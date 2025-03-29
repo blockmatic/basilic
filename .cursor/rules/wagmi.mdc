@@ -1,8 +1,8 @@
 ---
 description: Web3 integration patterns using Wagmi v2
-globs: "**/hooks/**/*.{ts,tsx}"
+globs: *.ts,*.tsx,**/hooks/**/*.tsx,**/hooks/**/*.ts
+alwaysApply: false
 ---
-
 # Wagmi v2 Best Practices
 
 - **Use Wagmi v2.x**: Ensure all hooks and configurations adhere to Wagmi v2.x standards. ([Wagmi Migration Guide](mdc:basilic-evm/https:/wagmi.sh/react/guides/migrate-from-v1-to-v2))

@@ -1,8 +1,8 @@
 ---
 description: Next.js development standards and patterns
-globs: "app/**/*.{ts,tsx}"
+globs: *.tsx,*.ts
+alwaysApply: false
 ---
-
 # Next.js Rules
 
 ## **Core Principles**

@@ -1,8 +1,8 @@
 ---
 description: Solidity development standards with Foundry
-globs: "**/*.{sol,t.sol}"
+globs: **/contracts/**/*.sol,*.sol
+alwaysApply: false
 ---
-
 # Solidity & Foundry Rules
 
 ## Core Principles

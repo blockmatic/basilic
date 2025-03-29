@@ -1,13 +1,8 @@
 ---
 description: TypeScript coding standards and best practices
-globs: **/*.{ts,tsx}
+globs: *.tsx,*.ts
 alwaysApply: false
 ---
----
-description: TypeScript Rules
-globs: **/*.{ts,tsx}
----
-
 # TypeScript Rules
 
 ### **Core Principles**

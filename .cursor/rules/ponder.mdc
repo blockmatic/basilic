@@ -1,8 +1,8 @@
 ---
 description: Ponder indexing standards and Rules
 globs: "**/ponder/**/*.ts"
+alwaysApply: false
 ---
-
 # Ponder Rules
 
 - **Use the latest Ponder package** (no `@ponder/core`).

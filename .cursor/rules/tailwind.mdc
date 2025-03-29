@@ -1,6 +1,7 @@
 ---
 description: Tailwind CSS and UI component guidelines
-globs: "**/*.{ts,tsx,css}"
+globs: .tsx
+alwaysApply: false
 ---
 
 # Tailwind & UI Rules

@@ -1,6 +1,7 @@
 ---
 description: Web Vitals and performance optimization guidelinespd
-globs: "**/*.{ts,tsx}"
+globs: *.tsx,*.ts,*.html
+alwaysApply: false
 ---
 
 # Web Vitals & Performance Rules

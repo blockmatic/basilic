@@ -1,8 +1,8 @@
 ---
 description: React hooks patterns and Rules
-globs: "**/hooks/**/*.{ts,tsx}"
+globs: *.tsx,*.ts,**/hooks/**/*.ts,**/hooks/**/*.tsx
+alwaysApply: false
 ---
-
 # React Hooks Rules
 
 ## Core Principles
