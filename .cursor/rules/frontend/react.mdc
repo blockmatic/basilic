@@ -1,3 +1,26 @@
 ---
-alwaysApply: true
+description: React component patterns and best practices
+globs: *.tsx,*.ts
+alwaysApply: false
 ---
+# React Rules
+
+## Component Structure
+- Separate UI and business logic into different components
+
+## Props and State
+- Follow the RORO (Receive an Object, Return an Object) pattern for props
+
+## Rendering Optimization
+- Memoize expensive calculations with useMemo
+- Use memo for pure components that render often
+- Use useCallback for functions passed to child components
+- Avoid creating new objects/arrays in render
+
+## Component Composition
+- Use children prop for flexible composition
+- Extract shared logic into custom hooks
+
+## Accessibility
+- Use semantic HTML elements
+- Maintain proper color contrast

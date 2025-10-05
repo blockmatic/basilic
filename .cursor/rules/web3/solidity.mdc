@@ -7,10 +7,7 @@ alwaysApply: false
 
 ## Core Principles
 - Use latest stable Solidity version (^0.8.20)
-- Follow CEI (Checks-Effects-Interactions) pattern
-- Implement proper access control
 - Use custom errors instead of revert strings
-- Optimize for gas efficiency
 
 ## Contract Structure
 ```solidity
@@ -45,44 +42,10 @@ contract ExampleContract is Ownable, ReentrancyGuard {
 }
 ```
 
-## Foundry Testing
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
-import "forge-std/Test.sol";
-import "../src/ExampleContract.sol";
-
-contract ExampleTest is Test {
-    ExampleContract public example;
-    address public user;
-    
-    function setUp() public {
-        example = new ExampleContract();
-        user = makeAddr("user");
-        vm.deal(user, 100 ether);
-    }
-    
-    function test_Deposit() public {
-        vm.startPrank(user);
-        example.deposit{value: 1 ether}();
-        assertEq(example.balances(user), 1 ether);
-        vm.stopPrank();
-    }
-    
-    function testFail_DepositUnderMin() public {
-        vm.prank(user);
-        example.deposit{value: 0.01 ether}();
-    }
-}
-```
-
 ## Gas Optimization
-- Use unchecked blocks for safe math
+- Use unchecked blocks for safe math operations
 - Pack storage variables efficiently
-- Use custom errors instead of strings
 - Cache storage variables in memory
-- Use calldata for readonly function parameters
 
 ```solidity
 contract GasOptimized {
@@ -92,52 +55,5 @@ contract GasOptimized {
         uint96 stakedAmount;
         uint64 lastUpdate;
     }
-    
-    // Use unchecked when overflow is impossible
-    function increment(uint256 i) public pure returns (uint256) {
-        unchecked { return i + 1; }
-    }
-    
-    // Cache storage reads
-    function processUserBalance(address user) external {
-        UserInfo memory userInfo = users[user]; // Cache in memory
-        if (userInfo.balance < minBalance) revert InsufficientBalance();
-        // Process using memory values
-    }
 }
 ```
-
-## Security Patterns
-- Use ReentrancyGuard for external calls
-- Implement proper access control
-- Follow checks-effects-interactions
-- Use pull over push payments
-- Validate all inputs
-- Use SafeERC20 for token transfers
-
-## Testing Guidelines
-- Test both success and failure cases
-- Use fuzzing for edge cases
-- Test state changes thoroughly
-- Mock external dependencies
-- Use proper assertions
-
-```solidity
-function testFuzz_ValidateInput(uint256 amount) public {
-    // Bound input to realistic values
-    amount = bound(amount, MIN_AMOUNT, MAX_AMOUNT);
-    
-    vm.startPrank(user);
-    example.deposit{value: amount}();
-    
-    assertEq(example.balances(user), amount);
-    vm.stopPrank();
-}
-```
-
-## Deployment
-- Use proper constructor parameters
-- Verify contracts on block explorers
-- Document deployment addresses
-- Use timelock for admin functions
-- Implement proper upgrade patterns 

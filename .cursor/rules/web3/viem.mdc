@@ -1,16 +1,13 @@
 ---
-description: Viem v2 integration patterns and Rules
+description: Viem v2 integration patterns and best practices
 globs: *.tsx,*.ts
 alwaysApply: false
 ---
-
 # Viem v2 Rules
 
 ## Core Principles
-- Use viem 2.x APIs consistently
 - Use getAddress for address validation
 - Never cast directly as Address type
-- Handle RPC errors gracefully
 
 ## Address Handling
 ```tsx
@@ -23,23 +20,6 @@ function validateAddress(rawAddress: string) {
   } catch (error) {
     throw new Error('Invalid Ethereum address')
   }
-}
-
-// Contract interaction pattern
-export async function readContract({
-  address,
-  abi,
-  functionName,
-  args
-}: ReadContractParams) {
-  const contractAddress = getAddress(address)
-  
-  return publicClient.readContract({
-    address: contractAddress,
-    abi,
-    functionName,
-    args
-  })
 }
 ```
 
@@ -70,36 +50,6 @@ export async function sendTransaction({
 }
 ```
 
-## Event Handling
-```tsx
-// Event listening pattern
-export function useContractEvent({
-  address,
-  abi,
-  eventName
-}: ContractEventParams) {
-  const unwatch = publicClient.watchContractEvent({
-    address: getAddress(address),
-    abi,
-    eventName,
-    onLogs: (logs) => {
-      // Handle logs
-    }
-  })
-
-  // Cleanup on unmount
-  onUnmount(() => unwatch())
-}
-```
-
-## Error Handling
-- Use proper viem error types
-- Handle common RPC errors gracefully
-- Implement proper fallbacks
-- Provide user-friendly error messages
-
-## Performance
+## Performance Optimization
 - Use multicall for batch requests
-- Implement proper caching strategies
-- Handle rate limiting appropriately
-- Use WebSocket for real-time updates 
+- Use WebSocket for real-time updates

@@ -1,20 +1,17 @@
 ---
-description: Ponder indexing standards and Rules
+description: Ponder indexing standards and best practices
 globs: "**/ponder/**/*.ts"
 alwaysApply: false
 ---
 # Ponder Rules
 
-- Use the latest Ponder package (no `@ponder/core`).
-- Define clear indexing strategies tailored to your use case.
-- Optimize queries by using proper indexing and query functions.
-- Leverage Ponder's API for efficient event processing and querying.
-- Structure event handlers efficiently to minimize processing time.
+## Core Principles
+- Use the latest Ponder package (no `@ponder/core`)
+- Define clear indexing strategies tailored to your use case
 
-## Ponder Configuration (`ponder.config.ts`)
-
-- Define networks and transports using `http()` from `viem`.
-- Specify contracts with `abi`, `network`, `address`, and `startBlock`.
+## Ponder Configuration
+- Define networks and transports using `http()` from `viem`
+- Specify contracts with proper start blocks
 
 ```ts
 import { createConfig } from "ponder";
@@ -44,10 +41,8 @@ export default createConfig({
 });
 ```
 
-## Schema Design (`ponder.schema.ts`)
-
-- Define tables with `onchainTable()` and use meaningful primary keys.
-- Use indexed fields for efficient lookups.
+## Schema Design
+- Define tables with `onchainTable()` and use meaningful primary keys
 
 ```ts
 import { onchainTable, primaryKey, index } from "ponder";
@@ -66,85 +61,6 @@ export const allowances = onchainTable(
 );
 ```
 
-## Event Handling
-
-- Use `ponder.on()` to register event handlers.
-- Destructure event and context parameters for better readability.
-- Handle errors gracefully using `try/catch`.
-
-```ts
-import { ponder } from "ponder:registry";
-
-ponder.on("UniswapV3Factory:PoolCreated", async ({ event, context }) => {
-  const { args, log } = event;
-  const { db, client, contracts } = context;
-
-  try {
-    const poolAddress = args.pool;
-    const token0 = await client.readContract({
-      abi: contracts.UniswapV3Factory.abi,
-      address: poolAddress,
-      functionName: "token0",
-    });
-
-    await db.insert(pools).values({
-      id: poolAddress,
-      token0,
-    });
-  } catch (error) {
-    console.error(`Error processing PoolCreated event: ${error}`);
-  }
-});
-```
-
-## Database Operations
-
-- Read data using `db.select()` or `db.query()` for complex queries.
-- Write data using `db.insert()` or `db.update()`.
-- Always handle null cases to avoid runtime errors.
-
-```ts
-const asset = await db.select().from(assets).where(eq(assets.id, id)).limit(1);
-if (!asset) {
-  // Handle missing asset case
-}
-
-await db.insert(assets).values({
-  id,
-  name,
-  symbol,
-  decimals,
-  chainId,
-  address: tokenAddress,
-});
-```
-
 ## Performance Optimization
-
-- Cache frequently accessed data to avoid redundant queries.
-- Batch database operations to reduce execution time.
-- Index fields appropriately to speed up queries.
-
-```ts
-// Check cache before querying the database
-const cachedAsset = await cache.get(assetId);
-if (cachedAsset) return cachedAsset;
-
-// Batch insert operations
-await db.insert(assets).values([
-  { id: '1', name: 'Asset1' },
-  { id: '2', name: 'Asset2' },
-]);
-```
-
-## Logging
-
-- Log important events and errors for debugging.
-- Use structured logging for better tracking.
-
-```ts
-console.log(`[Event] PoolCreated: ${poolAddress}`);
-console.error(`Error: ${error.message}`, { stack: error.stack });
-```
-
-
+- Cache frequently accessed data to avoid redundant queries
+- Batch database operations to reduce execution time

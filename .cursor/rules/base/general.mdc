@@ -1,8 +1,13 @@
 ---
+description: General Agent Rules
 alwaysApply: true
 ---
 
-- You are an expert on the following stack
-- Always follow .cursor/rules
-- Provide accurate and concise responses.
-- Always provide executive summaries.
+# General Agent Rules
+
+## Code Quality
+- Organize code logically with related functionality grouped together, aka "collocation"
+
+## Agent Behavior
+- Provide executive summaries when finishing tasks
+- Suggest improvements proactively when spotting issues

@@ -5,41 +5,25 @@ alwaysApply: false
 ---
 # Next.js Rules
 
-- Default to Server Components for better performance.
-- Minimize `'use client'` directives to leverage SSR benefits.
-- Follow App Router patterns and conventions.
-- Handle errors properly using `error.tsx` and error boundaries.
-- Use Next.js 15 built-in components (`Image`, `Link`, `Script`, `Head`, etc.).
-- Use `nuqs` for URL search parameter state management.
-- Limit `'use client'`:
-  - Favor Server Components and Next.js SSR.
-  - Use only for Web API access in small components.
-  - Avoid for data fetching or state management.
+## Core Principles
+- Default to Server Components for better performance
+- Minimize `'use client'` directives to leverage SSR benefits
+- Use `nuqs` for URL search parameter state management
 
-## Data Fetching
-- Use Server Components for data fetching.
-- Implement proper caching strategies.
-- Handle loading and error states.
-- Use revalidation patterns to optimize freshness.
+## Server vs Client Components
+- Favor Server Components and Next.js SSR
+- Use client components only when necessary (interactive UI, browser APIs)
 
-## Next.js Optimizations
-- Use App Router with `nuqs` for efficient navigation and state management.
-- Implement streaming with `Suspense` for progressive loading.
-- Follow proper caching strategies:
-  - Use `fetch` cache options appropriately.
-  - Implement revalidation when needed.
-- Minimize `'use client'`, `'useEffect'`, and `'setState'` in favor of React Server Components (RSC).
-- Wrap client components in `Suspense` with a fallback.
-- Use dynamic loading for non-critical components.
+## Performance Optimization
+- Implement streaming with `Suspense` for progressive loading
+- Optimize Core Web Vitals:
+  - Largest Contentful Paint (LCP) < 2.5s
+  - First Input Delay (FID) < 100ms
+  - Cumulative Layout Shift (CLS) < 0.1
 - Optimize images:
-  - Use WebP format.
-  - Include size data.
-  - Implement lazy loading.
-
-## UI & Styling
-- Use Shadcn UI, Radix, and Tailwind for components and styling.
-- Implement responsive design with Tailwind CSS using a mobile-first approach.
-
+  - Use WebP format
+  - Include proper size data
+  - Implement lazy loading for below-fold images
 
 ## Server Actions
 ```tsx
@@ -62,34 +46,3 @@ export const saveAction = createSafeActionClient()
     }
   })
 ```
-
----
-
-## Performance Patterns
-```tsx
-// Use Image component with proper sizing
-import { Image } from 'next/image'
-
-export function OptimizedImage() {
-  return (
-    <Image
-      src="/hero.webp"
-      alt="Hero"
-      width={1200}
-      height={630}
-      priority={true}
-      className="w-full"
-    />
-  )
-}
-
-// Use Suspense for loading states
-export function LazyComponent() {
-  return (
-    <Suspense fallback={<LoadingSkeleton />}>
-      <ExpensiveComponent />
-    </Suspense>
-  )
-}
-```
-

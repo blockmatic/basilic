@@ -6,7 +6,7 @@ A full-stack monorepo starter for building Web3 and AI applications.
 
 ## Features
 
-- **AI-First Dev Workflow:** Optimized Cursor rules, MCP integrations, and automated reviews.  
+- **AI-First Dev Workflow:** Optimized Cursor rules, MCP integrations (ShadcnUI, Supabase, V0, GitHub), and automated reviews.  
 - **Web3 & AI Starters:** Ready-to-use templates for Next.js, Expo, NestJS, and Ponder.  
 - **Turbo Monorepo + Design System:** ShadcnUI components with shared utilities.  
 - **Preconfigured Dev Tools:** Biome, Git workflows, hooks, and security checks.  

@@ -1,9 +1,0 @@
----
-alwaysApply: false
----
-- Optimize for Core Web Vitals:
-  - LCP (Largest Contentful Paint) < 2.5s
-  - FID (First Input Delay) < 100ms
-  - CLS (Cumulative Layout Shift) < 0.1
-- Use Server Components as default for improved performance
-- Minimize client-side JavaScript bundle size
