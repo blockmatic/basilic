@@ -5,16 +5,16 @@ alwaysApply: false
 ---
 # Ponder Rules
 
-- **Use the latest Ponder package** (no `@ponder/core`).
-- **Define clear indexing strategies** tailored to your use case.
-- **Optimize queries** by using proper indexing and query functions.
-- **Leverage Ponder’s API** for efficient event processing and querying.
-- **Structure event handlers efficiently** to minimize processing time.
+- Use the latest Ponder package (no `@ponder/core`).
+- Define clear indexing strategies tailored to your use case.
+- Optimize queries by using proper indexing and query functions.
+- Leverage Ponder's API for efficient event processing and querying.
+- Structure event handlers efficiently to minimize processing time.
 
 ## Ponder Configuration (`ponder.config.ts`)
 
-- **Define networks and transports** using `http()` from `viem`.
-- **Specify contracts** with `abi`, `network`, `address`, and `startBlock`.
+- Define networks and transports using `http()` from `viem`.
+- Specify contracts with `abi`, `network`, `address`, and `startBlock`.
 
 ```ts
 import { createConfig } from "ponder";
@@ -46,8 +46,8 @@ export default createConfig({
 
 ## Schema Design (`ponder.schema.ts`)
 
-- **Define tables with `onchainTable()`** and use meaningful primary keys.
-- **Use indexed fields** for efficient lookups.
+- Define tables with `onchainTable()` and use meaningful primary keys.
+- Use indexed fields for efficient lookups.
 
 ```ts
 import { onchainTable, primaryKey, index } from "ponder";
@@ -68,9 +68,9 @@ export const allowances = onchainTable(
 
 ## Event Handling
 
-- **Use `ponder.on()` to register event handlers.**
-- **Destructure event and context parameters** for better readability.
-- **Handle errors gracefully** using `try/catch`.
+- Use `ponder.on()` to register event handlers.
+- Destructure event and context parameters for better readability.
+- Handle errors gracefully using `try/catch`.
 
 ```ts
 import { ponder } from "ponder:registry";
@@ -99,9 +99,9 @@ ponder.on("UniswapV3Factory:PoolCreated", async ({ event, context }) => {
 
 ## Database Operations
 
-- **Read data** using `db.select()` or `db.query()` for complex queries.
-- **Write data** using `db.insert()` or `db.update()`.
-- **Always handle null cases** to avoid runtime errors.
+- Read data using `db.select()` or `db.query()` for complex queries.
+- Write data using `db.insert()` or `db.update()`.
+- Always handle null cases to avoid runtime errors.
 
 ```ts
 const asset = await db.select().from(assets).where(eq(assets.id, id)).limit(1);
@@ -121,9 +121,9 @@ await db.insert(assets).values({
 
 ## Performance Optimization
 
-- **Cache frequently accessed data** to avoid redundant queries.
-- **Batch database operations** to reduce execution time.
-- **Index fields appropriately** to speed up queries.
+- Cache frequently accessed data to avoid redundant queries.
+- Batch database operations to reduce execution time.
+- Index fields appropriately to speed up queries.
 
 ```ts
 // Check cache before querying the database
@@ -139,8 +139,8 @@ await db.insert(assets).values([
 
 ## Logging
 
-- **Log important events and errors** for debugging.
-- **Use structured logging** for better tracking.
+- Log important events and errors for debugging.
+- Use structured logging for better tracking.
 
 ```ts
 console.log(`[Event] PoolCreated: ${poolAddress}`);

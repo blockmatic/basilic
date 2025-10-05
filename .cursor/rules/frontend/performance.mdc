@@ -1,12 +1,6 @@
 ---
-description: Web Vitals and performance optimization guidelinespd
-globs: *.tsx,*.ts,*.html
 alwaysApply: false
 ---
-
-# Web Vitals & Performance Rules
-
-## Core Metrics
 - Optimize for Core Web Vitals:
   - LCP (Largest Contentful Paint) < 2.5s
   - FID (First Input Delay) < 100ms

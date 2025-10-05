@@ -1,18 +1,18 @@
 ---
-description: Tailwind CSS and UI component guidelines
+description: ShadcnUI component guidelines
 globs: .tsx
 alwaysApply: false
 ---
 
-# Tailwind & UI Rules
 
-## Core Principles
+- Shadcnui as base for our design system.
+- Critical: Shacnui components should always be installed in /packages/ui. 
+- Consuming apps must import from @repo/ui, never from relative paths to packages/ui.
+- When adding new components, update the Tailwind preset or tokens in packages/ui (not per app).
 - Use mobile-first responsive design
-- Use Shadcn UI components from @repo/ui
-- Follow design system tokens
-- Use lucide-react icons
 
 ## Component Patterns
+
 ```tsx
 import { cn } from '@repo/utils'
 import { cva } from 'class-variance-authority'

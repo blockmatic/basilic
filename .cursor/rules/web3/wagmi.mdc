@@ -5,9 +5,9 @@ alwaysApply: false
 ---
 # Wagmi v2 Best Practices
 
-- **Use Wagmi v2.x**: Ensure all hooks and configurations adhere to Wagmi v2.x standards. ([Wagmi Migration Guide](mdc:basilic-evm/https:/wagmi.sh/react/guides/migrate-from-v1-to-v2))
+- Use Wagmi v2.x: Ensure all hooks and configurations adhere to Wagmi v2.x standards. ([Wagmi Migration Guide](mdc:basilic-evm/https:/wagmi.sh/react/guides/migrate-from-v1-to-v2))
 
-- **TypeScript Enforcement**: Use `wagmi/core` and `viem` types for strict type safety.
+- TypeScript Enforcement: Use `wagmi/core` and `viem` types for strict type safety.
 
 ## Hooks and State Management Rules
 

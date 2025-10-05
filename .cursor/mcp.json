@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "bunx",
+      "args": ["shadcn@latest", "mcp"]
+    }
+  },
+  "v0": {
+    "command": "bunx",
+    "args": [
+      "mcp-remote",
+      "https://mcp.v0.dev",
+      "--header",
+      "Authorization: Bearer ${V0_API_KEY}"
+    ]
+  }
+}
