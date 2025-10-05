@@ -1,9 +1,11 @@
 import type { Config } from 'tailwindcss'
+import defaultTheme from 'tailwindcss/defaultTheme'
 import tailwindcssAnimate from 'tailwindcss-animate'
-import { fontFamily } from 'tailwindcss/defaultTheme'
+
+const { fontFamily } = defaultTheme
 
 const config = {
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     'app/**/*.{ts,tsx}',
     'components/**/*.{ts,tsx}',

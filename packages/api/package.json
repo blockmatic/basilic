@@ -12,17 +12,17 @@
   "license": "ISC",
   "exports": {},
   "dependencies": {
-    "@ponder/client": "^0.9.24",
-    "@ponder/react": "^0.9.24",
+    "@ponder/client": "^0.13.9",
+    "@ponder/react": "^0.13.9",
     "@repo/errors": "workspace:*",
     "@repo/ponder": "workspace:*",
-    "viem": "^2.21.3"
+    "viem": "^2.37.12"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.0.0"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@tanstack/react-query": "^5.28.4"
+    "@tanstack/react-query": "^5.90.2"
   }
 }

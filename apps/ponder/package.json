@@ -17,10 +17,10 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "bignumber.js": "^9.1.2",
-    "hono": "^4.7.4",
-    "ponder": "^0.10.0",
-    "viem": "^2.23.12",
+    "bignumber.js": "^9.3.1",
+    "hono": "^4.9.9",
+    "ponder": "^0.13.9",
+    "viem": "^2.37.12",
     "@repo/core": "workspace:*",
     "@repo/errors": "workspace:*",
     "@repo/tsconfig": "workspace:*"
@@ -28,8 +28,8 @@
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
     "@repo/errors": "workspace:*",
-    "@types/node": "^22.13.10",
-    "typescript": "^5.8.2"
+    "@types/node": "^24.6.2",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=18.14"

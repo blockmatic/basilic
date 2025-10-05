@@ -24,17 +24,17 @@
     "pg:logs": "docker-compose -f docker/pg-docker-compose.yml -p basilic logs -f"
   },
   "devDependencies": {
-    "simple-git-hooks": "2.11.1",
-    "turbo": "^2.4.2",
-    "typescript": "5.7.3",
-    "@biomejs/biome": "^1.9.4",
-    "@repo/tsconfig": "workspace:*"
+    "@biomejs/biome": "^2.2.5",
+    "@repo/tsconfig": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.14",
+    "simple-git-hooks": "2.13.1",
+    "turbo": "^2.5.8",
+    "typescript": "5.9.3"
   },
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "pnpm@8.15.4",
-  "dependencies": {},
+  "packageManager": "pnpm@10.18.0",
   "simple-git-hooks": {
     "pre-commit": "bun run hooks:pre-commit"
   }

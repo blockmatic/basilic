@@ -17,4 +17,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup and guidelines.
 
 ## License
 
-[WTFPL](./LICENSE) © [blockmatic.io](https://blockmatic.io)
+[WTFPL](./LICENSE) © [blockmatic.io](https://blockmatic.io)****

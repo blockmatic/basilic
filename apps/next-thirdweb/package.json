@@ -13,26 +13,26 @@
     "@repo/errors": "workspace:*",
     "@repo/markets": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.66.9",
-    "bignumber.js": "^9.1.2",
+    "@tanstack/react-query": "^5.90.2",
+    "bignumber.js": "^9.3.1",
     "lodash": "^4.17.21",
-    "next": "^15.1.6",
-    "next-safe-action": "^7.10.4",
-    "next-themes": "^0.4.3",
-    "pino-pretty": "^13.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "thirdweb": "^5.88.7",
+    "next": "^15.5.4",
+    "next-safe-action": "^8.0.11",
+    "next-themes": "^0.4.6",
+    "pino-pretty": "^13.1.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "thirdweb": "^5.108.8",
     "viem": "^2.x",
     "wagmi": "2.x",
-    "zod": "^3.23.8"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@turbo/gen": "^2.2.3",
-    "@types/node": "^22",
-    "@types/react": "19.0.8",
-    "@types/react-dom": "19.0.3",
-    "typescript": "5.7.3"
+    "@turbo/gen": "^2.5.8",
+    "@types/node": "^24",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
+    "typescript": "5.9.3"
   }
 }
