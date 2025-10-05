@@ -1,15 +1,8 @@
 import { type Context, type Event, ponder } from 'ponder:registry'
-import {
-  Asset,
-  LiquidityData,
-  PriceData,
-  SwapEvent,
-  VolumeData,
-} from 'ponder:schema'
+import { Asset, SwapEvent } from 'ponder:schema'
 import BigNumber from 'bignumber.js'
-import { formatUnits } from 'viem'
-import { erc20Abi } from 'viem'
 import type { Address } from 'viem'
+import { erc20Abi, formatUnits } from 'viem'
 
 // Main Event Handler
 ponder.on(

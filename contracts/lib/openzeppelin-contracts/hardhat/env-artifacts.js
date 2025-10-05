@@ -18,7 +18,6 @@ extendEnvironment((hre) => {
         return await originalReadArtifact.call(this, name + suffix)
       } catch (e) {
         if (isExpectedError(e, suffix)) {
-          continue
         } else {
           throw e
         }

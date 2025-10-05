@@ -10,7 +10,9 @@ import type { MarketData } from './markets-tracker'
 
 export async function MarketsTable({
   marketData = [],
-}: { marketData: MarketData[] }) {
+}: {
+  marketData: MarketData[]
+}) {
   const formatNumber = (num: number) => {
     if (num >= 1e9) {
       return `$${(num / 1e9).toFixed(2)}B`

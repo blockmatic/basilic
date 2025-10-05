@@ -66,7 +66,11 @@ function ListItem({
   title,
   href,
   children,
-}: { title: string; href: string; children: React.ReactNode }) {
+}: {
+  title: string
+  href: string
+  children: React.ReactNode
+}) {
   return (
     <li>
       <NavigationMenuLink asChild>

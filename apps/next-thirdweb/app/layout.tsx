@@ -1,5 +1,5 @@
-import { RootLayout } from '@/components/layout'
 import type { Metadata } from 'next'
+import { RootLayout } from '@/components/layout'
 
 export default function Layout({ children }: LayoutProps) {
   return (

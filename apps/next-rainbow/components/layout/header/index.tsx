@@ -1,5 +1,5 @@
-import { ThemeToggle } from '@/components/layout/header/theme-toggle'
 import Link from 'next/link'
+import { ThemeToggle } from '@/components/layout/header/theme-toggle'
 import { AppConnectButton } from './connect'
 import { Menu } from './menu'
 

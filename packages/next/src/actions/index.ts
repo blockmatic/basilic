@@ -13,8 +13,8 @@
  * - error is sent to sentry with captureAppError
  */
 
-import { captureAppError } from '@repo/errors'
 import type { RepoError, RepoInteralError } from '@repo/errors'
+import { captureAppError } from '@repo/errors'
 
 export type ActionResult<T> = Success<T> | Failure
 

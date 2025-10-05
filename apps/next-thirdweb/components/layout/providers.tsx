@@ -1,12 +1,12 @@
 'use client'
 
-import { webConfig } from '@/config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import { ThirdwebProvider } from 'thirdweb/react'
-import { http, type Transport } from 'viem'
-import { WagmiProvider, createConfig } from 'wagmi'
+import { http } from 'viem'
+import { createConfig, WagmiProvider } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
+import { webConfig } from '@/config'
 
 const queryClient = new QueryClient()
 

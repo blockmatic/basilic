@@ -1,8 +1,8 @@
 'use server'
-import { client } from '@/lib/thirdweb'
 import { cookies } from 'next/headers'
-import { type VerifyLoginPayloadParams, createAuth } from 'thirdweb/auth'
+import { createAuth, type VerifyLoginPayloadParams } from 'thirdweb/auth'
 import { privateKeyToAccount } from 'thirdweb/wallets'
+import { client } from '@/lib/thirdweb'
 
 const privateKey = process.env.AUTH_PRIVATE_KEY || ''
 

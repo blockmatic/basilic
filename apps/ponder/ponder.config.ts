@@ -1,6 +1,6 @@
 import { UniswapV3PoolAbi } from '@repo/core/abis'
 import { createConfig } from 'ponder'
-import { http, createPublicClient } from 'viem'
+import { createPublicClient, http } from 'viem'
 import { indexerConfig } from './src/config'
 
 // Create a public client to interact with Arbitrum

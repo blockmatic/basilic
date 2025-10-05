@@ -1,10 +1,10 @@
 'use client'
 
+import Link from 'next/link'
+import { ConnectButton } from 'thirdweb/react'
 import { generatePayload, isLoggedIn, login, logout } from '@/actions/login'
 import { ThemeToggle } from '@/components/layout/header/theme-toggle'
 import { client } from '@/lib/thirdweb'
-import Link from 'next/link'
-import { ConnectButton } from 'thirdweb/react'
 import { Menu } from './menu'
 
 export function Header() {

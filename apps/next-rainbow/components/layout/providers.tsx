@@ -1,13 +1,13 @@
 'use client'
-import { webConfig } from '@/config'
 import {
-  RainbowKitProvider,
-  type Theme as RainbowKitTheme,
   darkTheme,
   getDefaultConfig,
+  RainbowKitProvider,
+  type Theme as RainbowKitTheme,
 } from '@rainbow-me/rainbowkit'
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import { SessionProvider } from 'next-auth/react'
+import { webConfig } from '@/config'
 import '@rainbow-me/rainbowkit/styles.css'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'

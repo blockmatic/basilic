@@ -67,5 +67,16 @@
       "**/*.tsx"
     ],
     "experimentalScannerIgnores": ["contracts/**"]
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["contracts/**"],
+      "formatter": {
+        "enabled": false
+      },
+      "linter": {
+        "enabled": false
+      }
+    }
+  ]
 }

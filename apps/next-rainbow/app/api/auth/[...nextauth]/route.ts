@@ -20,7 +20,7 @@ const authOptions: AuthOptions = {
 
           if (!result.success) return null
           return { id: result.data.address }
-        } catch (error) {
+        } catch (_error) {
           return null
         }
       },

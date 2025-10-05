@@ -1,8 +1,8 @@
-import path from 'path'
 import { includeIgnoreFile } from '@eslint/compat'
 import js from '@eslint/js'
 import prettier from 'eslint-config-prettier'
 import globals from 'globals'
+import path from 'path'
 
 export default [
   js.configs.recommended,
