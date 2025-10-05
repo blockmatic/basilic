@@ -11,6 +11,15 @@ A full-stack monorepo starter for building Web3 and AI applications.
 - **Turbo Monorepo + Design System:** ShadcnUI components with shared utilities.  
 - **Preconfigured Dev Tools:** Biome, Git workflows, hooks, and security checks.  
 
+
+# Technology Stack
+
+- AI: OpenAI and Claude APIs with AI SDK
+- Frontend: Next.js 15.5, React, Tailwind, ShadcnUI
+- Backend: NestJS, PostgreSQL, Supabase
+- Web3: Solidity, Viem, Wagmi, Ponder
+- DevOps: pnpm, Bun, TurboRepo, TypeScript, Biome
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup and guidelines.
