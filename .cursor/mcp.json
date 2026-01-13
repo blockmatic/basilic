@@ -18,12 +18,13 @@
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       }
     },
-    "vercel": {
-      "command": "pnpm",
-      "args": ["dlx", "@modelcontextprotocol/server-vercel"],
-      "env": {
-        "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}"
-      }
+    "vercel-docs": {
+      "url": "https://mcp.vercel.com/gaboesquivel/basilic-docs",
+      "description": "Vercel MCP for @basilic/docs"
+    },
+    "vercel-api": {
+      "url": "https://mcp.vercel.comgaboesquivel/basilic-api",
+      "description": "Vercel MCP for @basilic/api"
     }
   }
 }
