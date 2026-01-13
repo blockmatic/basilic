@@ -1,0 +1,15 @@
+{
+  "index": "Introduction",
+  "getting-started": "Getting Started",
+  "architecture": "Architecture",
+  "dynamic-integration": "Dynamic Integration",
+  "environment": "Environment",
+  "tooling": "Tooling",
+  "mcp-servers": "MCP Servers",
+  "deployment": "Deployment",
+  "vercel-portability": "Vercel Portability",
+  "google-cloud": "Google Cloud",
+  "packages": "Packages",
+  "apps": "Applications",
+  "adrs": "Architecture Decisions"
+}

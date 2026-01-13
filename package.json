@@ -1,40 +1,32 @@
 {
-  "name": "basilic-evm",
+  "name": "basilic",
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "backend:start": "bash scripts/backend-start.sh",
-    "backend:stop": "bash scripts/backend-stop.sh",
-    "backend:reset": "bash scripts/backend-reset.sh",
     "dev": "turbo dev",
-    "check-types": "turbo check-types",
-    "lint": "biome check .",
-    "lint:fix": "biome check . --write",
+    "typecheck": "turbo typecheck",
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "lint:biome": "biome check .",
+    "lint:biome:fix": "biome check . --write",
+    "lint:eslint": "turbo run lint:eslint",
+    "lint:eslint:fix": "turbo run lint:eslint:fix",
+    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
+    "format": "biome format . --write",
     "hooks:pre-commit": "biome check --write --staged --no-errors-on-unmatched && git update-index --again",
-    "psql": "psql -h localhost -p 54321 -U postgres -W",
-    "supa:start": "docker-compose -f docker/supa-docker-compose.yml -p basilic up --build -d",
-    "supa:stop": "docker-compose -f docker/supa-docker-compose.yml -p basilic stop",
-    "supa:reset": "pnpm run supa:down && pnpm run supa:start",
-    "supa:down": "docker-compose -f docker/supa-docker-compose.yml -p basilic down -v --remove-orphans",
-    "supa:logs": "docker-compose -f docker/supa-docker-compose.yml -p basilic logs -f",
-    "pg:start": "docker-compose -f docker/pg-docker-compose.yml -p basilic up --build -d",
-    "pg:stop": "docker-compose -f docker/pg-docker-compose.yml -p basilic stop",
-    "pg:reset": "pnpm run pg:down && pnpm run pg:start",
-    "pg:down": "docker-compose -f docker/pg-docker-compose.yml -p basilic down -v --remove-orphans",
-    "pg:logs": "docker-compose -f docker/pg-docker-compose.yml -p basilic logs -f"
+    "setup": "echo 'Setup script pending'"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.5",
-    "@repo/tsconfig": "workspace:*",
-    "@tailwindcss/postcss": "^4.1.14",
+    "@biomejs/biome": "^2.3.11",
+    "@basilic/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.18",
     "simple-git-hooks": "2.13.1",
-    "turbo": "^2.5.8",
+    "turbo": "^2.7.4",
     "typescript": "5.9.3"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
-  "packageManager": "pnpm@10.18.0",
+  "packageManager": "pnpm@10.28.0",
   "simple-git-hooks": {
     "pre-commit": "bun run hooks:pre-commit"
   }

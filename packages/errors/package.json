@@ -1,9 +1,0 @@
-{
-  "name": "@repo/errors",
-  "main": "src/index.ts",
-  "devDependencies": {},
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {}
-}

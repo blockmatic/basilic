@@ -1,29 +1,29 @@
 {
   "mcpServers": {
     "shadcn": {
-      "command": "bunx",
-      "args": ["shadcn@latest", "mcp"]
-    },
-    "supabase": {
-      "url": "https://mcp.supabase.com/mcp"
+      "command": "pnpm",
+      "args": ["dlx", "@shadcn/mcp"]
     },
     "v0": {
-      "command": "bunx",
-      "args": [
-        "mcp-remote",
-        "https://mcp.v0.dev",
-        "--header",
-        "Authorization: Bearer ${V0_API_KEY}"
-      ]
+      "command": "pnpm",
+      "args": ["dlx", "@modelcontextprotocol/server-v0"],
+      "env": {
+        "V0_API_KEY": "${V0_API_KEY}"
+      }
     },
     "github": {
-      "command": "bunx",
-      "args": [
-        "mcp-remote",
-        "https://mcp.github.com",
-        "--header",
-        "Authorization: Bearer ${GITHUB_TOKEN}"
-      ]
+      "command": "pnpm",
+      "args": ["dlx", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "vercel": {
+      "command": "pnpm",
+      "args": ["dlx", "@modelcontextprotocol/server-vercel"],
+      "env": {
+        "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}"
+      }
     }
   }
 }

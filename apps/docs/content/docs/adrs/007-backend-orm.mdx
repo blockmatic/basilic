@@ -1,0 +1,272 @@
+---
+title: "ADR 007: Backend ORM Selection"
+description: "Decision to use Drizzle ORM for type-safe PostgreSQL queries, lightweight design, portability, and ability to migrate between database hosts without code changes."
+---
+
+## Context
+
+We need to select an Object-Relational Mapping (ORM) tool for the backend API to interact with PostgreSQL databases. The tool must support:
+
+- Type-safe database queries with full TypeScript support
+- PostgreSQL compatibility (Cloud SQL, Supabase, self-hosted)
+- Declarative schema definitions
+- Database migrations
+- Integration with Fastify framework (functional, plugin-based)
+- Support for both embedded (PGLite) and cloud (Cloud SQL, Supabase) databases
+- Lightweight runtime overhead
+- Good developer experience with IDE autocomplete
+- **Portability**: Works with any PostgreSQL host without vendor lock-in
+- Active community and maintenance
+
+## Considered Options
+
+### Option A – Drizzle ORM (Chosen)
+
+Lightweight, type-safe ORM with a focus on SQL-like syntax and minimal abstraction.
+
+**Pros**
+
+- Excellent TypeScript support with full type inference
+- Lightweight runtime with minimal overhead
+- SQL-like syntax that's intuitive and familiar
+- No code generation required (pure TypeScript)
+- Supports both PGLite and PostgreSQL seamlessly
+- Declarative schema definitions with type safety
+- Built-in migration tooling (drizzle-kit)
+- Composable query builder with excellent autocomplete
+- Small bundle size
+- Active development and growing community
+- Works well with both embedded and cloud databases
+- No runtime overhead from code generation
+- Easy to test and mock
+- **Plain SQL generation**: Generates standard PostgreSQL queries, no ORM-specific runtime
+- **Zero vendor lock-in**: Works with any PostgreSQL host (Supabase, AWS RDS, Google Cloud SQL, self-hosted)
+- **Migration path**: Easy to move from Supabase → AWS RDS → Google Cloud SQL → on-premises
+- **No proprietary APIs**: Standard `DATABASE_URL`, no platform-specific code
+- **Security flexibility**: Can migrate to environments with KMS encryption, VPC isolation, HSMs
+
+**Cons**
+
+- Smaller ecosystem compared to Prisma
+- Less mature than TypeORM (but rapidly growing)
+- Requires more manual SQL knowledge compared to Prisma
+- Migration tooling less feature-rich than Prisma
+- Smaller community compared to established ORMs
+
+### Option B – Prisma
+
+Modern ORM with a focus on developer experience and type safety.
+
+**Pros**
+
+- Excellent developer experience with Prisma Studio
+- Strong type safety with generated types
+- Comprehensive migration system
+- Large ecosystem and community
+- Great documentation and learning resources
+- Built-in query optimization
+- Support for multiple databases
+- Active development and strong backing
+- Excellent IDE support with Prisma extension
+
+**Cons**
+
+- Code generation step required (build-time overhead)
+- Runtime overhead from generated client
+- Less flexible for complex queries
+- Heavier bundle size
+- Requires separate Prisma Client generation
+- PGLite support may be limited or require workarounds
+- More abstraction from SQL (can be pro or con)
+- Migration system can be complex for advanced use cases
+- Less portable (requires Prisma Client runtime)
+
+### Option C – TypeORM
+
+Mature, feature-rich ORM with decorator-based entity definitions.
+
+**Pros**
+
+- Mature and battle-tested platform
+- Large ecosystem and community
+- Active Record and Data Mapper patterns
+- Comprehensive feature set (relations, transactions, etc.)
+- Good documentation
+- Supports multiple databases
+
+**Cons**
+
+- Heavier runtime overhead
+- More complex API surface
+- Decorator-based approach can be verbose
+- Type safety not as strong as Drizzle or Prisma
+- Larger bundle size
+- PGLite support may require custom adapters
+- More abstraction can hide SQL complexity
+- Slower query performance compared to lighter ORMs
+- Migration system can be cumbersome
+- Less suitable for functional Fastify patterns
+
+### Option D – Kysely
+
+Type-safe SQL query builder (not a full ORM).
+
+**Pros**
+
+- Excellent TypeScript support with type inference
+- SQL-like syntax with full type safety
+- Lightweight with minimal runtime overhead
+- No code generation required
+- Compile-time query validation
+- Very close to raw SQL (minimal abstraction)
+- Small bundle size
+- Good performance
+
+**Cons**
+
+- Not a full ORM (no built-in migrations, relations management)
+- Requires more manual work for common patterns
+- Less developer-friendly for complex relationships
+- Smaller ecosystem
+- No built-in migration tooling
+- Requires more SQL knowledge
+- Less abstraction (can be pro or con)
+- PGLite support may require custom work
+
+### Option E – Sequelize
+
+Mature ORM with promise-based API.
+
+**Pros**
+
+- Mature and stable platform
+- Large community and ecosystem
+- Promise-based API (modern async/await)
+- Supports multiple databases
+- Good documentation
+- Established patterns
+
+**Cons**
+
+- Less type safety compared to modern TypeScript ORMs
+- Heavier runtime overhead
+- More verbose syntax
+- Older architecture (less modern patterns)
+- PGLite support limited
+- Less active development compared to newer ORMs
+- TypeScript support not as strong as newer options
+
+### Option F – MikroORM
+
+TypeScript ORM with Data Mapper, Unit of Work, and Identity Map patterns.
+
+**Pros**
+
+- Strong TypeScript support
+- Modern architecture with Unit of Work pattern
+- Good type safety
+- Supports multiple databases
+- Active development
+- Good documentation
+
+**Cons**
+
+- Smaller community compared to Prisma/TypeORM
+- Steeper learning curve
+- More complex API
+- PGLite support may be limited
+- Heavier than Drizzle
+- Less familiar to most developers
+
+## Decision
+
+We will use **Drizzle ORM** for database operations in the backend API.
+
+### TLDR: Comparison Table
+
+| Feature | Drizzle ✅ | Prisma | TypeORM | Kysely | Sequelize | MikroORM |
+|---------|------------|--------|---------|--------|-----------|----------|
+| **TypeScript inference** | ✅ Excellent | ✅ Generated | ⚠️ Good | ✅ Excellent | ⚠️ Limited | ✅ Good |
+| **Bundle size** | ✅ Small | ⚠️ Medium | ⚠️ Large | ✅ Small | ⚠️ Large | ⚠️ Medium |
+| **Code generation** | ✅ None needed | ❌ Required | ✅ None | ✅ None | ✅ None | ✅ None |
+| **Runtime overhead** | ✅ Minimal | ⚠️ Medium | ⚠️ High | ✅ Minimal | ⚠️ High | ⚠️ Medium |
+| **PGLite support** | ✅ Seamless | ⚠️ Limited | ⚠️ Custom adapter | ⚠️ Custom work | ❌ Limited | ⚠️ Limited |
+| **SQL-like syntax** | ✅ Intuitive | ⚠️ Abstraction | ⚠️ Decorators | ✅ Very close | ⚠️ Verbose | ⚠️ Complex |
+| **Migration tooling** | ✅ Built-in | ✅ Comprehensive | ⚠️ Cumbersome | ❌ None | ✅ Good | ✅ Good |
+| **Ecosystem** | ⚠️ Growing | ✅ Large | ✅ Large | ⚠️ Smaller | ✅ Large | ⚠️ Smaller |
+| **Fastify integration** | ✅ Perfect fit | ⚠️ Good | ⚠️ Less suitable | ✅ Good | ⚠️ Less suitable | ⚠️ Less suitable |
+| **Portability** | ✅ Plain SQL | ⚠️ Prisma runtime | ⚠️ TypeORM runtime | ✅ Plain SQL | ⚠️ Sequelize runtime | ⚠️ MikroORM runtime |
+| **Vendor lock-in** | ✅ None | ⚠️ Prisma Client | ⚠️ TypeORM | ✅ None | ⚠️ Sequelize | ⚠️ MikroORM |
+
+**Main reasons:**
+
+- Excellent TypeScript support with full type inference aligns with our type-safe codebase
+- Lightweight runtime with minimal overhead, important for production deployments
+- Seamless support for both PGLite (ephemeral PR deployments) and PostgreSQL (dev/prod)
+- SQL-like syntax is intuitive and provides good control over queries
+- No code generation required, reducing build complexity
+- Declarative schema definitions with type safety enable maintainable database code
+- Built-in migration tooling (drizzle-kit) provides necessary migration support
+- Small bundle size reduces deployment size and cold start times
+- Composable query builder with excellent IDE autocomplete improves developer experience
+- Active development and growing community ensure long-term support
+- Works well with Fastify's functional patterns and plugin-based architecture
+- **Plain SQL generation**: Drizzle generates standard PostgreSQL queries, no ORM-specific runtime
+- **Zero vendor lock-in**: Works with any PostgreSQL host (Supabase, AWS RDS, Google Cloud SQL, self-hosted)
+- **Migration path**: Easy to move from Supabase → AWS RDS → Google Cloud SQL → on-premises
+- **No proprietary APIs**: Standard `DATABASE_URL`, no platform-specific code
+- **Security flexibility**: Can migrate to environments with KMS encryption, VPC isolation, HSMs
+- **Chosen for portability**: Enables migration from Vercel-Supabase to GCP/AWS for production security
+
+## Implementation Details
+
+### Schema Definition
+
+Schemas are defined using Drizzle's declarative syntax in `src/database/schema/`:
+
+```typescript
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+```
+
+### Database Integration
+
+Drizzle is integrated with the Fastify-based API through functional patterns:
+
+- Database connection (supports both PGLite and PostgreSQL)
+- Drizzle instance with schema exported from `src/database/`
+- Schema exports for type inference
+- Standard `DATABASE_URL` connection string
+
+### Migrations
+
+Migrations are generated and managed using `drizzle-kit`:
+
+- `db:generate` - Generate migration files from schema changes
+- `db:migrate` - Apply migrations to database
+
+### Query Patterns
+
+Queries use Drizzle's composable query builder:
+
+- Type-safe select, insert, update, delete operations
+- Full TypeScript inference for results
+- SQL-like syntax with excellent autocomplete
+
+## Notes
+
+- Schema files live in `src/database/schema/` directory
+- Migrations are stored in `src/database/migrations/`
+- Drizzle configuration in `drizzle.config.ts`
+- Supports both PGLite (embedded) and Cloud SQL/Supabase (PostgreSQL)
+- Type inference works seamlessly across both database types
+- Queries are composable and type-safe at compile time
+- No runtime code generation required
+- Regular schema reviews and migrations as requirements evolve
+- **Portability**: Migration between database hosts requires only changing `DATABASE_URL`
+- **Complements Fastify**: Both chosen for portability and ability to migrate from Vercel to GCP/AWS

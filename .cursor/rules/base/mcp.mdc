@@ -1,0 +1,62 @@
+---
+description: MCP server usage guidelines and best practices
+globs: *.md,*.mdx,*.json
+alwaysApply: false
+---
+
+# MCP Server Usage Rules
+
+## Overview
+Model Context Protocol (MCP) servers extend AI assistants with specialized capabilities. This project uses multiple MCP servers configured in `.cursor/mcp.json`.
+
+## Available MCP Servers
+- **shadcn**: UI component management (shadcn/ui)
+- **v0**: UI design and component generation (v0.dev)
+- **github**: GitHub repository operations
+- **vercel**: Vercel deployment and project management
+
+## When to Use Vercel MCP vs Manual CLI
+**Use Vercel MCP When:**
+- Deploying projects through AI-assisted workflows
+- Checking deployment status and build logs
+- Managing domains and checking availability
+- Creating shareable links for protected deployments
+- Automating deployment workflows
+
+**Use Manual Vercel CLI When:**
+- Debugging deployment issues requiring interactive troubleshooting
+- Performing one-off operations that don't benefit from AI assistance
+- Testing Vercel CLI commands before automating them
+
+## Preferred MCP Tools
+- **Deployments**: `deploy_to_vercel`, `list_deployments`, `get_deployment`, `get_deployment_build_logs`
+- **Domain Management**: `check_domain_availability_and_price`
+- **Project Management**: `list_projects`, `get_project`
+- **Access Management**: `get_access_to_vercel_url`, `web_fetch_vercel_url`
+
+## Integration Patterns
+- **GitHub + Vercel**: Read repository structure, then deploy
+- **v0 + Shadcn**: Generate initial designs, then add specific components
+- **Vercel + GitHub**: Deploy, then create deployment-related issues
+
+## Portability Considerations
+**Portable-by-default** architectural principle:
+- Default approach: Avoid Vercel-specific features to maintain portability
+- Pragmatic exceptions: Leverage Vercel's advanced features when scaling/performance needs justify
+- Stack designed to run on any Linux distribution and deploy to any containerized platform
+- Vercel is a deployment convenience for rapid iteration, not a requirement
+
+## Best Practices
+1. Always verify MCP actions, especially for deployments
+2. Use appropriate MCP for the task
+3. Keep API keys secure (never commit to version control)
+4. Test deployments after using Vercel MCP
+5. Maintain portability when using Vercel features
+
+## Package Manager
+All MCP servers use `pnpm dlx` for command execution, consistent with the project's package manager choice (pnpm).
+
+## References
+- See [MCP Servers Usage Guide](../../docs/mcp-servers.md) for detailed documentation
+- Vercel MCP tools: https://vercel.com/docs/mcp/vercel-mcp/tools
+- Cursor MCP documentation: https://cursor.com/docs/context/model-context-protocol

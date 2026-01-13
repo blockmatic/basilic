@@ -1,12 +1,11 @@
 {
-  "extends": "@repo/tsconfig/react-library.json",
+  "extends": "@basilic/typescript-config/react-library.json",
   "compilerOptions": {
-    //"outDir": "dist"
     "baseUrl": ".",
     "paths": {
-      "@repo/ui/*": ["./src/*"]
+      "@basilic/ui/*": ["./src/*"]
     }
   },
-  "include": ["."],
+  "include": [".", "../../config/typescript/reset.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,0 +1,57 @@
+---
+description: Cosmos address validation patterns and best practices
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+# Cosmos Rules
+
+## Core Principles
+- Use Bech32 encoding for addresses
+- Format: `{prefix}{separator}{data}` where prefix is chain-specific (e.g., "cosmos", "osmo")
+- Typical length: 20-45 characters depending on chain
+- Never cast directly - always validate format
+
+## Address Handling
+
+```tsx
+// Proper address validation
+function validateCosmosAddress(address: string) {
+  // Bech32 format: starts with chain prefix (1-5 chars), followed by separator '1', then base32 data (6+ chars)
+  const bech32Regex = /^[a-z]{1,5}1[a-z0-9]{6,}$/i
+  return bech32Regex.test(address) && address.length >= 20 && address.length <= 45
+}
+```
+
+## Chain-Specific Prefixes
+
+Common Cosmos chain prefixes:
+- `cosmos` - Cosmos Hub
+- `osmo` - Osmosis
+- `juno` - Juno
+- `atom` - Cosmos Hub (alternative)
+- `stars` - Stargaze
+
+## Transaction Handling
+
+```tsx
+// Cosmos transaction pattern
+export async function sendTransaction({
+  from,
+  to,
+  amount,
+  chainPrefix = 'cosmos'
+}: SendTransactionParams) {
+  // Validate addresses match chain prefix
+  if (!to.startsWith(chainPrefix)) {
+    throw new Error(`Invalid address prefix for ${chainPrefix} chain`)
+  }
+  
+  // Create and sign transaction
+  // ...
+}
+```
+
+## Best Practices
+- Validate address prefix matches expected chain
+- Use chain-specific validation libraries when available
+- Handle different Bech32 variants (Bech32, Bech32m)

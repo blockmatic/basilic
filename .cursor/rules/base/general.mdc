@@ -6,8 +6,22 @@ alwaysApply: true
 # General Agent Rules
 
 ## Code Quality
-- Organize code logically with related functionality grouped together, aka "collocation"
+- Organize code logically with related functionality grouped together (collocation)
+- Avoid leaking server-only code into client bundles (no fs, path, env loaders in shared/browser code)
+
+## Module System
+- Use **ESM** everywhere (`"type": "module"`, `import` / `export`)
+- Next.js apps use **bundler-style resolution**
+- Fastify / server code use **Node-style resolution**
+- Shared packages must be built and consumed via `package.json` **exports** (never import TS source across workspaces)
 
 ## Agent Behavior
-- Provide executive summaries when finishing tasks
+- Provide concise executive summaries when finishing tasks
 - Suggest improvements proactively when spotting issues
+- Always read readme files before coding
+- Always update readme files after making code changes
+
+## Tooling
+- Use **pnpm** for package management and scripts
+- Format with `pnpm run format` (Biome)
+- Lint with `pnpm run lint` (ESLint)

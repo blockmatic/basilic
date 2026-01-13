@@ -3,46 +3,139 @@ description: Next.js development standards and patterns
 globs: *.tsx,*.ts
 alwaysApply: false
 ---
+
 # Next.js Rules
 
-## Core Principles
-- Default to Server Components for better performance
-- Minimize `'use client'` directives to leverage SSR benefits
-- Use `nuqs` for URL search parameter state management
+## React Server Components (CRITICAL)
 
-## Server vs Client Components
-- Favor Server Components and Next.js SSR
-- Use client components only when necessary (interactive UI, browser APIs)
+**ALWAYS default to Server Components. Only use `'use client'` when absolutely necessary.**
 
-## Performance Optimization
-- Implement streaming with `Suspense` for progressive loading
-- Optimize Core Web Vitals:
-  - Largest Contentful Paint (LCP) < 2.5s
-  - First Input Delay (FID) < 100ms
-  - Cumulative Layout Shift (CLS) < 0.1
-- Optimize images:
-  - Use WebP format
-  - Include proper size data
-  - Implement lazy loading for below-fold images
+**When to Use Client Components (`'use client'`):**
+- Interactive features: `onClick`, `onChange`, `onSubmit` handlers
+- Browser APIs: `window`, `document`, `localStorage`, `navigator`
+- React hooks: `useState`, `useEffect`, `useContext` (for client-side state)
+- Third-party libraries requiring client-side execution
+- Event listeners or real-time subscriptions
+
+**Component Splitting Pattern:**
+```tsx
+// ✅ Server Component page
+import { ClientInteractiveSection } from './client-interactive-section'
+
+export default function Page() {
+  const data = await fetchData()
+  return (
+    <div>
+      <h1>{data.title}</h1>
+      <ClientInteractiveSection initialData={data} />
+    </div>
+  )
+}
+
+// ✅ Client Component (only when needed)
+'use client'
+export function ClientInteractiveSection({ initialData }) {
+  const [state, setState] = useState(initialData)
+}
+```
+
+**Anti-Patterns:**
+```tsx
+// ❌ Unnecessary client component
+'use client'
+export default function Page() {
+  return <div>Static content</div>
+}
+
+// ❌ Entire page as client when only small part needs interactivity
+'use client'
+export default function Page() {
+  return (
+    <div>
+      <StaticHeader />
+      <StaticContent />
+      <InteractiveButton /> {/* Only this needs client */}
+    </div>
+  )
+}
+```
+
+## Exports
+- **Pages and Layouts**: Default exports required for `app/**/page.tsx` and `app/**/layout.tsx` (exception to named exports rule)
+- **Components**: Named exports for all other components
+
+## Environment Variables
+See [Environment Rules](../base/environment.mdc) for pattern. Next.js automatically loads `.env` files.
+
+**Validation Pattern:**
+```tsx
+import { z } from 'zod'
+import { getEnvHelper } from '@basilic/lib'
+
+const envSchema = z.object({
+  NEXT_PUBLIC_API_URL: z.string().url(),
+})
+
+export const zEnv = getEnvHelper({ schema: envSchema })
+```
+
+## Deployment
+- **Vercel**: Primary deployment platform for Next.js apps
+- Use Vercel's environment variable management for production secrets
+- Leverage Vercel's edge functions and serverless functions as needed
+- Maintain portability: avoid Vercel-specific features unless scaling/performance needs justify
 
 ## Server Actions
 ```tsx
 'use server'
-import { type ActionResult, success, failure } from '@repo/next'
+import { type ActionResult, success, failure } from '@basilic/next'
 import { createSafeActionClient } from 'next-safe-action'
 
 export const saveAction = createSafeActionClient()
   .schema(actionSchema)
   .action(async ({ parsedInput }): Promise<ActionResult<T>> => {
     try {
-      // Happy path
       return success(result)
     } catch (error) {
-      return failure({
-        code: 'UNEXPECTED_ERROR',
-        error,
-        label: 'saveAction'
-      })
+      return failure({ code: 'UNEXPECTED_ERROR', error, label: 'saveAction' })
     }
   })
 ```
+
+## API Client with ts-rest
+```tsx
+import { initClient } from '@ts-rest/core'
+import { apiContract } from '@basilic/contracts'
+
+const client = initClient(apiContract, {
+  baseUrl: process.env.NEXT_PUBLIC_API_URL!,
+  baseHeaders: {},
+})
+
+// Type-safe API calls
+const result = await client.getWallet({ params: { id: '123' } })
+if (result.status === 200) {
+  // result.body is fully typed
+}
+```
+
+## Performance Optimization
+- Implement streaming with `Suspense` for progressive loading
+- Optimize Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
+- Optimize images: WebP format, proper size data, lazy loading
+
+## Linting Considerations
+
+- **ESLint**: Next.js apps use `@basilic/eslint-config/next-js` which enforces:
+  - Next.js specific rules (`@next/eslint-plugin-next`)
+  - React and React Hooks rules
+  - Import boundary enforcement (default exports allowed for pages/layouts only)
+- **Biome**: Handles all formatting and stylistic linting
+- See [Linting Rules](../base/linting.mdc) for full architecture details
+
+## Related Rules
+- [Linting Rules](../base/linting.mdc) - Hybrid Biome + ESLint architecture
+- [React Hooks Rules](./react-hooks.mdc) - TanStack Query patterns
+- [React Rules](./react.mdc) - Component patterns
+- [Environment Rules](../base/environment.mdc) - Environment variable patterns
+- [TypeScript Rules](../base/typescript.mdc) - Code style guidelines

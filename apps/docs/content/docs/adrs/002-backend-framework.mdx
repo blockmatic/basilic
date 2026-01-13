@@ -1,0 +1,171 @@
+---
+title: "ADR 002: Backend API Framework & Runtime"
+description: "Decision to use Node.js LTS runtime with Fastify framework for portability, performance, LTS support, flexibility, and ability to migrate from Vercel to Google Cloud/AWS for production security."
+---
+
+## Context
+
+We need to select a runtime and framework for building the backend API that:
+
+- Supports TypeScript with full type inference
+- Provides **portability** - runs anywhere (Vercel, Google Cloud, AWS, on-premises)
+- Enables **functional programming** style (no classes, no decorators, pure functions)
+- Delivers **excellent developer experience** (fast feedback, intuitive API, minimal boilerplate)
+- Offers **production performance** (fast runtime, efficient resource usage)
+- Supports **AI-friendly** architecture (clean HTTP contracts, OpenAPI generation)
+- Integrates well with our monorepo structure (pnpm, Node.js LTS, ESM-native)
+- Has strong ecosystem support and tooling
+- Provides **no vendor lock-in** - can migrate between deployment platforms without code changes
+- Enables **security controls** - can migrate to environments with KMS, VPC, HSM when needed
+
+## Considered Options
+
+### Runtime Selection: Node.js vs Bun vs Deno
+
+Before selecting a framework, we evaluated runtime environments:
+
+**Node.js LTS (Chosen)**
+
+- **Pros**: 
+  - Long-term support with predictable release cycle
+  - Battle-tested stability in production environments
+  - Largest npm ecosystem with 100% package compatibility
+  - Wide enterprise adoption and professional support available
+  - Best-in-class tooling (debugging, monitoring, APM: DataDog, New Relic, etc.)
+  - Universal cloud provider support (AWS, GCP, Azure)
+  - Mature ESM support
+- **Cons**: 
+  - Slower than Bun (but acceptable for stability and ecosystem)
+
+**Bun**
+
+- **Pros**: Very fast, all-in-one runtime and package manager, modern tooling
+- **Cons**: 
+  - Compatibility issues with some npm packages
+  - Smaller ecosystem, less enterprise adoption
+  - Less mature tooling and monitoring support
+  - Less predictable for production workloads
+
+**Deno**
+
+- **Pros**: Modern security model, TypeScript-first, good standard library
+- **Cons**: 
+  - Smaller ecosystem, less npm compatibility
+  - Less enterprise adoption
+  - Steeper learning curve
+
+**Decision: Node.js LTS chosen for stability, ecosystem maturity, and enterprise support over cutting-edge performance.**
+
+### Option A – Fastify (Chosen)
+
+Fast and low overhead web framework for Node.js.
+
+**Pros**
+
+- **Portability**: Runs anywhere - Vercel (rapid iteration), Google Cloud Run/Compute, AWS ECS/EC2, on-premises
+- **No vendor lock-in**: Standard Node.js app, can migrate from Vercel to GCP/AWS without code changes
+- **No cold starts**: Can run as always-on service on Google Cloud Run, Cloud Compute, AWS, or on-premises
+- **Performance**: Fast, low overhead, production-ready with Node.js LTS support
+- **Flexibility**: Functional, plugin-based architecture (no classes required)
+- **Control**: Full control over deployment, data, and infrastructure for sensitive environments
+- **Security**: Easy migration to environments with advanced security controls (KMS, VPC, HSM) when needed
+- **Plugin ecosystem**: Rich plugin ecosystem including `@fastify/swagger` and `@fastify/swagger-ui` for OpenAPI
+- **TypeScript support**: Excellent TypeScript support with type inference
+- **Mature ecosystem**: Well-established, battle-tested framework
+- **OpenAPI support**: Via plugins for API documentation and AI integration
+- **Testing**: Works well with standard Node.js testing tools
+
+**Cons**
+
+- No native Zod integration (requires plugins like `@fastify/type-provider-typebox` or manual validation)
+- Less opinionated structure (can be pro or con)
+- WebSocket support requires additional setup
+
+### Option B – Hono.js
+
+Ultrafast web framework for the Edge.
+
+**Pros**
+
+- Very fast performance
+- Designed for edge environments and serverless
+- Lightweight and minimal
+- Good TypeScript support
+
+**Cons**
+
+- Designed for edge/serverless, less suitable for traditional backend applications
+- WebSocket support is more limited
+- No native Zod integration (requires plugins)
+- Less mature OpenAPI generation
+- Newer framework with smaller ecosystem
+- Less community resources and examples
+
+### Option C – Express.js
+
+Minimal and flexible Node.js web framework.
+
+**Pros**
+
+- Very flexible and unopinionated
+- Large ecosystem and community
+- Simple to get started
+- Mature and battle-tested
+
+**Cons**
+
+- Minimal framework requires more boilerplate
+- No built-in validation (requires manual setup)
+- Less opinionated, leading to inconsistent patterns
+- WebSocket support requires additional libraries and setup
+- No built-in OpenAPI generation (requires manual setup)
+- Testing requires manual setup and mocking infrastructure
+- Less TypeScript-first approach
+- More manual type definitions needed
+- Not ESM-native (requires additional configuration)
+- Less suitable for functional programming patterns
+
+## Decision
+
+We will use **Node.js LTS** as our runtime and **Fastify** as our backend API framework.
+
+### TLDR: Comparison Table
+
+| Feature | Node.js LTS + Fastify ✅ | Bun + Elysia | Deno + Hono | Express |
+|---------|-------------------------|--------------|-------------|---------|
+| **Portability** | ✅ Runs anywhere | ⚠️ Bun-specific | ⚠️ Deno-specific | ✅ Runs anywhere |
+| **Vendor lock-in** | ✅ None (standard Node.js) | ❌ Bun runtime required | ❌ Deno runtime required | ✅ None |
+| **Cold starts** | ✅ None (always-on possible) | ⚠️ Serverless constraints | ⚠️ Serverless constraints | ✅ None |
+| **LTS Support** | ✅ Predictable | ⚠️ Fast-moving | ⚠️ Fast-moving | ✅ Predictable |
+| **npm Ecosystem** | ✅ 100% compatible | ⚠️ Some issues | ⚠️ Limited | ✅ 100% compatible |
+| **Enterprise adoption** | ✅ Widespread | ⚠️ Emerging | ⚠️ Niche | ✅ Widespread |
+| **Tooling (APM/monitoring)** | ✅ Best-in-class | ⚠️ Limited | ⚠️ Limited | ✅ Good |
+| **Performance** | ✅ Fast | ✅ Very fast | ✅ Fast | ✅ Good |
+| **Functional style** | ✅ Plugin-based | ✅ Pure functions | ✅ Functional | ⚠️ Flexible |
+| **OpenAPI generation** | ✅ Via plugin | ✅ Built-in | ⚠️ Limited | ❌ Manual |
+| **TypeScript inference** | ✅ Good | ✅ Excellent | ✅ Good | ⚠️ Manual types |
+| **Migration path** | ✅ Change deployment | ❌ Rewrite needed | ❌ Rewrite needed | ✅ Change deployment |
+
+**Main reasons:**
+
+- **Portability**: Fastify runs as standard Node.js process, can deploy to Vercel, Google Cloud Run, AWS ECS, or on-premises without code changes
+- **No vendor lock-in**: Standard Node.js app enables migration from Vercel to GCP/AWS by changing deployment targets only
+- **No cold starts**: Can run as always-on service on Google Cloud Run, Compute Engine, AWS ECS, or on-premises
+- **Node.js LTS stability**: Long-term support, predictable release cycle, battle-tested stability
+- **Ecosystem maturity**: Largest npm ecosystem with 100% package compatibility, wide enterprise adoption
+- **Security flexibility**: Easy migration to environments with KMS encryption, VPC isolation, Cloud HSM when needed
+- **Performance**: Fast, low overhead, production-ready with excellent resource efficiency
+- **Flexibility**: Functional, plugin-based architecture (no classes required) aligns with our architectural values
+- **Deployment strategy**: Start on Vercel for rapid iteration, migrate to Google Cloud/AWS for production security
+- **Tooling**: Best-in-class debugging, monitoring, and APM tools (DataDog, New Relic, etc.)
+- **OpenAPI support**: Via `@fastify/swagger` and `@fastify/swagger-ui` plugins for API documentation and AI integration
+
+## Notes
+
+- **Deployment flexibility**: Fastify runs as standard Node.js process with no platform-specific code
+- **Migration path**: Vercel (development) → Google Cloud Run/Cloud SQL or AWS ECS/RDS (production)
+- Consider framework-agnostic patterns when building shared utilities
+- OpenAPI generation via `@fastify/swagger` enables AI tool integration and typed SDK generation
+- Functional patterns provide consistent, composable architecture without decorator complexity
+- Node.js LTS provides stability and ecosystem support over cutting-edge performance
+- Fastify's plugin architecture enables modular, composable route organization

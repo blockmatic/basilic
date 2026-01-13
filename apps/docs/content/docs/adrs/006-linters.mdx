@@ -1,0 +1,138 @@
+---
+title: "ADR 006: Linters & Formatters"
+description: "Decision to use hybrid Biome + ESLint architecture where Biome handles formatting and stylistic rules, while ESLint focuses on correctness rules for TypeScript, React, and Next.js."
+---
+
+## Context
+
+We need to select linting and formatting tools for our monorepo that:
+
+- Enforce code quality and consistency across all packages
+- Support TypeScript, React, and Fastify
+- Integrate well with our monorepo structure and tooling
+- Provide **excellent developer experience** with fast feedback
+- Work seamlessly with our build tools (Turbo, Next.js, Fastify, pnpm)
+- Have strong ecosystem support and community
+- Maintain clear separation of concerns between formatting and correctness
+
+## Considered Options
+
+### Option A – Hybrid Biome + ESLint (Chosen)
+
+Biome for fast formatting and stylistic rules, ESLint for correctness rules only.
+
+**Pros**
+
+- **Maximum speed**: Biome is written in Rust, providing extremely fast formatting
+- **Clear separation**: Biome handles formatting/stylistic, ESLint handles correctness
+- **Best of both worlds**: Biome's speed for formatting, ESLint's mature ecosystem for rules
+- **Excellent DX**: Fast feedback loops, minimal waiting time
+- **All-in-one formatting**: Biome handles all formatting concerns (faster than Prettier)
+- **ESLint for rules only**: Focused on code quality rules, not formatting (faster execution)
+- **TypeScript support**: Both tools support TypeScript well
+- **Monorepo friendly**: Works well with Turborepo and pnpm workspaces
+- **Modern tooling**: Latest generation of dev tools optimized for speed
+- **Framework support**: ESLint provides Next.js, React, and Fastify rules
+
+**Cons**
+
+- Requires configuring ESLint to disable checks Biome handles
+- Two tools to maintain (but well-defined boundaries)
+
+### Option B – ESLint + Prettier
+
+Separate linting and formatting tools working together.
+
+**Pros**
+
+- Mature ecosystem with extensive plugin library
+- Excellent support for TypeScript, React, Next.js, and Fastify
+- Wide range of community-maintained rules and configurations
+- Native support for Next.js with `@next/eslint-plugin-next`
+- Strong integration with React and React Hooks
+- Battle-tested in production environments
+
+**Cons**
+
+- **Slower than Biome**: Prettier is JavaScript-based, slower than Rust-based Biome
+- Requires two tools (ESLint + Prettier) with configuration overhead
+- Need to ensure ESLint and Prettier don't conflict (solved with eslint-config-prettier)
+- Formatting conflicts can occur between tools
+- Less suitable for fast feedback loops we prioritize
+
+### Option C – Biome only
+
+Using Biome for both linting and formatting.
+
+**Pros**
+
+- Single tool for both linting and formatting
+- Extremely fast (Rust-based)
+- Simpler setup
+
+**Cons**
+
+- Less mature linting rules compared to ESLint
+- Smaller ecosystem for framework-specific rules (Next.js, Fastify)
+- Limited React-specific rules compared to ESLint
+- Less tested with complex monorepo setups
+- Would lose access to ESLint's extensive rule ecosystem
+
+## Decision
+
+We will use **Hybrid Biome + ESLint** for formatting and linting, with clear separation of concerns.
+
+### TLDR: Comparison Table
+
+| Feature | Hybrid Biome + ESLint ✅ | ESLint + Prettier | Biome Only |
+|---------|--------------------------|-------------------|------------|
+| **Formatting speed** | ✅ Very fast (Rust) | ⚠️ Slower (JS) | ✅ Very fast (Rust) |
+| **Correctness rules** | ✅ ESLint ecosystem | ✅ ESLint ecosystem | ⚠️ Limited |
+| **Framework rules** | ✅ Next.js, React, Fastify | ✅ Extensive | ⚠️ Limited |
+| **Clear separation** | ✅ Well-defined | ⚠️ Conflicts possible | ✅ Single tool |
+| **Monorepo support** | ✅ Excellent | ✅ Good | ✅ Good |
+| **Setup complexity** | ⚠️ Two tools | ⚠️ Two tools + conflicts | ✅ Single tool |
+
+**Main reasons:**
+
+- **Maximum speed**: Biome's Rust-based implementation provides extremely fast formatting
+- **Clear separation**: Biome handles formatting and stylistic rules, ESLint handles correctness
+- **Best dev tools**: Combines Biome's speed with ESLint's mature ecosystem for the best developer experience
+- **Framework support**: ESLint provides comprehensive rules for Next.js, React, TypeScript, and Fastify
+- **Fast feedback loops**: Minimal waiting time, excellent developer experience
+- **Well-defined strategy**: Clear boundaries - Biome handles formatting (fast), ESLint handles rules only (fast)
+
+## Implementation Strategy
+
+### Biome Configuration
+
+- **Formatting**: Biome handles all code formatting (faster than Prettier)
+- **Stylistic linting**: Biome handles import sorting, unused variables, style preferences
+- **Linter enabled**: Biome can handle basic linting, but we use ESLint for advanced rules
+
+### ESLint Configuration
+
+- **Rule enforcement only**: ESLint focused on code quality rules, not formatting
+- **Disabled checks**: ESLint configured to disable checks that Biome handles (faster execution)
+- **Framework support**: Retains Next.js, React, TypeScript, and Fastify rule support
+- **Monorepo support**: Works with Turborepo and pnpm workspaces
+- **Flat config**: Uses ESLint 9 flat config format
+- **No type-aware linting**: Basic TypeScript rules only (per performance considerations)
+
+### Workflow
+
+- **Format**: `pnpm lint:biome:fix` (extremely fast)
+- **Lint (Biome)**: `pnpm lint:biome` (formatting and stylistic checks)
+- **Lint (ESLint)**: `pnpm lint:eslint` (correctness checks)
+- **Fix all**: `pnpm lint:fix` (runs both Biome and ESLint fixes)
+- **Pre-commit**: Biome auto-fixes staged files
+- **CI/CD**: Both tools run for quality assurance
+
+## Notes
+
+- **Hybrid architecture**: Clear separation - Biome for formatting/stylistic, ESLint for correctness
+- **Speed-first approach**: All tooling choices prioritize fast feedback and developer experience
+- **Best dev tools**: Carefully selected modern tooling stack optimized for development workflows
+- Biome + ESLint strategy provides the best balance of speed and functionality
+- Monitor Biome's ecosystem growth for additional rule coverage
+- Pre-commit hooks use Biome for automatic formatting of staged files

@@ -1,0 +1,66 @@
+---
+description: Linting architecture and best practices
+globs: *.tsx,*.ts,*.jsx,*.js
+alwaysApply: false
+---
+
+# Linting Architecture
+
+## Hybrid Biome + ESLint Strategy
+
+This monorepo uses a **hybrid linting architecture** where Biome and ESLint have distinct, non-overlapping responsibilities.
+
+### Biome Responsibilities (Primary)
+- **Formatting**: All code formatting (indentation, quotes, semicolons, etc.)
+- **Import Organization**: Import sorting and organization
+- **Unused Variables/Imports**: Detection and removal of unused code
+- **Style Rules**: Code style preferences (no-var, prefer-const, etc.)
+- **React JSX Best Practices**: Basic JSX linting
+- **Basic A11y**: Accessibility rules for JSX
+
+### ESLint Responsibilities (Correctness Only)
+- **TypeScript Correctness**: Basic TypeScript rules (non-type-aware for speed)
+- **React/React Hooks Rules**: React-specific correctness rules
+- **Next.js Rules**: Next.js framework-specific rules
+- **Import Boundary Enforcement**: Architecture rules (e.g., `import/no-default-export`)
+- **Turbo Monorepo Rules**: Monorepo-aware linting
+
+### Running Linters
+
+```bash
+# Run both linters (recommended for CI)
+pnpm lint
+
+# Run Biome only (formatting + style)
+pnpm lint:biome
+pnpm lint:biome:fix  # Auto-fix
+
+# Run ESLint only (correctness)
+pnpm lint:eslint
+pnpm lint:eslint:fix  # Auto-fix
+
+# Fix all issues
+pnpm lint:fix
+
+# Format code only (Biome)
+pnpm format
+```
+
+### When to Disable Rules
+
+- **Biome**: Use `// biome-ignore lint/ruleName: reason`
+- **ESLint**: Use `// eslint-disable-next-line rule-name`
+
+**Important**: All formatting rules are disabled in ESLint configs. Biome owns formatting completely.
+
+### Pre-commit Hooks
+
+The pre-commit hook runs Biome on staged files only:
+- Automatically fixes formatting and style issues
+- Does not run ESLint (too slow for pre-commit)
+- ESLint runs in CI/CD pipeline
+
+## Related Rules
+- [TypeScript Rules](./typescript.mdc) - Type safety patterns and guidelines
+- [Next.js Rules](../frontend/nextjs.mdc) - Next.js-specific linting considerations
+- [ESLint Config README](../../devtools/eslint/README.md) - Detailed ESLint configuration documentation

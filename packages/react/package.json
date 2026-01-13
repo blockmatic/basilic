@@ -1,22 +1,36 @@
 {
-  "name": "@repo/react",
-  "version": "1.0.0",
-  "description": "A collection of React hooks and utilities",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@basilic/react",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
+    "postpack": "node ../../scripts/restore-publish.mjs"
+  },
   "dependencies": {
-    "@repo/errors": "workspace:*",
-    "@repo/core": "workspace:*",
-    "viem": "^2.x",
-    "wagmi": "2.x"
+    "@basilic/contracts": "workspace:*",
+    "@basilic/core": "workspace:*",
+    "@tanstack/react-query": "^5.67.0",
+    "@ts-rest/react-query": "^3.51.0"
   },
   "devDependencies": {
-    "@repo/tsconfig": "workspace:*"
+    "@basilic/eslint-config": "workspace:*",
+    "@basilic/typescript-config": "workspace:*",
+    "eslint": "^9.39.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
   }
 }

@@ -1,23 +1,31 @@
 {
-  "name": "@repo/core",
-  "version": "1.0.0",
-  "description": "A collection of asymorphic core utilities in TypeScript",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "name": "@basilic/core",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
   "exports": {
-    "./abis": "./src/abis/index.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
+    "postpack": "node ../../scripts/restore-publish.mjs"
   },
   "dependencies": {
-    "@repo/errors": "workspace:*",
-    "viem": "^2.37.12"
+    "@basilic/contracts": "workspace:*",
+    "@ts-rest/core": "^3.51.0"
   },
   "devDependencies": {
-    "@repo/tsconfig": "workspace:*"
+    "@basilic/eslint-config": "workspace:*",
+    "@basilic/typescript-config": "workspace:*",
+    "eslint": "^9.39.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.9.3"
   }
 }

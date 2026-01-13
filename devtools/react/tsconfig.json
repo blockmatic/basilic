@@ -1,0 +1,11 @@
+{
+  "extends": "@basilic/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@basilic/tools/*": ["./*"]
+    }
+  },
+  "include": [".", "../../config/typescript/reset.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

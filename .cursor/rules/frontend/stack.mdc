@@ -1,0 +1,133 @@
+---
+description: Preferred frontend technology stack and library usage patterns
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+
+# Frontend Stack
+
+## Core Technologies
+
+### Data Fetching & State Management
+- **@tanstack/react-query**: Primary data fetching solution
+  - Use `@lukemorales/query-key-factory` for centralized query keys
+  - See [React Hooks Rules](./react-hooks.mdc) for patterns
+- **nuqs**: URL-based state for shareable UI state (filters, search, tabs, pagination)
+  - See [React Rules](./react.mdc) for state management decision tree
+
+### Ethereum Integration
+- **viem**: Low-level Ethereum interactions
+- **wagmi**: React hooks for Ethereum (built on react-query and viem)
+  - See [Web3 Rules](../web3/wagmi.mdc) for patterns
+
+### Validation & Type Safety
+- **zod**: Primary schema validation tool (CRITICAL)
+  - Use `z.infer<typeof schema>` for type inference
+  - Use `@basilic/lib` utilities: `parseJsonWithSchema`, `formatZodError`, `formatZodErrors`, `isZodError`
+- **ts-rest**: Contract-first API client with full type safety
+  - Use `initClient` from `@ts-rest/core` for type-safe API calls
+  - Contracts defined in backend, shared with frontend for end-to-end type safety
+
+### Authentication & Actions
+- **@dynamic-labs/sdk-react-core**: Multi-chain wallet authentication with JWT
+  - See [Web3 Rules](../web3/wagmi.mdc) for patterns
+- **next-safe-action**: Type-safe server actions with ActionResult pattern
+
+### Error Handling
+- **react-error-boundary**: Use `ErrorBoundary` and `useErrorHandler` for async errors
+  - See [React Rules](./react.mdc) for patterns
+
+### Utility Libraries
+- **@basilic/lib**: Prefer over custom implementations
+  - Async: `delay` (replace `setTimeout`), `fetchWithTimeout` (replace `fetch` for external APIs)
+  - Error: `getErrorMessage`, `formatZodError`, `formatZodErrors`, `sanitizeErrorMessage`, `isZodError`
+  - Zod: `parseJsonWithSchema` (JSON parsing with validation)
+  - Date: `getDateKey`
+  - Env: `getEnvHelper` (Next.js), `validateEnvOrThrow` (server apps) - see [Environment Rules](../base/environment.mdc)
+- **react-use**: Use `useAsyncFn` for one-off async operations (not data fetching)
+- **nanoid**: Unique ID generation
+- **lodash-es**: Prefer over custom implementations for common operations (ESM version for tree-shaking)
+  - Array: `isEmpty`, `uniq`, `groupBy`, `chunk`
+  - Object: `merge`, `pick`, `omit`, `isPlainObject`
+  - Type checking: `isString`, `isNumber`, `isEmpty`, `isPlainObject`, `isArray`
+  - String: `camelCase`, `kebabCase`, `startCase`
+  - Functional: `debounce`, `throttle`, `memoize`
+  - Use per-function imports: `import isEmpty from 'lodash-es/isEmpty'` and `import debounce from 'lodash-es/debounce'`
+
+## Usage Patterns
+
+### Query Key Factory Pattern
+```tsx
+// src/queries/users.ts
+import { createQueryKeys } from '@lukemorales/query-key-factory'
+
+export const users = createQueryKeys('users', {
+  detail: (id: string) => ({
+    queryKey: [id],
+    queryFn: () => fetchUser(id),
+  }),
+})
+
+// Usage
+import { useQuery } from '@tanstack/react-query'
+import { users } from '@/queries/users'
+
+const { data } = useQuery(users.detail(userId))
+```
+
+### nuqs URL State
+```tsx
+import { useQueryState, parseAsString, parseAsInteger } from 'nuqs'
+
+// Single state
+const [search, setSearch] = useQueryState('q', parseAsString.withDefault(''))
+
+// Multiple states
+const [filters, setFilters] = useQueryStates({
+  search: parseAsString.withDefault(''),
+  page: parseAsInteger.withDefault(1),
+})
+```
+
+### Server Actions Pattern
+```tsx
+'use server'
+import { type ActionResult, success, failure } from '@repo/next'
+import { createSafeActionClient } from 'next-safe-action'
+
+export const saveAction = createSafeActionClient()
+  .schema(actionSchema)
+  .action(async ({ parsedInput }): Promise<ActionResult<T>> => {
+    try {
+      return success(result)
+    } catch (error) {
+      return failure({ code: 'UNEXPECTED_ERROR', error, label: 'saveAction' })
+    }
+  })
+```
+
+## Best Practices
+- Use Query Key Factory for all TanStack Query keys
+- Use nuqs for URL-shareable state (filters, search, tabs, pagination)
+- Use TanStack Query's built-in state (`isLoading`, `isError`) - never manually manage
+- Use `useSetState` for grouped state not in URL (game engine, form state)
+- Prefer lodash over custom implementations
+- Prefer `@basilic/lib` utilities over custom implementations
+- Use ts-rest contracts for type-safe API calls (end-to-end type safety)
+- Mobile-first design (see [Mobile-First Rules](./mobile-first.mdc))
+
+## Development Tools
+- **@tanstack/react-query-devtools**: Add conditionally in development only
+
+## Optional Packages (Add When Needed)
+- **@tanstack/query-sync-storage-persister**: Persist queries to localStorage
+- **@tanstack/virtual**: Virtual scrolling for large lists (1000+ items)
+- **@tanstack/react-table**: Complex data tables
+- **@ai-sdk/react**: AI chat functionality with streaming
+- **ai-elements**: Vercel AI Elements components
+
+## Related Rules
+- [React Hooks Rules](./react-hooks.mdc) - TanStack Query patterns
+- [React Rules](./react.mdc) - Component and state patterns
+- [Next.js Rules](./nextjs.mdc) - Next.js-specific patterns
+- [TypeScript Rules](../base/typescript.mdc) - Type safety patterns

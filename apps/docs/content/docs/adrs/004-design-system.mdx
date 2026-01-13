@@ -1,0 +1,129 @@
+---
+title: "ADR 004: Design System"
+description: "Decision to use Shadcn/ui with Tailwind CSS for consistent UI components, rapid prototyping with v0, and full component ownership without vendor lock-in."
+---
+
+## Context
+
+We need to establish a design system approach for our frontend applications that:
+
+- Provides consistent UI components across applications
+- Enables rapid prototyping and iteration
+- Integrates well with our chosen frontend framework (Next.js)
+- Supports modern design patterns and accessibility
+- Allows for easy customization and theming
+
+## Considered Options
+
+### Option A – Shadcn/ui with Tailwind CSS
+
+Copy-paste component library with Tailwind.
+
+**Pros**
+
+- Leveraging v0 for prototyping was a key factor in picking Next.js
+- v0 generates Next.js + Shadcn/ui components, enabling fast iteration
+- Seamless workflow from AI-generated prototypes to production code
+- Components are copied into the codebase, giving full ownership
+- No dependency on external component library versions
+- Easy to customize and modify components as needed
+- No vendor lock-in or breaking changes from library updates
+- Utility-first CSS approach enables rapid styling
+- Consistent design tokens and spacing system
+- Built on Radix UI primitives (accessible by default)
+- Well-tested components with good defaults
+- Components can be shared through `@basilic/ui` package
+- Works seamlessly with Next.js and our monorepo structure
+
+**Cons**
+
+- Need to manually update components when Shadcn/ui releases new versions
+- Some learning curve for Tailwind CSS utility classes
+- Initial setup requires configuring Tailwind and component structure
+
+### Option B – Material-UI / Mantine
+
+Full component libraries.
+
+**Pros**
+
+- Comprehensive component library
+- Well-documented
+- Large community
+
+**Cons**
+
+- Harder to customize beyond the library's design system
+- More opinionated styling that may not match our brand
+- Larger bundle sizes with unused components
+- External dependency that can introduce breaking changes
+- Less control over component implementation
+- Potential version conflicts in monorepo
+
+### Option C – Radix UI + Custom Styling
+
+Headless components with custom styling.
+
+**Pros**
+
+- Full control over styling
+- Accessible primitives from Radix UI
+- Flexible customization
+
+**Cons**
+
+- Requires building all styling from scratch
+- More time-consuming than using pre-styled components
+- Less rapid prototyping capabilities
+- Harder to maintain consistent design patterns
+- More effort required for design system documentation
+
+### Option D – Custom Component Library
+
+Building everything from scratch.
+
+**Pros**
+
+- Complete control over all aspects
+- No external dependencies
+- Custom to our needs
+
+**Cons**
+
+- Building everything from scratch is time-consuming
+- More code to maintain and test
+- Slower time to market
+- Shadcn/ui provides a solid foundation to build upon
+
+## Decision
+
+We will use **Shadcn/ui with Tailwind CSS** as our design system foundation.
+
+### TLDR: Comparison Table
+
+| Feature | Shadcn/ui + Tailwind ✅ | Material-UI/Mantine | Radix UI + Custom | Custom Library |
+|---------|-------------------------|---------------------|-------------------|----------------|
+| **v0 integration** | ✅ Seamless | ❌ Limited | ❌ Limited | ❌ None |
+| **Component ownership** | ✅ Full (copy-paste) | ❌ External dependency | ✅ Full | ✅ Full |
+| **Customization** | ✅ Easy | ⚠️ Limited | ✅ Full control | ✅ Full control |
+| **Bundle size** | ✅ Small (tree-shakeable) | ⚠️ Larger | ✅ Small | ✅ Small |
+| **Rapid prototyping** | ✅ Excellent | ✅ Good | ⚠️ Slower | ❌ Slow |
+| **Accessibility** | ✅ Radix primitives | ✅ Good | ✅ Radix primitives | ⚠️ Manual |
+| **Vendor lock-in** | ✅ None | ❌ Yes | ✅ None | ✅ None |
+| **Maintenance** | ⚠️ Manual updates | ✅ Library updates | ⚠️ All custom | ⚠️ All custom |
+| **Time to market** | ✅ Fast | ✅ Fast | ⚠️ Slower | ❌ Slow |
+
+**Main reasons:**
+
+- Leveraging v0 for prototyping was a key factor in picking Next.js; v0 generates Next.js + Shadcn/ui components
+- Copy-paste philosophy gives full ownership of components with no external dependency versioning
+- Easy to customize and modify components as needed without vendor lock-in
+- Built on Radix UI primitives (accessible by default) with well-tested components
+- Works seamlessly with Next.js and our monorepo structure through `@basilic/ui` package
+
+## Notes
+
+- v0's integration with Next.js + Shadcn/ui was a significant factor in choosing Next.js
+- Components can be customized extensively while maintaining the base structure
+- Consider contributing improvements back to Shadcn/ui when appropriate
+- Monitor Shadcn/ui updates for new components and improvements

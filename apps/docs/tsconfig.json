@@ -1,23 +1,30 @@
 {
-  "extends": "@repo/tsconfig/nextjs.json",
+  "extends": "@basilic/typescript-config/nextjs.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@basilic/ui/*": ["../../packages/ui/src/*"],
+      "@basilic/types": ["../../packages/types/src/index.ts"],
+      "@basilic/types/*": ["../../packages/types/src/*"],
+      "fumadocs-mdx:collections/*": [".source/*"]
+    },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"],
-      "~/*": ["./*"]
-    }
+    "skipLibCheck": true
   },
   "include": [
+    "next-env.d.ts",
+    "next.config.ts",
     "**/*.ts",
     "**/*.tsx",
-    "next-env.d.ts",
-    "next.config.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "types/**/*.d.ts",
+    "../../config/typescript/reset.d.ts"
   ],
   "exclude": ["node_modules"]
 }

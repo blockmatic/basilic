@@ -3,29 +3,65 @@ description: TypeScript coding standards and best practices
 globs: *.tsx,*.ts
 alwaysApply: false
 ---
+
 # TypeScript Rules
 
 ## Core Principles
 - Prefer interfaces over types for object definitions
+  - Exception: unions, utility types (e.g., `z.infer<typeof schema>`), mapped types use `type`
 - Avoid enums; use maps or union types instead
 - Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`)
-- Follow the RORO (Receive an Object, Return an Object) pattern for function arguments and return values
+- Follow RORO for function arguments only when there are multiple parameters
 - Use lowercase-with-dashes for directories (e.g., `components/auth-wizard`)
-- Favor named exports for components
-- Use functional & declarative programming patterns; avoid classes
-- Avoid unnecessary curly braces in conditionals, especially for single-line statements
+- Favor named exports (exception: Next.js pages/layouts require default exports)
+- Prefer functional & declarative patterns; avoid classes
 - Infer types and keep them inline unless you need to reuse them
+- CRITICAL: Always follow linting rules when generating code (see [Linting Rules](./linting.mdc))
+
+## Framework Exceptions
+- Next.js: `app/**/page.tsx` and `app/**/layout.tsx` require default exports
+- Fastify: fully functional; no classes or decorators
+
+## Code Style
+- Allow single-line if without braces: `if (!value) return null`
+- Allow single-line arrow bodies: `const double = (x: number) => x * 2`
+- Prefer simple one-liners for trivial conditionals; avoid extra braces/elses
+
+## Modularization and Imports
+- Use `@basilic/lib` for shared utilities (error, async, env, zod helpers)
+- Use Zod for schema validation + inference (`z.infer<typeof schema>`)
+- Prefer importing types from `@basilic/core` over `@basilic/types` when re-exported
+- Schema imports should use `@basilic/types/schemas` when not re-exported from `@basilic/core`
+- Lodash: prefer `lodash-es` and per-function imports for tree-shaking + RSC safety  
+  - ✅ `import isEmpty from "lodash-es/isEmpty"`  
+  - ❌ `import { isEmpty } from "lodash-es"`
+
+## ESM & Architecture Safety
+- Use `import type { X } from "..."` for type-only imports
+- Avoid barrel `index.ts` re-exports across layers (especially in shared packages); prefer explicit module imports
+- Exported API functions and route handlers must use explicit `Promise<...>` return types
+- Zod schemas live next to the feature that owns them; only re-export centrally when there is real reuse
+
+## ts-reset Type Safety
+This monorepo uses `@total-typescript/ts-reset` configured globally via `config/typescript/reset.d.ts`.
+
+## Type Safety Model: Zod-First, Boundary-Driven Validation
+Validate untrusted data at runtime boundaries with Zod; rely on inferred types internally.
+
+The following TS ESLint "unsafe" rules are intentionally disabled globally:
+- `@typescript-eslint/no-unsafe-assignment`
+- `@typescript-eslint/no-unsafe-call`
+- `@typescript-eslint/no-unsafe-member-access`
+- `@typescript-eslint/no-unsafe-return`
+- `@typescript-eslint/no-unsafe-argument`
 
 ## Error Handling
-- Fail fast: Handle errors early using guard clauses & early returns
-- Place the happy path last for improved readability
-- Avoid unnecessary else statements; prefer `if-return` pattern
-- Throw errors from `@repo/errors` for consistency
+- Fail fast with guard clauses and early returns; avoid unnecessary `else`
+- Place the happy path last when it improves readability
+- Validation functions that return result objects must never throw; always return a consistent `{ valid, error? }` shape
 
-## File Structure & Organization
-Maintain a structured and logical order when organizing files:
-1. Main Component – The primary component that orchestrates logic and renders subcomponents
-2. Subcomponents – Smaller, reusable components that support the main component
-3. Helpers & Utilities – Functions or modules that provide reusable logic and utilities
-4. Static Content – Non-code assets such as constants, images, or localization files
-5. Types & Interfaces – Type definitions for TypeScript to ensure type safety and maintain consistency
+## Related Rules
+- [Linting Rules](./linting.mdc) - Hybrid Biome + ESLint architecture
+- [React Rules](../frontend/react.mdc)
+- [React Hooks Rules](../frontend/react-hooks.mdc)
+- [Next.js Rules](../frontend/nextjs.mdc)

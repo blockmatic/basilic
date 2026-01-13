@@ -1,0 +1,61 @@
+---
+description: Solana address validation patterns and best practices
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+# Solana Rules
+
+## Core Principles
+- Use `PublicKey` from `@solana/web3.js` for address validation
+- Never cast directly - always validate through PublicKey constructor
+- Use `PublicKey.isOnCurve()` for additional validation
+
+## Address Handling
+
+```tsx
+import { PublicKey } from '@solana/web3.js'
+
+// Proper address validation
+function validateSolanaAddress(address: string) {
+  try {
+    const publicKey = new PublicKey(address)
+    return PublicKey.isOnCurve(publicKey)
+  } catch (error) {
+    return false
+  }
+}
+```
+
+## Transaction Handling
+
+```tsx
+import { PublicKey, Transaction, SystemProgram } from '@solana/web3.js'
+
+// Create transaction pattern
+export async function sendTransaction({
+  from,
+  to,
+  amount
+}: SendTransactionParams) {
+  try {
+    const fromPublicKey = new PublicKey(from)
+    const toPublicKey = new PublicKey(to)
+    
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: fromPublicKey,
+        toPubkey: toPublicKey,
+        lamports: amount,
+      })
+    )
+    
+    return { transaction }
+  } catch (error) {
+    throw new Error('Invalid Solana address')
+  }
+}
+```
+
+## Performance Optimization
+- Reuse PublicKey instances when possible
+- Validate addresses early before creating transactions

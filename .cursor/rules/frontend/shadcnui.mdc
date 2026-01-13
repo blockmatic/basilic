@@ -3,36 +3,55 @@ description: ShadcnUI component guidelines and patterns
 globs: *.tsx
 alwaysApply: false
 ---
+
 # ShadcnUI Rules
 
 ## Core Principles
-- Install ShadcnUI components in /packages/ui
-- Always import components from @repo/ui, never directly from packages/ui
-- Update the Tailwind preset or tokens in packages/ui (not per app)
+- Install ShadcnUI components in `@basilic/ui` (packages/ui)
+- Always import from `@basilic/ui/components/*`, never directly from packages/ui
+- All Radix UI primitives must be imported from `@basilic/ui/radix`; never import any `@radix-ui/react-*` packages directly in apps or other packages
+- Update Tailwind preset/tokens in packages/ui (not per app)
+- Application-specific components go in app's `components` folder
+- Hooks and utils must be collocated with components (same directory)
+
+## Installation Pattern
+Components installed in `packages/ui/src/components/`. Each app's `components.json` points to:
+- `"utils": "@basilic/ui/lib/utils"`
+- `"ui": "@basilic/ui/components"`
+
+## Import Patterns
+```tsx
+import { Button } from "@basilic/ui/components/button"
+import { cn } from "@basilic/ui/lib/utils"
+```
 
 ## Component Patterns
-- Use the class-variance-authority (cva) pattern for variants
-- Use the cn utility for merging class names
+Use class-variance-authority (cva) pattern for variants and `cn` utility for merging class names:
 
 ```tsx
-import { cn } from '@repo/utils'
-import { cva } from 'class-variance-authority'
+import { cn } from "@basilic/ui/lib/utils"
+import { cva } from "class-variance-authority"
 
 const buttonVariants = cva(
-  'rounded-md font-medium transition-colors',
+  "rounded-md font-medium transition-colors",
   {
     variants: {
       variant: {
-        default: 'bg-primary text-white hover:bg-primary/90',
-        secondary: 'bg-secondary text-white hover:bg-secondary/90'
+        default: "bg-primary text-white hover:bg-primary/90",
+        secondary: "bg-secondary text-white hover:bg-secondary/90"
       }
     },
     defaultVariants: {
-      variant: 'default'
+      variant: "default"
     }
   }
 )
 ```
 
 ## Design System Organization
-- Keep all core UI components in @repo/ui
+- Core UI components in `@basilic/ui`
+- Application-specific components in app's `components` folder
+- Hooks and utils collocated with components
+
+## Mobile-First Design
+All components follow mobile-first responsive design. See [Mobile-First Rules](./mobile-first.mdc) for guidelines.

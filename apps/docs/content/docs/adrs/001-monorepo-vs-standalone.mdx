@@ -1,0 +1,74 @@
+---
+title: "ADR 001: Monorepo vs Standalone Repositories"
+description: "Decision to adopt a monorepo architecture using Turborepo for better code reuse, unified tooling, and simplified dependency management across multiple frontend and backend applications."
+---
+
+## Context
+
+The project involves multiple front-end applications and backend services that share UI components, TypeScript types, and development tooling.  
+Managing these pieces in separate repositories makes synchronization harder and slows down iteration.
+
+We need an architecture that:
+
+- Promotes **code reuse** across UI and backend apps.
+- Provides **shared tooling and consistent standards** (linting, formatting, build scripts).
+- Simplifies dependency management and CI/CD pipelines.
+- Keeps developer experience consistent across the codebase.
+
+## Considered Options
+
+### Option A – Monorepo (Turborepo)
+
+All applications and packages coexist in one repository (`apps/*`, `packages/*`), orchestrated by Turborepo.
+
+**Pros**
+
+- Shared UI components, types, and config across apps.
+- Unified tooling and faster CI/CD via Turborepo caching.
+- Easier developer onboarding and dependency upgrades.
+- Consistent standards enforced project-wide.
+
+**Cons**
+
+- Slightly higher repo complexity and workspace management overhead.
+- Requires clear ownership boundaries to avoid tight coupling.
+
+### Option B – Standalone Repositories
+
+Each app or service lives in its own repo, communicating via published packages or APIs.
+
+**Pros**
+
+- Clean separation of concerns and clearer version boundaries.
+- Easier for teams to work independently with isolated pipelines.
+
+**Cons**
+
+- Harder to keep shared dependencies synchronized.
+- Requires multiple CI/CD setups.
+- Repeated tooling configuration and code duplication.
+
+## Decision
+
+Adopt a **Monorepo architecture** using **Turborepo** to orchestrate builds and caching.  
+Shared components, utilities, and standards will live under `packages/`, while each app resides under `apps/`.
+
+### TLDR: Comparison Table
+
+| Feature | Monorepo ✅ (Turborepo) | Standalone Repos |
+|---------|-------------------------|------------------|
+| **Code reuse** | ✅ Shared components/types | ❌ Requires publishing |
+| **Unified tooling** | ✅ Consistent standards | ❌ Multiple configs |
+| **CI/CD speed** | ✅ Turborepo caching | ⚠️ Separate pipelines |
+| **Dependency sync** | ✅ Automatic | ❌ Manual coordination |
+| **Developer onboarding** | ✅ Single repo | ⚠️ Multiple repos |
+| **Complexity** | ⚠️ Higher repo complexity | ✅ Simpler per repo |
+| **Team independence** | ⚠️ Requires coordination | ✅ Independent work |
+
+**Main reasons:**
+
+- Enables code reuse across UI and backend apps through shared components and types
+- Unified tooling and consistent standards across all projects
+- Faster CI/CD via Turborepo caching
+- Simplified dependency management and easier developer onboarding
+

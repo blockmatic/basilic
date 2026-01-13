@@ -1,0 +1,40 @@
+---
+title: "Architecture Decision Records"
+description: "Architecture Decision Records (ADRs) documenting key technical decisions for the monorepo."
+---
+
+Architecture Decision Records (ADRs) document key technical decisions made during development. Each ADR captures the context, considered options, decision rationale, and consequences.
+
+## Foundation Layer
+
+Foundational infrastructure decisions:
+
+- **[ADR 001: Monorepo vs Standalone](/docs/adrs/001-monorepo-vs-standalone)** - Monorepo architecture with Turborepo
+- **[ADR 005: Package Manager](/docs/adrs/005-package-manager)** - pnpm for package management with Node.js LTS runtime
+
+## Backend Stack
+
+Server infrastructure and data storage:
+
+- **[ADR 002: Backend Framework & Runtime](/docs/adrs/002-backend-framework)** - Node.js LTS + Fastify for backend API
+- **[ADR 008: Database Platform & Strategy](/docs/adrs/008-database)** - PostgreSQL with Supabase and portability strategy
+- **[ADR 007: Backend ORM](/docs/adrs/007-backend-orm)** - Drizzle ORM for type-safe PostgreSQL queries
+
+## API Contract Layer
+
+Frontend-backend communication and integration:
+
+- **[ADR 009: API Architecture & Contract Strategy](/docs/adrs/009-api-architecture)** - ts-rest contracts, REST-first, OpenAPI/Swagger, multi-language SDK strategy, AI/MCP integration
+
+## Frontend Stack
+
+Client application infrastructure:
+
+- **[ADR 003: Frontend Framework](/docs/adrs/003-frontend-framework)** - Next.js for frontend applications
+- **[ADR 004: Design System](/docs/adrs/004-design-system)** - Shadcn/ui with Tailwind CSS
+
+## Code Quality
+
+Development tooling and code standards:
+
+- **[ADR 006: Linters & Formatters](/docs/adrs/006-linters)** - Hybrid Biome + ESLint architecture

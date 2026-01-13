@@ -1,14 +1,9 @@
 {
-  "extends": "@repo/tsconfig/react-library.json",
+  "extends": "@basilic/typescript-config/base.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "isolatedModules": true,
-    "baseUrl": ".",
-    "paths": {
-      "@repo/supabase/*": ["./src/*"]
-    }
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true
   },
-  "include": ["."],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }

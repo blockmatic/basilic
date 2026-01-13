@@ -10,8 +10,14 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
-    "check-types": {
-      "dependsOn": ["^check-types"]
+    "lint:eslint": {
+      "dependsOn": ["^lint:eslint"]
+    },
+    "lint:eslint:fix": {
+      "dependsOn": ["^lint:eslint:fix"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
     },
     "dev": {
       "cache": false,

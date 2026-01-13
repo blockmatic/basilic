@@ -1,0 +1,162 @@
+---
+description: Mobile-first responsive design patterns and best practices
+globs: *.tsx,*.ts,*.css
+alwaysApply: false
+---
+# Mobile-First Development Rules
+
+## Core Principle
+
+**Always design and develop mobile-first.** Start with mobile styles as the base, then enhance for larger screens using Tailwind's responsive breakpoints.
+
+## Why Mobile-First?
+
+- **Performance**: Mobile-first CSS loads faster on mobile devices
+- **Progressive Enhancement**: Start with essential features, add enhancements for larger screens
+- **Better UX**: Ensures mobile users get a great experience first
+- **Easier Maintenance**: Base styles are simpler, enhancements are additive
+
+## Tailwind Breakpoints
+
+Tailwind uses mobile-first breakpoints. Base styles apply to mobile, then override/enhance for larger screens:
+
+- **Base (no prefix)**: Mobile (default, < 640px)
+- **`sm:`**: Small screens (≥ 640px)
+- **`md:`**: Medium screens (≥ 768px)
+- **`lg:`**: Large screens (≥ 1024px)
+- **`xl:`**: Extra large screens (≥ 1280px)
+- **`2xl:`**: 2X large screens (≥ 1536px)
+
+## Patterns
+
+### Layout
+
+✅ **Do**: Start with mobile layout, enhance for desktop
+```tsx
+// Mobile-first: column on mobile, row on larger screens
+<div className="flex flex-col sm:flex-row gap-4">
+  <div>Content 1</div>
+  <div>Content 2</div>
+</div>
+```
+
+❌ **Don't**: Start with desktop layout
+```tsx
+// Bad: Desktop-first approach
+<div className="flex-row flex-col sm:flex-col">
+```
+
+### Typography
+
+✅ **Do**: Start with smaller text, increase for larger screens
+```tsx
+<h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl">
+  Responsive Heading
+</h1>
+```
+
+### Spacing
+
+✅ **Do**: Use smaller spacing on mobile, increase for larger screens
+```tsx
+<div className="p-4 sm:p-6 md:p-8">
+  Content with responsive padding
+</div>
+```
+
+### Visibility
+
+✅ **Do**: Hide/show elements based on screen size
+```tsx
+{/* Mobile-only */}
+<div className="block sm:hidden">Mobile Menu</div>
+
+{/* Desktop-only */}
+<div className="hidden sm:block">Desktop Menu</div>
+```
+
+### Grid and Columns
+
+✅ **Do**: Single column on mobile, multiple on larger screens
+```tsx
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {items.map(item => <Item key={item.id} />)}
+</div>
+```
+
+## Component Examples
+
+### Dialog/Modal
+
+```tsx
+// Mobile-first dialog: full screen on mobile, centered on desktop
+<DialogContent className="w-full h-full sm:w-auto sm:h-auto sm:max-w-lg">
+  <DialogHeader className="text-center sm:text-left">
+    <DialogTitle>Title</DialogTitle>
+  </DialogHeader>
+  <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end">
+    <Button variant="outline">Cancel</Button>
+    <Button>Confirm</Button>
+  </DialogFooter>
+</DialogContent>
+```
+
+### Navigation
+
+```tsx
+// Mobile: hamburger menu, Desktop: horizontal nav
+<nav className="flex flex-col sm:flex-row gap-4">
+  <button className="sm:hidden">☰</button>
+  <div className="hidden sm:flex gap-4">
+    <Link href="/">Home</Link>
+    <Link href="/about">About</Link>
+  </div>
+</nav>
+```
+
+## Testing
+
+1. **Test on mobile devices first** - Use browser dev tools mobile emulation
+2. **Verify touch targets** - Ensure buttons/links are at least 44x44px
+3. **Check text readability** - Ensure text is readable without zooming
+4. **Test landscape orientation** - Verify layouts work in both orientations
+5. **Progressive enhancement** - Verify core functionality works without JavaScript
+
+## Common Mistakes
+
+❌ **Don't**: Use desktop-first breakpoints
+```tsx
+// Bad: Desktop-first
+<div className="flex-row max-md:flex-col">
+```
+
+❌ **Don't**: Assume desktop is the default
+```tsx
+// Bad: Desktop styles without mobile base
+<div className="lg:flex lg:gap-4">
+```
+
+❌ **Don't**: Ignore mobile touch targets
+```tsx
+// Bad: Too small for mobile
+<button className="w-6 h-6">×</button>
+
+// Good: Adequate touch target
+<button className="w-10 h-10 sm:w-6 sm:h-6">×</button>
+```
+
+## Best Practices
+
+- **Start with mobile styles** - Write base styles for mobile first
+- **Use responsive utilities** - Leverage Tailwind's responsive prefixes
+- **Test frequently** - Check mobile view during development
+- **Progressive enhancement** - Add features for larger screens, don't remove for mobile
+- **Touch-friendly** - Ensure interactive elements are easy to tap
+- **Readable text** - Use appropriate font sizes for mobile screens
+- **Performance** - Optimize images and assets for mobile networks
+
+## Related Rules
+
+- See [ShadcnUI Rules](./shadcnui.mdc) for component-specific patterns
+- See [React Rules](./react.mdc) for component structure
+- See [Next.js Rules](./nextjs.mdc) for Next.js-specific patterns

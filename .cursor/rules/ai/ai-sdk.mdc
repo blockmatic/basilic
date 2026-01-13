@@ -1,9 +1,0 @@
----
-description: AI integration patterns and best practices
-globs: *.ts,*.tsx
-alwaysApply: false
----
-# AI Integration Rules
-
-- Implement proper streaming patterns for real-time responses
-- Optimize prompt design for better results

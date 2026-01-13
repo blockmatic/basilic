@@ -1,0 +1,121 @@
+---
+description: Backend testing standards and patterns for Fastify
+globs: *.spec.ts,**/*.e2e-spec.ts,**/*test.ts
+alwaysApply: false
+---
+
+# Backend Testing Rules
+
+## Testing Philosophy
+**CRITICAL**: All tests use real APIs with real API keys. NO MOCKS allowed for core functionality.
+- E2E tests hit real API endpoints (no unit tests)
+- Integration tests use real external services
+- Tests validate against ts-rest contracts for type safety
+
+## Test Structure
+### E2E Tests (Blackbox API Testing)
+- **Location**: `test/*.e2e-spec.ts` or `src/**/*.spec.ts`
+- **Pattern**: Tests only interact with HTTP endpoints, not internal implementation
+- **Real APIs**: All tests use real external service endpoints (no mocks)
+- **Fastify Testing**: Use `fastify.inject()` to simulate HTTP requests for blackbox testing
+
+## Test Coverage Requirements
+**For endpoints only, never unit test in API:**
+- All CRUD operations (Create, Read, Update, Delete)
+- Error Handling (all error cases and validation)
+- Contract validation (request/response match ts-rest contracts)
+- Authentication and authorization
+- Input validation (Zod schemas)
+
+## Vitest Configuration
+**All Fastify tests run in ESM mode** - Vitest is ESM-native and tests TypeScript source directly:
+- Tests run against TypeScript source files (ESM), not built output
+- Vitest config uses `vitest.config.ts` with ESM syntax
+- Path aliases configured in Vitest config for `@basilic/*` imports
+- Test utilities available in `src/test/utils/fastify.ts` for route testing
+
+## Fastify Route Testing Pattern
+
+Use `fastify.inject()` for blackbox testing of routes:
+
+```typescript
+import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import Fastify from 'fastify'
+import { walletRoutes } from '../routes/wallet'
+
+describe('walletRoutes', () => {
+  let fastify: FastifyInstance
+
+  beforeAll(async () => {
+    fastify = Fastify({ logger: false })
+    await fastify.register(walletRoutes)
+    await fastify.ready()
+  })
+
+  afterAll(async () => {
+    await fastify.close()
+  })
+
+  it('should create wallet via HTTP endpoint', async () => {
+    // Blackbox test: hit HTTP endpoint, not internal handler
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/wallets',
+      payload: {
+        name: 'Test Wallet',
+      },
+    })
+    
+    const data = JSON.parse(response.body)
+    
+    // Validate response matches contract
+    expect(response.statusCode).toBe(201)
+    expect(data).toMatchObject({
+      id: expect.any(String),
+      name: 'Test Wallet',
+    })
+  })
+})
+```
+
+## Contract Testing Pattern
+
+Test that responses match ts-rest contracts:
+
+```typescript
+import { describe, it, expect } from 'vitest'
+import { initClient } from '@ts-rest/core'
+import { walletContract } from '../contracts/wallet.contract'
+
+describe('walletContract', () => {
+  const client = initClient(walletContract, {
+    baseUrl: 'http://localhost:3000',
+    baseHeaders: {},
+  })
+
+  it('should return wallet matching contract schema', async () => {
+    const result = await client.getWallet({ params: { id: '123' } })
+    
+    // Type-safe result from ts-rest
+    if (result.status === 200) {
+      expect(result.body).toMatchObject({
+        id: expect.any(String),
+        // ... other contract fields
+      })
+    }
+  })
+})
+```
+
+## Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:cov
+```

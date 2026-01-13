@@ -1,0 +1,136 @@
+---
+title: "ADR 003: Frontend Apps Framework"
+description: "Decision to use Next.js as the frontend framework for its mature ecosystem, React Server Components support, built-in optimizations, and seamless monorepo integration."
+---
+
+## Context
+
+We need to select a framework for building frontend applications in our monorepo that:
+
+- Supports React (our chosen UI library)
+- Provides server-side rendering and routing capabilities
+- Integrates well with our monorepo structure
+- Has strong ecosystem support and tooling
+- Enables fast development and prototyping
+
+## Considered Options
+
+### Option A – Next.js
+
+Full-stack React framework with file-based routing.
+
+**Pros**
+
+- Mature ecosystem with extensive documentation and community support
+- Excellent integration with React Server Components
+- Strong TypeScript support out of the box
+- Built-in optimizations (image optimization, font optimization, etc.)
+- File-based routing that's intuitive and easy to understand
+- Hot module replacement and fast refresh
+- Turbopack for faster builds and development
+- Battle-tested in production at scale
+- Strong deployment options (Vercel, self-hosted, etc.)
+- Works seamlessly with Turbo and pnpm workspaces
+- Easy to share components and utilities across apps
+
+**Cons**
+
+- Larger bundle size compared to minimal frameworks
+- Some opinionated patterns that may not fit all use cases
+- Learning curve for React Server Components and App Router
+
+### Option B – TanStack Start
+
+Full-stack React framework with file-based routing and streaming SSR, built by the TanStack team.
+
+**Pros**
+
+- Streaming SSR capabilities with excellent performance
+- Modern React patterns and hooks-first approach
+- File-based routing similar to Next.js
+- Built on Vite for fast development and builds
+- Strong TypeScript support
+- Flexible and unopinionated architecture
+- Excellent developer experience with TanStack Router integration
+- Lightweight compared to Next.js
+- Good integration with TanStack ecosystem (Query, Router, etc.)
+- Built-in support for React Server Components
+- Progressive enhancement and streaming capabilities
+
+**Cons**
+
+- Newer framework with smaller ecosystem compared to Next.js
+- Less community resources, documentation, and examples
+- Fewer third-party integrations and plugins
+- Team familiarity with Next.js may require learning curve
+- Next.js has more mature tooling and IDE support
+- Better integration with design tools and prototyping platforms in Next.js
+- Less battle-tested at scale compared to Next.js
+- Fewer deployment options and hosting integrations
+
+### Option C – Remix
+
+Full-stack React framework with data loading patterns.
+
+**Pros**
+
+- Strong data loading patterns
+- Good developer experience
+- Full-stack capabilities
+
+**Cons**
+
+- Remix's data loading patterns are different from Next.js
+- Team preference for Next.js's approach to data fetching
+- Smaller ecosystem compared to Next.js
+- Fewer integrations with design tools and prototyping platforms
+
+### Option D – Vite + React Router
+
+Build tool with client-side routing.
+
+**Pros**
+
+- Fast development server
+- Flexible routing
+- Good build performance
+
+**Cons**
+
+- Next.js provides built-in API routes and server-side rendering
+- Less setup required for full-stack applications with Next.js
+- Next.js includes many optimizations out of the box
+- Better support for modern React features (Server Components, etc.)
+
+## Decision
+
+We will use **Next.js** as our frontend framework for applications.
+
+### TLDR: Comparison Table
+
+| Feature | Next.js ✅ | TanStack Start | Remix | Vite + React Router |
+|---------|------------|----------------|-------|---------------------|
+| **Ecosystem maturity** | ✅ Extensive | ⚠️ Growing | ✅ Mature | ✅ Mature |
+| **React Server Components** | ✅ Excellent | ✅ Supported | ⚠️ Limited | ❌ No |
+| **TypeScript support** | ✅ Excellent | ✅ Strong | ✅ Good | ✅ Good |
+| **Built-in optimizations** | ✅ Image, font, etc. | ⚠️ Vite-based | ⚠️ Limited | ⚠️ Manual |
+| **File-based routing** | ✅ Intuitive | ✅ Similar | ⚠️ Different | ⚠️ Manual |
+| **Turbopack** | ✅ Fast builds | ❌ Vite | ❌ Vite | ❌ Vite |
+| **Monorepo integration** | ✅ Excellent | ✅ Good | ✅ Good | ⚠️ Manual |
+| **Deployment options** | ✅ Many | ⚠️ Limited | ✅ Good | ⚠️ Manual |
+| **Community & docs** | ✅ Extensive | ⚠️ Smaller | ✅ Good | ✅ Good |
+| **Battle-tested** | ✅ At scale | ⚠️ Newer | ✅ Yes | ✅ Yes |
+
+**Main reasons:**
+
+- Mature ecosystem with extensive documentation and community support
+- Excellent integration with React Server Components and strong TypeScript support
+- Built-in optimizations (image, font, etc.) and Turbopack for faster development
+- Battle-tested in production at scale with strong deployment options
+- Works seamlessly with Turbo and pnpm workspaces for monorepo integration
+
+## Notes
+
+- TanStack Start may be reconsidered for specific use cases that benefit from its streaming SSR capabilities
+- Next.js continues to evolve rapidly with new features and optimizations
+- Consider framework-agnostic patterns when building shared components

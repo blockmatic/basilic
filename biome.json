@@ -1,82 +1,81 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
-  "vcs": {
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+  "files": {
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/out",
+      "!**/dist",
+      "!**/build",
+      "!**/bin",
+      "!**/.turbo",
+      "!**/.source",
+      "!**/.vercel",
+      "!**/.cache",
+      "!**/coverage",
+      "!**/test-results",
+      "!**/playwright-report",
+      "!**/target",
+      "!*.generated.*",
+      "!*.log",
+      "!pnpm-lock.yaml",
+      "!.pnp.js",
+      "!.DS_Store",
+      "!*.pem"
+    ],
+    "maxSize": 1048576
+  },
+  "formatter": {
     "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
+    "formatWithErrors": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
   },
   "javascript": {
     "formatter": {
-      "semicolons": "asNeeded",
       "quoteStyle": "single",
-      "bracketSameLine": false,
-      "bracketSpacing": true
+      "jsxQuoteStyle": "double",
+      "trailingCommas": "all",
+      "semicolons": "asNeeded",
+      "arrowParentheses": "asNeeded"
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
     }
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
+      "a11y": {
+        "recommended": false
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off"
+      },
       "correctness": {
-        "noInvalidUseBeforeDeclaration": "off"
+        "useExhaustiveDependencies": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
       },
       "style": {
-        "noNonNullAssertion": "error",
-        "useNodejsImportProtocol": "error"
-      }
-    },
-    "includes": [
-      "**/*.js",
-      "**/*.cjs",
-      "**/*.mjs",
-      "**/*.jsx",
-      "**/*.ts",
-      "**/*.cts",
-      "**/*.mts",
-      "**/*.tsx"
-    ]
-  },
-  "formatter": {
-    "enabled": true,
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineWidth": 80,
-    "lineEnding": "lf",
-    "formatWithErrors": false,
-    "includes": [
-      "**/*.js",
-      "**/*.cjs",
-      "**/*.mjs",
-      "**/*.jsx",
-      "**/*.ts",
-      "**/*.cts",
-      "**/*.mts",
-      "**/*.tsx"
-    ]
-  },
-  "files": {
-    "ignoreUnknown": true,
-    "includes": [
-      "**/*.js",
-      "**/*.cjs",
-      "**/*.mjs",
-      "**/*.jsx",
-      "**/*.ts",
-      "**/*.cts",
-      "**/*.mts",
-      "**/*.tsx"
-    ],
-    "experimentalScannerIgnores": ["contracts/**"]
-  },
-  "overrides": [
-    {
-      "includes": ["contracts/**"],
-      "formatter": {
-        "enabled": false
-      },
-      "linter": {
-        "enabled": false
+        "noRestrictedImports": {
+          "options": {
+            "paths": {
+              "lodash-es": "Use per-function imports: lodash-es/<fn> (e.g., lodash-es/isEmpty)."
+            }
+          }
+        }
       }
     }
-  ]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  }
 }

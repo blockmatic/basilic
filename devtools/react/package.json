@@ -1,0 +1,25 @@
+{
+  "name": "@basilic/devtools-react",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "description": "React development tools",
+  "license": "PROPRIETARY",
+  "scripts": {
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0"
+  },
+  "exports": {
+    ".": "./index.ts"
+  },
+  "devDependencies": {
+    "@basilic/eslint-config": "workspace:*",
+    "@basilic/typescript-config": "workspace:*",
+    "eslint": "^9.32.0",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
