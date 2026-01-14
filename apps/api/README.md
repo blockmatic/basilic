@@ -1,23 +1,39 @@
-# Getting Started with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli)
-This project was bootstrapped with Fastify-CLI.
+# Basilic API
 
-## Available Scripts
+Contract-first, type-safe REST API built with Fastify & ts-rest.
 
-In the project directory, you can run:
+## Requirements
 
-### `npm run dev`
+- **Node.js**: `>=22`
+- **pnpm**: `10.28.0`
 
-To start the app in dev mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Development
 
-### `npm start`
+```bash
+pnpm dev
+```
 
-For production mode
+Starts Fastify server with hot reload at [http://localhost:3000](http://localhost:3000).
 
-### `npm run test`
+## Scripts
 
-Run the test cases.
+- `pnpm dev` - Development server with hot reload
+- `pnpm build` - Build TypeScript
+- `pnpm start` - Production server (requires build)
+- `pnpm test` - Run tests
 
-## Learn More
+## API Documentation
 
-To learn Fastify, check out the [Fastify documentation](https://fastify.dev/docs/latest/).
+- **Scalar UI**: `/reference`
+- **OpenAPI Spec**: `/reference/openapi.json`
+- **Health Check**: `GET /health`
+
+## Architecture
+
+Contract-first architecture using ts-rest:
+
+- **Contracts**: Defined in `@basilic/contracts` (ts-rest + Zod)
+- **Routes**: Implemented in `src/routes/` (Fastify plugins)
+- **Type Safety**: End-to-end from contracts to implementation
+
+See [Architecture Documentation](https://basilic-docs.vercel.app/docs/architecture) for details.

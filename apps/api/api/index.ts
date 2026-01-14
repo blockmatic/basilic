@@ -1,3 +1,4 @@
+import type { IncomingMessage, ServerResponse } from 'node:http'
 import Fastify from 'fastify'
 import app from '../src/app'
 
@@ -35,5 +36,10 @@ const ensureReady = async () => {
 export default async (req: VercelRequest, res: VercelResponse) => {
   await ensureReady()
   // Fastify can handle Vercel's request/response objects
-  fastify.server.emit('request', req as any, res as any)
+  // Vercel's request/response are compatible with Node.js HTTP types
+  fastify.server.emit(
+    'request',
+    req as unknown as IncomingMessage,
+    res as unknown as ServerResponse,
+  )
 }

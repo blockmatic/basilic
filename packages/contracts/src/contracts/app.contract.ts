@@ -1,5 +1,5 @@
 import { initContract } from '@ts-rest/core'
-import { HealthResponseSchema } from '../schemas/health.schema'
+import { HealthResponseSchema } from '../schemas/health.schema.js'
 
 const c = initContract()
 

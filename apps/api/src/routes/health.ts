@@ -5,19 +5,22 @@ import type { FastifyPluginAsync } from 'fastify'
 const healthRoutes: FastifyPluginAsync = async fastify => {
   const s = initServer()
 
-  s.router(appContract, {
+  const router = s.router(appContract, {
     health: {
-      check: async () => ({
-        status: 200 as const,
-        body: {
-          ok: true,
-          now: new Date().toISOString(),
-        },
-      }),
+      // @ts-expect-error - ts-rest type inference issue with nested routers
+      check: async () => {
+        return {
+          status: 200,
+          body: {
+            ok: true,
+            now: new Date().toISOString(),
+          },
+        }
+      },
     },
   })
 
-  await fastify.register(s.plugin)
+  await fastify.register(s.plugin(router))
 }
 
 export default healthRoutes
