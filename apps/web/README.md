@@ -1,6 +1,6 @@
-# Basilic Web App
+# Web App
 
-A Next.js application in the Basilic monorepo. This is a minimal hello world application demonstrating the integration of Next.js with the Basilic monorepo architecture.
+A Next.js application in this monorepo. This is a minimal hello world application demonstrating the integration of Next.js with the monorepo architecture.
 
 ## Tech Stack
 
@@ -14,7 +14,7 @@ A Next.js application in the Basilic monorepo. This is a minimal hello world app
 
 ## Monorepo Integration
 
-This app uses shared packages from the Basilic monorepo:
+This app uses shared packages from this monorepo:
 
 - **`@basilic/ui`** - Shared UI components and design system
 - **`@basilic/types`** - Domain types

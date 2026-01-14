@@ -43,8 +43,8 @@
       "dependsOn": ["^lint:eslint:fix"],
       "env": ["NODE_ENV", "NEXT_RUNTIME", "CI", "PLAYWRIGHT_TEST_BASE_URL", "PORT"]
     },
-    "typecheck": {
-      "dependsOn": ["^typecheck"]
+    "checktypes": {
+      "dependsOn": ["^checktypes"]
     },
     "dev": {
       "cache": false,

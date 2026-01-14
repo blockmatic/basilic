@@ -1,0 +1,121 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run gitleaks (full repo scan)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-path: .gitleaks.toml
+          redact: true
+          verbose: true
+          exit-code: 1
+          fail: true
+
+      - name: Install TruffleHog
+        run: |
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
+          wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_linux_${ARCH}.tar.gz
+          tar -xzf /tmp/trufflehog.tar.gz -C /tmp
+          sudo mv /tmp/trufflehog /usr/local/bin/
+          trufflehog version
+
+      - name: Run TruffleHog (filesystem scan)
+        run: |
+          echo "🔍 Scanning filesystem for secrets..."
+          trufflehog filesystem . --fail --json || {
+            echo ""
+            echo "❌ SECURITY ISSUE: TruffleHog found secrets in the filesystem"
+            echo "Review the JSON output above for details about detected secrets"
+            echo "Remove or rotate any exposed secrets immediately"
+            exit 1
+          }
+          echo "✅ No secrets found in filesystem"
+
+      - name: Run TruffleHog (git history scan)
+        run: |
+          echo "🔍 Scanning git history for secrets..."
+          trufflehog git file://. --fail --json || {
+            echo ""
+            echo "❌ SECURITY ISSUE: TruffleHog found secrets in git history"
+            echo "Review the JSON output above for details about detected secrets"
+            echo "You may need to clean git history or rotate exposed secrets"
+            exit 1
+          }
+          echo "✅ No secrets found in git history"
+
+      - name: Install OSV Scanner
+        run: |
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
+          wget -O /tmp/osv-scanner https://github.com/google/osv-scanner/releases/latest/download/osv-scanner_linux_${ARCH}
+          chmod +x /tmp/osv-scanner
+          sudo mv /tmp/osv-scanner /usr/local/bin/
+          osv-scanner --version
+
+      - name: Run OSV Scanner
+        run: |
+          echo "🔍 Scanning dependencies for known vulnerabilities..."
+          osv-scanner scan --lockfile=pnpm-lock.yaml || {
+            echo ""
+            echo "❌ SECURITY ISSUE: OSV Scanner found known vulnerabilities in dependencies"
+            echo "Review the output above for details about affected packages"
+            echo "Update or replace vulnerable dependencies"
+            exit 1
+          }
+          echo "✅ No known vulnerabilities found in dependencies"
+
+      - name: Run pnpm audit
+        run: |
+          echo "🔍 Running pnpm audit for dependency vulnerabilities..."
+          pnpm audit --audit-level=moderate || {
+            echo ""
+            echo "❌ SECURITY ISSUE: pnpm audit found vulnerabilities with severity >= moderate"
+            echo "Review the audit output above for details about vulnerable packages"
+            echo "Run 'pnpm audit fix' or update affected packages"
+            exit 1
+          }
+          echo "✅ No moderate or high severity vulnerabilities found"
+        continue-on-error: false

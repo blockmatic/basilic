@@ -9,7 +9,7 @@
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "types:check": "fumadocs-mdx && tsc --noEmit",
+    "checktypes": "fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint:eslint": "eslint .",
     "lint:eslint:fix": "eslint . --fix"

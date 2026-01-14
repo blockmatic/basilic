@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "typecheck": "tsc --noEmit",
+    "checktypes": "tsc --noEmit",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",

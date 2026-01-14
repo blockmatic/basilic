@@ -2,6 +2,10 @@
 
 import { cn } from '@basilic/ui/lib/utils'
 import * as React from 'react'
+import type {
+  DefaultLegendContentProps as RechartsLegendContentProps,
+  TooltipContentProps as RechartsTooltipContentProps,
+} from 'recharts'
 import * as RechartsPrimitive from 'recharts'
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -109,7 +113,7 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+}: RechartsTooltipContentProps<number | string, number | string> &
   React.ComponentProps<'div'> & {
     hideLabel?: boolean
     hideIndicator?: boolean
@@ -161,7 +165,7 @@ function ChartTooltipContent({
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
         {payload
-          .filter(item => item.type !== 'none')
+          .filter((item): item is NonNullable<typeof item> => item.type !== 'none')
           .map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || 'value'}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
@@ -240,7 +244,7 @@ function ChartLegendContent({
   verticalAlign = 'bottom',
   nameKey,
 }: React.ComponentProps<'div'> &
-  Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
+  Pick<RechartsLegendContentProps, 'payload' | 'verticalAlign'> & {
     hideIcon?: boolean
     nameKey?: string
   }) {
@@ -259,7 +263,7 @@ function ChartLegendContent({
       )}
     >
       {payload
-        .filter(item => item.type !== 'none')
+        .filter((item): item is NonNullable<typeof item> => item.type !== 'none')
         .map(item => {
           const key = `${nameKey || item.dataKey || 'value'}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)

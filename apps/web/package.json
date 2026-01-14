@@ -17,6 +17,7 @@
     "lint:eslint:fix": "eslint . --fix",
     "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
     "format": "biome format . --write",
+    "checktypes": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

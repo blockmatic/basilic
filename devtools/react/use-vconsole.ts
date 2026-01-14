@@ -13,7 +13,7 @@ import VConsole from 'vconsole'
 export function useVConsole() {
   const [debugQuery, setDebugQuery] = useQueryState('debug')
   const [debugStorage, setDebugStorage] = useLocalStorage('debug', false)
-  const vconsoleRef = useRef<VConsole>()
+  const vconsoleRef = useRef<VConsole | undefined>(undefined)
   const isFirstMount = useRef(true)
 
   // Sync query param with localStorage (bidirectional sync)

@@ -1,0 +1,136 @@
+# Gitleaks configuration for crypto-focused secret detection
+# See: https://github.com/gitleaks/gitleaks
+
+title = "Security Scan"
+
+[extend]
+# Use default rules but customize for crypto secrets
+useDefault = true
+
+[allowlist]
+description = "Allowlist for test fixtures and example files"
+paths = [
+  '''\.env-example$''',
+  '''\.env\.example$''',
+  '''\.env\.schema$''',
+  '''\.env\.test$''',
+  '''test.*\.(ts|tsx|js|jsx|mjs)$''',
+  '''.*\.test\.(ts|tsx|js|jsx|mjs)$''',
+  '''.*\.spec\.(ts|tsx|js|jsx|mjs)$''',
+  '''__tests__/''',
+  '''__mocks__/''',
+  '''fixtures/''',
+  '''examples/''',
+  '''docs/''',
+]
+
+commits = [
+  # Allow test commits with obvious test data
+  '''test.*''',
+  '''Test.*''',
+  '''TEST.*''',
+]
+
+regexes = [
+  # Allow obvious test patterns
+  '''test.*private.*key''',
+  '''test.*mnemonic''',
+  '''example.*key''',
+  '''dummy.*secret''',
+]
+
+[allowlist.regexDescription]
+test = "Test fixtures and example data"
+
+[[rules]]
+id = "crypto-private-key"
+description = "Cryptocurrency private key"
+regex = '''(?i)(private[_-]?key|privkey|privatekey|secret[_-]?key|secretkey)\s*[=:]\s*['"]?[0-9a-fA-F]{64,}['"]?'''
+tags = ["crypto", "private-key", "secret"]
+
+[[rules]]
+id = "crypto-mnemonic"
+description = "Cryptocurrency mnemonic phrase (12/24 words)"
+regex = '''(?i)(mnemonic|seed[_-]?phrase|seed[_-]?words|recovery[_-]?phrase)\s*[=:]\s*['"]?([a-z]+\s+){11,23}[a-z]+['"]?'''
+tags = ["crypto", "mnemonic", "seed", "secret"]
+
+[[rules]]
+id = "crypto-seed-hex"
+description = "Cryptocurrency seed in hex format"
+regex = '''(?i)(seed|seed[_-]?hex)\s*[=:]\s*['"]?[0-9a-fA-F]{32,128}['"]?'''
+tags = ["crypto", "seed", "secret"]
+
+[[rules]]
+id = "solana-private-key"
+description = "Solana private key (base58)"
+regex = '''(?i)(solana[_-]?private[_-]?key|sol[_-]?private[_-]?key)\s*[=:]\s*['"]?[1-9A-HJ-NP-Za-km-z]{87,88}['"]?'''
+tags = ["crypto", "solana", "private-key", "secret"]
+
+[[rules]]
+id = "ethereum-private-key"
+description = "Ethereum private key (hex, 64 chars)"
+regex = '''(?i)(eth[_-]?private[_-]?key|ethereum[_-]?private[_-]?key|eth[_-]?privkey)\s*[=:]\s*['"]?0x?[0-9a-fA-F]{64}['"]?'''
+tags = ["crypto", "ethereum", "private-key", "secret"]
+
+[[rules]]
+id = "cosmos-private-key"
+description = "Cosmos private key"
+regex = '''(?i)(cosmos[_-]?private[_-]?key|cosmos[_-]?privkey|atom[_-]?private[_-]?key)\s*[=:]\s*['"]?[0-9a-fA-F]{64,}['"]?'''
+tags = ["crypto", "cosmos", "private-key", "secret"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API key pattern"
+regex = '''(?i)(api[_-]?key|apikey|api[_-]?secret)\s*[=:]\s*['"]?[a-zA-Z0-9_\-]{20,}['"]?'''
+tags = ["api", "secret"]
+
+[[rules]]
+id = "jwt-secret"
+description = "JWT secret or signing key"
+regex = '''(?i)(jwt[_-]?secret|jwt[_-]?key|jwt[_-]?signing[_-]?key)\s*[=:]\s*['"]?[a-zA-Z0-9_\-]{32,}['"]?'''
+tags = ["jwt", "secret", "auth"]
+
+[[rules]]
+id = "database-password"
+description = "Database connection password"
+regex = '''(?i)(database[_-]?password|db[_-]?password|db[_-]?pass|postgres[_-]?password|mysql[_-]?password)\s*[=:]\s*['"]?[^\s'"]{8,}['"]?'''
+tags = ["database", "password", "secret"]
+
+[[rules]]
+id = "aws-access-key"
+description = "AWS access key ID"
+regex = '''(?i)(aws[_-]?access[_-]?key[_-]?id|aws[_-]?access[_-]?key)\s*[=:]\s*['"]?AKIA[0-9A-Z]{16}['"]?'''
+tags = ["aws", "secret"]
+
+[[rules]]
+id = "aws-secret-key"
+description = "AWS secret access key"
+regex = '''(?i)(aws[_-]?secret[_-]?access[_-]?key|aws[_-]?secret[_-]?key)\s*[=:]\s*['"]?[A-Za-z0-9/+=]{40}['"]?'''
+tags = ["aws", "secret"]
+
+# Exclude common build and dependency directories
+[exclude]
+paths = [
+  '''node_modules/''',
+  '''\.next/''',
+  '''dist/''',
+  '''build/''',
+  '''\.turbo/''',
+  '''\.vercel/''',
+  '''\.pnp/''',
+  '''\.logs/''',
+  '''coverage/''',
+  '''test-results/''',
+  '''playwright-report/''',
+  '''playwright/\.cache/''',
+  '''\.DS_Store''',
+  '''pnpm-lock\.yaml''',
+  '''package-lock\.json''',
+  '''yarn\.lock''',
+  '''\.git/''',
+  '''contracts/evm/out/''',
+  '''contracts/evm/cache/''',
+  '''contracts/evm/broadcast/''',
+  '''contracts/solana/target/''',
+  '''contracts/solana/\.anchor/''',
+]

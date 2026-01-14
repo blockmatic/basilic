@@ -20,6 +20,7 @@
     "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "checktypes": "tsc --noEmit",
     "generate:openapi": "tsx scripts/generate-openapi.ts"
   },
   "keywords": [],

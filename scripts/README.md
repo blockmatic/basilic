@@ -1,91 +1,85 @@
-# Publishing Scripts
+# Scripts
 
-These scripts handle the dual-mode export configuration for monorepo packages that need to work both in development and when published to npm.
+Utility scripts for this monorepo.
 
-## Why These Scripts Exist
+## Documentation
 
-Our packages use a **dual-mode export strategy**:
+For comprehensive guides, see:
 
-- **Development mode**: Exports point to `src/` for fast local development without requiring builds
-- **Publishing mode**: Exports point to `dist/` for npm consumers who need built artifacts
+- **[Publishing Guide](https://basilic-docs.vercel.app/docs/guides/publishing)** - Complete guide to publishing packages
+- **[Security Guide](https://basilic-docs.vercel.app/docs/guides/security)** - Security baseline and secret scanning
+- **[Deployment Guide](https://basilic-docs.vercel.app/docs/guides/deployment)** - Deployment options and strategies
 
-This allows:
-- ✅ Fast local development (no build step needed)
-- ✅ Next.js can transpile `src/` directly via `transpilePackages`
-- ✅ Clean `dist/`-only packages for npm publishing
-- ✅ Proper TypeScript types in both modes
+## Publishing Scripts
 
-## How It Works
+Scripts that handle dual-mode export configuration for npm publishing.
 
 ### `prepare-publish.mjs`
 
-Runs during the `prepack` lifecycle hook (before `pnpm pack` or `pnpm publish`):
+Runs during `prepack` lifecycle hook (before `pnpm pack` or `pnpm publish`):
 
-1. Builds the package (`pnpm build` runs first via the prepack script)
-2. Stores original `package.json` exports/main/types in `.package-originals.json`
-3. Switches `exports`, `main`, and `types` to point to `dist/`
-4. Sets `files: ["dist"]` to ensure only built files are included
+1. Stores original `package.json` exports/main/types in `.package-originals.json`
+2. Switches `exports`, `main`, and `types` to point to `dist/`
+3. Sets `files: ["dist"]` to ensure only built files are included
+
+**Note**: `pnpm build` runs first via the prepack script before this script executes.
 
 ### `restore-publish.mjs`
 
-Runs during the `postpack` lifecycle hook (after packing):
+Runs during `postpack` lifecycle hook (after packing):
 
-1. Reads the stored originals from `.package-originals.json`
-2. Restores the original `package.json` configuration
-3. Removes the temporary `.package-originals.json` file
+1. Reads stored originals from `.package-originals.json`
+2. Restores original `package.json` configuration
+3. Removes temporary `.package-originals.json` file
 
-## Usage
+**Usage**: Automatically invoked via npm/pnpm lifecycle hooks. No manual execution needed.
 
-These scripts are automatically invoked via npm/pnpm lifecycle hooks in `package.json`:
+**Package Configuration**: Packages using these scripts should have development exports pointing to `src/` in `package.json`. See [Publishing Guide](https://basilic-docs.vercel.app/docs/guides/publishing) for complete configuration details.
 
-```json
-{
-  "scripts": {
-    "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
-    "postpack": "node ../../scripts/restore-publish.mjs"
-  }
-}
+## Security Scripts
+
+Scripts that prevent committing secrets and scan for vulnerabilities.
+
+### `block-secret-files.mjs`
+
+Prevents committing sensitive file types in pre-commit hooks.
+
+**What gets blocked**:
+- `.env` (but `.env-example`, `.env.schema`, `.env.*` variants are allowed)
+- `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`
+- `id_rsa*` (SSH private keys)
+- Certificate files: `*.crt`, `*.cer`, `*.der`, `*.p7b`, `*.p7c`, `*.p7m`, `*.p7s`
+- `*.keytab`
+
+**Usage**: Automatically runs in pre-commit hooks via `simple-git-hooks`.
+
+### `scan-secrets-staged.mjs`
+
+Wrapper script for gitleaks staged file scanning.
+
+**What it scans**:
+- Cryptocurrency private keys (Ethereum, Solana, Cosmos, etc.)
+- Mnemonic phrases and seed phrases
+- API keys and secrets
+- JWT secrets
+- Database passwords
+- AWS credentials
+
+**Usage**: Automatically runs in pre-commit hooks. Can be run manually:
+```bash
+pnpm secrets:scan:staged
 ```
 
-## When They Run
+### `ensure-tool.mjs`
 
-- `prepack`: Before `pnpm pack` or `pnpm publish`
-- `postpack`: After `pnpm pack` or `pnpm publish`
+Checks tool availability and prints install instructions if missing.
 
-## Package Configuration
-
-Packages that use these scripts should have:
-
-**Development exports** (in `package.json`):
-```json
-{
-  "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts"
-    }
-  }
-}
-```
-
-**Publishing exports** (automatically set by `prepare-publish.mjs`):
-```json
-{
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": ["dist"]
-}
-```
+**Usage**: Used internally by other scripts to verify required tools are installed.
 
 ## Notes
 
-- The scripts use `process.cwd()` to find the package's `package.json` (they run from within each package directory)
+- Publishing scripts use `process.cwd()` to find the package's `package.json` (they run from within each package directory)
 - If `.package-originals.json` doesn't exist, `restore-publish.mjs` exits gracefully (useful for first-time runs)
-- These scripts are only needed for packages that will be published to npm
-- Private workspace-only packages don't need these scripts
+- Publishing scripts are only needed for packages that will be published to npm
+- Private workspace-only packages don't need publishing scripts
+- Security scripts run from the repository root and work with the monorepo structure

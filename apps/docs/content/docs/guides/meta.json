@@ -5,6 +5,8 @@
   "environment-setup": "Environment Setup",
   "testing": "Testing",
   "deployment": "Deployment",
+  "publishing": "Publishing Packages",
+  "security": "Security Baseline",
   "using-mcp-servers": "Using MCP Servers",
   "ci-cd-setup": "CI/CD Setup"
 }
