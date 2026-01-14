@@ -1,0 +1,80 @@
+---
+title: "Add UI Component"
+description: "Guide for adding a new component to the shared UI library."
+---
+
+Add a new component to `@basilic/ui` for use across all frontend apps.
+
+## Overview
+
+Components are shared via `@basilic/ui` package and can be used in any frontend app.
+
+## Step 1: Add Component
+
+Add your component to `packages/ui/components/`:
+
+```typescript
+// packages/ui/components/my-component.tsx
+import { cn } from '@basilic/ui/lib/utils'
+
+export interface MyComponentProps {
+  className?: string
+  children: React.ReactNode
+}
+
+export function MyComponent({ className, children }: MyComponentProps) {
+  return (
+    <div className={cn('rounded-lg border p-4', className)}>
+      {children}
+    </div>
+  )
+}
+```
+
+## Step 2: Export Component
+
+Export from `packages/ui/components/index.ts`:
+
+```typescript
+export { MyComponent } from './my-component'
+export type { MyComponentProps } from './my-component'
+```
+
+## Step 3: Use in Apps
+
+Import and use in any frontend app:
+
+```typescript
+// apps/web/app/page.tsx
+import { MyComponent } from '@basilic/ui/components'
+
+export default function Page() {
+  return (
+    <MyComponent>
+      Content here
+    </MyComponent>
+  )
+}
+```
+
+## Using Shadcn Components
+
+To add a Shadcn component:
+
+1. Use the shadcn CLI (via MCP server)
+2. Copy component to `packages/ui/components/`
+3. Export from index
+4. Use across apps
+
+## Best Practices
+
+- Use Tailwind CSS for styling
+- Follow mobile-first design
+- Export types with components
+- Use `cn()` utility for className merging
+- Keep components focused and reusable
+
+## Related Documentation
+
+- [Frontend Stack](/docs/architecture/frontend-stack) - UI architecture
+- [ShadcnUI Rules](/docs/cursor-rules) - Component patterns

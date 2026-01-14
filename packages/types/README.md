@@ -21,4 +21,4 @@ import type { User, UserId } from '@basilic/types'
 
 Domain types live here. API shapes (DTOs) are derived from Zod schemas in `@basilic/contracts`.
 
-See [Architecture Documentation](https://basilic-docs.vercel.app/docs/architecture) for type organization patterns.
+See [Package Conventions](https://basilic-docs.vercel.app/docs/architecture/package-conventions#1-packages-types) for type organization patterns.

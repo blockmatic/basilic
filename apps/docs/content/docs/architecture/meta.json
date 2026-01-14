@@ -1,0 +1,10 @@
+{
+  "index": "Architecture Overview",
+  "monorepo": "Monorepo Structure",
+  "backend-stack": "Backend Stack",
+  "frontend-stack": "Frontend Stack",
+  "dev-tooling": "Development Tooling",
+  "api-contracts": "API Contracts",
+  "package-conventions": "Package Conventions",
+  "portability": "Portability Strategy"
+}

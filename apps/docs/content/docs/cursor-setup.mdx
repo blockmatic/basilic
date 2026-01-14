@@ -1,0 +1,137 @@
+---
+title: "Cursor IDE Setup"
+description: "Complete guide to configuring Cursor for optimal AI-assisted development with MCP servers and documentation sites."
+---
+
+Complete guide to configuring Cursor for optimal AI-assisted development.
+
+## Prerequisites
+
+- Cursor IDE installed
+- This repository cloned
+
+## Step 1: Add Documentation Sites
+
+Configure Cursor to access documentation:
+
+1. Open Cursor Settings (Cmd/Ctrl + ,)
+2. Navigate to "Features" → "Docs"
+3. Add the following documentation sites:
+   - `https://basilic-docs.vercel.app/docs`
+   - `https://orm.drizzle.team/docs`
+   - `https://tanstack.com/query/latest/docs`
+   - `https://fastify.dev/docs`
+   - `https://fumadocs.dev/docs`
+
+These documentation sites help Cursor provide better context-aware assistance when working with these technologies.
+
+## Step 2: Configure MCP Servers
+
+### What are MCP Servers?
+
+Model Context Protocol servers extend AI capabilities with specialized tools. They allow Cursor to interact with external services and perform actions beyond code editing.
+
+### Available MCP Servers
+
+This project includes 4 MCP servers:
+
+1. **shadcn** - UI component management (shadcn/ui)
+2. **v0** - AI UI design and generation (v0.dev)
+3. **GitHub** - Repository operations
+4. **Vercel** - Deployment management
+
+### Setting Up API Keys
+
+MCP servers require API keys to function:
+
+**For zsh (recommended):**
+```bash
+# Add to ~/.zshrc
+export V0_API_KEY=your_v0_api_key_here
+export GITHUB_TOKEN=your_github_token_here
+export VERCEL_API_TOKEN=your_vercel_api_token_here
+
+# Reload
+source ~/.zshrc
+```
+
+**For bash:**
+```bash
+# Add to ~/.bashrc
+export V0_API_KEY=your_v0_api_key_here
+export GITHUB_TOKEN=your_github_token_here
+export VERCEL_API_TOKEN=your_vercel_api_token_here
+
+# Reload
+source ~/.bashrc
+```
+
+**Important:** Restart Cursor after setting environment variables.
+
+### Getting API Keys
+
+- **V0_API_KEY**: [v0.dev account settings](https://v0.dev)
+- **GITHUB_TOKEN**: [GitHub Personal Access Tokens](https://github.com/settings/tokens)
+- **VERCEL_API_TOKEN**: [Vercel Account Tokens](https://vercel.com/account/tokens)
+
+### Verifying MCP Setup
+
+The MCP configuration is already in `.cursor/mcp.json`. After setting API keys:
+
+1. Restart Cursor
+2. Open Cursor settings
+3. Navigate to "MCP Servers"
+4. Verify all servers show as "Connected"
+
+## Step 3: Install Plugins
+
+Recommended VS Code extensions (work with Cursor):
+
+1. **CodeRabbit** - AI code review assistant
+2. **ESLint** - JavaScript/TypeScript linting
+3. **Biome** - Fast formatter and linter
+4. **Tailwind CSS IntelliSense** - Tailwind autocomplete
+5. **Error Lens** - Inline error display
+
+Install via Extensions panel (Cmd/Ctrl + Shift + X).
+
+## Step 4: Verify Setup
+
+Test your configuration:
+
+```bash
+# Run linters
+pnpm lint
+
+# Start development
+pnpm dev
+```
+
+## Troubleshooting
+
+### MCP Servers Not Connecting
+
+- Verify API keys are exported in shell
+- Restart Cursor completely
+- Check `.cursor/mcp.json` syntax
+- Ensure environment variables are loaded in shell
+
+### Cursor Rules Not Loading
+
+- Check `.cursor/rules/` directory exists
+- Verify rule files have `.mdc` extension
+- Restart Cursor
+- Check Cursor settings for rules configuration
+
+### Documentation Sites Not Working
+
+- Verify URLs are correct
+- Check internet connection
+- Restart Cursor
+- Check Cursor settings → Features → Docs
+
+## Next Steps
+
+- [AI Workflow](/docs/ai-workflow) - Learn the development workflow
+- [Cursor Rules](/docs/cursor-rules) - Understand coding standards
+- [Using MCP Servers](/docs/guides/using-mcp-servers) - Practical usage

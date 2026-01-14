@@ -1,0 +1,83 @@
+---
+title: "CI/CD Setup"
+description: "Setting up CI/CD with CodeRabbit and GitHub Actions."
+---
+
+Automated code reviews and continuous integration for quality assurance.
+
+## Overview
+
+- **CodeRabbit**: AI-powered code reviews
+- **GitHub Actions**: Automated testing and builds
+- **Pre-commit hooks**: Local quality checks
+
+## CodeRabbit Setup
+
+1. Install CodeRabbit GitHub App
+2. Configure in repository settings
+3. CodeRabbit automatically reviews PRs
+
+### Configuration
+
+CodeRabbit works out of the box but can be configured via `.coderabbit.yaml`:
+
+```yaml
+# .coderabbit.yaml
+language: typescript
+review:
+  enabled: true
+  suggestions: true
+```
+
+## GitHub Actions
+
+### Workflow Example
+
+```yaml
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+```
+
+## Pre-commit Hooks
+
+Automatically format code before commit:
+
+```bash
+# Configured in package.json
+"simple-git-hooks": {
+  "pre-commit": "pnpm run hooks:pre-commit"
+}
+```
+
+## Best Practices
+
+1. **Run checks locally** - Fix issues before pushing
+2. **Review CodeRabbit suggestions** - Learn from AI feedback
+3. **Keep workflows fast** - Use caching and parallel jobs
+4. **Test before merge** - Ensure all checks pass
+
+## Related Documentation
+
+- [AI Workflow](/docs/ai-workflow) - Development workflow
+- [Linting Rules](/docs/cursor-rules) - Code quality standards

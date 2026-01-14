@@ -1,0 +1,10 @@
+{
+  "index": "How-To Guides",
+  "add-endpoint": "Add API Endpoint",
+  "add-component": "Add UI Component",
+  "environment-setup": "Environment Setup",
+  "testing": "Testing",
+  "deployment": "Deployment",
+  "using-mcp-servers": "Using MCP Servers",
+  "ci-cd-setup": "CI/CD Setup"
+}

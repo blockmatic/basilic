@@ -1,0 +1,124 @@
+---
+title: "Add API Endpoint"
+description: "Step-by-step guide for adding a new API endpoint using contract-first development."
+---
+
+Complete walkthrough for adding a new API endpoint with full type safety.
+
+## Overview
+
+Adding an endpoint follows the contract-first pattern:
+1. Define contract (Zod schemas + ts-rest route)
+2. Implement server route
+3. Use typed client automatically
+
+## Step 1: Define Schema
+
+Create a Zod schema in `packages/contracts/src/schemas/`:
+
+```typescript
+// packages/contracts/src/schemas/user.schema.ts
+import { z } from 'zod'
+
+export const UserSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+})
+
+export type UserDTO = z.infer<typeof UserSchema>
+```
+
+## Step 2: Add Contract Route
+
+Add the route to your contract in `packages/contracts/src/contracts/`:
+
+```typescript
+// packages/contracts/src/contracts/app.contract.ts
+import { initContract } from '@ts-rest/core'
+import { z } from 'zod'
+import { UserSchema } from '../schemas/user.schema'
+
+const c = initContract()
+
+export const appContract = c.router({
+  users: {
+    get: {
+      method: 'GET',
+      path: '/users/:id',
+      pathParams: z.object({ id: z.string() }),
+      responses: {
+        200: UserSchema,
+        404: z.object({ code: z.string(), message: z.string() }),
+      },
+      summary: 'Get user by id',
+    },
+  },
+})
+```
+
+## Step 3: Implement Server Route
+
+Implement the route in `apps/api/src/routes/`:
+
+```typescript
+// apps/api/src/routes/users.ts
+import { initServer } from '@ts-rest/fastify'
+import { appContract } from '@basilic/contracts'
+
+const s = initServer()
+
+export const usersRouter = s.router(appContract, {
+  users: {
+    get: async ({ params }) => {
+      // Your implementation here
+      const user = await getUserById(params.id)
+      
+      if (!user) {
+        return {
+          status: 404,
+          body: { code: 'NOT_FOUND', message: 'User not found' },
+        }
+      }
+      
+      return {
+        status: 200,
+        body: user,
+      }
+    },
+  },
+})
+```
+
+## Step 4: Use Typed Client
+
+The client is automatically typed:
+
+```typescript
+// In your frontend or other client
+import { createReactApi } from '@basilic/react'
+
+const api = createReactApi({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL!,
+})
+
+// Fully typed!
+const { data } = api.tsr.users.get.useQuery({
+  queryKey: ['users', id],
+  queryData: { params: { id } },
+})
+// data is typed as UserDTO | undefined
+```
+
+## Checklist
+
+- [ ] Schema defined in `packages/contracts/src/schemas/`
+- [ ] Route added to contract
+- [ ] Server route implemented
+- [ ] OpenAPI docs updated automatically
+- [ ] Client usage tested
+
+## Related Documentation
+
+- [Contract-First APIs](/docs/contracts) - Understanding contracts
+- [Package Conventions](/docs/architecture/package-conventions) - Package architecture

@@ -29,4 +29,4 @@ Centralized design system dependencies:
 - Styling utilities (`clsx`, `tailwind-merge`, `class-variance-authority`)
 - Single source of truth for component versions
 
-See [Design System ADR](https://basilic-docs.vercel.app/docs/adrs/004-design-system) for details.
+See [Frontend Stack](https://basilic-docs.vercel.app/docs/architecture/frontend-stack) for design system details.

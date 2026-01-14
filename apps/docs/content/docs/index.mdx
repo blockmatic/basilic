@@ -1,66 +1,128 @@
 ---
-title: "Documentation"
-description: "Welcome to the documentation."
+title: "Introduction"
+description: "Basilic - A TypeScript-first monorepo template for projects that need to publish SDKs, develop modular services with code reuse, and leverage AI-friendly documentation."
 ---
 
-Welcome to the documentation.
+## Perfect For
 
-## Overview
+This boilerplate is **specially targeted** for projects that:
 
-- [Getting Started](/docs/getting-started) - Quick start guide for setting up and running the monorepo
+- **Need to publish SDKs** - Generate multi-language SDKs from OpenAPI specs
+- **Want modular architecture** - Develop multiple services while reusing software
+- **Value separation of concerns** - Clear package boundaries (types → contracts → core → react)
+- **Prefer TypeScript-first** - Full type safety with automatic SDK generation for other languages
 
-<Diagram caption="Monorepo Structure - Applications, Packages, and Infrastructure">
-  <div className="flex flex-col gap-4 p-4 text-left">
-    <div className="rounded-lg border border-border bg-background p-4">
-      <h3 className="mb-2 font-semibold">Applications</h3>
-      <ul className="list-inside list-disc space-y-1 text-sm">
-        <li>API - Fastify backend</li>
-        <li>Web - Next.js frontend</li>
-        <li>Docs - Documentation site</li>
-        <li>Mathler - Game app</li>
-      </ul>
+### SDK Publishing Strategy
+
+**TypeScript**: Zero-codegen type safety via direct contract imports. **Other languages**: Generate SDKs from OpenAPI specs using standard tools (`openapi-generator`, `oapi-codegen`, `progenitor`).
+
+### AI-Friendly Documentation
+
+MDX files designed for both humans and AI workflows—use directly in prompts as reference. Includes Cursor rules and MCP server integration.
+
+## Who is this for?
+
+### 🚀 Builders
+Starting a TypeScript project that needs SDKs or modular services? Get:
+- Contract-first API development (ts-rest + Zod)
+- Multi-language SDK generation from OpenAPI specs
+- Type-safe frontend-backend communication
+- Shared component library
+- Testing and linting configured
+- AI-friendly documentation
+
+### 🔧 Contributors
+Want to customize or extend? You'll find:
+- Clear architecture decisions (ADRs)
+- Documented patterns and conventions
+- Portable design (easy to swap services)
+
+### 🎯 Evaluators
+Deciding if this fits? Review:
+- Tech stack decisions and rationale
+- Migration paths and exit strategies
+- Real examples of monorepo patterns
+
+## What problems does this solve?
+
+### Problem 1: Type Safety Across Boundaries
+**Solution:** ts-rest contracts ensure end-to-end type safety
+
+### Problem 2: Monorepo Package Management
+**Solution:** Clear package boundaries (types → contracts → core → react) enabling service reuse and separation of concerns
+
+### Problem 3: Vendor Lock-in
+**Solution:** Portable-by-default architecture
+
+### Problem 4: Multi-Language SDK Needs
+**Solution:** TypeScript-first with OpenAPI generation for other languages
+
+## Basilic has different parts:
+
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2 my-8">
+  <div className="rounded-lg border border-border bg-card p-6">
+    <div className="mb-2 flex items-center gap-2">
+      <span className="text-2xl">🏗️</span>
+      <h3 className="text-lg font-semibold">Architecture</h3>
     </div>
-    <div className="rounded-lg border border-border bg-background p-4">
-      <h3 className="mb-2 font-semibold">Packages</h3>
-      <ul className="list-inside list-disc space-y-1 text-sm">
-        <li>Core, React, UI, Types</li>
-        <li>Lib, EVM, Tools</li>
-      </ul>
-    </div>
-    <div className="rounded-lg border border-border bg-background p-4">
-      <h3 className="mb-2 font-semibold">Infrastructure</h3>
-      <ul className="list-inside list-disc space-y-1 text-sm">
-        <li>Contracts (EVM, Solana)</li>
-        <li>Pulumi IaC</li>
-      </ul>
+    <p className="text-sm text-muted-foreground">
+      Monorepo architecture with Turborepo, contract-first API development, and portable-by-default design.
+    </p>
+    <div className="mt-4">
+      <a href="/docs/architecture" className="text-sm font-medium text-primary hover:underline">
+        Learn more →
+      </a>
     </div>
   </div>
-</Diagram>
 
-## Architecture
+  <div className="rounded-lg border border-border bg-card p-6">
+    <div className="mb-2 flex items-center gap-2">
+      <span className="text-2xl">⚡</span>
+      <h3 className="text-lg font-semibold">Development</h3>
+    </div>
+    <p className="text-sm text-muted-foreground">
+      Type-safe full-stack TypeScript, AI-assisted workflows with MCP servers, and modern tooling.
+    </p>
+    <div className="mt-4">
+      <a href="/docs/ai-workflow" className="text-sm font-medium text-primary hover:underline">
+        Learn more →
+      </a>
+    </div>
+  </div>
 
-- [Architecture](/docs/architecture) - Monorepo architecture overview and design principles
-- [Dynamic Integration](/docs/dynamic-integration) - Dynamic SDK integration architecture
+  <div className="rounded-lg border border-border bg-card p-6">
+    <div className="mb-2 flex items-center gap-2">
+      <span className="text-2xl">🚀</span>
+      <h3 className="text-lg font-semibold">Deployment</h3>
+    </div>
+    <p className="text-sm text-muted-foreground">
+      Zero vendor lock-in architecture with migration paths from Vercel to GCP/AWS for production security.
+    </p>
+    <div className="mt-4">
+      <a href="/docs/architecture/portability" className="text-sm font-medium text-primary hover:underline">
+        Learn more →
+      </a>
+    </div>
+  </div>
 
-## Development Workflow
+  <div className="rounded-lg border border-border bg-card p-6">
+    <div className="mb-2 flex items-center gap-2">
+      <span className="text-2xl">📦</span>
+      <h3 className="text-lg font-semibold">Packages</h3>
+    </div>
+    <p className="text-sm text-muted-foreground">
+      Shared packages for types, contracts, core API client, React hooks, and UI components.
+    </p>
+    <div className="mt-4">
+      <a href="/docs/architecture/package-conventions" className="text-sm font-medium text-primary hover:underline">
+        Learn more →
+      </a>
+    </div>
+  </div>
+</div>
 
-- [Environment Strategy](/docs/environment) - Environment variable configuration and validation patterns
-- [Tooling](/docs/tooling) - Development tools, stack, and **[testing patterns](/docs/tooling/testing-patterns)** (blackbox Vitest strategy)
-- [MCP Servers](/docs/mcp-servers) - Model Context Protocol servers for **AI-assisted development** workflows
+## Next Steps
 
-## Deployment & Portability
-
-- [Deployment](/docs/deployment) - Deployment and branching strategy
-- [Vercel Portability](/docs/vercel-portability) - Vercel portability strategy and migration paths
-- [Google Cloud](/docs/google-cloud) - Google Cloud deployment option (documented, not implemented)
-
-## Apps & Packages
-
-- [Applications](/docs/apps) - Application documentation (API, Web, Mathler, Docs)
-- [Packages](/docs/packages) - Shared package documentation (Core, React, UI, Types, Lib, EVM, Tools)
-
-## Architecture Decisions
-
-- [ADRs](/docs/adrs) - Architecture Decision Records documenting key technical decisions
-
-For detailed app-specific setup and development, see individual app READMEs in the monorepo.
+- **New to this?** → [Getting Started](/docs/getting-started)
+- **Understand the patterns** → [Core Concepts](/docs/monorepo)
+- **See the decisions** → [Architecture Decisions](/docs/adrs)

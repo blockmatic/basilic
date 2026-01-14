@@ -26,4 +26,4 @@ const result = await client.users.getUser({ params: { id: '123' } })
 - ✅ No React dependencies
 - ✅ Type-safe via ts-rest contracts
 
-See [Architecture Documentation](https://basilic-docs.vercel.app/docs/architecture) for integration patterns.
+See [Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts#client-consumption) for integration patterns.

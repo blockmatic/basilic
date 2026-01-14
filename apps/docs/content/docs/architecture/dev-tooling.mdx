@@ -1,0 +1,128 @@
+---
+title: "Development Tooling"
+description: "pnpm package manager and hybrid Biome + ESLint for fast, reliable development workflows."
+---
+
+We use **pnpm** for package management and a **hybrid Biome + ESLint** setup. Biome handles fast formatting and stylistic rules, while ESLint focuses on correctness rules for TypeScript, React, and Next.js.
+
+## Package Manager: pnpm
+
+**pnpm** is our package manager of choice for monorepo reliability:
+
+- ✅ **Workspace support** - Correctly hoists and resolves dependencies across workspace packages
+- ✅ **Monorepo maturity** - Battle-tested with Next.js, Fastify, and Turborepo
+- ✅ **Symlink-based** - Proper node_modules structure for workspace packages
+- ✅ **Production stability** - Reliable builds without workarounds
+- ✅ **Consistent behavior** - Same behavior in development and production
+
+### Why pnpm over alternatives?
+
+- **vs npm/yarn** - Better workspace dependency resolution
+- **vs Bun** - More mature monorepo support and production stability
+
+## Linting & Formatting: Hybrid Biome + ESLint
+
+We use a **hybrid approach** that combines the best of both tools:
+
+- **Biome** - Fast formatting and stylistic rules (Rust-based)
+- **ESLint** - Correctness rules for TypeScript, React, Next.js
+
+### Clear Separation of Concerns
+
+```mermaid
+flowchart LR
+  Developer[Developer writes code] --> Biome[Biome<br/>Formatting & Style]
+  Developer --> ESLint[ESLint<br/>Correctness Rules]
+  Biome --> Formatted[Formatted Code]
+  ESLint --> Validated[Validated Code]
+  Formatted --> CI[CI/CD Pipeline]
+  Validated --> CI
+```
+
+### Biome Responsibilities
+
+**Biome** handles (extremely fast, Rust-based):
+
+- ✅ **Code formatting** - All formatting concerns (faster than Prettier)
+- ✅ **Stylistic linting** - Import sorting, unused variables, style preferences
+- ✅ **Pre-commit hooks** - Auto-formatting of staged files
+
+### ESLint Responsibilities
+
+**ESLint** handles (focused on correctness):
+
+- ✅ **TypeScript rules** - Type safety and correctness
+- ✅ **React rules** - React and React Hooks best practices
+- ✅ **Next.js rules** - Framework-specific rules via `@next/eslint-plugin-next`
+- ✅ **Fastify rules** - Backend code quality
+
+### Workflow
+
+```bash
+# Format code (extremely fast)
+pnpm lint:biome:fix
+
+# Lint with Biome (formatting and stylistic checks)
+pnpm lint:biome
+
+# Lint with ESLint (correctness checks)
+pnpm lint:eslint
+
+# Fix all (runs both Biome and ESLint fixes)
+pnpm lint:fix
+```
+
+### Pre-commit & CI/CD
+
+- **Pre-commit hooks** - Biome auto-formats staged files
+- **CI/CD** - Both tools run for quality assurance
+- **Fast feedback** - Minimal waiting time, excellent developer experience
+
+## Why Hybrid Approach?
+
+### Maximum Speed
+
+- **Biome** is written in Rust, providing extremely fast formatting
+- **ESLint** focuses only on correctness (faster execution without formatting)
+
+### Best of Both Worlds
+
+- **Biome's speed** for formatting and stylistic checks
+- **ESLint's mature ecosystem** for framework-specific rules
+
+### Clear Boundaries
+
+- **Biome** = formatting/stylistic
+- **ESLint** = correctness
+- No conflicts, no confusion
+
+## Configuration
+
+### Biome Configuration
+
+Biome handles all formatting and basic linting:
+
+```json
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "formatter": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true
+  }
+}
+```
+
+### ESLint Configuration
+
+ESLint configured to disable checks Biome handles:
+
+- Uses ESLint 9 flat config format
+- Focused on TypeScript, React, Next.js, Fastify rules
+- No formatting rules (Biome handles those)
+
+## Related Documentation
+
+- [ADR 005: Package Manager](/docs/adrs/005-package-manager) - pnpm selection
+- [ADR 006: Linters & Formatters](/docs/adrs/006-linters) - Hybrid Biome + ESLint strategy

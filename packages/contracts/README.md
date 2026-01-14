@@ -26,4 +26,4 @@ This package is the **HTTP boundary** between frontend and backend:
 - ✅ May import domain types from `@basilic/types`
 - ❌ No React or server framework code
 
-See [Architecture Documentation](https://basilic-docs.vercel.app/docs/architecture) for the full pattern.
+See [Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts) for the full pattern.

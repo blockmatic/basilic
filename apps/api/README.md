@@ -36,4 +36,4 @@ Contract-first architecture using ts-rest:
 - **Routes**: Implemented in `src/routes/` (Fastify plugins)
 - **Type Safety**: End-to-end from contracts to implementation
 
-See [Architecture Documentation](https://basilic-docs.vercel.app/docs/architecture) for details.
+See [Backend Stack](https://basilic-docs.vercel.app/docs/architecture/backend-stack) for details.

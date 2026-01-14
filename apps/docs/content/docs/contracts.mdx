@@ -1,0 +1,126 @@
+---
+title: "Contract-First APIs"
+description: "Contract-first API development with ts-rest ensures end-to-end type safety from contracts to clients."
+---
+
+Contract-first API development with **ts-rest** ensures end-to-end type safety. Contracts automatically generate OpenAPI specs for multi-language SDKs and AI/MCP integration.
+
+## What is Contract-First Development?
+
+Contract-first development means defining your API contracts **before** implementing the server or client. The contract becomes the single source of truth for:
+
+- Request/response shapes
+- Type definitions
+- Validation schemas
+- API documentation
+
+## Benefits
+
+- ✅ **End-to-end type safety** - Types flow from contracts to clients automatically
+- ✅ **No duplication** - Define once, use everywhere
+- ✅ **Automatic validation** - Zod schemas validate requests/responses
+- ✅ **OpenAPI generation** - Contracts automatically generate OpenAPI specs
+- ✅ **Framework portability** - Works with Fastify, Express, or any framework
+
+## Simple Example
+
+**1. Define Contract** (`packages/contracts`)
+
+```typescript
+import { initContract } from '@ts-rest/core'
+import { z } from 'zod'
+
+const c = initContract()
+
+export const apiContract = c.router({
+  users: {
+    get: {
+      method: 'GET',
+      path: '/users/:id',
+      pathParams: z.object({ id: z.string() }),
+      responses: {
+        200: z.object({ 
+          id: z.string(), 
+          email: z.string() 
+        }),
+        404: z.object({ 
+          code: z.string(), 
+          message: z.string() 
+        }),
+      },
+      summary: 'Get user by id',
+    },
+  },
+})
+```
+
+**2. Server Implementation** (`apps/api`)
+
+Fastify validates requests/responses using contract schemas.
+
+**3. Client Usage** (`apps/web`)
+
+```typescript
+import { createReactApi } from '@basilic/react'
+
+const api = createReactApi({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL!,
+})
+
+// Fully typed React Query hook
+const { data } = api.tsr.users.get.useQuery({
+  queryKey: ['users', id],
+  queryData: { params: { id } },
+})
+// data is typed as { id: string, email: string }
+```
+
+## Workflow
+
+1. **Define schemas** - Create Zod schemas in `packages/contracts/src/schemas/`
+2. **Create contract** - Define routes in `packages/contracts/src/contracts/`
+3. **Implement server** - Implement routes in `apps/api/src/routes/`
+4. **Use in client** - Import and use typed clients automatically
+
+## Client Consumption
+
+Clients consume contracts through typed React Query hooks:
+
+```typescript
+import { createReactApi } from '@basilic/react'
+
+const api = createReactApi({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL!,
+  getAuthToken: async () => session?.token,
+})
+
+// Fully typed React Query hook
+const { data, isLoading, error } = api.tsr.users.get.useQuery({
+  queryKey: ['users', id],
+  queryData: { params: { id } },
+})
+```
+
+The `createReactApi` function:
+- Generates React Query hooks from contracts
+- Provides full type safety from contracts to components
+- Handles authentication and headers automatically
+- Works with TanStack Query for caching and state management
+
+## OpenAPI Integration
+
+Contracts automatically generate OpenAPI 3.0 specs:
+- Served at `/openapi.json` (programmatic access)
+- Scalar UI at `/reference` (interactive docs)
+- MCP integration for AI agents
+- Multi-language SDK generation using standard OpenAPI tools
+
+### SDK Generation
+
+**TypeScript**: Zero-codegen, import contracts directly. **Other languages**: Use OpenAPI generators (`openapi-generator`, `oapi-codegen`, `progenitor`). OpenAPI specs are automatically generated from contracts and stay in sync.
+
+## Related Documentation
+
+- [Package Conventions](/docs/architecture/package-conventions) - Detailed package architecture
+- [API Contracts](/docs/architecture/api-contracts) - Deep dive into ts-rest
+- [ADR 009: API Architecture](/docs/adrs/009-api-architecture) - Full decision record

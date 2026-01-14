@@ -32,6 +32,19 @@ pnpm dev
 
 Full documentation: [https://basilic-docs.vercel.app/docs](https://basilic-docs.vercel.app/docs)
 
-- [Getting Started](https://basilic-docs.vercel.app/docs/getting-started)
-- [Architecture](https://basilic-docs.vercel.app/docs/architecture)
-- [ADRs](https://basilic-docs.vercel.app/docs/adrs)
+### Get Started
+- [Getting Started](https://basilic-docs.vercel.app/docs/getting-started) - 15-minute setup guide
+- [AI-Driven Development](https://basilic-docs.vercel.app/docs/ai-workflow) - Recommended workflow with Cursor
+
+### Core Concepts
+- [Monorepo Structure](https://basilic-docs.vercel.app/docs/monorepo) - Package organization
+- [Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts) - ts-rest pattern
+- [Portability Strategy](https://basilic-docs.vercel.app/docs/portability) - Zero vendor lock-in
+
+### Cursor Setup
+- [Cursor Setup Guide](https://basilic-docs.vercel.app/docs/cursor-setup) - Configure IDE and MCP servers
+- [Cursor Rules](https://basilic-docs.vercel.app/docs/cursor-rules) - Coding standards
+
+### Deep Dives
+- [Architecture](https://basilic-docs.vercel.app/docs/architecture) - Technical stack details
+- [ADRs](https://basilic-docs.vercel.app/docs/adrs) - Architecture decision records

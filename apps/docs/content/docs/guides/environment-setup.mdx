@@ -1,0 +1,82 @@
+---
+title: "Environment Setup"
+description: "Configure environment variables for development and production."
+---
+
+Environment variables are managed with Zod validation for type safety.
+
+## Overview
+
+Environment variables are validated at runtime using Zod schemas, ensuring type safety and clear error messages.
+
+## Development Setup
+
+Create `.env.local` files in each app:
+
+```bash
+# apps/api/.env.local
+DATABASE_URL=postgresql://user:pass@localhost:5432/dbname
+PORT=3001
+
+# apps/web/.env.local
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+## Validation
+
+### Next.js Apps
+
+Use `getEnvHelper` for type-safe environment access:
+
+```typescript
+// apps/web/src/lib/env.ts
+import { z } from 'zod'
+import { getEnvHelper } from '@basilic/typescript-config/env'
+
+const envSchema = z.object({
+  NEXT_PUBLIC_API_URL: z.string().url(),
+})
+
+export const env = getEnvHelper(envSchema)
+```
+
+### Server Apps
+
+Use `validateEnvOrThrow` for server-side validation:
+
+```typescript
+// apps/api/src/env.ts
+import { z } from 'zod'
+import { validateEnvOrThrow } from '@basilic/typescript-config/env'
+
+const envSchema = z.object({
+  DATABASE_URL: z.string().url(),
+  PORT: z.coerce.number().default(3001),
+})
+
+export const env = validateEnvOrThrow(envSchema)
+```
+
+## Required Variables
+
+### API (`apps/api`)
+
+- `DATABASE_URL` - PostgreSQL connection string
+- `PORT` - Server port (default: 3001)
+
+### Web (`apps/web`)
+
+- `NEXT_PUBLIC_API_URL` - API base URL
+
+## Production
+
+Set environment variables in your deployment platform:
+
+- **Vercel**: Project Settings → Environment Variables
+- **Google Cloud**: Cloud Run → Environment Variables
+- **AWS**: ECS Task Definition → Environment Variables
+
+## Related Documentation
+
+- [Environment Rules](/docs/cursor-rules) - Environment variable patterns
+- [Portability Strategy](/docs/portability) - Deployment options

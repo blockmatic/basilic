@@ -29,4 +29,4 @@ const { data } = api.tsr.users.getUser.useQuery({
 - ✅ Built on `@basilic/core` client
 - ✅ Type-safe from contracts
 
-See [Architecture Documentation](https://basilic-docs.vercel.app/docs/architecture) for full integration guide.
+See [Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts#client-consumption) for full integration guide.
