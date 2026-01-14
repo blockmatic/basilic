@@ -14,7 +14,7 @@ This boilerplate is **specially targeted** for projects that:
 
 ### SDK Publishing Strategy
 
-**TypeScript**: Zero-codegen type safety via direct contract imports. **Other languages**: Generate SDKs from OpenAPI specs using standard tools (`openapi-generator`, `oapi-codegen`, `progenitor`).
+**TypeScript**: Generated type-safe clients via `@hey-api/openapi-ts` from OpenAPI specs. **Other languages**: Generate SDKs from the same OpenAPI specs using standard tools (`openapi-generator`, `oapi-codegen`, `progenitor`).
 
 ### AI-Friendly Documentation
 
@@ -24,7 +24,7 @@ MDX files designed for both humans and AI workflows—use directly in prompts as
 
 ### 🚀 Builders
 Starting a TypeScript project that needs SDKs or modular services? Get:
-- Contract-first API development (ts-rest + Zod)
+- Contract-first API development (OpenAPI + hey-api)
 - Multi-language SDK generation from OpenAPI specs
 - Type-safe frontend-backend communication
 - Shared component library
@@ -46,10 +46,10 @@ Deciding if this fits? Review:
 ## What problems does this solve?
 
 ### Problem 1: Type Safety Across Boundaries
-**Solution:** ts-rest contracts ensure end-to-end type safety
+**Solution:** OpenAPI specs with hey-api-generated clients ensure end-to-end type safety
 
 ### Problem 2: Monorepo Package Management
-**Solution:** Clear package boundaries (types → contracts → core → react) enabling service reuse and separation of concerns
+**Solution:** Clear package boundaries (types → core → react) with OpenAPI as the contract source, enabling service reuse and separation of concerns
 
 ### Problem 3: Vendor Lock-in
 **Solution:** Portable-by-default architecture
@@ -125,4 +125,4 @@ Deciding if this fits? Review:
 
 - **New to this?** → [Getting Started](/docs/getting-started)
 - **Understand the patterns** → [Core Concepts](/docs/monorepo)
-- **See the decisions** → [Architecture Decisions](/docs/adrs)
+- **See the architecture** → [Architecture Overview](/docs/architecture)

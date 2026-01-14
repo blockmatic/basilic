@@ -1,6 +1,6 @@
 ---
 title: "ADR 009: API Architecture & Contract Strategy"
-description: "Decision to use ts-rest for contract-based development with REST-first approach, OpenAPI/Swagger generation, and AI/MCP integration support."
+description: "Decision to use OpenAPI-first approach with hey-api for client generation, REST-first approach, and AI/MCP integration support."
 ---
 
 ## Context
@@ -16,30 +16,47 @@ We need to define API contract strategy for frontend-backend communication that:
 
 ## Considered Options
 
-### Option A – Contract-Based with ts-rest + REST-first (Chosen)
+### Option A – OpenAPI-First with hey-api + REST-first (Chosen)
 
-ts-rest for type-safe contracts, REST as primary interface, GraphQL as optional secondary.
+OpenAPI spec as source of truth, hey-api for TypeScript client generation, REST as primary interface, GraphQL as optional secondary.
 
 **Pros**
 
-- **Type-safe contracts**: ts-rest provides end-to-end type safety with clear contract definitions
-- **Separation of concerns**: Contracts live separately from implementation, better architecture
-- **Automatic client generation**: Frontend gets fully typed clients automatically
+- **OpenAPI standard**: Industry-standard format for API contracts, works with all tools
+- **Type-safe clients**: hey-api generates fully typed TypeScript clients from OpenAPI specs
+- **Separation of concerns**: OpenAPI specs live separately from implementation, better architecture
+- **Automatic client generation**: Frontend gets fully typed clients automatically via code generation
 - **REST-first for simplicity**: RESTful interfaces are simple, cacheable, and well-understood
-- **OpenAPI/Swagger generation**: Contracts automatically generate OpenAPI 3.0 specs for documentation, testing, and tooling
 - **AI/MCP integration**: REST endpoints with OpenAPI specs work seamlessly with Model Context Protocol servers and AI agents
-- **Framework portability**: ts-rest works with Fastify, Express, or any framework - no lock-in
-- **Interactive API docs**: Swagger UI can be served via `@fastify/swagger-ui` for interactive API exploration
+- **Framework portability**: OpenAPI works with Fastify, Express, or any framework - no lock-in
+- **Interactive API docs**: Scalar UI can be served for interactive API exploration
 - **GraphQL as option**: Can expose GraphQL layer if complex querying needed, but REST is primary
 - **Complements stack**: Works with Fastify's plugin architecture and our portability goals
-- **Multi-language support**: OpenAPI specs can generate clients in Python, Go, Rust, etc.
+- **Multi-language support**: OpenAPI specs can generate clients in Python, Go, Rust, etc. using standard tools
 
 **Cons**
 
-- Need to maintain contract definitions separately
+- Need to maintain OpenAPI spec separately
+- Requires code generation step (but hey-api makes this straightforward)
 - Less flexible than GraphQL for complex queries (but can add GraphQL layer)
 
-### Option B – Framework-Based (tRPC)
+### Option B – Contract-Based with ts-rest (Rejected)
+
+ts-rest for type-safe contracts, REST as primary interface.
+
+**Pros**
+
+- Type-safe contracts with clear contract definitions
+- Zero codegen for TypeScript consumers
+
+**Cons**
+
+- Convoluted and overcomplicated in experimentation
+- Didn't work well in practice
+- Less standard than OpenAPI
+- Harder to generate clients for other languages
+
+### Option C – Framework-Based (tRPC)
 
 End-to-end type safety with tRPC.
 
@@ -56,7 +73,7 @@ End-to-end type safety with tRPC.
 - Not standard HTTP REST, requires tRPC client
 - Less portable across frameworks
 
-### Option C – GraphQL-First
+### Option D – GraphQL-First
 
 GraphQL as primary API interface.
 
@@ -74,7 +91,7 @@ GraphQL as primary API interface.
 - Over-fetching prevention comes at cost of complexity
 - Less standard HTTP caching
 
-### Option D – Plain REST (no contracts)
+### Option E – Plain REST (no contracts)
 
 Standard HTTP REST without contract definitions.
 
@@ -92,121 +109,143 @@ Standard HTTP REST without contract definitions.
 
 ## Decision
 
-We will use **ts-rest for contract-based development** with **REST-first approach**, generating **OpenAPI/Swagger** specs for documentation and AI/MCP integration.
+We will use **OpenAPI-first approach** with **hey-api for TypeScript client generation** and **REST-first approach**, with OpenAPI specs serving as the source of truth for documentation and AI/MCP integration.
 
 ### TLDR: Comparison Table
 
-| Feature | ts-rest + REST ✅ | tRPC | GraphQL-First | Plain REST |
+| Feature | OpenAPI + hey-api ✅ | tRPC | GraphQL-First | Plain REST |
 |---------|-------------------|------|---------------|------------|
-| **Type safety** | ✅ Contract-based | ✅ End-to-end | ✅ Schema-based | ❌ Manual |
-| **Client generation** | ✅ Automatic | ✅ Automatic | ✅ Codegen | ❌ Manual |
+| **Type safety** | ✅ Generated from OpenAPI | ✅ End-to-end | ✅ Schema-based | ❌ Manual |
+| **Client generation** | ✅ Automatic (hey-api) | ✅ Automatic | ✅ Codegen | ❌ Manual |
 | **AI/MCP integration** | ✅ REST-native | ⚠️ RPC pattern | ⚠️ Complex | ✅ Standard HTTP |
 | **Framework portability** | ✅ Any framework | ❌ tRPC-specific | ✅ Any GraphQL server | ✅ Any framework |
-| **Separation of concerns** | ✅ Clear contracts | ⚠️ Coupled | ✅ Schema separate | ❌ No contracts |
-| **OpenAPI generation** | ✅ From contracts | ⚠️ Via plugin | ⚠️ Via conversion | ❌ Manual |
+| **Separation of concerns** | ✅ Clear OpenAPI spec | ⚠️ Coupled | ✅ Schema separate | ❌ No contracts |
+| **OpenAPI standard** | ✅ Native | ⚠️ Via plugin | ⚠️ Via conversion | ❌ Manual |
 | **Caching** | ✅ HTTP caching | ⚠️ Custom | ⚠️ Complex | ✅ HTTP caching |
-| **Learning curve** | ✅ REST + types | ⚠️ tRPC patterns | ⚠️ GraphQL | ✅ Simple |
+| **Learning curve** | ✅ REST + OpenAPI | ⚠️ tRPC patterns | ⚠️ GraphQL | ✅ Simple |
 | **Works with Fastify** | ✅ Native support | ⚠️ Adapter needed | ✅ Via plugin | ✅ Native |
 
 **Main reasons:**
 
-- **Type-safe contracts**: ts-rest provides end-to-end type safety with clear contract definitions
-- **Separation of concerns**: Contracts live separately from implementation, better architecture
-- **Automatic client generation**: Frontend gets fully typed clients automatically
+- **OpenAPI standard**: Industry-standard format, works with all tools and generators
+- **Type-safe clients**: hey-api generates fully typed TypeScript clients from OpenAPI specs
+- **Separation of concerns**: OpenAPI specs live separately from implementation, better architecture
+- **Automatic client generation**: Frontend gets fully typed clients automatically via code generation
 - **REST-first for simplicity**: RESTful interfaces are simple, cacheable, and well-understood
-- **OpenAPI/Swagger generation**: Contracts automatically generate OpenAPI 3.0 specs for documentation, testing, and tooling
 - **AI/MCP integration**: REST endpoints with OpenAPI specs work seamlessly with Model Context Protocol servers and AI agents
-- **Framework portability**: ts-rest works with Fastify, Express, or any framework - no lock-in
-- **Interactive API docs**: Swagger UI can be served via `@fastify/swagger-ui` for interactive API exploration
+- **Framework portability**: OpenAPI works with Fastify, Express, or any framework - no lock-in
+- **Interactive API docs**: Scalar UI can be served for interactive API exploration
 - **GraphQL as option**: Can expose GraphQL layer if complex querying needed, but REST is primary
 - **Complements stack**: Works with Fastify's plugin architecture and our portability goals
+- **Multi-language support**: Standard OpenAPI generators work for Python, Go, Rust, etc.
 
 ## Implementation Details
 
-### Contract Definition
+### OpenAPI Specification
 
-Contracts are defined in a shared package (e.g., `packages/contracts`):
+OpenAPI specs are defined in `apps/api/openapi/openapi.json`:
 
-```typescript
-import { initContract } from '@ts-rest/core'
-
-const c = initContract()
-
-export const apiContract = c.router({
-  users: {
-    get: {
-      method: 'GET',
-      path: '/users/:id',
-      responses: {
-        200: z.object({ id: z.string(), email: z.string() }),
-      },
-    },
-  },
-})
+```json
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "email": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ```
+
+### Client Generation
+
+TypeScript clients are generated using `@hey-api/openapi-ts`:
+
+- Generated code in `packages/core/src/gen/` and `packages/react/src/gen/`
+- Fully typed API clients
+- React Query hooks generated automatically
+- Type-safe error handling
 
 ### Server Implementation
 
-Server implements contracts using `@ts-rest/fastify`:
+Server implements routes that match the OpenAPI spec:
 
-- Fastify routes generated from contracts
-- Type-safe request/response handling
-- Automatic validation
+- Fastify routes manually implemented to match OpenAPI spec
+- Type-safe request/response handling via generated types
+- Validation can use Zod schemas derived from OpenAPI
 
 ### Client Consumption
 
-Frontend consumes contracts using `@ts-rest/react-query` or `@ts-rest/core`:
+Frontend consumes the API via generated clients:
 
-- Fully typed API clients
-- Automatic React Query integration
+- Fully typed API clients from `@basilic/core`
+- Generated React Query hooks from `@basilic/react`
 - Type-safe error handling
 
-### OpenAPI/Swagger Integration
+### OpenAPI Integration
 
-- **OpenAPI 3.0 specs**: Automatically generated from ts-rest contracts
-- **Programmatic access**: Served via `@fastify/swagger` plugin
-- **Interactive documentation**: Swagger UI via `@fastify/swagger-ui` at `/docs` or `/api-docs`
+- **OpenAPI 3.0 specs**: Source of truth for API contracts
+- **Programmatic access**: Served at `/reference/openapi.json`
+- **Interactive documentation**: Scalar UI at `/reference`
 - **MCP integration**: OpenAPI specs enable AI agents to interact with API via Model Context Protocol
-- **Multi-language clients**: OpenAPI specs can generate clients in Python, Go, Rust, etc. for backend-to-backend integration
-
-### GraphQL Layer (Optional)
-
-GraphQL layer can be added via `@ts-rest/graphql` if needed for complex querying, but REST remains primary.
+- **Multi-language clients**: OpenAPI specs can generate clients in Python, Go, Rust, etc. using standard generators
 
 ## Multi-Language SDK Strategy
 
 ### The Clean Mental Model
 
-We use a **TypeScript-first, OpenAPI-available** strategy that gives the best of both worlds:
+We use an **OpenAPI-first** strategy that works for all languages:
 
-- **ts-rest is for TypeScript** (server + TS clients) with **zero codegen** and great DX
-- **OpenAPI is for everyone else** (Go/Rust/Python/etc.) where codegen is normal and expected
+- **OpenAPI spec is the source of truth** for all API contracts
+- **hey-api generates TypeScript clients** from OpenAPI specs
+- **Standard generators** create clients for other languages (Go/Rust/Python/etc.)
 
-These two approaches are **complementary, not in conflict**.
+This approach is **consistent across all languages** - OpenAPI is the universal contract.
 
-### Philosophy: TypeScript-First with OpenAPI as First-Class Export
+### Philosophy: OpenAPI-First with Generated Clients
 
-**Keep ts-rest as the source of truth, make OpenAPI a first-class export.**
+**Keep OpenAPI as the source of truth, generate clients for all languages.**
 
 This gives us:
 
-- ✅ **No generated code in TypeScript** - Direct contract imports, full type inference
-- ✅ **Fully typed TS client** - ts-rest client or `@basilic/core` wrapper
-- ✅ **OpenAPI spec always up-to-date** for:
-  - Go / Rust / Python SDK generation (when needed)
-  - API documentation (Scalar/Swagger UI)
-  - Contract testing from other stacks
-  - Integration partners and third-party consumers
+- ✅ **OpenAPI spec always up-to-date** - Single source of truth
+- ✅ **Fully typed TS client** - Generated by hey-api from OpenAPI spec
+- ✅ **Consistent across languages** - Same OpenAPI spec generates all clients
+- ✅ **Standard tooling** - Works with industry-standard OpenAPI generators
 
-### Why No Codegen in TypeScript?
+### Why Codegen for TypeScript?
 
-TypeScript consumers get the **best possible experience** by importing contracts directly:
+TypeScript consumers get **full type safety** from generated clients:
 
-- **Zero build step** for API client code
-- **Instant type updates** when contracts change (no regeneration needed)
-- **Better IDE experience** - jump to definition takes you to the actual contract, not generated code
-- **Smaller bundle sizes** - no generated client code overhead
-- **Monorepo-friendly** - workspace packages share contracts without intermediate build artifacts
+- **Automatic type updates** - Regenerate when OpenAPI spec changes
+- **Excellent IDE experience** - Full type inference from OpenAPI schemas
+- **Consistent with other languages** - Same generation approach
+- **Monorepo-friendly** - Generated code in packages, easy to share
 
 ### When to Generate SDKs for Other Languages
 
@@ -231,29 +270,37 @@ For non-TypeScript clients, code generation is the standard approach:
 **1. TypeScript Consumers (Primary)**
 
 ```typescript
-// Direct import of contracts - no generation
-import { apiContract } from '@basilic/contracts'
-import { createClient } from '@basilic/core'
+// Generated client from OpenAPI spec
+import { createApi } from '@basilic/core'
+import { useHealthCheck } from '@basilic/react'
 
-const client = createClient({ baseUrl: API_URL })
-// Fully typed, zero codegen
+const api = createApi({ baseUrl: API_URL })
+// Fully typed, generated by hey-api
 ```
 
-**2. OpenAPI Generation (Automatic)**
+**2. OpenAPI Spec (Source of Truth)**
 
-```typescript
-// Server exposes at runtime
-app.register(swagger, {
-  openapi: generateOpenApiFromContracts(apiContract),
-})
-// Available at: GET /openapi.json
+```json
+// apps/api/openapi/openapi.json
+{
+  "openapi": "3.0.0",
+  "paths": { /* ... */ }
+}
 ```
 
-**3. Other Language Consumers (Optional)**
+**3. Client Generation**
+
+```bash
+# Generate TypeScript clients
+pnpm --filter @basilic/core gen
+pnpm --filter @basilic/react gen
+```
+
+**4. Other Language Consumers (Optional)**
 
 ```bash
 # Generate Go client from OpenAPI spec
-curl https://api.basilic.dev/openapi.json > openapi.json
+curl https://api.basilic.dev/reference/openapi.json > openapi.json
 oapi-codegen -package client openapi.json > client.go
 ```
 
@@ -261,40 +308,31 @@ oapi-codegen -package client openapi.json > client.go
 
 This architecture **doesn't lock you in**:
 
-- **Today**: TypeScript-only consumers → zero codegen
-- **Tomorrow**: Need Go client → generate from OpenAPI
-- **Later**: Need to change source of truth → OpenAPI spec is already there
+- **OpenAPI is standard** - Works with all tools and generators
+- **Easy to change generators** - Switch from hey-api to another if needed
+- **Consistent approach** - Same OpenAPI spec for all languages
 
-If you ever need to move away from ts-rest (unlikely but possible):
-- OpenAPI spec already documents your API completely
-- Can regenerate TS types from OpenAPI (via openapi-typescript)
-- Other language clients unaffected
+### Why OpenAPI-First?
 
-### The Real Risk We're Avoiding
+**OpenAPI is an industry standard** - it's the universal contract format:
 
-**ts-rest is not a platform standard** - it's a TypeScript library. That's fine because:
-
-- Our **primary consumers are TypeScript apps** (web, workers, internal tools)
-- We treat **OpenAPI as the cross-language contract**
-- We can always generate TS types from OpenAPI if needed (but prefer not to)
-
-If we expected **many non-TS clients soon**, we'd consider:
-- OpenAPI-first (handwritten spec) → lightweight TS types
-- Or protobuf/gRPC (different tradeoffs)
-
-But given our **TypeScript-primary** reality, ts-rest + OpenAPI export is optimal.
+- Works with all tools and generators
+- Supported by all major cloud providers
+- Standard format for API documentation
+- Perfect for AI/MCP integration
+- Consistent approach across all languages
 
 ## Notes
 
 - **REST-first philosophy**: Simple, stateless, cacheable, MCP-friendly
 - **OpenAPI as API contract**: OpenAPI specs serve as machine-readable API contracts for tooling, testing, and AI integration
-- **Swagger UI for developers**: Interactive API documentation automatically generated at `/docs` or `/api-docs` endpoints
+- **Scalar UI for developers**: Interactive API documentation automatically generated at `/reference` endpoint
 - **MCP integration**: REST interfaces with OpenAPI specs enable AI agents to interact with API via Model Context Protocol
-- **Multi-language support**: OpenAPI specs can generate clients in Python, Go, Rust, etc. for backend-to-backend integration
-- **No TypeScript codegen**: TS consumers import contracts directly, zero build step
-- **Codegen for other languages**: Go/Rust/Python use OpenAPI-generated SDKs when needed
+- **Multi-language support**: OpenAPI specs can generate clients in Python, Go, Rust, etc. using standard generators
+- **TypeScript codegen**: hey-api generates fully typed clients from OpenAPI specs
+- **Codegen for all languages**: All clients generated from same OpenAPI spec for consistency
 - **GraphQL available**: Can expose GraphQL layer for complex querying if needed, but not primary approach
-- **Contract-first design**: Contracts define the interface, implementation follows
-- **Type safety**: Full TypeScript inference from contracts to clients
-- **Framework-agnostic**: ts-rest works with any framework, maintains portability goals
+- **OpenAPI-first design**: OpenAPI spec defines the interface, implementation follows
+- **Type safety**: Full TypeScript types generated from OpenAPI schemas
+- **Framework-agnostic**: OpenAPI works with any framework, maintains portability goals
 - **Testing**: OpenAPI specs can be used for contract testing and validation

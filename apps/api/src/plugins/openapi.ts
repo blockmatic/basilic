@@ -1,28 +1,25 @@
-import { appContract } from '@basilic/contracts'
+import swagger from '@fastify/swagger'
 import scalar from '@scalar/fastify-api-reference'
-import { generateOpenApi } from '@ts-rest/open-api'
 import type { FastifyPluginAsync } from 'fastify'
 
 const openapi: FastifyPluginAsync = async fastify => {
-  const openApiDocument = generateOpenApi(
-    appContract,
-    {
+  // Register Swagger plugin to generate OpenAPI spec
+  await fastify.register(swagger, {
+    openapi: {
       info: {
         title: 'Basilic API',
         version: '1.0.0',
         description: 'Basilic API documentation',
       },
     },
-    {
-      setOperationId: true,
-    },
-  )
+  })
 
   // Register Scalar UI plugin with OpenAPI document
+  // Scalar will read from fastify.swagger()
   await fastify.register(scalar, {
     routePrefix: '/reference',
     configuration: {
-      content: openApiDocument,
+      content: () => fastify.swagger(),
     },
   })
 }

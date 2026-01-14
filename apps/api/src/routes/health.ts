@@ -1,26 +1,40 @@
-import { appContract } from '@basilic/contracts'
-import { initServer } from '@ts-rest/fastify'
 import type { FastifyPluginAsync } from 'fastify'
 
 const healthRoutes: FastifyPluginAsync = async fastify => {
-  const s = initServer()
-
-  const router = s.router(appContract, {
-    health: {
-      // @ts-expect-error - ts-rest type inference issue with nested routers
-      check: async () => {
-        return {
-          status: 200,
-          body: {
-            ok: true,
-            now: new Date().toISOString(),
+  fastify.get(
+    '/health',
+    {
+      schema: {
+        operationId: 'healthCheck',
+        description: 'Health check endpoint',
+        summary: 'Returns server health status with current ISO datetime',
+        tags: ['health'],
+        response: {
+          200: {
+            description: 'Health check response',
+            type: 'object',
+            properties: {
+              ok: {
+                type: 'boolean',
+                enum: [true],
+              },
+              now: {
+                type: 'string',
+                format: 'date-time',
+              },
+            },
+            required: ['ok', 'now'],
           },
-        }
+        },
       },
     },
-  })
-
-  await fastify.register(s.plugin(router))
+    async (_request, reply) => {
+      return reply.code(200).send({
+        ok: true,
+        now: new Date().toISOString(),
+      })
+    },
+  )
 }
 
 export default healthRoutes

@@ -1,0 +1,16 @@
+{
+  "buildCommand": "cd ../.. && pnpm build --filter=mathler",
+  "devCommand": "cd ../.. && pnpm dev --filter=mathler",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "develop": true
+    }
+  }
+}

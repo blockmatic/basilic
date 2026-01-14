@@ -105,7 +105,7 @@ const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
   <div class="container">
     <span class="badge">v1.0.0</span>
     <h1>🌿 Basilic API</h1>
-    <p class="subtitle">Contract-first, type-safe REST API built with Fastify & ts-rest</p>
+    <p class="subtitle">Contract-first, type-safe REST API built with Fastify & OpenAPI</p>
     
     <h2>📚 Resources</h2>
     <ul>
@@ -119,7 +119,7 @@ const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
     
     <h2>💡 Features</h2>
     <ul>
-      <li><a href="#">Type-safe contracts</a> End-to-end type safety with ts-rest</li>
+      <li><a href="#">Type-safe contracts</a> End-to-end type safety with OpenAPI and hey-api</li>
       <li><a href="#">Zod validation</a> Runtime schema validation</li>
       <li><a href="#">OpenAPI generation</a> Auto-generated from contracts</li>
       <li><a href="#">Fast & efficient</a> Built on Fastify</li>

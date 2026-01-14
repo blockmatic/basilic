@@ -3,12 +3,13 @@ title: "Package Conventions"
 description: "Monorepo package architecture conventions: types / contracts / core / react with clean boundaries, no duplication, and portable design."
 ---
 
-# Monorepo Conventions: types / contracts / core / react
+# Monorepo Conventions: types / core / react
 
 This document defines the conventions and package architecture for a **TypeScript + ESM** monorepo that uses:
 
 * **Fastify** (server)
-* **ts-rest** (contract-first API)
+* **OpenAPI** (API contracts)
+* **hey-api** (TypeScript client generation)
 * **Zod** (runtime schemas)
 * **TanStack Query** (React data fetching)
 * **tsup** (package builds for npm)
@@ -26,29 +27,27 @@ We want three outcomes at the same time:
 The key idea:
 
 * **Domain types** are pure TypeScript.
-* **API shapes** live in **contracts** and are derived from **Zod schemas** (no duplication).
-* **core** provides the **ts-rest client**.
-* **react** provides **TanStack Query** helpers/hooks.
+* **OpenAPI specs** define API contracts (source of truth).
+* **core** provides generated **hey-api clients** (runtime-agnostic).
+* **react** provides **TanStack Query** hooks from generated clients.
 
 ## Package layout
 
 ```
 packages/
-  types/       # pure TS domain types (no zod, no ts-rest)
-  contracts/   # ts-rest routers + zod schemas (API boundary)
-  core/        # ts-rest client (runtime-agnostic)
-  react/       # react-query wrappers (React-only)
+  types/       # pure TS domain types (no zod, no hey-api)
+  core/        # generated hey-api client (runtime-agnostic)
+  react/       # react-query hooks from generated clients
 apps/
-  api/         # Fastify server implementing contracts
+  api/         # Fastify server + OpenAPI spec
   web/         # Next.js app consuming core/react
 ```
 
 ### Dependency direction (strict)
 
 * `types` → depends on nothing
-* `contracts` → may depend on `types`
-* `core` → depends on `contracts`
-* `react` → depends on `core` and `contracts`
+* `core` → depends on generated hey-api client code
+* `react` → depends on `core` and generated client code
 
 No reverse dependencies.
 
@@ -59,26 +58,25 @@ flowchart TB
   subgraph P[packages]
     T[types
 (pure TS domain)]
-    C[contracts
-(ts-rest + zod)]
     K[core
-(ts-rest client)]
+(generated hey-api client)]
     R[react
-(TanStack Query)]
+(TanStack Query hooks)]
   end
 
   subgraph A[apps]
     API[api
-(Fastify)]
+(Fastify + OpenAPI)]
     WEB[web
 (Next.js)]
   end
 
-  T --> C
-  C --> K
+  T --> K
   K --> R
 
-  C --> API
+  API -->|OpenAPI JSON| GEN[hey-api Generator]
+  GEN -->|Generated Code| K
+  GEN -->|Generated Code| R
   API -->|OpenAPI JSON| DOCS[Scalar UI]
 
   R --> WEB
@@ -98,7 +96,7 @@ flowchart TB
 
 * ✅ TypeScript `type`/`interface` only
 * ❌ No `zod`
-* ❌ No `ts-rest`
+* ❌ No `hey-api`
 * ❌ No runtime helpers
 
 **Example**
@@ -125,107 +123,72 @@ export interface ApiError {
 }
 ```
 
-### 2) `packages/contracts`
+### 2) OpenAPI Specification
 
-This is the **HTTP boundary**.
+The **HTTP boundary** is defined by the OpenAPI spec.
 
 **What goes here**
 
-* Zod schemas for requests and responses
-* ts-rest routers that reference those schemas
-* shared API error schemas
-* OpenAPI metadata (tags/summary/description)
+* OpenAPI 3.0 specification file (`apps/api/openapi/openapi.json`)
+* Request/response schemas defined in OpenAPI format
+* API metadata (tags, summary, description)
 
 **Hard rules**
 
-* ✅ Allowed: `zod`, `@ts-rest/core`
-* ✅ May import domain interfaces from `types`
-* ❌ No React
-* ❌ No server framework code (Fastify/Elysia/etc.)
+* ✅ OpenAPI 3.0 standard format
+* ✅ Can reference domain types conceptually
+* ❌ No TypeScript code (spec is JSON/YAML)
+* ❌ No server framework code
 
-**Pattern: derive types from schemas (no duplication)**
+**Pattern: OpenAPI spec as source of truth**
 
-```ts
-// packages/contracts/src/schemas/user.schema.ts
-import { z } from "zod";
+The OpenAPI spec defines all API contracts. hey-api generates TypeScript clients from this spec.
 
-export const UserSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-});
-
-export type UserDTO = z.infer<typeof UserSchema>;
-```
-
-If you want to ensure your domain type matches a schema, you can do this:
-
-```ts
-import type { User } from "@acme/types";
-
-export const UserSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-}) satisfies z.ZodType<User>;
-```
-
-**Shared error schema**
-
-```ts
-// packages/contracts/src/schemas/error.schema.ts
-import { z } from "zod";
-
-export const ApiErrorSchema = z.object({
-  code: z.enum(["UNAUTHORIZED", "NOT_FOUND", "VALIDATION_ERROR", "INTERNAL_ERROR"]),
-  message: z.string(),
-  requestId: z.string().optional(),
-});
-
-export type ApiErrorDTO = z.infer<typeof ApiErrorSchema>;
-```
-
-**ts-rest contract**
-
-```ts
-// packages/contracts/src/contracts/app.contract.ts
-import { initContract } from "@ts-rest/core";
-import { z } from "zod";
-import { UserSchema } from "../schemas/user.schema";
-import { ApiErrorSchema } from "../schemas/error.schema";
-
-const c = initContract();
-
-export const appContract = c.router({
-  users: {
-    getUser: {
-      method: "GET",
-      path: "/users/:id",
-      pathParams: z.object({ id: z.string() }),
-      responses: {
-        200: UserSchema,
-        404: ApiErrorSchema,
-      },
-      summary: "Get user by id",
-    },
-  },
-});
-```
-
-**Public exports**
-
-```ts
-// packages/contracts/src/index.ts
-export * from "./contracts/app.contract";
-export * from "./schemas/user.schema";
-export * from "./schemas/error.schema";
+```json
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "email": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ```
 
 ### 3) `packages/core`
 
-The **runtime-agnostic** client package.
+The **runtime-agnostic** client package with generated hey-api clients.
 
 **What goes here**
 
-* `createClient({ baseUrl, getAuthToken, getHeaders })`
+* Generated TypeScript client code from OpenAPI spec (via `@hey-api/openapi-ts`)
+* `createApi({ baseUrl, getAuthToken, getHeaders })` wrapper
 * shared fetch behavior (headers, auth, retries if you want)
 
 **Hard rules**
@@ -233,122 +196,153 @@ The **runtime-agnostic** client package.
 * ✅ No React
 * ✅ No TanStack
 * ✅ OK to be used in Node, Next, Workers (depending on fetch)
+* ✅ Generated code lives in `src/gen/` directory
 
 **Example**
 
 ```ts
-// packages/core/src/client.ts
-import { initClient } from "@ts-rest/core";
-import { appContract } from "@acme/contracts";
+// packages/core/src/api.ts
+import type { CoreClientOptions } from './config.js'
+import { createClient, createConfig } from './gen/client/index.js'
+import * as gen from './gen/index.js'
 
-export type CoreClientOptions = {
-  baseUrl: string;
-  getAuthToken?: () => string | null | Promise<string | null>;
-  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
-};
+export function createApi(options: CoreClientOptions) {
+  const config = createConfig({
+    baseUrl: options.baseUrl,
+  })
 
-export function createClient(opts: CoreClientOptions) {
-  return initClient(appContract, {
-    baseUrl: opts.baseUrl,
-    baseHeaders: async () => {
-      const [token, extra] = await Promise.all([
-        opts.getAuthToken?.(),
-        opts.getHeaders?.(),
-      ]);
+  const client = createClient(config)
 
-      return {
-        ...(extra ?? {}),
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      };
+  return {
+    async healthCheck() {
+      const [token, extraHeaders] = await Promise.all([
+        options.getAuthToken?.(),
+        options.getHeaders?.(),
+      ])
+
+      const headers: Record<string, string> = {}
+      if (extraHeaders) {
+        Object.assign(headers, extraHeaders)
+      }
+      if (token) {
+        headers.Authorization = `Bearer ${token}`
+      }
+
+      const response = await gen.healthCheck({
+        client,
+        ...(Object.keys(headers).length > 0 && { headers }),
+      })
+
+      if (!response.data) {
+        throw new ApiError(/* ... */)
+      }
+      return response.data
     },
-  });
+  }
 }
 ```
 
 ```ts
 // packages/core/src/index.ts
-export { createClient } from "./client";
-export type { CoreClientOptions } from "./client";
+export { createApi } from "./api";
+export type { CoreClientOptions } from "./config";
 ```
 
 ### 4) `packages/react`
 
-React-only helpers using **TanStack Query**.
+React-only helpers using **TanStack Query** with generated hooks.
 
 **What goes here**
 
-* query client init for ts-rest
-* hooks wrapper patterns
+* Generated React Query hooks from OpenAPI spec (via `@hey-api/openapi-ts`)
+* React Query hook wrappers
 * shared query keys (optional)
 
 **Hard rules**
 
 * ✅ React-only dependencies live here
 * ✅ `@tanstack/react-query` belongs here
+* ✅ Generated code lives in `src/gen/` directory
 
 **Example**
 
 ```ts
-// packages/react/src/index.ts
-import { initQueryClient } from "@ts-rest/react-query";
-import { appContract } from "@acme/contracts";
-import { createClient, type CoreClientOptions } from "@acme/core";
+// packages/react/src/hooks/useHealthCheck.ts
+import { useQuery } from '@tanstack/react-query'
+import { useReactApiConfig } from '../context'
+import { healthCheck } from '../gen/index.js'
 
-export function createReactApi(opts: CoreClientOptions) {
-  const client = createClient(opts);
-  const tsr = initQueryClient(appContract, opts);
-  return { client, tsr };
+export function useHealthCheck() {
+  const { client, getAuthHeaders } = useReactApiConfig()
+
+  return useQuery({
+    queryKey: ['healthCheck'],
+    queryFn: async () => {
+      const headers = await getAuthHeaders()
+      const response = await healthCheck({ client, headers })
+      if (!response.data) {
+        throw new Error('Health check failed')
+      }
+      return response.data
+    },
+  })
 }
 ```
 
 Then in the web app:
 
-```ts
-const api = createReactApi({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL!,
-  getAuthToken: async () => /* read session */ null,
-});
+```tsx
+import { ReactApiProvider } from '@basilic/react'
+import { useHealthCheck } from '@basilic/react'
 
-api.tsr.users.getUser.useQuery({
-  queryKey: ["users.getUser", id],
-  queryData: { params: { id } },
-});
+function App() {
+  return (
+    <ReactApiProvider config={{ baseUrl: process.env.NEXT_PUBLIC_API_URL! }}>
+      <MyComponent />
+    </ReactApiProvider>
+  )
+}
+
+function MyComponent() {
+  const { data } = useHealthCheck()
+  // data is fully typed from OpenAPI spec
+}
 ```
 
-## Server implementation (Fastify) uses the same contract
+## Server implementation (Fastify) matches OpenAPI spec
 
 The server app (`apps/api`) should:
 
-1. import the `appContract`
-2. implement routes to match the contract
-3. expose OpenAPI JSON
-4. mount Scalar UI
+1. Define OpenAPI spec in `openapi/openapi.json`
+2. Implement routes to match the OpenAPI spec
+3. Expose OpenAPI JSON at `/reference/openapi.json`
+4. Mount Scalar UI at `/reference`
 
 ### Multi-Language SDK Philosophy
 
-**TypeScript consumers** import contracts directly with **zero codegen** for the best DX.
+**TypeScript consumers** use generated clients from `@hey-api/openapi-ts` for full type safety.
 
-**Other languages** (Go, Rust, Python) generate SDKs from the OpenAPI spec when needed.
+**Other languages** (Go, Rust, Python) generate SDKs from the same OpenAPI spec when needed.
 
 This gives us:
-- ✅ No generated code in TypeScript
-- ✅ Full type safety via ts-rest
+- ✅ Generated TypeScript clients with full type safety
+- ✅ Consistent API contracts across all languages
 - ✅ OpenAPI always available for non-TS consumers
 
-See **[ADR 009: API Architecture](/docs/adrs/009-api-architecture#multi-language-sdk-strategy)** for detailed philosophy and implementation strategy.
+See **[API Contracts](/docs/architecture/api-contracts)** for detailed philosophy and implementation strategy.
 
 ### Mermaid: request flow
 
 ```mermaid
 sequenceDiagram
   participant Web as Next.js (react)
-  participant Core as core client
+  participant Core as core client (generated)
   participant API as Fastify API
-  participant C as contracts
+  participant OpenAPI as OpenAPI Spec
 
-  Web->>Core: call ts-rest query/client
+  Web->>Core: call generated client/hooks
   Core->>API: HTTP request (typed)
-  API->>C: validates using contract schemas
+  API->>OpenAPI: validates against OpenAPI spec
   API-->>Core: typed response
   Core-->>Web: data -> react-query cache
 ```
@@ -486,76 +480,91 @@ import type { UserDTO } from "@acme/contracts";
 
 When you add a new endpoint:
 
-1. Add schemas in `packages/contracts/src/schemas/...`
-2. Add route definition in `packages/contracts/src/contracts/...`
-3. Implement route handler in `apps/api`
-4. Add client usage via `packages/core`
-5. Add React Query usage via `packages/react` or directly in apps
+1. Update OpenAPI spec in `apps/api/openapi/openapi.json`
+2. Regenerate clients: `pnpm --filter @basilic/core gen` and `pnpm --filter @basilic/react gen`
+3. Implement route handler in `apps/api/src/routes/`
+4. Use generated client via `packages/core`
+5. Use generated React Query hooks via `packages/react` or directly in apps
 
 ## Example: Health Check Endpoint
 
 The health check endpoint demonstrates the full monorepo pattern:
 
-**1. Contract Definition** (`packages/contracts`)
+**1. OpenAPI Specification** (`apps/api/openapi/openapi.json`)
 
-```ts
-// packages/contracts/src/schemas/health.schema.ts
-export const HealthResponseSchema = z.object({
-  ok: z.literal(true),
-  now: z.string().datetime(),
-})
-
-// packages/contracts/src/contracts/app.contract.ts
-export const appContract = c.router({
-  health: {
-    check: {
-      method: 'GET',
-      path: '/health',
-      responses: { 200: HealthResponseSchema },
-      summary: 'Health check endpoint',
-    },
-  },
-})
+```json
+{
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean" },
+                    "now": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ```
 
-**2. Server Implementation** (`apps/api`)
+**2. Generate Clients**
+
+Run `@hey-api/openapi-ts` to generate TypeScript clients in `packages/core/src/gen/` and `packages/react/src/gen/`.
+
+**3. Server Implementation** (`apps/api`)
 
 ```ts
 // apps/api/src/routes/health.ts
-const router = s.router(appContract, {
-  health: {
-    check: async () => ({
-      status: 200 as const,
-      body: { ok: true, now: new Date().toISOString() },
-    }),
-  },
-})
+import type { FastifyPluginAsync } from 'fastify'
+
+const health: FastifyPluginAsync = async (fastify) => {
+  fastify.get('/health', async (_request, reply) => {
+    return reply.send({
+      ok: true,
+      now: new Date().toISOString(),
+    })
+  })
+}
+
+export default health
 ```
 
-**3. Client Usage** (`apps/web` or other consumers)
+**4. Client Usage** (`apps/web` or other consumers)
 
 ```tsx
-const api = createReactApi({ baseUrl: process.env.NEXT_PUBLIC_API_URL! })
+import { useHealthCheck } from '@basilic/react'
 
-// React Query hook
-const { data } = api.tsr.health.check.useQuery({
-  queryKey: ['health'],
-})
-// data is typed as { ok: true, now: string }
+function MyComponent() {
+  const { data } = useHealthCheck()
+  // data is typed as { ok: boolean, now: string } from OpenAPI spec
+}
 ```
 
 **OpenAPI Documentation**
 
-- OpenAPI JSON available at `GET /openapi.json`
-- Interactive Scalar UI at `GET /openapi`
-- Automatically generated from ts-rest contracts
+- OpenAPI JSON available at `GET /reference/openapi.json`
+- Interactive Scalar UI at `GET /reference`
+- Generated from OpenAPI spec
 
 ## Summary
 
 * `types` stays clean: **no runtime, no API boundary**
-* `contracts` is the API spec: **Zod + ts-rest**, derive DTO types from schemas
-* `core` is the shared client: **runtime-agnostic**
-* `react` is the React layer: **TanStack Query**
+* **OpenAPI spec** is the API contract: **source of truth** for all languages
+* `core` is the generated client: **runtime-agnostic**, generated by hey-api
+* `react` is the React layer: **TanStack Query hooks**, generated by hey-api
 * ESM everywhere
 * tsup builds dist for npm
 * monorepo dev can use source exports + `prepack` switch (Approach A)

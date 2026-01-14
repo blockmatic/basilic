@@ -30,22 +30,20 @@ We chose a monorepo over standalone repositories for several key benefits:
 flowchart TB
   subgraph Packages["packages/"]
     Types["types<br/>(pure TS domain)"]
-    Contracts["contracts<br/>(ts-rest + zod)"]
-    Core["core<br/>(ts-rest client)"]
+    Core["core<br/>(generated hey-api client)"]
     React["react<br/>(TanStack Query)"]
     UI["ui<br/>(Shadcn components)"]
   end
 
   subgraph Apps["apps/"]
-    API["api<br/>(Fastify)"]
+    API["api<br/>(Fastify + OpenAPI)"]
     Web["web<br/>(Next.js)"]
     Docs["docs<br/>(Fumadocs)"]
   end
 
-  Types --> Contracts
-  Contracts --> Core
+  Types --> Core
+  API -->|OpenAPI| Core
   Core --> React
-  Contracts --> API
   React --> Web
   Core --> Web
   UI --> Web
@@ -78,9 +76,8 @@ Each application is self-contained but can import shared packages:
 Packages follow strict dependency rules:
 
 - **`types`** - Pure TypeScript domain types (no runtime dependencies)
-- **`contracts`** - API contracts with ts-rest and Zod schemas
-- **`core`** - Runtime-agnostic API client
-- **`react`** - React-specific hooks and TanStack Query integration
+- **`core`** - Generated runtime-agnostic API client (via hey-api from OpenAPI)
+- **`react`** - React-specific hooks and TanStack Query integration (generated via hey-api)
 - **`ui`** - Shared UI components (Shadcn/ui based)
 
 ### Dependency Direction
@@ -88,11 +85,11 @@ Packages follow strict dependency rules:
 Strict one-way dependencies prevent circular references:
 
 ```
-types → contracts → core → react
-                ↓
-              apps/api
-                ↓
-              apps/web
+types → core → react
+         ↑
+    apps/api (OpenAPI)
+         ↓
+    apps/web
 ```
 
 ## Workspace Configuration
@@ -112,5 +109,5 @@ The monorepo uses **pnpm workspaces** for dependency management:
 
 ## Related Documentation
 
-- [Package Architecture](/docs/architecture/package-conventions) - Detailed package conventions (types/contracts/core/react)
-- [ADR 001: Monorepo vs Standalone](/docs/adrs/001-monorepo-vs-standalone) - Full decision record
+- [Package Architecture](/docs/architecture/package-conventions) - Detailed package conventions
+- [Monorepo Structure](/docs/architecture/monorepo) - Architecture details

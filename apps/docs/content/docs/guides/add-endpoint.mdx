@@ -1,61 +1,88 @@
 ---
 title: "Add API Endpoint"
-description: "Step-by-step guide for adding a new API endpoint using contract-first development."
+description: "Step-by-step guide for adding a new API endpoint using OpenAPI-first development."
 ---
 
 Complete walkthrough for adding a new API endpoint with full type safety.
 
 ## Overview
 
-Adding an endpoint follows the contract-first pattern:
-1. Define contract (Zod schemas + ts-rest route)
-2. Implement server route
-3. Use typed client automatically
+Adding an endpoint follows the OpenAPI-first pattern:
+1. Update OpenAPI spec
+2. Generate TypeScript clients
+3. Implement server route
+4. Use generated typed clients
 
-## Step 1: Define Schema
+## Step 1: Update OpenAPI Specification
 
-Create a Zod schema in `packages/contracts/src/schemas/`:
+Add the endpoint to your OpenAPI spec in `apps/api/openapi/openapi.json`:
 
-```typescript
-// packages/contracts/src/schemas/user.schema.ts
-import { z } from 'zod'
-
-export const UserSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  name: z.string(),
-})
-
-export type UserDTO = z.infer<typeof UserSchema>
+```json
+{
+  "paths": {
+    "/users/{id}": {
+      "get": {
+        "operationId": "getUser",
+        "summary": "Get user by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "email": { "type": "string" },
+                    "name": { "type": "string" }
+                  },
+                  "required": ["id", "email", "name"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ```
 
-## Step 2: Add Contract Route
+## Step 2: Generate TypeScript Clients
 
-Add the route to your contract in `packages/contracts/src/contracts/`:
+Run hey-api to generate TypeScript clients:
 
-```typescript
-// packages/contracts/src/contracts/app.contract.ts
-import { initContract } from '@ts-rest/core'
-import { z } from 'zod'
-import { UserSchema } from '../schemas/user.schema'
-
-const c = initContract()
-
-export const appContract = c.router({
-  users: {
-    get: {
-      method: 'GET',
-      path: '/users/:id',
-      pathParams: z.object({ id: z.string() }),
-      responses: {
-        200: UserSchema,
-        404: z.object({ code: z.string(), message: z.string() }),
-      },
-      summary: 'Get user by id',
-    },
-  },
-})
+```bash
+# Generate clients for core and react packages
+pnpm --filter @basilic/core gen
+pnpm --filter @basilic/react gen
 ```
+
+This generates type-safe client code in:
+- `packages/core/src/gen/` - Runtime-agnostic client
+- `packages/react/src/gen/` - React Query hooks
 
 ## Step 3: Implement Server Route
 
@@ -63,59 +90,61 @@ Implement the route in `apps/api/src/routes/`:
 
 ```typescript
 // apps/api/src/routes/users.ts
-import { initServer } from '@ts-rest/fastify'
-import { appContract } from '@basilic/contracts'
+import type { FastifyPluginAsync } from 'fastify'
 
-const s = initServer()
+const users: FastifyPluginAsync = async (fastify) => {
+  fastify.get<{
+    Params: { id: string }
+  }>('/users/:id', async (request, reply) => {
+    const { id } = request.params
+    
+    // Your implementation here
+    const user = await getUserById(id)
+    
+    if (!user) {
+      return reply.status(404).send({
+        code: 'NOT_FOUND',
+        message: 'User not found',
+      })
+    }
+    
+    return reply.send(user)
+  })
+}
 
-export const usersRouter = s.router(appContract, {
-  users: {
-    get: async ({ params }) => {
-      // Your implementation here
-      const user = await getUserById(params.id)
-      
-      if (!user) {
-        return {
-          status: 404,
-          body: { code: 'NOT_FOUND', message: 'User not found' },
-        }
-      }
-      
-      return {
-        status: 200,
-        body: user,
-      }
-    },
-  },
-})
+export default users
 ```
 
-## Step 4: Use Typed Client
+## Step 4: Use Generated Typed Client
 
-The client is automatically typed:
+The generated client is fully typed:
 
 ```typescript
 // In your frontend or other client
-import { createReactApi } from '@basilic/react'
+import { createApi } from '@basilic/core'
+import { useUser } from '@basilic/react' // Generated React Query hook
 
-const api = createReactApi({
+// Runtime-agnostic client
+const api = createApi({
   baseUrl: process.env.NEXT_PUBLIC_API_URL!,
+  getAuthToken: async () => session?.token,
 })
 
-// Fully typed!
-const { data } = api.tsr.users.get.useQuery({
-  queryKey: ['users', id],
-  queryData: { params: { id } },
-})
+// Fully typed API call
+const user = await api.getUser({ id: '123' })
+// user is typed from OpenAPI spec
+
+// Or use generated React Query hooks
+const { data } = useUser({ id: '123' })
 // data is typed as UserDTO | undefined
 ```
 
 ## Checklist
 
-- [ ] Schema defined in `packages/contracts/src/schemas/`
-- [ ] Route added to contract
+- [ ] OpenAPI spec updated in `apps/api/openapi/openapi.json`
+- [ ] Clients regenerated with hey-api
 - [ ] Server route implemented
-- [ ] OpenAPI docs updated automatically
+- [ ] Route matches OpenAPI spec
 - [ ] Client usage tested
 
 ## Related Documentation

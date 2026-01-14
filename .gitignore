@@ -51,5 +51,8 @@ npm-debug.log*
 *.pem
 __dev__dev
 
+# TypeScript build info
+*.tsbuildinfo
+
 # Package publish temp files
 .package-originals.json

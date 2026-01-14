@@ -38,7 +38,7 @@ Full documentation: [https://basilic-docs.vercel.app/docs](https://basilic-docs.
 
 ### Core Concepts
 - [Monorepo Structure](https://basilic-docs.vercel.app/docs/monorepo) - Package organization
-- [Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts) - ts-rest pattern
+- [Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts) - OpenAPI and hey-api pattern
 - [Portability Strategy](https://basilic-docs.vercel.app/docs/portability) - Zero vendor lock-in
 
 ### Cursor Setup
@@ -46,5 +46,5 @@ Full documentation: [https://basilic-docs.vercel.app/docs](https://basilic-docs.
 - [Cursor Rules](https://basilic-docs.vercel.app/docs/cursor-rules) - Coding standards
 
 ### Deep Dives
-- [Architecture](https://basilic-docs.vercel.app/docs/architecture) - Technical stack details
-- [ADRs](https://basilic-docs.vercel.app/docs/adrs) - Architecture decision records
+- [Architecture](https://basilic-docs.vercel.app/docs/architecture) - Architecture overview
+- [Architecture Decisions](https://basilic-docs.vercel.app/docs/adrs) - ADRs documenting key technical decisions

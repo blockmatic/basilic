@@ -1,0 +1,12 @@
+Token "HealthResponse" does not exist.
+MissingPointerError: Token "HealthResponse" does not exist.
+    at Pointer.resolve (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/pointer.js:103:23)
+    at $Ref.resolve (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/ref.js:81:28)
+    at $Refs._resolve (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/refs.js:158:21)
+    at inventory$Ref (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/bundle.js:115:27)
+    at crawl (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/bundle.js:90:21)
+    at crawl (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/bundle.js:93:21)
+    at crawl (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/bundle.js:93:21)
+    at crawl (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/bundle.js:93:21)
+    at crawl (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/bundle.js:93:21)
+    at crawl (/home/gabo/code/basilic/node_modules/.pnpm/@apidevtools+json-schema-ref-parser@11.7.2/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/bundle.js:93:21)

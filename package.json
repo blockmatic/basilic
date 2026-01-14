@@ -28,6 +28,6 @@
   },
   "packageManager": "pnpm@10.28.0",
   "simple-git-hooks": {
-    "pre-commit": "bun run hooks:pre-commit"
+    "pre-commit": "pnpm run hooks:pre-commit"
   }
 }

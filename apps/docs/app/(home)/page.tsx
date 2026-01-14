@@ -8,9 +8,9 @@ export default function HomePage() {
         A minimal boilerplate for AI and Web3 sites
       </p>
       <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-        Following best practices and AI-driven development with Cursor rules and skills.
-        Built with type-safe full-stack TypeScript, contract-first API development,
-        and portable-by-default architecture.
+        Following best practices and AI-driven development with Cursor rules and skills. Built with
+        type-safe full-stack TypeScript, contract-first API development, and portable-by-default
+        architecture.
       </p>
       <div className="flex gap-4 justify-center">
         <Link

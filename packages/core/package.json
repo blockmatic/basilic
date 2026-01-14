@@ -15,15 +15,16 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
-    "postpack": "node ../../scripts/restore-publish.mjs"
+    "postpack": "node ../../scripts/restore-publish.mjs",
+    "generate": "openapi-ts"
   },
   "dependencies": {
-    "@basilic/contracts": "workspace:*",
-    "@ts-rest/core": "^3.51.0"
+    "@hey-api/client-fetch": "^0.13.0"
   },
   "devDependencies": {
     "@basilic/eslint-config": "workspace:*",
     "@basilic/typescript-config": "workspace:*",
+    "@hey-api/openapi-ts": "^0.90.3",
     "eslint": "^9.39.2",
     "tsup": "^8.3.5",
     "typescript": "^5.9.3"

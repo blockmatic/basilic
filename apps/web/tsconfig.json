@@ -1,0 +1,26 @@
+{
+  "extends": "@basilic/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@basilic/ui/*": ["../../packages/ui/src/*"],
+      "@basilic/types": ["../../packages/types/src/index.ts"],
+      "@basilic/types/*": ["../../packages/types/src/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "next.config.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../../config/typescript/reset.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

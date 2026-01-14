@@ -30,21 +30,19 @@ All applications and packages coexist in one repository with clear organizationa
 flowchart TB
   subgraph Packages["packages/"]
     Types["types<br/>(pure TS domain)"]
-    Contracts["contracts<br/>(ts-rest + zod)"]
-    Core["core<br/>(ts-rest client)"]
+    Core["core<br/>(generated hey-api client)"]
     React["react<br/>(TanStack Query)"]
     UI["ui<br/>(Shadcn components)"]
   end
 
   subgraph Apps["apps/"]
-    API["api<br/>(Fastify)"]
+    API["api<br/>(Fastify + OpenAPI)"]
     Docs["docs<br/>(Fumadocs)"]
   end
 
-  Types --> Contracts
-  Contracts --> Core
+  Types --> Core
+  API -->|OpenAPI| Core
   Core --> React
-  Contracts --> API
   React --> Docs
   UI --> Docs
 ```
@@ -65,9 +63,8 @@ Intelligent caching: task caching, parallel execution, remote caching, pipeline 
 Packages follow strict dependency rules:
 
 - **`types`** - Pure TypeScript domain types (no runtime dependencies)
-- **`contracts`** - API contracts with ts-rest and Zod schemas
-- **`core`** - Runtime-agnostic API client
-- **`react`** - React-specific hooks and TanStack Query integration
+- **`core`** - Generated runtime-agnostic API client (via hey-api from OpenAPI)
+- **`react`** - React-specific hooks and TanStack Query integration (generated via hey-api)
 - **`ui`** - Shared UI components (Shadcn/ui based)
 
 ### Dependency Direction
@@ -75,9 +72,9 @@ Packages follow strict dependency rules:
 Strict one-way dependencies prevent circular references:
 
 ```
-types → contracts → core → react
-                ↓
-              apps/api
+types → core → react
+         ↑
+    apps/api (OpenAPI)
 ```
 
 ## Workspace Configuration
@@ -93,6 +90,6 @@ Uses **pnpm workspaces**: `workspace:*` protocol, symlink-based resolution, prop
 
 ## Related Documentation
 
-- [Package Conventions](/docs/architecture/package-conventions) - Detailed package architecture (types/contracts/core/react)
+- [Package Conventions](/docs/architecture/package-conventions) - Detailed package architecture
 - [Contract-First APIs](/docs/contracts) - Contract-first development approach
-- [ADR 001: Monorepo vs Standalone](/docs/adrs/001-monorepo-vs-standalone) - Full decision record
+- [Monorepo Architecture](/docs/architecture/monorepo) - Architecture details

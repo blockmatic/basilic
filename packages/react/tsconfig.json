@@ -1,5 +1,5 @@
 {
-  "extends": "@basilic/typescript-config/base.json",
+  "extends": "@basilic/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",

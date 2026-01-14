@@ -2,26 +2,66 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "tasks": {
+    "generate": {
+      "dependsOn": [],
+      "inputs": ["$TURBO_DEFAULT$", "../../apps/api/openapi/openapi.json"],
+      "outputs": ["src/gen/**"]
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "NEXT_RUNTIME",
+        "NODE_ENV",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "NEXT_PUBLIC_SENTRY_ENVIRONMENT"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
     },
     "lint:eslint": {
-      "dependsOn": ["^lint:eslint"]
+      "dependsOn": ["^lint:eslint"],
+      "env": [
+        "NEXT_RUNTIME",
+        "NODE_ENV",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "CI",
+        "PLAYWRIGHT_TEST_BASE_URL",
+        "PORT"
+      ]
     },
     "lint:eslint:fix": {
-      "dependsOn": ["^lint:eslint:fix"]
+      "dependsOn": ["^lint:eslint:fix"],
+      "env": [
+        "NEXT_RUNTIME",
+        "NODE_ENV",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "CI",
+        "PLAYWRIGHT_TEST_BASE_URL",
+        "PORT"
+      ]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "NEXT_RUNTIME",
+        "NODE_ENV",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
+        "PORT"
+      ]
     }
   }
 }

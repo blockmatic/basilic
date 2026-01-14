@@ -4,7 +4,7 @@ Pure TypeScript domain types with no runtime dependencies.
 
 ## Overview
 
-Domain models and shared types. No Zod, no ts-rest, no runtime code—pure TypeScript types only.
+Domain models and shared types. No Zod, no hey-api, no runtime code—pure TypeScript types only.
 
 ## Usage
 
