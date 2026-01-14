@@ -16,6 +16,11 @@ const options: AppOptions = {}
 const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void> => {
   // Place here your custom code!
 
+  // Register security hooks
+  const { securityHooks } = await import('./hooks/security.js')
+  fastify.addHook('onRequest', securityHooks.onRequest)
+  fastify.addHook('onError', securityHooks.onError)
+
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins

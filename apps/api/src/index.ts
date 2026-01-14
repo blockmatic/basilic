@@ -3,7 +3,24 @@ import app from './app.js'
 import { env } from './lib/env.js'
 
 const fastify = Fastify({
-  logger: true,
+  logger: {
+    level: env.NODE_ENV === 'production' ? 'info' : 'debug',
+    transport:
+      env.NODE_ENV === 'development'
+        ? {
+            target: 'pino-pretty',
+            options: {
+              translateTime: 'HH:MM:ss Z',
+              ignore: 'pid,hostname',
+            },
+          }
+        : undefined,
+  },
+  trustProxy: env.TRUST_PROXY,
+  bodyLimit: env.BODY_LIMIT,
+  requestIdHeader: 'x-request-id',
+  requestIdLogLabel: 'reqId',
+  disableRequestLogging: false,
 })
 
 fastify.register(app)

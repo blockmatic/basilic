@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import Fastify from 'fastify'
 import app from '../src/app'
+import { env } from '../src/lib/env.js'
 
 // Vercel serverless function types
 type VercelRequest = {
@@ -19,7 +20,14 @@ type VercelResponse = {
 }
 
 const fastify = Fastify({
-  logger: true,
+  logger: {
+    level: env.NODE_ENV === 'production' ? 'info' : 'debug',
+  },
+  trustProxy: env.TRUST_PROXY,
+  bodyLimit: env.BODY_LIMIT,
+  requestIdHeader: 'x-request-id',
+  requestIdLogLabel: 'reqId',
+  disableRequestLogging: false,
 })
 
 fastify.register(app)

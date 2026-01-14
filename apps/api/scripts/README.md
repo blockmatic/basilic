@@ -4,7 +4,7 @@ Development scripts for the API application.
 
 ## Overview
 
-These scripts support the API development workflow in a contract-first architecture. The API uses OpenAPI specifications as the source of truth, and these scripts help maintain consistency between route implementations and the OpenAPI spec.
+These scripts support the API development workflow in a code-first architecture. The API uses Fastify routes as the source of truth, and these scripts help generate the OpenAPI specification from route implementations.
 
 ## Scripts
 
@@ -37,5 +37,5 @@ This script ensures the OpenAPI spec stays in sync with route implementations, e
 - **[API README](../README.md)** - General API documentation and setup
 - **[Deployment Guide](https://basilic-docs.vercel.app/docs/guides/deployment)** - Deployment options and strategies
 - **[Backend Stack](https://basilic-docs.vercel.app/docs/architecture/backend-stack)** - Technology choices and architecture
-- **[Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts)** - OpenAPI and hey-api pattern
+- **[Code-First APIs](https://basilic-docs.vercel.app/docs/contracts)** - OpenAPI and hey-api pattern
 - **[Root Scripts](../../../scripts/README.md)** - Publishing and security scripts for the monorepo

@@ -1,6 +1,6 @@
 # Basilic
 
-TypeScript monorepo with contract-first API architecture.
+TypeScript monorepo with code-first API architecture.
 
 ## Requirements
 
@@ -66,7 +66,7 @@ Full documentation: [https://basilic-docs.vercel.app/docs](https://basilic-docs.
 
 ### Core Concepts
 - [Monorepo Structure](https://basilic-docs.vercel.app/docs/monorepo) - Package organization
-- [Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts) - OpenAPI and hey-api pattern
+- [Code-First APIs](https://basilic-docs.vercel.app/docs/contracts) - OpenAPI and hey-api pattern
 - [Portability Strategy](https://basilic-docs.vercel.app/docs/portability) - Zero vendor lock-in
 
 ### Guides

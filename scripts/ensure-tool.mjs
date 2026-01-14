@@ -11,8 +11,7 @@ const TOOL_INSTALL_INSTRUCTIONS = {
       manual: 'https://github.com/gitleaks/gitleaks#macos',
     },
     linux: {
-      install:
-        'wget -O /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_$(uname -s)_$(uname -m).tar.gz && tar -xzf /tmp/gitleaks.tar.gz -C /tmp && sudo mv /tmp/gitleaks /usr/local/bin/',
+      install: `ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then ARCH="x64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && wget -O /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_\${ARCH}.tar.gz && tar -xzf /tmp/gitleaks.tar.gz -C /tmp && sudo mv /tmp/gitleaks /usr/local/bin/`,
       manual: 'https://github.com/gitleaks/gitleaks#linux',
     },
     win32: {
@@ -27,8 +26,7 @@ const TOOL_INSTALL_INSTRUCTIONS = {
       manual: 'https://google.github.io/osv-scanner/installation/',
     },
     linux: {
-      install:
-        'wget -O /tmp/osv-scanner.tar.gz https://github.com/google/osv-scanner/releases/latest/download/osv-scanner_$(uname -s)_$(uname -m).tar.gz && tar -xzf /tmp/osv-scanner.tar.gz -C /tmp && sudo mv /tmp/osv-scanner /usr/local/bin/',
+      install: `ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && wget -O /tmp/osv-scanner https://github.com/google/osv-scanner/releases/latest/download/osv-scanner_linux_\${ARCH} && chmod +x /tmp/osv-scanner && sudo mv /tmp/osv-scanner /usr/local/bin/`,
       manual: 'https://google.github.io/osv-scanner/installation/',
     },
     win32: {
@@ -43,8 +41,7 @@ const TOOL_INSTALL_INSTRUCTIONS = {
       manual: 'https://github.com/trufflesecurity/trufflehog#installation',
     },
     linux: {
-      install:
-        'wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_$(uname -s)_$(uname -m).tar.gz && tar -xzf /tmp/trufflehog.tar.gz -C /tmp && sudo mv /tmp/trufflehog /usr/local/bin/',
+      install: `ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_linux_\${ARCH}.tar.gz && tar -xzf /tmp/trufflehog.tar.gz -C /tmp && sudo mv /tmp/trufflehog /usr/local/bin/`,
       manual: 'https://github.com/trufflesecurity/trufflehog#installation',
     },
     win32: {

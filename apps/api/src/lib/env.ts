@@ -13,6 +13,16 @@ export const env = createEnv({
     SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(1),
     SENTRY_REPLACES_HEADERS: z.coerce.boolean().default(false),
     SENTRY_REPLACES_PROD_ENV: z.coerce.boolean().default(false),
+    // Security configuration
+    ALLOWED_ORIGINS: z
+      .string()
+      .default('*')
+      .transform(val => (val === '*' ? '*' : val.split(',').map(origin => origin.trim()))),
+    RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
+    RATE_LIMIT_TIME_WINDOW: z.coerce.number().int().positive().default(60000),
+    TRUST_PROXY: z.coerce.boolean().default(true),
+    SECURITY_HEADERS_ENABLED: z.coerce.boolean().default(true),
+    BODY_LIMIT: z.coerce.number().int().positive().default(1048576), // 1MB default
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

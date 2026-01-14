@@ -24,13 +24,6 @@ paths = [
   '''docs/''',
 ]
 
-commits = [
-  # Allow test commits with obvious test data
-  '''test.*''',
-  '''Test.*''',
-  '''TEST.*''',
-]
-
 regexes = [
   # Allow obvious test patterns
   '''test.*private.*key''',

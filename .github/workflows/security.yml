@@ -98,7 +98,7 @@ jobs:
       - name: Run OSV Scanner
         run: |
           echo "🔍 Scanning dependencies for known vulnerabilities..."
-          osv-scanner scan --lockfile=pnpm-lock.yaml || {
+          osv-scanner --lockfile=pnpm-lock.yaml || {
             echo ""
             echo "❌ SECURITY ISSUE: OSV Scanner found known vulnerabilities in dependencies"
             echo "Review the output above for details about affected packages"

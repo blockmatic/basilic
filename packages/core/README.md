@@ -26,4 +26,4 @@ const result = await client.users.getUser({ params: { id: '123' } })
 - ✅ No React dependencies
 - ✅ Type-safe via generated hey-api clients from OpenAPI specs
 
-See [Contract-First APIs](https://basilic-docs.vercel.app/docs/contracts#client-consumption) for integration patterns.
+See [Code-First APIs](https://basilic-docs.vercel.app/docs/contracts#client-consumption) for integration patterns.

@@ -112,7 +112,21 @@ The entire backend stack is designed for **zero vendor lock-in**:
 
 See [Portability Strategy](/docs/architecture/portability) for detailed migration paths.
 
+## Security
+
+The API implements comprehensive security measures:
+
+- **Security Headers** - X-Content-Type-Options, X-Frame-Options, CSP, HSTS, and more
+- **CORS** - Configurable origin restrictions
+- **Rate Limiting** - Per-IP rate limiting to prevent abuse
+- **Input Validation** - Zod schemas for all requests
+- **Security Logging** - Automatic logging of security events
+- **Trust Proxy** - Proper IP detection behind Vercel/Cloudflare
+
+See [Security Guide](/docs/guides/security#api-security) for detailed security configuration.
+
 ## Related Documentation
 
-- [API Contracts](/docs/architecture/api-contracts) - Contract-first API development
+- [API Contracts](/docs/architecture/api-contracts) - Code-first API development
 - [Portability Strategy](/docs/architecture/portability) - Migration and portability details
+- [Security Guide](/docs/guides/security) - Security baseline and API security
