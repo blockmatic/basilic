@@ -1,6 +1,0 @@
-c._handlerLegacy is not a function
-TypeError: c._handlerLegacy is not a function
-    at qi (/home/gabo/code/basilic/node_modules/.pnpm/@hey-api+openapi-ts@0.58.0_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/index.cjs:29:2663)
-    at async /home/gabo/code/basilic/node_modules/.pnpm/@hey-api+openapi-ts@0.58.0_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/index.cjs:1329:9407
-    at async pu (/home/gabo/code/basilic/node_modules/.pnpm/@hey-api+openapi-ts@0.58.0_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/index.cjs:1329:9659)
-    at async start (/home/gabo/code/basilic/node_modules/.pnpm/@hey-api+openapi-ts@0.58.0_typescript@5.9.3/node_modules/@hey-api/openapi-ts/bin/index.cjs:86:5)

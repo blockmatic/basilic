@@ -7,12 +7,20 @@ alwaysApply: false
 
 **This pattern applies consistently across all apps in the stack** - Next.js frontend apps, Fastify API (`apps/api`), and other Node.js apps.
 
+## Standard: t3-env
+
+All apps use **t3-env** for environment variable validation:
+
+- **Next.js apps**: `@t3-oss/env-nextjs`
+- **Node/Fastify apps**: `@t3-oss/env-core`
+
 ## File Structure
 
 **Files:**
 - `.env` - Sensitive data (API keys, tokens, secrets) - **NEVER COMMIT**
 - `.env.development` / `.env.staging` / `.env.production` / `.env.test` - Non-sensitive configuration (committed)
 - `.env-example` - Template for `.env` file (committed)
+- `lib/env.ts` - Environment variable validation module (one per app)
 
 **Loading Priority (highest to lowest):**
 1. `.env` (sensitive, never committed, overrides everything)
@@ -20,37 +28,92 @@ alwaysApply: false
 
 ## Validation Pattern
 
-**Always use Zod for environment variable validation** - consistent across all apps (Next.js, Fastify API, etc.).
+**Always use t3-env** - consistent across all apps.
 
-- Define schema with `z.object()` using Zod validators (`z.string()`, `z.coerce.number()`, `z.optional()`, `z.default()`)
-- Use `z.infer<typeof envSchema>` for type inference (no manual types)
-- Validation functions must have explicit return types
-- **Next.js apps**: Use `getEnvHelper` from `@basilic/lib` → export `zEnv = getEnv()` (validated const object)
-- **Server apps (Fastify, API)**: Use `validateEnvOrThrow` from `@basilic/lib` → export `zEnv = getEnv()` (fails fast)
-- **All apps**: Export `zEnv` as const object validated at module load - fails fast if config is invalid
-- Leverage `@basilic/lib` utilities - no custom validation logic needed
+### Next.js Apps
 
-**load-env.ts (ESM):**
-- Load `.env.{environment}` first (based on NODE_ENV)
-- Load `.env` last (highest priority)
-- Use `fileURLToPath` and `dirname` for ESM path resolution
+```typescript
+// apps/web/lib/env.ts
+import { createEnv } from '@t3-oss/env-nextjs'
+import { z } from 'zod'
+
+export const env = createEnv({
+  server: {
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    // Server-only vars (no NEXT_PUBLIC_ prefix)
+  },
+  client: {
+    NEXT_PUBLIC_API_URL: z.string().min(1),
+    // Client vars (must have NEXT_PUBLIC_ prefix)
+  },
+  runtimeEnv: {
+    // MUST include ALL keys from server + client schemas
+    NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
+  emptyStringAsUndefined: true,
+})
+```
+
+### Server Apps (Fastify/Node)
+
+```typescript
+// apps/api/src/lib/env.ts
+import { createEnv } from '@t3-oss/env-core'
+import { z } from 'zod'
+
+export const env = createEnv({
+  server: {
+    PORT: z.coerce.number().int().positive().default(3000),
+    DATABASE_URL: z.string().min(1).optional(),
+    // Schema keys match env var names (UPPERCASE)
+  },
+  runtimeEnv: process.env,
+  emptyStringAsUndefined: true,
+})
+```
 
 ## Key Principles
 
-1. **Sensitive vs Non-Sensitive**: Clear separation - `.env` (sensitive, never commit) vs `.env.{environment}` (non-sensitive, committed)
-2. **Zod Validation**: Always use Zod for runtime validation and type inference - leverage `@basilic/lib` utilities (`validateEnvOrThrow`, `getEnvHelper`)
-3. **Type Safety**: Use `z.infer<typeof envSchema>` for type inference (no manual types)
-4. **Explicit Return Types**: Validation functions must have explicit return types
-5. **zEnv Export**: All apps must export `zEnv` as const object validated at module load
-6. **No Manual Checks**: Remove all manual error checks - Zod validation handles this
-7. **No Example Files**: Remove all `.env.{environment}.example` files - update `.env.{environment}` directly with values
+1. **Schema keys are UPPERCASE** - Match actual environment variable names (`DATABASE_URL`, `NEXT_PUBLIC_API_URL`)
+2. **Single `env` export** - Export only `export const env = createEnv(...)`, no mapping layers
+3. **Direct consumption** - Use `env.DATABASE_URL`, `env.NEXT_PUBLIC_API_URL` (not camelCase aliases)
+4. **Never `process.env` in app code** - Always import `{ env }` from `lib/env.ts`
+5. **Complete runtimeEnv** - Next.js apps must list ALL server+client keys in `runtimeEnv`
+6. **Server/client separation** - Next.js `server` vars are private, `client` vars are public (`NEXT_PUBLIC_*`)
+
+## Consumption Pattern
+
+**Always import from `lib/env.ts`:**
+
+```typescript
+// ✅ Correct
+import { env } from '@/lib/env'
+const dbUrl = env.DATABASE_URL
+const apiUrl = env.NEXT_PUBLIC_API_URL
+
+// ❌ Wrong - never use process.env directly
+const dbUrl = process.env.DATABASE_URL
+```
+
+**In Next.js Client Components:**
+- Only access `env.NEXT_PUBLIC_*` variables
+- Accessing server-only vars will throw at runtime (t3-env protection)
 
 ## Next.js Caveats
 
 1. **NEXT_PUBLIC_ prefix**: Client-side vars must have `NEXT_PUBLIC_` prefix - replaced at build time
 2. **Server-only vars**: Don't use `NEXT_PUBLIC_` prefix for server-only vars
-3. **Validation timing**: Validation happens at module load (build time for `NEXT_PUBLIC_*` vars)
-4. **Optional vars**: Use Zod's `.optional()` or `.default()` instead of manual checks
+3. **runtimeEnv requirement**: Must explicitly list ALL keys (server + client) for Next.js bundling
+4. **Build-time inlining**: `NEXT_PUBLIC_*` variables are public and inlined at build time (never put secrets here)
+
+## Adding New Environment Variables
+
+1. Add to schema in `lib/env.ts` (UPPERCASE key matching env var name)
+2. For Next.js: Add to `runtimeEnv` object (explicit destructuring)
+3. For Node: Already covered by `runtimeEnv: process.env`
+4. Update `.env-example` if needed
+5. Update `turbo.json` `env` arrays if variable affects build/lint outputs
 
 ## Git Configuration
 

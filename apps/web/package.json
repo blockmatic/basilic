@@ -7,8 +7,8 @@
     "dev": "next dev",
     "dev:local": "NODE_ENV=development next dev",
     "dev:staging": "NODE_ENV=development NEXT_PUBLIC_APP_ENV=staging next dev",
-    "build": "NODE_ENV=production node ../../scripts/validate-env.mjs && next build",
-    "build:validate": "NODE_ENV=production node ../../scripts/validate-env.mjs && next build",
+    "build": "NODE_ENV=production next build",
+    "build:validate": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "lint:biome": "biome check .",
@@ -43,7 +43,8 @@
     "react-error-boundary": "^4.1.2",
     "require-in-the-middle": "^7.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^4.3.5"
+    "zod": "^4.3.5",
+    "@t3-oss/env-nextjs": "^0.13.8"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

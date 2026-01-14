@@ -3,7 +3,7 @@
 import * as Sentry from '@sentry/nextjs'
 import { useEffect } from 'react'
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary'
-import { zEnv } from '@/lib/env'
+import { env } from '@/lib/env'
 
 function ErrorFallback({
   error,
@@ -31,12 +31,11 @@ function ErrorFallback({
 export function ErrorBoundary({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Initialize Sentry client-side if DSN is configured
-    const dsn = zEnv.NEXT_PUBLIC_SENTRY_DSN
-    const environment = zEnv.NEXT_PUBLIC_SENTRY_ENVIRONMENT || 'development'
+    const dsn = env.NEXT_PUBLIC_SENTRY_DSN
 
     if (dsn && !Sentry.getClient()) {
       import('../sentry.client.config').then(({ initSentry }) => {
-        initSentry({ dsn, environment })
+        initSentry({ dsn, environment: env.NEXT_PUBLIC_SENTRY_ENVIRONMENT })
       })
     }
   }, [])

@@ -5,6 +5,7 @@ node_modules
 .pnp
 .pnp.js
 __dev
+.logs/
 
 # Bun
 .bun

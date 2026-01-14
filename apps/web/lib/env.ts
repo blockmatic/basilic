@@ -1,30 +1,24 @@
+import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
-const envSchema = z.object({
-  NEXT_PUBLIC_API_URL: z.string().url(),
-  NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
-  NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().optional(),
+export const env = createEnv({
+  server: {
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    SENTRY_ORG: z.string().min(1).optional(),
+    SENTRY_PROJECT: z.string().min(1).optional(),
+  },
+  client: {
+    NEXT_PUBLIC_API_URL: z.string().min(1),
+    NEXT_PUBLIC_SENTRY_DSN: z.string().min(1).optional(),
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().min(1).default('development'),
+  },
+  runtimeEnv: {
+    NODE_ENV: process.env.NODE_ENV,
+    SENTRY_ORG: process.env.SENTRY_ORG,
+    SENTRY_PROJECT: process.env.SENTRY_PROJECT,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+  },
+  emptyStringAsUndefined: true,
 })
-
-export type Env = z.infer<typeof envSchema>
-
-/**
- * Gets validated environment variables.
- * Returns validated env vars or throws if required vars are missing.
- * Note: In Next.js, NEXT_PUBLIC_* variables are replaced at build time.
- */
-export function getEnv(): Env {
-  const result = envSchema.safeParse(process.env)
-
-  if (!result.success) {
-    throw new Error(`Invalid environment configuration: ${result.error.message}`)
-  }
-
-  return result.data
-}
-
-/**
- * Validated environment configuration object.
- * Validated at module load - fails fast if config is invalid in production.
- */
-export const zEnv = getEnv()

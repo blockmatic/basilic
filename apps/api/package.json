@@ -33,7 +33,8 @@
     "@fastify/autoload": "^6.0.0",
     "@fastify/sensible": "^6.0.0",
     "fastify-cli": "^7.4.1",
-    "zod": "^4.3.5"
+    "zod": "^4.3.5",
+    "@t3-oss/env-core": "^0.13.8"
   },
   "devDependencies": {
     "@basilic/eslint-config": "workspace:*",

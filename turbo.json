@@ -13,12 +13,23 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
-        "NEXT_RUNTIME",
         "NODE_ENV",
+        "NEXT_RUNTIME",
+        "PORT",
+        "HOST",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "SENTRY_DSN",
+        "SENTRY_ENVIRONMENT",
+        "SENTRY_TRACES_SAMPLE_RATE",
+        "SENTRY_REPLACES_HEADERS",
+        "SENTRY_REPLACES_PROD_ENV",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
+        "NEXT_PUBLIC_API_URL",
         "NEXT_PUBLIC_SENTRY_DSN",
-        "NEXT_PUBLIC_SENTRY_ENVIRONMENT"
+        "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
+        "NEXT_PUBLIC_SITE_URL"
       ]
     },
     "lint": {
@@ -26,27 +37,11 @@
     },
     "lint:eslint": {
       "dependsOn": ["^lint:eslint"],
-      "env": [
-        "NEXT_RUNTIME",
-        "NODE_ENV",
-        "SENTRY_ORG",
-        "SENTRY_PROJECT",
-        "CI",
-        "PLAYWRIGHT_TEST_BASE_URL",
-        "PORT"
-      ]
+      "env": ["NODE_ENV", "NEXT_RUNTIME", "CI", "PLAYWRIGHT_TEST_BASE_URL", "PORT"]
     },
     "lint:eslint:fix": {
       "dependsOn": ["^lint:eslint:fix"],
-      "env": [
-        "NEXT_RUNTIME",
-        "NODE_ENV",
-        "SENTRY_ORG",
-        "SENTRY_PROJECT",
-        "CI",
-        "PLAYWRIGHT_TEST_BASE_URL",
-        "PORT"
-      ]
+      "env": ["NODE_ENV", "NEXT_RUNTIME", "CI", "PLAYWRIGHT_TEST_BASE_URL", "PORT"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
@@ -55,13 +50,20 @@
       "cache": false,
       "persistent": true,
       "env": [
-        "NEXT_RUNTIME",
         "NODE_ENV",
+        "NEXT_RUNTIME",
+        "PORT",
+        "HOST",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "SENTRY_DSN",
+        "SENTRY_ENVIRONMENT",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
+        "NEXT_PUBLIC_API_URL",
         "NEXT_PUBLIC_SENTRY_DSN",
         "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
-        "PORT"
+        "NEXT_PUBLIC_SITE_URL"
       ]
     }
   }

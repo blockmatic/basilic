@@ -22,6 +22,17 @@ pnpm dev
 - `pnpm format` - Format all code (Biome)
 - `pnpm typecheck` - Type check all TypeScript
 
+## CI/CD Workflows
+
+GitHub Actions workflows automate quality checks:
+
+### Lint Workflow (`.github/workflows/lint.yml`)
+
+Runs on all pull requests to ensure code quality:
+- Executes `pnpm lint` (Biome + ESLint)
+- Catches linting errors before merge
+- Can be manually triggered via `workflow_dispatch`
+
 ## Structure
 
 - **`apps/`** - Applications (API, Docs)

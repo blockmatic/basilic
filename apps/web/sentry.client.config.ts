@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nextjs'
+import { env } from './lib/env'
 
 /**
  * Initializes Sentry for client-side error tracking.
@@ -7,15 +8,15 @@ import * as Sentry from '@sentry/nextjs'
 export function initSentry({ dsn, environment }: { dsn?: string; environment?: string }) {
   if (!dsn) return { initialized: false }
 
-  const env = environment || process.env.NODE_ENV || 'development'
+  const sentryEnv = environment ?? env.NEXT_PUBLIC_SENTRY_ENVIRONMENT
 
   Sentry.init({
     dsn,
-    environment: env,
-    tracesSampleRate: env === 'production' ? 0.1 : 1.0,
-    debug: env === 'development',
+    environment: sentryEnv,
+    tracesSampleRate: sentryEnv === 'production' ? 0.1 : 1.0,
+    debug: sentryEnv === 'development',
     replaysOnErrorSampleRate: 1.0,
-    replaysSessionSampleRate: env === 'production' ? 0.1 : 1.0,
+    replaysSessionSampleRate: sentryEnv === 'production' ? 0.1 : 1.0,
     integrations: [Sentry.replayIntegration({ maskAllText: false })],
   })
 
