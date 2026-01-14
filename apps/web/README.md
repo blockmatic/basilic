@@ -104,6 +104,16 @@ The app uses two main providers:
 
 See `components/providers.tsx` for the provider setup.
 
+## Vercel Deployment
+
+This app includes a `vercel.json` configuration file. If deploying to Vercel:
+
+1. **Root Directory**: Set the root directory to `apps/web` in Vercel project settings
+2. **Build Command**: Should be `cd ../.. && pnpm build --filter=@basilic/web` (configured in `vercel.json`)
+3. **Install Command**: Should be `cd ../.. && pnpm install` (configured in `vercel.json`)
+
+**Important**: If you see build errors about a package named "mathler" or any other incorrect filter, check your Vercel project settings and ensure they match the `vercel.json` configuration. Vercel project settings override `vercel.json`, so make sure they're aligned.
+
 ## Related Documentation
 
 - [Monorepo Structure](../../apps/docs/content/docs/architecture/monorepo.mdx) - Package organization

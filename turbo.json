@@ -5,7 +5,8 @@
     "generate": {
       "dependsOn": [],
       "inputs": ["$TURBO_DEFAULT$", "../../apps/api/openapi/openapi.json"],
-      "outputs": ["src/gen/**"]
+      "outputs": ["src/gen/**"],
+      "env": ["NODE_ENV"]
     },
     "build": {
       "dependsOn": ["^build", "generate"],
