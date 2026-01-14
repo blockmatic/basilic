@@ -1,4 +1,4 @@
-import type { CoreClientOptions } from '@basilic/core'
+import type { CoreClientOptions } from '@repo/core'
 import type { QueryClient } from '@tanstack/react-query'
 import { createClient, createConfig } from './gen/client/index.js'
 

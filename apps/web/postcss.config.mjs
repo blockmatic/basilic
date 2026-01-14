@@ -1,3 +1,3 @@
-import postcssConfig from '@basilic/ui/postcss.config'
+import postcssConfig from '@repo/ui/postcss.config'
 
 export default postcssConfig

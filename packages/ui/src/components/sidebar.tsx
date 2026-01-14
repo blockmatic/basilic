@@ -1,25 +1,25 @@
 'use client'
 
-import { Button } from '@basilic/ui/components/button'
-import { Input } from '@basilic/ui/components/input'
-import { Separator } from '@basilic/ui/components/separator'
+import { Slot } from '@radix-ui/react-slot'
+import { Button } from '@repo/ui/components/button'
+import { Input } from '@repo/ui/components/input'
+import { Separator } from '@repo/ui/components/separator'
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '@basilic/ui/components/sheet'
-import { Skeleton } from '@basilic/ui/components/skeleton'
+} from '@repo/ui/components/sheet'
+import { Skeleton } from '@repo/ui/components/skeleton'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@basilic/ui/components/tooltip'
-import { useIsMobile } from '@basilic/ui/hooks/use-mobile'
-import { cn } from '@basilic/ui/lib/utils'
-import { Slot } from '@radix-ui/react-slot'
+} from '@repo/ui/components/tooltip'
+import { useIsMobile } from '@repo/ui/hooks/use-mobile'
+import { cn } from '@repo/ui/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PanelLeftIcon } from 'lucide-react'
 import * as React from 'react'

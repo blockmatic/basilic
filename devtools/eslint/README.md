@@ -1,4 +1,4 @@
-# `@basilic/eslint-config`
+# `@repo/eslint-config`
 
 Shared ESLint configuration for the workspace. Provides consistent linting rules across all packages and apps in the monorepo.
 
@@ -51,7 +51,7 @@ pnpm format
 
 ## Available Configurations
 
-### Base Configuration (`@basilic/eslint-config/base`)
+### Base Configuration (`@repo/eslint-config/base`)
 
 Base ESLint configuration for Node.js projects (e.g., Elysia backend, infrastructure code).
 
@@ -59,7 +59,7 @@ Base ESLint configuration for Node.js projects (e.g., Elysia backend, infrastruc
 
 ```js
 // eslint.config.js
-import baseConfig from '@basilic/eslint-config/base'
+import baseConfig from '@repo/eslint-config/base'
 
 export default [...baseConfig]
 ```
@@ -71,7 +71,7 @@ export default [...baseConfig]
 - Biome integration (disabled checks Biome handles for faster execution)
 - Turbo plugin for monorepo support
 
-### Next.js Configuration (`@basilic/eslint-config/next-js`)
+### Next.js Configuration (`@repo/eslint-config/next-js`)
 
 ESLint configuration for Next.js applications.
 
@@ -79,7 +79,7 @@ ESLint configuration for Next.js applications.
 
 ```js
 // eslint.config.js
-import nextConfig from '@basilic/eslint-config/next-js'
+import nextConfig from '@repo/eslint-config/next-js'
 
 export default [...nextConfig]
 ```
@@ -91,7 +91,7 @@ export default [...nextConfig]
 - React and React Hooks plugins
 - TypeScript support
 
-### React Internal Configuration (`@basilic/eslint-config/react-internal`)
+### React Internal Configuration (`@repo/eslint-config/react-internal`)
 
 ESLint configuration for React libraries and internal packages.
 
@@ -99,7 +99,7 @@ ESLint configuration for React libraries and internal packages.
 
 ```js
 // eslint.config.js
-import reactConfig from '@basilic/eslint-config/react-internal'
+import reactConfig from '@repo/eslint-config/react-internal'
 
 export default [...reactConfig]
 ```
@@ -170,7 +170,7 @@ Instead of relying on ESLint's unsafe rules, we enforce type safety through:
 ```typescript
 // ✅ Good: Validate at the boundary
 import { z } from 'zod'
-import { fetchWithTimeout } from '@basilic/lib'
+import { fetchWithTimeout } from '@repo/lib'
 
 const apiResponseSchema = z.object({
   id: z.string(),
@@ -198,7 +198,7 @@ const user = await fetchUser('123') // Type: { id: string; name: string }
 - **Export typed interfaces** from internal modules for type safety
 - **Trust type inference** - let TypeScript infer types from validated data and function return types
 - **Validate, don't assert** - Use Zod's `.parse()` or `.safeParse()` instead of type assertions
-- **Use utility libraries**: Always leverage `@basilic/lib` (error handling, delays, fetch with timeout), `zod` (validation), and `lodash` (array/object operations, type checking) instead of custom implementations
+- **Use utility libraries**: Always leverage `@repo/lib` (error handling, delays, fetch with timeout), `zod` (validation), and `lodash` (array/object operations, type checking) instead of custom implementations
 
 For more details, see:
 
@@ -221,7 +221,7 @@ For more details, see:
 
 ```js
 // apps/vencura/eslint.config.mjs
-import { config } from '@basilic/eslint-config/base'
+import { config } from '@repo/eslint-config/base'
 
 export default config
 ```
@@ -240,7 +240,7 @@ export default config
 
 ```js
 // apps/docs/eslint.config.mjs
-import { nextJsConfig } from '@basilic/eslint-config/next-js'
+import { nextJsConfig } from '@repo/eslint-config/next-js'
 
 export default nextJsConfig
 ```
@@ -259,7 +259,7 @@ export default nextJsConfig
 
 ```js
 // packages/ui/eslint.config.js
-import { config } from '@basilic/eslint-config/react-internal'
+import { config } from '@repo/eslint-config/react-internal'
 
 export default config
 ```

@@ -1,4 +1,4 @@
-# `@basilic/typescript-config`
+# `@repo/typescript-config`
 
 Shared TypeScript configuration for the workspace. Provides consistent TypeScript compiler settings across all packages and apps in the monorepo.
 
@@ -22,7 +22,7 @@ Base TypeScript configuration that all other configs extend. Suitable for Node.j
 ```json
 // tsconfig.json
 {
-  "extends": "@basilic/typescript-config/base"
+  "extends": "@repo/typescript-config/base"
 }
 ```
 
@@ -44,7 +44,7 @@ TypeScript configuration for Next.js applications. Extends the base configuratio
 ```json
 // tsconfig.json
 {
-  "extends": "@basilic/typescript-config/nextjs"
+  "extends": "@repo/typescript-config/nextjs"
 }
 ```
 
@@ -63,7 +63,7 @@ TypeScript configuration for React component libraries. Extends the base configu
 ```json
 // tsconfig.json
 {
-  "extends": "@basilic/typescript-config/react-library"
+  "extends": "@repo/typescript-config/react-library"
 }
 ```
 
@@ -114,8 +114,8 @@ This package integrates `@total-typescript/ts-reset` to enhance TypeScript's bui
 Since `JSON.parse()` and `response.json()` now return `unknown`, you must validate the data before use. This aligns perfectly with the monorepo's use of Zod for validation:
 
 ```typescript
-// ✅ Good: Validate with Zod, use @basilic/lib utilities
-import { fetchWithTimeout, parseJsonWithSchema } from '@basilic/lib'
+// ✅ Good: Validate with Zod, use @repo/lib utilities
+import { fetchWithTimeout, parseJsonWithSchema } from '@repo/lib'
 import { z } from 'zod'
 
 const response = await fetchWithTimeout({
@@ -139,7 +139,7 @@ const value = data.someProperty // TypeScript error: Property 'someProperty' doe
 
 ```json
 {
-  "extends": "@basilic/typescript-config/base.json",
+  "extends": "@repo/typescript-config/base.json",
   "include": ["src", "../../packages/typescript-config/reset.d.ts"]
 }
 ```
@@ -153,7 +153,7 @@ Packages that don't override `include` will automatically get `reset.d.ts` from 
 ```json
 // apps/vencura/tsconfig.json
 {
-  "extends": "@basilic/typescript-config/base",
+  "extends": "@repo/typescript-config/base",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"
@@ -168,7 +168,7 @@ Packages that don't override `include` will automatically get `reset.d.ts` from 
 ```json
 // apps/web/tsconfig.json
 {
-  "extends": "@basilic/typescript-config/nextjs",
+  "extends": "@repo/typescript-config/nextjs",
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
@@ -179,7 +179,7 @@ Packages that don't override `include` will automatically get `reset.d.ts` from 
 ```json
 // packages/ui/tsconfig.json
 {
-  "extends": "@basilic/typescript-config/react-library",
+  "extends": "@repo/typescript-config/react-library",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"

@@ -1,5 +1,5 @@
 {
-  "name": "@basilic/devtools-react",
+  "name": "@repo/devtools-react",
   "version": "0.0.1",
   "type": "module",
   "private": true,
@@ -14,8 +14,8 @@
     ".": "./index.ts"
   },
   "devDependencies": {
-    "@basilic/eslint-config": "workspace:*",
-    "@basilic/typescript-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.2",

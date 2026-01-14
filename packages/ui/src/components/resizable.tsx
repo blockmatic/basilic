@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@basilic/ui/lib/utils'
+import { cn } from '@repo/ui/lib/utils'
 import { GripVerticalIcon } from 'lucide-react'
 import type * as React from 'react'
 import * as ResizablePrimitive from 'react-resizable-panels'

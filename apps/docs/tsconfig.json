@@ -1,13 +1,13 @@
 {
-  "extends": "@basilic/typescript-config/nextjs.json",
+  "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
       "@/components/*": ["./components/*"],
-      "@basilic/ui/*": ["../../packages/ui/src/*"],
-      "@basilic/types": ["../../packages/types/src/index.ts"],
-      "@basilic/types/*": ["../../packages/types/src/*"],
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@repo/types": ["../../packages/types/src/index.ts"],
+      "@repo/types/*": ["../../packages/types/src/*"],
       "fumadocs-mdx:collections/*": [".source/*"]
     },
     "plugins": [

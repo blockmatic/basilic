@@ -6,8 +6,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@basilic/ui/components/dialog'
-import { cn } from '@basilic/ui/lib/utils'
+} from '@repo/ui/components/dialog'
+import { cn } from '@repo/ui/lib/utils'
 import { Command as CommandPrimitive } from 'cmdk'
 import { SearchIcon } from 'lucide-react'
 import type * as React from 'react'

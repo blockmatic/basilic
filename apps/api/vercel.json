@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd ../.. && pnpm install && pnpm turbo build --filter=@basilic/api...",
+  "buildCommand": "cd ../.. && pnpm install && pnpm turbo build --filter=@repo/api...",
   "installCommand": "cd ../.. && pnpm install",
   "functions": {
     "api/index.ts": {

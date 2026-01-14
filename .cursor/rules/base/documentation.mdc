@@ -1,0 +1,61 @@
+---
+description: Documentation standards and best practices
+alwaysApply: false
+---
+
+# Documentation Standards
+
+## Writing Principles
+
+- **Simple**: Get to the point quickly
+- **Succinct**: No unnecessary words or fluff
+- **Technical**: Assume the reader is a developer
+- **Factual**: Describe what things do, not philosophies or paradigms
+
+## Documentation Site
+
+### Content Rules
+- Keep content simple and technical
+- Optimize architecture information for clear flow and navigation
+- Use generic wording (avoid product-specific branding in technical content)
+- Start with most important information first
+- Use clear headings and hierarchy
+
+### Linking Rules
+- **Never link to README files from docs** (READMEs are repository artifacts, not documentation)
+- Always use markdown links for external URLs: `[Link Text](https://example.com)`
+- Keep navigation clean and focused on essential pages
+
+## README Files
+
+### Purpose
+High-level overview and quick reference only.
+
+### Content Rules
+- Keep READMEs lean
+- Link to documentation site for detailed information
+- Structure: Requirements → Quick Start → Links to docs
+- Avoid duplicating content that exists in docs
+
+## Cursor Rules
+
+### Content Rules
+- Keep cursor rules lean and focused
+- Self-contained: no external links
+- Embed necessary context directly in the rule
+- Focus on patterns and standards, not lengthy examples
+
+## Architecture Documentation
+
+### Organization
+Optimize for clear flow and intuitive navigation:
+- Core concepts first (what, why)
+- Architecture details second (how)
+- How-to guides for practical tasks
+- ADRs for historical context (not in main navigation)
+
+### Flow
+Each page should:
+- Have a clear purpose
+- Link to related pages at the end
+- Avoid redundancy with other pages

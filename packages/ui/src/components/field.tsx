@@ -1,9 +1,9 @@
 'use client'
 
-import { Label } from '@basilic/ui/components/label'
-import { Separator } from '@basilic/ui/components/separator'
+import { Label } from '@repo/ui/components/label'
+import { Separator } from '@repo/ui/components/separator'
 
-import { cn } from '@basilic/ui/lib/utils'
+import { cn } from '@repo/ui/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { useMemo } from 'react'
 

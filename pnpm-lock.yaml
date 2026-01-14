@@ -8,7 +8,7 @@ importers:
 
   .:
     devDependencies:
-      '@basilic/typescript-config':
+      '@repo/typescript-config':
         specifier: workspace:*
         version: link:devtools/typescript
       '@biomejs/biome':
@@ -63,7 +63,7 @@ importers:
         specifier: ^4.3.5
         version: 4.3.5
     devDependencies:
-      '@basilic/eslint-config':
+      '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../devtools/eslint
       '@types/node':
@@ -93,7 +93,7 @@ importers:
 
   apps/docs:
     dependencies:
-      '@basilic/ui':
+      '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@t3-oss/env-nextjs':
@@ -124,7 +124,7 @@ importers:
         specifier: ^4.3.5
         version: 4.3.5
     devDependencies:
-      '@basilic/eslint-config':
+      '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../devtools/eslint
       '@tailwindcss/postcss':
@@ -160,13 +160,13 @@ importers:
 
   apps/web:
     dependencies:
-      '@basilic/react':
+      '@repo/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@basilic/types':
+      '@repo/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@basilic/ui':
+      '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@sentry/nextjs':
@@ -215,10 +215,10 @@ importers:
         specifier: ^4.3.5
         version: 4.3.5
     devDependencies:
-      '@basilic/eslint-config':
+      '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../devtools/eslint
-      '@basilic/typescript-config':
+      '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../devtools/typescript
       '@playwright/test':
@@ -324,10 +324,10 @@ importers:
         specifier: ^19.0.0
         version: 19.2.3(react@19.2.3)
     devDependencies:
-      '@basilic/eslint-config':
+      '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint
-      '@basilic/typescript-config':
+      '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript
       '@types/react':
@@ -356,10 +356,10 @@ importers:
 
   packages/core:
     devDependencies:
-      '@basilic/eslint-config':
+      '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../devtools/eslint
-      '@basilic/typescript-config':
+      '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../devtools/typescript
       '@hey-api/openapi-ts':
@@ -377,17 +377,17 @@ importers:
 
   packages/react:
     dependencies:
-      '@basilic/core':
+      '@repo/core':
         specifier: workspace:*
         version: link:../core
       react:
         specifier: ^19.0.0
         version: 19.2.3
     devDependencies:
-      '@basilic/eslint-config':
+      '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../devtools/eslint
-      '@basilic/typescript-config':
+      '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../devtools/typescript
       '@hey-api/openapi-ts':
@@ -411,10 +411,10 @@ importers:
 
   packages/types:
     devDependencies:
-      '@basilic/eslint-config':
+      '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../devtools/eslint
-      '@basilic/typescript-config':
+      '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../devtools/typescript
       eslint:
@@ -571,10 +571,10 @@ importers:
         specifier: ^4.3.5
         version: 4.3.5
     devDependencies:
-      '@basilic/eslint-config':
+      '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../devtools/eslint
-      '@basilic/typescript-config':
+      '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../devtools/typescript
       '@tailwindcss/postcss':

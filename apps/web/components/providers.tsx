@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactApiProvider } from '@basilic/react'
+import { ReactApiProvider } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'

@@ -1,4 +1,4 @@
-import { config } from '@basilic/eslint-config/library'
+import { config } from '@repo/eslint-config/library'
 
 export default [
   ...config,

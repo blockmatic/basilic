@@ -1,4 +1,4 @@
-import { config } from '@basilic/eslint-config/library.js'
+import { config } from '@repo/eslint-config/library.js'
 
 /**
  * Root ESLint configuration - Correctness-only rules.

@@ -234,7 +234,7 @@ Vitest is the test runner for all frontend tests:
 - **Config**: `vitest.config.ts` with jsdom environment
 - **Setup**: `vitest.setup.ts` imports `@testing-library/jest-dom`
 - **ESM-Native**: All configs use ESM syntax (`import`/`export`)
-- **Path Aliases**: Configured in Vitest config for `@basilic/*` imports
+- **Path Aliases**: Configured in Vitest config for `@repo/*` imports
 - **Globals**: `globals: true` enables global test APIs (describe, it, expect)
 
 ## Best Practices

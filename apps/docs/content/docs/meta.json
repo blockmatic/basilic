@@ -4,7 +4,7 @@
     "getting-started",
     "--- Core Concepts",
     "monorepo",
-    "contracts",
+    "api-development",
     "portability",
     "--- AI-Driven Development",
     "ai-workflow",
@@ -12,11 +12,9 @@
     "cursor-rules",
     "--- Architecture",
     "architecture",
-    "adrs",
     "--- How-To Guides",
     "guides"
   ],
   "architecture": "Architecture Overview",
-  "adrs": "Architecture Decisions",
   "guides": "How-To Guides"
 }

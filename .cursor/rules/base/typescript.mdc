@@ -28,10 +28,10 @@ alwaysApply: false
 - Prefer simple one-liners for trivial conditionals; avoid extra braces/elses
 
 ## Modularization and Imports
-- Use `@basilic/lib` for shared utilities (error, async, env, zod helpers)
+- Use `@repo/lib` for shared utilities (error, async, env, zod helpers)
 - Use Zod for schema validation + inference (`z.infer<typeof schema>`)
-- Prefer importing types from `@basilic/core` over `@basilic/types` when re-exported
-- Schema imports should use `@basilic/types/schemas` when not re-exported from `@basilic/core`
+- Prefer importing types from `@repo/core` over `@repo/types` when re-exported
+- Schema imports should use `@repo/types/schemas` when not re-exported from `@repo/core`
 - Lodash: prefer `lodash-es` and per-function imports for tree-shaking + RSC safety  
   - ✅ `import isEmpty from "lodash-es/isEmpty"`  
   - ❌ `import { isEmpty } from "lodash-es"`

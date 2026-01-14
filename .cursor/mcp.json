@@ -20,11 +20,11 @@
     },
     "vercel-docs": {
       "url": "https://mcp.vercel.com/gaboesquivel/basilic-docs",
-      "description": "Vercel MCP for @basilic/docs"
+      "description": "Vercel MCP for @repo/docs"
     },
     "vercel-api": {
-      "url": "https://mcp.vercel.comgaboesquivel/basilic-api",
-      "description": "Vercel MCP for @basilic/api"
+      "url": "https://mcp.vercel.com/gaboesquivel/basilic-api",
+      "description": "Vercel MCP for @repo/api"
     }
   }
 }

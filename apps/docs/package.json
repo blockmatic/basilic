@@ -1,5 +1,5 @@
 {
-  "name": "@basilic/docs",
+  "name": "@repo/docs",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -15,7 +15,7 @@
     "lint:eslint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@basilic/ui": "workspace:*",
+    "@repo/ui": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.10",
     "fumadocs-core": "16.4.7",
     "fumadocs-mdx": "14.2.5",
@@ -27,7 +27,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@basilic/eslint-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
     "@types/node": "^25.0.8",

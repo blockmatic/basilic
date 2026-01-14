@@ -1,4 +1,4 @@
-import { config } from '@basilic/eslint-config/react-internal'
+import { config } from '@repo/eslint-config/react-internal'
 
 export default [
   ...config,

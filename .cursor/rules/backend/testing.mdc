@@ -10,7 +10,7 @@ alwaysApply: false
 **CRITICAL**: All tests use real APIs with real API keys. NO MOCKS allowed for core functionality.
 - E2E tests hit real API endpoints (no unit tests)
 - Integration tests use real external services
-- Tests validate against ts-rest contracts for type safety
+- Tests validate against OpenAPI schemas for type safety
 
 ## Test Structure
 ### E2E Tests (Blackbox API Testing)
@@ -23,7 +23,7 @@ alwaysApply: false
 **For endpoints only, never unit test in API:**
 - All CRUD operations (Create, Read, Update, Delete)
 - Error Handling (all error cases and validation)
-- Contract validation (request/response match ts-rest contracts)
+- Response validation (responses match OpenAPI schemas)
 - Authentication and authorization
 - Input validation (Zod schemas)
 
@@ -31,7 +31,7 @@ alwaysApply: false
 **All Fastify tests run in ESM mode** - Vitest is ESM-native and tests TypeScript source directly:
 - Tests run against TypeScript source files (ESM), not built output
 - Vitest config uses `vitest.config.ts` with ESM syntax
-- Path aliases configured in Vitest config for `@basilic/*` imports
+- Path aliases configured in Vitest config for `@repo/*` imports
 - Test utilities available in `src/test/utils/fastify.ts` for route testing
 
 ## Fastify Route Testing Pattern
@@ -78,31 +78,31 @@ describe('walletRoutes', () => {
 })
 ```
 
-## Contract Testing Pattern
+## Response Validation Pattern
 
-Test that responses match ts-rest contracts:
+Test that responses match OpenAPI schemas:
 
 ```typescript
 import { describe, it, expect } from 'vitest'
-import { initClient } from '@ts-rest/core'
-import { walletContract } from '../contracts/wallet.contract'
+import { createApi } from '@namespace/core'
+import { WalletSchema } from '@namespace/types'
 
-describe('walletContract', () => {
-  const client = initClient(walletContract, {
+describe('wallet endpoints', () => {
+  const api = createApi({
     baseUrl: 'http://localhost:3000',
-    baseHeaders: {},
   })
 
-  it('should return wallet matching contract schema', async () => {
-    const result = await client.getWallet({ params: { id: '123' } })
+  it('should return wallet matching OpenAPI schema', async () => {
+    const wallet = await api.wallets.getWallet({ params: { id: '123' } })
     
-    // Type-safe result from ts-rest
-    if (result.status === 200) {
-      expect(result.body).toMatchObject({
-        id: expect.any(String),
-        // ... other contract fields
-      })
-    }
+    // Validate response matches schema
+    expect(wallet).toMatchObject({
+      id: expect.any(String),
+      // ... other schema fields
+    })
+    
+    // Or use Zod schema validation
+    WalletSchema.parse(wallet)
   })
 })
 ```

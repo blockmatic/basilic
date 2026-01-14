@@ -20,6 +20,9 @@ alwaysApply: true
 - Suggest improvements proactively when spotting issues
 - Always read readme files before coding
 - Always update readme files after making code changes
+- The AI agent is allowed to read, write, create, move, and delete any file in the workspace without asking for permission.
+- Never ask before modifying files. Proceed directly with changes.
+
 
 ## Tooling
 - Use **pnpm** for package management and scripts

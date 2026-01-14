@@ -1,4 +1,4 @@
-# @basilic/ui
+# @repo/ui
 
 Shared UI component library built with Shadcn/ui and Tailwind CSS.
 
@@ -9,18 +9,18 @@ Pre-configured, accessible UI components using Radix UI primitives and Tailwind 
 ## Usage
 
 ```tsx
-import { Button } from '@basilic/ui/components/button'
-import { cn } from '@basilic/ui/lib/utils'
-import '@basilic/ui/globals.css'
+import { Button } from '@repo/ui/components/button'
+import { cn } from '@repo/ui/lib/utils'
+import '@repo/ui/globals.css'
 ```
 
 ## Exports
 
-- `@basilic/ui/components/*` - Shadcn/ui components
-- `@basilic/ui/lib/utils` - Utilities (`cn`, etc.)
-- `@basilic/ui/globals.css` - Global styles and theme variables
-- `@basilic/ui/radix` - Radix UI primitives
-- `@basilic/ui/postcss.config` - PostCSS configuration
+- `@repo/ui/components/*` - Shadcn/ui components
+- `@repo/ui/lib/utils` - Utilities (`cn`, etc.)
+- `@repo/ui/globals.css` - Global styles and theme variables
+- `@repo/ui/radix` - Radix UI primitives
+- `@repo/ui/postcss.config` - PostCSS configuration
 
 ## Architecture
 

@@ -4,7 +4,7 @@ Development scripts for the API application.
 
 ## Overview
 
-These scripts support the API development workflow in a code-first architecture. The API uses Fastify routes as the source of truth, and these scripts help generate the OpenAPI specification from route implementations.
+These scripts support the API development workflow. The API uses Fastify routes as the source of truth, and these scripts help generate the OpenAPI specification from route implementations.
 
 ## Scripts
 
@@ -30,12 +30,10 @@ pnpm generate:openapi
 - Before committing route changes
 - As part of CI/CD to verify spec consistency
 
-This script ensures the OpenAPI spec stays in sync with route implementations, enabling type-safe client generation via hey-api in `@basilic/core` and `@basilic/react`.
+This script ensures the OpenAPI spec stays in sync with route implementations, enabling type-safe client generation via hey-api in `@repo/core` and `@repo/react`.
 
 ## Related Documentation
 
-- **[API README](../README.md)** - General API documentation and setup
 - **[Deployment Guide](https://basilic-docs.vercel.app/docs/guides/deployment)** - Deployment options and strategies
 - **[Backend Stack](https://basilic-docs.vercel.app/docs/architecture/backend-stack)** - Technology choices and architecture
-- **[Code-First APIs](https://basilic-docs.vercel.app/docs/contracts)** - OpenAPI and hey-api pattern
-- **[Root Scripts](../../../scripts/README.md)** - Publishing and security scripts for the monorepo
+- **[API Development](https://basilic-docs.vercel.app/docs/api-development)** - REST API with OpenAPI and hey-api client generation

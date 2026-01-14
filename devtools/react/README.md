@@ -1,4 +1,4 @@
-# @basilic/tools
+# @repo/tools
 
 Development tools enabled by feature flags for debugging and development purposes.
 
@@ -12,7 +12,7 @@ Development tools enabled by feature flags for debugging and development purpose
 ## Installation
 
 ```bash
-bun add @basilic/tools
+bun add @repo/tools
 ```
 
 ## Peer Dependencies
@@ -29,7 +29,7 @@ This package requires the following peer dependencies (provided by your app):
 ```tsx
 'use client'
 
-import { useDevtools } from '@basilic/tools'
+import { useDevtools } from '@repo/tools'
 
 function App() {
   useDevtools() // Enables dev tools when feature flag is enabled
@@ -43,7 +43,7 @@ function App() {
 ```tsx
 'use client'
 
-import { useVConsole, useNuqsDebug } from '@basilic/tools'
+import { useVConsole, useNuqsDebug } from '@repo/tools'
 
 function DevTools() {
   useVConsole() // Enable VConsole for mobile debugging
@@ -58,7 +58,7 @@ Enable dev tools conditionally using environment variables or feature flags:
 ```tsx
 'use client'
 
-import { useDevtools } from '@basilic/tools'
+import { useDevtools } from '@repo/tools'
 
 function App() {
   const enableDevTools = process.env.NEXT_PUBLIC_ENABLE_DEV_TOOLS === 'true'
@@ -70,10 +70,6 @@ function App() {
   return <div>Your app</div>
 }
 ```
-
-## Related Packages
-
-- [@basilic/ui](../ui/README.md) - Shared UI components (dev tools may integrate with UI components)
 
 ## License
 

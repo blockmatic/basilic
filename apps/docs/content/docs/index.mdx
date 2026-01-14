@@ -24,7 +24,7 @@ MDX files designed for both humans and AI workflows—use directly in prompts as
 
 ### 🚀 Builders
 Starting a TypeScript project that needs SDKs or modular services? Get:
-- Code-first API development (OpenAPI + hey-api)
+- REST API with OpenAPI and automatic client generation
 - Multi-language SDK generation from OpenAPI specs
 - Type-safe frontend-backend communication
 - Shared component library
@@ -49,7 +49,7 @@ Deciding if this fits? Review:
 **Solution:** OpenAPI specs with hey-api-generated clients ensure end-to-end type safety
 
 ### Problem 2: Monorepo Package Management
-**Solution:** Clear package boundaries (types → core → react) with OpenAPI as the contract source, enabling service reuse and separation of concerns
+**Solution:** Clear package boundaries (types → core → react) with OpenAPI specs defining the API interface, enabling service reuse and separation of concerns
 
 ### Problem 3: Vendor Lock-in
 **Solution:** Portable-by-default architecture
@@ -66,7 +66,7 @@ Deciding if this fits? Review:
       <h3 className="text-lg font-semibold">Architecture</h3>
     </div>
     <p className="text-sm text-muted-foreground">
-      Monorepo architecture with Turborepo, code-first API development, and portable-by-default design.
+      Monorepo architecture with Turborepo, REST API with OpenAPI, and portable-by-default design.
     </p>
     <div className="mt-4">
       <a href="/docs/architecture" className="text-sm font-medium text-primary hover:underline">

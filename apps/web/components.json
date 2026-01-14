@@ -14,7 +14,7 @@
     "components": "@/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
-    "utils": "@basilic/ui/lib/utils",
-    "ui": "@basilic/ui/components"
+    "utils": "@repo/ui/lib/utils",
+    "ui": "@repo/ui/components"
   }
 }

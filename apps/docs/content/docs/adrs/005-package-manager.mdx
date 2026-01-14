@@ -22,7 +22,7 @@ Mature, workspace-optimized package manager.
 **Pros**
 
 - Correctly hoists and resolves dependencies across workspace packages
-- Handles complex scenarios like `@tailwindcss/postcss` in `@basilic/ui` being accessible to `apps/web`
+- Handles complex scenarios like `@tailwindcss/postcss` in `@repo/ui` being accessible to `apps/web`
 - Uses symlinks and proper node_modules structure for workspace packages
 - Well-tested with Next.js, Fastify, and Turbo
 - Mature support for monorepo patterns
@@ -79,7 +79,7 @@ We will use **pnpm** as our package manager.
 
 **Main reasons:**
 
-- **Reliable workspace resolution**: Correctly hoists and resolves dependencies across workspace packages, handling complex scenarios like `@tailwindcss/postcss` in `@basilic/ui` being accessible to `apps/web`
+- **Reliable workspace resolution**: Correctly hoists and resolves dependencies across workspace packages, handling complex scenarios like `@tailwindcss/postcss` in `@repo/ui` being accessible to `apps/web`
 - **Monorepo maturity**: Well-tested with Next.js, Fastify, and Turbo with mature support for monorepo patterns
 - **Production stability**: Battle-tested in production environments with reliable builds and no module resolution issues
 - **Ecosystem support**: Extensive community adoption, documentation, and better tooling support for debugging, monitoring, and CI/CD

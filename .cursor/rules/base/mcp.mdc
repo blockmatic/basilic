@@ -57,6 +57,5 @@ Model Context Protocol (MCP) servers extend AI assistants with specialized capab
 All MCP servers use `pnpm dlx` for command execution, consistent with the project's package manager choice (pnpm).
 
 ## References
-- See [MCP Servers Usage Guide](../../docs/mcp-servers.md) for detailed documentation
-- Vercel MCP tools: https://vercel.com/docs/mcp/vercel-mcp/tools
-- Cursor MCP documentation: https://cursor.com/docs/context/model-context-protocol
+- Vercel MCP tools documentation
+- Cursor MCP documentation

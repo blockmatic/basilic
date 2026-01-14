@@ -5,7 +5,7 @@
   "002-backend-framework": "Backend API Framework & Runtime",
   "008-database": "Database Platform & Strategy",
   "007-backend-orm": "Backend ORM Selection",
-  "009-api-architecture": "API Architecture & Contract Strategy",
+  "009-api-architecture": "API Architecture & Client Generation",
   "003-frontend-framework": "Frontend Apps Framework",
   "004-design-system": "Design System",
   "006-linters": "Linters & Formatters"

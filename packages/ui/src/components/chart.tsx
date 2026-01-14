@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@basilic/ui/lib/utils'
+import { cn } from '@repo/ui/lib/utils'
 import * as React from 'react'
 import type {
   DefaultLegendContentProps as RechartsLegendContentProps,

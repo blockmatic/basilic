@@ -1,5 +1,5 @@
-import { type Button, buttonVariants } from '@basilic/ui/components/button'
-import { cn } from '@basilic/ui/lib/utils'
+import { type Button, buttonVariants } from '@repo/ui/components/button'
+import { cn } from '@repo/ui/lib/utils'
 import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react'
 import type * as React from 'react'
 

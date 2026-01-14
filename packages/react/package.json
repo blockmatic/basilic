@@ -1,5 +1,5 @@
 {
-  "name": "@basilic/react",
+  "name": "@repo/react",
   "version": "0.0.0",
   "type": "module",
   "private": true,
@@ -19,11 +19,11 @@
     "generate": "openapi-ts"
   },
   "dependencies": {
-    "@basilic/core": "workspace:*"
+    "@repo/core": "workspace:*"
   },
   "devDependencies": {
-    "@basilic/eslint-config": "workspace:*",
-    "@basilic/typescript-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@hey-api/openapi-ts": "^0.90.3",
     "@tanstack/react-query": "^5.90.17",
     "@types/react": "^19.2.8",

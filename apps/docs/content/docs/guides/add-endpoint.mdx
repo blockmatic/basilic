@@ -1,108 +1,60 @@
 ---
 title: "Add API Endpoint"
-description: "Step-by-step guide for adding a new API endpoint using OpenAPI-first development."
+description: "Step-by-step guide for adding a new API endpoint with Fastify and OpenAPI."
 ---
 
 Complete walkthrough for adding a new API endpoint with full type safety.
 
 ## Overview
 
-Adding an endpoint follows the OpenAPI-first pattern:
-1. Update OpenAPI spec
-2. Generate TypeScript clients
-3. Implement server route
+Adding an endpoint:
+1. Define Fastify route with Zod schemas
+2. Generate OpenAPI spec from routes
+3. Generate TypeScript clients from OpenAPI
 4. Use generated typed clients
 
-## Step 1: Update OpenAPI Specification
+## Step 1: Implement Server Route
 
-Add the endpoint to your OpenAPI spec in `apps/api/openapi/openapi.json`:
-
-```json
-{
-  "paths": {
-    "/users/{id}": {
-      "get": {
-        "operationId": "getUser",
-        "summary": "Get user by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": { "type": "string" },
-                    "email": { "type": "string" },
-                    "name": { "type": "string" }
-                  },
-                  "required": ["id", "email", "name"]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "code": { "type": "string" },
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-## Step 2: Generate TypeScript Clients
-
-Run hey-api to generate TypeScript clients:
-
-```bash
-# Generate clients for core and react packages
-pnpm --filter @basilic/core gen
-pnpm --filter @basilic/react gen
-```
-
-This generates type-safe client code in:
-- `packages/core/src/gen/` - Runtime-agnostic client
-- `packages/react/src/gen/` - React Query hooks
-
-## Step 3: Implement Server Route
-
-Implement the route in `apps/api/src/routes/`:
+Define Zod schemas and implement the Fastify route in `apps/api/src/routes/`:
 
 ```typescript
 // apps/api/src/routes/users.ts
-import type { FastifyPluginAsync } from 'fastify'
+import { FastifyInstance } from 'fastify'
+import { z } from 'zod'
 
-const users: FastifyPluginAsync = async (fastify) => {
-  fastify.get<{
-    Params: { id: string }
-  }>('/users/:id', async (request, reply) => {
+// Define Zod schemas
+const UserParamsSchema = z.object({
+  id: z.string(),
+})
+
+const UserSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+})
+
+const ErrorSchema = z.object({
+  code: z.string(),
+  message: z.string(),
+})
+
+export async function userRoutes(fastify: FastifyInstance) {
+  fastify.get('/users/:id', {
+    schema: {
+      params: UserParamsSchema,
+      response: {
+        200: UserSchema,
+        404: ErrorSchema,
+      },
+    },
+  }, async (request, reply) => {
     const { id } = request.params
     
     // Your implementation here
     const user = await getUserById(id)
     
     if (!user) {
-      return reply.status(404).send({
+      return reply.code(404).send({
         code: 'NOT_FOUND',
         message: 'User not found',
       })
@@ -111,9 +63,32 @@ const users: FastifyPluginAsync = async (fastify) => {
     return reply.send(user)
   })
 }
-
-export default users
 ```
+
+## Step 2: Generate OpenAPI Spec
+
+Generate the OpenAPI specification from your Fastify routes:
+
+```bash
+# Generate OpenAPI spec from routes
+pnpm --filter @repo/api gen:openapi
+```
+
+This runs `generate-openapi.ts` which scans your Fastify route definitions and automatically generates the OpenAPI 3.0 spec at `apps/api/openapi/openapi.json`.
+
+## Step 3: Generate TypeScript Clients
+
+Run hey-api to generate TypeScript clients from the OpenAPI spec:
+
+```bash
+# Generate clients for core and react packages
+pnpm --filter @repo/core gen
+pnpm --filter @repo/react gen
+```
+
+This generates type-safe client code in:
+- `packages/core/src/gen/` - Runtime-agnostic client
+- `packages/react/src/gen/` - React Query hooks
 
 ## Step 4: Use Generated Typed Client
 
@@ -121,8 +96,8 @@ The generated client is fully typed:
 
 ```typescript
 // In your frontend or other client
-import { createApi } from '@basilic/core'
-import { useUser } from '@basilic/react' // Generated React Query hook
+import { createApi } from '@repo/core'
+import { useUser } from '@repo/react' // Generated React Query hook
 
 // Runtime-agnostic client
 const api = createApi({
@@ -141,13 +116,12 @@ const { data } = useUser({ id: '123' })
 
 ## Checklist
 
-- [ ] OpenAPI spec updated in `apps/api/openapi/openapi.json`
-- [ ] Clients regenerated with hey-api
-- [ ] Server route implemented
-- [ ] Route matches OpenAPI spec
-- [ ] Client usage tested
+- [ ] Server route implemented with Zod schemas
+- [ ] OpenAPI spec generated from routes
+- [ ] Clients generated with hey-api
+- [ ] Generated client usage tested in frontend
 
 ## Related Documentation
 
-- [Code-First APIs](/docs/contracts) - Understanding contracts
+- [API Development](/docs/api-development) - REST API with OpenAPI and client generation
 - [Package Conventions](/docs/architecture/package-conventions) - Package architecture

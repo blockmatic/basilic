@@ -8,7 +8,7 @@ A Next.js application in this monorepo. This is a minimal hello world applicatio
 - **React** 19.2.3 - UI library
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Utility-first CSS
-- **Shadcn/ui** - Component library (via `@basilic/ui`)
+- **Shadcn/ui** - Component library (via `@repo/ui`)
 - **next-themes** - Theme provider for dark mode
 - **nuqs** - URL state management
 
@@ -16,12 +16,12 @@ A Next.js application in this monorepo. This is a minimal hello world applicatio
 
 This app uses shared packages from this monorepo:
 
-- **`@basilic/ui`** - Shared UI components and design system
-- **`@basilic/types`** - Domain types
-- **`@basilic/react`** - React Query hooks (for future API integration)
-- **`@basilic/core`** - API client (for future API integration)
+- **`@repo/ui`** - Shared UI components and design system
+- **`@repo/types`** - Domain types
+- **`@repo/react`** - React Query hooks (for future API integration)
+- **`@repo/core`** - API client (for future API integration)
 
-See the [monorepo documentation](../../apps/docs/content/docs/architecture/monorepo.mdx) for details on package architecture.
+See the [monorepo documentation](https://basilic-docs.vercel.app/docs/architecture/monorepo) for details on package architecture.
 
 ## Getting Started
 
@@ -109,13 +109,13 @@ See `components/providers.tsx` for the provider setup.
 This app includes a `vercel.json` configuration file. If deploying to Vercel:
 
 1. **Root Directory**: Set the root directory to `apps/web` in Vercel project settings
-2. **Build Command**: Should be `cd ../.. && pnpm build --filter=@basilic/web` (configured in `vercel.json`)
+2. **Build Command**: Should be `cd ../.. && pnpm build --filter=@repo/web` (configured in `vercel.json`)
 3. **Install Command**: Should be `cd ../.. && pnpm install` (configured in `vercel.json`)
 
 **Important**: If you see build errors about a package named "mathler" or any other incorrect filter, check your Vercel project settings and ensure they match the `vercel.json` configuration. Vercel project settings override `vercel.json`, so make sure they're aligned.
 
 ## Related Documentation
 
-- [Monorepo Structure](../../apps/docs/content/docs/architecture/monorepo.mdx) - Package organization
-- [Frontend Stack](../../apps/docs/content/docs/architecture/frontend-stack.mdx) - Next.js and Shadcn/ui
-- [Package Conventions](../../apps/docs/content/docs/architecture/package-conventions.mdx) - Package architecture
+- [Monorepo Structure](https://basilic-docs.vercel.app/docs/architecture/monorepo) - Package organization
+- [Frontend Stack](https://basilic-docs.vercel.app/docs/architecture/frontend-stack) - Next.js and Shadcn/ui
+- [Package Conventions](https://basilic-docs.vercel.app/docs/architecture/package-conventions) - Package architecture

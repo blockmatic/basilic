@@ -7,29 +7,29 @@ alwaysApply: false
 # ShadcnUI Rules
 
 ## Core Principles
-- Install ShadcnUI components in `@basilic/ui` (packages/ui)
-- Always import from `@basilic/ui/components/*`, never directly from packages/ui
-- All Radix UI primitives must be imported from `@basilic/ui/radix`; never import any `@radix-ui/react-*` packages directly in apps or other packages
+- Install ShadcnUI components in `@repo/ui` (packages/ui)
+- Always import from `@repo/ui/components/*`, never directly from packages/ui
+- All Radix UI primitives must be imported from `@repo/ui/radix`; never import any `@radix-ui/react-*` packages directly in apps or other packages
 - Update Tailwind preset/tokens in packages/ui (not per app)
 - Application-specific components go in app's `components` folder
 - Hooks and utils must be collocated with components (same directory)
 
 ## Installation Pattern
 Components installed in `packages/ui/src/components/`. Each app's `components.json` points to:
-- `"utils": "@basilic/ui/lib/utils"`
-- `"ui": "@basilic/ui/components"`
+- `"utils": "@repo/ui/lib/utils"`
+- `"ui": "@repo/ui/components"`
 
 ## Import Patterns
 ```tsx
-import { Button } from "@basilic/ui/components/button"
-import { cn } from "@basilic/ui/lib/utils"
+import { Button } from "@repo/ui/components/button"
+import { cn } from "@repo/ui/lib/utils"
 ```
 
 ## Component Patterns
 Use class-variance-authority (cva) pattern for variants and `cn` utility for merging class names:
 
 ```tsx
-import { cn } from "@basilic/ui/lib/utils"
+import { cn } from "@repo/ui/lib/utils"
 import { cva } from "class-variance-authority"
 
 const buttonVariants = cva(
@@ -49,7 +49,7 @@ const buttonVariants = cva(
 ```
 
 ## Design System Organization
-- Core UI components in `@basilic/ui`
+- Core UI components in `@repo/ui`
 - Application-specific components in app's `components` folder
 - Hooks and utils collocated with components
 

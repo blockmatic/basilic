@@ -1,5 +1,5 @@
 // Re-export all Radix UI primitives for centralized access
-// This allows apps to import Radix primitives from @basilic/ui/radix
+// This allows apps to import Radix primitives from @repo/ui/radix
 // instead of installing them individually
 //
 // Using namespace exports to avoid name collisions between packages

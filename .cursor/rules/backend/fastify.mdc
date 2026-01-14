@@ -8,15 +8,15 @@ alwaysApply: false
 
 ## Why Fastify
 
-We chose **Fastify** as the backend framework because it aligns perfectly with our architectural values: **contract-first**, **type-safe**, **fast**, and **simple to reason about**. Combined with **ts-rest** for strict API contracts, it provides the right balance between performance, developer experience, and long-term maintainability.
+We chose **Fastify** as the backend framework because it aligns perfectly with our architectural values: **type-safe**, **fast**, and **simple to reason about**. Combined with **OpenAPI generation** and **Hey API** for client generation, it provides the right balance between performance, developer experience, and long-term maintainability.
 
 ### Core Reasons
 
-1. **Contract-first with ts-rest**: Strict API contracts defined with TypeScript types, Zod schemas, and OpenAPI generation
-2. **Type-safe end-to-end**: Full type safety from API routes to client calls via ts-rest contracts
+1. **Fastify routes as source**: Routes define the API, OpenAPI spec generated automatically
+2. **Type-safe end-to-end**: Full type safety from API routes to client calls via generated clients
 3. **Fast and efficient**: High-performance HTTP framework optimized for Node.js
 4. **Zod-first validation**: Native integration with Zod for request/response validation
-5. **OpenAPI generation**: Automatic OpenAPI spec generation from ts-rest contracts
+5. **OpenAPI generation**: Automatic OpenAPI spec generation from Fastify routes via generate-openapi.ts
 6. **Functional patterns**: Clean, composable route handlers without decorators
 7. **ESM-native**: Built for modern ESM from day one, works seamlessly with Node.js and pnpm
 8. **Scales elegantly**: Composable plugins, modular route grouping, unified error handling
@@ -26,7 +26,6 @@ We chose **Fastify** as the backend framework because it aligns perfectly with o
 - Organize routes by domain/feature (e.g., `routes/wallet.ts`, `routes/user.ts`)
 - Keep routes focused and single-purpose
 - Use route grouping for related endpoints
-- Define ts-rest contracts in `contracts/` directory
 - Keep handlers thin - delegate business logic to services
 
 ## ESM Patterns
@@ -47,85 +46,58 @@ const moduleUrl = pathToFileURL(join(__dirname, '../dist/index.js')).href
 const { default } = await import(moduleUrl)
 ```
 
-## Contract-First API Design with ts-rest
-
-### Contract Definition Pattern
-
-```typescript
-// contracts/wallet.contract.ts
-import { initContract } from '@ts-rest/core'
-import { z } from 'zod'
-import { WalletSchema, CreateWalletInputSchema } from '@basilic/types'
-
-const c = initContract()
-
-export const walletContract = c.router({
-  createWallet: {
-    method: 'POST',
-    path: '/wallets',
-    body: CreateWalletInputSchema,
-    responses: {
-      201: WalletSchema,
-      400: z.object({ error: z.string() }),
-    },
-    summary: 'Create wallet',
-    description: 'Creates a new custodial wallet',
-  },
-  getWallet: {
-    method: 'GET',
-    path: '/wallets/:id',
-    pathParams: z.object({ id: z.string() }),
-    responses: {
-      200: WalletSchema,
-      404: z.object({ error: z.string() }),
-    },
-    summary: 'Get wallet',
-    description: 'Retrieves a wallet by ID',
-  },
-})
-```
-
-### Route Handler Pattern
+## Route Handler Pattern
 
 ```typescript
 // routes/wallet.ts
 import { FastifyInstance } from 'fastify'
-import { initServer } from '@ts-rest/fastify'
-import { walletContract } from '../contracts/wallet.contract'
+import { z } from 'zod'
 import { createWalletService, getWalletService } from '../services/wallet.service'
 
-export async function walletRoutes(fastify: FastifyInstance) {
-  const s = initServer()
+const CreateWalletSchema = z.object({
+  name: z.string(),
+  chainId: z.string(),
+})
 
-  s.router(walletContract, {
-    createWallet: async ({ body }) => {
-      // Body is already validated by ts-rest + Zod schema
-      const result = await createWalletService({ input: body })
-      
-      // Response is validated against contract
-      return {
-        status: 201,
-        body: result,
-      }
+const WalletSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  chainId: z.string(),
+  createdAt: z.string(),
+})
+
+export async function walletRoutes(fastify: FastifyInstance) {
+  fastify.post('/wallets', {
+    schema: {
+      body: CreateWalletSchema,
+      response: {
+        201: WalletSchema,
+        400: z.object({ error: z.string() }),
+      },
     },
-    getWallet: async ({ params }) => {
-      const wallet = await getWalletService({ id: params.id })
-      
-      if (!wallet) {
-        return {
-          status: 404,
-          body: { error: 'Wallet not found' },
-        }
-      }
-      
-      return {
-        status: 200,
-        body: wallet,
-      }
-    },
+  }, async (request, reply) => {
+    const result = await createWalletService({ input: request.body })
+    
+    return reply.code(201).send(result)
   })
 
-  await fastify.register(s.plugin)
+  fastify.get('/wallets/:id', {
+    schema: {
+      params: z.object({ id: z.string() }),
+      response: {
+        200: WalletSchema,
+        404: z.object({ error: z.string() }),
+      },
+    },
+  }, async (request, reply) => {
+    const wallet = await getWalletService({ id: request.params.id })
+    
+    if (!wallet) {
+      return reply.code(404).send({ error: 'Wallet not found' })
+    }
+    
+    return reply.send(wallet)
+  })
 }
 ```
 
@@ -159,50 +131,29 @@ start()
 
 ## Utility Libraries
 
-- **@basilic/lib**: Always use instead of custom implementations
+- **@namespace/lib**: Always use instead of custom implementations
   - Error: `getErrorMessage` (error extraction), `formatZodError` / `formatZodErrors` (zod error formatting), `sanitizeErrorMessage` (error sanitization)
   - Async: `fetchWithTimeout` (external APIs - replaces `fetch`), `delay` (replaces `setTimeout`)
   - Zod: `parseJsonWithSchema` (JSON parsing with validation), `isZodError` (type guards)
-  - Env: `validateEnvOrThrow` (environment validation - see [Environment Rules](../base/environment.mdc))
+  - Env: `validateEnvOrThrow` (environment validation)
 - **zod**: Use for all validation (request bodies, responses, environment variables, internal validation)
-- **@ts-rest/core**: Contract definitions
-- **@ts-rest/fastify**: Fastify integration for ts-rest
 - **lodash-es**: Use for array/object operations (`isEmpty`, `uniq`, `groupBy`, `merge`), type checking (`isPlainObject`, `isString`, `isArray`). Use per-function imports: `import isEmpty from 'lodash-es/isEmpty'`
 
 ## Error Handling
 
-- Use `formatZodError` / `formatZodErrors` from `@basilic/lib` for zod validation errors
-- Use `getErrorMessage` from `@basilic/lib` for consistent error message extraction
+- Use `formatZodError` / `formatZodErrors` from `@namespace/lib` for zod validation errors
+- Use `getErrorMessage` from `@namespace/lib` for consistent error message extraction
 - Return proper HTTP status codes (400 for validation errors, 500 for server errors)
-- Use ts-rest contract response types for type-safe error responses
 - Fastify's error handler can be customized for consistent error formatting
 
 ## Environment Variables
 
-See [Environment Rules](../base/environment.mdc) for pattern. Fastify apps use `validateEnvOrThrow` from `@basilic/lib` for environment validation.
+Fastify apps use `validateEnvOrThrow` from `@namespace/lib` for environment validation.
 
 ## OpenAPI Generation
 
-ts-rest contracts automatically generate OpenAPI specs. Use `@ts-rest/open-api` to generate OpenAPI documentation:
-
-```typescript
-import { generateOpenApi } from '@ts-rest/open-api'
-import { apiContract } from './contracts'
-
-const openApiDocument = generateOpenApi(apiContract, {
-  info: {
-    title: 'Basilic API',
-    version: '1.0.0',
-  },
-})
-```
+OpenAPI specs are generated from Fastify routes via `generate-openapi.ts`. The script scans route definitions and generates OpenAPI 3.0 specification. Hey API then generates TypeScript clients from the OpenAPI spec.
 
 ## Testing
 
-See [Testing Rules](./testing.mdc) for Fastify testing patterns. Use Fastify's `inject()` method for blackbox testing of routes.
-
-## Related Rules
-
-- [Testing Rules](./testing.mdc) - Fastify testing patterns
-- [TypeScript Rules](../base/typescript.mdc) - Type safety patterns
-- [Environment Rules](../base/environment.mdc) - Environment variable patterns
+Use Fastify's `inject()` method for blackbox testing of routes.

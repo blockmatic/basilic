@@ -1,9 +1,9 @@
 'use client'
 
-import { Button } from '@basilic/ui/components/button'
-import { Input } from '@basilic/ui/components/input'
-import { Textarea } from '@basilic/ui/components/textarea'
-import { cn } from '@basilic/ui/lib/utils'
+import { Button } from '@repo/ui/components/button'
+import { Input } from '@repo/ui/components/input'
+import { Textarea } from '@repo/ui/components/textarea'
+import { cn } from '@repo/ui/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import type * as React from 'react'
 

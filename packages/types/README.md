@@ -1,4 +1,4 @@
-# @basilic/types
+# @repo/types
 
 Pure TypeScript domain types with no runtime dependencies.
 
@@ -9,7 +9,7 @@ Domain models and shared types. No Zod, no hey-api, no runtime code—pure TypeS
 ## Usage
 
 ```ts
-import type { User, UserId } from '@basilic/types'
+import type { User, UserId } from '@repo/types'
 ```
 
 ## Architecture
@@ -19,6 +19,6 @@ import type { User, UserId } from '@basilic/types'
 - ❌ No validation schemas
 - ❌ No API boundary code
 
-Domain types live here. API shapes (DTOs) are derived from Zod schemas in `@basilic/contracts`.
+Domain types live here. API shapes (DTOs) are derived from Zod schemas in `@repo/contracts`.
 
 See [Package Conventions](https://basilic-docs.vercel.app/docs/architecture/package-conventions#1-packages-types) for type organization patterns.

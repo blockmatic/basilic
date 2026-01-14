@@ -1,7 +1,7 @@
 'use client'
 
-import { useHealthCheck } from '@basilic/react'
-import { Badge } from '@basilic/ui/components/badge'
+import { useHealthCheck } from '@repo/react'
+import { Badge } from '@repo/ui/components/badge'
 
 export function ApiHealthBadge() {
   const { data, isLoading, isError } = useHealthCheck()

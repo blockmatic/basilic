@@ -1,4 +1,4 @@
 {
-  "extends": "@basilic/typescript-config/base.json",
+  "extends": "@repo/typescript-config/base.json",
   "include": ["config/typescript/reset.d.ts"]
 }

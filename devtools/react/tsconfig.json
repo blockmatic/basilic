@@ -1,9 +1,9 @@
 {
-  "extends": "@basilic/typescript-config/base.json",
+  "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@basilic/tools/*": ["./*"]
+      "@repo/tools/*": ["./*"]
     }
   },
   "include": [".", "../../config/typescript/reset.d.ts"],

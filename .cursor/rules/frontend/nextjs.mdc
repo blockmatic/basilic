@@ -70,7 +70,7 @@ See [Environment Rules](../base/environment.mdc) for pattern. Next.js automatica
 **Validation Pattern:**
 ```tsx
 import { z } from 'zod'
-import { getEnvHelper } from '@basilic/lib'
+import { getEnvHelper } from '@repo/lib'
 
 const envSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url(),
@@ -88,7 +88,7 @@ export const zEnv = getEnvHelper({ schema: envSchema })
 ## Server Actions
 ```tsx
 'use server'
-import { type ActionResult, success, failure } from '@basilic/next'
+import { type ActionResult, success, failure } from '@repo/next'
 import { createSafeActionClient } from 'next-safe-action'
 
 export const saveAction = createSafeActionClient()
@@ -102,20 +102,24 @@ export const saveAction = createSafeActionClient()
   })
 ```
 
-## API Client with ts-rest
+## API Client with Generated Clients
 ```tsx
-import { initClient } from '@ts-rest/core'
-import { apiContract } from '@basilic/contracts'
+import { createApi } from '@repo/core'
+import { useWallet } from '@repo/react'
 
-const client = initClient(apiContract, {
+// Runtime-agnostic client
+const api = createApi({
   baseUrl: process.env.NEXT_PUBLIC_API_URL!,
-  baseHeaders: {},
+  getAuthToken: async () => session?.token,
 })
 
 // Type-safe API calls
-const result = await client.getWallet({ params: { id: '123' } })
-if (result.status === 200) {
-  // result.body is fully typed
+const wallet = await api.wallets.getWallet({ params: { id: '123' } })
+
+// Or use generated React Query hooks
+function WalletComponent({ id }: { id: string }) {
+  const { data, isLoading } = useWallet({ params: { id } })
+  // data is fully typed from OpenAPI spec
 }
 ```
 
@@ -126,7 +130,7 @@ if (result.status === 200) {
 
 ## Linting Considerations
 
-- **ESLint**: Next.js apps use `@basilic/eslint-config/next-js` which enforces:
+- **ESLint**: Next.js apps use `@repo/eslint-config/next-js` which enforces:
   - Next.js specific rules (`@next/eslint-plugin-next`)
   - React and React Hooks rules
   - Import boundary enforcement (default exports allowed for pages/layouts only)

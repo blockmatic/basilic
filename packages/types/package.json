@@ -1,5 +1,5 @@
 {
-  "name": "@basilic/types",
+  "name": "@repo/types",
   "version": "0.0.0",
   "type": "module",
   "private": true,
@@ -18,8 +18,8 @@
     "postpack": "node ../../scripts/restore-publish.mjs"
   },
   "devDependencies": {
-    "@basilic/eslint-config": "workspace:*",
-    "@basilic/typescript-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "eslint": "^9.39.2",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"

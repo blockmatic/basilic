@@ -1,5 +1,5 @@
 {
-  "name": "@basilic/core",
+  "name": "@repo/core",
   "version": "0.0.0",
   "type": "module",
   "private": true,
@@ -19,8 +19,8 @@
     "generate": "openapi-ts"
   },
   "devDependencies": {
-    "@basilic/eslint-config": "workspace:*",
-    "@basilic/typescript-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@hey-api/openapi-ts": "^0.90.3",
     "eslint": "^9.39.2",
     "tsup": "^8.5.1",

@@ -50,7 +50,7 @@ flowchart TB
   end
 
   subgraph Packages["Shared Packages"]
-    UI["@basilic/ui<br/>(Shadcn components)"]
+    UI["@repo/ui<br/>(Shadcn components)"]
   end
 
   subgraph Primitives["UI Primitives"]
@@ -66,7 +66,7 @@ flowchart TB
 
 ## Component Organization
 
-Components are organized in the `@basilic/ui` package:
+Components are organized in the `@repo/ui` package:
 
 - **Base components** - Button, Input, Card, etc. (from Shadcn/ui)
 - **Custom components** - Domain-specific components built on base
@@ -75,7 +75,7 @@ Components are organized in the `@basilic/ui` package:
 ## Development Workflow
 
 1. **AI prototyping** - Use v0 to generate component ideas
-2. **Component copy** - Copy Shadcn/ui components into `@basilic/ui`
+2. **Component copy** - Copy Shadcn/ui components into `@repo/ui`
 3. **Customization** - Modify components to match design requirements
 4. **Usage** - Import components in Next.js apps
 5. **Sharing** - Components available across all frontend apps
@@ -97,7 +97,7 @@ Full type safety throughout:
 - **Component props** - Fully typed component interfaces
 - **Next.js routes** - Type-safe routing with App Router
 - **API clients** - Type-safe API calls via generated hey-api clients
-- **Shared types** - Domain types from `@basilic/types`
+- **Shared types** - Domain types from `@repo/types`
 
 ## Related Documentation
 

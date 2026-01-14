@@ -1,6 +1,6 @@
 {
-  "buildCommand": "cd ../.. && pnpm build --filter=@basilic/web",
-  "devCommand": "cd ../.. && pnpm dev --filter=@basilic/web",
+  "buildCommand": "cd ../.. && pnpm build --filter=@repo/web",
+  "devCommand": "cd ../.. && pnpm dev --filter=@repo/web",
   "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",
   "outputDirectory": ".next",

@@ -1,7 +1,7 @@
 'use client'
 
-import { cn } from '@basilic/ui/lib/utils'
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area'
+import { cn } from '@repo/ui/lib/utils'
 import type * as React from 'react'
 
 function ScrollArea({

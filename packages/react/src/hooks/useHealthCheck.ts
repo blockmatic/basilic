@@ -1,4 +1,4 @@
-import type { HealthCheckResponse } from '@basilic/core'
+import type { HealthCheckResponse } from '@repo/core'
 import type { UseQueryOptions } from '@tanstack/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context.js'
