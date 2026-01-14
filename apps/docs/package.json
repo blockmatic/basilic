@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@basilic/ui": "workspace:*",
+    "@t3-oss/env-nextjs": "^0.13.10",
     "fumadocs-core": "16.4.7",
     "fumadocs-mdx": "14.2.5",
     "fumadocs-ui": "16.4.7",
@@ -23,16 +24,15 @@
     "next": "16.1.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "zod": "^4.3.5",
-    "@t3-oss/env-nextjs": "^0.13.8"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@basilic/eslint-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
     "@types/node": "^25.0.8",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
-    "@basilic/eslint-config": "workspace:*",
     "browserslist": "^4.28.1",
     "eslint": "^9.39.2",
     "postcss": "^8.5.6",

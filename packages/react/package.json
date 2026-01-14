@@ -25,10 +25,10 @@
     "@basilic/eslint-config": "workspace:*",
     "@basilic/typescript-config": "workspace:*",
     "@hey-api/openapi-ts": "^0.90.3",
-    "@tanstack/react-query": "^5.77.0",
+    "@tanstack/react-query": "^5.90.17",
     "@types/react": "^19.2.8",
     "eslint": "^9.39.2",
-    "tsup": "^8.3.5",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

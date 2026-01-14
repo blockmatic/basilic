@@ -51,6 +51,9 @@ export const nextJsConfig = [
     settings: { react: { version: 'detect' } },
     rules: {
       ...pluginReactHooks.configs.recommended.rules,
+      // Disable React Compiler rules if not using React Compiler
+      // These are enabled by default in eslint-plugin-react-hooks v7+
+      'react-hooks/compiler': 'off',
       // Formatting rules - disabled (Biome handles)
       semi: 'off',
       quotes: 'off',

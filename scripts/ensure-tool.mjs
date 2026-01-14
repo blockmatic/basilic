@@ -41,7 +41,7 @@ const TOOL_INSTALL_INSTRUCTIONS = {
       manual: 'https://github.com/trufflesecurity/trufflehog#installation',
     },
     linux: {
-      install: `ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_linux_\${ARCH}.tar.gz && tar -xzf /tmp/trufflehog.tar.gz -C /tmp && sudo mv /tmp/trufflehog /usr/local/bin/`,
+      install: `ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && TAG=$(curl -s https://api.github.com/repos/trufflesecurity/trufflehog/releases/latest | grep -oP '"tag_name":\\s*"\\K[^"]+' | sed 's/^v//') && wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_\${TAG}_linux_\${ARCH}.tar.gz && tar -xzf /tmp/trufflehog.tar.gz -C /tmp && sudo mv /tmp/trufflehog /usr/local/bin/`,
       manual: 'https://github.com/trufflesecurity/trufflehog#installation',
     },
     win32: {

@@ -142,29 +142,56 @@ function PieChart({
   const centerY = height / 2
   const radius = Math.min(width, height) / 2 - 20
 
-  let currentAngle = -90
+  // Guard against total === 0 to prevent NaN in percentage calculations
+  if (total === 0) {
+    return (
+      <div className="flex flex-col items-center gap-4 md:flex-row">
+        <svg width={width} height={height} className="overflow-visible" />
+        <div className="flex flex-col gap-2">
+          {data.map((point, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div
+                className="h-4 w-4 rounded"
+                style={{
+                  backgroundColor: point.color || `hsl(${(index * 360) / data.length}, 70%, 50%)`,
+                }}
+              />
+              <span className="text-sm">{point.label}: 0%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
-  const paths = data.map((point, index) => {
-    const percentage = point.value / total
-    const angle = percentage * 360
-    const startAngle = currentAngle
-    const endAngle = currentAngle + angle
+  const paths = data.reduce(
+    ({ paths: accPaths, currentAngle }, point, index) => {
+      const percentage = point.value / total
+      const angle = percentage * 360
+      const startAngle = currentAngle
+      const endAngle = currentAngle + angle
 
-    const x1 = centerX + radius * Math.cos((startAngle * Math.PI) / 180)
-    const y1 = centerY + radius * Math.sin((startAngle * Math.PI) / 180)
-    const x2 = centerX + radius * Math.cos((endAngle * Math.PI) / 180)
-    const y2 = centerY + radius * Math.sin((endAngle * Math.PI) / 180)
+      const x1 = centerX + radius * Math.cos((startAngle * Math.PI) / 180)
+      const y1 = centerY + radius * Math.sin((startAngle * Math.PI) / 180)
+      const x2 = centerX + radius * Math.cos((endAngle * Math.PI) / 180)
+      const y2 = centerY + radius * Math.sin((endAngle * Math.PI) / 180)
 
-    const largeArcFlag = angle > 180 ? 1 : 0
+      const largeArcFlag = angle > 180 ? 1 : 0
 
-    const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
+      const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
 
-    currentAngle += angle
+      const color = point.color || `hsl(${(index * 360) / data.length}, 70%, 50%)`
 
-    const color = point.color || `hsl(${(index * 360) / data.length}, 70%, 50%)`
-
-    return { pathData, color, label: point.label, percentage }
-  })
+      return {
+        paths: [...accPaths, { pathData, color, label: point.label, percentage }],
+        currentAngle: currentAngle + angle,
+      }
+    },
+    {
+      paths: [] as Array<{ pathData: string; color: string; label: string; percentage: number }>,
+      currentAngle: -90,
+    },
+  ).paths
 
   return (
     <div className="flex flex-col items-center gap-4 md:flex-row">
