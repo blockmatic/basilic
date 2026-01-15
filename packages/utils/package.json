@@ -24,6 +24,10 @@
       "node": "./dist/logger/server.js",
       "import": "./dist/logger/server.js",
       "default": "./dist/logger/server.js"
+    },
+    "./debug": {
+      "types": "./src/debug/index.ts",
+      "import": "./dist/debug/index.js"
     }
   },
   "scripts": {
@@ -36,8 +40,12 @@
   },
   "peerDependencies": {
     "lodash-es": "*",
+    "nuqs": "*",
     "pino": "*",
+    "react": "*",
+    "react-use": "*",
     "typescript": "^5.0.0",
+    "vconsole": "*",
     "viem": "*",
     "zod": "*",
     "zod-validation-error": "*"
@@ -46,13 +54,18 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/lodash-es": "latest",
-    "@types/node": "^24.10.1",
-    "eslint": "^9.32.0",
+    "@types/node": "^25.0.9",
+    "@types/react": "^19.2.8",
+    "eslint": "^9.39.2",
     "lodash-es": "latest",
-    "tsup": "^8.3.5",
-    "typescript": "^5.9.2",
-    "viem": "2.44.1",
-    "zod": "^3.25.76",
-    "zod-validation-error": "^3.3.0"
+    "nuqs": "^2.8.6",
+    "react": "^19.2.3",
+    "react-use": "^17.6.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vconsole": "^3.15.1",
+    "viem": "2.44.4",
+    "zod": "^4.3.5",
+    "zod-validation-error": "^5.0.0"
   }
 }

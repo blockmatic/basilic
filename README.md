@@ -54,7 +54,7 @@ See [Security Guide](https://basilic-docs.vercel.app/docs/guides/security) for c
 ## Structure
 
 - **`apps/`** - Applications (API, Web, Docs)
-- **`packages/`** - Shared packages (contracts, core, react, types, ui)
+- **`packages/`** - Shared packages (core, react, ui, utils)
 - **`devtools/`** - Shared development tooling (eslint, react, typescript configs)
 
 ## Documentation

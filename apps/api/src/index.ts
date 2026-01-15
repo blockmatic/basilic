@@ -1,3 +1,4 @@
+import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import Fastify from 'fastify'
 import app from './app.js'
 import { env } from './lib/env.js'
@@ -21,7 +22,7 @@ const fastify = Fastify({
   requestIdHeader: 'x-request-id',
   requestIdLogLabel: 'reqId',
   disableRequestLogging: false,
-})
+}).withTypeProvider<TypeBoxTypeProvider>()
 
 fastify.register(app)
 

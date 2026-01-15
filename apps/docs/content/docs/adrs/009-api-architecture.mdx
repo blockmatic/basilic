@@ -197,10 +197,11 @@ TypeScript clients are generated using `@hey-api/openapi-ts`:
 
 Fastify routes are the source of truth:
 
-- Routes implemented in `apps/api/src/routes/` with schemas and metadata
+- Routes implemented in `apps/api/src/routes/` with TypeBox schemas (native JSON Schema)
 - OpenAPI spec automatically generated from route definitions via `generate-openapi.ts`
-- Type-safe request/response handling via route schemas
-- Validation uses Zod schemas defined in routes
+- Type-safe request/response handling via route schemas with TypeBox type provider
+- Validation uses TypeBox schemas defined in routes (no conversion overhead)
+- Frontend receives Zod schemas generated from OpenAPI spec (via hey-api)
 
 ### Client Consumption
 

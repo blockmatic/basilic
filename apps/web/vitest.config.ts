@@ -19,7 +19,7 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './'),
       '@repo/ui': resolve(__dirname, '../../packages/ui/src'),
-      '@repo/types': resolve(__dirname, '../../packages/types/src/index.ts'),
+      '@repo/core': resolve(__dirname, '../../packages/core/src/index.ts'),
       'lucide-react': resolve(__dirname, './vitest.setup.lucide.ts'),
     },
   },

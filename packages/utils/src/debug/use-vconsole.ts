@@ -1,15 +1,16 @@
 'use client'
+
 /**
  * This module initializes and manages a debug console (VConsole) based on URL parameters and localStorage.
  * It allows enabling/disabling the debug mode via URL and persists the setting in localStorage.
  * The debug console is only initialized when debug mode is active.
  */
 
-import { logger } from '@repo/utils/logger'
 import { useQueryState } from 'nuqs'
 import { useEffect, useRef } from 'react'
 import { useLocalStorage } from 'react-use'
 import VConsole from 'vconsole'
+import { logger } from '../logger/client.js'
 
 export function useVConsole() {
   const [debugQuery, setDebugQuery] = useQueryState('debug')

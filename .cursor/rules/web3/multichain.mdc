@@ -17,7 +17,7 @@ alwaysApply: false
 ```tsx
 import { getAddress } from 'viem' // For EVM
 import { PublicKey } from '@solana/web3.js' // For Solana
-import type { ChainType } from '@repo/types'
+import type { ChainType } from '@repo/utils/web3'
 
 // RORO pattern for validation
 export function validateAddress({

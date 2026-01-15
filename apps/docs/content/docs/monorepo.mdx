@@ -13,7 +13,7 @@ Monorepo architecture using **Turborepo** for orchestration. Designed for projec
 All applications and packages coexist in one repository with clear organizational boundaries:
 
 - **`apps/`** - Applications (API, Docs, etc.)
-- **`packages/`** - Shared packages (types, contracts, core, react, ui, etc.)
+- **`packages/`** - Shared packages (core, react, ui, etc.)
 - **`devtools/`** - Shared development tooling (eslint, react, typescript configs)
 
 ## Why Monorepo?
@@ -29,8 +29,7 @@ All applications and packages coexist in one repository with clear organizationa
 ```mermaid
 flowchart TB
   subgraph Packages["packages/"]
-    Types["types<br/>(pure TS domain)"]
-    Core["core<br/>(generated hey-api client)"]
+    Core["core<br/>(generated hey-api client + types)"]
     React["react<br/>(TanStack Query)"]
     UI["ui<br/>(Shadcn components)"]
   end
@@ -40,7 +39,6 @@ flowchart TB
     Docs["docs<br/>(Fumadocs)"]
   end
 
-  Types --> Core
   API -->|OpenAPI| Core
   Core --> React
   React --> Docs
@@ -62,8 +60,7 @@ Intelligent caching: task caching, parallel execution, remote caching, pipeline 
 
 Packages follow strict dependency rules:
 
-- **`types`** - Pure TypeScript domain types (no runtime dependencies)
-- **`core`** - Generated runtime-agnostic API client (via hey-api from OpenAPI)
+- **`core`** - Generated runtime-agnostic API client + types (via hey-api from OpenAPI)
 - **`react`** - React-specific hooks and TanStack Query integration (generated via hey-api)
 - **`ui`** - Shared UI components (Shadcn/ui based)
 
@@ -72,9 +69,7 @@ Packages follow strict dependency rules:
 Strict one-way dependencies prevent circular references:
 
 ```
-types → core → react
-         ↑
-    apps/api (OpenAPI)
+apps/api (OpenAPI) → core → react
 ```
 
 ## Workspace Configuration

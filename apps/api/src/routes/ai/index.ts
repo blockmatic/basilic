@@ -1,38 +1,30 @@
 import { createOpenAI } from '@ai-sdk/openai'
 import { getErrorMessage } from '@repo/utils/error'
 import { logger } from '@repo/utils/logger'
+import { type Static, Type } from '@sinclair/typebox'
 import { generateText, streamText } from 'ai'
 import type { FastifyPluginAsync } from 'fastify'
-import { z } from 'zod'
 import { env } from '../../lib/env.js'
 
-const ChatMessageSchema = z.object({
-  role: z.enum(['user', 'assistant', 'system']),
-  content: z.string(),
+const ChatMessageSchema = Type.Object({
+  role: Type.Union([Type.Literal('user'), Type.Literal('assistant'), Type.Literal('system')]),
+  content: Type.String(),
 })
 
-const ChatRequestSchema = z.object({
-  messages: z.array(ChatMessageSchema).min(1),
-  model: z.string().optional().default('gpt-4o-mini'),
+const ChatRequestSchema = Type.Object({
+  messages: Type.Array(ChatMessageSchema, { minItems: 1 }),
+  model: Type.Optional(Type.String({ default: 'gpt-4o-mini' })),
 })
 
-const ChatResponseSchema = z.object({
-  text: z.string(),
+type ChatRequest = Static<typeof ChatRequestSchema>
+
+const ChatResponseSchema = Type.Object({
+  text: Type.String(),
 })
 
-const ErrorSchema = z.object({
-  code: z.string(),
-  message: z.string(),
-})
-
-const ChatRequestJsonSchema = z.toJSONSchema(ChatRequestSchema, {
-  target: 'openapi-3.0',
-})
-const ChatResponseJsonSchema = z.toJSONSchema(ChatResponseSchema, {
-  target: 'openapi-3.0',
-})
-const ErrorJsonSchema = z.toJSONSchema(ErrorSchema, {
-  target: 'openapi-3.0',
+const ErrorSchema = Type.Object({
+  code: Type.String(),
+  message: Type.String(),
 })
 
 const openai = createOpenAI({
@@ -48,26 +40,26 @@ const aiRoutes: FastifyPluginAsync = async (fastify, _opts) => {
         description: 'Chat with AI using OpenAI',
         summary: 'Generate AI chat response',
         tags: ['ai'],
-        body: ChatRequestJsonSchema,
+        body: ChatRequestSchema,
         response: {
-          200: ChatResponseJsonSchema,
-          400: ErrorJsonSchema,
-          500: ErrorJsonSchema,
+          200: ChatResponseSchema,
+          400: ErrorSchema,
+          500: ErrorSchema,
         },
       },
     },
     async (request, reply) => {
       const requestLogger = logger.child({ requestId: request.id })
       try {
-        // Validate request body with Zod
-        const validatedBody = ChatRequestSchema.parse(request.body)
-        const { messages, model } = validatedBody
+        // Fastify validates automatically - request.body is typed and validated
+        const body = request.body as ChatRequest
+        const { messages, model } = body
 
         requestLogger.debug({ messages: messages.length, model }, 'Processing chat request')
 
         const result = await generateText({
-          model: openai(model),
-          messages,
+          model: openai(model ?? 'gpt-4o-mini'),
+          messages: messages as Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
         })
 
         return reply.code(200).send({
@@ -77,13 +69,7 @@ const aiRoutes: FastifyPluginAsync = async (fastify, _opts) => {
         const errorMessage = getErrorMessage(error)
         requestLogger.error({ error, context: { requestId: request.id } }, 'Chat request failed')
 
-        if (error instanceof z.ZodError) {
-          return reply.code(400).send({
-            code: 'VALIDATION_ERROR',
-            message: errorMessage ?? 'Invalid request',
-          })
-        }
-
+        // Fastify handles validation errors automatically, this catches other errors
         return reply.code(500).send({
           code: 'INTERNAL_ERROR',
           message: errorMessage ?? 'An error occurred processing your request',
@@ -100,23 +86,20 @@ const aiRoutes: FastifyPluginAsync = async (fastify, _opts) => {
         description: 'Stream AI chat response using OpenAI',
         summary: 'Stream AI chat response',
         tags: ['ai'],
-        body: ChatRequestJsonSchema,
+        body: ChatRequestSchema,
         response: {
-          200: {
-            type: 'string',
-            description: 'Streaming text response',
-          },
-          400: ErrorJsonSchema,
-          500: ErrorJsonSchema,
+          200: Type.String({ description: 'Streaming text response' }),
+          400: ErrorSchema,
+          500: ErrorSchema,
         },
       },
     },
     async (request, reply) => {
       const requestLogger = logger.child({ requestId: request.id })
       try {
-        // Validate request body with Zod
-        const validatedBody = ChatRequestSchema.parse(request.body)
-        const { messages, model } = validatedBody
+        // Fastify validates automatically - request.body is typed and validated
+        const body = request.body as ChatRequest
+        const { messages, model } = body
 
         requestLogger.debug(
           { messages: messages.length, model },
@@ -124,8 +107,8 @@ const aiRoutes: FastifyPluginAsync = async (fastify, _opts) => {
         )
 
         const result = streamText({
-          model: openai(model),
-          messages,
+          model: openai(model ?? 'gpt-4o-mini'),
+          messages: messages as Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
         })
 
         reply.header('Content-Type', 'text/event-stream')
@@ -142,14 +125,7 @@ const aiRoutes: FastifyPluginAsync = async (fastify, _opts) => {
           'Streaming chat request failed',
         )
 
-        // Error occurred before streaming started, send JSON error response
-        if (error instanceof z.ZodError) {
-          return reply.code(400).send({
-            code: 'VALIDATION_ERROR',
-            message: errorMessage ?? 'Invalid request',
-          })
-        }
-
+        // Fastify handles validation errors automatically, this catches other errors
         return reply.code(500).send({
           code: 'INTERNAL_ERROR',
           message: errorMessage ?? 'An error occurred processing your request',

@@ -30,8 +30,7 @@ alwaysApply: false
 ## Modularization and Imports
 - Use `@repo/lib` for shared utilities (error, async, env, zod helpers)
 - Use Zod for schema validation + inference (`z.infer<typeof schema>`)
-- Prefer importing types from `@repo/core` over `@repo/types` when re-exported
-- Schema imports should use `@repo/types/schemas` when not re-exported from `@repo/core`
+- Import all types from `@repo/core` (types are exported from core package)
 - Lodash: prefer `lodash-es` and per-function imports for tree-shaking + RSC safety  
   - ✅ `import isEmpty from "lodash-es/isEmpty"`  
   - ❌ `import { isEmpty } from "lodash-es"`

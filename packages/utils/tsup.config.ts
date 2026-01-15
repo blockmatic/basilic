@@ -9,6 +9,7 @@ export default defineConfig({
     'src/logger/index.ts',
     'src/logger/client.ts',
     'src/logger/server.ts',
+    'src/debug/index.ts',
   ],
   format: ['esm'],
   dts: true,

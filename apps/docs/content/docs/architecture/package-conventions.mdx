@@ -1,9 +1,9 @@
 ---
 title: "Package Conventions"
-description: "Monorepo package architecture conventions: types / contracts / core / react with clean boundaries, no duplication, and portable design."
+description: "Monorepo package architecture conventions: core / react with clean boundaries, no duplication, and portable design."
 ---
 
-# Monorepo Conventions: types / core / react
+# Monorepo Conventions: core / react
 
 This document defines the conventions and package architecture for a **TypeScript + ESM** monorepo that uses:
 
@@ -26,17 +26,16 @@ We want three outcomes at the same time:
 
 The key idea:
 
-* **Domain types** are pure TypeScript.
+* **Domain types** are pure TypeScript, exported from `core`.
 * **OpenAPI specs** define API contracts (source of truth).
-* **core** provides generated **hey-api clients** (runtime-agnostic).
+* **core** provides generated **hey-api clients** (runtime-agnostic) and exports all types.
 * **react** provides **TanStack Query** hooks from generated clients.
 
 ## Package layout
 
 ```
 packages/
-  types/       # pure TS domain types (no zod, no hey-api)
-  core/        # generated hey-api client (runtime-agnostic)
+  core/        # generated hey-api client + types (runtime-agnostic)
   react/       # react-query hooks from generated clients
 apps/
   api/         # Fastify server + OpenAPI spec
@@ -45,8 +44,7 @@ apps/
 
 ### Dependency direction (strict)
 
-* `types` → depends on nothing
-* `core` → depends on generated hey-api client code
+* `core` → depends on generated hey-api client code, exports all types
 * `react` → depends on `core` and generated client code
 
 No reverse dependencies.
@@ -56,10 +54,8 @@ No reverse dependencies.
 ```mermaid
 flowchart TB
   subgraph P[packages]
-    T[types
-(pure TS domain)]
     K[core
-(generated hey-api client)]
+(generated hey-api client + types)]
     R[react
 (TanStack Query hooks)]
   end
@@ -71,7 +67,6 @@ flowchart TB
 (Next.js)]
   end
 
-  T --> K
   K --> R
 
   API -->|OpenAPI JSON| GEN[hey-api Generator]
@@ -86,44 +81,7 @@ flowchart TB
 
 ## Package responsibilities
 
-### 1) `packages/types`
-
-**What goes here**
-
-* Domain models and shared non-HTTP types: `User`, `Wallet`, `ChainId`, `Money`, etc.
-
-**Hard rules**
-
-* ✅ TypeScript `type`/`interface` only
-* ❌ No `zod`
-* ❌ No `hey-api`
-* ❌ No runtime helpers
-
-**Example**
-
-```ts
-// packages/types/src/index.ts
-export type UserId = string;
-
-export interface User {
-  id: UserId;
-  email: string;
-}
-
-export type ApiErrorCode =
-  | "UNAUTHORIZED"
-  | "NOT_FOUND"
-  | "VALIDATION_ERROR"
-  | "INTERNAL_ERROR";
-
-export interface ApiError {
-  code: ApiErrorCode;
-  message: string;
-  requestId?: string;
-}
-```
-
-### 2) OpenAPI Specification
+### 1) OpenAPI Specification
 
 The **HTTP boundary** is defined by the OpenAPI spec.
 
@@ -181,13 +139,14 @@ The OpenAPI spec defines all API contracts. hey-api generates TypeScript clients
 }
 ```
 
-### 3) `packages/core`
+### 2) `packages/core`
 
-The **runtime-agnostic** client package with generated hey-api clients.
+The **runtime-agnostic** client package with generated hey-api clients and types.
 
 **What goes here**
 
 * Generated TypeScript client code from OpenAPI spec (via `@hey-api/openapi-ts`)
+* All domain types and API types (exported from generated types)
 * `createApi({ baseUrl, getAuthToken, getHeaders })` wrapper
 * shared fetch behavior (headers, auth, retries if you want)
 
@@ -197,6 +156,7 @@ The **runtime-agnostic** client package with generated hey-api clients.
 * ✅ No TanStack
 * ✅ OK to be used in Node, Next, Workers (depending on fetch)
 * ✅ Generated code lives in `src/gen/` directory
+* ✅ Exports all types via `export type * from './gen/types.gen.js'`
 
 **Example**
 
@@ -246,9 +206,10 @@ export function createApi(options: CoreClientOptions) {
 // packages/core/src/index.ts
 export { createApi } from "./api";
 export type { CoreClientOptions } from "./config";
+export type * from "./gen/types.gen.js"; // All types exported here
 ```
 
-### 4) `packages/react`
+### 3) `packages/react`
 
 React-only helpers using **TanStack Query** with generated hooks.
 
@@ -443,10 +404,8 @@ Next.js should transpile workspace packages:
 // apps/web/next.config.js
 module.exports = {
   transpilePackages: [
-    "@acme/types",
-    "@acme/contracts",
-    "@acme/core",
-    "@acme/react"
+    "@repo/core",
+    "@repo/react"
   ],
 };
 ```
@@ -455,26 +414,18 @@ This keeps DX smooth without having to prebuild packages.
 
 ## Import conventions (do this, not that)
 
-### Domain types
+### Domain types and API types
 
 ✅
 
 ```ts
-import type { User } from "@acme/types";
+import type { User, UserDTO } from "@repo/core";
 ```
 
-### API-derived DTO types
-
-✅
-
-```ts
-import type { UserDTO } from "@acme/contracts";
-```
-
-### Avoid leaking contracts runtime
-
-* In non-HTTP domain code, prefer importing from `types`.
-* Only import from `contracts` when you are working on API boundary shapes.
+All types are exported from `@repo/core`, including:
+* Domain types (if defined in OpenAPI spec)
+* API request/response types (generated from OpenAPI spec)
+* Client configuration types
 
 ## Checklist for new endpoints
 
@@ -561,9 +512,8 @@ function MyComponent() {
 
 ## Summary
 
-* `types` stays clean: **no runtime, no API boundary**
 * **OpenAPI spec** is the API specification: **source of truth** for all languages
-* `core` is the generated client: **runtime-agnostic**, generated by hey-api
+* `core` is the generated client and types: **runtime-agnostic**, generated by hey-api, exports all types
 * `react` is the React layer: **TanStack Query hooks**, generated by hey-api
 * ESM everywhere
 * tsup builds dist for npm

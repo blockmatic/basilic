@@ -37,5 +37,12 @@
   "packageManager": "pnpm@10.28.0",
   "simple-git-hooks": {
     "pre-commit": "pnpm run hooks:pre-commit"
+  },
+  "pnpm": {
+    "overrides": {
+      "tmp@<=0.2.3": ">=0.2.4",
+      "js-yaml@<4.1.1": ">=4.1.1",
+      "diff@<8.0.3": ">=8.0.3"
+    }
   }
 }

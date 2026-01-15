@@ -60,7 +60,7 @@ pnpm dev
 
 **Apps:** `apps/api/` (Fastify backend), `apps/docs/` (documentation)
 
-**Packages:** `core/` (generated API client), `types/` (domain types), `react/` (React Query hooks), `ui/` (components)
+**Packages:** `core/` (generated API client + types), `react/` (React Query hooks), `ui/` (components)
 
 ```mermaid
 flowchart TB
@@ -70,13 +70,11 @@ flowchart TB
   end
 
   subgraph Packages["Shared Packages"]
-    Types["@repo/types<br/>Domain types"]
-    Core["@repo/core<br/>Generated API client"]
+    Core["@repo/core<br/>Generated API client + types"]
     React["@repo/react<br/>React hooks"]
     UI["@repo/ui<br/>Components"]
   end
 
-  Types --> Core
   Core --> React
   API -->|OpenAPI| Core
   UI --> Docs

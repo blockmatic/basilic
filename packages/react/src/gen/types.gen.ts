@@ -13,7 +13,7 @@ export type HealthCheckData = {
 
 export type HealthCheckResponses = {
     /**
-     * Health check response
+     * Default Response
      */
     200: {
         ok: true;

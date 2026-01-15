@@ -7,7 +7,9 @@ We use a **Fastify REST API** that exposes **OpenAPI** specifications. The OpenA
 
 ## Architecture
 
-**Fastify routes** define the API endpoints. The **OpenAPI spec** is automatically generated from route definitions via `generate-openapi.ts`. **Hey API** generates type-safe TypeScript clients from the OpenAPI spec.
+**Fastify routes** define the API endpoints using **TypeBox** schemas (native JSON Schema). The **OpenAPI spec** is automatically generated from route definitions via `generate-openapi.ts`. **Hey API** generates type-safe TypeScript clients with **Zod schemas** from the OpenAPI spec.
+
+**Data Flow:** TypeBox (Backend) → OpenAPI Spec → Zod Schemas + Types (Frontend)
 
 ## Benefits
 
@@ -23,22 +25,27 @@ We use a **Fastify REST API** that exposes **OpenAPI** specifications. The OpenA
 
 **1. Implement Routes** (`apps/api/src/routes/`)
 
-Fastify routes are implemented with schemas and metadata:
+Fastify routes are implemented with TypeBox schemas (native JSON Schema):
 
 ```typescript
+import { Type } from 'typebox'
+
+const HealthResponseSchema = Type.Object({
+  ok: Type.Literal(true),
+  now: Type.String({ format: 'date-time' }),
+})
+
 fastify.get('/health', {
   schema: {
     response: {
-      200: {
-        type: 'object',
-        properties: {
-          status: { type: 'string' }
-        }
-      }
-    }
-  }
+      200: HealthResponseSchema,
+    },
+  },
 }, async (request, reply) => {
-  return { status: 'ok' }
+  return reply.send({
+    ok: true,
+    now: new Date().toISOString(),
+  })
 })
 ```
 

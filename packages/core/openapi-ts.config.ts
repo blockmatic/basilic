@@ -9,4 +9,7 @@ export default defineConfig({
   types: {
     enums: 'typescript',
   },
+  schemas: {
+    type: 'zod',
+  },
 })

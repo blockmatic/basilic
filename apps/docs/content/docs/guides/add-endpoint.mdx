@@ -8,37 +8,37 @@ Complete walkthrough for adding a new API endpoint with full type safety.
 ## Overview
 
 Adding an endpoint:
-1. Define Fastify route with Zod schemas
+1. Define Fastify route with TypeBox schemas (native JSON Schema)
 2. Generate OpenAPI spec from routes
-3. Generate TypeScript clients from OpenAPI
+3. Generate TypeScript clients with Zod schemas from OpenAPI
 4. Use generated typed clients
 
 ## Step 1: Implement Server Route
 
-Define Zod schemas and implement the Fastify route in `apps/api/src/routes/`:
+Define TypeBox schemas and implement the Fastify route in `apps/api/src/routes/`:
 
 ```typescript
 // apps/api/src/routes/users.ts
-import { FastifyInstance } from 'fastify'
-import { z } from 'zod'
+import { Type } from 'typebox'
+import type { FastifyPluginAsync } from 'fastify'
 
-// Define Zod schemas
-const UserParamsSchema = z.object({
-  id: z.string(),
+// Define TypeBox schemas (native JSON Schema)
+const UserParamsSchema = Type.Object({
+  id: Type.String(),
 })
 
-const UserSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  name: z.string(),
+const UserSchema = Type.Object({
+  id: Type.String(),
+  email: Type.String({ format: 'email' }),
+  name: Type.String(),
 })
 
-const ErrorSchema = z.object({
-  code: z.string(),
-  message: z.string(),
+const ErrorSchema = Type.Object({
+  code: Type.String(),
+  message: Type.String(),
 })
 
-export async function userRoutes(fastify: FastifyInstance) {
+const userRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/users/:id', {
     schema: {
       params: UserParamsSchema,
@@ -48,6 +48,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
+    // request.params is automatically typed from schema
     const { id } = request.params
     
     // Your implementation here
@@ -63,6 +64,8 @@ export async function userRoutes(fastify: FastifyInstance) {
     return reply.send(user)
   })
 }
+
+export default userRoutes
 ```
 
 ## Step 2: Generate OpenAPI Spec
@@ -116,9 +119,9 @@ const { data } = useUser({ id: '123' })
 
 ## Checklist
 
-- [ ] Server route implemented with Zod schemas
+- [ ] Server route implemented with TypeBox schemas
 - [ ] OpenAPI spec generated from routes
-- [ ] Clients generated with hey-api
+- [ ] Clients generated with hey-api (includes Zod schemas)
 - [ ] Generated client usage tested in frontend
 
 ## Related Documentation

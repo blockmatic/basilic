@@ -1,4 +1,10 @@
+import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
+
+export const HealthResponseSchema = Type.Object({
+  ok: Type.Literal(true),
+  now: Type.String({ format: 'date-time' }),
+})
 
 const healthRoutes: FastifyPluginAsync = async fastify => {
   fastify.get(
@@ -10,21 +16,7 @@ const healthRoutes: FastifyPluginAsync = async fastify => {
         summary: 'Returns server health status with current ISO datetime',
         tags: ['health'],
         response: {
-          200: {
-            description: 'Health check response',
-            type: 'object',
-            properties: {
-              ok: {
-                type: 'boolean',
-                enum: [true],
-              },
-              now: {
-                type: 'string',
-                format: 'date-time',
-              },
-            },
-            required: ['ok', 'now'],
-          },
+          200: HealthResponseSchema,
         },
       },
     },

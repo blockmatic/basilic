@@ -17,9 +17,8 @@ A Next.js application in this monorepo. This is a minimal hello world applicatio
 This app uses shared packages from this monorepo:
 
 - **`@repo/ui`** - Shared UI components and design system
-- **`@repo/types`** - Domain types
+- **`@repo/core`** - API client and types (for future API integration)
 - **`@repo/react`** - React Query hooks (for future API integration)
-- **`@repo/core`** - API client (for future API integration)
 
 See the [monorepo documentation](https://basilic-docs.vercel.app/docs/architecture/monorepo) for details on package architecture.
 

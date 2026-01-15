@@ -46,6 +46,7 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
         with:
           config-path: .gitleaks.toml
           redact: true
@@ -53,38 +54,10 @@ jobs:
           exit-code: 1
           fail: true
 
-      - name: Install TruffleHog
-        run: |
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
-          wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_linux_${ARCH}.tar.gz
-          tar -xzf /tmp/trufflehog.tar.gz -C /tmp
-          sudo mv /tmp/trufflehog /usr/local/bin/
-          trufflehog version
-
-      - name: Run TruffleHog (filesystem scan)
-        run: |
-          echo "🔍 Scanning filesystem for secrets..."
-          trufflehog filesystem . --fail --json || {
-            echo ""
-            echo "❌ SECURITY ISSUE: TruffleHog found secrets in the filesystem"
-            echo "Review the JSON output above for details about detected secrets"
-            echo "Remove or rotate any exposed secrets immediately"
-            exit 1
-          }
-          echo "✅ No secrets found in filesystem"
-
-      - name: Run TruffleHog (git history scan)
-        run: |
-          echo "🔍 Scanning git history for secrets..."
-          trufflehog git file://. --fail --json || {
-            echo ""
-            echo "❌ SECURITY ISSUE: TruffleHog found secrets in git history"
-            echo "Review the JSON output above for details about detected secrets"
-            echo "You may need to clean git history or rotate exposed secrets"
-            exit 1
-          }
-          echo "✅ No secrets found in git history"
+      - name: Run TruffleHog OSS (filesystem scan)
+        uses: trufflesecurity/trufflehog@821e8b9e5cdf8dc484dd23e06f78941fcf6b9191
+        with:
+          path: ./
 
       - name: Install OSV Scanner
         run: |
@@ -98,24 +71,31 @@ jobs:
       - name: Run OSV Scanner
         run: |
           echo "🔍 Scanning dependencies for known vulnerabilities..."
-          osv-scanner --lockfile=pnpm-lock.yaml || {
+          set +e
+          osv-scanner --lockfile=pnpm-lock.yaml
+          EXIT_CODE=$?
+          set -e
+          if [ $EXIT_CODE -ne 0 ]; then
             echo ""
             echo "❌ SECURITY ISSUE: OSV Scanner found known vulnerabilities in dependencies"
             echo "Review the output above for details about affected packages"
             echo "Update or replace vulnerable dependencies"
             exit 1
-          }
+          fi
           echo "✅ No known vulnerabilities found in dependencies"
 
       - name: Run pnpm audit
         run: |
           echo "🔍 Running pnpm audit for dependency vulnerabilities..."
-          pnpm audit --audit-level=moderate || {
+          set +e
+          pnpm audit --audit-level=moderate
+          EXIT_CODE=$?
+          set -e
+          if [ $EXIT_CODE -ne 0 ]; then
             echo ""
             echo "❌ SECURITY ISSUE: pnpm audit found vulnerabilities with severity >= moderate"
             echo "Review the audit output above for details about vulnerable packages"
             echo "Run 'pnpm audit fix' or update affected packages"
             exit 1
-          }
+          fi
           echo "✅ No moderate or high severity vulnerabilities found"
-        continue-on-error: false

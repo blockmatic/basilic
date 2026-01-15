@@ -27,3 +27,54 @@ functionality into the `plugins` folder, and share it via
 
 If you're a bit confused about using `async/await` to write routes, you would
 better take a look at [Promise resolution](https://fastify.dev/docs/latest/Reference/Routes/#promise-resolution) for more details.
+
+## Schema Definition
+
+**Principle: Collocation** - Keep schemas with their routes, not in separate folders.
+
+### Simple Routes (single/few endpoints)
+Define TypeBox schemas directly in the route file:
+
+```typescript
+import { Type } from 'typebox'
+import type { FastifyPluginAsync } from 'fastify'
+
+const HealthResponseSchema = Type.Object({
+  ok: Type.Literal(true),
+  now: Type.String({ format: 'date-time' }),
+})
+
+const healthRoutes: FastifyPluginAsync = async (fastify) => {
+  fastify.get('/health', {
+    schema: {
+      response: {
+        200: HealthResponseSchema,
+      },
+    },
+  }, async (_request, reply) => {
+    return reply.send({
+      ok: true,
+      now: new Date().toISOString(),
+    })
+  })
+}
+
+export default healthRoutes
+```
+
+### Complex Routes (multiple endpoints, shared logic)
+For complex routes, you can optionally extract schemas to a separate file within the route folder:
+
+```text
+routes/
+  └── ai/
+      ├── index.ts        # Route definitions
+      ├── schemas.ts      # Schemas (optional, if they get large)
+      └── services.ts     # Business logic (optional)
+```
+
+**Key points:**
+- ✅ Use TypeBox for all route schemas (native JSON Schema)
+- ✅ Keep schemas collocated with routes (same file or same folder)
+- ✅ Fastify validates automatically - no manual validation needed
+- ✅ Request/response types are automatically inferred with TypeBox type provider

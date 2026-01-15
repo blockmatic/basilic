@@ -85,7 +85,7 @@ Test that responses match OpenAPI schemas:
 ```typescript
 import { describe, it, expect } from 'vitest'
 import { createApi } from '@namespace/core'
-import { WalletSchema } from '@namespace/types'
+import { WalletSchema } from '@namespace/core'
 
 describe('wallet endpoints', () => {
   const api = createApi({

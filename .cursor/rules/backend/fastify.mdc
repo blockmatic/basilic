@@ -15,7 +15,7 @@ We chose **Fastify** as the backend framework because it aligns perfectly with o
 1. **Fastify routes as source**: Routes define the API, OpenAPI spec generated automatically
 2. **Type-safe end-to-end**: Full type safety from API routes to client calls via generated clients
 3. **Fast and efficient**: High-performance HTTP framework optimized for Node.js
-4. **Zod-first validation**: Native integration with Zod for request/response validation
+4. **TypeBox schemas**: Native JSON Schema with TypeBox for optimal performance and OpenAPI generation
 5. **OpenAPI generation**: Automatic OpenAPI spec generation from Fastify routes via generate-openapi.ts
 6. **Functional patterns**: Clean, composable route handlers without decorators
 7. **ESM-native**: Built for modern ESM from day one, works seamlessly with Node.js and pnpm
@@ -106,12 +106,13 @@ export async function walletRoutes(fastify: FastifyInstance) {
 ```typescript
 // src/index.ts
 import Fastify from 'fastify'
-import { walletRoutes } from './routes/wallet'
-import { userRoutes } from './routes/user'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import walletRoutes from './routes/wallet.js'
+import userRoutes from './routes/user.js'
 
 const fastify = Fastify({
   logger: true,
-})
+}).withTypeProvider<TypeBoxTypeProvider>()
 
 // Register routes
 await fastify.register(walletRoutes)
@@ -129,20 +130,29 @@ const start = async () => {
 start()
 ```
 
+## Schema Validation
+
+- **TypeBox**: Use TypeBox for all route schemas (request/response validation)
+  - Native JSON Schema - no conversion overhead
+  - Automatic OpenAPI generation
+  - Type-safe with TypeBox type provider
+  - Better performance than Zod on backend
+- **Zod**: Generated on frontend from OpenAPI spec (via hey-api)
+  - Frontend uses Zod schemas generated from OpenAPI
+  - Consistent validation across frontend apps
+
 ## Utility Libraries
 
-- **@namespace/lib**: Always use instead of custom implementations
-  - Error: `getErrorMessage` (error extraction), `formatZodError` / `formatZodErrors` (zod error formatting), `sanitizeErrorMessage` (error sanitization)
+- **@repo/utils**: Always use instead of custom implementations
+  - Error: `getErrorMessage` (error extraction), `sanitizeErrorMessage` (error sanitization)
   - Async: `fetchWithTimeout` (external APIs - replaces `fetch`), `delay` (replaces `setTimeout`)
-  - Zod: `parseJsonWithSchema` (JSON parsing with validation), `isZodError` (type guards)
   - Env: `validateEnvOrThrow` (environment validation)
-- **zod**: Use for all validation (request bodies, responses, environment variables, internal validation)
 - **lodash-es**: Use for array/object operations (`isEmpty`, `uniq`, `groupBy`, `merge`), type checking (`isPlainObject`, `isString`, `isArray`). Use per-function imports: `import isEmpty from 'lodash-es/isEmpty'`
 
 ## Error Handling
 
-- Use `formatZodError` / `formatZodErrors` from `@namespace/lib` for zod validation errors
-- Use `getErrorMessage` from `@namespace/lib` for consistent error message extraction
+- Use `getErrorMessage` from `@repo/utils` for consistent error message extraction
+- Fastify automatically validates requests/responses using TypeBox schemas
 - Return proper HTTP status codes (400 for validation errors, 500 for server errors)
 - Fastify's error handler can be customized for consistent error formatting
 

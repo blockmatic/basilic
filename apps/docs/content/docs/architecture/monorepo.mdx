@@ -10,7 +10,7 @@ All applications and packages are organized in a single repository using **Turbo
 All applications and packages coexist in one repository with clear organizational boundaries:
 
 - **`apps/`** - Applications (API, Web, Docs, etc.)
-- **`packages/`** - Shared packages (types, contracts, core, react, ui, etc.)
+- **`packages/`** - Shared packages (core, react, ui, etc.)
 - **`contracts/`** - Smart contract code (EVM, Solana)
 - **`infra/`** - Infrastructure as code (Pulumi)
 
@@ -29,8 +29,7 @@ We chose a monorepo over standalone repositories for several key benefits:
 ```mermaid
 flowchart TB
   subgraph Packages["packages/"]
-    Types["types<br/>(pure TS domain)"]
-    Core["core<br/>(generated hey-api client)"]
+    Core["core<br/>(generated hey-api client + types)"]
     React["react<br/>(TanStack Query)"]
     UI["ui<br/>(Shadcn components)"]
   end
@@ -41,7 +40,6 @@ flowchart TB
     Docs["docs<br/>(Fumadocs)"]
   end
 
-  Types --> Core
   API -->|OpenAPI| Core
   Core --> React
   React --> Web
@@ -74,8 +72,7 @@ Each application is self-contained but can import shared packages:
 
 Packages follow strict dependency rules:
 
-- **`types`** - Pure TypeScript domain types (no runtime dependencies)
-- **`core`** - Generated runtime-agnostic API client (via hey-api from OpenAPI)
+- **`core`** - Generated runtime-agnostic API client + types (via hey-api from OpenAPI)
 - **`react`** - React-specific hooks and TanStack Query integration (generated via hey-api)
 - **`ui`** - Shared UI components (Shadcn/ui based)
 
@@ -84,11 +81,11 @@ Packages follow strict dependency rules:
 Strict one-way dependencies prevent circular references:
 
 ```
-types → core → react
-         ↑
-    apps/api (OpenAPI)
-         ↓
-    apps/web
+core → react
+  ↑
+apps/api (OpenAPI)
+  ↓
+apps/web
 ```
 
 ## Workspace Configuration

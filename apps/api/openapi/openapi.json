@@ -17,23 +17,22 @@
         "description": "Health check endpoint",
         "responses": {
           "200": {
-            "description": "Health check response",
+            "description": "Default Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Health check response",
                   "type": "object",
+                  "required": ["ok", "now"],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
                     "now": {
-                      "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "type": "string"
                     }
-                  },
-                  "required": ["ok", "now"]
+                  }
                 }
               }
             }
@@ -61,32 +60,42 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["messages"],
                 "properties": {
                   "messages": {
                     "minItems": 1,
                     "type": "array",
                     "items": {
                       "type": "object",
+                      "required": ["role", "content"],
                       "properties": {
                         "role": {
-                          "type": "string",
-                          "enum": ["user", "assistant", "system"]
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": ["user"]
+                            },
+                            {
+                              "type": "string",
+                              "enum": ["assistant"]
+                            },
+                            {
+                              "type": "string",
+                              "enum": ["system"]
+                            }
+                          ]
                         },
                         "content": {
                           "type": "string"
                         }
-                      },
-                      "required": ["role", "content"],
-                      "additionalProperties": false
+                      }
                     }
                   },
                   "model": {
                     "default": "gpt-4o-mini",
                     "type": "string"
                   }
-                },
-                "required": ["messages"],
-                "additionalProperties": false
+                }
               }
             }
           },
@@ -99,13 +108,12 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["text"],
                   "properties": {
                     "text": {
                       "type": "string"
                     }
-                  },
-                  "required": ["text"],
-                  "additionalProperties": false
+                  }
                 }
               }
             }
@@ -116,6 +124,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["code", "message"],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -123,9 +132,7 @@
                     "message": {
                       "type": "string"
                     }
-                  },
-                  "required": ["code", "message"],
-                  "additionalProperties": false
+                  }
                 }
               }
             }
@@ -136,6 +143,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["code", "message"],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -143,9 +151,7 @@
                     "message": {
                       "type": "string"
                     }
-                  },
-                  "required": ["code", "message"],
-                  "additionalProperties": false
+                  }
                 }
               }
             }
@@ -164,32 +170,42 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["messages"],
                 "properties": {
                   "messages": {
                     "minItems": 1,
                     "type": "array",
                     "items": {
                       "type": "object",
+                      "required": ["role", "content"],
                       "properties": {
                         "role": {
-                          "type": "string",
-                          "enum": ["user", "assistant", "system"]
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": ["user"]
+                            },
+                            {
+                              "type": "string",
+                              "enum": ["assistant"]
+                            },
+                            {
+                              "type": "string",
+                              "enum": ["system"]
+                            }
+                          ]
                         },
                         "content": {
                           "type": "string"
                         }
-                      },
-                      "required": ["role", "content"],
-                      "additionalProperties": false
+                      }
                     }
                   },
                   "model": {
                     "default": "gpt-4o-mini",
                     "type": "string"
                   }
-                },
-                "required": ["messages"],
-                "additionalProperties": false
+                }
               }
             }
           },
@@ -201,8 +217,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string",
-                  "description": "Streaming text response"
+                  "description": "Streaming text response",
+                  "type": "string"
                 }
               }
             }
@@ -213,6 +229,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["code", "message"],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -220,9 +237,7 @@
                     "message": {
                       "type": "string"
                     }
-                  },
-                  "required": ["code", "message"],
-                  "additionalProperties": false
+                  }
                 }
               }
             }
@@ -233,6 +248,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["code", "message"],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -240,9 +256,7 @@
                     "message": {
                       "type": "string"
                     }
-                  },
-                  "required": ["code", "message"],
-                  "additionalProperties": false
+                  }
                 }
               }
             }

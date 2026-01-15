@@ -1,6 +1,5 @@
 import type { FastifyInstance } from 'fastify'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { HealthResponseSchema } from '../../src/schemas/health.schema.js'
 import { buildTestApp } from '../utils/fastify.js'
 
 describe('GET /health', () => {
@@ -69,9 +68,11 @@ describe('GET /health', () => {
 
     const data = JSON.parse(response.body)
 
-    expect(() => HealthResponseSchema.parse(data)).not.toThrow()
-    const validated = HealthResponseSchema.parse(data)
-    expect(validated.ok).toBe(true)
-    expect(typeof validated.now).toBe('string')
+    // Fastify validates automatically using TypeBox schema
+    // This test verifies the response structure matches the schema
+    expect(data.ok).toBe(true)
+    expect(typeof data.now).toBe('string')
+    // Verify ISO datetime format
+    expect(data.now).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
   })
 })
