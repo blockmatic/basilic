@@ -1,5 +1,3 @@
-import isPlainObject from 'lodash-es/isPlainObject'
-
 /**
  * Extracts error message from various error types.
  * Handles Error, objects with message property, and unknown types.
@@ -16,9 +14,14 @@ import isPlainObject from 'lodash-es/isPlainObject'
 export function getErrorMessage(error: unknown): string | null {
   if (!error) return null
   if (error instanceof Error) return error.message
-  if (isPlainObject(error) && typeof error === 'object' && error !== null) {
-    const obj = error as Record<string, unknown>
-    if ('message' in obj && typeof obj.message === 'string') return obj.message
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    error.constructor === Object &&
+    'message' in error &&
+    typeof (error as Record<string, unknown>).message === 'string'
+  ) {
+    return (error as Record<string, unknown>).message as string
   }
   return String(error)
 }

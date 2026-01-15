@@ -22,6 +22,7 @@ pnpm dev
 - `pnpm lint` - Lint all code (Biome + ESLint)
 - `pnpm format` - Format all code (Biome)
 - `pnpm checktypes` - Type check all TypeScript
+- `pnpm test` - Run all tests
 
 ### Security
 - `pnpm secrets:scan:staged` - Scan staged files for secrets (gitleaks)

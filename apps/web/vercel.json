@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "bash -c 'if [ -z \"$VERCEL_GIT_PREVIOUS_SHA\" ]; then exit 1; fi; git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" \"$VERCEL_GIT_COMMIT_SHA\" -- apps/web pnpm-lock.yaml && exit 0 || exit 1'",
   "buildCommand": "cd ../.. && pnpm build --filter=@repo/web",
   "devCommand": "cd ../.. && pnpm dev --filter=@repo/web",
   "installCommand": "cd ../.. && pnpm install",

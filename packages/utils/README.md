@@ -22,6 +22,9 @@ import { getChainMetadata } from '@repo/utils/web3'
 
 **Important**: Do not import from `@repo/utils` directly. Always use subpath imports.
 
+Runtime exports resolve to `dist/`, so make sure `pnpm --filter @repo/utils build` runs before production usage.
+Logger types are shared across client/server and resolve via the client signature.
+
 ## Utilities
 
 ### Async Utilities (`@repo/utils/async`)

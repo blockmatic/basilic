@@ -1,5 +1,13 @@
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createEnv } from '@t3-oss/env-core'
-import { z } from 'zod/v4'
+import { config } from 'dotenv'
+import { z } from 'zod'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+config({ path: resolve(__dirname, '../../.env') })
 
 export const env = createEnv({
   server: {
@@ -27,6 +35,8 @@ export const env = createEnv({
     LOG_ENABLED: z.coerce.boolean().optional(),
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).optional(),
     LOG_SERVICE: z.string().optional(),
+    // AI configuration
+    OPENAI_API_KEY: z.string().min(1),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

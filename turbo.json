@@ -35,7 +35,8 @@
         "LOG_SERVICE",
         "VERCEL_ENV",
         "NEXT_PUBLIC_LOG_ENABLED",
-        "NEXT_PUBLIC_LOG_LEVEL"
+        "NEXT_PUBLIC_LOG_LEVEL",
+        "OPENAI_API_KEY"
       ]
     },
     "lint": {
@@ -43,11 +44,25 @@
     },
     "lint:eslint": {
       "dependsOn": ["^lint:eslint"],
-      "env": ["NODE_ENV", "NEXT_RUNTIME", "CI", "PLAYWRIGHT_TEST_BASE_URL", "PORT"]
+      "env": [
+        "NODE_ENV",
+        "NEXT_RUNTIME",
+        "CI",
+        "PLAYWRIGHT_TEST_BASE_URL",
+        "PORT",
+        "OPENAI_API_KEY"
+      ]
     },
     "lint:eslint:fix": {
       "dependsOn": ["^lint:eslint:fix"],
-      "env": ["NODE_ENV", "NEXT_RUNTIME", "CI", "PLAYWRIGHT_TEST_BASE_URL", "PORT"]
+      "env": [
+        "NODE_ENV",
+        "NEXT_RUNTIME",
+        "CI",
+        "PLAYWRIGHT_TEST_BASE_URL",
+        "PORT",
+        "OPENAI_API_KEY"
+      ]
     },
     "checktypes": {
       "dependsOn": ["^checktypes"]

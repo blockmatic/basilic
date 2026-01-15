@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetData, GetExampleData, GetExampleResponses, GetResponses, HealthCheckData, HealthCheckResponses } from './types.gen';
+import type { ChatData, ChatErrors, ChatResponses, ChatStreamData, ChatStreamErrors, ChatStreamResponses, GetData, GetResponses, HealthCheckData, HealthCheckResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -27,4 +27,30 @@ export const healthCheck = <ThrowOnError extends boolean = false>(options?: Opti
 
 export const get = <ThrowOnError extends boolean = false>(options?: Options<GetData, ThrowOnError>) => (options?.client ?? client).get<GetResponses, unknown, ThrowOnError>({ url: '/', ...options });
 
-export const getExample = <ThrowOnError extends boolean = false>(options?: Options<GetExampleData, ThrowOnError>) => (options?.client ?? client).get<GetExampleResponses, unknown, ThrowOnError>({ url: '/example/', ...options });
+/**
+ * Generate AI chat response
+ *
+ * Chat with AI using OpenAI
+ */
+export const chat = <ThrowOnError extends boolean = false>(options: Options<ChatData, ThrowOnError>) => (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
+    url: '/ai/chat',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Stream AI chat response
+ *
+ * Stream AI chat response using OpenAI
+ */
+export const chatStream = <ThrowOnError extends boolean = false>(options: Options<ChatStreamData, ThrowOnError>) => (options.client ?? client).post<ChatStreamResponses, ChatStreamErrors, ThrowOnError>({
+    url: '/ai/chat/stream',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});

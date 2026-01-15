@@ -1,4 +1,4 @@
-import type { ErrorWithMessage } from './types'
+import type { ErrorWithMessage } from './types.js'
 
 /**
  * Type guard to check if an unknown error has a message property
