@@ -23,6 +23,10 @@ export const env = createEnv({
     TRUST_PROXY: z.coerce.boolean().default(true),
     SECURITY_HEADERS_ENABLED: z.coerce.boolean().default(true),
     BODY_LIMIT: z.coerce.number().int().positive().default(1048576), // 1MB default
+    // Logging configuration
+    LOG_ENABLED: z.coerce.boolean().optional(),
+    LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).optional(),
+    LOG_SERVICE: z.string().optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

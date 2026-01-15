@@ -11,6 +11,9 @@ export const env = createEnv({
     NEXT_PUBLIC_API_URL: z.string().min(1),
     NEXT_PUBLIC_SENTRY_DSN: z.string().min(1).optional(),
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().min(1).default('development'),
+    // Logging configuration
+    NEXT_PUBLIC_LOG_ENABLED: z.coerce.boolean().optional(),
+    NEXT_PUBLIC_LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).optional(),
   },
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
@@ -19,6 +22,8 @@ export const env = createEnv({
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+    NEXT_PUBLIC_LOG_ENABLED: process.env.NEXT_PUBLIC_LOG_ENABLED,
+    NEXT_PUBLIC_LOG_LEVEL: process.env.NEXT_PUBLIC_LOG_LEVEL,
   },
   emptyStringAsUndefined: true,
 })

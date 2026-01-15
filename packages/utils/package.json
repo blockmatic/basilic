@@ -1,0 +1,58 @@
+{
+  "name": "@repo/utils",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "description": "Shared utility functions and helpers",
+  "license": "PROPRIETARY",
+  "exports": {
+    "./async": {
+      "types": "./src/async/index.ts",
+      "import": "./src/async/index.ts"
+    },
+    "./error": {
+      "types": "./src/error/index.ts",
+      "import": "./src/error/index.ts"
+    },
+    "./web3": {
+      "types": "./src/web3/index.ts",
+      "import": "./src/web3/index.ts"
+    },
+    "./logger": {
+      "types": "./src/logger/client.ts",
+      "browser": "./src/logger/client.ts",
+      "node": "./src/logger/server.ts",
+      "import": "./src/logger/server.ts",
+      "default": "./src/logger/server.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "checktypes": "tsc --noEmit",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
+    "postpack": "node ../../scripts/restore-publish.mjs"
+  },
+  "peerDependencies": {
+    "lodash-es": "*",
+    "pino": "*",
+    "typescript": "^5.0.0",
+    "viem": "*",
+    "zod": "*",
+    "zod-validation-error": "*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/lodash-es": "latest",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.32.0",
+    "lodash-es": "latest",
+    "tsup": "^8.3.5",
+    "typescript": "^5.9.2",
+    "viem": "2.44.1",
+    "zod": "^3.25.76",
+    "zod-validation-error": "^3.3.0"
+  }
+}

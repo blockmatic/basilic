@@ -57,7 +57,10 @@
         "recommended": false
       },
       "suspicious": {
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "noConsole": {
+          "level": "error"
+        }
       },
       "correctness": {
         "useExhaustiveDependencies": "off"
@@ -76,6 +79,23 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": [
+        "scripts/**/*.mjs",
+        "scripts/**/*.js",
+        "**/scripts/**/*.ts",
+        "**/scripts/**/*.js"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    }
+  ],
   "css": {
     "parser": {
       "tailwindDirectives": true

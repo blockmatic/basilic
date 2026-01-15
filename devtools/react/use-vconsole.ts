@@ -5,6 +5,7 @@
  * The debug console is only initialized when debug mode is active.
  */
 
+import { logger } from '@repo/utils/logger'
 import { useQueryState } from 'nuqs'
 import { useEffect, useRef } from 'react'
 import { useLocalStorage } from 'react-use'
@@ -40,7 +41,7 @@ export function useVConsole() {
   useEffect(() => {
     if (debugStorage && !vconsoleRef.current) {
       vconsoleRef.current = new VConsole({ theme: 'dark' })
-      console.info('vconsole initialized', vconsoleRef.current)
+      logger.info({ vconsole: vconsoleRef.current }, 'vconsole initialized')
     } else if (!debugStorage && vconsoleRef.current) {
       vconsoleRef.current.destroy()
       vconsoleRef.current = undefined
