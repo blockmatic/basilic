@@ -32,7 +32,8 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
-    "postpack": "node ../../scripts/restore-publish.mjs"
+    "postpack": "node ../../scripts/restore-publish.mjs",
+    "test": "echo \"no test\""
   },
   "peerDependencies": {
     "lodash-es": "*",

@@ -53,6 +53,41 @@ function validateCatalog(catalog: Record<string, CatalogError>): void {
 }
 
 /**
+ * Validates all catalogs individually, then checks for cross-catalog duplicates
+ * @throws Error if validation fails or duplicates are found across catalogs
+ */
+function validateAndCheckDuplicates(): void {
+  // Validate each catalog individually
+  validateCatalog(serverErrors)
+  validateCatalog(clientErrors)
+  validateCatalog(commonErrors)
+  validateCatalog(apiErrors)
+  validateCatalog(webErrors)
+
+  // Check for cross-catalog duplicates
+  const seenCodes = new Set<string>()
+  const catalogsWithNames: Array<[Record<string, CatalogError>, string]> = [
+    [serverErrors, 'serverErrors'],
+    [clientErrors, 'clientErrors'],
+    [commonErrors, 'commonErrors'],
+    [apiErrors, 'apiErrors'],
+    [webErrors, 'webErrors'],
+  ]
+
+  for (const [catalog, catalogName] of catalogsWithNames) {
+    for (const code of Object.keys(catalog)) {
+      if (seenCodes.has(code)) {
+        throw new Error(`Duplicate error code "${code}" found in ${catalogName}`)
+      }
+      seenCodes.add(code)
+    }
+  }
+}
+
+// Validate all catalogs and check for duplicates before merging
+validateAndCheckDuplicates()
+
+/**
  * Merged error catalog containing all error codes from all catalogs
  * This is created at build time and validated for format and duplicates
  * Using const spread preserves literal key types for AllErrorCode union type
@@ -64,9 +99,6 @@ export const mergedCatalog = {
   ...apiErrors,
   ...webErrors,
 } as const satisfies Record<string, CatalogError>
-
-// Validate the merged catalog at build time
-validateCatalog(mergedCatalog)
 
 /**
  * All error codes from the merged catalog

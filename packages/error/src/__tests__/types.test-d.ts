@@ -38,7 +38,7 @@ const _assert3: CoreErrorCode = 'NETWORK_ERROR'
 const _assert4: CoreErrorCode = 'UNEXPECTED_ERROR'
 
 // Verify CoreErrorCode includes all test codes (this will error if any are missing)
-const _assert5: TestAllCoreCodes = '' as CoreErrorCode
+const _assert5: CoreErrorCode = '' as TestAllCoreCodes
 
 // Test 2: mapHttpStatusToErrorCode returns CoreErrorCode
 const _assert6: CoreErrorCode = '' as ReturnType<typeof mapHttpStatusToErrorCode>

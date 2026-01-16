@@ -8,8 +8,14 @@ import type { CoreErrorCode } from './types.js'
  * @returns Core error catalog code (type-safe union type)
  */
 export function mapHttpStatusToErrorCode(statusCode?: number): CoreErrorCode {
-  if (!statusCode) {
+  // Explicitly check for missing values (null or undefined)
+  if (statusCode === null || statusCode === undefined) {
     return 'SERVER_ERROR'
+  }
+
+  // Validate the value: invalid numeric values (non-number, NaN, or 0)
+  if (typeof statusCode !== 'number' || Number.isNaN(statusCode) || statusCode === 0) {
+    return 'UNEXPECTED_ERROR' as CoreErrorCode
   }
 
   // Invalid status codes (< 100 or > 599)

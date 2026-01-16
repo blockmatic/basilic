@@ -16,7 +16,8 @@
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs",
-    "generate": "openapi-ts"
+    "generate": "openapi-ts",
+    "test": "echo \"no test\""
   },
   "dependencies": {
     "@repo/core": "workspace:*"

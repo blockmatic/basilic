@@ -119,6 +119,11 @@ All error codes are defined in `packages/error/src/catalogs/` and merged at buil
 - `api.ts` - API-specific errors
 - `web.ts` - Web app-specific errors
 
+**Build-time Validation:**
+- Each catalog is validated individually (format, duplicates, code property matching)
+- Cross-catalog duplicate detection ensures no code collisions
+- Build fails if validation errors are found
+
 To add new error codes, add them to the appropriate catalog file and rebuild the package.
 
 ## API Reference
@@ -167,6 +172,12 @@ interface InitSentryOptions {
 function initSentry(options: InitSentryOptions): void
 ```
 
+**Idempotency:** `initSentry` automatically checks if Sentry is already initialized using `Sentry.getClient()` before initializing. You can safely call it multiple times (e.g., in both server-side instrumentation and client-side error boundaries) without causing double initialization.
+
+**Platform-Specific Configuration:**
+- **Node.js** (`@repo/error/node`): Only includes `'Non-Error promise rejection'` in `ignoreErrors`. Network-related errors (e.g., `ECONNREFUSED`, `ETIMEDOUT`) should be filtered via `beforeSend` hook if needed.
+- **Next.js/Browser** (`@repo/error/nextjs`, `@repo/error/browser`): Includes browser-specific patterns: `'ResizeObserver loop'`, `'Non-Error promise rejection'`, `'NetworkError'`, `'Failed to fetch'`.
+
 ### `mapHttpStatusToErrorCode(statusCode)`
 
 Maps HTTP status codes to error catalog codes. Returns a type-safe `CoreErrorCode` union type.
@@ -176,6 +187,12 @@ function mapHttpStatusToErrorCode(statusCode?: number): CoreErrorCode
 ```
 
 **Type Safety:** The return type is `CoreErrorCode`, ensuring compile-time guarantee that mapped codes are valid error codes.
+
+**Validation:**
+- Missing values (`null`/`undefined`) → `SERVER_ERROR`
+- Invalid numeric values (`0`, `NaN`, non-number) → `UNEXPECTED_ERROR`
+- Out-of-range valid numbers (< 100 or > 599) → `UNEXPECTED_ERROR`
+- Valid status codes → proper mapping to catalog codes
 
 ### `getErrorMessage(error)`
 
@@ -194,6 +211,7 @@ function getErrorMessage(error: unknown): string
 import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
 
 fastify.setErrorHandler((error, request, reply) => {
+  // mapHttpStatusToErrorCode handles null/undefined/invalid statusCode gracefully
   const catalogError = captureError({
     code: mapHttpStatusToErrorCode(error.statusCode),
     error,

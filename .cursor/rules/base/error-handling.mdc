@@ -135,6 +135,8 @@ export async function register() {
 }
 ```
 
+**Idempotency:** `initSentry` automatically checks if Sentry is already initialized. You can safely call it multiple times without causing double initialization.
+
 ## Error Code Format
 
 Must be `UPPER_SNAKE_CASE`:
@@ -156,7 +158,14 @@ All error codes are defined in `packages/error/src/catalogs/` and merged at buil
 
 **Web-Specific**: `DASHBOARD_DATA_LOAD_FAILED`
 
+**Build-time Validation:**
+- Each catalog is validated individually (format, duplicates, code property matching)
+- Cross-catalog duplicate detection ensures no code collisions
+- Build fails if validation errors are found
+
 **Type Safety:** All error codes are available as the `CoreErrorCode` union type, exported from platform-specific paths or `/core`. Use `mapHttpStatusToErrorCode()` which returns `CoreErrorCode` for type-safe HTTP status code mapping.
+
+**Unknown Error Codes:** If `captureError` is called with an unknown error code, it returns `UNEXPECTED_ERROR` fallback, logs a warning, and automatically captures to Sentry with `unknownErrorCode: 'true'` tag for runtime misconfiguration detection.
 
 ## Adding New Error Codes
 

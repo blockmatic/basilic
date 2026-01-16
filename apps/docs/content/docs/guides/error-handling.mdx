@@ -67,6 +67,8 @@ initSentry({
 })
 ```
 
+**Idempotency:** `initSentry` automatically checks if Sentry is already initialized using `Sentry.getClient()`. You can safely call it multiple times without causing double initialization. This is useful when initializing in both server-side instrumentation and client-side error boundaries.
+
 ## Core Concepts
 
 ### Two-Track Error Handling
@@ -188,6 +190,7 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
     
     // captureError handles logging via @repo/utils/logger
     // Captures REAL error to Sentry with built-in PII scrubbing
+    // mapHttpStatusToErrorCode handles null/undefined/invalid statusCode gracefully
     const catalogError = captureError({
       code: mapHttpStatusToErrorCode(error.statusCode),
       error, // ← Full stack trace → Sentry
@@ -221,7 +224,7 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
 // apps/api/src/index.ts
 import { initSentry } from '@repo/error/node'
 
-// 1. Initialize Sentry
+// 1. Initialize Sentry (idempotent - safe to call multiple times)
 initSentry({ dsn: process.env.SENTRY_DSN })
 
 // 2. Start Fastify
@@ -345,7 +348,7 @@ async function handleSubmit() {
 // app/error.tsx
 'use client'
 import { captureError } from '@repo/error/nextjs'
-import { useMemo } from 'react'
+import { useEffect } from 'react'
 
 export default function ErrorPage({ 
   error, 
@@ -441,6 +444,8 @@ export async function register() {
   }
 }
 ```
+
+**Idempotency:** `initSentry` automatically checks if Sentry is already initialized before initializing. You can safely call it multiple times (e.g., in both `instrumentation.ts` and error boundaries) without causing double initialization.
 
 ## Error Catalogs
 
@@ -541,13 +546,19 @@ interface InitSentryOptions {
   dsn?: string
   environment?: string
   release?: string
-  beforeSend?: (event: Sentry.Event) => Sentry.Event | null
+  beforeSend?: (event: ErrorEvent, hint: EventHint) => ErrorEvent | null
 }
 
 function initSentry(options: InitSentryOptions): void
 ```
 
+**Idempotency:** `initSentry` automatically checks if Sentry is already initialized using `Sentry.getClient()` before initializing. You can safely call it multiple times (e.g., in both server-side instrumentation and client-side error boundaries) without causing double initialization.
+
 **Note**: If DSN is not provided, Sentry initialization is skipped gracefully (no errors thrown).
+
+**Platform-Specific Configuration:**
+- **Node.js** (`@repo/error/node`): Only includes `'Non-Error promise rejection'` in `ignoreErrors`. Network-related errors (e.g., `ECONNREFUSED`, `ETIMEDOUT`) should be filtered via `beforeSend` hook if needed.
+- **Next.js/Browser** (`@repo/error/nextjs`, `@repo/error/browser`): Includes browser-specific patterns: `'ResizeObserver loop'`, `'Non-Error promise rejection'`, `'NetworkError'`, `'Failed to fetch'`.
 
 ### `mapHttpStatusToErrorCode(statusCode)`
 
@@ -558,6 +569,12 @@ function mapHttpStatusToErrorCode(statusCode?: number): CoreErrorCode
 ```
 
 **Type Safety:** The return type is `CoreErrorCode`, ensuring compile-time guarantee that mapped codes are valid core error codes.
+
+**Validation:**
+- Missing values (`null`/`undefined`) → `SERVER_ERROR`
+- Invalid numeric values (`0`, `NaN`, non-number) → `UNEXPECTED_ERROR`
+- Out-of-range valid numbers (< 100 or > 599) → `UNEXPECTED_ERROR`
+- Valid status codes → proper mapping to catalog codes
 
 **Mappings:**
 - `400` → `BAD_REQUEST`

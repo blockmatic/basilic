@@ -166,7 +166,7 @@ Use `@repo/error` for all error handling:
 // apps/api/src/index.ts
 import { initSentry } from '@repo/error/node'
 
-// Initialize Sentry
+// Initialize Sentry (idempotent - safe to call multiple times)
 initSentry({ dsn: process.env.SENTRY_DSN })
 
 // Start Fastify
@@ -184,6 +184,7 @@ import fp from 'fastify-plugin'
 
 export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
   fastify.setErrorHandler((error: FastifyError, request, reply) => {
+    // mapHttpStatusToErrorCode handles null/undefined/invalid statusCode gracefully
     const catalogError = captureError({
       code: mapHttpStatusToErrorCode(error.statusCode),
       error,

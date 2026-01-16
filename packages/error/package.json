@@ -32,16 +32,17 @@
     "checktypes": "tsc --noEmit",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "test": "vitest run",
     "test:types": "tsc --noEmit src/__tests__/types.test-d.ts",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs"
   },
   "peerDependencies": {
     "@repo/utils": "workspace:*",
-    "@sentry/node": "*",
-    "@sentry/nextjs": "*",
-    "@sentry/browser": "*",
-    "react": "*"
+    "@sentry/node": "^10.34.0",
+    "@sentry/nextjs": "^10.34.0",
+    "@sentry/browser": "^10.34.0",
+    "react": "^19.0.0"
   },
   "peerDependenciesMeta": {
     "@sentry/node": {
@@ -63,6 +64,7 @@
     "@types/node": "^25.0.9",
     "@types/react": "^19.0.0",
     "eslint": "^9.39.2",
+    "react": "^19.0.0",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"

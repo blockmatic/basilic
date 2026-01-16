@@ -36,12 +36,8 @@ export function initSentry(options: InitSentryOptions): void {
     tracesSampleRate: options.environment === 'production' ? 0.1 : 1.0,
     // Optional: custom beforeSend for domain-specific scrubbing
     // Sentry's built-in scrubbing handles most cases automatically
+    // Network-related errors (e.g., ECONNREFUSED, ETIMEDOUT) should be filtered via beforeSend
     beforeSend: options.beforeSend,
-    ignoreErrors: [
-      'ResizeObserver loop',
-      'Non-Error promise rejection',
-      'NetworkError',
-      'Failed to fetch',
-    ],
+    ignoreErrors: ['Non-Error promise rejection'],
   })
 }

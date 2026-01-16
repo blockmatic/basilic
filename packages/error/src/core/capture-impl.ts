@@ -40,18 +40,53 @@ export function createCaptureError(Sentry: SentryAdapter) {
       }
       const errorLogger = logger.child({ code: options.code, label: options.label })
 
-      if (process.env.NODE_ENV === 'development') {
-        errorLogger.error(
-          `Unknown error code: "${options.code}". ` +
+      const fallbackMessage =
+        process.env.NODE_ENV === 'development'
+          ? `Unknown error code: "${options.code}". ` +
             `This error code is not defined in the error catalog. ` +
-            `Ensure the error code exists in packages/error/src/catalogs/ and the package is rebuilt.`,
-        )
+            `Ensure the error code exists in packages/error/src/catalogs/ and the package is rebuilt.`
+          : `Unknown error code: "${options.code}". Using fallback. ` +
+            `The error code may not be defined in the error catalog.`
+
+      if (process.env.NODE_ENV === 'development') {
+        errorLogger.error(fallbackMessage)
       } else {
-        errorLogger.warn(
-          `Unknown error code: "${options.code}". Using fallback. ` +
-            `The error code may not be defined in the error catalog.`,
-        )
+        errorLogger.warn(fallbackMessage)
       }
+
+      // Capture unknown error code to Sentry for runtime misconfiguration detection
+      Promise.resolve().then(() => {
+        const sentryClient = Sentry.getClient()
+
+        if (!sentryClient) {
+          return
+        }
+
+        Sentry.captureException(
+          errorWithMessage instanceof Error
+            ? errorWithMessage
+            : new Error(errorWithMessage.message),
+          {
+            tags: {
+              errorCode: options.code,
+              component: options.label,
+              unknownErrorCode: 'true',
+              ...options.tags,
+            },
+            level: 'warning',
+            contexts: {
+              error: {
+                code: options.code,
+                label: options.label,
+                fallbackMessage,
+                environment: process.env.NODE_ENV,
+                ...options.data,
+              },
+            },
+          },
+        )
+      })
+
       return fallback
     }
 
