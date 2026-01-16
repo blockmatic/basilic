@@ -144,17 +144,61 @@ start()
 ## Utility Libraries
 
 - **@repo/utils**: Always use instead of custom implementations
-  - Error: `getErrorMessage` (error extraction), `sanitizeErrorMessage` (error sanitization)
   - Async: `fetchWithTimeout` (external APIs - replaces `fetch`), `delay` (replaces `setTimeout`)
   - Env: `validateEnvOrThrow` (environment validation)
+- **@repo/error**: Error handling utilities with Sentry integration and centralized error catalog
+  - `getErrorMessage` (type-safe error extraction), `captureError` (error capture with Sentry)
+  - Centralized error catalog (all errors pre-registered at build time), HTTP status mapping
+  - Two-track handling: Sentry gets real errors, API returns safe catalog errors
 - **lodash-es**: Use for array/object operations (`isEmpty`, `uniq`, `groupBy`, `merge`), type checking (`isPlainObject`, `isString`, `isArray`). Use per-function imports: `import isEmpty from 'lodash-es/isEmpty'`
 
 ## Error Handling
 
-- Use `getErrorMessage` from `@repo/utils` for consistent error message extraction
-- Fastify automatically validates requests/responses using TypeBox schemas
-- Return proper HTTP status codes (400 for validation errors, 500 for server errors)
-- Fastify's error handler can be customized for consistent error formatting
+Use `@repo/error` for all error handling:
+
+- **Centralized Catalog**: All error codes are defined in `packages/error/src/catalogs/` and pre-registered at build time
+- **Global Error Handler**: Use error handler plugin (`plugins/error-handler.ts`) for automatic Sentry capture
+- **HTTP Status Mapping**: `mapHttpStatusToErrorCode` converts HTTP status to catalog codes
+- **Two-Track**: Sentry gets full error details, API returns safe catalog error
+
+**Setup**:
+```typescript
+// apps/api/src/index.ts
+import { initSentry } from '@repo/error/node'
+
+// Initialize Sentry
+initSentry({ dsn: process.env.SENTRY_DSN })
+
+// Start Fastify
+const app = fastify()
+await app.register(import('./plugins/error-handler.js'))
+```
+
+**Error Handler Plugin**:
+
+```typescript
+// plugins/error-handler.ts
+import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
+import type { FastifyError, FastifyInstance } from 'fastify'
+import fp from 'fastify-plugin'
+
+export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
+  fastify.setErrorHandler((error: FastifyError, request, reply) => {
+    const catalogError = captureError({
+      code: mapHttpStatusToErrorCode(error.statusCode),
+      error,
+      label: `${request.method} ${request.url}`,
+      tags: { app: 'api' },
+    })
+    reply.status(error.statusCode ?? 500).send({
+      code: catalogError.code,
+      message: catalogError.message,
+    })
+  })
+})
+```
+
+Routes can throw errors - the global handler catches and formats them automatically.
 
 ## Environment Variables
 

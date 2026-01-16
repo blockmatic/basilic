@@ -10,10 +10,6 @@
       "types": "./src/async/index.ts",
       "import": "./dist/async/index.js"
     },
-    "./error": {
-      "types": "./src/error/index.ts",
-      "import": "./dist/error/index.js"
-    },
     "./web3": {
       "types": "./src/web3/index.ts",
       "import": "./dist/web3/index.js"

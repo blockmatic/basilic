@@ -16,9 +16,13 @@ This package uses subpath exports - import directly from the specific module you
 
 ```typescript
 import { delay } from '@repo/utils/async'
-import { getErrorMessage } from '@repo/utils/error'
 import { getChainMetadata } from '@repo/utils/web3'
 ```
+
+**Note**: Error handling utilities have been moved to `@repo/error`. Use platform-specific imports:
+- `import { getErrorMessage, captureError } from '@repo/error/node'` for Node.js/Fastify
+- `import { getErrorMessage, captureError } from '@repo/error/nextjs'` for Next.js
+- `import { getErrorMessage, captureError } from '@repo/error/browser'` for browser frameworks
 
 **Important**: Do not import from `@repo/utils` directly. Always use subpath imports.
 
@@ -51,63 +55,6 @@ const response = await fetchWithTimeout({
   options: { headers: { Authorization: 'Bearer token' } },
   timeoutMs: 5000,
 })
-```
-
-### Error Utilities (`@repo/utils/error`)
-
-#### `getErrorMessage`
-
-Extracts error message from various error types.
-
-```typescript
-import { getErrorMessage } from '@repo/utils/error'
-
-const message = getErrorMessage(new Error('Something went wrong'))
-// Returns: 'Something went wrong'
-```
-
-#### `formatZodError`
-
-Formats a zod error into a user-friendly error message using zod-validation-error.
-
-```typescript
-import { formatZodError } from '@repo/utils/error'
-import { ZodError } from 'zod'
-
-try {
-  schema.parse(data)
-} catch (error) {
-  if (error instanceof ZodError) {
-    const message = formatZodError({ error })
-    console.error(message)
-  }
-}
-```
-
-#### `sanitizeErrorMessage`
-
-Sanitizes error messages by removing sensitive information in production.
-
-```typescript
-import { sanitizeErrorMessage } from '@repo/utils/error'
-
-const safeMessage = sanitizeErrorMessage({
-  message: 'Database connection failed: DATABASE_URL=xxx',
-  isProduction: true,
-})
-// Returns: 'Configuration error' in production
-```
-
-#### `isZodError`
-
-Type guard to check if an error is a ZodError.
-
-```typescript
-import { isZodError } from '@repo/utils/error'
-
-if (isZodError(error)) {
-  // Handle zod validation error
-}
 ```
 
 ### Web3 Utilities (`@repo/utils/web3`)
@@ -183,8 +130,12 @@ Import utilities using subpath exports:
 
 ```typescript
 import { delay, fetchWithTimeout } from '@repo/utils/async'
-import { getErrorMessage, formatZodError, sanitizeErrorMessage, isZodError } from '@repo/utils/error'
 import { getChainMetadata, getChainType, ChainType, chainTypeSchema } from '@repo/utils/web3'
+```
+
+**Error Handling**: Error utilities have been moved to `@repo/error`. Import from `@repo/error` instead:
+```typescript
+import { getErrorMessage, captureError } from '@repo/error/node' // or '/nextjs', '/browser'
 ```
 
 ## Peer Dependencies
@@ -199,10 +150,9 @@ This package requires the following peer dependencies (provided by consumers):
 
 ### Error Handling
 
-- Use `getErrorMessage` for consistent error message extraction
+- Error handling utilities have been moved to `@repo/error`
+- Use `getErrorMessage` and `captureError` from `@repo/error` for error handling
 - Use lodash-es utilities (`isPlainObject`, `isEmpty`) for type checking instead of manual checks
-- Use `formatZodError` for user-facing messages
-- Use `isZodError` type guard for zod error handling
 
 ### Fetch Calls
 

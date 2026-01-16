@@ -67,7 +67,12 @@
     "checktypes": {
       "dependsOn": ["^checktypes"]
     },
+    "test": {
+      "dependsOn": ["build"],
+      "env": ["NODE_ENV", "OPENAI_API_KEY", "CI"]
+    },
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true,
       "env": [

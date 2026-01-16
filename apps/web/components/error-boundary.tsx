@@ -1,6 +1,6 @@
 'use client'
 
-import * as Sentry from '@sentry/nextjs'
+import { captureError, initSentry } from '@repo/error/nextjs'
 import { useEffect } from 'react'
 import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary'
 import { env } from '@/lib/env'
@@ -29,10 +29,8 @@ export function ErrorBoundary({ children }: { children: React.ReactNode }) {
     // Initialize Sentry client-side if DSN is configured
     const dsn = env.NEXT_PUBLIC_SENTRY_DSN
 
-    if (dsn && !Sentry.getClient()) {
-      import('../sentry.client.config').then(({ initSentry }) => {
-        initSentry({ dsn, environment: env.NEXT_PUBLIC_SENTRY_ENVIRONMENT })
-      })
+    if (dsn) {
+      initSentry({ dsn, environment: env.NEXT_PUBLIC_SENTRY_ENVIRONMENT })
     }
   }, [])
 
@@ -40,11 +38,16 @@ export function ErrorBoundary({ children }: { children: React.ReactNode }) {
     <ReactErrorBoundary
       FallbackComponent={ErrorFallback}
       onReset={() => window.location.reload()}
-      onError={error => {
-        // Report error to Sentry if initialized
-        if (Sentry.getClient()) {
-          Sentry.captureException(error)
-        }
+      onError={(error, errorInfo) => {
+        captureError({
+          code: 'UNEXPECTED_ERROR',
+          error,
+          label: 'React Error Boundary',
+          tags: { app: 'web', component: 'ErrorBoundary' },
+          data: {
+            componentStack: errorInfo.componentStack,
+          },
+        })
       }}
     >
       {children}

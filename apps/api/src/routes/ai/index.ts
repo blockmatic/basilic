@@ -1,5 +1,5 @@
 import { createOpenAI } from '@ai-sdk/openai'
-import { getErrorMessage } from '@repo/utils/error'
+import { captureError, getErrorMessage } from '@repo/error/node'
 import { logger } from '@repo/utils/logger'
 import { type Static, Type } from '@sinclair/typebox'
 import { generateText, streamText } from 'ai'
@@ -119,16 +119,20 @@ const aiRoutes: FastifyPluginAsync = async (fastify, _opts) => {
         // Fastify handles the stream and will close it when done
         return reply.send(result.textStream)
       } catch (error) {
-        const errorMessage = getErrorMessage(error)
-        requestLogger.error(
-          { error, context: { requestId: request.id } },
-          'Streaming chat request failed',
-        )
+        // Use captureError for AI-specific errors
+        // The global error handler will also catch this, but we want AI_MODEL_ERROR code
+        const catalogError = captureError({
+          code: 'AI_MODEL_ERROR',
+          error,
+          label: 'AI Streaming Chat Request',
+          tags: { app: 'api', module: 'ai-service' },
+          data: { requestId: request.id },
+        })
 
-        // Fastify handles validation errors automatically, this catches other errors
+        // Sanitize response to only include ErrorSchema fields
         return reply.code(500).send({
-          code: 'INTERNAL_ERROR',
-          message: errorMessage ?? 'An error occurred processing your request',
+          code: catalogError.code,
+          message: catalogError.message || 'Internal server error',
         })
       }
     },

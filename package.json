@@ -11,7 +11,7 @@
     "lint:eslint": "turbo run lint:eslint",
     "lint:eslint:fix": "turbo run lint:eslint:fix",
     "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
-    "test": "pnpm --filter @repo/api test && pnpm --filter @repo/web test",
+    "test": "turbo run test",
     "format": "biome format . --write",
     "hooks:pre-commit": "pnpm run hooks:security && biome check --write --staged --no-errors-on-unmatched && git update-index --again",
     "hooks:security": "node scripts/block-secret-files.mjs && node scripts/scan-secrets-staged.mjs",

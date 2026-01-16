@@ -1,7 +1,14 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { initSentry } from '@repo/error/node'
 import Fastify from 'fastify'
 import app from './app.js'
 import { env } from './lib/env.js'
+
+// Initialize Sentry BEFORE Fastify instance creation
+initSentry({
+  dsn: env.SENTRY_DSN,
+  environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
+})
 
 const fastify = Fastify({
   logger: {

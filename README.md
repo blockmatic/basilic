@@ -72,6 +72,7 @@ Full documentation: [https://basilic-docs.vercel.app/docs](https://basilic-docs.
 
 ### Guides
 - [Security Guide](https://basilic-docs.vercel.app/docs/guides/security) - Security baseline and secret scanning
+- [Error Handling Guide](https://basilic-docs.vercel.app/docs/guides/error-handling) - Error handling with Sentry integration
 - [Deployment Guide](https://basilic-docs.vercel.app/docs/guides/deployment) - Deployment options and strategies
 - [Publishing Guide](https://basilic-docs.vercel.app/docs/guides/publishing) - Publishing packages to npm
 

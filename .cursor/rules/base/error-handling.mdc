@@ -1,0 +1,192 @@
+---
+description: Error handling patterns with @repo/error
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+
+# Error Handling Rules
+
+## Package: @repo/error
+
+All error handling uses `@repo/error` package with:
+- **Centralized catalog** - All error codes defined in package, pre-registered at build time
+- **Sentry integration** - Automatic error capture with PII scrubbing
+- **Two-track handling** - Real errors to Sentry, safe messages to users
+- **Framework-native** - Fastify handlers, React Error Boundaries, Next.js error pages
+
+## Export Structure
+
+The package provides platform-specific exports (no root exports):
+- `@repo/error/core` - Core functionality (types, catalog, utils) - NO Sentry
+- `@repo/error/node` - Node.js/Fastify (uses `@sentry/node`)
+- `@repo/error/nextjs` - Next.js (uses `@sentry/nextjs`) - works for both client and server
+- `@repo/error/browser` - Browser frameworks (uses `@sentry/browser`) - TanStack Start, Vue, Svelte, etc.
+- `@repo/error/react` - React components
+
+**Import Rules:**
+- All imports must use platform-specific paths (no root `@repo/error` import)
+- Type imports (`CatalogError`, `CoreErrorCode`) → Use platform-specific path or `/core`
+- Runtime imports (`captureError`, `initSentry`) → Use `/node`, `/nextjs`, or `/browser`
+- Core utilities (`getError`, `mapHttpStatusToErrorCode`, `getErrorMessage`) → Available from all platform exports
+
+## Core Patterns
+
+### Capture Error (Most Common)
+
+```typescript
+// For Next.js apps
+import { captureError } from '@repo/error/nextjs'
+// For Node.js/Fastify apps
+// import { captureError } from '@repo/error/node'
+// For browser frameworks
+// import { captureError } from '@repo/error/browser'
+
+const catalogError = captureError({
+  code: 'NETWORK_ERROR', // ✅ Autocomplete for all catalog codes (CoreErrorCode | string)
+  error, // Real error → Sentry
+  label: 'API Call',
+  data: { endpoint: '/api/data' }, // Internal context
+  tags: { app: 'web' }, // ✅ Autocomplete for known apps ('api' | 'web' | 'mobile' | 'docs' | string)
+})
+// Returns: { code: 'NETWORK_ERROR', message: 'A network error occurred' }
+```
+
+**Type Safety:**
+- `code` accepts `CoreErrorCode` (union type) for autocomplete and type checking
+- `code` also accepts `string` for flexibility
+- `tags.app` accepts known apps with autocomplete, or `string` for custom apps
+
+### Extract Error Message
+
+```typescript
+import { getErrorMessage } from '@repo/error/nextjs' // or '/node', '/browser', '/core'
+const message = getErrorMessage(error) // Type-safe
+```
+
+## Framework Integration
+
+### Fastify
+
+Global error handler plugin:
+
+```typescript
+// plugins/error-handler.ts
+import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
+
+fastify.setErrorHandler((error, request, reply) => {
+  const catalogError = captureError({
+    code: mapHttpStatusToErrorCode(error.statusCode),
+    error,
+    label: `${request.method} ${request.url}`,
+    tags: { app: 'api' },
+  })
+  reply.status(error.statusCode ?? 500).send(catalogError)
+})
+```
+
+### React
+
+Error Boundary:
+
+```typescript
+import { AppErrorBoundary } from '@repo/error/react'
+import { captureError } from '@repo/error/nextjs' // or /node, /browser
+
+<AppErrorBoundary app="web" captureError={captureError}>
+  <App />
+</AppErrorBoundary>
+```
+
+**Note**: `AppErrorBoundary` requires `captureError` as a prop. Import the appropriate implementation for your platform.
+
+### Next.js
+
+Error pages:
+
+```typescript
+// app/error.tsx
+'use client'
+import { captureError } from '@repo/error/nextjs'
+
+export default function Error({ error }: { error: Error }) {
+  captureError({
+    code: 'UNEXPECTED_ERROR',
+    error,
+    label: 'Next.js Error Page',
+    tags: { app: 'web' },
+  })
+  return <div>Something went wrong</div>
+}
+```
+
+Initialization:
+
+```typescript
+// instrumentation.ts
+import { initSentry } from '@repo/error/nextjs'
+
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    initSentry({
+      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+      environment: process.env.NODE_ENV,
+    })
+  }
+}
+```
+
+## Error Code Format
+
+Must be `UPPER_SNAKE_CASE`:
+
+- ✅ `NETWORK_ERROR`, `USER_NOT_FOUND`, `AI_MODEL_ERROR`
+- ❌ `network-error`, `NetworkError`, `NETWORK_ERROR_`
+
+## Error Catalogs
+
+All error codes are defined in `packages/error/src/catalogs/` and merged at build time:
+
+**Server**: `SERVER_ERROR`, `BAD_REQUEST`, `NOT_FOUND`, `UNAUTHORIZED`, `FORBIDDEN`, `INVALID_INPUT`, `CONFLICT`, `RATE_LIMIT_EXCEEDED`, `BAD_GATEWAY`, `SERVICE_UNAVAILABLE`, `GATEWAY_TIMEOUT`
+
+**Client**: `NETWORK_ERROR`, `NETWORK_TIMEOUT`, `FETCH_ERROR`, `CLIENT_VALIDATION_ERROR`, `CLIENT_FORMAT_ERROR`
+
+**Common**: `UNEXPECTED_ERROR`
+
+**API-Specific**: `AI_MODEL_ERROR`, `AI_RATE_LIMIT_EXCEEDED`, `BLOCKCHAIN_TRX_OP_FAILURE`, `BLOCKCHAIN_BLOCK_PROCESSING_ERROR`
+
+**Web-Specific**: `DASHBOARD_DATA_LOAD_FAILED`
+
+**Type Safety:** All error codes are available as the `CoreErrorCode` union type, exported from platform-specific paths or `/core`. Use `mapHttpStatusToErrorCode()` which returns `CoreErrorCode` for type-safe HTTP status code mapping.
+
+## Adding New Error Codes
+
+To add new error codes:
+
+1. Add them to the appropriate catalog file in `packages/error/src/catalogs/`:
+   - `server.ts` for server-side errors
+   - `client.ts` for client-side errors
+   - `common.ts` for shared errors
+   - `api.ts` for API-specific errors
+   - `web.ts` for web app-specific errors
+
+2. Rebuild the package: `cd packages/error && pnpm build`
+
+3. Use the new error code directly - no registration needed!
+
+## Best Practices
+
+### Do
+
+- ✅ Use `captureError` for all error reporting
+- ✅ Use `mapHttpStatusToErrorCode` in Fastify handlers
+- ✅ Return safe catalog errors to users
+- ✅ Include context in `data` field
+- ✅ Import from platform-specific paths
+
+### Don't
+
+- ❌ Never use `console.*` (use `@repo/utils/logger`)
+- ❌ Never expose internal error details to users
+- ❌ Never call `captureError` without required fields
+- ❌ Never import from root `@repo/error` (use platform-specific paths)
+- ❌ Never try to register errors at runtime (all errors are pre-registered)

@@ -3,6 +3,7 @@
   "add-endpoint": "Add API Endpoint",
   "add-component": "Add UI Component",
   "environment-setup": "Environment Setup",
+  "error-handling": "Error Handling",
   "logging": "Logging",
   "testing": "Testing",
   "deployment": "Deployment",

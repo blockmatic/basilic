@@ -28,8 +28,10 @@
   },
   "dependencies": {
     "@repo/core": "workspace:*",
+    "@repo/error": "workspace:*",
     "@repo/react": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@repo/utils": "workspace:*",
     "@sentry/nextjs": "^10.34.0",
     "@t3-oss/env-nextjs": "^0.13.10",
     "@tanstack/react-query": "^5.90.17",

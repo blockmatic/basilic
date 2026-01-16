@@ -76,28 +76,80 @@ setState({ signedMessage: data.signedMessage, message: '' })
 - Prefer `React.memo` for pure components over wrapping functions with `useCallback`
 
 ## Error Boundaries
-Use `react-error-boundary` for error handling:
+
+Use `react-error-boundary` with `@repo/error` for error handling:
 
 ```tsx
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
+import { ErrorBoundary } from 'react-error-boundary'
+import { captureError, initSentry } from '@repo/error/nextjs'
+import { useEffect } from 'react'
 
-// Component
-<ErrorBoundary FallbackComponent={ErrorFallback}>
-  <YourApp />
-</ErrorBoundary>
+function ErrorFallback({ error, resetErrorBoundary }: { 
+  error: Error
+  resetErrorBoundary: () => void 
+}) {
+  return (
+    <div>
+      <h2>Something went wrong</h2>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  )
+}
 
-// Async errors
-const handleError = useErrorHandler()
-try {
-  await someAsyncOperation()
-} catch (error) {
-  handleError(error) // Triggers nearest ErrorBoundary
+export function AppErrorBoundary({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
+    if (dsn) {
+      initSentry({ dsn, environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT })
+    }
+  }, [])
+
+  return (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => window.location.reload()}
+      onError={(error, errorInfo) => {
+        captureError({
+          code: 'UNEXPECTED_ERROR',
+          error,
+          label: 'React Error Boundary',
+          tags: { app: 'web' },
+          data: {
+            componentStack: errorInfo.componentStack,
+          },
+        })
+      }}
+    >
+      {children}
+    </ErrorBoundary>
+  )
 }
 ```
 
-**Use for:** App-level, section-level, feature-level error handling, third-party component errors
+**Async errors in event handlers**:
 
-**Don't use for:** Event handlers (use try/catch), async code (use `useErrorHandler`), SSR errors
+```tsx
+import { captureError } from '@repo/error/nextjs'
+import { toast } from 'sonner'
+
+async function handleSubmit() {
+  try {
+    await submitForm()
+  } catch (error) {
+    const catalogError = captureError({
+      code: 'NETWORK_ERROR',
+      error,
+      label: 'Form Submission',
+      tags: { app: 'web' },
+    })
+    toast.error(catalogError.message)
+  }
+}
+```
+
+**Use for**: App-level, section-level, feature-level error handling, third-party component errors
+
+**Don't use for**: Event handlers (use try/catch with `captureError`), async code (use try/catch), SSR errors
 
 ## Related Rules
 - [React Hooks Rules](./react-hooks.mdc) - Data fetching patterns

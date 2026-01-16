@@ -102,6 +102,74 @@ export const saveAction = createSafeActionClient()
   })
 ```
 
+## Error Handling
+
+Use `@repo/error` for error handling in Next.js:
+
+**Error Pages**:
+```tsx
+// app/error.tsx
+'use client'
+import { captureError } from '@repo/error/nextjs'
+
+export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  captureError({
+    code: 'UNEXPECTED_ERROR',
+    error,
+    label: 'Next.js Error Page',
+    tags: { app: 'web' },
+    data: {
+      digest: error.digest,
+    },
+  })
+  return (
+    <div>
+      <h2>Something went wrong</h2>
+      <button onClick={() => reset()}>Try again</button>
+    </div>
+  )
+}
+```
+
+**Server Actions** (use `captureError` for error reporting):
+
+```tsx
+'use server'
+import { captureError } from '@repo/error/nextjs'
+
+export async function serverAction() {
+  try {
+    return await db.query('...')
+  } catch (error) {
+    captureError({
+      code: 'SERVER_ERROR',
+      error,
+      label: 'Server Action',
+      tags: { app: 'web' },
+    })
+    throw error // Next.js handles serialization
+  }
+}
+```
+
+**Initialization** (in `instrumentation.ts`):
+```typescript
+import { initSentry } from '@repo/error/nextjs'
+import { env } from './lib/env'
+
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Initialize Sentry (only if DSN is configured)
+    const dsn = env.NEXT_PUBLIC_SENTRY_DSN
+    const environment = env.NEXT_PUBLIC_SENTRY_ENVIRONMENT
+    
+    if (dsn) {
+      initSentry({ dsn, environment })
+    }
+  }
+}
+```
+
 ## API Client with Generated Clients
 ```tsx
 import { createApi } from '@repo/core'
