@@ -188,12 +188,14 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
     const routePath = (request as { routerPath?: string }).routerPath ?? request.url.split('?')[0]
     const module = extractModuleFromRoute(routePath) ?? 'api-route'
     
-    // captureError handles logging via @repo/utils/logger
+    // captureError handles logging via Fastify's native logger (request.log)
     // Captures REAL error to Sentry with built-in PII scrubbing
+    // Uses Fastify's native Pino logger with request context (requestId via requestIdLogLabel: 'reqId')
     // mapHttpStatusToErrorCode handles null/undefined/invalid statusCode gracefully
     const catalogError = captureError({
       code: mapHttpStatusToErrorCode(error.statusCode),
       error, // ← Full stack trace → Sentry
+      logger: request.log, // ← Use Fastify's native logger
       label: `${request.method} ${request.url}`,
       data: {
         requestId: request.id,
@@ -218,6 +220,8 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
   })
 })
 ```
+
+**Note**: Pass `logger: request.log` to use Fastify's native Pino logger. This ensures errors are logged with request context (requestId, etc.) and avoids duplicate logging. If omitted, `captureError` defaults to the internal logger from `@repo/utils/logger`.
 
 **Setup:**
 ```typescript
@@ -487,6 +491,7 @@ interface CaptureErrorOptions {
   code: CoreErrorCode | string // Error code (core codes get autocomplete, string for app-specific codes)
   error: unknown // Real error: sent to Sentry
   label: string // Component/feature label
+  logger?: Logger // Optional logger instance (defaults to internal logger). Use Fastify's request.log for native logging.
   data?: Record<string, unknown> // Additional context (Sentry only)
   tags?: {
     app: 'api' | 'web' | 'mobile' | 'docs' | string // Required: known apps get autocomplete, string for custom apps
@@ -511,7 +516,9 @@ function captureError(options: CaptureErrorOptions): CatalogError
 ```
 captureError() called
 │
-├─→ [Logger] Log full error (Pino on server, console wrapper on client)
+├─→ [Logger] Log full error using provided logger (or defaults to internal logger)
+│   - Fastify: Use logger: request.log for native Pino logging with request context
+│   - Other: Defaults to @repo/utils/logger (Pino on server, console wrapper on client)
 ├─→ [Sentry] Async via Promise.resolve().then(): Send REAL error → Sentry scrubs PII (non-blocking)
 └─→ [Return] SAFE catalog error immediately
 ```

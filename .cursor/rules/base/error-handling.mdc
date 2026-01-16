@@ -77,12 +77,15 @@ fastify.setErrorHandler((error, request, reply) => {
   const catalogError = captureError({
     code: mapHttpStatusToErrorCode(error.statusCode),
     error,
+    logger: request.log, // Use Fastify's native logger for request context
     label: `${request.method} ${request.url}`,
     tags: { app: 'api' },
   })
   reply.status(error.statusCode ?? 500).send(catalogError)
 })
 ```
+
+**Note**: Pass `logger: request.log` to use Fastify's native Pino logger with automatic request context (requestId, etc.). If omitted, `captureError` defaults to the internal logger from `@repo/utils/logger`.
 
 ### React
 

@@ -304,6 +304,36 @@ try {
 }
 ```
 
+### 6. Error Logging with captureError
+
+When using `captureError` from `@repo/error` in Fastify, pass Fastify's native logger to ensure errors are logged with request context and avoid duplicate logging:
+
+```typescript
+import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
+import type { FastifyError, FastifyInstance } from 'fastify'
+
+fastify.setErrorHandler((error: FastifyError, request, reply) => {
+  // Pass request.log to use Fastify's native logger
+  const catalogError = captureError({
+    code: mapHttpStatusToErrorCode(error.statusCode),
+    error,
+    logger: request.log, // ← Use Fastify's native logger
+    label: `${request.method} ${request.url}`,
+    tags: { app: 'api' },
+  })
+  
+  reply.status(error.statusCode ?? 500).send(catalogError)
+})
+```
+
+**Benefits:**
+- Errors logged through Fastify's native Pino logger
+- Automatic request context (requestId via `requestIdLogLabel: 'reqId'`)
+- No duplicate logging (captureError handles all error logging internally)
+- Consistent with Fastify's logging strategy
+
+If `logger` is omitted, `captureError` defaults to the internal logger from `@repo/utils/logger`.
+
 ## Examples
 
 ### Fastify Route with Error Handling

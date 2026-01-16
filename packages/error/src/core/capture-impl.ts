@@ -31,6 +31,7 @@ export function createCaptureError(Sentry: SentryAdapter) {
   return function captureError(options: CaptureErrorOptions): CatalogError {
     const errorWithMessage = toErrorWithMessage(options.error)
     const catalogError = getError(options.code)
+    const log = options.logger ?? logger
 
     // Validate error code exists (runtime check)
     if (!catalogError) {
@@ -38,7 +39,7 @@ export function createCaptureError(Sentry: SentryAdapter) {
         code: 'UNEXPECTED_ERROR',
         message: 'An unexpected error occurred',
       }
-      const errorLogger = logger.child({ code: options.code, label: options.label })
+      const errorLogger = log.child({ code: options.code, label: options.label })
 
       const fallbackMessage =
         process.env.NODE_ENV === 'development'
@@ -91,7 +92,7 @@ export function createCaptureError(Sentry: SentryAdapter) {
     }
 
     // Log with structured logging (Pino on server, console wrapper on client)
-    const errorLogger = logger.child({
+    const errorLogger = log.child({
       errorCode: options.code,
       label: options.label,
       ...options.tags,
@@ -114,9 +115,7 @@ export function createCaptureError(Sentry: SentryAdapter) {
 
       if (!sentryClient) {
         if (!sentryWarningShown) {
-          logger.warn(
-            'Sentry not initialized - error reporting disabled. Set SENTRY_DSN to enable.',
-          )
+          log.warn('Sentry not initialized - error reporting disabled. Set SENTRY_DSN to enable.')
           sentryWarningShown = true
         }
         return

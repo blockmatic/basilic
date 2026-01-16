@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { dirname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { config } from 'dotenv'
 import type { Plugin } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
@@ -8,6 +9,12 @@ import { defineConfig } from 'vitest/config'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const projectRoot = resolve(__dirname)
+
+// Load .env file before any code runs
+// This ensures env vars are available when env.ts is imported
+// Note: For dev/prod, Node's --env-file is used in package.json scripts
+// For tests, we load it here since vitest doesn't support --env-file natively
+config({ path: resolve(projectRoot, '.env') })
 
 const resolveJsToTsPlugin = (): Plugin => ({
   name: 'resolve-js-to-ts',

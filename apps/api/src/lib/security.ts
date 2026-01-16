@@ -112,24 +112,44 @@ export const sanitizeErrorMessage = (error: unknown, isProduction: boolean): str
 }
 
 /**
- * Log security event
+ * Log security event with enhanced context
  */
 export const logSecurityEvent = (
   request: FastifyRequest,
   event: string,
   details?: Record<string, unknown>,
 ): void => {
+  const userAgent = request.headers['user-agent'] || ''
+  const forwarded = request.headers['x-forwarded-for']
+
   const logData = {
     event,
     timestamp: new Date().toISOString(),
+    // Note: requestId automatically included via requestIdLogLabel: 'reqId'
     ip: request.ip,
+    xForwardedFor: forwarded,
     method: request.method,
     url: request.url,
-    userAgent: request.headers['user-agent'],
+    userAgent,
+    // User agent patterns for analysis
+    userAgentPattern:
+      userAgent.length > 0
+        ? {
+            isBot: /bot|crawler|spider|scraper/i.test(userAgent),
+            isMobile: /mobile|android|iphone|ipad/i.test(userAgent),
+            isBrowser: /mozilla|chrome|safari|firefox|edge/i.test(userAgent),
+          }
+        : null,
+    // Additional request context
+    headers: {
+      origin: request.headers.origin,
+      referer: request.headers.referer,
+      host: request.headers.host,
+    },
     ...details,
   }
 
-  // In production, you might want to send this to a security monitoring service
+  // Use Fastify's native logger - request ID automatically included
   request.log.warn({ security: true, ...logData }, `Security event: ${event}`)
 }
 

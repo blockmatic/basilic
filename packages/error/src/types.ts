@@ -1,3 +1,4 @@
+import type { Logger } from '@repo/utils/logger'
 import type { AllErrorCode } from './catalogs/merge.js'
 
 /**
@@ -33,6 +34,8 @@ export interface CaptureErrorOptions {
   error: unknown
   /** Component/feature label for Sentry */
   label: string
+  /** Optional logger instance (defaults to internal logger). Use Fastify's request.log for native logging. */
+  logger?: Logger
   /** Additional context (sent to Sentry only, not exposed to users) */
   data?: Record<string, unknown>
   /** Tags for filtering in Sentry */

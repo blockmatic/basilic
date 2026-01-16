@@ -137,6 +137,7 @@ interface CaptureErrorOptions {
   code: CoreErrorCode | string // Error code (must exist in catalog)
   error: unknown // Real error: sent to Sentry
   label: string // Component/feature label
+  logger?: Logger // Optional logger instance (defaults to internal logger). Use Fastify's request.log for native logging.
   data?: Record<string, unknown> // Additional context (Sentry only)
   tags?: {
     app: string // Required: 'api' | 'web' | 'mobile' | 'docs' | string
@@ -215,12 +216,15 @@ fastify.setErrorHandler((error, request, reply) => {
   const catalogError = captureError({
     code: mapHttpStatusToErrorCode(error.statusCode),
     error,
+    logger: request.log, // Use Fastify's native logger for request context
     label: `${request.method} ${request.url}`,
     tags: { app: 'api', module: 'user-service' },
   })
   reply.status(error.statusCode ?? 500).send(catalogError)
 })
 ```
+
+**Note**: Pass `logger: request.log` to use Fastify's native Pino logger with automatic request context (requestId via `requestIdLogLabel: 'reqId'`). If omitted, `captureError` defaults to the internal logger from `@repo/utils/logger`.
 
 ### React Error Boundary
 
@@ -281,7 +285,7 @@ The package includes the following error catalogs, all merged at build time:
 - Sentry's built-in PII scrubbing handles sensitive data automatically
 - Optional `beforeSend` hook for domain-specific scrubbing
 - Never expose internal details to users
-- All errors logged via `@repo/utils/logger` (Pino on server, console wrapper on client)
+- All errors logged via provided logger (or defaults to `@repo/utils/logger`). In Fastify, use `logger: request.log` for native logging with request context.
 
 ## Performance
 

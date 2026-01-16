@@ -159,6 +159,27 @@ In Fastify routes, you can use either:
 
 Both approaches work - Fastify's logger includes request context automatically, while the shared logger gives you more control.
 
+### Error Logging with captureError
+
+When using `captureError` from `@repo/error`, pass Fastify's native logger to ensure errors are logged with request context:
+
+```typescript
+import { captureError } from '@repo/error/node'
+
+fastify.setErrorHandler((error, request, reply) => {
+  const catalogError = captureError({
+    code: 'SERVER_ERROR',
+    error,
+    logger: request.log, // Use Fastify's native logger
+    label: `${request.method} ${request.url}`,
+    tags: { app: 'api' },
+  })
+  reply.status(500).send(catalogError)
+})
+```
+
+This ensures errors are logged through Fastify's native logging system with proper request context (requestId, etc.) and avoids duplicate logging.
+
 ## Related
 
 - [Logging Guide](../../apps/docs/content/docs/guides/logging.mdx) - Complete logging documentation

@@ -35,7 +35,7 @@ Tests run with Vitest in ESM mode against the TypeScript source.
 ## Environment Variables
 
 The API uses environment variables for configuration. See [Environment Setup Guide](https://basilic-docs.vercel.app/docs/guides/environment-setup) for complete details.
-The server loads `apps/api/.env` on startup via `dotenv`.
+The server loads `apps/api/.env` using Node.js native `--env-file` flag (Node.js 20.6+).
 
 ### Required
 - `NODE_ENV` - Environment mode (`development`, `test`, `production`)
@@ -51,6 +51,7 @@ The server loads `apps/api/.env` on startup via `dotenv`.
 - `SENTRY_TRACES_SAMPLE_RATE` - Sentry traces sample rate (default: `1`)
 - `SENTRY_REPLACES_HEADERS` - Replace headers with Sentry (default: `false`)
 - `SENTRY_REPLACES_PROD_ENV` - Replace production env with Sentry (default: `false`)
+- `REQUEST_TIMEOUT` - Request timeout in milliseconds (default: `30000`)
 
 ## Deployment
 

@@ -26,6 +26,7 @@ const fastify = Fastify({
   },
   trustProxy: env.TRUST_PROXY,
   bodyLimit: env.BODY_LIMIT,
+  requestTimeout: env.REQUEST_TIMEOUT,
   requestIdHeader: 'x-request-id',
   requestIdLogLabel: 'reqId',
   disableRequestLogging: false,
@@ -36,10 +37,41 @@ fastify.register(app)
 const start = async () => {
   try {
     await fastify.listen({ port: env.PORT, host: env.HOST })
+    fastify.log.info({ port: env.PORT, host: env.HOST }, 'Server started')
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
   }
 }
+
+// Graceful shutdown handler
+const shutdown = async (signal: string) => {
+  fastify.log.info({ signal }, 'Received shutdown signal, closing server gracefully')
+
+  try {
+    // Close server with timeout
+    await fastify.close()
+    fastify.log.info('Server closed successfully')
+    process.exit(0)
+  } catch (err) {
+    fastify.log.error({ err }, 'Error during shutdown')
+    process.exit(1)
+  }
+}
+
+// Register signal handlers
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+process.on('SIGINT', () => shutdown('SIGINT'))
+
+// Handle uncaught errors
+process.on('uncaughtException', err => {
+  fastify.log.error({ err }, 'Uncaught exception')
+  shutdown('uncaughtException')
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  fastify.log.error({ reason, promise }, 'Unhandled rejection')
+  shutdown('unhandledRejection')
+})
 
 start()

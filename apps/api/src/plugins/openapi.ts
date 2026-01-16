@@ -1,6 +1,7 @@
 import swagger from '@fastify/swagger'
 import scalar from '@scalar/fastify-api-reference'
 import type { FastifyPluginAsync } from 'fastify'
+import fp from 'fastify-plugin'
 
 const openapi: FastifyPluginAsync = async fastify => {
   // Register Swagger plugin to generate OpenAPI spec
@@ -24,4 +25,6 @@ const openapi: FastifyPluginAsync = async fastify => {
   })
 }
 
-export default openapi
+export default fp(openapi, {
+  name: 'openapi',
+})

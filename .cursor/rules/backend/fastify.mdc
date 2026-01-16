@@ -188,6 +188,7 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
     const catalogError = captureError({
       code: mapHttpStatusToErrorCode(error.statusCode),
       error,
+      logger: request.log, // Use Fastify's native logger for request context
       label: `${request.method} ${request.url}`,
       tags: { app: 'api' },
     })
@@ -198,6 +199,8 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
   })
 })
 ```
+
+**Note**: Pass `logger: request.log` to use Fastify's native Pino logger. This ensures errors are logged with request context (requestId via `requestIdLogLabel: 'reqId'`) and avoids duplicate logging.
 
 Routes can throw errors - the global handler catches and formats them automatically.
 
