@@ -1,0 +1,243 @@
+---
+title: "EVM Contracts (Foundry)"
+description: "Set up Foundry for EVM smart contract development with Solidity."
+---
+
+This guide covers setting up Foundry for EVM smart contract development in the monorepo.
+
+## Overview
+
+EVM contracts are located in `contracts/evm/` and use Foundry for development, testing, and deployment. Foundry is optional - if not installed, builds skip gracefully without failing the pipeline.
+
+## Monorepo Integration
+
+This package is fully integrated into the monorepo workspace:
+
+- **Package**: `@repo/contracts-evm`
+- **Workspace**: Included in `pnpm-workspace.yaml` as `contracts/*`
+- **Scripts**: Run via `pnpm --filter @repo/contracts-evm` pattern
+- **Caching**: Turborepo caches builds when tools are available
+- **Graceful degradation**: Builds skip if Foundry not installed (no CI failures)
+
+For comprehensive usage, deployment examples, and Cast commands, see the [contracts/evm/README.md](../../../../contracts/evm/README.md) file.
+
+## Deployed Contracts
+
+The following test contracts are deployed on **Arbitrum Sepolia** (Chain ID: 421614):
+
+| Token | Symbol | Address | Explorer |
+|-------|--------|---------|----------|
+| Dynamic Arcade Token | DNMC | `0x4F28D4eD49E20d064C9052E7Ff4Fd12878aBA09F` | [Arbiscan](https://sepolia.arbiscan.io/address/0x4F28D4eD49E20d064C9052E7Ff4Fd12878aBA09F) |
+| Mocked USDC | USDC | `0x6a2fE04d877439a44938D38709698d524BCF5c40` | [Arbiscan](https://sepolia.arbiscan.io/address/0x6a2fE04d877439a44938D38709698d524BCF5c40) |
+| Mocked USDT | USDT | `0x5f036f0B6948d4593364f975b81caBB3206aD994` | [Arbiscan](https://sepolia.arbiscan.io/address/0x5f036f0B6948d4593364f975b81caBB3206aD994) |
+
+See [contracts/evm/README.md](../../../../contracts/evm/README.md) for full details and usage examples.
+
+## Quick Setup
+
+Install Foundry:
+
+```bash
+pnpm setup:evm
+```
+
+Or install everything (including security tools and Solana):
+
+```bash
+pnpm setup
+```
+
+## Prerequisites
+
+- Node.js >= 22
+- Foundry (install via foundryup or Homebrew; Rust is only required if building Foundry from source, which is rare)
+
+## Installation
+
+### macOS
+
+**Via Homebrew (recommended):**
+```bash
+brew install foundry
+```
+
+**Via foundryup:**
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+source $HOME/.zshrc  # or .bashrc
+foundryup
+```
+
+### Linux
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+source $HOME/.bashrc  # or .zshrc
+foundryup
+```
+
+### Windows
+
+**Via Chocolatey:**
+```bash
+choco install foundry
+```
+
+**Via Scoop:**
+```bash
+scoop install foundry
+```
+
+## Verify Installation
+
+```bash
+forge --version
+cast --version
+anvil --version
+```
+
+## Automated Setup
+
+Use the setup script:
+
+```bash
+pnpm setup:evm
+```
+
+This script:
+- Checks if Foundry is already installed
+- Installs via Homebrew (macOS) or foundryup (Linux)
+- Provides installation instructions if automatic installation fails
+
+## Project Structure
+
+```
+contracts/evm/
+├── src/              # Contract source files
+├── test/             # Test files
+├── script/           # Deployment scripts
+├── lib/              # Dependencies (managed by Foundry)
+├── foundry.toml      # Foundry configuration
+└── package.json      # Package scripts
+```
+
+## Usage
+
+### Build Contracts
+
+```bash
+pnpm --filter @repo/contracts-evm build
+# or
+cd contracts/evm && forge build
+```
+
+### Run Tests
+
+```bash
+pnpm --filter @repo/contracts-evm test
+# or
+cd contracts/evm && forge test
+```
+
+### Start Local Node
+
+```bash
+pnpm --filter @repo/contracts-evm deploy:anvil
+# or
+cd contracts/evm && anvil
+```
+
+### Update Dependencies
+
+```bash
+pnpm --filter @repo/contracts-evm deps:update
+# or
+cd contracts/evm && forge update
+```
+
+### Format Code
+
+```bash
+cd contracts/evm && forge fmt
+```
+
+### Deploy Contracts
+
+```bash
+# Deploy to local Anvil
+pnpm --filter @repo/contracts-evm deploy:local
+
+# Deploy to testnet (requires .env with RPC_URL and PRIVATE_KEY)
+pnpm --filter @repo/contracts-evm deploy:dnmc
+pnpm --filter @repo/contracts-evm deploy:usdc
+pnpm --filter @repo/contracts-evm deploy:usdt
+```
+
+## Build Pipeline Integration
+
+Foundry builds are integrated into the monorepo build pipeline:
+
+- **Build scripts check for tools**: If Foundry isn't installed, builds skip with a message
+- **No pipeline failures**: Missing Foundry doesn't cause build failures (tool is optional)
+- **Turbo caching**: Contract builds are cached by Turbo when Foundry is available
+
+### Build Behavior
+
+When Foundry is missing:
+```bash
+# Build output
+Foundry not installed, skipping EVM contract build
+```
+
+When Foundry is installed:
+```bash
+# Normal build output
+forge build
+```
+
+## Package Scripts
+
+The `@repo/contracts-evm` package supports standard monorepo scripts:
+
+```bash
+# Build
+pnpm --filter @repo/contracts-evm build
+
+# Test
+pnpm --filter @repo/contracts-evm test
+
+# Format
+pnpm --filter @repo/contracts-evm fmt
+
+# Update dependencies
+pnpm --filter @repo/contracts-evm deps:update
+```
+
+## Troubleshooting
+
+### Foundry Not Found After Installation
+
+After installing Foundry, you may need to restart your terminal or reload your shell:
+
+```bash
+source $HOME/.bashrc  # or .zshrc
+# or
+export PATH="$HOME/.foundry/bin:$PATH"
+```
+
+### Dependencies Not Installing
+
+Foundry dependencies are managed separately from npm. Install them with:
+
+```bash
+cd contracts/evm
+forge install
+```
+
+**Important**: Never manually edit files in the `lib/` directory. All dependencies are managed through Foundry's dependency system.
+
+## Related Documentation
+
+- [Solana Contracts](/docs/blockchain/solana-contracts) - Solana program development with Anchor
+- [Architecture: Monorepo](/docs/architecture/monorepo) - Package organization
+- [Getting Started](/docs/getting-started) - Initial setup

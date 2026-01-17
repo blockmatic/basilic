@@ -12,14 +12,16 @@ alwaysApply: false
 - Never cast addresses directly - always validate first
 - Follow RORO pattern for validation functions
 - Document address formats per chain in code comments
+- **Delegate to chain-specific rules** for implementation details
 
 ## Address Validation Pattern
+
+This rule coordinates multichain validation. For implementation details, see chain-specific rules:
+
 ```tsx
-import { getAddress } from 'viem' // For EVM
-import { PublicKey } from '@solana/web3.js' // For Solana
 import type { ChainType } from '@repo/utils/web3'
 
-// RORO pattern for validation
+// RORO pattern for validation - delegates to chain-specific rules
 export function validateAddress({
   address,
   chainType
@@ -29,23 +31,14 @@ export function validateAddress({
 }): boolean {
   switch (chainType) {
     case 'evm':
-      try {
-        getAddress(address) // Use viem's getAddress (see viem.mdc)
-        return true
-      } catch {
-        return false
-      }
+      // See [Viem Rules](./viem.mdc) for EVM address validation
+      return validateEVMAddress(address)
     case 'solana':
-      try {
-        const publicKey = new PublicKey(address)
-        return PublicKey.isOnCurve(publicKey)
-      } catch {
-        return false
-      }
+      // See [Solana Rules](./solana.mdc) for Solana address validation
+      return validateSolanaAddress(address)
     case 'cosmos':
-      // Bech32 validation (see cosmos.mdc)
-      const bech32Regex = /^[a-z]{1,5}1[a-z0-9]{6,}$/i
-      return bech32Regex.test(address) && address.length >= 20 && address.length <= 45
+      // See [Cosmos Rules](./cosmos.mdc) for Cosmos address validation
+      return validateCosmosAddress(address)
     default:
       return false
   }
@@ -53,9 +46,12 @@ export function validateAddress({
 ```
 
 ## Chain-Specific Libraries
-- **EVM**: Use `getAddress()` from `viem` (see [Viem Rules](./viem.mdc))
-- **Solana**: Use `PublicKey` from `@solana/web3.js` (see [Solana Rules](./solana.mdc))
-- **Cosmos**: Use Bech32 validation (see [Cosmos Rules](./cosmos.mdc))
+
+This rule delegates to chain-specific rules for implementation:
+
+- **EVM**: See [Viem Rules](./viem.mdc) - Use `getAddress()` from `viem` v2.44.4
+- **Solana**: See [Solana Rules](./solana.mdc) - Use `PublicKey` from `@solana/web3.js` v1.98.4
+- **Cosmos**: See [Cosmos Rules](./cosmos.mdc) - Use Bech32 validation
 - **Other chains**: Use appropriate validation libraries when available
 
 ## Error Handling

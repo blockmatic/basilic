@@ -148,4 +148,4 @@ if (!result.success) {
 
 ## References
 
-- [React Query Integration](references/react-query-integration.md) - Using generated clients with TanStack Query
+- React Query integration: Use generated clients with TanStack Query by wrapping API calls in `useQuery` hooks (see React Query Integration section above)

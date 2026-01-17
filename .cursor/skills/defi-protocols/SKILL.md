@@ -1,83 +1,43 @@
----
-name: defi-protocols
-description: Master DeFi protocol development including AMMs, lending, yield, and oracles
-sasmp_version: "1.3.0"
-version: "2.0.0"
-updated: "2025-01"
-bonded_agent: 04-defi-specialist
-bond_type: PRIMARY_BOND
+# Skill: defi-protocols
 
-# Skill Configuration
-atomic: true
-single_responsibility: defi_development
+## Scope
 
-# Parameter Validation
-parameters:
-  protocol_type:
-    type: string
-    required: true
-    enum: [amm, lending, yield, oracle, flash_loan]
-  chain:
-    type: string
-    default: ethereum
+- DeFi protocol development patterns (AMMs, lending, yield, oracles)
+- AMM mechanics and swap calculations
+- Lending protocol architecture and interest rate models
+- Oracle integration and price feed security
+- Flash loan patterns and protection
 
-# Retry & Error Handling
-retry_config:
-  max_attempts: 3
-  backoff: exponential
-  initial_delay_ms: 1000
+Does NOT cover:
+- General Solidity development (see `solidity-development` skill)
+- Security auditing (see `smart-contract-security` skill)
+- Frontend integration (see `web3-frontend` skill)
 
-# Logging & Observability
-logging:
-  level: info
-  include_timestamps: true
-  track_usage: true
----
+## Principles
 
-# DeFi Protocols Skill
+- Use TWAP (time-weighted average price) for manipulation-resistant pricing
+- Check oracle staleness before using prices
+- Enforce slippage protection on swaps
+- Use overcollateralization for lending protocols
+- Implement flash loan resistance where applicable
+- Use utilization-based interest rate curves for lending
 
-> Master DeFi protocol development including AMM mechanics, lending systems, yield optimization, and oracle integration.
+## Constraints
 
-## Quick Start
+- MUST check oracle staleness before using prices (prevent stale price attacks)
+- MUST enforce slippage protection on swaps (prevent sandwich attacks)
+- MUST use TWAP or multiple oracles for critical pricing (prevent flash loan manipulation)
+- SHOULD implement flash loan resistance for protocols handling large value
+- SHOULD use overcollateralization for lending (maintain health factor > 1)
+- AVOID using spot prices from DEX for critical decisions (vulnerable to manipulation)
+- AVOID single oracle setups for high-value protocols (use fallbacks)
 
-```python
-# Invoke this skill for DeFi development
-Skill("defi-protocols", protocol_type="amm", chain="ethereum")
-```
+## Patterns
 
-## Topics Covered
+### AMM Swap Calculation (Constant Product)
 
-### 1. AMM (Automated Market Makers)
-Build decentralized exchanges:
-- **Constant Product**: x * y = k (Uniswap V2)
-- **Concentrated Liquidity**: Tick-based (Uniswap V3)
-- **Stable Swaps**: Curve invariant
-- **TWAP**: Time-weighted average price
+Constant product formula: `x * y = k`
 
-### 2. Lending Protocols
-Create lending markets:
-- **Overcollateralized**: Aave/Compound model
-- **Interest Rates**: Utilization-based curves
-- **Liquidation**: Health factor, incentives
-- **Isolated Markets**: Risk segmentation
-
-### 3. Yield Optimization
-Maximize returns:
-- **Auto-compounding**: Vault strategies
-- **Liquidity Mining**: Reward distribution
-- **veTokens**: Vote-escrowed governance
-- **Bribes**: Gauge voting incentives
-
-### 4. Oracle Integration
-Secure price feeds:
-- **Chainlink**: Decentralized oracles
-- **TWAP**: Manipulation resistant
-- **Staleness Checks**: Price freshness
-- **Fallbacks**: Multi-oracle setups
-
-## Code Examples
-
-### AMM Swap Calculation
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
@@ -86,7 +46,6 @@ library SwapMath {
     uint256 constant FEE_NUMERATOR = 997;
     uint256 constant FEE_DENOMINATOR = 1000;
 
-    /// @notice Calculate output amount for constant product AMM
     function getAmountOut(
         uint256 amountIn,
         uint256 reserveIn,
@@ -97,18 +56,13 @@ library SwapMath {
         uint256 denominator = reserveIn * FEE_DENOMINATOR + amountInWithFee;
         return numerator / denominator;
     }
-
-    /// @notice Calculate price impact percentage (basis points)
-    function getPriceImpact(
-        uint256 amountIn,
-        uint256 reserveIn
-    ) internal pure returns (uint256) {
-        return (amountIn * 10000) / (reserveIn + amountIn);
-    }
 }
 ```
 
-### Chainlink Oracle
+### Oracle Staleness Check Pattern
+
+Always validate oracle freshness:
+
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
@@ -121,10 +75,6 @@ contract PriceOracle {
 
     error StalePrice();
     error InvalidPrice();
-
-    constructor(address feed) {
-        priceFeed = AggregatorV3Interface(feed);
-    }
 
     function getPrice() external view returns (uint256) {
         (, int256 price,, uint256 updatedAt,) = priceFeed.latestRoundData();
@@ -139,103 +89,81 @@ contract PriceOracle {
 }
 ```
 
-### Flash Loan Callback
+### Slippage Protection Pattern
+
+Enforce minimum output on swaps:
+
 ```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+function swap(
+    uint256 amountIn,
+    uint256 minAmountOut
+) external {
+    uint256 amountOut = getAmountOut(amountIn, reserveIn, reserveOut);
+    
+    if (amountOut < minAmountOut) {
+        revert SlippageExceeded();
+    }
+    
+    // Execute swap
+}
+```
 
-import "@aave/v3-core/contracts/flashloan/base/FlashLoanSimpleReceiverBase.sol";
+### Interest Rate Model Pattern
 
-contract Arbitrage is FlashLoanSimpleReceiverBase {
-    function executeOperation(
-        address asset,
-        uint256 amount,
-        uint256 premium,
-        address,
-        bytes calldata
-    ) external override returns (bool) {
-        // Execute arbitrage logic here
+Utilization-based interest rates:
 
-        // Repay: amount + premium
-        IERC20(asset).approve(address(POOL), amount + premium);
-        return true;
+```solidity
+function getBorrowRate(uint256 utilization) public pure returns (uint256) {
+    if (utilization < OPTIMAL_UTILIZATION) {
+        return BASE_RATE + (utilization * SLOPE_1) / OPTIMAL_UTILIZATION;
+    } else {
+        return BASE_RATE + SLOPE_1 + 
+               ((utilization - OPTIMAL_UTILIZATION) * SLOPE_2) / 
+               (1e18 - OPTIMAL_UTILIZATION);
     }
 }
 ```
 
-## DeFi Math Formulas
+## Protocol Types
 
-### Constant Product AMM
-```
-Invariant: x * y = k
-Output: dy = y - k/(x + dx)
-Price: p = y/x
-Slippage: dx/(x + dx) * 100%
-```
+### AMM (Automated Market Maker)
+- **Constant Product**: `x * y = k` (Uniswap V2)
+- **Concentrated Liquidity**: Tick-based (Uniswap V3)
+- **Stable Swaps**: Curve invariant for similar assets
+- **TWAP**: Time-weighted average price for manipulation resistance
 
-### Interest Rates
-```
-Utilization: U = borrows / (deposits + borrows)
-Borrow Rate: R = base + slope * U  (when U < optimal)
-Supply Rate: R_supply = R_borrow * U * (1 - reserve_factor)
-```
+### Lending Protocols
+- **Overcollateralized**: Aave/Compound model (health factor)
+- **Interest Rates**: Utilization-based curves
+- **Liquidation**: Automated when health factor < 1
+- **Isolated Markets**: Risk segmentation
 
-### Health Factor
-```
-HF = (collateral * liquidation_threshold) / debt
-Liquidation when HF < 1
-```
+### Oracle Integration
+- **Chainlink**: Decentralized oracle network
+- **TWAP**: DEX-based time-weighted prices
+- **Multi-oracle**: Fallback mechanisms
+- **Staleness Checks**: Price freshness validation
 
-## Common Pitfalls
+## Trade-offs
 
-| Pitfall | Risk | Prevention |
-|---------|------|------------|
-| Spot price oracle | Flash loan manipulation | Use TWAP |
-| No slippage check | Sandwich attacks | Enforce min output |
-| Stale prices | Wrong liquidations | Check updatedAt |
-| Reentrancy | Fund drainage | CEI + guards |
+- **TWAP vs spot price**: TWAP resists manipulation but has latency. Spot price is immediate but vulnerable to flash loans.
+- **Single vs multi-oracle**: Single oracle is simpler but single point of failure. Multi-oracle provides redundancy but complexity.
+- **Overcollateralization**: Higher safety but lower capital efficiency. Lower collateralization increases risk but improves efficiency.
 
-## Security Checklist
+## Security Considerations
 
-- [ ] Oracle staleness validation
-- [ ] Slippage protection
-- [ ] Flash loan attack resistance
-- [ ] Reentrancy guards
-- [ ] Access control on admin
-- [ ] Emergency pause mechanism
-- [ ] Timelock on parameters
+- **Oracle manipulation**: Use TWAP or multiple oracles
+- **Flash loan attacks**: Check price staleness, use TWAP
+- **Sandwich attacks**: Enforce slippage protection
+- **Reentrancy**: Follow CEI pattern (see `smart-contract-security`)
 
-## Troubleshooting
+## Interactions
 
-### "Oracle price deviation"
-```bash
-# Compare oracle vs DEX price
-cast call $ORACLE "latestRoundData()" --rpc-url $RPC
-cast call $POOL "slot0()" --rpc-url $RPC
-```
+- Uses `solidity-development` for contract patterns
+- Uses `smart-contract-security` for security patterns
+- Uses `ethereum-development` for EVM understanding
 
-### "Sandwich attack detected"
-Add minimum output enforcement:
-```solidity
-require(amountOut >= minAmountOut, "Slippage exceeded");
-```
+## External Resources
 
-## Protocol Addresses (Mainnet)
-
-| Protocol | Contract |
-|----------|----------|
-| Uniswap V3 Router | 0xE592427A0AEce92De3Edee1F18E0157C05861564 |
-| Aave V3 Pool | 0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2 |
-| Chainlink ETH/USD | 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419 |
-
-## Cross-References
-
-- **Bonded Agent**: `04-defi-specialist`
-- **Related Skills**: `solidity-development`, `smart-contract-security`
-
-## Version History
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.0.0 | 2025-01 | Production-grade with math, security |
-| 1.0.0 | 2024-12 | Initial release |
+- [Uniswap V2 Documentation](https://docs.uniswap.org/contracts/v2/overview)
+- [Aave Documentation](https://docs.aave.com/) - Lending protocol patterns

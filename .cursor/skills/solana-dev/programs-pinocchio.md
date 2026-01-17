@@ -547,7 +547,7 @@ pub mod tests;
 // Run with: cargo test-sbf
 ```
 
-See [testing.md](testing.md) for detailed testing patterns with Mollusk and LiteSVM.
+For detailed testing patterns with Mollusk and LiteSVM, see the testing documentation in the Solana development skill.
 
 ## Security Checklist
 

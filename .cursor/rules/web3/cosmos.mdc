@@ -55,3 +55,6 @@ export async function sendTransaction({
 - Validate address prefix matches expected chain
 - Use chain-specific validation libraries when available
 - Handle different Bech32 variants (Bech32, Bech32m)
+
+## Related Rules
+- [Multichain Rules](./multichain.mdc) - Multichain address validation coordination

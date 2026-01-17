@@ -5,9 +5,13 @@ alwaysApply: false
 ---
 # Viem v2 Rules
 
+## Version
+- **Viem**: v2.44.4 (from `packages/utils/package.json`)
+
 ## Core Principles
-- Use getAddress for address validation
+- Use `getAddress` for address validation
 - Never cast directly as Address type
+- Use `@repo/utils/web3` for chain type utilities (`ChainType`, `getChainType`, `getChainMetadata`)
 
 ## Address Handling
 ```tsx
@@ -53,3 +57,7 @@ export async function sendTransaction({
 ## Performance Optimization
 - Use multicall for batch requests
 - Use WebSocket for real-time updates
+
+## Related Rules
+- [Wagmi Rules](./wagmi.mdc) - React hooks for Ethereum using Wagmi v3
+- [Multichain Rules](./multichain.mdc) - Multichain address validation coordination

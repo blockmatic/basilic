@@ -1,0 +1,21 @@
+[package]
+name = "test-token"
+version = "0.1.0"
+description = "Test token program for testing and faucet purposes"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "test_token"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.32.1"
+anchor-spl = "0.32.1"
+

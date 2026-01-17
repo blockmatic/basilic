@@ -5,10 +5,15 @@ alwaysApply: false
 ---
 # Solana Rules
 
+## Versions
+- **@solana/web3.js**: v1.98.4 (from `contracts/solana/package.json`)
+- **Anchor**: v0.32.1 (from `contracts/solana/package.json`)
+
 ## Core Principles
-- Use `PublicKey` from `@solana/web3.js` for address validation
+- Use `PublicKey` from `@solana/web3.js` v1.98.4 for address validation
 - Never cast directly - always validate through PublicKey constructor
 - Use `PublicKey.isOnCurve()` for additional validation
+- Use `@repo/utils/web3` for chain type utilities (`ChainType`, `getChainType`, `getChainMetadata`)
 
 ## Address Handling
 
@@ -59,3 +64,16 @@ export async function sendTransaction({
 ## Performance Optimization
 - Reuse PublicKey instances when possible
 - Validate addresses early before creating transactions
+
+## Anchor Setup
+- **Installation**: Use `pnpm setup:solana` to install Anchor v0.32.1 automatically, or install manually via Homebrew/avm
+- **Package location**: Solana programs are in `contracts/solana/` and use `@repo/contracts-solana` package name
+- **Build behavior**: If Anchor isn't installed, builds skip gracefully without failing the pipeline
+- **Linux requirement**: Rust/Cargo must be installed first on Linux
+
+## Contract Development
+- Use Anchor v0.32.1 framework for program development
+- Test tokens use PDA-based mint authority for open minting (faucet functionality)
+
+## Related Rules
+- [Multichain Rules](./multichain.mdc) - Multichain address validation coordination

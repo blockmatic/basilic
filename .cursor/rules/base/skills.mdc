@@ -124,6 +124,11 @@ Avoid:
 
 Skills should **guide decisions**, not enforce architecture.
 
+CRITICAL:
+Skills should never link to anything inside repo. They MUST be self-contained.
+Never mention internal code. Skills are closed, self-contained. No links or references.
+Cross agent skill references are OK.
+
 ## Quality Checklist
 
 Before finalizing a skill:
@@ -147,9 +152,3 @@ If a skill feels like documentation or a tutorial, it's probably doing too much.
 ## Related Resources
 
 - @.cursor/skills/skill-creator/SKILL.md - Complete skill creation workflow with init and packaging scripts
-- @.cursor/rules/base/rules.mdc - Guidelines for writing Cursor rules (complementary to skills)
-
-## Related Resources
-
-- @.cursor/skills/skill-creator/SKILL.md - Complete skill creation workflow with init and packaging scripts
-- @.cursor/rules/base/rules.mdc - Guidelines for writing Cursor rules (complementary to skills)

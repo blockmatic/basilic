@@ -139,12 +139,12 @@ Extract text with pdfplumber:
 
 ## Advanced features
 
-- **Form filling**: See [FORMS.md](FORMS.md) for complete guide
-- **API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
-- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns
+- **Form filling**: See references/workflows.md for complete guide
+- **API reference**: See references/output-patterns.md for all methods
+- **Examples**: See references/output-patterns.md for common patterns
 ```
 
-Claude loads FORMS.md, REFERENCE.md, or EXAMPLES.md only when needed.
+Claude loads references/workflows.md and references/output-patterns.md only when needed.
 
 **Pattern 2: Domain-specific organization**
 
@@ -184,17 +184,17 @@ Show basic content, link to advanced content:
 
 ## Creating documents
 
-Use docx-js for new documents. See [DOCX-JS.md](DOCX-JS.md).
+Use docx-js for new documents. See references/output-patterns.md for document creation patterns.
 
 ## Editing documents
 
 For simple edits, modify the XML directly.
 
-**For tracked changes**: See [REDLINING.md](REDLINING.md)
-**For OOXML details**: See [OOXML.md](OOXML.md)
+**For tracked changes**: See references/output-patterns.md for advanced document editing
+**For OOXML details**: See references/output-patterns.md for document structure details
 ```
 
-Claude reads REDLINING.md or OOXML.md only when the user needs those features.
+Claude reads references/output-patterns.md only when the user needs those features.
 
 **Important guidelines:**
 

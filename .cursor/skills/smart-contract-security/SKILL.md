@@ -1,101 +1,70 @@
----
-name: smart-contract-security
-description: Master smart contract security with auditing, vulnerability detection, and incident response
-sasmp_version: "1.3.0"
-version: "2.0.0"
-updated: "2025-01"
-bonded_agent: 06-smart-contract-security
-bond_type: PRIMARY_BOND
+# Skill: smart-contract-security
 
-# Skill Configuration
-atomic: true
-single_responsibility: security_auditing
+## Scope
 
-# Parameter Validation
-parameters:
-  topic:
-    type: string
-    required: true
-    enum: [vulnerabilities, auditing, tools, incidents]
-  severity:
-    type: string
-    default: all
-    enum: [critical, high, medium, low, all]
+- Common vulnerability patterns and prevention
+- Security auditing methodology
+- Foundry-based security testing (fuzz, invariant)
+- Static analysis tools (Slither, Mythril)
+- Incident response procedures
 
-# Retry & Error Handling
-retry_config:
-  max_attempts: 3
-  backoff: exponential
-  initial_delay_ms: 1000
+Does NOT cover:
+- General Solidity development (see `solidity-development` skill)
+- EVM internals (see `ethereum-development` skill)
+- Frontend security (see general security practices)
 
-# Logging & Observability
-logging:
-  level: info
-  include_timestamps: true
-  track_usage: true
----
+## Principles
 
-# Smart Contract Security Skill
+- Follow CEI pattern (Checks-Effects-Interactions) for all external calls
+- Use Foundry for fuzz testing and invariant testing
+- Validate all inputs (zero address, bounds, overflow)
+- Use access control modifiers on admin functions
+- Check oracle staleness and price deviation
+- Write comprehensive security tests before deployment
 
-> Master smart contract security with vulnerability detection, auditing methodology, and incident response procedures.
+## Constraints
 
-## Quick Start
+- MUST follow CEI pattern for external calls (prevents reentrancy)
+- MUST validate inputs (zero address checks, bounds checking)
+- MUST use access control on admin functions
+- SHOULD write fuzz tests for functions with numeric inputs
+- SHOULD write invariant tests for system-wide properties
+- SHOULD use Foundry's security testing features for fuzz and invariant testing
+- AVOID trusting external calls without validation
+- AVOID using `block.timestamp` for critical logic (miners can manipulate)
 
-```python
-# Invoke this skill for security analysis
-Skill("smart-contract-security", topic="vulnerabilities", severity="high")
-```
+## Patterns
 
-## Topics Covered
+### Reentrancy Prevention (CEI Pattern)
 
-### 1. Common Vulnerabilities
-Recognize and prevent:
-- **Reentrancy**: CEI pattern violation
-- **Access Control**: Missing modifiers
-- **Oracle Manipulation**: Flash loan attacks
-- **Integer Issues**: Precision loss
+Always update state before external calls:
 
-### 2. Auditing Methodology
-Systematic review process:
-- **Manual Review**: Line-by-line analysis
-- **Static Analysis**: Automated tools
-- **Fuzzing**: Property-based testing
-- **Formal Verification**: Mathematical proofs
-
-### 3. Security Tools
-Essential tooling:
-- **Slither**: Fast static analysis
-- **Mythril**: Symbolic execution
-- **Foundry**: Fuzzing, invariants
-- **Certora**: Formal verification
-
-### 4. Incident Response
-Handle security events:
-- **Triage**: Assess severity
-- **Mitigation**: Emergency actions
-- **Post-mortem**: Root cause analysis
-- **Disclosure**: Responsible reporting
-
-## Vulnerability Quick Reference
-
-### Critical: Reentrancy
 ```solidity
 // VULNERABLE
 function withdraw(uint256 amount) external {
     (bool ok,) = msg.sender.call{value: amount}("");
     require(ok);
-    balances[msg.sender] -= amount;  // After call!
+    balances[msg.sender] -= amount;  // After call - vulnerable!
 }
 
 // FIXED: CEI Pattern
 function withdraw(uint256 amount) external {
-    balances[msg.sender] -= amount;  // Before call
+    // 1. CHECKS
+    if (balances[msg.sender] < amount) revert InsufficientBalance();
+    
+    // 2. EFFECTS (update state first)
+    balances[msg.sender] -= amount;
+    
+    // 3. INTERACTIONS (external call last)
     (bool ok,) = msg.sender.call{value: amount}("");
-    require(ok);
+    if (!ok) revert TransferFailed();
 }
 ```
 
-### High: Missing Access Control
+### Access Control Pattern
+
+Always protect admin functions:
+
 ```solidity
 // VULNERABLE
 function setAdmin(address newAdmin) external {
@@ -103,80 +72,52 @@ function setAdmin(address newAdmin) external {
 }
 
 // FIXED
+modifier onlyOwner() {
+    if (msg.sender != owner) revert Unauthorized();
+    _;
+}
+
 function setAdmin(address newAdmin) external onlyOwner {
     admin = newAdmin;
 }
 ```
 
-### High: Unchecked Return Value
+### Foundry Fuzz Test Pattern
+
+Test with random inputs:
+
 ```solidity
-// VULNERABLE
-IERC20(token).transfer(to, amount);  // Ignored!
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
 
-// FIXED: Use SafeERC20
-using SafeERC20 for IERC20;
-IERC20(token).safeTransfer(to, amount);
-```
+import "forge-std/Test.sol";
 
-### Medium: Precision Loss
-```solidity
-// VULNERABLE: Division before multiplication
-uint256 fee = (amount / 1000) * rate;
+contract SecurityTest is Test {
+    Vault vault;
 
-// FIXED: Multiply first
-uint256 fee = (amount * rate) / 1000;
-```
+    function setUp() public {
+        vault = new Vault();
+    }
 
-## Audit Checklist
-
-### Pre-Audit
-- [ ] Code compiles without warnings
-- [ ] Tests pass with good coverage
-- [ ] Documentation reviewed
-
-### Core Security
-- [ ] CEI pattern followed
-- [ ] Reentrancy guards present
-- [ ] Access control on admin functions
-- [ ] Input validation complete
-
-### DeFi Specific
-- [ ] Oracle staleness checks
-- [ ] Slippage protection
-- [ ] Flash loan resistance
-- [ ] Sandwich prevention
-
-## Security Tools
-
-### Static Analysis
-```bash
-# Slither - Fast vulnerability detection
-slither . --exclude-dependencies
-
-# Mythril - Symbolic execution
-myth analyze src/Contract.sol
-
-# Semgrep - Custom rules
-semgrep --config "p/smart-contracts" .
-```
-
-### Fuzzing
-```solidity
-// Foundry fuzz test
-function testFuzz_Withdraw(uint256 amount) public {
-    amount = bound(amount, 1, type(uint128).max);
-
-    vm.deal(address(vault), amount);
-    vault.deposit{value: amount}();
-
-    uint256 before = address(this).balance;
-    vault.withdraw(amount);
-
-    assertEq(address(this).balance, before + amount);
+    function testFuzz_Withdraw(uint256 amount) public {
+        amount = bound(amount, 1, type(uint128).max);
+        
+        vm.deal(address(this), amount);
+        vault.deposit{value: amount}();
+        
+        uint256 before = address(this).balance;
+        vault.withdraw(amount);
+        uint256 after = address(this).balance;
+        
+        assertEq(after, before + amount);
+    }
 }
 ```
 
-### Invariant Testing
+### Foundry Invariant Test Pattern
+
+Test system-wide properties:
+
 ```solidity
 function invariant_BalancesMatchTotalSupply() public {
     uint256 sum = 0;
@@ -187,58 +128,66 @@ function invariant_BalancesMatchTotalSupply() public {
 }
 ```
 
-## Severity Classification
+## Common Vulnerabilities
 
-| Severity | Impact | Examples |
-|----------|--------|----------|
-| Critical | Direct fund loss | Reentrancy, unprotected init |
-| High | Significant damage | Access control, oracle manipulation |
-| Medium | Conditional impact | Precision loss, timing issues |
-| Low | Minor issues | Missing events, naming |
+### Critical: Reentrancy
+- **Issue**: State updated after external call
+- **Prevention**: CEI pattern, update state before external calls
 
-## Incident Response
+### High: Missing Access Control
+- **Issue**: Admin functions callable by anyone
+- **Prevention**: Use modifiers (`onlyOwner`, `onlyRole`)
 
-### 1. Detection
-```bash
-# Monitor for suspicious activity
-cast logs --address $CONTRACT --from-block latest
-```
+### High: Unchecked Return Values
+- **Issue**: External calls fail silently
+- **Prevention**: Check return values, use SafeERC20 for tokens
 
-### 2. Mitigation
-```solidity
-// Emergency pause
-function pause() external onlyOwner {
-    _pause();
-}
-```
+### Medium: Precision Loss
+- **Issue**: Division before multiplication loses precision
+- **Prevention**: Multiply first, then divide
 
-### 3. Recovery
-- Assess damage scope
-- Coordinate disclosure
-- Deploy fixes with audit
+### Medium: Oracle Manipulation
+- **Issue**: Flash loan attacks on spot prices
+- **Prevention**: Use TWAP, check staleness, use multiple oracles
 
-## Common Pitfalls
+## Security Checklist
 
-| Pitfall | Risk | Prevention |
-|---------|------|------------|
-| Only testing happy path | Missing edge cases | Fuzz test boundaries |
-| Ignoring integrations | External call risks | Review all dependencies |
-| Trusting block.timestamp | Miner manipulation | Use for long timeframes only |
+- [ ] CEI pattern on all external calls
+- [ ] Access control on admin functions
+- [ ] Input validation (zero address, bounds)
+- [ ] Reentrancy guards where needed
+- [ ] Event emission for state changes
+- [ ] Custom errors for gas efficiency
+- [ ] Fuzz tests for numeric inputs
+- [ ] Invariant tests for system properties
+- [ ] Oracle staleness checks (if using oracles)
+- [ ] Slippage protection (if using DEX)
 
-## Cross-References
+## Tools
 
-- **Bonded Agent**: `06-smart-contract-security`
-- **Related Skills**: `solidity-development`, `defi-protocols`
+### Foundry (Primary)
+- Fuzz testing: `forge test --fuzz`
+- Invariant testing: `invariant_*` functions
+- Gas snapshots: `forge snapshot`
+- Coverage: `forge coverage`
 
-## Resources
+### Static Analysis
+- **Slither**: Fast vulnerability detection
+- **Mythril**: Symbolic execution
+- **Semgrep**: Custom security rules
 
-- SWC Registry: Common weakness enumeration
-- Rekt News: Hack post-mortems
-- Immunefi: Bug bounties
+## Interactions
 
-## Version History
+- Uses `solidity-development` for contract development patterns
+- Uses `ethereum-development` for EVM internals understanding
+- Uses Foundry for fuzz and invariant testing
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.0.0 | 2025-01 | Production-grade with tools, methodology |
-| 1.0.0 | 2024-12 | Initial release |
+## External Resources
+
+- [Foundry Book - Fuzz Testing](https://book.getfoundry.sh/forge/fuzz-testing)
+- [EEA Security Guidelines](https://entethalliance.org/technical-specifications/) - Enterprise Ethereum Alliance security standards
+- [SCSVS](https://github.com/Consensys/smart-contract-verification-standard) - Smart Contract Security Verification Standard
+
+## Historical References
+
+- [SWC Registry](https://swcregistry.io/) - Common weakness enumeration (not actively maintained since ~2020, retained for historical context only)

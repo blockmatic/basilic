@@ -1,13 +1,14 @@
 ---
-description: Web3 integration patterns using Wagmi v2
+description: Web3 integration patterns using Wagmi v3
 glob: "*.ts, *.tsx, **/hooks/**/*.tsx, **/hooks/**/*.ts"
 alwaysApply: false
 ---
-# Wagmi v2 Rules
+# Wagmi v3 Rules
 
 ## Core Principles
-- Use Wagmi v2.x hooks and configurations consistently
+- Use Wagmi v3.x (latest v3.3.2) hooks and configurations consistently
 - Handle wallet connection states properly
+- Reference [Viem Rules](./viem.mdc) for address validation patterns
 
 ## Custom Hooks
 - Create specialized hooks for specific contract interactions
@@ -52,3 +53,7 @@ export type QuoteInputType = AbiParametersToPrimitiveTypes<
 
 ## Error Handling
 - Consider network conditions and gas price fluctuations
+
+## Related Rules
+- [Viem Rules](./viem.mdc) - Address validation and transaction utilities (v2.44.4)
+- [Multichain Rules](./multichain.mdc) - Multichain address validation coordination

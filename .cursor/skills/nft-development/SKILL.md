@@ -1,84 +1,43 @@
----
-name: nft-development
-description: Master NFT development with token standards, metadata, marketplaces, and on-chain art
-sasmp_version: "1.3.0"
-version: "2.0.0"
-updated: "2025-01"
-bonded_agent: 07-nft-development
-bond_type: PRIMARY_BOND
+# Skill: nft-development
 
-# Skill Configuration
-atomic: true
-single_responsibility: nft_development
+## Scope
 
-# Parameter Validation
-parameters:
-  topic:
-    type: string
-    required: true
-    enum: [standards, metadata, marketplace, onchain]
-  standard:
-    type: string
-    default: ERC721
-    enum: [ERC721, ERC721A, ERC1155, DN404]
+- NFT token standards (ERC-721, ERC-721A, ERC-1155, DN404)
+- Metadata design patterns (on-chain, IPFS, Arweave)
+- Marketplace integration (OpenSea, royalties, operator filters)
+- On-chain art generation (SVG, deterministic randomness)
+- Gas optimization for NFT contracts
 
-# Retry & Error Handling
-retry_config:
-  max_attempts: 3
-  backoff: exponential
-  initial_delay_ms: 1000
+Does NOT cover:
+- General Solidity development (see `solidity-development` skill)
+- Frontend integration (see `web3-frontend` skill)
+- Security auditing (see `smart-contract-security` skill)
 
-# Logging & Observability
-logging:
-  level: info
-  include_timestamps: true
-  track_usage: true
----
+## Principles
 
-# NFT Development Skill
+- Use ERC-721A for batch minting (gas efficient)
+- Use OpenZeppelin Contracts for standard implementations
+- Implement EIP-2981 for royalties
+- Use operator filters for royalty enforcement
+- Store metadata off-chain (IPFS/Arweave) for large collections
+- Generate on-chain art deterministically from token ID
 
-> Master NFT development with token standards, metadata design, marketplace integration, and on-chain generative art.
+## Constraints
 
-## Quick Start
+- MUST use OpenZeppelin Contracts for standard implementations
+- SHOULD use ERC-721A for batch minting (saves ~80% gas vs ERC-721)
+- SHOULD implement EIP-2981 for marketplace royalty support
+- SHOULD use operator filters for royalty enforcement (if needed)
+- SHOULD validate metadata JSON structure (OpenSea standard)
+- AVOID storing large metadata on-chain (use IPFS/Arweave)
+- AVOID using standard ERC-721 for batch mints (use ERC-721A)
 
-```python
-# Invoke this skill for NFT development
-Skill("nft-development", topic="standards", standard="ERC721A")
-```
+## Patterns
 
-## Topics Covered
+### ERC-721A Mint Pattern
 
-### 1. Token Standards
-Choose the right standard:
-- **ERC-721**: Standard NFTs, one token per ID
-- **ERC-721A**: Gas-optimized batch minting
-- **ERC-1155**: Multi-token, semi-fungible
-- **DN404**: Divisible NFT hybrid
+Use ERC-721A for gas-efficient batch minting:
 
-### 2. Metadata Design
-Structure your NFT data:
-- **On-chain**: Base64 JSON, SVG
-- **IPFS**: Content-addressed storage
-- **Arweave**: Permanent storage
-- **Dynamic**: Evolving traits
-
-### 3. Marketplace Integration
-List and sell NFTs:
-- **OpenSea**: Seaport protocol
-- **Royalties**: EIP-2981
-- **Operator Filter**: Royalty enforcement
-- **Collection Verification**: Metadata standards
-
-### 4. On-Chain Art
-Generate art in Solidity:
-- **SVG Generation**: Dynamic shapes
-- **Seed-based**: Deterministic randomness
-- **Traits**: Rarity distribution
-- **Base64**: Data URI encoding
-
-## Code Examples
-
-### ERC-721A Mint
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
@@ -108,7 +67,31 @@ contract MyNFT is ERC721A, Ownable {
 }
 ```
 
-### On-Chain SVG
+### EIP-2981 Royalty Pattern
+
+Implement royalties for marketplace support:
+
+```solidity
+import "@openzeppelin/contracts/token/common/ERC2981.sol";
+
+contract NFTWithRoyalty is ERC721A, ERC2981 {
+    constructor(string memory name, string memory symbol) ERC721A(name, symbol) {
+        _setDefaultRoyalty(msg.sender, 500); // 5%
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public view override(ERC721A, ERC2981)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+}
+```
+
+### On-Chain SVG Pattern
+
+Generate SVG art deterministically:
+
 ```solidity
 function tokenURI(uint256 tokenId) public view returns (string memory) {
     uint256 seed = seeds[tokenId];
@@ -132,27 +115,19 @@ function tokenURI(uint256 tokenId) public view returns (string memory) {
 }
 ```
 
-### EIP-2981 Royalties
-```solidity
-import "@openzeppelin/contracts/token/common/ERC2981.sol";
+## Token Standards Comparison
 
-contract NFTWithRoyalty is ERC721A, ERC2981 {
-    constructor() {
-        _setDefaultRoyalty(msg.sender, 500); // 5%
-    }
+| Standard | Best For | Gas (1 mint) | Gas (5 mints) |
+|----------|----------|--------------|---------------|
+| ERC-721 | Simple NFTs | ~100k | ~500k |
+| ERC-721A | PFP collections | ~100k | ~120k |
+| ERC-1155 | Game items | ~50k | ~80k |
+| DN404 | Divisible NFTs | Variable | Variable |
 
-    function supportsInterface(bytes4 interfaceId)
-        public view override(ERC721A, ERC2981)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
-}
-```
+## Metadata Standards
 
-## Metadata Schema
+### OpenSea Metadata Format
 
-### ERC-721 Standard
 ```json
 {
   "name": "Cool NFT #1",
@@ -168,72 +143,20 @@ contract NFTWithRoyalty is ERC721A, ERC2981 {
 }
 ```
 
-## Standard Comparison
+## Trade-offs
 
-| Standard | Best For | Gas (1 mint) | Gas (5 mints) |
-|----------|----------|--------------|---------------|
-| ERC-721 | Simple NFTs | ~100k | ~500k |
-| ERC-721A | PFP collections | ~100k | ~120k |
-| ERC-1155 | Game items | ~50k | ~80k |
+- **ERC-721 vs ERC-721A**: ERC-721A saves ~80% gas for batch mints but adds complexity. Use ERC-721A for collections with batch minting.
+- **On-chain vs off-chain metadata**: On-chain provides permanence but costs gas. Off-chain (IPFS) is cheaper but requires pinning.
+- **Operator filters**: Enforce royalties but may limit marketplace compatibility. Use only if royalty enforcement is critical.
 
-## Common Pitfalls
+## Interactions
 
-| Pitfall | Issue | Solution |
-|---------|-------|----------|
-| Metadata not showing | Bad tokenURI | Validate JSON, check CORS |
-| Gas too high | Standard ERC-721 | Use ERC-721A for batches |
-| Royalties not paid | Marketplaces ignore | Use operator filter |
-| Reveal broken | Wrong base URI | Test on testnet first |
+- Uses `solidity-development` for contract patterns
+- Uses `web3-frontend` for marketplace integration
+- Uses OpenZeppelin Contracts for standard implementations
 
-## Troubleshooting
+## External Resources
 
-### "Metadata not showing on OpenSea"
-1. Verify tokenURI returns valid JSON
-2. Check IPFS gateway accessibility
-3. Refresh metadata via API:
-```bash
-curl "https://api.opensea.io/api/v2/chain/ethereum/contract/{addr}/nfts/{id}/refresh"
-```
-
-### "Batch mint out of gas"
-- Use ERC-721A instead of ERC-721
-- Limit batch size to 10-20 per tx
-
-### "Royalties not enforced"
-Implement operator filter:
-```solidity
-import "operator-filter-registry/src/DefaultOperatorFilterer.sol";
-
-function setApprovalForAll(address op, bool approved)
-    public override onlyAllowedOperatorApproval(op)
-{
-    super.setApprovalForAll(op, approved);
-}
-```
-
-## Gas Optimization
-
-| Technique | Savings |
-|-----------|---------|
-| ERC721A batching | ~80% for batches |
-| Merkle whitelist | ~50% vs mapping |
-| Packed storage | ~20k per slot |
-| Custom errors | ~200 per error |
-
-## Cross-References
-
-- **Bonded Agent**: `07-nft-development`
-- **Related Skills**: `solidity-development`, `web3-frontend`
-
-## Resources
-
-- ERC-721: eips.ethereum.org/EIPS/eip-721
-- ERC-721A: erc721a.org
-- OpenSea Metadata: docs.opensea.io/docs/metadata-standards
-
-## Version History
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.0.0 | 2025-01 | Production-grade with standards, on-chain |
-| 1.0.0 | 2024-12 | Initial release |
+- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts) - Standard implementations
+- [ERC-721A Documentation](https://erc721a.org/) - Gas-optimized NFT standard
+- [OpenSea Metadata Standards](https://docs.opensea.io/docs/metadata-standards) - Marketplace integration

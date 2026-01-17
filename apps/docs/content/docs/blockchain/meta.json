@@ -1,0 +1,4 @@
+{
+  "evm-contracts": "EVM (Foundry)",
+  "solana-contracts": "Solana (Anchor)"
+}

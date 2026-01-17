@@ -2,7 +2,7 @@
   "name": "basilic",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build --filter='!./contracts/**'",
     "dev": "turbo dev",
     "checktypes": "turbo checktypes",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
@@ -11,16 +11,23 @@
     "lint:eslint": "turbo run lint:eslint",
     "lint:eslint:fix": "turbo run lint:eslint:fix",
     "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
-    "test": "turbo run test",
+    "test": "turbo run test --filter='!./contracts/**'",
     "format": "biome format . --write",
     "hooks:pre-commit": "pnpm run hooks:security && biome check --write --staged --no-errors-on-unmatched && git update-index --again",
-    "hooks:security": "node scripts/block-secret-files.mjs && node scripts/scan-secrets-staged.mjs",
-    "secrets:scan:staged": "gitleaks protect --staged --redact --verbose --config .gitleaks.toml",
-    "secrets:scan": "gitleaks detect --redact --verbose --config .gitleaks.toml",
-    "deps:osv": "osv-scanner scan --lockfile=pnpm-lock.yaml",
-    "deps:audit": "pnpm audit --audit-level=moderate",
+    "hooks:security": "node scripts/block-secret-files.mjs && node scripts/scan-secrets-staged.mjs && node scripts/scan-osv.mjs",
+    "security:block-files": "node scripts/block-secret-files.mjs",
+    "security:secrets": "node scripts/scan-secrets-staged.mjs",
+    "security:secrets:full": "gitleaks detect --redact --verbose --config .gitleaks.toml",
+    "security:osv": "node scripts/scan-osv.mjs",
+    "security:audit": "pnpm audit --audit-level=moderate",
+    "security:check": "node scripts/security-check.mjs",
     "postinstall": "npx simple-git-hooks",
-    "setup": "pnpm install && npx simple-git-hooks && node scripts/setup-security-tools.mjs",
+    "setup": "pnpm install && npx simple-git-hooks && node scripts/setup-security-tools.mjs && node scripts/setup-evm-tools.mjs && node scripts/setup-solana-tools.mjs",
+    "setup:security": "node scripts/setup-gitleaks.mjs && node scripts/setup-osv-scanner.mjs",
+    "setup:gitleaks": "node scripts/setup-gitleaks.mjs",
+    "setup:osv": "node scripts/setup-osv-scanner.mjs",
+    "setup:evm": "node scripts/setup-evm-tools.mjs",
+    "setup:solana": "node scripts/setup-solana-tools.mjs",
     "qa": "pnpm i && pnpm lint:fix && pnpm checktypes && pnpm run build && pnpm run test"
   },
   "devDependencies": {
@@ -42,7 +49,9 @@
     "overrides": {
       "tmp@<=0.2.3": ">=0.2.4",
       "js-yaml@<4.1.1": ">=4.1.1",
-      "diff@<8.0.3": ">=8.0.3"
+      "diff@<8.0.3": ">=8.0.3",
+      "bigint-buffer": "npm:bigint-buffer-fixed@1.1.6",
+      "tar@<7.5.3": ">=7.5.3"
     }
   }
 }

@@ -1,83 +1,86 @@
----
-name: ethereum-development
-description: Master Ethereum development including EVM, gas optimization, and client interactions
-sasmp_version: "1.3.0"
-version: "2.0.0"
-updated: "2025-01"
-bonded_agent: 02-ethereum-development
-bond_type: PRIMARY_BOND
+# Skill: ethereum-development
 
-# Skill Configuration
-atomic: true
-single_responsibility: ethereum_development
+## Scope
 
-# Parameter Validation
-parameters:
-  topic:
-    type: string
-    required: true
-    enum: [evm, gas, transactions, clients, debugging]
-  network:
-    type: string
-    default: mainnet
-    enum: [mainnet, sepolia, holesky, local]
+- EVM internals and execution environment understanding
+- Gas optimization techniques for Solidity contracts
+- Transaction mechanics (EIP-1559, legacy, access lists)
+- Client interactions using viem v2
+- RPC methods and state queries
+- Network-specific patterns (Arbitrum Sepolia for testing)
 
-# Retry & Error Handling
-retry_config:
-  max_attempts: 3
-  backoff: exponential
-  initial_delay_ms: 1000
+Does NOT cover:
+- Frontend wallet integration (see `web3-frontend` skill)
+- Solidity contract development (see `solidity-development` skill)
+- Security auditing (see `smart-contract-security` skill)
 
-# Logging & Observability
-logging:
-  level: info
-  include_timestamps: true
-  track_usage: true
----
+## Principles
 
-# Ethereum Development Skill
+- Use viem v2 for client interactions and transaction building
+- Understand EVM execution model: stack, memory, storage, opcodes
+- Optimize gas usage: storage packing, calldata over memory, custom errors
+- Use EIP-1559 transactions for predictable fee structure
+- Cache storage reads in memory when used multiple times
+- Use Foundry Cast for CLI interactions and debugging
 
-> Master Ethereum development including EVM internals, gas optimization, transaction mechanics, and client interactions.
+## Constraints
 
-## Quick Start
+- MUST use viem v2 for client interactions
+- MUST validate addresses with `getAddress()` from viem (never cast directly)
+- SHOULD use EIP-1559 transactions (type 2) for predictable fees
+- SHOULD cache storage reads in memory when used in loops
+- SHOULD use `calldata` for read-only function parameters
+- AVOID storage reads in loops (cache first)
+- AVOID relying on SSTORE refunds (EIP-3529 removed them)
 
-```python
-# Invoke this skill for Ethereum development
-Skill("ethereum-development", topic="gas", network="mainnet")
+## Patterns
+
+### Storage Slot Reading Pattern
+
+Read contract storage using viem v2:
+
+```typescript
+import { createPublicClient, http, keccak256, encodePacked } from 'viem'
+import { arbitrumSepolia } from 'viem/chains'
+
+const client = createPublicClient({
+  chain: arbitrumSepolia,
+  transport: http(),
+})
+
+// Read mapping value: balances[address]
+async function getBalance(contract: `0x${string}`, user: `0x${string}`) {
+  const slot = keccak256(encodePacked(['address', 'uint256'], [user, 0n]))
+  return await client.getStorageAt({ address: contract, slot })
+}
 ```
 
-## Topics Covered
+### EIP-1559 Transaction Pattern
 
-### 1. EVM (Ethereum Virtual Machine)
-Understand the execution environment:
-- **Stack Machine**: 256-bit words, 1024 depth
-- **Memory**: Linear byte array, expansion costs
-- **Storage**: Persistent key-value, 32-byte slots
-- **Opcodes**: Costs, effects, gas consumption
+Use EIP-1559 for predictable fee structure:
 
-### 2. Gas Optimization
-Reduce transaction costs:
-- **Storage Packing**: Fit multiple values in one slot
-- **Calldata vs Memory**: Choose efficiently
-- **Loop Optimization**: Cache storage reads
-- **Custom Errors**: Save gas on reverts
+```typescript
+import { createWalletClient, http, parseEther, parseGwei } from 'viem'
+import { arbitrumSepolia } from 'viem/chains'
 
-### 3. Transaction Mechanics
-Master transaction lifecycle:
-- **Types**: Legacy (0), Access List (1), EIP-1559 (2)
-- **Fee Estimation**: Base fee, priority fee, max fee
-- **Nonce Management**: Sequential ordering
-- **Receipts**: Status, logs, gas used
+const client = createWalletClient({
+  chain: arbitrumSepolia,
+  transport: http(),
+})
 
-### 4. Client Interactions
-Work with Ethereum nodes:
-- **RPC Methods**: eth_, debug_, trace_
-- **State Queries**: Storage slots, code, balance
-- **Event Subscriptions**: Filter logs, topics
+const hash = await client.sendTransaction({
+  to: '0x...',
+  value: parseEther('0.1'),
+  type: 'eip1559',
+  maxFeePerGas: parseGwei('30'),
+  maxPriorityFeePerGas: parseGwei('2'),
+})
+```
 
-## Code Examples
+### Gas Optimization Pattern
 
-### Gas-Efficient Storage
+Pack storage efficiently:
+
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
@@ -96,108 +99,26 @@ contract Optimized {
 }
 ```
 
-### Read Storage Slot
-```typescript
-import { createPublicClient, http, keccak256, encodePacked, pad } from 'viem';
-import { mainnet } from 'viem/chains';
+## Trade-offs
 
-const client = createPublicClient({ chain: mainnet, transport: http() });
+- **Storage packing**: Saves ~20k gas per slot but requires careful type selection. Use when multiple small values fit in one slot.
+- **Calldata vs memory**: `calldata` saves ~3 gas per byte but is read-only. Use `calldata` for read-only parameters.
+- **Custom errors**: Save ~200+ gas per revert but require error definitions. Use custom errors for production contracts.
+- **EIP-1559 vs legacy**: EIP-1559 provides predictable fees but requires base fee estimation. Use EIP-1559 for all new transactions.
 
-// Read mapping value: balances[address]
-async function getBalance(contract: `0x${string}`, user: `0x${string}`) {
-  const slot = keccak256(encodePacked(['address', 'uint256'], [user, 0n]));
-  return await client.getStorageAt({ address: contract, slot });
-}
-```
+## Interactions
 
-### EIP-1559 Transaction
-```typescript
-import { createWalletClient, http, parseEther } from 'viem';
+- Uses `solidity-development` for contract development patterns
+- Complements `web3-frontend` for frontend integration
+- Uses Arbitrum Sepolia testnet for contract deployments
 
-const client = createWalletClient({ transport: http() });
+## Network Context
 
-const hash = await client.sendTransaction({
-  to: '0x...',
-  value: parseEther('0.1'),
-  type: 'eip1559',
-  maxFeePerGas: parseGwei('30'),
-  maxPriorityFeePerGas: parseGwei('2'),
-});
-```
+- **Testing**: Arbitrum Sepolia (Chain ID: 421614) - used for contract deployments
+- **RPC**: `https://sepolia-rollup.arbitrum.io/rpc`
+- **Test tokens**: Deployed on Arbitrum Sepolia
 
-## Gas Optimization Cheatsheet
+## External Resources
 
-| Technique | Savings | Example |
-|-----------|---------|---------|
-| Storage packing | ~20k/slot | `uint128 + uint128` in one slot |
-| Calldata vs memory | ~3/byte | Use `calldata` for read-only |
-| Unchecked math | ~80/op | `unchecked { i++; }` |
-| Custom errors | ~200+ | `error Unauthorized()` |
-| Short-circuit | Variable | Cheap checks first |
-
-## Common Pitfalls
-
-| Pitfall | Issue | Solution |
-|---------|-------|----------|
-| Storage in loops | Expensive reads | Cache in memory first |
-| String storage | Uses multiple slots | Use bytes32 when possible |
-| Zero value storage | Full refund gone | Don't rely on SSTORE refunds |
-
-## Troubleshooting
-
-### "Transaction underpriced"
-```bash
-# Check current gas prices
-cast gas-price --rpc-url $RPC
-cast basefee --rpc-url $RPC
-```
-Set `maxFeePerGas` to at least 2x current base fee.
-
-### "Out of gas"
-```bash
-# Trace transaction to find issue
-cast run --trace $TX_HASH --rpc-url $RPC
-```
-
-### "Nonce too low"
-```bash
-# Get current nonce
-cast nonce $ADDRESS --rpc-url $RPC
-```
-
-## CLI Commands
-
-```bash
-# Foundry essentials
-forge build --sizes          # Contract sizes
-forge test --gas-report      # Gas consumption
-forge snapshot               # Gas snapshots
-cast storage $ADDR $SLOT     # Read storage
-cast call $ADDR "fn()"       # Simulate call
-```
-
-## Test Template
-
-```solidity
-contract GasTest is Test {
-    function test_GasOptimization() public {
-        uint256 gasBefore = gasleft();
-        target.optimizedFunction();
-        uint256 gasUsed = gasBefore - gasleft();
-
-        assertLt(gasUsed, 50000, "Too much gas used");
-    }
-}
-```
-
-## Cross-References
-
-- **Bonded Agent**: `02-ethereum-development`
-- **Related Skills**: `solidity-development`, `web3-frontend`
-
-## Version History
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.0.0 | 2025-01 | Production-grade with viem, gas optimization |
-| 1.0.0 | 2024-12 | Initial release |
+- [Viem Documentation](https://viem.sh/) - Complete viem v2 API reference
+- [Foundry Book](https://book.getfoundry.sh/) - Cast CLI commands

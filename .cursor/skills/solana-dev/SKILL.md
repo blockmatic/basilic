@@ -1,20 +1,28 @@
----
-name: solana-dev
-description: End-to-end Solana development playbook (Jan 2026). Prefer Solana Foundation framework-kit (@solana/client + @solana/react-hooks) for React/Next.js UI. Prefer @solana/kit for all new client/RPC/transaction code. When legacy dependencies require web3.js, isolate it behind @solana/web3-compat (or @solana/web3.js as a true legacy fallback). Covers wallet-standard-first connection (incl. ConnectorKit), Anchor/Pinocchio programs, Codama-based client generation, LiteSVM/Mollusk/Surfpool testing, and security checklists.
-user-invocable: true
----
+# Skill: solana-dev
 
-# Solana Development Skill (framework-kit-first)
+## Scope
 
-## What this Skill is for
-Use this Skill when the user asks for:
-- Solana dApp UI work (React / Next.js)
-- Wallet connection + signing flows
-- Transaction building / sending / confirmation UX
-- On-chain program development (Anchor or Pinocchio)
-- Client SDK generation (typed program clients)
-- Local testing (LiteSVM, Mollusk, Surfpool)
-- Security hardening and audit-style reviews
+- Solana dApp UI development (React/Next.js) with framework-kit
+- Wallet connection and signing flows
+- Transaction building, sending, and confirmation UX
+- On-chain program development with Anchor 0.32.1
+- Client SDK generation from IDLs
+- Local testing with Anchor test framework
+- Address validation and transaction patterns
+
+Does NOT cover:
+- EVM frontend development (see `web3-frontend` skill)
+- General blockchain concepts (see `blockchain-basics` skill)
+
+## Principles
+
+- Use Solana Foundation framework-kit (`@solana/client` + `@solana/react-hooks`) for React/Next.js UI
+- Use `@solana/kit` for client/RPC/transaction code
+- Use Anchor 0.32.1 for program development
+- Validate addresses with `PublicKey` from `@solana/web3.js`
+- Use Wallet Standard for wallet discovery and connection
+- Isolate `@solana/web3.js` to adapter boundaries when legacy dependencies require it
+- Organize contracts using standard Anchor project structure
 
 ## Default stack decisions (opinionated)
 1) **UI: framework-kit first**
@@ -40,48 +48,48 @@ Use this Skill when the user asks for:
 - Use Surfpool for integration tests against realistic cluster state (mainnet/devnet) locally.
 - Use solana-test-validator only when you need specific RPC behaviors not emulated by LiteSVM.
 
-## Operating procedure (how to execute tasks)
-When solving a Solana task:
+## Patterns
 
-### 1. Classify the task layer
-- UI/wallet/hook layer
-- Client SDK/scripts layer
-- Program layer (+ IDL)
-- Testing/CI layer
-- Infra (RPC/indexing/monitoring)
+### Address Validation Pattern
 
-### 2. Pick the right building blocks
-- UI: framework-kit patterns.
-- Scripts/backends: @solana/kit directly.
-- Legacy library present: introduce a web3-compat adapter boundary.
-- High-performance programs: Pinocchio over Anchor.
+Always validate Solana addresses before use:
 
-### 3. Implement with Solana-specific correctness
-Always be explicit about:
-- cluster + RPC endpoints + websocket endpoints
-- fee payer + recent blockhash
-- compute budget + prioritization (where relevant)
-- expected account owners + signers + writability
-- token program variant (SPL Token vs Token-2022) and any extensions
+```tsx
+import { PublicKey } from '@solana/web3.js'
 
-### 4. Add tests
-- Unit test: LiteSVM or Mollusk.
-- Integration test: Surfpool.
-- For "wallet UX", add mocked hook/provider tests where appropriate.
+function validateSolanaAddress(address: string): boolean {
+  try {
+    const publicKey = new PublicKey(address)
+    return PublicKey.isOnCurve(publicKey)
+  } catch {
+    return false
+  }
+}
+```
 
-### 5. Deliverables expectations
-When you implement changes, provide:
-- exact files changed + diffs (or patch-style output)
-- commands to install/build/test
-- a short "risk notes" section for anything touching signing/fees/CPIs/token transfers
+### Anchor Program Development
 
-## Progressive disclosure (read when needed)
-- UI + wallet + hooks: [frontend-framework-kit.md](frontend-framework-kit.md)
-- Kit ↔ web3.js boundary: [kit-web3-interop.md](kit-web3-interop.md)
-- Anchor programs: [programs-anchor.md](programs-anchor.md)
-- Pinocchio programs: [programs-pinocchio.md](programs-pinocchio.md)
-- Testing strategy: [testing.md](testing.md)
-- IDLs + codegen: [idl-codegen.md](idl-codegen.md)
-- Payments: [payments.md](payments.md)
-- Security checklist: [security.md](security.md)
-- Reference links: [resources.md](resources.md)
+Use Anchor 0.32.1 for program development:
+
+- Organize programs in `programs/` directory
+- Place tests in `tests/` directory
+- Create deployment scripts in `scripts/` directory
+- Configure in `Anchor.toml` at project root
+
+### Testing Pattern
+
+Use Anchor test framework (includes local validator):
+
+```bash
+# Run tests with local validator
+anchor test
+
+# Run tests without starting validator (requires running separately)
+anchor test --skip-local-validator
+```
+
+## Interactions
+
+- Complements `web3-frontend` for EVM frontend work
+- Uses `blockchain-basics` for general blockchain concepts
+

@@ -33,6 +33,15 @@ This monorepo uses a **hybrid linting architecture** where Biome and ESLint have
 - **Import Boundary Enforcement**: Architecture rules (e.g., `import/no-default-export`)
 - **Turbo Monorepo Rules**: Monorepo-aware linting
 
+## Agent Requirements
+
+**CRITICAL**: All agents MUST follow these rules:
+
+1. **Always follow Biome and ESLint rules** - Code must pass both linters before completion
+2. **Run linting after making changes** - Execute `pnpm lint:fix` after editing files
+3. **Fix all introduced issues** - Resolve any linting errors you create; pre-existing issues are optional
+4. **Check linting before finishing** - Verify code passes linting as part of task completion
+
 ## Usage
 
 ### Running Linters
@@ -49,12 +58,21 @@ pnpm lint:biome:fix  # Auto-fix
 pnpm lint:eslint
 pnpm lint:eslint:fix  # Auto-fix
 
-# Fix all issues
+# Fix all issues (RECOMMENDED after making changes)
 pnpm lint:fix
 
 # Format code only (Biome)
 pnpm format
 ```
+
+### Agent Workflow
+
+After making code changes, agents MUST:
+
+1. **Run auto-fix**: `pnpm lint:fix` to automatically fix fixable issues
+2. **Check remaining issues**: `pnpm lint` to see if any issues remain
+3. **Fix manually**: Address any remaining linting errors that couldn't be auto-fixed
+4. **Verify**: Ensure `pnpm lint` passes before marking task complete
 
 ### Disabling Rules
 

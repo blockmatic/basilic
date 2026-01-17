@@ -1,166 +1,106 @@
----
-name: blockchain-basics
-description: Master blockchain fundamentals including consensus, cryptography, and distributed systems
-sasmp_version: "1.3.0"
-version: "2.0.0"
-updated: "2025-01"
-bonded_agent: 01-blockchain-fundamentals
-bond_type: PRIMARY_BOND
+# Skill: blockchain-basics
 
-# Skill Configuration
-atomic: true
-single_responsibility: blockchain_education
+## Scope
 
-# Parameter Validation
-parameters:
-  topic:
-    type: string
-    required: true
-    enum: [consensus, cryptography, networks, transactions, blocks]
-  depth:
-    type: string
-    default: intermediate
-    enum: [basic, intermediate, advanced, expert]
+- Blockchain fundamentals: consensus mechanisms, cryptography, distributed systems
+- Transaction lifecycle and block structure
+- Network architecture and node types
+- Cryptographic primitives (hash functions, digital signatures, Merkle trees)
 
-# Retry & Error Handling
-retry_config:
-  max_attempts: 3
-  backoff: exponential
-  initial_delay_ms: 1000
+Does NOT cover:
+- Smart contract development (see `solidity-development` or `solana-dev`)
+- Frontend integration (see `web3-frontend`)
+- Security auditing (see `smart-contract-security`)
 
-# Logging & Observability
-logging:
-  level: info
-  include_timestamps: true
-  track_usage: true
----
+## Principles
 
-# Blockchain Basics Skill
+- Consensus mechanisms determine how networks achieve agreement (PoW, PoS, BFT)
+- Cryptographic primitives provide security (hash functions, digital signatures)
+- Distributed systems enable decentralization (P2P networks, gossip protocols)
+- Transactions are atomic units of state change
+- Blocks batch transactions and provide ordering
+- Finality varies by consensus mechanism (probabilistic vs deterministic)
 
-> Master blockchain fundamentals including consensus mechanisms, cryptographic primitives, and distributed systems architecture.
+## Constraints
 
-## Quick Start
+- MUST understand consensus mechanism before building on a chain
+- MUST use cryptographic primitives correctly (hashes are one-way, signatures verify authenticity)
+- SHOULD understand finality characteristics (PoW is probabilistic, PoS can be deterministic)
+- AVOID trusting `block.timestamp` for critical logic (miners can manipulate)
+- AVOID confusing hash functions with encryption (hashes are one-way)
 
-```python
-# Invoke this skill for blockchain fundamentals
-Skill("blockchain-basics", topic="consensus", depth="intermediate")
-```
+## Consensus Mechanisms
 
-## Topics Covered
+### Proof of Work (PoW)
+- Miners compete to solve cryptographic puzzles
+- Difficulty adjusts to maintain block time
+- Finality is probabilistic (6+ confirmations recommended)
+- High energy consumption
 
-### 1. Consensus Mechanisms
-Learn how distributed networks achieve agreement:
-- **Proof of Work**: Mining, hashrate, difficulty adjustment
-- **Proof of Stake**: Validators, slashing, finality
-- **Byzantine Fault Tolerance**: Leader election, view changes
+### Proof of Stake (PoS)
+- Validators stake tokens to participate
+- Slashing penalizes malicious behavior
+- Can achieve deterministic finality
+- Lower energy consumption
 
-### 2. Cryptographic Foundations
-Understand the security primitives:
-- **Hash Functions**: SHA-256, Keccak-256, properties
-- **Digital Signatures**: ECDSA, Ed25519, verification
-- **Merkle Trees**: Proof construction, verification
+### Byzantine Fault Tolerance (BFT)
+- Requires 2/3+ honest nodes
+- Leader election and view changes
+- Deterministic finality
+- Used in permissioned networks
 
-### 3. Network Architecture
-Explore distributed systems:
-- **P2P Networks**: Gossip protocols, peer discovery
-- **Node Types**: Full nodes, light clients, archives
-- **Block Propagation**: Compact blocks, relay networks
+## Cryptographic Primitives
 
-### 4. Transaction Lifecycle
-Follow data through the chain:
-- **Transaction Structure**: Inputs, outputs, signatures
-- **Mempool**: Fee markets, ordering, priority
-- **Confirmation**: Finality, reorganization
+### Hash Functions
+- One-way functions (SHA-256, Keccak-256)
+- Deterministic output for same input
+- Avalanche effect (small input change → large output change)
+- Used for: block hashes, Merkle roots, address derivation
 
-## Code Examples
+### Digital Signatures
+- ECDSA (Ethereum), Ed25519 (Solana)
+- Prove ownership without revealing private key
+- Used for: transaction signing, message authentication
 
-### Verify Merkle Proof
-```python
-import hashlib
+### Merkle Trees
+- Efficient proof of inclusion
+- Root hash commits to all leaves
+- Used for: transaction verification, state proofs
 
-def verify_merkle_proof(leaf: bytes, proof: list, root: bytes) -> bool:
-    """Verify a Merkle proof for inclusion"""
-    current = leaf
-    for sibling, is_left in proof:
-        if is_left:
-            current = hashlib.sha256(sibling + current).digest()
-        else:
-            current = hashlib.sha256(current + sibling).digest()
-    return current == root
-```
+## Network Architecture
 
-### Calculate Block Hash
-```python
-import hashlib
-import struct
+### Node Types
+- **Full nodes**: Store complete blockchain, validate all transactions
+- **Light clients**: Store headers only, request data from full nodes
+- **Archive nodes**: Store all historical state
 
-def calculate_block_hash(header: dict) -> bytes:
-    """Calculate Bitcoin-style block hash"""
-    data = struct.pack(
-        '<I32s32sIII',
-        header['version'],
-        bytes.fromhex(header['prev_block']),
-        bytes.fromhex(header['merkle_root']),
-        header['timestamp'],
-        header['bits'],
-        header['nonce']
-    )
-    return hashlib.sha256(hashlib.sha256(data).digest()).digest()[::-1]
-```
+### P2P Networks
+- Gossip protocols for block/transaction propagation
+- Peer discovery mechanisms
+- Relay networks for faster propagation
 
-## Common Pitfalls
+## Transaction Lifecycle
 
-| Pitfall | Issue | Solution |
-|---------|-------|----------|
-| Finality confusion | PoW is probabilistic | Wait for 6+ confirmations |
-| Hash vs encryption | Hashes are one-way | Use proper encryption for secrets |
-| Timestamp trust | Miners can manipulate | Use block height for precision |
+1. **Creation**: User signs transaction with private key
+2. **Broadcast**: Transaction sent to network (mempool)
+3. **Validation**: Nodes validate signature and state
+4. **Inclusion**: Miner/validator includes in block
+5. **Confirmation**: Block added to chain, confirmations accumulate
+6. **Finality**: Transaction considered final (varies by consensus)
 
-## Troubleshooting
+## Trade-offs
 
-### "Why is my transaction not confirming?"
-1. Check transaction fee vs current mempool
-2. Verify nonce is sequential (no gaps)
-3. Ensure sufficient balance for amount + gas
+- **PoW vs PoS**: PoW provides proven security but high energy cost. PoS is energy-efficient but requires economic security assumptions.
+- **Full nodes vs light clients**: Full nodes provide security and privacy but require significant storage. Light clients are resource-efficient but trust full nodes.
+- **Finality**: Probabilistic finality (PoW) requires waiting for confirmations. Deterministic finality (PoS/BFT) provides immediate finality but may have different security properties.
 
-### "How do I verify a signature?"
-```python
-from eth_account import Account
-from eth_account.messages import encode_defunct
+## Interactions
 
-message = encode_defunct(text="Hello")
-address = Account.recover_message(message, signature=sig)
-```
+- Provides foundation for `ethereum-development` and `solana-dev`
+- Complements `smart-contract-security` with cryptographic understanding
+- Supports `web3-frontend` with transaction lifecycle knowledge
 
-## Learning Path
+## External Resources
 
-```
-[Beginner] → Hash Functions → Digital Signatures → Transactions
-    ↓
-[Intermediate] → Merkle Trees → Consensus → Network Layer
-    ↓
-[Advanced] → BFT Protocols → Sharding → Cross-chain
-```
-
-## Test Yourself
-
-```python
-# Unit test template
-def test_merkle_root():
-    txs = [b"tx1", b"tx2", b"tx3", b"tx4"]
-    root = build_merkle_root(txs)
-    assert len(root) == 32
-    assert verify_merkle_proof(txs[0], get_proof(0), root)
-```
-
-## Cross-References
-
-- **Bonded Agent**: `01-blockchain-fundamentals`
-- **Related Skills**: `ethereum-development`, `smart-contract-security`
-
-## Version History
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.0.0 | 2025-01 | Production-grade with validation, examples |
-| 1.0.0 | 2024-12 | Initial release |
+- [Ethereum Whitepaper](https://ethereum.org/en/whitepaper/) - Ethereum fundamentals
+- [Solana Documentation](https://docs.solana.com/) - Solana architecture

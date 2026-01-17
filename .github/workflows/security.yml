@@ -72,7 +72,7 @@ jobs:
         run: |
           echo "🔍 Scanning dependencies for known vulnerabilities..."
           set +e
-          osv-scanner --lockfile=pnpm-lock.yaml
+          osv-scanner scan --lockfile=pnpm-lock.yaml --format=markdown
           EXIT_CODE=$?
           set -e
           if [ $EXIT_CODE -ne 0 ]; then

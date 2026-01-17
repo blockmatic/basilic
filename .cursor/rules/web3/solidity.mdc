@@ -6,21 +6,30 @@ alwaysApply: false
 
 # Solidity & Foundry Rules
 
+## Versions
+- **Solidity**: v0.8.24 (from `contracts/evm/foundry.toml`)
+
 ## Core Principles
-- Use latest stable Solidity version (^0.8.20)
+- Use Solidity v0.8.24 (as configured in `foundry.toml`)
 - Use custom errors instead of revert strings (when validation is needed)
 - For test contracts with intentionally open access (e.g., faucet tokens), custom errors may not be necessary
 
+## Foundry Setup
+- **Installation**: Use `pnpm setup:evm` to install Foundry automatically, or install manually via Homebrew/foundryup
+- **Package location**: EVM contracts are in `contracts/evm/` and use `@repo/contracts-evm` package name
+- **Build behavior**: If Foundry isn't installed, builds skip gracefully without failing the pipeline
+- **Solidity version**: Configured in `foundry.toml` as `solc = "0.8.24"`
+
 ## Foundry Dependencies
 - **Never manually edit files in `lib/` directory**: Contains third-party dependencies (e.g., OpenZeppelin Contracts) managed by Foundry
-- **Update dependencies via Foundry**: Use `forge update` or `pnpm run deps:update`
+- **Update dependencies via Foundry**: Use `forge update` or `pnpm --filter @repo/contracts-evm deps:update`
 - **Formatting protection**: `lib/` directory excluded from formatting via `foundry.toml` and `.prettierignore`
 - **Dependency management**: All dependencies installed/updated through Foundry (`forge install`, `forge update`)
 
 ## Contract Structure
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity 0.8.24;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";

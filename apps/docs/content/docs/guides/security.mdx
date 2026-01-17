@@ -18,6 +18,7 @@ Pre-commit hooks run automatically via `simple-git-hooks` when you attempt to co
 
 1. **File blocking** - Prevents committing sensitive file types (`.env`, `*.pem`, `*.key`, etc.)
 2. **Secret scanning** - Scans staged files for secrets using gitleaks
+3. **Vulnerability scanning** - Scans dependencies for known vulnerabilities using OSV Scanner
 
 ### What Gets Blocked
 
@@ -131,17 +132,23 @@ scoop install trufflehog
 You can run security scans manually:
 
 ```bash
+# Check for blocked secret file types
+pnpm security:block-files
+
 # Scan staged files for secrets
-pnpm run secrets:scan:staged
+pnpm security:secrets
 
 # Scan entire repository for secrets
-pnpm run secrets:scan
+pnpm security:secrets:full
 
 # Scan dependencies for vulnerabilities (OSV)
-pnpm run deps:osv
+pnpm security:osv
 
 # Run pnpm audit
-pnpm run deps:audit
+pnpm security:audit
+
+# Run all security checks
+pnpm security:check
 ```
 
 ## CI Workflow
@@ -194,7 +201,7 @@ git reset HEAD~1
 - Use `.env` files for secrets (never commit them)
 - Use `.env-example` or `.env.schema` for templates
 - Review staged files before committing: `git diff --cached`
-- Run `pnpm run secrets:scan:staged` before committing
+- Run `pnpm security:secrets` before committing
 
 ## Adding Allowlist Entries
 
@@ -368,7 +375,7 @@ BODY_LIMIT=1048576  # Maximum request body size in bytes (default: 1MB)
 2. **Restrict CORS origins** - Never use `*` in production
 3. **Configure rate limits** - Adjust based on your API usage patterns
 4. **Monitor security logs** - Review security events regularly
-5. **Keep dependencies updated** - Run `pnpm audit` regularly
+5. **Keep dependencies updated** - Run `pnpm security:audit` and `pnpm security:osv` regularly
 6. **Validate all inputs** - Use Zod schemas for all request validation
 7. **Sanitize error messages** - Don't expose internal details in production
 8. **Use environment variables** - Never hardcode secrets or configuration

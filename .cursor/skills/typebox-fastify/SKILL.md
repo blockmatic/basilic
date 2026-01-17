@@ -190,4 +190,4 @@ With `TypeBoxTypeProvider`, request/response types are inferred:
 
 ## References
 
-- [OpenAPI Integration](references/openapi-integration.md) - Generating OpenAPI specs from TypeBox schemas
+- OpenAPI integration: TypeBox schemas automatically generate OpenAPI specs when used with `@fastify/swagger`

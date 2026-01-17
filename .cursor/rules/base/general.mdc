@@ -30,15 +30,18 @@ alwaysApply: true
 ## Planning & Execution
 - Break complex tasks into steps: Use TodoWrite for tasks with 3+ steps or multiple file changes
 - Define success criteria upfront: Identify tests, builds, or lints that verify task completion
-- Iterate with verification: Implement → verify → fix → verify until clean
+- Iterate with verification: Implement → run `pnpm lint:fix` → verify → fix → verify until clean
+- **Linting is mandatory**: Code must pass `pnpm lint` before task completion
 - Revert and replan if stuck: Don't patch mistakes mid-stream; restart with better plan
 
 ## Code Quality
 - Organize code logically with related functionality grouped together (collocation)
 - Avoid leaking server-only code into client bundles (no fs, path, env loaders in shared/browser code)
-- Run linters after substantive edits: Use ReadLints on edited files to catch introduced errors
+- **ALWAYS run linting after making changes**: Execute `pnpm lint:fix` after editing files to auto-fix issues
+- **ALWAYS verify linting passes**: Run `pnpm lint` to ensure code passes both Biome and ESLint before completing tasks
 - Fix introduced issues: Always resolve linter errors you create; pre-existing issues are optional
 - Check for semantic duplication: Before creating new code, search for existing similar functionality
+- Follow Biome and ESLint rules strictly: See `.cursor/rules/base/linting.mdc` for detailed requirements
 
 ## Safety & Boundaries
 - Never commit secrets: Warn if user requests committing .env, credentials, or sensitive files

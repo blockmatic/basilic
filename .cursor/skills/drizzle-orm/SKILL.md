@@ -65,29 +65,17 @@ src/
 
 ## Key Concepts
 
-| Concept | Guide |
-|---------|-------|
-| **Schema Definition** | [reference/schema.md](reference/schema.md) |
-| **Queries** | [reference/queries.md](reference/queries.md) |
-| **Relations** | [reference/relations.md](reference/relations.md) |
-| **Migrations** | [reference/migrations.md](reference/migrations.md) |
+- **Schema Definition**: Define tables using `pgTable`, `text`, `varchar`, `timestamp`, etc. (see Schema Definition section below)
+- **Queries**: Use `select()`, `insert()`, `update()`, `delete()` with query helpers (see CRUD Operations section below)
+- **Relations**: Define relationships using `relations()` function (see Schema Definition section below)
+- **Migrations**: Generate and apply migrations using `drizzle-kit` (see Migrations section below)
 
 ## Examples
 
-| Pattern | Guide |
-|---------|-------|
-| **CRUD Operations** | [examples/crud.md](examples/crud.md) |
-| **Complex Queries** | [examples/complex-queries.md](examples/complex-queries.md) |
-| **Transactions** | [examples/transactions.md](examples/transactions.md) |
-| **With Better Auth** | [examples/better-auth.md](examples/better-auth.md) |
-
-## Templates
-
-| Template | Purpose |
-|----------|---------|
-| [templates/schema.ts](templates/schema.ts) | Schema template |
-| [templates/db.ts](templates/db.ts) | Database connection |
-| [templates/drizzle.config.ts](templates/drizzle.config.ts) | Drizzle Kit config |
+- **CRUD Operations**: See CRUD Operations section below for create, read, update, delete patterns
+- **Complex Queries**: Use query helpers like `eq`, `and`, `or`, `like`, etc. (see Query Helpers section below)
+- **Transactions**: Use `db.transaction()` for atomic operations (see Transactions section below)
+- **With Better Auth**: Use Drizzle with authentication libraries by querying user tables directly
 
 ## Database Connection
 
