@@ -1,6 +1,6 @@
 ---
 description: ShadcnUI component guidelines and patterns
-globs: *.tsx
+glob: "*.tsx"
 alwaysApply: false
 ---
 

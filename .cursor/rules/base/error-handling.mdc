@@ -1,7 +1,7 @@
 ---
 description: Error handling patterns with @repo/error
-globs: *.tsx,*.ts
-alwaysApply: false
+glob: "*.tsx, *.ts"
+alwaysApply: true
 ---
 
 # Error Handling Rules
@@ -20,7 +20,7 @@ The package provides platform-specific exports (no root exports):
 - `@repo/error/core` - Core functionality (types, catalog, utils) - NO Sentry
 - `@repo/error/node` - Node.js/Fastify (uses `@sentry/node`)
 - `@repo/error/nextjs` - Next.js (uses `@sentry/nextjs`) - works for both client and server
-- `@repo/error/browser` - Browser frameworks (uses `@sentry/browser`) - TanStack Start, Vue, Svelte, etc.
+- `@repo/error/browser` - Browser frameworks (uses `@sentry/browser`)
 - `@repo/error/react` - React components
 
 **Import Rules:**
@@ -38,8 +38,6 @@ The package provides platform-specific exports (no root exports):
 import { captureError } from '@repo/error/nextjs'
 // For Node.js/Fastify apps
 // import { captureError } from '@repo/error/node'
-// For browser frameworks
-// import { captureError } from '@repo/error/browser'
 
 const catalogError = captureError({
   code: 'NETWORK_ERROR', // ✅ Autocomplete for all catalog codes (CoreErrorCode | string)
@@ -65,125 +63,28 @@ const message = getErrorMessage(error) // Type-safe
 
 ## Framework Integration
 
-### Fastify
+See framework-specific rules for integration patterns:
+- [Fastify Rules](../backend/fastify.mdc) - Error handler plugin pattern
+- [Next.js Rules](../frontend/nextjs.mdc) - Error pages and server actions
+- [React Rules](../frontend/react.mdc) - Error boundaries
 
-Global error handler plugin:
+**Initialization** (idempotent - safe to call multiple times):
 
 ```typescript
-// plugins/error-handler.ts
-import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
+// instrumentation.ts (Next.js) or index.ts (Fastify)
+import { initSentry } from '@repo/error/nextjs' // or /node
 
-fastify.setErrorHandler((error, request, reply) => {
-  const catalogError = captureError({
-    code: mapHttpStatusToErrorCode(error.statusCode),
-    error,
-    logger: request.log, // Use Fastify's native logger for request context
-    label: `${request.method} ${request.url}`,
-    tags: { app: 'api' },
-  })
-  reply.status(error.statusCode ?? 500).send(catalogError)
+initSentry({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  environment: process.env.NODE_ENV,
 })
 ```
-
-**Note**: Pass `logger: request.log` to use Fastify's native Pino logger with automatic request context (requestId, etc.). If omitted, `captureError` defaults to the internal logger from `@repo/utils/logger`.
-
-### React
-
-Error Boundary:
-
-```typescript
-import { AppErrorBoundary } from '@repo/error/react'
-import { captureError } from '@repo/error/nextjs' // or /node, /browser
-
-<AppErrorBoundary app="web" captureError={captureError}>
-  <App />
-</AppErrorBoundary>
-```
-
-**Note**: `AppErrorBoundary` requires `captureError` as a prop. Import the appropriate implementation for your platform.
-
-### Next.js
-
-Error pages:
-
-```typescript
-// app/error.tsx
-'use client'
-import { captureError } from '@repo/error/nextjs'
-
-export default function Error({ error }: { error: Error }) {
-  captureError({
-    code: 'UNEXPECTED_ERROR',
-    error,
-    label: 'Next.js Error Page',
-    tags: { app: 'web' },
-  })
-  return <div>Something went wrong</div>
-}
-```
-
-Initialization:
-
-```typescript
-// instrumentation.ts
-import { initSentry } from '@repo/error/nextjs'
-
-export async function register() {
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
-    initSentry({
-      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-      environment: process.env.NODE_ENV,
-    })
-  }
-}
-```
-
-**Idempotency:** `initSentry` automatically checks if Sentry is already initialized. You can safely call it multiple times without causing double initialization.
 
 ## Error Code Format
 
 Must be `UPPER_SNAKE_CASE`:
-
 - ✅ `NETWORK_ERROR`, `USER_NOT_FOUND`, `AI_MODEL_ERROR`
 - ❌ `network-error`, `NetworkError`, `NETWORK_ERROR_`
-
-## Error Catalogs
-
-All error codes are defined in `packages/error/src/catalogs/` and merged at build time:
-
-**Server**: `SERVER_ERROR`, `BAD_REQUEST`, `NOT_FOUND`, `UNAUTHORIZED`, `FORBIDDEN`, `INVALID_INPUT`, `CONFLICT`, `RATE_LIMIT_EXCEEDED`, `BAD_GATEWAY`, `SERVICE_UNAVAILABLE`, `GATEWAY_TIMEOUT`
-
-**Client**: `NETWORK_ERROR`, `NETWORK_TIMEOUT`, `FETCH_ERROR`, `CLIENT_VALIDATION_ERROR`, `CLIENT_FORMAT_ERROR`
-
-**Common**: `UNEXPECTED_ERROR`
-
-**API-Specific**: `AI_MODEL_ERROR`, `AI_RATE_LIMIT_EXCEEDED`, `BLOCKCHAIN_TRX_OP_FAILURE`, `BLOCKCHAIN_BLOCK_PROCESSING_ERROR`
-
-**Web-Specific**: `DASHBOARD_DATA_LOAD_FAILED`
-
-**Build-time Validation:**
-- Each catalog is validated individually (format, duplicates, code property matching)
-- Cross-catalog duplicate detection ensures no code collisions
-- Build fails if validation errors are found
-
-**Type Safety:** All error codes are available as the `CoreErrorCode` union type, exported from platform-specific paths or `/core`. Use `mapHttpStatusToErrorCode()` which returns `CoreErrorCode` for type-safe HTTP status code mapping.
-
-**Unknown Error Codes:** If `captureError` is called with an unknown error code, it returns `UNEXPECTED_ERROR` fallback, logs a warning, and automatically captures to Sentry with `unknownErrorCode: 'true'` tag for runtime misconfiguration detection.
-
-## Adding New Error Codes
-
-To add new error codes:
-
-1. Add them to the appropriate catalog file in `packages/error/src/catalogs/`:
-   - `server.ts` for server-side errors
-   - `client.ts` for client-side errors
-   - `common.ts` for shared errors
-   - `api.ts` for API-specific errors
-   - `web.ts` for web app-specific errors
-
-2. Rebuild the package: `cd packages/error && pnpm build`
-
-3. Use the new error code directly - no registration needed!
 
 ## Best Practices
 
@@ -202,3 +103,8 @@ To add new error codes:
 - ❌ Never call `captureError` without required fields
 - ❌ Never import from root `@repo/error` (use platform-specific paths)
 - ❌ Never try to register errors at runtime (all errors are pre-registered)
+
+## Related Documentation
+
+- [Error Handling Guide](/docs/guides/error-handling) - Complete guide with error catalog, build-time validation, and adding new error codes
+- [Packages Reference](/docs/architecture/packages) - `@repo/error` package structure

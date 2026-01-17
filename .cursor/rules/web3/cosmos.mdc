@@ -1,6 +1,6 @@
 ---
 description: Cosmos address validation patterns and best practices
-globs: *.tsx,*.ts
+glob: "*.tsx, *.ts"
 alwaysApply: false
 ---
 # Cosmos Rules

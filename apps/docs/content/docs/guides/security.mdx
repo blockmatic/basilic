@@ -42,6 +42,8 @@ If gitleaks is installed, staged files are scanned for:
 
 ## Required Tools
 
+Install all required security tools automatically with `pnpm run setup` (see [Getting Started](/docs/getting-started)). For manual installation, see the instructions below.
+
 ### gitleaks
 
 **macOS:**
@@ -305,7 +307,7 @@ Rate limiting protects against abuse and brute force attacks:
 - **Response Headers**: Includes rate limit information (`x-ratelimit-limit`, `x-ratelimit-remaining`, `x-ratelimit-reset`)
 - **Error Response**: Returns 429 status with retry information
 
-Rate limiting is configured in `apps/api/src/plugins/rate-limit.ts`. For distributed systems, Redis can be configured via `REDIS_URL` environment variable.
+Rate limiting is configured in `apps/api/src/plugins/rate-limit.ts`.
 
 ### Trust Proxy Configuration
 
@@ -336,7 +338,7 @@ Security events are automatically logged:
 - **Authentication Failures**: Logs 401/403 errors
 - **Request Logging**: All requests logged in production with security context
 
-Security logging is implemented in `apps/api/src/hooks/security.ts` and `apps/api/src/lib/security.ts`.
+Security logging is implemented in `apps/api/src/plugins/security.ts` and `apps/api/src/lib/security.ts`.
 
 ### Environment Variables
 
@@ -375,7 +377,7 @@ BODY_LIMIT=1048576  # Maximum request body size in bytes (default: 1MB)
 
 If a security incident is detected:
 
-1. **Review security logs** - Check `apps/api/src/hooks/security.ts` logs
+1. **Review security logs** - Check `apps/api/src/plugins/security.ts` logs
 2. **Identify affected endpoints** - Review request patterns
 3. **Block malicious IPs** - Add to blocklist if needed (requires custom implementation)
 4. **Rotate secrets** - If credentials are compromised
@@ -391,3 +393,9 @@ If a security incident is detected:
 - [GitHub Secret Scanning](https://docs.github.com/en/code-security/secret-scanning)
 - [Fastify Security Best Practices](https://www.fastify.io/docs/latest/Guides/Security/)
 - [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
+
+## Related Documentation
+
+- [Error Handling](/docs/guides/error-handling) - Error handling with Sentry integration and PII scrubbing
+- [Backend Stack](/docs/architecture/backend-stack) - Fastify security headers and CORS configuration
+- [Deployment](/docs/guides/deployment) - Deployment security considerations

@@ -3,6 +3,8 @@ title: "Backend Stack"
 description: "Node.js LTS + Fastify runtime, PostgreSQL database, and Drizzle ORM for type-safe, portable backend development."
 ---
 
+## Overview
+
 The backend uses **Node.js LTS** with **Fastify**, **PostgreSQL**, and **Drizzle ORM**. These standard technologies ensure portability and type safety, allowing migration between deployment platforms without code changes.
 
 ## Technology Choices
@@ -27,6 +29,21 @@ The backend uses **Node.js LTS** with **Fastify**, **PostgreSQL**, and **Drizzle
 - ✅ **Functional patterns** - Plugin-based architecture, no classes required
 - ✅ **TypeScript support** - Excellent type inference and developer experience
 - ✅ **OpenAPI support** - Via plugins for API documentation and AI integration
+
+**Why Fastify?**
+
+We chose **Fastify** as the backend framework because it aligns perfectly with our architectural values: **type-safe**, **fast**, and **simple to reason about**. Combined with **OpenAPI generation** and **Hey API** for client generation, it provides the right balance between performance, developer experience, and long-term maintainability.
+
+**Core Reasons:**
+
+1. **Fastify routes as source**: Routes define the API, OpenAPI spec generated automatically
+2. **Type-safe end-to-end**: Full type safety from API routes to client calls via generated clients
+3. **Fast and efficient**: High-performance HTTP framework optimized for Node.js
+4. **TypeBox schemas**: Native JSON Schema with TypeBox for optimal performance and OpenAPI generation
+5. **OpenAPI generation**: Automatic OpenAPI spec generation from Fastify routes via `generate-openapi.ts`
+6. **Functional patterns**: Clean, composable route handlers without decorators
+7. **ESM-native**: Built for modern ESM from day one, works seamlessly with Node.js and pnpm
+8. **Scales elegantly**: Composable plugins, modular route grouping, unified error handling
 
 ### Database: PostgreSQL
 
@@ -81,6 +98,45 @@ sequenceDiagram
 3. **Business logic** - Handler processes request
 4. **Database access** - Drizzle executes type-safe queries
 5. **Response** - Typed JSON response returned
+
+## Fastify App Setup
+
+```typescript
+// src/index.ts
+import Fastify from 'fastify'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import walletRoutes from './routes/wallet.js'
+import userRoutes from './routes/user.js'
+
+const fastify = Fastify({
+  logger: true,
+}).withTypeProvider<TypeBoxTypeProvider>()
+
+// Register routes
+await fastify.register(walletRoutes)
+await fastify.register(userRoutes)
+
+const start = async () => {
+  try {
+    await fastify.listen({ port: 3000, host: '0.0.0.0' })
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+}
+
+start()
+```
+
+## OpenAPI Generation
+
+OpenAPI specs are generated from Fastify routes via `generate-openapi.ts`. The script scans route definitions and generates OpenAPI 3.0 specification. Hey API then generates TypeScript clients from the OpenAPI spec.
+
+**Flow:**
+1. Fastify routes define schemas using TypeBox
+2. `generate-openapi.ts` scans routes and generates OpenAPI spec
+3. Hey API generates TypeScript clients from OpenAPI spec
+4. Full type safety from routes to client calls
 
 ## Database Schema Management
 

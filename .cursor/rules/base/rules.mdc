@@ -1,0 +1,31 @@
+---
+description: Guidelines for creating effective Cursor rule files
+glob: ".cursor/rules/**/*.mdc"
+alwaysApply: false
+---
+
+# Rules for Writing Cursor Rules
+
+## Structure & Organization
+
+- **Keep rules modular and context-specific**: Use separate rule files for different languages or project areas instead of one monolithic file
+- **Document each rule file**: Provide each rule file with a clear description of its purpose and define its scope with appropriate globs. For example, use `*` as a glob for truly global rules, or specific patterns for targeted rules
+- **Use file pattern globs to auto-attach rules**: Leverage glob patterns (e.g. by file type or folder) so each rule only applies where relevant, rather than loading all rules all the time
+
+## Content Quality
+
+- **Keep rules lean and focused**: Focus on patterns and standards, not lengthy examples. Avoid verbose explanations that could bloat the context
+- **Be specific and provide examples**: Write clear, concrete guidelines (avoid vague advice like "write clean code" without definition) and include examples or criteria that illustrate the preferred practices
+- **Self-contained with embedded context**: No external links—embed necessary context directly in the rule so it works offline and remains stable
+- **Include project context**: Mention your project's key context—architecture patterns, important libraries/frameworks (with version numbers), and any tech stack specifics or constraints—so the AI understands the environment and avoids suggesting deprecated or irrelevant patterns
+- **Specify style and naming conventions**: Clearly define coding style guidelines (formatting, linting rules) and naming conventions (e.g. camelCase vs PascalCase for identifiers) in the rules to enforce consistency with your team's standards
+
+## Reusability
+
+- **Leverage @ references**: Use the @ syntax to pull in existing documentation or base rule files within your rules, keeping them concise by reusing established guidance (e.g. reference an architecture guide with @docs/architecture.md instead of re-explaining it)
+
+## Maintenance & Governance
+
+- **Continuously refine based on feedback**: Update the rules whenever the AI produces undesirable output or forgets a standard. If you find yourself repeating a correction ("don't do X"), add that as a rule to prevent future occurrences
+- **Centralize your guidelines**: Treat the Cursor rules as the single source of truth for best practices. Consolidate coding standards and avoid maintaining separate documents, so both humans and the AI reference the same up-to-date rules
+- **Utilize Agent Mode with care**: If using Cursor's Agent Mode, include rules that clearly direct the agent's autonomous behavior (e.g. specify which files or tests to tackle first and define the agent's role or objectives) to guide its actions effectively

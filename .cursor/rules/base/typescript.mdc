@@ -1,66 +1,137 @@
 ---
 description: TypeScript coding standards and best practices
-globs: *.tsx,*.ts
-alwaysApply: false
+glob: "*.tsx, *.ts"
+alwaysApply: true
 ---
 
 # TypeScript Rules
 
+## Project Context
+- **TypeScript**: v5.9.3 (strict mode enabled)
+- **Runtime validation**: Zod v4.3.5 for schema validation and type inference
+- **Type safety enhancement**: `@total-typescript/ts-reset` configured globally
+- **Module system**: ESM with bundler/Node resolution depending on target
+- **Monorepo structure**: Shared packages via `@repo/*` with explicit subpath exports
+
+For detailed module system architecture, see @apps/docs/content/docs/architecture/esm-strategy.mdx
+
 ## Core Principles
-- Prefer interfaces over types for object definitions
-  - Exception: unions, utility types (e.g., `z.infer<typeof schema>`), mapped types use `type`
-- Avoid enums; use maps or union types instead
-- Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`)
-- Follow RORO for function arguments only when there are multiple parameters
-- Use lowercase-with-dashes for directories (e.g., `components/auth-wizard`)
-- Favor named exports (exception: Next.js pages/layouts require default exports)
-- Prefer functional & declarative patterns; avoid classes
-- Infer types and keep them inline unless you need to reuse them
-- CRITICAL: Always follow linting rules when generating code (see [Linting Rules](./linting.mdc))
 
-## Framework Exceptions
-- Next.js: `app/**/page.tsx` and `app/**/layout.tsx` require default exports
-- Fastify: fully functional; no classes or decorators
+### Type Declarations
+- **Prefer interfaces over types** for object shapes
+- **Use `type` for**: unions, utility types, mapped types, Zod inference
+- **Avoid enums**; use const objects or union types
+- **Infer types when possible**; only declare when reusing across functions/components
 
-## Code Style
-- Allow single-line if without braces: `if (!value) return null`
-- Allow single-line arrow bodies: `const double = (x: number) => x * 2`
-- Prefer simple one-liners for trivial conditionals; avoid extra braces/elses
+### Naming Conventions
+- **Variables**: camelCase with auxiliary verbs for booleans (`isLoading`, `hasError`, `canEdit`)
+- **Directories**: lowercase-with-dashes (`components/auth-wizard`, `lib/error-handling`)
+- **Exports**: prefer named exports (exception: Next.js pages/layouts require default)
 
-## Modularization and Imports
-- Use `@repo/lib` for shared utilities (error, async, env, zod helpers)
-- Use Zod for schema validation + inference (`z.infer<typeof schema>`)
-- Import all types from `@repo/core` (types are exported from core package)
-- Lodash: prefer `lodash-es` and per-function imports for tree-shaking + RSC safety  
-  - ✅ `import isEmpty from "lodash-es/isEmpty"`  
-  - ❌ `import { isEmpty } from "lodash-es"`
+### Function Patterns
+- **Use RORO** (receive object, return object) for multiple parameters
+  - ✅ `const createUser = ({ name, email }: CreateUserInput) => ({ id, name, email })`
+  - ❌ `const createUser = (name: string, email: string) => [id, name, email]`
+- **Prefer functional patterns**; avoid classes and decorators (exception: framework requirements)
+  - ✅ `const double = (x: number) => x * 2`
+  - ❌ `class MathUtil { double(x: number) { return x * 2 } }`
 
-## ESM & Architecture Safety
-- Use `import type { X } from "..."` for type-only imports
-- Avoid barrel `index.ts` re-exports across layers (especially in shared packages); prefer explicit module imports
-- Exported API functions and route handlers must use explicit `Promise<...>` return types
-- Zod schemas live next to the feature that owns them; only re-export centrally when there is real reuse
+### Code Style
+- **Single-line conditionals** without braces for simple cases
+  - ✅ `if (!value) return null`
+  - ❌ `if (!value) { return null }`
+- **Single-line arrow functions** without braces
+  - ✅ `const double = (x: number) => x * 2`
+  - ❌ `const double = (x: number) => { return x * 2 }`
+- **Early returns** for guard clauses; avoid unnecessary `else`
+  - ✅ `if (!user) return null; return <Profile user={user} />`
+  - ❌ `if (!user) { return null } else { return <Profile user={user} /> }`
 
-## ts-reset Type Safety
-This monorepo uses `@total-typescript/ts-reset` configured globally via `config/typescript/reset.d.ts`.
+## Imports & Module Organization
 
-## Type Safety Model: Zod-First, Boundary-Driven Validation
-Validate untrusted data at runtime boundaries with Zod; rely on inferred types internally.
+### Type-Only Imports
+- Use `import type` for type-only imports to ensure they're erased at runtime
 
-The following TS ESLint "unsafe" rules are intentionally disabled globally:
-- `@typescript-eslint/no-unsafe-assignment`
-- `@typescript-eslint/no-unsafe-call`
-- `@typescript-eslint/no-unsafe-member-access`
-- `@typescript-eslint/no-unsafe-return`
-- `@typescript-eslint/no-unsafe-argument`
+### Shared Packages
+All shared packages use **subpath exports** for better tree-shaking. See @apps/docs/content/docs/architecture/packages.mdx for complete package reference.
+
+**Key packages:**
+- **`@repo/utils/*`**: Async, web3, logger, debug utilities (always use subpaths)
+- **`@repo/error/*`**: Platform-specific error handling (node/nextjs/browser/react)
+- **`@repo/core`**: API client and types (generated from OpenAPI)
+- **`@repo/react`**: React hooks and TanStack Query integration
+- **`@repo/ui/components/*`**: Shared UI components (Shadcn/ui based)
+
+Examples:
+  - ✅ `import { delay } from "@repo/utils/async"`
+  - ✅ `import { captureError } from "@repo/error/nextjs"` (Next.js apps)
+  - ✅ `import { captureError } from "@repo/error/node"` (Fastify apps)
+  - ❌ `import { delay } from "@repo/utils"` (no root export)
+
+### Lodash Usage
+- Use `lodash-es` with per-function imports for tree-shaking and RSC compatibility
+  - ✅ `import isEmpty from "lodash-es/isEmpty"`
+  - ❌ `import { isEmpty } from "lodash-es"` (breaks tree-shaking)
+
+## Type Safety Model
+
+### Zod-First Validation
+- Validate untrusted data at runtime boundaries (API routes, form inputs, external APIs)
+- Use Zod schemas for both validation and type inference
+  - ✅ `const userSchema = z.object({ name: z.string(), email: z.email() })`
+  - ✅ `type User = z.infer<typeof userSchema>`
+- **Schema location**: colocate with feature; only centralize when genuinely reused
+  - ✅ `app/api/users/schema.ts` (feature-specific)
+  - ❌ `lib/schemas/index.ts` (premature centralization)
+
+### Disabled TS ESLint Rules
+The following "unsafe" rules are disabled globally to support Zod-first validation: `no-unsafe-assignment`, `no-unsafe-call`, `no-unsafe-member-access`, `no-unsafe-return`, `no-unsafe-argument`. This allows inferred types internally while maintaining runtime safety at boundaries.
+
+### ts-reset Enhancements
+`@total-typescript/ts-reset` is configured globally via `tools/typescript/reset.d.ts`, providing:
+- Better array method types (`filter`, `includes`, etc.)
+- Stricter `JSON.parse` return type
+- Improved `fetch` response types
+
+## Architecture Safety
+
+### Explicit Return Types
+- Exported functions and API handlers must declare explicit return types
+  - ✅ `export const getUser = async (id: string): Promise<User | null> => {}`
+  - ❌ `export const getUser = async (id: string) => {}` (implicit return type)
+
+### Validation Functions
+- Functions that validate must return result objects, never throw
+  - ✅ `const validate = (input: unknown): { valid: boolean; error?: string } => {}`
+  - ❌ `const validate = (input: unknown) => { if (!isValid) throw new Error() }`
+
+## Framework-Specific Rules
+
+### Next.js
+- `app/**/page.tsx` and `app/**/layout.tsx` require default exports
+- Use React Server Components by default; mark client components with `"use client"`
+
+### Fastify
+- Fully functional patterns; no classes or decorators
+- Use Fastify's type-safe route definitions with schemas
 
 ## Error Handling
-- Fail fast with guard clauses and early returns; avoid unnecessary `else`
-- Place the happy path last when it improves readability
-- Validation functions that return result objects must never throw; always return a consistent `{ valid, error? }` shape
+- Use guard clauses with early returns
+- Place happy path last for readability
+- **Error utilities**: Use `@repo/error` with platform-specific imports
+- See @.cursor/rules/base/error-handling.mdc for full error handling patterns
 
 ## Related Rules
-- [Linting Rules](./linting.mdc) - Hybrid Biome + ESLint architecture
-- [React Rules](../frontend/react.mdc)
-- [React Hooks Rules](../frontend/react-hooks.mdc)
-- [Next.js Rules](../frontend/nextjs.mdc)
+- @.cursor/rules/base/linting.mdc - Hybrid Biome + ESLint architecture
+- @.cursor/rules/frontend/react.mdc - React-specific TypeScript patterns
+- @.cursor/rules/frontend/react-hooks.mdc - Hook typing and patterns
+- @.cursor/rules/frontend/nextjs.mdc - Next.js TypeScript conventions
+
+## Related Documentation
+- @apps/docs/content/docs/architecture/esm-strategy.mdx - ESM module system details
+- @apps/docs/content/docs/architecture/packages.mdx - Complete package reference
+xt.js TypeScript conventions
+
+## Related Documentation
+- @apps/docs/content/docs/architecture/esm-strategy.mdx - ESM module system details
+- @apps/docs/content/docs/architecture/packages.mdx - Complete package reference

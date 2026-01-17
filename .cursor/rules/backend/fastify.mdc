@@ -1,25 +1,12 @@
 ---
 description: Fastify backend development standards and patterns
-globs: *.ts,**/*route.ts,**/*service.ts,**/*handler.ts
+glob: "*.ts, **/*route.ts, **/*service.ts, **/*handler.ts"
 alwaysApply: false
 ---
 
 # Fastify Rules
 
-## Why Fastify
-
-We chose **Fastify** as the backend framework because it aligns perfectly with our architectural values: **type-safe**, **fast**, and **simple to reason about**. Combined with **OpenAPI generation** and **Hey API** for client generation, it provides the right balance between performance, developer experience, and long-term maintainability.
-
-### Core Reasons
-
-1. **Fastify routes as source**: Routes define the API, OpenAPI spec generated automatically
-2. **Type-safe end-to-end**: Full type safety from API routes to client calls via generated clients
-3. **Fast and efficient**: High-performance HTTP framework optimized for Node.js
-4. **TypeBox schemas**: Native JSON Schema with TypeBox for optimal performance and OpenAPI generation
-5. **OpenAPI generation**: Automatic OpenAPI spec generation from Fastify routes via generate-openapi.ts
-6. **Functional patterns**: Clean, composable route handlers without decorators
-7. **ESM-native**: Built for modern ESM from day one, works seamlessly with Node.js and pnpm
-8. **Scales elegantly**: Composable plugins, modular route grouping, unified error handling
+See [Backend Stack](/docs/architecture/backend-stack) for why Fastify was chosen and architecture details.
 
 ## Module Structure
 
@@ -101,34 +88,6 @@ export async function walletRoutes(fastify: FastifyInstance) {
 }
 ```
 
-### Fastify App Setup
-
-```typescript
-// src/index.ts
-import Fastify from 'fastify'
-import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import walletRoutes from './routes/wallet.js'
-import userRoutes from './routes/user.js'
-
-const fastify = Fastify({
-  logger: true,
-}).withTypeProvider<TypeBoxTypeProvider>()
-
-// Register routes
-await fastify.register(walletRoutes)
-await fastify.register(userRoutes)
-
-const start = async () => {
-  try {
-    await fastify.listen({ port: 3000, host: '0.0.0.0' })
-  } catch (err) {
-    fastify.log.error(err)
-    process.exit(1)
-  }
-}
-
-start()
-```
 
 ## Schema Validation
 
@@ -145,34 +104,13 @@ start()
 
 - **@repo/utils**: Always use instead of custom implementations
   - Async: `fetchWithTimeout` (external APIs - replaces `fetch`), `delay` (replaces `setTimeout`)
-  - Env: `validateEnvOrThrow` (environment validation)
-- **@repo/error**: Error handling utilities with Sentry integration and centralized error catalog
-  - `getErrorMessage` (type-safe error extraction), `captureError` (error capture with Sentry)
-  - Centralized error catalog (all errors pre-registered at build time), HTTP status mapping
-  - Two-track handling: Sentry gets real errors, API returns safe catalog errors
+- **@repo/error**: Error handling utilities with Sentry integration. See [Error Handling Rules](../base/error-handling.mdc)
+- **@repo/utils/logger**: Logging utilities. See [Logging Rules](../base/logging.mdc)
 - **lodash-es**: Use for array/object operations (`isEmpty`, `uniq`, `groupBy`, `merge`), type checking (`isPlainObject`, `isString`, `isArray`). Use per-function imports: `import isEmpty from 'lodash-es/isEmpty'`
 
 ## Error Handling
 
-Use `@repo/error` for all error handling:
-
-- **Centralized Catalog**: All error codes are defined in `packages/error/src/catalogs/` and pre-registered at build time
-- **Global Error Handler**: Use error handler plugin (`plugins/error-handler.ts`) for automatic Sentry capture
-- **HTTP Status Mapping**: `mapHttpStatusToErrorCode` converts HTTP status to catalog codes
-- **Two-Track**: Sentry gets full error details, API returns safe catalog error
-
-**Setup**:
-```typescript
-// apps/api/src/index.ts
-import { initSentry } from '@repo/error/node'
-
-// Initialize Sentry (idempotent - safe to call multiple times)
-initSentry({ dsn: process.env.SENTRY_DSN })
-
-// Start Fastify
-const app = fastify()
-await app.register(import('./plugins/error-handler.js'))
-```
+Use `@repo/error` for all error handling. See [Error Handling Rules](../base/error-handling.mdc) for complete patterns.
 
 **Error Handler Plugin**:
 
@@ -184,7 +122,6 @@ import fp from 'fastify-plugin'
 
 export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
   fastify.setErrorHandler((error: FastifyError, request, reply) => {
-    // mapHttpStatusToErrorCode handles null/undefined/invalid statusCode gracefully
     const catalogError = captureError({
       code: mapHttpStatusToErrorCode(error.statusCode),
       error,
@@ -200,18 +137,24 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
 })
 ```
 
-**Note**: Pass `logger: request.log` to use Fastify's native Pino logger. This ensures errors are logged with request context (requestId via `requestIdLogLabel: 'reqId'`) and avoids duplicate logging.
+**Note**: Pass `logger: request.log` to use Fastify's native Pino logger. This ensures errors are logged with request context and avoids duplicate logging.
 
 Routes can throw errors - the global handler catches and formats them automatically.
 
 ## Environment Variables
 
-Fastify apps use `validateEnvOrThrow` from `@namespace/lib` for environment validation.
+Fastify apps use `validateEnvOrThrow` from `@repo/lib` for environment validation. See [Environment Rules](../base/environment.mdc) for pattern.
 
 ## OpenAPI Generation
 
-OpenAPI specs are generated from Fastify routes via `generate-openapi.ts`. The script scans route definitions and generates OpenAPI 3.0 specification. Hey API then generates TypeScript clients from the OpenAPI spec.
+See [Backend Stack](/docs/architecture/backend-stack#openapi-generation) for OpenAPI generation details.
 
 ## Testing
 
-Use Fastify's `inject()` method for blackbox testing of routes.
+Use Fastify's `inject()` method for blackbox testing of routes. See [Backend Testing Rules](./testing.mdc) for testing patterns.
+
+## Related Documentation
+
+- [Backend Stack](/docs/architecture/backend-stack) - Why Fastify, app setup, OpenAPI generation
+- [Environment Rules](../base/environment.mdc) - Environment variable patterns
+- [Error Handling Rules](../base/error-handling.mdc) - Error handling patterns

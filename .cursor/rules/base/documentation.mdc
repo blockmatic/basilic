@@ -1,5 +1,6 @@
 ---
 description: Documentation standards and best practices
+glob: "apps/docs/**/*.mdx, **/README.md, **/README.mdc"
 alwaysApply: false
 ---
 
@@ -7,55 +8,146 @@ alwaysApply: false
 
 ## Writing Principles
 
+Apply to all documentation types:
+
 - **Simple**: Get to the point quickly
 - **Succinct**: No unnecessary words or fluff
 - **Technical**: Assume the reader is a developer
 - **Factual**: Describe what things do, not philosophies or paradigms
 
-## Documentation Site
+## Content Structure
 
-### Content Rules
-- Keep content simple and technical
-- Optimize architecture information for clear flow and navigation
-- Use generic wording (avoid product-specific branding in technical content)
-- Start with most important information first
-- Use clear headings and hierarchy
+Guidelines for organizing any documentation:
 
-### Linking Rules
-- **Never link to README files from docs** (READMEs are repository artifacts, not documentation)
-- Always use markdown links for external URLs: `[Link Text](https://example.com)`
-- Keep navigation clean and focused on essential pages
+- **Start with most important information first**: Lead with what matters most to readers
+- **Use clear headings and hierarchy**: Create scannable, well-structured content
+- **Each page has a clear purpose**: Avoid overlap and redundancy between pages
+- **Link to related pages at the end**: Help readers navigate to adjacent topics
+- **Optimize for flow and navigation**: Arrange content logically for progressive understanding
+
+## Technical Writing Best Practices
+
+### Clarity and Precision
+
+- **Use active voice**: "Run the command" not "The command should be run"
+- **Be specific**: "Supports PostgreSQL 14+" not "Supports PostgreSQL"
+- **Avoid ambiguity**: Use concrete examples instead of vague descriptions
+- **Define terms once**: First mention should include a clear definition
+- **Use consistent terminology**: Pick one term and stick with it (e.g., "package" not "module" sometimes)
+
+### Structure and Organization
+
+- **Inverted pyramid**: Most important information first, details later
+- **One concept per section**: Don't mix multiple topics in a single section
+- **Logical flow**: Each section should build on previous ones
+- **Scannable content**: Use lists, tables, and code blocks for easy scanning
+- **Progressive disclosure**: Start simple, add complexity gradually
+
+### Code Examples
+
+- **Minimal but complete**: Show only what's necessary, but ensure it works
+- **Inline comments**: Explain non-obvious code with comments
+- **Real-world patterns**: Use actual code from the codebase when possible
+- **Avoid placeholders**: Use concrete examples (e.g., `userId: "abc123"` not `userId: "..."`)
+- **Show errors**: Include error handling in examples when relevant
+
+### Length and Conciseness
+
+- **Target 300-500 words per section**: Break longer content into subsections
+- **Remove redundancy**: Don't repeat what's in other sections
+- **Cut unnecessary words**: "Use X" not "You should use X"
+- **Combine related examples**: Multiple small examples can often be one
+- **Use tables for comparisons**: Replace paragraphs of comparisons with tables
+
+## Information Architecture
+
+### Content Hierarchy
+
+Documentation should follow this structure:
+
+1. **Getting Started** - Quick setup and first success (15 min or less)
+2. **Core Concepts** - Essential patterns and mental models (what, why)
+3. **Architecture** - Technical details and design decisions (how it works)
+4. **How-To Guides** - Task-oriented instructions (how to do X)
+5. **Reference** - API documentation, package details (comprehensive reference)
+6. **ADRs** - Historical decisions and rationale (context for contributors)
+
+### Page Structure
+
+Every documentation page should follow this template:
+
+```markdown
+---
+title: "Clear, Specific Title"
+description: "One-sentence summary of what this page covers"
+---
+
+## Overview (Required)
+2-3 sentences explaining what this is and why it matters.
+
+## Quick Start (If applicable)
+Minimal example to get started immediately.
+
+## Main Content (Required)
+Primary content organized with clear H2/H3 headings.
+
+## Examples (If applicable)
+Real-world usage patterns.
+
+## Related Documentation (Required)
+Links to related pages for further reading.
+```
+
+### Navigation Design
+
+- **Top-level categories**: Maximum 5-7 main categories
+- **Depth limit**: Maximum 3 levels deep (Category → Subcategory → Page)
+- **Breadcrumb-friendly**: Each page should have clear ancestors
+- **Cross-references**: Link related topics bidirectionally
+- **Search-optimized**: Use keywords that users would search for
+
+### Content Organization Principles
+
+- **DRY (Don't Repeat Yourself)**: Single source of truth for each concept
+- **Progressive complexity**: Simple → Intermediate → Advanced
+- **Task-based guides**: Organize by what users want to accomplish
+- **Reference vs tutorial**: Keep API reference separate from learning content
+- **Modular content**: Each page should be independently useful
 
 ## README Files
 
-### Purpose
-High-level overview and quick reference only.
+High-level overview and quick reference only:
+
+- **Keep READMEs lean**: Minimal content focused on getting started
+- **Link to documentation site**: Point to detailed information rather than duplicating it
+- **Follow standard structure**: Requirements → Quick Start → Links to docs
+- **Avoid content duplication**: Don't replicate what exists in the documentation site
+
+## Documentation Site
 
 ### Content Rules
-- Keep READMEs lean
-- Link to documentation site for detailed information
-- Structure: Requirements → Quick Start → Links to docs
-- Avoid duplicating content that exists in docs
 
-## Cursor Rules
+- Keep content simple and technical (follow Writing Principles)
+- Use generic wording (avoid product-specific branding)
+- Structure: Core concepts → Architecture details → How-to guides → ADRs
 
-### Content Rules
-- Keep cursor rules lean and focused
-- Self-contained: no external links
-- Embed necessary context directly in the rule
-- Focus on patterns and standards, not lengthy examples
+### Linking Rules
 
-## Architecture Documentation
+- **Never link to README files from docs**: READMEs are repository artifacts
+- **Always use markdown links for external URLs**
+- **Keep navigation clean**: Focus on essential pages only
 
-### Organization
-Optimize for clear flow and intuitive navigation:
-- Core concepts first (what, why)
-- Architecture details second (how)
-- How-to guides for practical tasks
-- ADRs for historical context (not in main navigation)
+### Quality Checklist
 
-### Flow
-Each page should:
-- Have a clear purpose
-- Link to related pages at the end
-- Avoid redundancy with other pages
+Before publishing documentation, verify:
+
+- [ ] Title and description are clear and accurate
+- [ ] First paragraph explains what and why
+- [ ] Code examples are tested and work
+- [ ] No duplicate content exists elsewhere
+- [ ] Related documentation links are present
+- [ ] Headings use proper hierarchy (H2 → H3 → H4)
+- [ ] Lists use consistent formatting
+- [ ] No broken internal or external links
+- [ ] Terminology is consistent throughout
+- [ ] Length is appropriate (concise but complete)

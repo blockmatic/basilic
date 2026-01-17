@@ -1,6 +1,6 @@
 ---
 description: React hooks patterns and best practices
-globs: *.tsx,*.ts,**/hooks/**/*.ts,**/hooks/**/*.tsx
+glob: "*.tsx, *.ts, **/hooks/**/*.ts, **/hooks/**/*.tsx"
 alwaysApply: false
 ---
 
@@ -152,35 +152,26 @@ queryClient.invalidateQueries({ queryKey: articles._def })
 **Use `useAsyncFn` from `react-use` for:**
 - One-off async operations (file uploads, form submissions without caching)
 - Non-data-fetching async operations
-- Always use `useAsyncFn` instead of manually managing `isLoading` and `error` states
 
-```tsx
-import { useAsyncFn } from 'react-use'
-
-const [saveState, saveData] = useAsyncFn(async (data) => {
-  return await api.save(data)
-}, [])
-
-// Access: saveState.loading, saveState.error
-```
+See [React Rules](./react.mdc) for state management decision tree and when to use each pattern.
 
 ## Memoization Hooks
 
 **Default: Don't use `useMemo` or `useCallback`** - Modern React optimizations handle most cases automatically.
 
-**Only use when:**
-1. Computationally expensive operations (`useMemo`)
-2. Function identity required as dependency (`useCallback`)
-3. Stable object references in dependency arrays (`useMemo`)
-4. Context Provider functions (`useMemo`)
-
-**Prefer `React.memo` over `useCallback`** for component memoization.
+See [React Rules](./react.mdc) for memoization guidelines and when to use these hooks.
 
 ## Custom Hooks Best Practices
 - Combine multiple queries into cohesive hooks
 - Extract query logic into custom hooks for reusability
 - Use query key factory for all TanStack Query hooks
 - Never manually manage `isLoading`, `error`, or `isError` states
+
+## Related Rules
+- [React Rules](./react.mdc) - Component patterns
+- [Frontend Stack](./stack.mdc) - Library usage patterns
+- [TypeScript Rules](../base/typescript.mdc) - Type safety patterns
+tack Query's built-in state)
 
 ## Related Rules
 - [React Rules](./react.mdc) - Component patterns

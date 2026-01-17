@@ -32,6 +32,8 @@ flowchart TB
     Core["core<br/>(generated hey-api client + types)"]
     React["react<br/>(TanStack Query)"]
     UI["ui<br/>(Shadcn components)"]
+    Error["error<br/>(Error handling + Sentry)"]
+    Utils["utils<br/>(Logger, async, web3)"]
   end
 
   subgraph Apps["apps/"]
@@ -46,6 +48,10 @@ flowchart TB
   Core --> Web
   UI --> Web
   UI --> Docs
+  Error --> API
+  Error --> Web
+  Utils --> API
+  Utils --> Web
   Web -->|HTTP| API
 ```
 
@@ -75,6 +81,8 @@ Packages follow strict dependency rules:
 - **`core`** - Generated runtime-agnostic API client + types (via hey-api from OpenAPI)
 - **`react`** - React-specific hooks and TanStack Query integration (generated via hey-api)
 - **`ui`** - Shared UI components (Shadcn/ui based)
+- **`error`** - Error handling utilities with Sentry integration (platform-specific exports)
+- **`utils`** - Shared utilities (logger, async helpers, web3 utilities)
 
 ### Dependency Direction
 

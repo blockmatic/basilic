@@ -1,6 +1,6 @@
 ---
 description: Solidity development standards with Foundry
-globs: **/contracts/**/*.sol,*.sol
+glob: "**/contracts/**/*.sol, *.sol"
 alwaysApply: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: Web3 integration patterns using Wagmi v2
-globs: *.ts,*.tsx,**/hooks/**/*.tsx,**/hooks/**/*.ts
+glob: "*.ts, *.tsx, **/hooks/**/*.tsx, **/hooks/**/*.ts"
 alwaysApply: false
 ---
 # Wagmi v2 Rules

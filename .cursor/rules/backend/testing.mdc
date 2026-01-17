@@ -1,16 +1,12 @@
 ---
 description: Backend testing standards and patterns for Fastify
-globs: *.spec.ts,**/*.e2e-spec.ts,**/*test.ts
+glob: "*.spec.ts, **/*.e2e-spec.ts, **/*test.ts"
 alwaysApply: false
 ---
 
 # Backend Testing Rules
 
-## Testing Philosophy
-**CRITICAL**: All tests use real APIs with real API keys. NO MOCKS allowed for core functionality.
-- E2E tests hit real API endpoints (no unit tests)
-- Integration tests use real external services
-- Tests validate against OpenAPI schemas for type safety
+See [Base Testing Rules](../base/testing.mdc) for common testing philosophy, coverage requirements, and mocking guidelines.
 
 ## Test Structure
 ### E2E Tests (Blackbox API Testing)
@@ -18,14 +14,6 @@ alwaysApply: false
 - **Pattern**: Tests only interact with HTTP endpoints, not internal implementation
 - **Real APIs**: All tests use real external service endpoints (no mocks)
 - **Fastify Testing**: Use `fastify.inject()` to simulate HTTP requests for blackbox testing
-
-## Test Coverage Requirements
-**For endpoints only, never unit test in API:**
-- All CRUD operations (Create, Read, Update, Delete)
-- Error Handling (all error cases and validation)
-- Response validation (responses match OpenAPI schemas)
-- Authentication and authorization
-- Input validation (Zod schemas)
 
 ## Vitest Configuration
 **All Fastify tests run in ESM mode** - Vitest is ESM-native and tests TypeScript source directly:
@@ -39,42 +27,22 @@ alwaysApply: false
 Use `fastify.inject()` for blackbox testing of routes:
 
 ```typescript
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import Fastify from 'fastify'
 import { walletRoutes } from '../routes/wallet'
 
-describe('walletRoutes', () => {
-  let fastify: FastifyInstance
+const fastify = Fastify({ logger: false })
+await fastify.register(walletRoutes)
 
-  beforeAll(async () => {
-    fastify = Fastify({ logger: false })
-    await fastify.register(walletRoutes)
-    await fastify.ready()
-  })
+const response = await fastify.inject({
+  method: 'POST',
+  url: '/wallets',
+  payload: { name: 'Test Wallet' },
+})
 
-  afterAll(async () => {
-    await fastify.close()
-  })
-
-  it('should create wallet via HTTP endpoint', async () => {
-    // Blackbox test: hit HTTP endpoint, not internal handler
-    const response = await fastify.inject({
-      method: 'POST',
-      url: '/wallets',
-      payload: {
-        name: 'Test Wallet',
-      },
-    })
-    
-    const data = JSON.parse(response.body)
-    
-    // Validate response matches contract
-    expect(response.statusCode).toBe(201)
-    expect(data).toMatchObject({
-      id: expect.any(String),
-      name: 'Test Wallet',
-    })
-  })
+expect(response.statusCode).toBe(201)
+expect(JSON.parse(response.body)).toMatchObject({
+  id: expect.any(String),
+  name: 'Test Wallet',
 })
 ```
 
@@ -83,28 +51,13 @@ describe('walletRoutes', () => {
 Test that responses match OpenAPI schemas:
 
 ```typescript
-import { describe, it, expect } from 'vitest'
-import { createApi } from '@namespace/core'
-import { WalletSchema } from '@namespace/core'
+import { createApi } from '@repo/core'
+import { WalletSchema } from '@repo/core'
 
-describe('wallet endpoints', () => {
-  const api = createApi({
-    baseUrl: 'http://localhost:3000',
-  })
+const api = createApi({ baseUrl: 'http://localhost:3000' })
+const wallet = await api.wallets.getWallet({ params: { id: '123' } })
 
-  it('should return wallet matching OpenAPI schema', async () => {
-    const wallet = await api.wallets.getWallet({ params: { id: '123' } })
-    
-    // Validate response matches schema
-    expect(wallet).toMatchObject({
-      id: expect.any(String),
-      // ... other schema fields
-    })
-    
-    // Or use Zod schema validation
-    WalletSchema.parse(wallet)
-  })
-})
+WalletSchema.parse(wallet) // Validate against schema
 ```
 
 ## Running Tests

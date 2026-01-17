@@ -1,16 +1,23 @@
 ---
 description: Linting architecture and best practices
-globs: *.tsx,*.ts,*.jsx,*.js
-alwaysApply: false
+glob: "*"
+alwaysApply: true
 ---
 
-# Linting Architecture
+# Linting 
 
-## Hybrid Biome + ESLint Strategy
+## Architecture Overview
 
-This monorepo uses a **hybrid linting architecture** where Biome and ESLint have distinct, non-overlapping responsibilities.
+This monorepo uses a **hybrid linting architecture** where Biome and ESLint have distinct, non-overlapping responsibilities:
 
-### Biome Responsibilities (Primary)
+- **Biome**: Handles formatting, style, and basic best practices (fast, modern)
+- **ESLint**: Handles correctness, framework rules, and architecture boundaries (ecosystem plugins)
+- **No overlap**: All formatting rules are disabled in ESLint. Each tool owns its domain completely.
+
+## Tool Responsibilities
+
+### Biome (Primary - Formatting & Style)
+
 - **Formatting**: All code formatting (indentation, quotes, semicolons, etc.)
 - **Import Organization**: Import sorting and organization
 - **Unused Variables/Imports**: Detection and removal of unused code
@@ -18,12 +25,15 @@ This monorepo uses a **hybrid linting architecture** where Biome and ESLint have
 - **React JSX Best Practices**: Basic JSX linting
 - **Basic A11y**: Accessibility rules for JSX
 
-### ESLint Responsibilities (Correctness Only)
+### ESLint (Correctness & Framework Rules)
+
 - **TypeScript Correctness**: Basic TypeScript rules (non-type-aware for speed)
 - **React/React Hooks Rules**: React-specific correctness rules
 - **Next.js Rules**: Next.js framework-specific rules
 - **Import Boundary Enforcement**: Architecture rules (e.g., `import/no-default-export`)
 - **Turbo Monorepo Rules**: Monorepo-aware linting
+
+## Usage
 
 ### Running Linters
 
@@ -46,21 +56,9 @@ pnpm lint:fix
 pnpm format
 ```
 
-### When to Disable Rules
+### Disabling Rules
 
-- **Biome**: Use `// biome-ignore lint/ruleName: reason`
-- **ESLint**: Use `// eslint-disable-next-line rule-name`
+Use inline comments sparingly and always include a reason:
 
-**Important**: All formatting rules are disabled in ESLint configs. Biome owns formatting completely.
-
-### Pre-commit Hooks
-
-The pre-commit hook runs Biome on staged files only:
-- Automatically fixes formatting and style issues
-- Does not run ESLint (too slow for pre-commit)
-- ESLint runs in CI/CD pipeline
-
-## Related Rules
-- [TypeScript Rules](./typescript.mdc) - Type safety patterns and guidelines
-- [Next.js Rules](../frontend/nextjs.mdc) - Next.js-specific linting considerations
-- [ESLint Config README](../../devtools/eslint/README.md) - Detailed ESLint configuration documentation
+- **Biome**: `// biome-ignore lint/ruleName: reason`
+- **ESLint**: `// eslint-disable-next-line rule-name`

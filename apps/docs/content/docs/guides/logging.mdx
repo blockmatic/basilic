@@ -94,46 +94,39 @@ NEXT_PUBLIC_LOG_LEVEL=info
 
 **Important**: Client-side logs are disabled in production by default. This means log statements won't execute, improving performance and reducing bundle size.
 
-## Server Usage
+## Usage
 
-### Fastify Routes
+### Server-Side
 
-Fastify provides a built-in logger via `request.log`. You can use either:
+**Fastify Routes** - Use Fastify's built-in logger (`request.log`) for automatic request context, or create child loggers:
 
-**Option 1: Use Fastify's request logger (recommended for request-scoped logs)**
 ```typescript
 // apps/api/src/routes/users.ts
+import { logger } from '@repo/utils/logger'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
 export async function userRoutes(fastify: FastifyInstance) {
   fastify.get('/users/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    // Fastify's logger includes request context automatically
+    // Option 1: Use Fastify's logger (includes request context automatically)
     request.log.info('Fetching user')
-    request.log.debug({ userId: request.params.id }, 'User details requested')
     
-    // ... your code
+    // Option 2: Create child logger with custom context
+    const requestLogger = logger.child({ requestId: request.id, userId: request.params.id })
+    requestLogger.debug('User details requested')
+    
+    try {
+      const user = await getUserById(request.params.id)
+      requestLogger.info({ email: user.email }, 'User fetched')
+      return reply.send(user)
+    } catch (error) {
+      requestLogger.error({ error }, 'Failed to fetch user')
+      return reply.code(500).send({ error: 'Internal server error' })
+    }
   })
 }
 ```
 
-**Option 2: Use shared logger**
-```typescript
-// apps/api/src/routes/users.ts
-import { logger } from '@repo/utils/logger'
-
-export async function userRoutes(fastify: FastifyInstance) {
-  fastify.get('/users/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    // Create a child logger with request context
-    const requestLogger = logger.child({ requestId: request.id })
-    requestLogger.info('Fetching user')
-    requestLogger.debug({ userId: request.params.id }, 'User details requested')
-    
-    // ... your code
-  })
-}
-```
-
-### Next.js Route Handlers
+**Next.js Route Handlers & Server Actions**:
 
 ```typescript
 // app/api/users/route.ts
@@ -141,78 +134,51 @@ import { logger } from '@repo/utils/logger'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  const requestId = request.headers.get('x-request-id') || crypto.randomUUID()
-  const requestLogger = logger.child({ requestId })
-  
-  requestLogger.info('Processing GET /api/users')
+  const requestLogger = logger.child({ 
+    requestId: request.headers.get('x-request-id') || crypto.randomUUID() 
+  })
   
   try {
-    // ... your code
-    requestLogger.debug({ count: users.length }, 'Users fetched successfully')
+    requestLogger.info('Processing request')
+    const users = await getUsers()
+    requestLogger.debug({ count: users.length }, 'Users fetched')
     return NextResponse.json(users)
   } catch (error) {
-    requestLogger.error({ error }, 'Failed to fetch users')
+    requestLogger.error({ error }, 'Request failed')
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 ```
 
-### Next.js Server Actions
+### Client-Side
 
-```typescript
-// app/actions/users.ts
-'use server'
-
-import { logger } from '@repo/utils/logger'
-
-export async function createUser(data: UserData) {
-  const actionLogger = logger.child({ action: 'createUser' })
-  
-  actionLogger.info('Creating user')
-  actionLogger.debug({ email: data.email }, 'User data received')
-  
-  try {
-    // ... your code
-    actionLogger.info({ userId: user.id }, 'User created successfully')
-    return { success: true, userId: user.id }
-  } catch (error) {
-    actionLogger.error({ error }, 'Failed to create user')
-    throw error
-  }
-}
-```
-
-## Client Usage
-
-### Client Components
+**Client Components** - Logs are disabled in production by default (no performance impact):
 
 ```typescript
 // components/user-profile.tsx
 'use client'
 
 import { logger } from '@repo/utils/logger'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 export function UserProfile({ userId }: { userId: string }) {
+  const componentLogger = useMemo(
+    () => logger.child({ component: 'UserProfile', userId }),
+    [userId]
+  )
+  
   useEffect(() => {
-    const componentLogger = logger.child({ component: 'UserProfile', userId })
-    componentLogger.info('UserProfile mounted')
-    
-    return () => {
-      componentLogger.debug('UserProfile unmounted')
-    }
-  }, [userId])
+    componentLogger.info('Component mounted')
+    return () => componentLogger.debug('Component unmounted')
+  }, [componentLogger])
   
   const handleClick = () => {
-    logger.info('User profile clicked')
-    logger.debug({ userId }, 'Profile interaction')
+    componentLogger.info('User profile clicked')
   }
   
   return <div onClick={handleClick}>...</div>
 }
 ```
-
-**Note**: In production, client-side logs are disabled by default. Log statements won't execute, so you don't need to remove them.
 
 ## Log Levels
 
@@ -233,9 +199,7 @@ logger.error('Database connection failed', { error })
 
 ## Best Practices
 
-### 1. Use Structured Fields
-
-Always use structured fields (first parameter) instead of string interpolation:
+**1. Use Structured Fields** - Always use structured fields instead of string interpolation:
 
 ```typescript
 // ✅ Good
@@ -245,217 +209,60 @@ logger.info({ userId, action: 'login' }, 'User logged in')
 logger.info(`User ${userId} logged in`)
 ```
 
-### 2. Request ID Correlation
-
-Use `child()` to create request-scoped loggers for correlation:
+**2. Request Correlation** - Use `child()` to create request-scoped loggers:
 
 ```typescript
-// Create a child logger with request context
-const requestLogger = logger.child({ requestId: 'abc-123', userId: 'user-456' })
-
-// All logs from this logger will include requestId and userId
-requestLogger.info('Processing request')
-requestLogger.debug({ step: 'validation' }, 'Request validated')
-```
-
-### 3. Never Log Secrets
-
-The server-side logger automatically redacts common secret fields:
-- `password`, `token`, `secret`, `key`, `apiKey`, `api_key`
-- `accessToken`, `access_token`, `refreshToken`, `refresh_token`
-- `authorization`, `cookie`, `session`
-
-```typescript
-// ✅ Safe - password will be redacted automatically
-logger.debug({ user: { email: 'user@example.com', password: 'secret123' } }, 'User data')
-
-// ❌ Avoid logging sensitive data even if redacted
-logger.debug({ apiKey: 'sk-123456' }, 'API key received')
-```
-
-### 4. Use Child Loggers for Context
-
-Create child loggers for operations that span multiple functions:
-
-```typescript
-// In route handler
 const requestLogger = logger.child({ requestId, userId })
-
-// Pass to service functions
-await processOrder(requestLogger, orderData)
-
-// In service function
-async function processOrder(log: Logger, orderData: OrderData) {
-  log.info('Processing order')
-  // All logs will include requestId and userId
-}
+requestLogger.info('Processing request') // Includes requestId and userId
 ```
 
-### 5. Error Logging
+**3. Secret Redaction** - Server-side logger automatically redacts: `password`, `token`, `secret`, `key`, `apiKey`, `accessToken`, `refreshToken`, `authorization`, `cookie`, `session`
 
-Always include error objects in error logs:
+**4. Error Logging** - Always include error objects:
 
 ```typescript
 try {
-  // ... code
+  await processOrder(orderData)
 } catch (error) {
   logger.error({ error, context: { userId, orderId } }, 'Failed to process order')
   throw error
 }
 ```
 
-### 6. Error Logging with captureError
-
-When using `captureError` from `@repo/error` in Fastify, pass Fastify's native logger to ensure errors are logged with request context and avoid duplicate logging:
+**5. Integration with `@repo/error`** - When using `captureError` in Fastify, pass `request.log` to use Fastify's native logger:
 
 ```typescript
 import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
-import type { FastifyError, FastifyInstance } from 'fastify'
 
-fastify.setErrorHandler((error: FastifyError, request, reply) => {
-  // Pass request.log to use Fastify's native logger
+fastify.setErrorHandler((error, request, reply) => {
   const catalogError = captureError({
     code: mapHttpStatusToErrorCode(error.statusCode),
     error,
-    logger: request.log, // ← Use Fastify's native logger
+    logger: request.log, // Uses Fastify's logger with request context
     label: `${request.method} ${request.url}`,
-    tags: { app: 'api' },
   })
-  
   reply.status(error.statusCode ?? 500).send(catalogError)
 })
 ```
 
-**Benefits:**
-- Errors logged through Fastify's native Pino logger
-- Automatic request context (requestId via `requestIdLogLabel: 'reqId'`)
-- No duplicate logging (captureError handles all error logging internally)
-- Consistent with Fastify's logging strategy
-
-If `logger` is omitted, `captureError` defaults to the internal logger from `@repo/utils/logger`.
-
-## Examples
-
-### Fastify Route with Error Handling
-
-```typescript
-import type { FastifyRequest, FastifyReply } from 'fastify'
-import { logger } from '@repo/utils/logger'
-
-export async function userRoutes(fastify: FastifyInstance) {
-  fastify.get('/users/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-    const requestLogger = logger.child({ 
-      requestId: request.id, 
-      userId: request.params.id 
-    })
-    
-    requestLogger.info('Fetching user')
-    
-    try {
-      const user = await getUserById(request.params.id)
-      
-      if (!user) {
-        requestLogger.warn('User not found')
-        return reply.code(404).send({ error: 'User not found' })
-      }
-      
-      requestLogger.debug({ email: user.email }, 'User fetched successfully')
-      return reply.send(user)
-    } catch (error) {
-      requestLogger.error({ error }, 'Failed to fetch user')
-      return reply.code(500).send({ error: 'Internal server error' })
-    }
-  })
-}
-```
-
-### Next.js API Route
-
-```typescript
-import { logger } from '@repo/utils/logger'
-import { NextRequest, NextResponse } from 'next/server'
-
-export async function POST(request: NextRequest) {
-  const requestId = request.headers.get('x-request-id') || crypto.randomUUID()
-  const requestLogger = logger.child({ requestId })
-  
-  requestLogger.info('Processing POST request')
-  
-  try {
-    const body = await request.json()
-    requestLogger.debug({ body }, 'Request body received')
-    
-    // ... process request
-    
-    requestLogger.info('Request processed successfully')
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    requestLogger.error({ error }, 'Request processing failed')
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-```
-
-### Client Component
-
-```typescript
-'use client'
-
-import { logger } from '@repo/utils/logger'
-import { useState, useEffect, useMemo } from 'react'
-
-export function DataFetcher({ url }: { url: string }) {
-  const [data, setData] = useState(null)
-  const componentLogger = useMemo(
-    () => logger.child({ component: 'DataFetcher', url }),
-    [url]
-  )
-  
-  useEffect(() => {
-    componentLogger.info('Fetching data')
-    
-    fetch(url)
-      .then(res => {
-        componentLogger.debug({ status: res.status }, 'Response received')
-        return res.json()
-      })
-      .then(data => {
-        componentLogger.info('Data fetched successfully')
-        setData(data)
-      })
-      .catch(error => {
-        componentLogger.error({ error }, 'Failed to fetch data')
-      })
-  }, [url, componentLogger])
-  
-  return <div>{/* render data */}</div>
-}
-```
-
 ## Troubleshooting
 
-### Logs not appearing
+**Logs not appearing:**
+- Check `LOG_ENABLED` / `NEXT_PUBLIC_LOG_ENABLED` environment variables
+- Verify log level isn't higher than message level
+- Remember: client logs disabled in production by default
 
-1. **Check environment variables**: Ensure `LOG_ENABLED` / `NEXT_PUBLIC_LOG_ENABLED` is set correctly
-2. **Check log level**: Your log level might be higher than the message level
-3. **Client-side in production**: Client logs are disabled by default in production
-
-### Console errors about console usage
-
-If you see linting errors about `console.*` usage:
-- Ensure you're importing from `@repo/utils/logger`
-- Check that Biome/ESLint are configured correctly
+**Console usage linting errors:**
+- Ensure importing from `@repo/utils/logger` (not `console.*`)
 - Only `packages/utils/logger/src/client.ts` can use `console.*`
 
-### Pino bundled in client
+**Pino in client bundles:**
+- Verify `package.json` exports include `browser` condition
+- Check `client.ts` never imports `pino`
+- Inspect bundle analysis with `next build`
 
-If `pino` appears in client bundles:
-- Verify `package.json` exports include `browser` condition pointing to `client.js`
-- Check that `client.ts` never imports `pino`
-- Run `next build` and inspect bundle analysis
-
-## Related
+## Related Documentation
 
 - [Environment Setup](./environment-setup) - Environment variable configuration
+- [Error Handling](./error-handling) - Error logging with `@repo/error`
 - [Add API Endpoint](./add-endpoint) - Fastify route examples
-- [Testing](./testing) - Testing with logging

@@ -58,9 +58,9 @@ pnpm dev
 
 ### 3. Understand the Structure (5 min)
 
-**Apps:** `apps/api/` (Fastify backend), `apps/docs/` (documentation)
+**Apps:** `apps/api/` (Fastify backend), `apps/web/` (Next.js frontend), `apps/docs/` (documentation)
 
-**Packages:** `core/` (generated API client + types), `react/` (React Query hooks), `ui/` (components)
+**Packages:** `core/` (generated API client + types), `react/` (React Query hooks), `ui/` (components), `error/` (error handling), `utils/` (utilities)
 
 ```mermaid
 flowchart TB
@@ -87,9 +87,9 @@ Add a new API endpoint: implement route → generate OpenAPI → use typed clien
 ## Next Steps
 
 **Understand Core Concepts:**
-- [Monorepo Structure](/docs/monorepo) - Package organization
+- [Monorepo Structure](/docs/architecture/monorepo) - Package organization
 - [API Development](/docs/api-development) - REST API with OpenAPI and client generation
-- [Portability Strategy](/docs/portability) - Avoiding vendor lock-in
+- [Portability Strategy](/docs/architecture/portability) - Avoiding vendor lock-in
 
 **AI-Driven Development:**
 - [AI Workflow](/docs/ai-workflow) - Recommended development workflow
@@ -102,3 +102,9 @@ Add a new API endpoint: implement route → generate OpenAPI → use typed clien
 ## Environment Setup (Optional)
 
 For database features, you'll need PostgreSQL. See [Environment Setup Guide](/docs/guides/environment-setup).
+
+## Related Documentation
+
+- [Architecture Overview](/docs/architecture) - Understand the technical stack and design decisions
+- [API Development](/docs/api-development) - Learn about REST API with OpenAPI and client generation
+- [AI Workflow](/docs/ai-workflow) - Recommended development workflow for AI-assisted development

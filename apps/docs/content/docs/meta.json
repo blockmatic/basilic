@@ -3,18 +3,18 @@
     "index",
     "getting-started",
     "--- Core Concepts",
-    "monorepo",
     "api-development",
-    "portability",
     "--- AI-Driven Development",
     "ai-workflow",
     "cursor-setup",
     "cursor-rules",
     "--- Architecture",
     "architecture",
+    "adrs",
     "--- How-To Guides",
     "guides"
   ],
   "architecture": "Architecture Overview",
+  "adrs": "Architecture Decisions",
   "guides": "How-To Guides"
 }

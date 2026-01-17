@@ -1,6 +1,6 @@
 ---
 description: Mobile-first responsive design patterns and best practices
-globs: *.tsx,*.ts,*.css
+glob: "*.tsx, *.ts, *.css"
 alwaysApply: false
 ---
 # Mobile-First Development Rules

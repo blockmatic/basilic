@@ -1,10 +1,15 @@
 {
-  "index": "Architecture Overview",
+  "index": "Overview",
+  "--- Structure": "",
   "monorepo": "Monorepo Structure",
-  "backend-stack": "Backend Stack",
-  "frontend-stack": "Frontend Stack",
-  "dev-tooling": "Development Tooling",
-  "api-contracts": "API Contracts",
   "package-conventions": "Package Conventions",
+  "packages": "Packages Reference",
+  "esm-strategy": "ESM Strategy",
+  "--- Backend": "",
+  "backend-stack": "Backend Stack",
+  "--- Frontend": "",
+  "frontend-stack": "Frontend Stack",
+  "--- Cross-Cutting": "",
+  "dev-tooling": "Development Tooling",
   "portability": "Portability Strategy"
 }

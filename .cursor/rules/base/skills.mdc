@@ -1,0 +1,155 @@
+---
+description: Best practices for writing high-quality agent skills
+glob: ".cursor/skills/**/*"
+alwaysApply: false
+---
+
+# Agent Skill Writing Standards
+
+## Scope
+
+This rule applies when creating or modifying files in `.cursor/skills/` directory. Skills extend agent capabilities with specialized knowledge, workflows, or tool integrations.
+
+## Core Principles
+
+### 1. Single Responsibility
+
+One skill = one narrow capability:
+
+- ✅ `tanstack-query`, `fastify-openapi-routing`, `solidity-foundry-testing`
+- ❌ `fullstack-typescript-guidelines`, `web3-backend-rules`
+
+Think Unix philosophy: small, composable skills.
+
+### 2. Declarative Over Instructional
+
+State **what is true**, not **how to think step-by-step**.
+
+- ✅ "Use TanStack Query v5 with queryKey factories"
+- ✅ "Do not wrap generated hooks unless necessary"
+- ❌ "First analyze the code, then decide…"
+- ❌ "Think carefully before choosing…"
+
+Agents already reason. Skills should **constrain**, not narrate.
+
+### 3. Patterns Over Examples
+
+Examples rot fast. Patterns last.
+
+- ✅ "Expose one public entrypoint per package"
+- ✅ "SDKs wrap generated clients behind stable facades"
+
+If examples are needed: keep minimal, avoid file paths unless universal.
+
+### 4. Hard Rules Sparingly
+
+Use MUST/NEVER only when violations cause real damage:
+
+- ✅ "MUST not introduce new state managers"
+- ✅ "NEVER duplicate OpenAPI schemas manually"
+
+Overuse reduces flexibility and reasoning quality.
+
+### 5. Version Context
+
+State what you're targeting explicitly:
+
+- ✅ "Applies to TanStack Query v5+"
+- ✅ "Assumes ESM-first TypeScript projects"
+- ❌ Timeless claims without context
+
+### 6. Trade-offs Not Absolutes
+
+Explain *why* a choice exists, preserve agent judgment:
+
+- ✅ "Prefer OpenAPI-generated clients for portability; manual clients acceptable for experimental endpoints"
+
+## Structure Requirements
+
+### Minimal Skill Template
+
+```md
+# Skill: <name>
+
+## Scope
+- What this skill applies to
+- What it explicitly does NOT cover
+
+## Principles
+- Bullet list of stable truths
+- Clear trade-offs where relevant
+
+## Constraints
+- MUST / SHOULD / AVOID (only when justified)
+
+## Interactions
+- How this skill coexists with others
+- Known intentional conflicts
+```
+
+### Optimization for Retrieval
+
+Skills are machine-read first. Use:
+
+- ✅ Bullets, short sentences, consistent vocabulary
+- ❌ Long paragraphs, metaphors, storytelling
+
+## Coexistence Rules
+
+### Make Conflicts Explicit
+
+If your skill disagrees with common defaults, state clearly:
+
+> "This skill intentionally avoids MVC and class-based patterns, even if the framework supports them."
+
+### Design for Composition
+
+Assume:
+
+- Other skills exist
+- User rules override everything
+
+Avoid:
+
+- Re-explaining TypeScript basics
+- Redefining general formatting rules
+
+## Relationship with Rules
+
+| Layer      | Purpose                                  |
+| ---------- | ---------------------------------------- |
+| **Rules**  | Global, opinionated, override everything |
+| **Skills** | Local expertise, patterns, constraints   |
+| **Model**  | Reasoning and synthesis                  |
+
+Skills should **guide decisions**, not enforce architecture.
+
+## Quality Checklist
+
+Before finalizing a skill:
+
+- [ ] Single, narrow responsibility?
+- [ ] Declarative statements (not instructional)?
+- [ ] Hard rules justified?
+- [ ] Patterns > examples?
+- [ ] Versions/assumptions explicit?
+- [ ] Conflicts with other skills addressed?
+- [ ] Optimized for retrieval (bullets, short)?
+- [ ] Trade-offs explained?
+- [ ] Self-contained (no external links)?
+
+## Bottom Line
+
+**Great agent skills are boring, precise, scoped, and opinionated only where it matters.**
+
+If a skill feels like documentation or a tutorial, it's probably doing too much.
+
+## Related Resources
+
+- @.cursor/skills/skill-creator/SKILL.md - Complete skill creation workflow with init and packaging scripts
+- @.cursor/rules/base/rules.mdc - Guidelines for writing Cursor rules (complementary to skills)
+
+## Related Resources
+
+- @.cursor/skills/skill-creator/SKILL.md - Complete skill creation workflow with init and packaging scripts
+- @.cursor/rules/base/rules.mdc - Guidelines for writing Cursor rules (complementary to skills)

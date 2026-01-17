@@ -1,6 +1,6 @@
 ---
 description: Environment variable management pattern for all apps
-globs: .env*,**/env*.ts,**/load-env.ts
+glob: ".env*, **/env*.ts, **/load-env.ts"
 alwaysApply: false
 ---
 # Environment Variable Pattern

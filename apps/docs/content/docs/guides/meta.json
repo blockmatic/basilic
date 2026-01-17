@@ -1,14 +1,20 @@
 {
-  "index": "How-To Guides",
+  "index": "Overview",
+  "--- Getting Set Up": "",
+  "environment-setup": "Environment Setup",
+  "--- Development": "",
   "add-endpoint": "Add API Endpoint",
   "add-component": "Add UI Component",
-  "environment-setup": "Environment Setup",
   "error-handling": "Error Handling",
   "logging": "Logging",
-  "testing": "Testing",
+  "--- Testing": "",
+  "testing": "Testing Overview",
+  "frontend-testing": "Frontend Testing",
+  "--- Deployment & Publishing": "",
   "deployment": "Deployment",
   "publishing": "Publishing Packages",
+  "ci-cd-setup": "CI/CD Setup",
+  "--- Advanced": "",
   "security": "Security Baseline",
-  "using-mcp-servers": "Using MCP Servers",
-  "ci-cd-setup": "CI/CD Setup"
+  "using-mcp-servers": "Using MCP Servers"
 }

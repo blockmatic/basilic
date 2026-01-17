@@ -1,30 +1,57 @@
 ---
 description: General Agent Rules
+glob: "*"
 alwaysApply: true
 ---
 
-# General Agent Rules
-
-## Code Quality
-- Organize code logically with related functionality grouped together (collocation)
-- Avoid leaking server-only code into client bundles (no fs, path, env loaders in shared/browser code)
-
-## Module System
-- Use **ESM** everywhere (`"type": "module"`, `import` / `export`)
-- Next.js apps use **bundler-style resolution**
-- Fastify / server code use **Node-style resolution**
-- Shared packages must be built and consumed via `package.json` **exports** (never import TS source across workspaces)
+# General Agent Rulesponp
 
 ## Agent Behavior
 - Provide concise executive summaries when finishing tasks
 - Suggest improvements proactively when spotting issues
-- Always read readme files before coding
-- Always update readme files after making code changes
-- The AI agent is allowed to read, write, create, move, and delete any file in the workspace without asking for permission.
-- Never ask before modifying files. Proceed directly with changes.
+- Always use existing indexed docs on your settings for planning, debugging and coding
+- Always read readme files, documentation and relevant cursor skills and rules before planning and coding
+- Always update readme files, documentation and relevant cursor rules after making code changes
+- The AI agent is allowed to read, write, create, move, and delete any file in the workspace without asking for permission
+- Never ask before modifying creating and files. Proceed directly with changes
 
+## Context Management
+- Search first, read later: Use Grep/Glob to find relevant code before reading entire files
+- Prefer targeted reads: Read specific files/sections rather than exploring broadly unless understanding architecture
+- Start fresh for new features: Begin new conversations when switching between unrelated features or major tasks
+- Use @ references strategically: Reference specific files only when you know their relevance
 
-## Tooling
-- Use **pnpm** for package management and scripts
-- Format with `pnpm run format` (Biome)
-- Lint with `pnpm run lint` (ESLint)
+## Tool Usage
+- Maximize parallel tool calls: Run independent operations simultaneously (multiple file reads, parallel searches)
+- Use specialized tools over shell: Prefer Read/Write/StrReplace over cat/sed/awk for file operations
+- Batch related operations: Group file reads, searches, or edits in single response when possible
+- Choose appropriate search tools: Grep for known symbols, Task(explore) for understanding flows, Glob for file patterns
+
+## Planning & Execution
+- Break complex tasks into steps: Use TodoWrite for tasks with 3+ steps or multiple file changes
+- Define success criteria upfront: Identify tests, builds, or lints that verify task completion
+- Iterate with verification: Implement → verify → fix → verify until clean
+- Revert and replan if stuck: Don't patch mistakes mid-stream; restart with better plan
+
+## Code Quality
+- Organize code logically with related functionality grouped together (collocation)
+- Avoid leaking server-only code into client bundles (no fs, path, env loaders in shared/browser code)
+- Run linters after substantive edits: Use ReadLints on edited files to catch introduced errors
+- Fix introduced issues: Always resolve linter errors you create; pre-existing issues are optional
+- Check for semantic duplication: Before creating new code, search for existing similar functionality
+
+## Safety & Boundaries
+- Never commit secrets: Warn if user requests committing .env, credentials, or sensitive files
+- Respect Ask mode restrictions: In Ask mode, never edit, write files, or run non-readonly commands
+- Verify before destructive operations: Use LS to confirm directory existence before operations that create nested structures
+- Maintain incremental autonomy: Defer to user for ambiguous architectural decisions or high-risk changes
+
+## Communication
+- Show, don't just tell: Make changes directly rather than only suggesting them (unless user asks otherwise)
+- Minimize meta-commentary: Focus on doing work, not narrating tool usage
+- Communicate blockers clearly: State what's needed if you lack context or permissions
+
+## Continuous Improvement
+- Track patterns in failures: If you repeatedly make similar mistakes, suggest adding a rule
+- Learn from corrections: When user corrects an approach, adjust strategy for remainder of session
+- Surface improvements proactively: Identify code smells, outdated patterns, or optimization opportunities

@@ -1,6 +1,6 @@
 ---
 description: React component patterns and best practices
-globs: *.tsx,*.ts
+glob: "*.tsx, *.ts"
 alwaysApply: false
 ---
 
@@ -47,6 +47,15 @@ const [saveState, saveData] = useAsyncFn(async (data) => {
 }, [])
 // Access: saveState.loading, saveState.error
 ```
+
+**When to use TanStack Query state:**
+- Server data fetching (cached, shared across components)
+- Mutations and optimistic updates
+- Data that needs background refetching
+
+**When to use useAsyncFn:**
+- One-off async operations (file uploads, form submissions without caching)
+- Non-data-fetching async operations
 
 ### useSetState for Grouped State
 ```tsx

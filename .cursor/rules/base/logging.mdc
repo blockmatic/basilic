@@ -1,7 +1,7 @@
 ---
 description: Logging best practices and rules
-globs: *.tsx,*.ts,*.jsx,*.js
-alwaysApply: false
+glob: "*.tsx, *.ts, *.jsx, *.js"
+alwaysApply: true
 ---
 
 # Logging Rules
@@ -43,20 +43,7 @@ requestLogger.info('Processing request') // Includes requestId and userId
 
 ## Build-Time Conditional Exports
 
-The logger uses **build-time conditional exports** - no runtime detection:
-
-- **No `typeof window` checks**
-- **No `process` checks**
-- **No dynamic imports**
-
-The bundler (Next.js, Turbopack) automatically selects the correct implementation:
-- Browser builds → console wrapper
-- Node builds → Pino
-
-**Architecture:**
-- `index.ts` is types-only and never imported at runtime
-- `server.ts` and `client.ts` are the actual runtime entrypoints (both export `logger`)
-- Conditional exports in `package.json` route to the correct file at build time
+The logger uses build-time conditional exports - no runtime detection. See [Logging Guide](/docs/guides/logging#build-time-conditional-exports) for architecture details.
 
 ## Log Levels
 
@@ -137,8 +124,8 @@ try {
 
 ## Runtime Differences
 
-- **Server-side** (Fastify API, Next.js server runtime): Uses Pino for structured JSON logging with automatic secret redaction
-- **Client-side** (Next.js client components): Uses console wrapper with environment-controlled enable/level filtering
+- **Server-side**: Uses Pino for structured JSON logging with automatic secret redaction
+- **Client-side**: Uses console wrapper with environment-controlled enable/level filtering
 
 The same API works in both environments - conditional exports handle the selection at build time.
 
@@ -180,7 +167,7 @@ fastify.setErrorHandler((error, request, reply) => {
 
 This ensures errors are logged through Fastify's native logging system with proper request context (requestId, etc.) and avoids duplicate logging.
 
-## Related
+## Related Documentation
 
-- [Logging Guide](../../apps/docs/content/docs/guides/logging.mdx) - Complete logging documentation
+- [Logging Guide](/docs/guides/logging) - Complete logging documentation including build-time conditional exports architecture
 - [Environment Variables](./environment.mdc) - Environment variable patterns

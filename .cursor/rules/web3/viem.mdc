@@ -1,6 +1,6 @@
 ---
 description: Viem v2 integration patterns and best practices
-globs: *.tsx,*.ts
+glob: "*.tsx, *.ts"
 alwaysApply: false
 ---
 # Viem v2 Rules

@@ -1,0 +1,180 @@
+---
+title: "ESM Module Strategy"
+description: "ESM-first module architecture with dual-mode exports, subpath patterns, and runtime-specific configurations."
+---
+
+## Overview
+
+This document describes the monorepo's **ESM-first module strategy**, including dual-mode package exports, subpath patterns, and runtime-specific configurations for Next.js and Fastify.
+
+## ESM-First Architecture
+
+All packages use `"type": "module"` in `package.json`. This enables:
+- Native ESM imports (`import`/`export`) throughout the codebase
+- No CommonJS interop overhead
+- Better tree-shaking and bundling optimization
+
+## Dual-Mode Package Exports
+
+Packages use a **dual-mode export strategy** for optimal developer experience and publishing:
+
+### Development Mode (Monorepo)
+
+Packages export TypeScript source files directly for fast local development:
+
+```json
+{
+  "type": "module",
+  "exports": {
+    "./async": {
+      "types": "./src/async/index.ts",
+      "import": "./src/async/index.ts"
+    }
+  }
+}
+```
+
+**Benefits:**
+- ✅ No build step required for local development
+- ✅ Instant type checking and IntelliSense
+- ✅ Fast iteration without waiting for compilation
+- ✅ Next.js can transpile TypeScript source directly via `transpilePackages`
+
+### Publishing Mode (npm)
+
+The `prepack` script automatically switches exports to compiled `dist/` before publishing:
+
+```json
+{
+  "exports": {
+    "./async": {
+      "types": "./dist/async/index.d.ts",
+      "import": "./dist/async/index.js"
+    }
+  },
+  "files": ["dist"]
+}
+```
+
+**Process:**
+1. `prepack` hook runs before `pnpm pack`/`publish`
+2. Builds package with `tsup` (ESM + `.d.ts` files)
+3. Switches `exports` from `src/` to `dist/`
+4. `postpack` hook restores original `src/` exports after packing
+
+## Directory/Subpath Exports
+
+Packages use **subpath exports** for better tree-shaking and explicit imports:
+
+**Pattern:**
+```json
+{
+  "exports": {
+    "./async": { "types": "./src/async/index.ts", "import": "./src/async/index.ts" },
+    "./web3": { "types": "./src/web3/index.ts", "import": "./src/web3/index.ts" },
+    "./components/*": { "types": "./src/components/*.tsx", "import": "./src/components/*.tsx" }
+  }
+}
+```
+
+**Benefits:**
+- ✅ Explicit imports enable better tree-shaking (`import { delay } from "@repo/utils/async"`)
+- ✅ Bundlers can eliminate unused code paths
+- ✅ Clear package boundaries (no barrel exports across packages)
+- ✅ TypeScript path resolution works seamlessly
+
+**Rules:**
+- ✅ Always use subpath imports: `import { delay } from "@repo/utils/async"`
+- ❌ Never use root imports: `import { delay } from "@repo/utils"` (no root export)
+- ✅ Use directory patterns for UI: `import { Button } from "@repo/ui/components/button"`
+
+## Next.js Package Interpolation
+
+Next.js apps import TypeScript source directly using **package interpolation**:
+
+**Configuration:**
+```js
+// next.config.mjs
+export default {
+  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/error', '@repo/utils']
+}
+```
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@repo/core": ["../../packages/core/src/index.ts"],
+      "@repo/core/*": ["../../packages/core/src/*"]
+    }
+  }
+}
+```
+
+**How It Works:**
+1. TypeScript resolves imports to `src/` via path mappings
+2. Next.js `transpilePackages` transpiles workspace packages during build
+3. No pre-build step required - Next.js handles compilation
+4. Fast refresh works with direct TypeScript source
+
+**Rules:**
+- ✅ Add all workspace packages to `transpilePackages` array
+- ✅ Use TypeScript path mappings for direct `src/` imports
+- ✅ Import from package names (not relative paths): `import { Button } from "@repo/ui/components/button"`
+- ❌ Don't use relative paths across packages: `import { Button } from "../../packages/ui/src/components/button"`
+
+## Node.js/Fastify Runtime
+
+Node.js apps (Fastify API) import TypeScript source directly using a TypeScript runtime:
+
+**Development:**
+```json
+{
+  "scripts": {
+    "dev": "tsx watch src/index.ts"
+  }
+}
+```
+
+**TypeScript Config:**
+```json
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  }
+}
+```
+
+**Rules:**
+- ✅ Use `tsx` or similar TS runtime for development
+- ✅ Configure `moduleResolution: "NodeNext"` for proper ESM support
+- ✅ Import workspace packages normally - they resolve to `src/` exports
+
+## Import Extension Rules
+
+**ESM requires explicit extensions**, but TypeScript allows omitting them:
+
+**In TypeScript source:**
+- ✅ `import { delay } from "./utils/delay"` (no extension)
+- ✅ `import { delay } from "./utils/delay.js"` (explicit `.js` for ESM compatibility)
+- ❌ `import { delay } from "./utils/delay.ts"` (don't use `.ts` extension)
+
+**Why `.js` extension?**
+- ESM spec requires explicit extensions
+- TypeScript allows `.js` extension even when importing `.ts` files
+- Bundlers/runtimes resolve `.js` → `.ts` automatically
+- Ensures compatibility with native ESM
+
+**Best Practice:**
+- Omit extensions in TypeScript (TypeScript handles resolution)
+- Use `.js` extensions if targeting strict ESM environments
+- Never use `.ts` extensions in import statements
+
+## Related Documentation
+
+- [Package Conventions](/docs/architecture/package-conventions) - Package organization and naming
+- [Packages Reference](/docs/architecture/packages) - Complete package API reference
+- [Monorepo Structure](/docs/architecture/monorepo) - Overall monorepo architecture

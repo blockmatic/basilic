@@ -453,17 +453,35 @@ export async function register() {
 
 ## Error Catalogs
 
-The `@repo/error` package includes the following error catalogs, all merged at build time:
+All error codes are defined in `packages/error/src/catalogs/` and merged at build time:
+
+- `server.ts` - Server-side HTTP errors
+- `client.ts` - Client-side validation and network errors
+- `common.ts` - Common errors used across both
+- `api.ts` - API-specific errors
+- `web.ts` - Web app-specific errors
+
+### Complete Error Catalog
 
 **Server Errors**: `SERVER_ERROR`, `BAD_REQUEST`, `NOT_FOUND`, `UNAUTHORIZED`, `FORBIDDEN`, `INVALID_INPUT`, `CONFLICT`, `RATE_LIMIT_EXCEEDED`, `BAD_GATEWAY`, `SERVICE_UNAVAILABLE`, `GATEWAY_TIMEOUT`
 
-**Client Errors**: `CLIENT_VALIDATION_ERROR`, `CLIENT_FORMAT_ERROR`, `NETWORK_ERROR`, `NETWORK_TIMEOUT`, `FETCH_ERROR`
+**Client Errors**: `NETWORK_ERROR`, `NETWORK_TIMEOUT`, `FETCH_ERROR`, `CLIENT_VALIDATION_ERROR`, `CLIENT_FORMAT_ERROR`
 
 **Common**: `UNEXPECTED_ERROR`
 
 **API-Specific**: `AI_MODEL_ERROR`, `AI_RATE_LIMIT_EXCEEDED`, `BLOCKCHAIN_TRX_OP_FAILURE`, `BLOCKCHAIN_BLOCK_PROCESSING_ERROR`
 
 **Web-Specific**: `DASHBOARD_DATA_LOAD_FAILED`
+
+### Build-time Validation
+
+- Each catalog is validated individually (format, duplicates, code property matching)
+- Cross-catalog duplicate detection ensures no code collisions
+- Build fails if validation errors are found
+
+**Type Safety:** All error codes are available as the `CoreErrorCode` union type, exported from platform-specific paths or `/core`. Use `mapHttpStatusToErrorCode()` which returns `CoreErrorCode` for type-safe HTTP status code mapping.
+
+**Unknown Error Codes:** If `captureError` is called with an unknown error code, it returns `UNEXPECTED_ERROR` fallback, logs a warning, and automatically captures to Sentry with `unknownErrorCode: 'true'` tag for runtime misconfiguration detection.
 
 ### Adding New Error Codes
 
@@ -898,7 +916,9 @@ import { getErrorMessage, captureError } from '@repo/error/nextjs'
 6. **Update React Error Boundaries** (if using React):
    - Use the ErrorBoundary pattern shown in Framework Integration section
 
-## Related
+## Related Documentation
 
-- [Logging Guide](./logging) - Logging patterns with `@repo/utils/logger`. All logging in `@repo/error` uses `@repo/utils/logger` for unified logging across the monorepo.
-- [Security Guide](./security) - Security best practices and PII handling. Sentry's built-in PII scrubbing automatically handles sensitive data.
+- [Logging Guide](/docs/guides/logging) - Logging patterns with `@repo/utils/logger`. All logging in `@repo/error` uses `@repo/utils/logger` for unified logging across the monorepo.
+- [Security Guide](/docs/guides/security) - Security best practices and PII handling. Sentry's built-in PII scrubbing automatically handles sensitive data.
+- [Backend Stack](/docs/architecture/backend-stack) - Fastify error handler integration patterns
+- [Frontend Stack](/docs/architecture/frontend-stack) - React Error Boundaries and Next.js error pages
