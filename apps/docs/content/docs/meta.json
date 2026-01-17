@@ -10,6 +10,7 @@
     "blockchain",
     "--- AI-Driven Development",
     "ai-workflow",
+    "cursor-workflow",
     "cursor-setup",
     "cursor-rules",
     "--- How-To Guides",
@@ -19,6 +20,7 @@
   "architecture": "Architecture",
   "blockchain": "Blockchain",
   "ai-workflow": "AI Workflow",
+  "cursor-workflow": "Cursor Workflow",
   "cursor-setup": "Cursor Setup",
   "cursor-rules": "Cursor Rules",
   "guides": "How-To Guides"

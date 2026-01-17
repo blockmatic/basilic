@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "coderabbit.coderabbit-vscode",
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "bierner.markdown-mermaid",
+    "mermaidchart.vscode-mermaid-chart",
+    "github.vscode-github-actions"
+  ]
+}

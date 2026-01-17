@@ -1,0 +1,62 @@
+---
+title: "Cursor Extensions"
+description: "VS Code/Cursor extensions for optimal development experience in this monorepo."
+---
+
+Currently installed VS Code extensions for optimal development experience in this monorepo.
+
+## Installed Extensions
+
+| Extension | Publisher/ID | Purpose | Category | Why It's Needed | Key Features |
+|-----------|-------------|---------|----------|-----------------|--------------|
+| **CodeRabbit** | `coderabbit.coderabbit-vscode` | AI-powered code review assistant | Code Review | Automated PR reviews with AI suggestions | - Automated code reviews on PRs<br>- AI-powered suggestions<br>- Security vulnerability detection<br>- Code quality improvements<br>- Integration with GitHub/GitLab |
+| **Biome** | `biomejs.biome` | Fast formatter and linter | Formatting/Linting | Primary formatter (handles all formatting, imports, unused vars) | - Ultra-fast formatting<br>- Import sorting and organization<br>- Unused variable/import detection<br>- Style rules (no-var, prefer-const)<br>- React JSX best practices<br>- Basic accessibility rules |
+| **Tailwind CSS IntelliSense** | `bradlc.vscode-tailwindcss` | Tailwind CSS autocomplete and IntelliSense | Frontend | Provides autocomplete for Tailwind classes | - Autocomplete for Tailwind classes<br>- Linting for Tailwind syntax<br>- Hover previews<br>- CSS validation<br>- Class name suggestions<br>- IntelliSense for Tailwind config |
+| **Markdown Preview Mermaid Support** | `bierner.markdown-mermaid` | Mermaid diagram rendering in Markdown preview | Documentation/Visualization | Renders Mermaid diagrams in built-in Markdown preview | - Renders Mermaid code blocks in Markdown preview<br>- Theme-aware rendering (light/dark mode)<br>- Supports all Mermaid diagram types<br>- Works in notebook cells<br>- Iconify icons support |
+| **Mermaid Chart** | `mermaidchart.vscode-mermaid-chart` | Official Mermaid extension with advanced features | Documentation/Visualization | Enhanced Mermaid editing and preview capabilities | - Full syntax highlighting for Mermaid diagrams<br>- Live preview in Markdown<br>- Pan & zoom support<br>- Export to SVG/PNG<br>- Error highlighting<br>- AI-assist features for diagram generation<br>- Large diagram support<br>- Icon packs support |
+| **GitHub Actions** | `github.vscode-github-actions` | GitHub Actions workflow support | CI/CD | Enhanced editing experience for GitHub Actions workflows | - Syntax highlighting for workflow files<br>- IntelliSense for GitHub Actions<br>- Validation and error checking<br>- Action marketplace integration<br>- Workflow debugging support |
+
+## Extension Roles in This Project
+
+### Hybrid Linting Architecture
+
+This monorepo uses a **hybrid linting architecture** where Biome and ESLint have distinct, non-overlapping responsibilities:
+
+- **Biome**: Handles formatting, style, import organization, and unused code detection
+- **ESLint**: Handles correctness, framework rules (React, Next.js), and architectural boundaries
+
+**Important**: All formatting rules are disabled in ESLint configs. Biome owns formatting completely.
+
+### Workflow Integration
+
+- **CodeRabbit**: Used during [Phase 3: Execution](/docs/cursor-workflow/complete-workflow#phase-3-execution) for pre-commit review and [Phase 4: Review](/docs/cursor-workflow/complete-workflow#phase-4-review--refinement) for PR reviews
+- **Biome**: Run via `pnpm lint:biome` or `pnpm format` for formatting (see [Phase 3: Execution](/docs/cursor-workflow/complete-workflow#phase-3-execution))
+- **GitHub Actions**: Provides IntelliSense and validation for `.github/workflows/*.yml` files
+- **Tailwind IntelliSense**: Enhances productivity when working with Tailwind CSS classes
+- **Mermaid Extensions**: Enable diagram visualization in Markdown files and documentation
+
+### Mermaid Diagram Support
+
+This project uses Mermaid diagrams extensively for:
+- Architecture documentation
+- User journey visualization
+- Roadmap planning
+- Code visualization
+
+**Two Mermaid extensions work together:**
+- **Markdown Preview Mermaid Support**: Renders diagrams in VS Code's built-in Markdown preview
+- **Mermaid Chart**: Provides syntax highlighting, live preview, and export capabilities
+
+Both extensions complement each other - use Markdown Preview for quick viewing, and Mermaid Chart for advanced editing and export features.
+
+## Installation
+
+Install all recommended extensions via Extensions panel (Cmd/Ctrl + Shift + X) or use the workspace recommendations file (`.vscode/extensions.json`).
+
+## Related Documentation
+
+- [Complete Workflow](/docs/cursor-workflow/complete-workflow) - Complete development workflow including extension usage in Phase 3 and Phase 4
+- [Quick Start](/docs/cursor-workflow/quick-start) - Essential patterns for AI-assisted development
+- [Cursor Setup](/docs/cursor-setup) - Complete IDE configuration
+- [Linting Architecture](/docs/adrs/006-linters) - Hybrid Biome + ESLint details
+- [AI Workflow](/docs/ai-workflow) - Development workflow with extensions

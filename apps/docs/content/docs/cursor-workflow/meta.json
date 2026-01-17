@@ -1,0 +1,7 @@
+{
+  "pages": ["index", "quick-start", "complete-workflow", "extensions"],
+  "index": "Overview",
+  "quick-start": "Quick Start",
+  "complete-workflow": "Complete Workflow",
+  "extensions": "Extensions"
+}

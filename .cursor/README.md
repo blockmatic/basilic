@@ -1,111 +1,121 @@
 # Cursor Directory
 
-Configuration and guidelines for AI assistants working with this codebase.
+AI-assisted development configuration for this codebase. Contains rules, commands, skills, and guides that enhance the development workflow with Cursor AI.
 
-## Structure
+## Getting Started
 
-### Context (`context/`)
+**New to this codebase?** Start here:
 
-Factual information about the project (not behavioral rules):
+1. Read [Cursor Workflow Overview](https://basilic-docs.vercel.app/docs/cursor-workflow) - Entry point with learning path
+2. Skim [Quick Start Guide](https://basilic-docs.vercel.app/docs/cursor-workflow/quick-start) - 5-minute reference card
+3. Explore [Complete Workflow](https://basilic-docs.vercel.app/docs/cursor-workflow/complete-workflow) - Comprehensive workflow reference
 
-- `architecture.md`: High-level architecture
-- `backend.md`: Backend architecture and infrastructure
-- `frontend.md`: Frontend architecture and tech stack
-- `project.md`: Project information and guidelines
+**Experienced developer?** Jump to:
+- [`commands/`](commands/) - Task-specific commands (code review, git, testing, etc.)
+- [`rules/`](rules/) - Coding standards organized by domain
+
+## Directory Structure
+
+### Workflow Documentation
+
+Human-facing workflow documentation for AI-assisted development is now in the [documentation site](https://basilic-docs.vercel.app/docs/cursor-workflow).
+
+**Start here:** [Cursor Workflow Overview](https://basilic-docs.vercel.app/docs/cursor-workflow)
+
+Key guides:
+- [Quick Start](https://basilic-docs.vercel.app/docs/cursor-workflow/quick-start) - 5-minute reference card with essential patterns
+- [Complete Workflow](https://basilic-docs.vercel.app/docs/cursor-workflow/complete-workflow) - Complete development lifecycle (discovery → architecture → planning → execution → review)
+- [Extensions](https://basilic-docs.vercel.app/docs/cursor-workflow/extensions) - VS Code/Cursor extensions and their roles
 
 ### Rules (`rules/`)
 
-Coding standards and best practices organized by domain:
+Coding standards and best practices organized by domain.
 
-- `base/`: Foundational rules (TypeScript, environment variables, MCP, general patterns)
-- `frontend/`: Frontend rules (React, Next.js, mobile-first, ShadcnUI, testing)
-- `web3/`: Web3 rules (Cosmos, Solana, Solidity, Viem, Wagmi, Ponder, multichain)
-- `backend/`: Backend rules (Fastify, ts-rest, testing)
+**Structure:**
+- `base/` - Foundation (TypeScript, linting, error handling, logging, testing, environment)
+- `frontend/` - React, Next.js, mobile-first, ShadcnUI, testing
+- `backend/` - Fastify, testing
+- `web3/` - Cosmos, Solana, Solidity, Viem, Wagmi, Ponder, multichain
 
-**Rule guidelines:**
-
-- Focused, actionable, and scoped (~1.5K words max)
-- Include frontmatter with `description` and `globs` patterns
-- Use clear, direct language with code examples
-
-**Usage:**
-
+**Usage pattern:**
 ```
-Please apply the TypeScript rules from .cursor/rules/base/typescript.mdc when refactoring this code.
+Please apply @.cursor/rules/base/typescript.mdc when refactoring this code.
 ```
 
-### Prompts (`prompts/`)
+**Guidelines:**
+- Focused and actionable (~1.5K words max)
+- Include frontmatter with description and file patterns
+- Provide code examples
 
-Reusable prompt templates:
+### Commands (`commands/`)
 
-- `refine-plan.md`: Checklist for refining implementation plans
-- `debug-plan.md`: Guidelines for investigating failures and creating fix plans
+Task-specific command definitions for common development workflows.
 
-### MCP Configuration (`mcp.json`)
+**Categories:**
+- **Code quality**: `code-review.md`, `lint-fix.md`, `refactor-code.md`
+- **Testing**: `write-unit-tests.md`, `write-api-test.md`, `run-all-tests-and-fix.md`
+- **Git workflows**: `git-commit.md`, `git-push.md`, `create-pr.md`, `fix-git-issues.md`
+- **Documentation**: `add-documentation.md`, `generate-api-docs.md`
+- **Debugging**: `debug-issue.md`, `fix-compile-errors.md`, `docker-logs.md`
+- **Planning**: `roadmap.md`, `setup-new-feature.md`, `clarify-task.md`
+- **Architecture**: `info-architecture.md`, `diagrams.md`, `visualize.md`
+- **Audits**: `security-audit.md`, `security-review.md`, `accessibility-audit.md`, `optimize-performance.md`
 
-Model Context Protocol servers for specialized capabilities:
+**Usage pattern:**
+```
+@.cursor/README.md /info-architecture
+```
 
-- `shadcn`: UI component management (shadcn/ui)
-- `v0`: UI design and generation (v0.dev)
-- `github`: Repository management
-- `vercel`: Deployment and project management
+### Skills (`skills/`)
 
-**Authentication:**
+Specialized knowledge bundles for technologies and patterns.
 
-- `shadcn`: Local CLI (no API key)
-- `v0`: `V0_API_KEY`
-- `github`: `GITHUB_TOKEN`
-- `vercel`: `VERCEL_API_TOKEN`
+**Categories:**
+- **Framework skills**: Next.js 15, React best practices, Tailwind v4
+- **Backend skills**: Fastify, Drizzle ORM, TypeBox, OpenTelemetry
+- **AI skills**: Vercel AI SDK (core & UI), prompt engineering
+- **Web3 skills**: Ethereum, Solana, Solidity, DeFi, NFTs
+- **Architecture skills**: Senior architect, systematic planning, security practices
+- **Development skills**: Code deduplication, skill creator
 
-**Setting API Keys:**
+**Usage:** Read skill files for detailed guidance on specific technologies or patterns.
 
-Add the required API keys to your shell profile so Cursor can access them:
+## MCP Configuration
 
-**For zsh (recommended):**
+Model Context Protocol (MCP) servers extend Cursor with specialized capabilities. Configuration is in `mcp.json`.
+
+**Available servers:**
+- `shadcn` - UI component management (local CLI, no auth required)
+- `v0` - UI design and generation (requires `V0_API_KEY`)
+- `github` - Repository management (requires `GITHUB_TOKEN`)
+- `vercel` - Deployment and project management (requires `VERCEL_API_TOKEN`)
+
+**Setup:**
+
+1. Add required environment variables to your shell profile (`~/.zshrc` or `~/.bashrc`):
+
 ```bash
-# Add to ~/.zshrc
-export V0_API_KEY=your_v0_api_key_here
-export GITHUB_TOKEN=your_github_token_here
-export VERCEL_API_TOKEN=your_vercel_api_token_here
-
-# Then reload
-source ~/.zshrc
+export V0_API_KEY=your_key_here
+export GITHUB_TOKEN=your_token_here
+export VERCEL_API_TOKEN=your_token_here
 ```
 
-**For bash:**
-```bash
-# Add to ~/.bashrc
-export V0_API_KEY=your_v0_api_key_here
-export GITHUB_TOKEN=your_github_token_here
-export VERCEL_API_TOKEN=your_vercel_api_token_here
+2. Reload shell: `source ~/.zshrc` (or `~/.bashrc`)
+3. Restart Cursor
 
-# Then reload
-source ~/.bashrc
-```
+**Get API keys:**
+- [v0.dev account settings](https://v0.dev) - V0_API_KEY
+- [GitHub Personal Access Tokens](https://github.com/settings/tokens) - GITHUB_TOKEN
+- [Vercel Account Tokens](https://vercel.com/account/tokens) - VERCEL_API_TOKEN
 
-**Important:** Restart Cursor after setting the environment variables for them to take effect.
+**Note:** All servers use `pnpm dlx` for command execution.
 
-**Getting API Keys:**
-- `V0_API_KEY`: Get from [v0.dev account settings](https://v0.dev)
-- `GITHUB_TOKEN`: Create at [GitHub Personal Access Tokens](https://github.com/settings/tokens)
-- `VERCEL_API_TOKEN`: Create at [Vercel Account Tokens](https://vercel.com/account/tokens)
+## Related Resources
 
-**Package Manager:** All MCP servers use `pnpm dlx` for command execution, consistent with the project's package manager choice (pnpm).
+**Project documentation:**
+- [MCP Servers Guide](../../apps/docs/content/docs/mcp-servers/index.mdx) - Detailed usage documentation
+- Project tech stack - See main repository README
 
-## Tech Stack
-
-This project uses:
-- **Node.js**: Runtime environment
-- **pnpm**: Package manager
-- **Fastify**: Backend framework
-- **ts-rest**: Contract-first API framework with strict type safety
-- **Next.js**: Frontend framework
-- **Vercel**: Deployment platform
-- **Zod**: Schema validation and type inference
-- **OpenAPI**: API documentation (generated from ts-rest contracts)
-
-## Documentation
-
-- [MCP Servers Guide](/docs/mcp-servers) - See [MCP Servers Usage Guide](../../apps/docs/content/docs/mcp-servers/index.mdx) for detailed documentation
-- [Cursor Rules](https://cursor.com/docs/context/rules)
-- [MCP Documentation](https://cursor.com/docs/context/model-context-protocol)
+**External documentation:**
+- [Cursor Rules](https://cursor.com/docs/context/rules) - Official rules documentation
+- [MCP Protocol](https://cursor.com/docs/context/model-context-protocol) - MCP specification
