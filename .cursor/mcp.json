@@ -1,30 +1,41 @@
 {
   "mcpServers": {
-    "shadcn": {
+    "shadcnui-official": {
       "command": "pnpm",
-      "args": ["dlx", "@shadcn/mcp"]
+      "args": ["dlx", "shadcn@latest", "mcp"],
+      "description": "Official shadcn/ui components, variants, and definitions"
     },
-    "v0": {
+    "shadcnui-jpisnice-react": {
       "command": "pnpm",
-      "args": ["dlx", "@modelcontextprotocol/server-v0"],
+      "args": ["dlx", "@jpisnice/shadcn-ui-mcp-server"],
       "env": {
-        "V0_API_KEY": "${V0_API_KEY}"
-      }
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "shadcn/ui v4 components, blocks, and demos for React"
+    },
+    "shadcnui-jpisnice-react-native": {
+      "command": "pnpm",
+      "args": ["dlx", "@jpisnice/shadcn-ui-mcp-server", "--framework", "react-native"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "shadcn/ui v4 components, blocks, and demos for react native"
     },
     "github": {
       "command": "pnpm",
       "args": ["dlx", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
-      }
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub repository operations and issue management"
     },
-    "vercel-docs": {
+    "basilic-docs": {
       "url": "https://mcp.vercel.com/gaboesquivel/basilic-docs",
-      "description": "Vercel MCP for @repo/docs"
+      "description": "Basilic project documentation context"
     },
-    "vercel-api": {
+    "basilic-api": {
       "url": "https://mcp.vercel.com/gaboesquivel/basilic-api",
-      "description": "Vercel MCP for @repo/api"
+      "description": "Basilic API package context"
     }
   }
 }

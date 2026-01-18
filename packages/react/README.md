@@ -32,4 +32,4 @@ function MyComponent() {
 - ✅ Built on `@repo/core` generated client
 - ✅ Type-safe from OpenAPI specs
 
-See [API Development](https://basilic-docs.vercel.app/docs/api-development#client-consumption) for full integration guide.
+See [API Development](https://basilic-docs.vercel.app/docs/core-concepts/api-architecture#client-consumption) for full integration guide.

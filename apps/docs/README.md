@@ -43,14 +43,14 @@ Live site: [https://basilic-docs.vercel.app/docs](https://basilic-docs.vercel.ap
 
 ### Key Guides
 
-- **[Security Guide](https://basilic-docs.vercel.app/docs/guides/security)** - Security baseline, secret scanning, and vulnerability management
-- **[Deployment Guide](https://basilic-docs.vercel.app/docs/guides/deployment)** - Deployment options and strategies for all applications
-- **[Publishing Guide](https://basilic-docs.vercel.app/docs/guides/publishing)** - Publishing packages to npm using dual-mode exports
-- **[Environment Setup](https://basilic-docs.vercel.app/docs/guides/environment-setup)** - Configuring environment variables
+- **[Security Guide](@apps/docs/content/docs/security/index.mdx)** - Security baseline, secret scanning, and vulnerability management
+- **[Deployment Guide](@apps/docs/content/docs/deployment/index.mdx)** - Deployment options and strategies for all applications
+- **[Publishing Guide](@apps/docs/content/docs/deployment/publishing.mdx)** - Publishing packages to npm using dual-mode exports
+- **[Environment Setup](@apps/docs/content/docs/getting-started/installation.mdx)** - Configuring environment variables
 
 ### Architecture
 
-- **[Architecture Overview](https://basilic-docs.vercel.app/docs/architecture)** - System architecture and design patterns
-- **[Backend Stack](https://basilic-docs.vercel.app/docs/architecture/backend-stack)** - Fastify, OpenAPI, and API architecture
-- **[Frontend Stack](https://basilic-docs.vercel.app/docs/architecture/frontend-stack)** - Next.js, React, and UI components
-- **[Portability Strategy](https://basilic-docs.vercel.app/docs/portability)** - Zero vendor lock-in architecture
+- **[Architecture Overview](@apps/docs/content/docs/architecture/index.mdx)** - System architecture and design patterns
+- **[Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx)** - Fastify, OpenAPI, and API architecture
+- **[Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx)** - Next.js, React, and UI components
+- **[Portability Strategy](@apps/docs/content/docs/architecture/portability.mdx)** - Zero vendor lock-in architecture

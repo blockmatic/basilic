@@ -128,8 +128,17 @@ We will use **Shadcn/ui with Tailwind CSS** as our design system foundation.
 - Consider contributing improvements back to Shadcn/ui when appropriate
 - Monitor Shadcn/ui updates for new components and improvements
 
+### MCP Server Integration
+
+MCP servers complement the v0 workflow for component discovery and installation:
+
+- **shadcnui-official**: Provides canonical component reference for variants, props, and single primitives
+- **shadcnui-jpisnice-react**: Provides React blocks and templates for complete page implementations
+- MCP servers work alongside v0, enabling both AI-generated prototypes and direct component discovery
+- **Note:** `shadcnui-jpisnice-react-native` exists for future React Native support but is not included in the current React workflow
+
 ## Related Documentation
 
 - [Frontend Stack](/docs/architecture/frontend-stack) - Next.js and Shadcn/ui component architecture
 - [ADR 003: Frontend Framework](/docs/adrs/003-frontend-framework) - Next.js framework selection decision
-- [Add UI Component](/docs/guides/add-component) - Guide for adding components to the shared UI library
+- [Packages Reference](/docs/core-concepts/packages) - UI components reference

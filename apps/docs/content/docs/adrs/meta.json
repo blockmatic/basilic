@@ -1,12 +1,15 @@
 {
-  "index": "Architecture Decisions",
-  "001-monorepo-vs-standalone": "Monorepo vs Standalone",
-  "005-package-manager": "Package Manager",
-  "002-backend-framework": "Backend API Framework & Runtime",
-  "008-database": "Database Platform & Strategy",
-  "007-backend-orm": "Backend ORM Selection",
-  "009-api-architecture": "API Architecture & Client Generation",
-  "003-frontend-framework": "Frontend Apps Framework",
-  "004-design-system": "Design System",
-  "006-linters": "Linters & Formatters"
+  "title": "Architecture Decisions",
+  "pages": [
+    "index",
+    "001-monorepo-vs-standalone",
+    "002-backend-framework",
+    "003-frontend-framework",
+    "004-design-system",
+    "005-package-manager",
+    "006-linters",
+    "007-backend-orm",
+    "008-database",
+    "009-api-architecture"
+  ]
 }

@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Frontend Testing Rules
 
-See [Base Testing Rules](../base/testing.mdc) for common testing philosophy, coverage requirements, and mocking guidelines.
+See [Base Testing Rules](@.cursor/rules/base/testing.mdc) for common testing philosophy, coverage requirements, and mocking guidelines.
 
 ## Test Structure
 
@@ -50,4 +50,4 @@ await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
 ## Related Documentation
 
-- [Frontend Testing Guide](/docs/guides/frontend-testing) - Complete testing guide with detailed examples, Vitest configuration, and environment setup
+- [Frontend Testing Guide](@apps/docs/content/docs/testing/frontend-testing.mdx) - Complete testing guide with detailed examples, Vitest configuration, and environment setup

@@ -64,6 +64,8 @@ export const config = [
       curly: 'off',
       // Prefer interfaces over types for object definitions
       '@typescript-eslint/consistent-type-definitions': 'off',
+      // File size limit - helps agents maintain manageable file sizes
+      'max-lines': ['error', { max: 300 }],
       // Disable unsafe rules - we use Zod-first validation strategy instead
       // This aligns with ts-reset (JSON.parse/response.json return unknown) which requires runtime validation
       // See config/eslint/README.md for details and .cursor/rules/base/typescript.mdc for ts-reset documentation
@@ -77,6 +79,13 @@ export const config = [
   {
     plugins: {
       onlyWarn,
+    },
+  },
+  // Disable max-lines rule for test files - they legitimately need more lines for setup, mocks, and comprehensive coverage
+  {
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/*.e2e-spec.{ts,tsx}'],
+    rules: {
+      'max-lines': 'off',
     },
   },
   {

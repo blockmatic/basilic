@@ -1,0 +1,173 @@
+---
+description: Security best practices and patterns
+glob: "**/*.{tsx,ts}"
+alwaysApply: true
+---
+
+# Security Rules
+
+## Core Security Principles
+
+### Security-First Mindset
+- **Never trust client input**: Always validate and sanitize all user input server-side
+- **Defense in depth**: Implement multiple layers of security controls
+- **Least privilege**: Grant minimum necessary permissions and access
+- **Security by default**: Make secure options the default, require explicit opt-in for less secure alternatives
+- **Fail securely**: When security checks fail, deny access rather than allowing it
+
+## Input Validation
+
+### Server-Side Validation
+- **Always validate server-side**: Never trust client-side validation alone - it can be bypassed
+- **Validate all inputs**: Validate all user inputs, including form data, query parameters, headers, and file uploads
+- **Use Zod schemas**: Use Zod schemas for runtime validation at API boundaries (see [TypeScript Rules](@.cursor/rules/base/typescript.mdc))
+- **Sanitize output**: Sanitize data before rendering to prevent XSS attacks
+- **Type coercion**: Be explicit about type coercion and validate types match expectations
+
+### Validation Patterns
+```typescript
+// ✅ Good: Server-side validation with Zod
+import { z } from 'zod'
+
+const userSchema = z.object({
+  email: z.string().email(),
+  age: z.number().int().min(0).max(120),
+})
+
+export async function createUser(formData: FormData) {
+  const rawData = Object.fromEntries(formData)
+  const validated = userSchema.parse(rawData) // Throws on invalid
+  // Use validated data
+}
+```
+
+## Secret Management
+
+### Never Expose Secrets
+- **No secrets in client code**: Never expose API keys, auth tokens, or secrets in client-side code
+- **Environment variables**: Use environment variables for secrets, never hardcode
+- **Server-only access**: Access secrets only in Server Components, API routes, or server-side code
+- **No secrets in logs**: Never log secrets, API keys, passwords, or tokens (use logger redaction - see [Logging Rules](@.cursor/rules/base/logging.mdc))
+- **No secrets in URLs**: Never include secrets in URLs, query parameters, or client-visible locations
+
+### Environment Variable Patterns
+```typescript
+// ✅ Good: Server-side only
+const apiKey = process.env.API_KEY // Only in server code
+
+// ❌ Bad: Client-side exposure
+const apiKey = process.env.NEXT_PUBLIC_API_KEY // Never for secrets
+```
+
+## Authentication & Authorization
+
+### Session Management
+- **httpOnly cookies**: Use httpOnly cookies for session tokens to prevent XSS access
+- **Secure cookies**: Use secure flag for cookies in production (HTTPS only)
+- **SameSite cookies**: Use SameSite cookie attribute to prevent CSRF attacks
+- **Session expiration**: Implement proper session expiration and refresh mechanisms
+- **Session revocation**: Support session revocation for security incidents
+
+### Password Security
+- **Strong passwords**: Enforce strong password requirements (length, complexity)
+- **Password hashing**: Use secure password hashing (bcrypt, argon2) - never store plaintext
+- **Breach checking**: Implement breach checking (HaveIBeenPwned) for password validation
+- **Password reset**: Use secure password reset flows with time-limited tokens
+- **Rate limiting**: Rate limit password attempts to prevent brute force attacks
+
+### Authorization
+- **Role-based access**: Implement role-based access control (RBAC) for authorization
+- **Permission checks**: Check permissions server-side before allowing actions
+- **Resource ownership**: Verify resource ownership before allowing modifications
+- **Multi-tenant isolation**: Ensure proper data isolation in multi-tenant applications
+
+## Rate Limiting
+
+### Sensitive Endpoints
+- **Auth endpoints**: Enable rate limiting on authentication endpoints (login, signup, password reset)
+- **Mutation endpoints**: Rate limit mutation endpoints (create, update, delete) to prevent abuse
+- **API endpoints**: Implement rate limiting on public API endpoints
+- **Exponential backoff**: Use exponential backoff for rate limit responses
+- **User identification**: Identify users by IP, session, or user ID for rate limiting
+
+### Rate Limiting Patterns
+```typescript
+// ✅ Good: Rate limiting in Fastify API using @fastify/rate-limit plugin
+// Configured globally in apps/api/src/plugins/rate-limit.ts
+// For route-specific rate limiting, register the plugin on specific routes:
+import rateLimit from '@fastify/rate-limit'
+import type { FastifyPluginAsync } from 'fastify'
+
+const loginRateLimit: FastifyPluginAsync = async fastify => {
+  await fastify.register(rateLimit, {
+    max: 5, // 5 requests
+    timeWindow: 60 * 1000, // per 60 seconds
+    keyGenerator: request => {
+      const forwarded = request.headers['x-forwarded-for']
+      if (forwarded) {
+        const ips = Array.isArray(forwarded) ? forwarded[0] : forwarded
+        return ips.split(',')[0].trim()
+      }
+      return request.ip
+    },
+  })
+}
+
+// Apply to specific route
+fastify.register(loginRateLimit, { prefix: '/api/auth/login' })
+```
+
+## Security Auditing
+
+### Logging Security Events
+- **Auth events**: Log authentication attempts (success and failure) for security auditing
+- **Permission failures**: Log authorization failures and permission denials
+- **Sensitive operations**: Log sensitive operations (password changes, permission updates, data exports)
+- **Security incidents**: Log security-relevant events (suspicious activity, rate limit hits)
+- **Audit trail**: Maintain audit trails for compliance and security investigations
+
+### Logging Patterns
+```typescript
+// ✅ Good: Security event logging
+import { logger } from '@repo/utils/logger'
+
+logger.info({
+  event: 'auth_failure',
+  userId: user?.id,
+  ip: request.ip,
+  reason: 'invalid_password',
+}, 'Authentication failed')
+```
+
+## API Security
+
+### CORS Configuration
+- **Restrictive origins**: Configure CORS to allow only trusted origins
+- **Credentials handling**: Be careful with credentials in CORS configuration
+- **Preflight requests**: Handle CORS preflight requests correctly
+
+### CSRF Protection
+- **CSRF tokens**: Use CSRF tokens for state-changing operations
+- **SameSite cookies**: Use SameSite cookie attribute as additional CSRF protection
+- **Origin checking**: Verify request origin matches expected origin
+
+### SQL Injection Prevention
+- **Parameterized queries**: Always use parameterized queries or ORM methods (never string concatenation)
+- **ORM usage**: Use Drizzle ORM or similar with proper parameterization
+- **Input sanitization**: Sanitize inputs before database operations
+
+## File Upload Security
+
+### Upload Validation
+- **File type validation**: Validate file types server-side (don't trust client-provided MIME types)
+- **File size limits**: Enforce file size limits to prevent DoS attacks
+- **Virus scanning**: Scan uploaded files for malware when possible
+- **Secure storage**: Store uploaded files outside web root or with proper access controls
+- **Filename sanitization**: Sanitize filenames to prevent directory traversal attacks
+
+## Related Rules
+
+- [Error Handling Rules](@.cursor/rules/base/error-handling.mdc) - Error handling patterns
+- [Logging Rules](@.cursor/rules/base/logging.mdc) - Logging patterns with secret redaction
+- [TypeScript Rules](@.cursor/rules/base/typescript.mdc) - Zod validation patterns
+- [Environment Rules](@.cursor/rules/base/environment.mdc) - Environment variable management

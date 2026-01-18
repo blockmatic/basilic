@@ -50,5 +50,5 @@ alwaysApply: false
 
 ## Related Rules
 
-- [Backend Testing Rules](../backend/testing.mdc) - Fastify-specific testing patterns
-- [Frontend Testing Rules](../frontend/testing.mdc) - React/Next.js-specific testing patterns
+- [Backend Testing Rules](@.cursor/rules/backend/testing.mdc) - Fastify-specific testing patterns
+- [Frontend Testing Rules](@.cursor/rules/frontend/testing.mdc) - React/Next.js-specific testing patterns

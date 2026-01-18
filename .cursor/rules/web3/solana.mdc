@@ -1,6 +1,6 @@
 ---
 description: Solana address validation patterns and best practices
-glob: "*.tsx, *.ts"
+glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
 # Solana Rules
@@ -76,4 +76,4 @@ export async function sendTransaction({
 - Test tokens use PDA-based mint authority for open minting (faucet functionality)
 
 ## Related Rules
-- [Multichain Rules](./multichain.mdc) - Multichain address validation coordination
+- [Multichain Rules](@.cursor/rules/web3/multichain.mdc) - Multichain address validation coordination

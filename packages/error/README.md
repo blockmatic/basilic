@@ -382,9 +382,9 @@ import { getErrorMessage, captureError } from '@repo/error/nextjs'
 
 ## See Also
 
-- [Error Handling Guide](https://basilic-docs.vercel.app/docs/guides/error-handling) - Complete guide with examples and best practices
-- [Logging Guide](https://basilic-docs.vercel.app/docs/guides/logging) - Logging patterns with @repo/utils/logger
-- [Security Guide](https://basilic-docs.vercel.app/docs/guides/security) - Security best practices and PII handling
+- [Error Handling Guide](@apps/docs/content/docs/architecture/error-handling.mdx) - Complete guide with examples and best practices
+- [Logging Guide](@apps/docs/content/docs/architecture/logging.mdx) - Logging patterns with @repo/utils/logger
+- [Security Guide](@apps/docs/content/docs/security/index.mdx) - Security best practices and PII handling
 
 ## License
 

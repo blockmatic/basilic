@@ -1,15 +1,14 @@
 {
-  "index": "Overview",
-  "--- Structure": "",
-  "monorepo": "Monorepo Structure",
-  "package-conventions": "Package Conventions",
-  "packages": "Packages Reference",
-  "esm-strategy": "ESM Strategy",
-  "--- Backend": "",
-  "backend-stack": "Backend Stack",
-  "--- Frontend": "",
-  "frontend-stack": "Frontend Stack",
-  "--- Cross-Cutting": "",
-  "dev-tooling": "Development Tooling",
-  "portability": "Portability Strategy"
+  "title": "Architecture",
+  "pages": [
+    "index",
+    "backend-stack",
+    "frontend-stack",
+    "esm-strategy",
+    "package-conventions",
+    "portability",
+    "dev-tooling",
+    "error-handling",
+    "logging"
+  ]
 }

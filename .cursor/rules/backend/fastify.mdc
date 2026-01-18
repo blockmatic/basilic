@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Fastify Rules
 
-See [Backend Stack](/docs/architecture/backend-stack) for why Fastify was chosen and architecture details.
+See [Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx) for why Fastify was chosen and architecture details.
 
 ## Module Structure
 
@@ -104,13 +104,13 @@ export async function walletRoutes(fastify: FastifyInstance) {
 
 - **@repo/utils**: Always use instead of custom implementations
   - Async: `fetchWithTimeout` (external APIs - replaces `fetch`), `delay` (replaces `setTimeout`)
-- **@repo/error**: Error handling utilities with Sentry integration. See [Error Handling Rules](../base/error-handling.mdc)
-- **@repo/utils/logger**: Logging utilities. See [Logging Rules](../base/logging.mdc)
+- **@repo/error**: Error handling utilities with Sentry integration. See [Error Handling Rules](@.cursor/rules/base/error-handling.mdc)
+- **@repo/utils/logger**: Logging utilities. See [Logging Rules](@.cursor/rules/base/logging.mdc)
 - **lodash-es**: Use for array/object operations (`isEmpty`, `uniq`, `groupBy`, `merge`), type checking (`isPlainObject`, `isString`, `isArray`). Use per-function imports: `import isEmpty from 'lodash-es/isEmpty'`
 
 ## Error Handling
 
-Use `@repo/error` for all error handling. See [Error Handling Rules](../base/error-handling.mdc) for complete patterns.
+Use `@repo/error` for all error handling. See [Error Handling Rules](@.cursor/rules/base/error-handling.mdc) for complete patterns.
 
 **Error Handler Plugin**:
 
@@ -143,18 +143,18 @@ Routes can throw errors - the global handler catches and formats them automatica
 
 ## Environment Variables
 
-Fastify apps use `validateEnvOrThrow` from `@repo/lib` for environment validation. See [Environment Rules](../base/environment.mdc) for pattern.
+Fastify apps use `validateEnvOrThrow` from `@repo/lib` for environment validation. See [Environment Rules](@.cursor/rules/base/environment.mdc) for pattern.
 
 ## OpenAPI Generation
 
-See [Backend Stack](/docs/architecture/backend-stack#openapi-generation) for OpenAPI generation details.
+See [Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx#openapi-generation) for OpenAPI generation details.
 
 ## Testing
 
-Use Fastify's `inject()` method for blackbox testing of routes. See [Backend Testing Rules](./testing.mdc) for testing patterns.
+Use Fastify's `inject()` method for blackbox testing of routes. See [Backend Testing Rules](@.cursor/rules/backend/testing.mdc) for testing patterns.
 
 ## Related Documentation
 
-- [Backend Stack](/docs/architecture/backend-stack) - Why Fastify, app setup, OpenAPI generation
-- [Environment Rules](../base/environment.mdc) - Environment variable patterns
-- [Error Handling Rules](../base/error-handling.mdc) - Error handling patterns
+- [Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx) - Why Fastify, app setup, OpenAPI generation
+- [Environment Rules](@.cursor/rules/base/environment.mdc) - Environment variable patterns
+- [Error Handling Rules](@.cursor/rules/base/error-handling.mdc) - Error handling patterns

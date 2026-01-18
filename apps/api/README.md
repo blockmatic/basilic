@@ -34,7 +34,7 @@ Tests run with Vitest in ESM mode against the TypeScript source.
 
 ## Environment Variables
 
-The API uses environment variables for configuration. See [Environment Setup Guide](https://basilic-docs.vercel.app/docs/guides/environment-setup) for complete details.
+The API uses environment variables for configuration. See [Environment Setup Guide](@apps/docs/content/docs/getting-started/installation.mdx) for complete details.
 The server loads `apps/api/.env` using Node.js native `--env-file` flag (Node.js 20.6+).
 
 ### Required
@@ -83,4 +83,4 @@ REST API architecture using OpenAPI:
 
 Fastify routes are the source of truth. The OpenAPI specification is automatically generated from route definitions, ensuring consistency between implementation and documentation. This enables type-safe client generation across the entire stack from API to client.
 
-See [Backend Stack](https://basilic-docs.vercel.app/docs/architecture/backend-stack) and [API Development](https://basilic-docs.vercel.app/docs/api-development) for details.
+See [Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx) and [API Development](@apps/docs/content/docs/core-concepts/api-architecture.mdx) for details.

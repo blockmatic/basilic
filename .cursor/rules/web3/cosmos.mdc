@@ -1,6 +1,6 @@
 ---
 description: Cosmos address validation patterns and best practices
-glob: "*.tsx, *.ts"
+glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
 # Cosmos Rules
@@ -57,4 +57,4 @@ export async function sendTransaction({
 - Handle different Bech32 variants (Bech32, Bech32m)
 
 ## Related Rules
-- [Multichain Rules](./multichain.mdc) - Multichain address validation coordination
+- [Multichain Rules](@.cursor/rules/web3/multichain.mdc) - Multichain address validation coordination

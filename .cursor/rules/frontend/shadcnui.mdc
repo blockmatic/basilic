@@ -14,6 +14,49 @@ alwaysApply: false
 - Application-specific components go in app's `components` folder
 - Hooks and utils must be collocated with components (same directory)
 
+## MCP Server Usage
+
+Two MCP servers are available for shadcn/ui component discovery and installation:
+
+### shadcnui-official
+**Use for:** Canonical component definitions, variants, and single primitives
+- Component variants and props reference
+- Single component installation (Button, Dialog, Form, etc.)
+- Official component patterns and best practices
+- Source of truth when conflicts arise
+
+### shadcnui-jpisnice-react
+**Use for:** Full blocks, demos, and page templates for React
+- Complete page templates (auth screens, dashboards, calendars)
+- Full component blocks and demos
+- React-specific implementations
+- Complex UI patterns and compositions
+
+**Note:** `shadcnui-jpisnice-react-native` exists for future React Native support but is not included in the current React workflow.
+
+### Decision Tree
+- **Single component or variant**: Use `shadcnui-official` first
+- **Full page/block template**: Use `shadcnui-jpisnice-react` first, then cross-check with `shadcnui-official` for component patterns
+- **Conflict resolution**: `shadcnui-official` is authoritative when conflicts arise
+- **Optimization**: Only call MCP when unsure about implementation or encountering errors; don't call when confident about the approach
+
+## Planning with MCP Servers
+
+When planning new UI features:
+
+1. **Component composition**: Use `shadcnui-official` to understand component variants and composition patterns
+2. **Full UX/page templates**: Use `shadcnui-jpisnice-react` to discover complete page templates and blocks
+3. **Workflow for new screens**: Start with a block from `shadcnui-jpisnice-react`, then validate component patterns with `shadcnui-official`
+
+## Implementation with MCP Servers
+
+When implementing UI components:
+
+1. **Single component**: Query `shadcnui-official` first for canonical implementation
+2. **Full block/page**: Query `shadcnui-jpisnice-react` first for complete templates, then cross-check individual components with `shadcnui-official`
+3. **Always align**: Ensure all implementations follow monorepo standards (install in `@repo/ui`, use correct import patterns, follow TypeScript rules)
+4. **Call optimization**: Only call MCP servers when unsure about implementation details or encountering errors; rely on existing patterns when confident
+
 ## Installation Pattern
 Components installed in `packages/ui/src/components/`. Each app's `components.json` points to:
 - `"utils": "@repo/ui/lib/utils"`
@@ -54,4 +97,4 @@ const buttonVariants = cva(
 - Hooks and utils collocated with components
 
 ## Mobile-First Design
-All components follow mobile-first responsive design. See [Mobile-First Rules](./mobile-first.mdc) for guidelines.
+All components follow mobile-first responsive design. See [Mobile-First Rules](@.cursor/rules/frontend/mobile-first.mdc) for guidelines.

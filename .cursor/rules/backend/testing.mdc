@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Backend Testing Rules
 
-See [Base Testing Rules](../base/testing.mdc) for common testing philosophy, coverage requirements, and mocking guidelines.
+See [Base Testing Rules](@.cursor/rules/base/testing.mdc) for common testing philosophy, coverage requirements, and mocking guidelines.
 
 ## Test Structure
 ### E2E Tests (Blackbox API Testing)

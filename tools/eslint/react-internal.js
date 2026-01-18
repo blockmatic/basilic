@@ -84,6 +84,9 @@ export const config = [
       'react/prop-types': 'off',
       // Prefer ternaries over && in JSX
       'react/jsx-no-leaked-render': 'off',
+      // Enforce one component per file - helps agents maintain component separation
+      // Allow stateless (functional) components in the same file for utility/helper components
+      'react/no-multi-comp': ['error', { ignoreStateless: true }],
       // Enforce named exports for React components
       'import/no-default-export': 'error',
     },
@@ -93,6 +96,13 @@ export const config = [
     files: ['**/*.config.{js,mjs,ts}', '**/eslint.config.{js,mjs}', '**/postcss.config.{js,mjs}'],
     rules: {
       'import/no-default-export': 'off',
+    },
+  },
+  // Disable max-lines rule for UI components - shadcn/ui components can legitimately be longer
+  {
+    files: ['src/components/**/*.{ts,tsx}'],
+    rules: {
+      'max-lines': 'off',
     },
   },
 ]

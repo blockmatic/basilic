@@ -10,7 +10,13 @@ alwaysApply: false
 - Function components only (never class components)
 - No explicit return types (inferred automatically)
 - Props always use object destructuring: `function Component({ title }: { title: string })`
-- RORO pattern applies to regular functions only, not React components (see [TypeScript Rules](../base/typescript.mdc))
+- RORO pattern applies to regular functions only, not React components (see [TypeScript Rules](@.cursor/rules/base/typescript.mdc))
+
+## Component Organization
+- **One component per file** - The `react/no-multi-comp` ESLint rule enforces this (with `ignoreStateless: true`)
+- Each component with state must be in its own file for better maintainability, testability, and reusability (class components are not used)
+- **Stateless (functional) components are allowed** - Multiple stateless components can be in the same file, which is useful for small utility/helper components that are tightly coupled to the main component
+- If a component is truly tiny and only used once, consider inlining it directly in JSX rather than creating a separate component
 
 ## State Management Decision Tree
 
@@ -161,7 +167,7 @@ async function handleSubmit() {
 **Don't use for**: Event handlers (use try/catch with `captureError`), async code (use try/catch), SSR errors
 
 ## Related Rules
-- [React Hooks Rules](./react-hooks.mdc) - Data fetching patterns
-- [Frontend Stack](./stack.mdc) - Library usage patterns
-- [Next.js Rules](./nextjs.mdc) - Next.js-specific patterns
-- [TypeScript Rules](../base/typescript.mdc) - Code style guidelines
+- [React Hooks Rules](@.cursor/rules/frontend/react-hooks.mdc) - Data fetching patterns
+- [Frontend Stack](@.cursor/rules/frontend/stack.mdc) - Library usage patterns
+- [Next.js Rules](@.cursor/rules/frontend/nextjs.mdc) - Next.js-specific patterns
+- [TypeScript Rules](@.cursor/rules/base/typescript.mdc) - Code style guidelines

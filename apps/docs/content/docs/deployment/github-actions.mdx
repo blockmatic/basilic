@@ -1,0 +1,153 @@
+---
+title: "GitHub Actions"
+description: "Continuous integration workflows for automated testing, linting, and security checks."
+---
+
+GitHub Actions workflows automate quality checks on every pull request and push to main.
+
+## Workflows
+
+### CI Workflow
+
+Tests, type checking, and linting on every PR:
+
+```yaml
+# .github/workflows/ci.yml (simplified)
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install
+      - run: pnpm lint
+      - run: pnpm checktypes
+      - run: pnpm test
+```
+
+### Security Workflow
+
+Security scans on every PR:
+
+```yaml
+# .github/workflows/security.yml (simplified)
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+      - name: OSV Scanner
+        uses: google/osv-scanner-action/osv-scanner-action@v1.8.5
+```
+
+### Package Tests
+
+Tests for specific packages:
+
+```yaml
+# .github/workflows/packages-test.yml (simplified)
+name: Packages Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+      - run: pnpm install
+      - run: pnpm --filter @repo/error test
+      - run: pnpm --filter @repo/utils test
+```
+
+## CodeRabbit Integration
+
+CodeRabbit automatically reviews pull requests using AI. Configuration is in `.coderabbit.yaml`:
+
+```yaml
+# .coderabbit.yaml (simplified)
+language: en-US
+reviews:
+  auto_review: true
+  high_level_summary: true
+```
+
+See the complete `.coderabbit.yaml` in the repository root for full configuration.
+
+## Pre-commit Hooks
+
+Local quality checks run before each commit:
+
+```json
+// package.json (simplified)
+{
+  "simple-git-hooks": {
+    "pre-commit": "pnpm run hooks:pre-commit"
+  }
+}
+```
+
+Pre-commit hooks check:
+1. **File blocking** - Prevents committing sensitive files (`.env`, `*.pem`, etc.)
+2. **Secret scanning** - Scans staged files with gitleaks
+3. **Formatting** - Runs Biome formatter on staged files
+
+## Best Practices
+
+1. **Run checks locally** - Fix issues before pushing
+   ```bash
+   pnpm lint
+   pnpm checktypes
+   pnpm test
+   ```
+
+2. **Review CodeRabbit suggestions** - Learn from AI feedback and iterate
+
+3. **Keep workflows fast** - Use caching and parallel jobs
+
+4. **Test before merge** - Ensure all checks pass before merging
+
+5. **Monitor CI failures** - Fix broken workflows immediately
+
+## Workflow Files
+
+All workflows are in `.github/workflows/`:
+- `api-test.yml` - API tests
+- `lint.yml` - Linting checks
+- `packages-test.yml` - Package tests
+- `security.yml` - Security scans
+- `web-test.yml` - Web app tests
+
+## Related Documentation
+
+- [Security](/docs/security) - Security scanning and secret detection
+- [Testing](/docs/testing) - Testing strategies and patterns
+- [Deployment Overview](/docs/deployment) - GitHub Flow and deployment platforms

@@ -1,0 +1,276 @@
+---
+title: "Frontend Testing"
+description: "Complete guide for testing React and Next.js applications with real APIs."
+---
+
+Complete guide for testing frontend applications with real APIs, TanStack Query, and Testing Library.
+
+## Testing Philosophy
+
+**CRITICAL**: All tests use real APIs with real API keys. NO MOCKS allowed for core functionality.
+
+- Component tests use real API calls
+- Integration tests use real endpoints
+- E2E tests use real infrastructure
+- All API calls use actual credentials from environment variables
+
+**Exception**: UI-only tests (rendering, styling) may mock API calls for performance, but integration tests must use real APIs.
+
+## Test Structure
+
+### Component Tests
+
+- **Location**: `**/*.spec.tsx` or `**/*.test.tsx`
+- **Pattern**: Test component rendering and user interactions
+- **Real APIs**: Use real API calls via TanStack Query hooks
+- **Mocking**: Only mock UI-specific things (window, localStorage), not APIs
+
+**Example Structure:**
+```typescript
+import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { WalletList } from './wallet-list'
+
+describe('WalletList', () => {
+  let queryClient: QueryClient
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+  })
+
+  it('should fetch and display wallets from real API', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <WalletList />
+      </QueryClientProvider>
+    )
+
+    // Wait for real API call to complete
+    const wallets = await screen.findAllByRole('listitem')
+    expect(wallets.length).toBeGreaterThan(0)
+  })
+})
+```
+
+### Integration Tests
+
+- **Location**: `**/*.integration.test.tsx`
+- **Pattern**: Test component integration with real APIs
+- **Real APIs**: All API calls use real endpoints
+- **Setup**: Use real authentication tokens
+
+**Example Structure:**
+```typescript
+import { render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { getTestAuthToken } from '@/test/utils/auth'
+
+describe('WalletIntegration', () => {
+  let authToken: string
+  let queryClient: QueryClient
+
+  beforeAll(async () => {
+    authToken = await getTestAuthToken()
+  })
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+  })
+
+  it('should create wallet via real API', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <CreateWalletForm authToken={authToken} />
+      </QueryClientProvider>
+    )
+
+    // Interact with form
+    const chainInput = screen.getByLabelText('Chain ID')
+    fireEvent.change(chainInput, { target: { value: '421614' } })
+    
+    const submitButton = screen.getByRole('button', { name: 'Create Wallet' })
+    fireEvent.click(submitButton)
+
+    // Wait for real API call
+    await waitFor(() => {
+      expect(screen.getByText(/wallet created/i)).toBeInTheDocument()
+    })
+  })
+})
+```
+
+### E2E Tests
+
+- **Location**: `e2e/**/*.spec.ts`
+- **Pattern**: Test full user flows with real infrastructure
+- **Real APIs**: All tests use real APIs and infrastructure
+- **Tools**: Use Playwright or Cypress
+
+**Example Structure:**
+```typescript
+import { test, expect } from '@playwright/test'
+
+test.describe('Wallet E2E', () => {
+  test('should create wallet and view balance', async ({ page }) => {
+    // Navigate to app (uses real API)
+    await page.goto('http://localhost:3000')
+    
+    // Login (uses real Dynamic auth)
+    await page.click('text=Login')
+    await page.fill('[name=email]', 'test@example.com')
+    await page.click('text=Sign In')
+    
+    // Create wallet (uses real API)
+    await page.click('text=Create Wallet')
+    await page.selectOption('[name=chainId]', '421614')
+    await page.click('text=Create')
+    
+    // Verify wallet created (real API response)
+    await expect(page.locator('text=Wallet created')).toBeVisible()
+  })
+})
+```
+
+## Test Coverage Requirements
+
+### Required Coverage
+
+- **Component Rendering**: Test component renders correctly
+- **User Interactions**: Test clicks, form submissions, navigation
+- **API Integration**: Test real API calls and responses
+- **Error Handling**: Test error states and error messages
+- **Loading States**: Test loading spinners and states
+- **Data Fetching**: Test TanStack Query hooks with real APIs
+
+### Test Files Organization
+
+- `**/*.spec.tsx` - Component unit tests
+- `**/*.integration.test.tsx` - Integration tests with real APIs
+- `e2e/**/*.spec.ts` - E2E tests
+
+## TanStack Query Testing
+
+### Testing Query Hooks
+
+Always test with real API calls:
+
+```typescript
+import { renderHook, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useWallets } from './use-wallets'
+
+describe('useWallets', () => {
+  let queryClient: QueryClient
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+  })
+
+  it('should fetch wallets from real API', async () => {
+    const wrapper = ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    )
+
+    const { result } = renderHook(() => useWallets(), { wrapper })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(result.current.data).toBeDefined()
+    expect(Array.isArray(result.current.data)).toBe(true)
+  })
+})
+```
+
+## Environment Setup
+
+### Required Environment Variables
+
+Tests require these environment variables:
+
+- `NEXT_PUBLIC_API_URL` - API base URL
+- `NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID` - Dynamic environment ID
+- `TEST_AUTH_TOKEN` (optional) - Pre-configured auth token
+
+### Test Utilities
+
+Create test utilities for common patterns:
+
+- `test/utils/auth.ts` - Auth token helpers
+- `test/utils/render.tsx` - Custom render with providers
+- `test/utils/mocks.ts` - Only for UI mocks, not API mocks
+
+## Running Tests
+
+```bash
+# Component tests
+pnpm test
+
+# Component tests in watch mode
+pnpm test:watch
+
+# Component tests with UI
+pnpm test:ui
+
+# Integration tests
+pnpm test:integration
+
+# E2E tests
+pnpm test:e2e
+
+# Test coverage
+pnpm test:cov
+```
+
+## Vitest Configuration
+
+Vitest is the test runner for all frontend tests:
+- **Config**: `vitest.config.ts` with jsdom environment
+- **Setup**: `vitest.setup.ts` imports `@testing-library/jest-dom`
+- **ESM-Native**: All configs use ESM syntax (`import`/`export`)
+- **Path Aliases**: Configured in Vitest config for `@repo/*` imports
+- **Globals**: `globals: true` enables global test APIs (describe, it, expect)
+
+## Best Practices
+
+1. **Use Real APIs**: Always prefer real API calls over mocks
+2. **Test User Flows**: Test complete user interactions, not just components
+3. **Wait for Async**: Use `waitFor` and `findBy` queries for async operations
+4. **Test Error States**: Include tests for error handling
+5. **Test Loading States**: Verify loading indicators work correctly
+6. **Isolation**: Each test should be independent
+7. **Clean Up**: Reset query client between tests
+8. **Documentation**: Add comments explaining what each test verifies
+
+## Mocking Guidelines
+
+### When to Mock
+
+- **UI-Only Tests**: Mock APIs for pure rendering tests (performance)
+- **Window APIs**: Mock `window`, `localStorage`, `sessionStorage`
+- **Timers**: Mock `setTimeout`, `setInterval` for time-dependent tests
+
+### When NOT to Mock
+
+- **API Calls**: Never mock API calls in integration tests
+- **TanStack Query**: Never mock TanStack Query hooks
+- **Authentication**: Never mock authentication in integration tests
+- **Data Fetching**: Never mock data fetching hooks
+
+## Future Work
+
+- Add visual regression testing
+- Add accessibility testing
+- Add performance testing
+- Add cross-browser E2E testing
+
+## Related Documentation
+
+- [Testing Overview](/docs/testing) - General testing patterns and best practices
+- [Frontend Stack](/docs/architecture/frontend-stack) - Next.js and React architecture

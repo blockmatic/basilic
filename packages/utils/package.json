@@ -6,6 +6,10 @@
   "description": "Shared utility functions and helpers",
   "license": "PROPRIETARY",
   "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.js"
+    },
     "./async": {
       "types": "./src/async/index.ts",
       "import": "./dist/async/index.js"

@@ -1,0 +1,11 @@
+{
+  "title": "Core Concepts",
+  "pages": [
+    "index",
+    "monorepo-structure",
+    "packages",
+    "api-architecture",
+    "openapi-generation",
+    "cursor-rules"
+  ]
+}

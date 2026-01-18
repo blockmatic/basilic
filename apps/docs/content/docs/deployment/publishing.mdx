@@ -1,0 +1,120 @@
+---
+title: "Publishing Packages"
+description: "How to publish monorepo packages to npm using the dual-mode export strategy."
+---
+
+This guide explains how to publish packages from the monorepo to npm using the dual-mode export strategy.
+
+## Overview
+
+Our packages use a **dual-mode export strategy**:
+
+- **Development mode**: Exports point to `src/` for fast local development without requiring builds
+- **Publishing mode**: Exports point to `dist/` for npm consumers who need built artifacts
+
+This allows:
+- ✅ Fast local development (no build step needed)
+- ✅ Next.js can transpile `src/` directly via `transpilePackages`
+- ✅ Clean `dist/`-only packages for npm publishing
+- ✅ Proper TypeScript types in both modes
+
+## How It Works
+
+The publishing process uses npm lifecycle hooks:
+
+### `prepack` Hook
+
+Runs before `pnpm pack` or `pnpm publish`:
+
+1. Builds the package (`pnpm build` runs first via the prepack script)
+2. Stores original `package.json` exports/main/types in `.package-originals.json`
+3. Switches `exports`, `main`, and `types` to point to `dist/`
+4. Sets `files: ["dist"]` to ensure only built files are included
+
+### `postpack` Hook
+
+Runs after packing:
+
+1. Reads the stored originals from `.package-originals.json`
+2. Restores the original `package.json` configuration
+3. Removes the temporary `.package-originals.json` file
+
+## Package Configuration
+
+Packages that use these scripts should have:
+
+**Development exports** (in `package.json`):
+```json
+{
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  }
+}
+```
+
+**Publishing exports** (automatically set by `prepare-publish.mjs`):
+```json
+{
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"]
+}
+```
+
+## Usage
+
+These scripts are automatically invoked via npm/pnpm lifecycle hooks in `package.json`:
+
+```json
+{
+  "scripts": {
+    "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
+    "postpack": "node ../../scripts/restore-publish.mjs"
+  }
+}
+```
+
+## Publishing a Package
+
+1. **Build and test** your package locally
+2. **Update version** in `package.json` (or use `pnpm version`)
+3. **Publish**:
+   ```bash
+   cd packages/your-package
+   pnpm publish
+   ```
+
+The `prepack` hook will automatically:
+- Build the package
+- Switch exports to `dist/`
+- Create the tarball
+
+The `postpack` hook will automatically:
+- Restore the original `package.json`
+- Clean up temporary files
+
+## Scripts Reference
+
+The publishing scripts (`prepare-publish.mjs` and `restore-publish.mjs`) are located in the `/scripts` directory.
+
+## Notes
+
+- The scripts use `process.cwd()` to find the package's `package.json` (they run from within each package directory)
+- If `.package-originals.json` doesn't exist, `restore-publish.mjs` exits gracefully (useful for first-time runs)
+- These scripts are only needed for packages that will be published to npm
+- Private workspace-only packages don't need these scripts
+
+## Related Documentation
+
+- [Package Conventions](/docs/architecture/package-conventions) - Package architecture and organization
+- [Monorepo Structure](/docs/core-concepts/monorepo-structure) - Turborepo organization and package dependencies
+- [Packages Reference](/docs/core-concepts/packages) - Complete reference for all shared packages

@@ -151,4 +151,5 @@ If a skill feels like documentation or a tutorial, it's probably doing too much.
 
 ## Related Resources
 
-- @.cursor/skills/skill-creator/SKILL.md - Complete skill creation workflow with init and packaging scripts
+- Skills should be self-contained and follow the patterns described above
+- See existing skills in `.cursor/skills/` for examples of well-structured skills

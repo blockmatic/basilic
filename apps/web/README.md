@@ -20,7 +20,7 @@ This app uses shared packages from this monorepo:
 - **`@repo/core`** - API client and types (for future API integration)
 - **`@repo/react`** - React Query hooks (for future API integration)
 
-See the [monorepo documentation](https://basilic-docs.vercel.app/docs/architecture/monorepo) for details on package architecture.
+See the [monorepo documentation](@apps/docs/content/docs/core-concepts/monorepo-structure.mdx) for details on package architecture.
 
 ## Getting Started
 
@@ -115,6 +115,6 @@ This app includes a `vercel.json` configuration file. If deploying to Vercel:
 
 ## Related Documentation
 
-- [Monorepo Structure](https://basilic-docs.vercel.app/docs/architecture/monorepo) - Package organization
-- [Frontend Stack](https://basilic-docs.vercel.app/docs/architecture/frontend-stack) - Next.js and Shadcn/ui
-- [Package Conventions](https://basilic-docs.vercel.app/docs/architecture/package-conventions) - Package architecture
+- [Monorepo Structure](@apps/docs/content/docs/core-concepts/monorepo-structure.mdx) - Package organization
+- [Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx) - Next.js and Shadcn/ui
+- [Package Conventions](@apps/docs/content/docs/architecture/package-conventions.mdx) - Package architecture

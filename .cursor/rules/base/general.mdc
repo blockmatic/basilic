@@ -4,16 +4,26 @@ glob: "*"
 alwaysApply: true
 ---
 
-# General Agent Rulesponp
+# General Agent Rules
 
 ## Agent Behavior
-- Provide concise executive summaries when finishing tasks
-- Suggest improvements proactively when spotting issues
-- Always use existing indexed docs on your settings for planning, debugging and coding
+
 - Always read readme files, documentation and relevant cursor skills and rules before planning and coding
+- Before acting, confirm you’ve read and understood the linked docs. Summarize assumptions in 3–5 bullets.
 - Always update readme files, documentation and relevant cursor rules after making code changes
 - The AI agent is allowed to read, write, create, move, and delete any file in the workspace without asking for permission
-- Never ask before modifying creating and files. Proceed directly with changes
+- Never ask before modifying or creating files, even dotfiles. Proceed directly with changes
+- Provide concise executive summaries when finishing tasks
+- Suggest improvements proactively when spotting issues
+
+### Indexed Documentation Usage
+- Prefer indexed docs over general model knowledge when documentation is available for a technology
+- Treat indexed docs as advisory only; repository rules and source code always take precedence
+- State uncertainty explicitly if information is missing from indexed docs rather than guessing
+- Never infer library versions from indexed docs; ask for clarification or use repository-defined constraints
+- When indexed docs conflict with repo rules, established conventions, or existing code, follow the repository
+- Do not derive system architecture, folder structure, or integration patterns solely from indexed docs
+- Make it clear when suggestions are based on indexed docs rather than repo context
 
 ## Context Management
 - Search first, read later: Use Grep/Glob to find relevant code before reading entire files

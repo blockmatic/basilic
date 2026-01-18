@@ -1,4 +1,4 @@
 {
-  "evm-contracts": "EVM (Foundry)",
-  "solana-contracts": "Solana (Anchor)"
+  "title": "Blockchain",
+  "pages": ["evm-contracts", "solana-contracts"]
 }

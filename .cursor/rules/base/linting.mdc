@@ -31,6 +31,7 @@ This monorepo uses a **hybrid linting architecture** where Biome and ESLint have
 - **React/React Hooks Rules**: React-specific correctness rules
 - **Next.js Rules**: Next.js framework-specific rules
 - **Import Boundary Enforcement**: Architecture rules (e.g., `import/no-default-export`)
+- **File Size Limits**: Maximum 300 lines per file (`max-lines`) - helps agents maintain manageable file sizes. Test files (`.test.ts`, `.spec.ts`, `.e2e-spec.ts`, etc.) and UI components (`packages/ui/src/components/**`) are exempt as they legitimately need more lines for setup, mocks, comprehensive coverage, or complex component implementations
 - **Turbo Monorepo Rules**: Monorepo-aware linting
 
 ## Agent Requirements

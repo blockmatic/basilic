@@ -153,13 +153,13 @@ queryClient.invalidateQueries({ queryKey: articles._def })
 - One-off async operations (file uploads, form submissions without caching)
 - Non-data-fetching async operations
 
-See [React Rules](./react.mdc) for state management decision tree and when to use each pattern.
+See [React Rules](@.cursor/rules/frontend/react.mdc) for state management decision tree and when to use each pattern.
 
 ## Memoization Hooks
 
 **Default: Don't use `useMemo` or `useCallback`** - Modern React optimizations handle most cases automatically.
 
-See [React Rules](./react.mdc) for memoization guidelines and when to use these hooks.
+See [React Rules](@.cursor/rules/frontend/react.mdc) for memoization guidelines and when to use these hooks.
 
 ## Custom Hooks Best Practices
 - Combine multiple queries into cohesive hooks
@@ -168,12 +168,6 @@ See [React Rules](./react.mdc) for memoization guidelines and when to use these 
 - Never manually manage `isLoading`, `error`, or `isError` states
 
 ## Related Rules
-- [React Rules](./react.mdc) - Component patterns
-- [Frontend Stack](./stack.mdc) - Library usage patterns
-- [TypeScript Rules](../base/typescript.mdc) - Type safety patterns
-tack Query's built-in state)
-
-## Related Rules
-- [React Rules](./react.mdc) - Component patterns
-- [Frontend Stack](./stack.mdc) - Library usage patterns
-- [TypeScript Rules](../base/typescript.mdc) - Type safety patterns
+- [React Rules](@.cursor/rules/frontend/react.mdc) - Component patterns
+- [Frontend Stack](@.cursor/rules/frontend/stack.mdc) - Library usage patterns
+- [TypeScript Rules](@.cursor/rules/base/typescript.mdc) - Type safety patterns

@@ -1,0 +1,119 @@
+---
+description: Guidelines for creating effective Cursor command files
+glob: ".cursor/commands/**/*.md"
+alwaysApply: false
+---
+
+# Rules for Writing Cursor Commands
+
+## Structure & Organization
+
+- **Consistent format**: All commands follow the same structure: Title, Overview, Steps, Checklist
+- **Clear purpose**: Each command should have a single, well-defined purpose
+- **Action-oriented**: Commands should guide agents to perform specific tasks, not just provide information
+- **Use descriptive filenames**: Command files use kebab-case matching the command title (e.g., `add-component.md`, `write-unit-tests.md`)
+
+## Content Structure
+
+### Required Sections
+
+1. **Title** (`# Title`)
+   - Use clear, action-oriented title
+   - Match the filename (kebab-case → Title Case)
+
+2. **Overview**
+   - Brief 1-2 sentence description of what the command does
+   - Context about when and why to use it
+
+3. **Steps**
+   - Numbered list of main steps (1, 2, 3...)
+   - Each step has sub-items with specific actions or considerations
+   - Use clear, actionable language
+   - Group related actions under the same step
+
+4. **Checklist**
+   - Checkbox list (`- [ ]`) of verification items
+   - Should cover all critical aspects from Steps
+   - Helps ensure completeness when executing the command
+
+### Optional Sections
+
+- **Best Practices**: Do/Don't lists for guidance
+- **Prompt Template**: Reusable templates for complex prompts
+- **Examples**: Code examples or usage patterns when helpful
+
+## Content Quality
+
+- **Be specific and actionable**: Provide concrete steps, not vague guidance
+- **Include project context**: Reference project-specific patterns, tools, and conventions
+- **Self-contained**: Embed necessary context directly (no external links)
+- **Follow project patterns**: Reference existing rules, documentation, and conventions
+- **Use consistent terminology**: Match terminology used in rules and documentation
+
+## Command Patterns
+
+### Common Patterns
+
+1. **Task Execution Commands** (e.g., `write-unit-tests.md`, `add-documentation.md`)
+   - Focus on step-by-step execution
+   - Include quality criteria and verification steps
+
+2. **Setup Commands** (e.g., `setup-new-feature.md`)
+   - Guide initial setup and planning
+   - Include checklists for completeness
+
+3. **Refactoring Commands** (e.g., `refactor-code.md`, `optimize-performance.md`)
+   - Focus on analysis and improvement
+   - Include before/after considerations
+
+4. **Integration Commands** (e.g., `v0.md`)
+   - Guide integration with external tools
+   - Include best practices and prompt templates
+
+### Step Organization
+
+- **Group related actions**: Keep related sub-items together
+- **Order logically**: Steps should follow natural execution order
+- **Be comprehensive**: Cover all aspects needed to complete the task
+- **Include verification**: Each major step should have corresponding checklist items
+
+## Best Practices
+
+### Do
+
+- ✅ Follow the standard structure (Title, Overview, Steps, Checklist)
+- ✅ Use clear, action-oriented language
+- ✅ Reference project-specific patterns and conventions
+- ✅ Include verification steps in checklist
+- ✅ Provide specific examples when helpful
+- ✅ Reference related rules and documentation using @ syntax
+
+### Don't
+
+- ❌ Create overly verbose commands (keep focused and concise)
+- ❌ Duplicate information already in rules (reference rules instead)
+- ❌ Use vague or ambiguous language
+- ❌ Skip the checklist section
+- ❌ Create commands that conflict with existing rules
+
+## Integration with Rules
+
+- **Reference rules**: Use @ syntax to reference relevant rule files
+- **Complement rules**: Commands provide workflows; rules provide standards
+- **Stay consistent**: Ensure commands align with project rules and conventions
+- **Update together**: When updating rules, check if related commands need updates
+
+## Examples
+
+See existing commands for reference:
+- `write-unit-tests.md` - Task execution pattern
+- `setup-new-feature.md` - Setup pattern
+- `refactor-code.md` - Refactoring pattern
+- `v0.md` - Integration pattern with prompt template
+
+## Maintenance
+
+- **Keep commands current**: Update when project patterns or tools change
+- **Remove obsolete commands**: Delete commands that are no longer relevant
+- **Consolidate when needed**: Merge similar commands to avoid duplication
+- **Test commands**: Verify commands work as intended when creating or updating

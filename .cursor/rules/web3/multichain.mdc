@@ -1,6 +1,6 @@
 ---
 description: General multichain address validation patterns and best practices
-glob: "*.tsx, *.ts"
+glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
 
@@ -31,13 +31,13 @@ export function validateAddress({
 }): boolean {
   switch (chainType) {
     case 'evm':
-      // See [Viem Rules](./viem.mdc) for EVM address validation
+      // See [Viem Rules](@.cursor/rules/web3/viem.mdc) for EVM address validation
       return validateEVMAddress(address)
     case 'solana':
-      // See [Solana Rules](./solana.mdc) for Solana address validation
+      // See [Solana Rules](@.cursor/rules/web3/solana.mdc) for Solana address validation
       return validateSolanaAddress(address)
     case 'cosmos':
-      // See [Cosmos Rules](./cosmos.mdc) for Cosmos address validation
+      // See [Cosmos Rules](@.cursor/rules/web3/cosmos.mdc) for Cosmos address validation
       return validateCosmosAddress(address)
     default:
       return false
@@ -49,9 +49,9 @@ export function validateAddress({
 
 This rule delegates to chain-specific rules for implementation:
 
-- **EVM**: See [Viem Rules](./viem.mdc) - Use `getAddress()` from `viem` v2.44.4
-- **Solana**: See [Solana Rules](./solana.mdc) - Use `PublicKey` from `@solana/web3.js` v1.98.4
-- **Cosmos**: See [Cosmos Rules](./cosmos.mdc) - Use Bech32 validation
+- **EVM**: See [Viem Rules](@.cursor/rules/web3/viem.mdc) - Use `getAddress()` from `viem` v2.44.4
+- **Solana**: See [Solana Rules](@.cursor/rules/web3/solana.mdc) - Use `PublicKey` from `@solana/web3.js` v1.98.4
+- **Cosmos**: See [Cosmos Rules](@.cursor/rules/web3/cosmos.mdc) - Use Bech32 validation
 - **Other chains**: Use appropriate validation libraries when available
 
 ## Error Handling
@@ -72,6 +72,6 @@ if (!validateAddress({ address: to, chainType })) {
 5. **Fail Fast**: Return false immediately on validation failure
 
 ## Related Rules
-- [Viem Rules](./viem.mdc) - EVM address validation
-- [Solana Rules](./solana.mdc) - Solana address validation
-- [Cosmos Rules](./cosmos.mdc) - Cosmos address validation
+- [Viem Rules](@.cursor/rules/web3/viem.mdc) - EVM address validation
+- [Solana Rules](@.cursor/rules/web3/solana.mdc) - Solana address validation
+- [Cosmos Rules](@.cursor/rules/web3/cosmos.mdc) - Cosmos address validation

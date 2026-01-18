@@ -1,0 +1,54 @@
+# TruffleHog exclude patterns
+# These paths will be excluded from secret scanning
+# Patterns are regex-based, one per line
+
+# Documentation files (contain example connection strings)
+^apps/docs/.*
+^\.cursor/skills/.*
+^packages/.*/README\.md$
+
+# Example and sample files
+.*\.example$
+.*\.sample$
+.*\.env-example$
+.*\.env\.example$
+.*\.env\.schema$
+.*\.env\.test$
+
+# Test files
+.*\.test\.(ts|tsx|js|jsx|mjs)$
+.*\.spec\.(ts|tsx|js|jsx|mjs)$
+.*/(test|tests)/.*\.(ts|tsx|js|jsx|mjs)$
+__tests__/.*
+__mocks__/.*
+fixtures/.*
+examples/.*
+
+# Build and dependency directories
+node_modules/.*
+\.next/.*
+dist/.*
+build/.*
+\.turbo/.*
+\.vercel/.*
+\.pnp/.*
+\.logs/.*
+coverage/.*
+test-results/.*
+playwright-report/.*
+playwright/\.cache/.*
+
+# Lock files
+pnpm-lock\.yaml$
+package-lock\.json$
+yarn\.lock$
+
+# Git directory
+\.git/.*
+
+# Contract build outputs
+contracts/evm/out/.*
+contracts/evm/cache/.*
+contracts/evm/broadcast/.*
+contracts/solana/target/.*
+contracts/solana/\.anchor/.*

@@ -8,7 +8,7 @@ alwaysApply: false
 ## Core Principles
 - Use Wagmi v3.x (latest v3.3.2) hooks and configurations consistently
 - Handle wallet connection states properly
-- Reference [Viem Rules](./viem.mdc) for address validation patterns
+- Reference [Viem Rules](@.cursor/rules/web3/viem.mdc) for address validation patterns
 
 ## Custom Hooks
 - Create specialized hooks for specific contract interactions
@@ -55,5 +55,5 @@ export type QuoteInputType = AbiParametersToPrimitiveTypes<
 - Consider network conditions and gas price fluctuations
 
 ## Related Rules
-- [Viem Rules](./viem.mdc) - Address validation and transaction utilities (v2.44.4)
-- [Multichain Rules](./multichain.mdc) - Multichain address validation coordination
+- [Viem Rules](@.cursor/rules/web3/viem.mdc) - Address validation and transaction utilities (v2.44.4)
+- [Multichain Rules](@.cursor/rules/web3/multichain.mdc) - Multichain address validation coordination

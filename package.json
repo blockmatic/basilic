@@ -35,7 +35,7 @@
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "simple-git-hooks": "2.13.1",
-    "turbo": "^2.7.4",
+    "turbo": "^2.7.5",
     "typescript": "5.9.3"
   },
   "engines": {

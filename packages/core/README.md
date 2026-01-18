@@ -27,4 +27,4 @@ const result = await client.users.getUser({ params: { id: '123' } })
 - ✅ Type-safe via generated hey-api clients from OpenAPI specs
 - ✅ Exports all types (domain types and API types) from generated code
 
-See [API Development](https://basilic-docs.vercel.app/docs/api-development#client-consumption) for integration patterns.
+See [API Development](https://basilic-docs.vercel.app/docs/core-concepts/api-architecture#client-consumption) for integration patterns.

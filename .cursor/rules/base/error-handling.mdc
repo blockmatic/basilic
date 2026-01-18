@@ -64,9 +64,9 @@ const message = getErrorMessage(error) // Type-safe
 ## Framework Integration
 
 See framework-specific rules for integration patterns:
-- [Fastify Rules](../backend/fastify.mdc) - Error handler plugin pattern
-- [Next.js Rules](../frontend/nextjs.mdc) - Error pages and server actions
-- [React Rules](../frontend/react.mdc) - Error boundaries
+- [Fastify Rules](@.cursor/rules/backend/fastify.mdc) - Error handler plugin pattern
+- [Next.js Rules](@.cursor/rules/frontend/nextjs.mdc) - Error pages and server actions
+- [React Rules](@.cursor/rules/frontend/react.mdc) - Error boundaries
 
 **Initialization** (idempotent - safe to call multiple times):
 
@@ -106,5 +106,5 @@ Must be `UPPER_SNAKE_CASE`:
 
 ## Related Documentation
 
-- [Error Handling Guide](/docs/guides/error-handling) - Complete guide with error catalog, build-time validation, and adding new error codes
-- [Packages Reference](/docs/architecture/packages) - `@repo/error` package structure
+- [Error Handling Guide](@apps/docs/content/docs/architecture/error-handling.mdx) - Complete guide with error catalog, build-time validation, and adding new error codes
+- [Packages Reference](@apps/docs/content/docs/core-concepts/packages.mdx) - `@repo/error` package structure

@@ -1,6 +1,6 @@
 ---
 description: Mobile-first responsive design patterns and best practices
-glob: "*.tsx, *.ts, *.css"
+glob: "**/*.{tsx,ts,css}"
 alwaysApply: false
 ---
 # Mobile-First Development Rules
@@ -157,6 +157,6 @@ Tailwind uses mobile-first breakpoints. Base styles apply to mobile, then overri
 
 ## Related Rules
 
-- See [ShadcnUI Rules](./shadcnui.mdc) for component-specific patterns
-- See [React Rules](./react.mdc) for component structure
-- See [Next.js Rules](./nextjs.mdc) for Next.js-specific patterns
+- See [ShadcnUI Rules](@.cursor/rules/frontend/shadcnui.mdc) for component-specific patterns
+- See [React Rules](@.cursor/rules/frontend/react.mdc) for component structure
+- See [Next.js Rules](@.cursor/rules/frontend/nextjs.mdc) for Next.js-specific patterns

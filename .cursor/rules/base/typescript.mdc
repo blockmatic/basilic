@@ -53,7 +53,7 @@ For detailed module system architecture, see @apps/docs/content/docs/architectur
 - Use `import type` for type-only imports to ensure they're erased at runtime
 
 ### Shared Packages
-All shared packages use **subpath exports** for better tree-shaking. See @apps/docs/content/docs/architecture/packages.mdx for complete package reference.
+All shared packages use **subpath exports** for better tree-shaking. See @apps/docs/content/docs/core-concepts/packages.mdx for complete package reference.
 
 **Key packages:**
 - **`@repo/utils/*`**: Async, web3, logger, debug utilities (always use subpaths)
@@ -129,9 +129,4 @@ The following "unsafe" rules are disabled globally to support Zod-first validati
 
 ## Related Documentation
 - @apps/docs/content/docs/architecture/esm-strategy.mdx - ESM module system details
-- @apps/docs/content/docs/architecture/packages.mdx - Complete package reference
-xt.js TypeScript conventions
-
-## Related Documentation
-- @apps/docs/content/docs/architecture/esm-strategy.mdx - ESM module system details
-- @apps/docs/content/docs/architecture/packages.mdx - Complete package reference
+- @apps/docs/content/docs/core-concepts/packages.mdx - Complete package reference

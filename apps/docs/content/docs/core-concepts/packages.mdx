@@ -1,0 +1,308 @@
+---
+title: "Packages Reference"
+description: "Complete reference for all shared packages and their subpath exports in the monorepo."
+---
+
+This document provides a complete reference for all shared packages (`@repo/*`) in the monorepo, including their subpath exports, use cases, and platform-specific variants.
+
+## Import Rules
+
+All shared packages use **subpath exports** - never import from package root:
+- ✅ `import { delay } from "@repo/utils/async"`
+- ❌ `import { delay } from "@repo/utils"` (no root export)
+
+## Core Packages
+
+### `@repo/core` - API Client & Types
+
+Generated API client and types from OpenAPI (via hey-api). Exports all domain types.
+
+**Exports:**
+- Default export: Full SDK client
+- Named exports: All API types and schemas
+
+**Usage:**
+```typescript
+import type { User, ApiResponse } from "@repo/core"
+import { sdk } from "@repo/core"
+
+// Use SDK client
+const response = await sdk.users.getUser({ id: "123" })
+```
+
+**Notes:**
+- Types are generated from OpenAPI schema
+- Client is runtime-agnostic (works in browser and Node.js)
+- Re-exported by `@repo/react` for React-specific hooks
+
+### `@repo/react` - React Hooks
+
+React-specific hooks and TanStack Query integration (generated from OpenAPI).
+
+**Exports:**
+- `useHealthCheck()` - Health check hook
+- `useGetUser()` - Get user query hook
+- Additional hooks generated from OpenAPI endpoints
+
+**Usage:**
+```typescript
+import { useGetUser } from "@repo/react"
+
+const { data, isLoading, error } = useGetUser({ id: "123" })
+```
+
+**Notes:**
+- Built on TanStack Query v5
+- Automatic caching, refetching, and optimistic updates
+- Type-safe hooks generated from API schema
+
+### `@repo/ui` - UI Components
+
+Shared UI components (Shadcn/ui based) with subpath exports.
+
+**Exports:**
+- `@repo/ui/components/*` - Individual component exports
+- `@repo/ui/lib/utils` - Utility functions (e.g., `cn` for class names)
+
+**Usage:**
+```typescript
+import { Button } from "@repo/ui/components/button"
+import { Card, CardHeader, CardContent } from "@repo/ui/components/card"
+import { cn } from "@repo/ui/lib/utils"
+```
+
+**Notes:**
+- Based on Shadcn/ui component library
+- Fully customizable with Tailwind CSS
+- Includes accessibility features built-in
+
+## Utility Packages
+
+### `@repo/utils` - Utility Functions
+
+Shared utility library with subpath exports. **Always use subpath imports** (no root import).
+
+#### `@repo/utils/async`
+
+Async utilities for promises, delays, and timeout handling.
+
+**Exports:**
+- `delay(ms: number): Promise<void>` - Promise-based delay
+- `fetchWithTimeout(url: string, options): Promise<Response>` - Fetch with timeout
+- Additional async utilities
+
+**Usage:**
+```typescript
+import { delay, fetchWithTimeout } from "@repo/utils/async"
+
+await delay(1000) // Wait 1 second
+const response = await fetchWithTimeout("/api/data", { timeout: 5000 })
+```
+
+#### `@repo/utils/web3`
+
+Web3 utilities for chain metadata, chain type detection, and validation.
+
+**Exports:**
+- `getChainMetadata(chainId: number)` - Get chain metadata (name, symbol, explorer)
+- `getChainType(chainId: number)` - Detect chain type (EVM, Solana, Cosmos)
+- `chainTypeSchema` - Zod schema for chain type validation
+
+**Usage:**
+```typescript
+import { getChainMetadata, getChainType } from "@repo/utils/web3"
+
+const metadata = getChainMetadata(1) // Ethereum mainnet
+const chainType = getChainType(1) // "evm"
+```
+
+#### `@repo/utils/logger`
+
+Logging utilities with client/server variants.
+
+**Exports:**
+- Server-side: Full logger with structured logging
+- Client-side: Browser-safe logger
+
+**Usage:**
+```typescript
+// Server-side
+import { logger } from "@repo/utils/logger"
+logger.info("Server started", { port: 3000 })
+
+// Client-side (browser)
+import { logger } from "@repo/utils/logger"
+logger.debug("Component mounted", { componentName: "Header" })
+```
+
+#### `@repo/utils/debug`
+
+Debug utilities for development.
+
+**Exports:**
+- `useDevtools()` - React hook for enabling React DevTools
+- `useVconsole()` - React hook for mobile debugging (vConsole)
+
+**Usage:**
+```typescript
+import { useDevtools, useVconsole } from "@repo/utils/debug"
+
+// In development component
+useDevtools() // Enable React DevTools
+useVconsole() // Enable mobile debugging console
+```
+
+## Error Handling Package
+
+### `@repo/error` - Error Handling & Sentry
+
+Error handling with Sentry integration. **Always use platform-specific imports** (no root import).
+
+#### `@repo/error/core`
+
+Core types and utilities (no Sentry dependencies).
+
+**Exports:**
+- `getErrorMessage(error: unknown): string` - Extract error message
+- `isErrorWithMessage(error: unknown): boolean` - Type guard for errors
+- Type definitions for error handling
+
+**Usage:**
+```typescript
+import { getErrorMessage } from "@repo/error/core"
+
+try {
+  await riskyOperation()
+} catch (error) {
+  const message = getErrorMessage(error)
+  console.error(message)
+}
+```
+
+#### `@repo/error/node`
+
+Node.js/Fastify error handling with `@sentry/node`.
+
+**Exports:**
+- `captureError(error: Error, context?: object)` - Capture error to Sentry
+- `initSentry(config: SentryConfig)` - Initialize Sentry for Node.js
+- Additional Node.js-specific utilities
+
+**Usage:**
+```typescript
+import { captureError, initSentry } from "@repo/error/node"
+
+// Initialize (in server startup)
+initSentry({ dsn: process.env.SENTRY_DSN })
+
+// Capture errors
+try {
+  await dbQuery()
+} catch (error) {
+  captureError(error, { query: "getUser", userId: "123" })
+  throw error
+}
+```
+
+#### `@repo/error/nextjs`
+
+Next.js error handling with `@sentry/nextjs`.
+
+**Exports:**
+- `captureError(error: Error, context?: object)` - Capture error to Sentry
+- `initSentry(config: SentryConfig)` - Initialize Sentry for Next.js
+- Additional Next.js-specific utilities
+
+**Usage:**
+```typescript
+import { captureError, initSentry } from "@repo/error/nextjs"
+
+// Initialize (in instrumentation.ts)
+export function register() {
+  initSentry({ dsn: process.env.NEXT_PUBLIC_SENTRY_DSN })
+}
+
+// Capture errors
+try {
+  await fetchData()
+} catch (error) {
+  captureError(error, { route: "/api/users" })
+  throw error
+}
+```
+
+#### `@repo/error/browser`
+
+Browser error handling with `@sentry/browser`.
+
+**Exports:**
+- `captureError(error: Error, context?: object)` - Capture error to Sentry
+- `initSentry(config: SentryConfig)` - Initialize Sentry for browser
+- Additional browser-specific utilities
+
+**Usage:**
+```typescript
+import { captureError, initSentry } from "@repo/error/browser"
+
+// Initialize (in app entry point)
+initSentry({ dsn: import.meta.env.VITE_SENTRY_DSN })
+
+// Capture errors
+try {
+  processData()
+} catch (error) {
+  captureError(error, { userId: currentUser.id })
+}
+```
+
+#### `@repo/error/react`
+
+React components for error handling.
+
+**Exports:**
+- `<AppErrorBoundary>` - Error boundary component
+- Additional React-specific error utilities
+
+**Usage:**
+```typescript
+import { AppErrorBoundary } from "@repo/error/react"
+
+export default function App() {
+  return (
+    <AppErrorBoundary fallback={(error) => <ErrorPage error={error} />}>
+      <YourApp />
+    </AppErrorBoundary>
+  )
+}
+```
+
+## Platform-Specific Imports
+
+Always use platform-specific imports for `@repo/error`:
+
+| Runtime      | Import Path           | Sentry Package      |
+|--------------|-----------------------|---------------------|
+| Next.js      | `@repo/error/nextjs`  | `@sentry/nextjs`    |
+| Fastify      | `@repo/error/node`    | `@sentry/node`      |
+| Browser      | `@repo/error/browser` | `@sentry/browser`   |
+| React (UI)   | `@repo/error/react`   | None (components)   |
+| Type-only    | `@repo/error/core`    | None (pure TS)      |
+
+## Lodash Usage
+
+Use `lodash-es` with per-function imports for tree-shaking and RSC compatibility:
+
+```typescript
+// ✅ Good - Tree-shakeable
+import isEmpty from "lodash-es/isEmpty"
+import debounce from "lodash-es/debounce"
+
+// ❌ Bad - Breaks tree-shaking
+import { isEmpty, debounce } from "lodash-es"
+```
+
+## Related Documentation
+
+- [Monorepo Structure](/docs/core-concepts/monorepo-structure) - Overall monorepo architecture
+- [ESM Strategy](/docs/architecture/esm-strategy) - Module system architecture
+- [Package Conventions](/docs/architecture/package-conventions) - Package organization

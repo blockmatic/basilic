@@ -2,26 +2,12 @@
   "pages": [
     "index",
     "getting-started",
-    "--- Core Concepts",
-    "api-development",
-    "--- Architecture",
+    "core-concepts",
     "architecture",
-    "--- Blockchain",
+    "security",
+    "testing",
+    "deployment",
     "blockchain",
-    "--- AI-Driven Development",
-    "ai-workflow",
-    "cursor-workflow",
-    "cursor-setup",
-    "cursor-rules",
-    "--- How-To Guides",
-    "guides"
-  ],
-  "api-development": "API Development",
-  "architecture": "Architecture",
-  "blockchain": "Blockchain",
-  "ai-workflow": "AI Workflow",
-  "cursor-workflow": "Cursor Workflow",
-  "cursor-setup": "Cursor Setup",
-  "cursor-rules": "Cursor Rules",
-  "guides": "How-To Guides"
+    "adrs"
+  ]
 }

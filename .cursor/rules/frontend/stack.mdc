@@ -1,12 +1,12 @@
 ---
 description: Preferred frontend technology stack and library usage patterns
-glob: "*.tsx, *.ts"
+glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
 
 # Frontend Stack
 
-See [Frontend Stack](/docs/architecture/frontend-stack) for complete library documentation and technology choices.
+See [Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx) for complete library documentation and technology choices.
 
 ## Core Libraries
 
@@ -39,11 +39,10 @@ import { createApi } from '@repo/core'
 const api = createApi({ baseUrl: process.env.NEXT_PUBLIC_API_URL! })
 ```
 
-See [Frontend Stack](/docs/architecture/frontend-stack) for complete library documentation, usage patterns, and best practices.
+See [Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx) for complete library documentation, usage patterns, and best practices.
 
 ## Related Documentation
 
-- [Frontend Stack](/docs/architecture/frontend-stack) - Complete library documentation and technology choices
-- [TanStack Query Guide](/docs/guides/tanstack-query) - TanStack Query patterns
-- [React Hooks Rules](./react-hooks.mdc) - Hooks patterns
+- [Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx) - Complete library documentation and technology choices
+- [React Hooks Rules](@.cursor/rules/frontend/react-hooks.mdc) - Hooks patterns
 

@@ -34,6 +34,6 @@ This script ensures the OpenAPI spec stays in sync with route implementations, e
 
 ## Related Documentation
 
-- **[Deployment Guide](https://basilic-docs.vercel.app/docs/guides/deployment)** - Deployment options and strategies
-- **[Backend Stack](https://basilic-docs.vercel.app/docs/architecture/backend-stack)** - Technology choices and architecture
-- **[API Development](https://basilic-docs.vercel.app/docs/api-development)** - REST API with OpenAPI and hey-api client generation
+- **[Deployment Guide](@apps/docs/content/docs/deployment/index.mdx)** - Deployment options and strategies
+- **[Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx)** - Technology choices and architecture
+- **[API Development](@apps/docs/content/docs/core-concepts/api-architecture.mdx)** - REST API with OpenAPI and hey-api client generation

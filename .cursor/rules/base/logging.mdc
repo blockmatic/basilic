@@ -43,7 +43,7 @@ requestLogger.info('Processing request') // Includes requestId and userId
 
 ## Build-Time Conditional Exports
 
-The logger uses build-time conditional exports - no runtime detection. See [Logging Guide](/docs/guides/logging#build-time-conditional-exports) for architecture details.
+The logger uses build-time conditional exports - no runtime detection. See [Logging Guide](@apps/docs/content/docs/architecture/logging.mdx#build-time-conditional-exports) for architecture details.
 
 ## Log Levels
 
@@ -169,5 +169,5 @@ This ensures errors are logged through Fastify's native logging system with prop
 
 ## Related Documentation
 
-- [Logging Guide](/docs/guides/logging) - Complete logging documentation including build-time conditional exports architecture
-- [Environment Variables](./environment.mdc) - Environment variable patterns
+- [Logging Guide](@apps/docs/content/docs/architecture/logging.mdx) - Complete logging documentation including build-time conditional exports architecture
+- [Environment Variables](@.cursor/rules/base/environment.mdc) - Environment variable patterns

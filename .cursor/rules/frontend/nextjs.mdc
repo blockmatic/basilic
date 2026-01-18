@@ -1,6 +1,6 @@
 ---
 description: Next.js development standards and patterns
-glob: "*.tsx, *.ts"
+glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
 
@@ -66,7 +66,7 @@ export default function Page() {
 
 ## Environment Variables
 
-See [Environment Rules](../base/environment.mdc) for environment variable validation patterns using t3-env. Next.js automatically loads `.env` files.
+See [Environment Rules](@.cursor/rules/base/environment.mdc) for environment variable validation patterns using t3-env. Next.js automatically loads `.env` files.
 
 ## Deployment
 - **Vercel**: Primary deployment platform for Next.js apps
@@ -93,7 +93,7 @@ export const saveAction = createSafeActionClient()
 
 ## Error Handling
 
-Use `@repo/error` for error handling in Next.js. See [Error Handling Rules](../base/error-handling.mdc) for complete patterns.
+Use `@repo/error` for error handling in Next.js. See [Error Handling Rules](@.cursor/rules/base/error-handling.mdc) for complete patterns.
 
 **Error Pages**:
 ```tsx
@@ -151,11 +151,11 @@ function WalletComponent({ id }: { id: string }) {
   - React and React Hooks rules
   - Import boundary enforcement (default exports allowed for pages/layouts only)
 - **Biome**: Handles all formatting and stylistic linting
-- See [Linting Rules](../base/linting.mdc) for full architecture details
+- See [Linting Rules](@.cursor/rules/base/linting.mdc) for full architecture details
 
 ## Related Rules
-- [Linting Rules](../base/linting.mdc) - Hybrid Biome + ESLint architecture
-- [React Hooks Rules](./react-hooks.mdc) - TanStack Query patterns
-- [React Rules](./react.mdc) - Component patterns
-- [Environment Rules](../base/environment.mdc) - Environment variable patterns
-- [TypeScript Rules](../base/typescript.mdc) - Code style guidelines
+- [Linting Rules](@.cursor/rules/base/linting.mdc) - Hybrid Biome + ESLint architecture
+- [React Hooks Rules](@.cursor/rules/frontend/react-hooks.mdc) - TanStack Query patterns
+- [React Rules](@.cursor/rules/frontend/react.mdc) - Component patterns
+- [Environment Rules](@.cursor/rules/base/environment.mdc) - Environment variable patterns
+- [TypeScript Rules](@.cursor/rules/base/typescript.mdc) - Code style guidelines

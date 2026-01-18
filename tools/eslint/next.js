@@ -95,6 +95,9 @@ export const nextJsConfig = [
       'react/prop-types': 'off',
       // Prefer ternaries over && in JSX
       'react/jsx-no-leaked-render': 'off',
+      // Enforce one component per file - helps agents maintain component separation
+      // Allow stateless (functional) components in the same file for utility/helper components
+      'react/no-multi-comp': ['error', { ignoreStateless: true }],
       // Enforce named exports, except for Next.js pages and layouts
       'import/no-default-export': 'error',
     },

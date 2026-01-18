@@ -54,10 +54,13 @@ jobs:
           exit-code: 1
           fail: true
 
-      - name: Run TruffleHog OSS (filesystem scan)
+      - name: Run TruffleHog OSS (git scan)
         uses: trufflesecurity/trufflehog@821e8b9e5cdf8dc484dd23e06f78941fcf6b9191
         with:
           path: ./
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          extra_args: --exclude-paths=.trufflehogignore --only-verified
 
       - name: Install OSV Scanner
         run: |

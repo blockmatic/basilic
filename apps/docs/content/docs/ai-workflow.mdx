@@ -16,6 +16,41 @@ MDX files can be used directly in prompts as reference material. Reference any d
 "Using the patterns from /docs/api-development, create a new API endpoint..."
 ```
 
+## Cursor Docs Indexing
+
+Cursor supports indexed external documentation sources that are crawled and embedded for AI reference. These improve AI accuracy when working with specific frameworks and libraries by providing scoped knowledge during planning, reasoning, and API usage.
+
+### What Are Indexed Docs
+
+- External documentation websites (Fastify, Next.js, Viem, etc.)
+- Crawled and embedded as scoped knowledge
+- Independent from workspace code indexing
+- Managed via Cursor settings UI
+
+### How Indexing Works
+
+- Documentation is re-crawled periodically by Cursor
+- Reindexing frequency is managed by Cursor (not configurable)
+- Docs may change as libraries release updates
+- Used during planning, reasoning, API suggestions, best practices
+
+### Key Principles
+
+- Docs are advisory knowledge, not behavioral constraints
+- Docs never override repository rules or source code
+- Docs may conflict with each other or repo conventions
+- Repository rules and source code remain final authority
+- Treat indexed docs as current but non-authoritative
+
+## Research Tools
+
+Before diving into implementation, leverage AI research tools for exploration and discovery:
+
+- **Perplexity** - Best for researching APIs, libraries, and technical concepts with sourced information
+- **ChatGPT** - Good for brainstorming approaches, exploring patterns, and understanding trade-offs
+
+**Use cases:** Understanding new technologies, comparing library options, researching best practices, exploring architectural patterns.
+
 ## The Recommended Workflow
 
 ### 1. Plan Mode with Sonnet (Always Start Here)

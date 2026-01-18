@@ -1,0 +1,155 @@
+---
+title: "AI-Driven Development Workflow"
+description: "Recommended workflow for AI-assisted development: Plan Mode with Sonnet, review and iterate, execute with Composer, work in small incremental tasks."
+---
+
+## Philosophy
+
+Optimized for AI-assisted development with a proven workflow that maximizes quality while maintaining velocity.
+
+> **Want comprehensive workflow documentation?** See the [Cursor Workflow](/docs/cursor-workflow) section for detailed guidance including phases, decision trees, model selection, commands, and quality gates.
+
+### Documentation as AI Reference
+
+MDX files can be used directly in prompts as reference material. Reference any documentation page:
+```
+"Using the patterns from /docs/core-concepts/api-architecture, create a new API endpoint..."
+```
+
+## Cursor Docs Indexing
+
+Cursor supports indexed external documentation sources that are crawled and embedded for AI reference. These improve AI accuracy when working with specific frameworks and libraries by providing scoped knowledge during planning, reasoning, and API usage.
+
+### What Are Indexed Docs
+
+- External documentation websites (Fastify, Next.js, Viem, etc.)
+- Crawled and embedded as scoped knowledge
+- Independent from workspace code indexing
+- Managed via Cursor settings UI
+
+### How Indexing Works
+
+- Documentation is re-crawled periodically by Cursor
+- Reindexing frequency is managed by Cursor (not configurable)
+- Docs may change as libraries release updates
+- Used during planning, reasoning, API suggestions, best practices
+
+### Key Principles
+
+- Docs are advisory knowledge, not behavioral constraints
+- Docs never override repository rules or source code
+- Docs may conflict with each other or repo conventions
+- Repository rules and source code remain final authority
+- Treat indexed docs as current but non-authoritative
+
+## Research Tools
+
+Before diving into implementation, leverage AI research tools for exploration and discovery:
+
+- **Perplexity** - Best for researching APIs, libraries, and technical concepts with sourced information
+- **ChatGPT** - Good for brainstorming approaches, exploring patterns, and understanding trade-offs
+
+**Use cases:** Understanding new technologies, comparing library options, researching best practices, exploring architectural patterns.
+
+## The Recommended Workflow
+
+### 1. Plan Mode with Sonnet (Always Start Here)
+
+- Use Claude Sonnet for planning (better reasoning)
+- Break down complex tasks into clear steps
+- Get a reviewed plan before coding
+
+**Why start with planning?** Better results, fewer iterations, identifies edge cases early.
+
+### 2. Review and Iterate the Plan
+
+- Read the plan carefully
+- Ask clarifying questions
+- Refine until you're satisfied
+- Don't rush to execution
+
+**Key questions:** Edge cases covered? Scope appropriate? Dependencies identified? Approach optimal?
+
+### 3. Execute with Composer
+
+- Use Composer for multi-file edits
+- Follow the plan step-by-step
+- Make small, incremental changes
+
+**Best practices:** Execute one step at a time, test between steps, review before proceeding.
+
+### 4. Small Incremental Tasks
+
+- Break work into < 30-minute chunks
+- Commit after each complete task
+- Test between commits
+- Easy to review, easy to revert
+
+**Benefits:** Easier reviews, simple reverts, clear progress tracking.
+
+## CI/CD Integration
+
+- **CodeRabbit** - Automated code reviews on PRs
+- **Linters** - Biome (formatting, pre-commit) + ESLint (correctness)
+- **GitHub Actions** - Tests, type checking, build verification, lint checks
+
+## Development Tools
+
+Commands available:
+
+- `pnpm dev` - Start all apps
+- `pnpm build` - Build all packages
+- `pnpm lint` - Run linters
+- `pnpm checktypes` - Check types
+- `pnpm format` - Format code (Biome)
+
+## Best Practices
+
+1. Always use plan mode first
+2. Review before executing
+3. Small commits (< 30 min chunks)
+4. Test incrementally
+5. Use MCP servers
+6. Follow Cursor rules
+7. Document decisions
+
+## Common Workflows
+
+### Adding a New Feature
+
+1. **Plan** - Use Sonnet to create a detailed plan
+2. **Review** - Check the plan with team/yourself
+3. **Execute** - Use Composer to implement step-by-step
+4. **Test** - Verify each step works
+5. **Commit** - Small, focused commits
+6. **Review** - CodeRabbit + human review
+7. **Iterate** - Refine based on feedback
+
+### Fixing a Bug
+
+1. **Reproduce** - Understand the issue
+2. **Plan** - Create a fix plan with Sonnet
+3. **Execute** - Implement the fix
+4. **Test** - Verify the fix works
+5. **Commit** - Document the fix
+
+### Refactoring
+
+1. **Plan** - Map out the refactoring approach
+2. **Review** - Ensure no breaking changes
+3. **Execute** - Small, incremental changes
+4. **Test** - Verify behavior unchanged
+5. **Commit** - Document the refactoring
+
+## Next Steps
+
+**Complete your AI-assisted development setup:**
+
+1. [Cursor Setup](/docs/getting-started/cursor-setup) - Configure your IDE
+2. [Core Concepts](/docs/core-concepts/cursor-rules) - Understand the coding standards that guide AI behavior
+
+## Related Documentation
+
+- [Cursor Setup](/docs/getting-started/cursor-setup) - Complete guide to configuring Cursor IDE
+- [Cursor Rules](/docs/core-concepts/cursor-rules) - AI-readable coding standards and conventions
+- [Getting Started](/docs/getting-started) - Initial setup and quick start guide
