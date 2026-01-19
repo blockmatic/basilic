@@ -4,7 +4,7 @@ alwaysApply: false
 ---
 # Frontend Stack
 
-See @apps/docs/content/docs/architecture/frontend-stack.mdx for complete library documentation and technology choices.
+See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete library documentation and technology choices.
 
 ## Core Libraries
 - **@tanstack/react-query**: Primary data fetching (use `@lukemorales/query-key-factory`)
@@ -36,8 +36,8 @@ import { createApi } from '@repo/core'
 const api = createApi({ baseUrl: process.env.NEXT_PUBLIC_API_URL! })
 ```
 
-See @apps/docs/content/docs/architecture/frontend-stack.mdx for complete library documentation, usage patterns, and best practices.
+See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete library documentation, usage patterns, and best practices.
 
 ## Related
-- @apps/docs/content/docs/architecture/frontend-stack.mdx - Complete library documentation and technology choices
+- @apps/docu/content/docs/architecture/frontend-stack.mdx - Complete library documentation and technology choices
 - @.cursor/rules/frontend/react-hooks.mdc - Hooks patterns

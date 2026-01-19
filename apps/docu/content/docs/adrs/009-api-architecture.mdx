@@ -1,0 +1,249 @@
+---
+title: "ADR 009: API Architecture & Client Generation"
+description: "Decision to use Fastify REST API with OpenAPI generation and Hey API for client generation, REST-first approach, and AI/MCP integration support."
+---
+
+## Context
+
+We need to define API architecture for frontend-backend communication that:
+
+- Provides type-safe client generation for frontend consumption
+- Enables better separation of concerns between API specs and implementation
+- Supports AI agent integration via MCP (Model Context Protocol)
+- Chooses primary API interface pattern (REST vs GraphQL)
+- Works with our Fastify backend and Next.js frontend
+- Maintains portability goals (no framework lock-in)
+
+## Considered Options
+
+### Option A – Fastify REST with OpenAPI Generation + Hey API (Chosen)
+
+Fastify routes as source of truth, OpenAPI spec generated from routes, Hey API for TypeScript client generation, REST as primary interface, GraphQL as optional secondary.
+
+**Pros**
+
+- **Fastify routes as source**: Routes define the API, OpenAPI spec generated automatically
+- **OpenAPI standard**: Industry-standard format for API specifications, works with all tools
+- **Type-safe clients**: Hey API generates fully typed TypeScript clients from OpenAPI specs
+- **Automatic OpenAPI generation**: OpenAPI spec generated from Fastify routes via generate-openapi.ts
+- **Automatic client generation**: Frontend gets fully typed clients automatically via code generation
+- **REST-first for simplicity**: RESTful interfaces are simple, cacheable, and well-understood
+- **AI/MCP integration**: REST endpoints with OpenAPI specs work seamlessly with Model Context Protocol servers and AI agents
+- **Framework portability**: OpenAPI works with Fastify, Express, or any framework - no lock-in
+- **Interactive API docs**: Scalar UI can be served for interactive API exploration
+- **GraphQL as option**: Can expose GraphQL layer if complex querying needed, but REST is primary
+- **Complements stack**: Works with Fastify's plugin architecture and our portability goals
+- **Multi-language support**: OpenAPI specs can generate clients in Python, Go, Rust, etc. using standard tools
+
+**Cons**
+
+- Requires code generation step (automated via scripts)
+- Less flexible than GraphQL for complex queries (can add GraphQL layer if needed)
+
+### Option B – ts-rest (Rejected)
+
+ts-rest for type-safe contracts, REST as primary interface.
+
+**Pros**
+
+- Type-safe API definitions with clear TypeScript types
+- Zero codegen for TypeScript consumers
+
+**Cons**
+
+- Convoluted and overcomplicated in experimentation
+- Didn't work well in practice
+- Less standard than OpenAPI
+- Harder to generate clients for other languages
+
+### Option C – Framework-Based (tRPC)
+
+End-to-end type safety with tRPC.
+
+**Pros**
+
+- End-to-end type safety, no separate type definitions needed
+- Automatic type inference
+
+**Cons**
+
+- Framework lock-in (requires specific server/client setup)
+- Less AI/MCP friendly (RPC pattern vs REST)
+- Harder to migrate between frameworks
+- Not standard HTTP REST, requires tRPC client
+- Less portable across frameworks
+
+### Option D – GraphQL-First
+
+GraphQL as primary API interface.
+
+**Pros**
+
+- Flexible querying, strong typing with GraphQL schema
+- Prevents over-fetching
+
+**Cons**
+
+- More complex than REST for simple CRUD
+- Harder caching strategy
+- Less MCP/AI friendly (agents prefer simple REST)
+- Requires GraphQL client setup
+- Over-fetching prevention comes at cost of complexity
+- Less standard HTTP caching
+
+### Option E – Plain REST (no contracts)
+
+Standard HTTP REST without formal API specifications.
+
+**Pros**
+
+- Simple, standard HTTP
+- No additional tooling needed
+
+**Cons**
+
+- No type safety between frontend and backend
+- Manual client code
+- No automatic API documentation
+- No OpenAPI generation
+
+## Decision
+
+We will use **Fastify REST API** with **OpenAPI spec generation from routes** and **Hey API for TypeScript client generation** from the generated OpenAPI spec. Fastify routes are the source of truth, OpenAPI spec is generated from routes, and clients are generated from the OpenAPI spec.
+
+### TLDR: Comparison Table
+
+| Feature | OpenAPI + hey-api ✅ | tRPC | GraphQL-First | Plain REST |
+|---------|-------------------|------|---------------|------------|
+| **Type safety** | ✅ Generated from OpenAPI | ✅ End-to-end | ✅ Schema-based | ❌ Manual |
+| **Client generation** | ✅ Automatic (hey-api) | ✅ Automatic | ✅ Codegen | ❌ Manual |
+| **AI/MCP integration** | ✅ REST-native | ⚠️ RPC pattern | ⚠️ Complex | ✅ Standard HTTP |
+| **Framework portability** | ✅ Any framework | ❌ tRPC-specific | ✅ Any GraphQL server | ✅ Any framework |
+| **Separation of concerns** | ✅ Clear OpenAPI spec | ⚠️ Coupled | ✅ Schema separate | ❌ No contracts |
+| **OpenAPI standard** | ✅ Native | ⚠️ Via plugin | ⚠️ Via conversion | ❌ Manual |
+| **Caching** | ✅ HTTP caching | ⚠️ Custom | ⚠️ Complex | ✅ HTTP caching |
+| **Learning curve** | ✅ REST + OpenAPI | ⚠️ tRPC patterns | ⚠️ GraphQL | ✅ Simple |
+| **Works with Fastify** | ✅ Native support | ⚠️ Adapter needed | ✅ Via plugin | ✅ Native |
+
+**Key reasons:**
+
+- Fastify routes as source of truth → OpenAPI spec generated → clients generated from spec
+- Industry-standard OpenAPI format enables tooling, MCP/AI integration, and multi-language support
+- Type-safe TypeScript clients via Hey API codegen
+- Framework-agnostic REST approach maintains portability goals
+
+## Implementation Details
+
+### OpenAPI Specification
+
+OpenAPI specs are generated in `apps/fastify/openapi/openapi.json` from Fastify routes via `generate-openapi.ts`:
+
+```json
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "email": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Client Generation
+
+TypeScript clients are generated using `@hey-api/openapi-ts`:
+
+- Generated code in `packages/core/src/gen/` and `packages/react/src/gen/`
+- Fully typed API clients
+- React Query hooks generated automatically
+- Type-safe error handling
+
+### Server Implementation
+
+Fastify routes are the source of truth:
+
+- Routes implemented in `apps/fastify/src/routes/` with TypeBox schemas (native JSON Schema)
+- OpenAPI spec automatically generated from route definitions via `generate-openapi.ts`
+- Type-safe request/response handling via route schemas with TypeBox type provider
+- Validation uses TypeBox schemas defined in routes (no conversion overhead)
+- Frontend receives Zod schemas generated from OpenAPI spec (via hey-api)
+
+### Client Consumption
+
+Frontend consumes the API via generated clients:
+
+- Fully typed API clients from `@repo/core` (generated by Hey API)
+- Generated React Query hooks from `@repo/react` (generated by Hey API)
+- Type-safe error handling
+
+### OpenAPI Integration
+
+- **OpenAPI 3.0 specs**: Source of truth for API contracts
+- **Programmatic access**: Served at `/reference/openapi.json`
+- **Interactive documentation**: Scalar UI at `/reference`
+- **MCP integration**: OpenAPI specs enable AI agents to interact with API via Model Context Protocol
+- **Multi-language clients**: OpenAPI specs can generate clients in Python, Go, Rust, etc. using standard generators
+
+## Multi-Language SDK Strategy
+
+**Architecture**: Fastify Routes → OpenAPI Spec → Generated Clients
+
+1. **Fastify routes** define the API (source of truth)
+2. **OpenAPI spec** generated from routes via `generate-openapi.ts`
+3. **Clients generated** from OpenAPI spec:
+   - TypeScript: Hey API generates `@repo/core` and `@repo/react` clients
+   - Other languages: Use standard OpenAPI generators (oapi-codegen, openapi-generator, etc.)
+
+**Benefits:**
+- OpenAPI spec always up-to-date (single source of truth)
+- Consistent approach across all languages
+- Standard tooling (industry-standard OpenAPI generators)
+- Type-safe TypeScript clients with full IDE support
+
+**Implementation:**
+
+```bash
+# Generate TypeScript clients
+pnpm --filter @repo/core gen
+pnpm --filter @repo/react gen
+
+# For other languages, generate from OpenAPI spec
+curl https://api.your-domain.com/reference/openapi.json > openapi.json
+oapi-codegen -package client openapi.json > client.go
+```
+
+**When to generate SDKs for other languages:**
+- Early stage: Use REST endpoints directly with `/openapi.json` for reference
+- Production: Generate SDKs using language-specific generators (keep in separate repos)
+
+## Related Documentation
+
+- [API Architecture](/docs/core-concepts/api-architecture) - OpenAPI generation workflow
+- [Backend Stack](/docs/architecture/backend-stack) - Fastify implementation details
+- [Package Conventions](/docs/architecture/package-conventions) - Client package structure

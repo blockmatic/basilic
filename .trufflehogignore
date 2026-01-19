@@ -3,7 +3,7 @@
 # Patterns are regex-based, one per line
 
 # Documentation files (contain example connection strings)
-^apps/docs/.*
+^apps/docu/.*
 ^\.cursor/skills/.*
 ^packages/.*/README\.md$
 

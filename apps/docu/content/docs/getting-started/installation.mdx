@@ -1,0 +1,225 @@
+---
+title: "Installation"
+description: "Environment variables and optional setup for database and smart contracts."
+---
+
+This guide covers environment variable configuration and optional setup for database and smart contract development.
+
+## Overview
+
+Environment variables are validated at module load using **t3-env** (built on Zod), ensuring type safety, clear error messages, and preventing runtime errors from missing configuration.
+
+## Development Setup
+
+Create `.env.local` files in each app:
+
+```bash
+# apps/fastify/.env.local
+DATABASE_URL=postgresql://user:pass@localhost:5432/dbname
+PORT=3001
+
+# apps/next/.env.local
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+## Validation Pattern
+
+All apps use **t3-env** for environment variable validation:
+
+- **Next.js apps** (`apps/next`, `apps/docu`): Use `@t3-oss/env-nextjs`
+- **Node/Fastify apps** (`apps/fastify`): Use `@t3-oss/env-core`
+
+### Next.js Apps
+
+Each Next.js app has `lib/env.ts` with server/client separation:
+
+```typescript
+// apps/web/lib/env.ts
+import { createEnv } from '@t3-oss/env-nextjs'
+import { z } from 'zod'
+
+export const env = createEnv({
+  server: {
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    SENTRY_ORG: z.string().min(1).optional(),
+  },
+  client: {
+    NEXT_PUBLIC_API_URL: z.string().min(1),
+    NEXT_PUBLIC_SENTRY_DSN: z.string().min(1).optional(),
+  },
+  runtimeEnv: {
+    NODE_ENV: process.env.NODE_ENV,
+    SENTRY_ORG: process.env.SENTRY_ORG,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  },
+  emptyStringAsUndefined: true,
+})
+```
+
+**Key points:**
+- `server` schema contains server-only variables (no `NEXT_PUBLIC_` prefix)
+- `client` schema contains only `NEXT_PUBLIC_*` variables
+- `runtimeEnv` must explicitly list ALL keys (server + client) for Next.js bundling
+- Consumption: `env.NEXT_PUBLIC_API_URL` (not camelCase)
+
+### Server Apps (Fastify/Node)
+
+Server apps use `@t3-oss/env-core`:
+
+```typescript
+// apps/fastify/src/lib/env.ts
+import { createEnv } from '@t3-oss/env-core'
+import { z } from 'zod'
+
+export const env = createEnv({
+  server: {
+    PORT: z.coerce.number().int().positive().default(3000),
+    HOST: z.string().default('0.0.0.0'),
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    DATABASE_URL: z.string().min(1).optional(),
+  },
+  runtimeEnv: process.env,
+  emptyStringAsUndefined: true,
+})
+```
+
+**Key points:**
+- Schema keys match actual environment variable names (UPPERCASE)
+- `runtimeEnv: process.env` passes through all env vars
+- Consumption: `env.DATABASE_URL`, `env.PORT` (not camelCase)
+
+## Consumption Pattern
+
+**Always import `env` from `lib/env.ts`:**
+
+```typescript
+// ✅ Correct
+import { env } from '@/lib/env'
+const apiUrl = env.NEXT_PUBLIC_API_URL
+
+// ❌ Wrong - never use process.env directly
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
+```
+
+**In Next.js Client Components:**
+- Only access `env.NEXT_PUBLIC_*` variables
+- Accessing server-only vars will throw at runtime (t3-env protection)
+
+## Required Variables
+
+### API (`apps/fastify`)
+
+- `DATABASE_URL` - PostgreSQL connection string (optional)
+- `PORT` - Server port (default: 3000)
+- `HOST` - Server host (default: 0.0.0.0)
+
+### Web (`apps/next`)
+
+- `NEXT_PUBLIC_API_URL` - API base URL (required)
+
+### Docs (`apps/docu`)
+
+- `NEXT_PUBLIC_SITE_URL` - Site URL for metadata (default: https://docs.basilic.dev)
+
+## Important Notes
+
+### NEXT_PUBLIC_* Variables
+
+⚠️ **Warning**: `NEXT_PUBLIC_*` variables are:
+- **Public** - Exposed to the browser (never put secrets here)
+- **Build-time inlined** - Replaced at build time, not runtime
+- **Cannot be changed** without rebuilding
+
+### runtimeEnv Requirement (Next.js)
+
+In Next.js apps, `runtimeEnv` must explicitly list every key from both `server` and `client` schemas. This is required for Next.js bundling to correctly identify which variables are used.
+
+### Type Safety
+
+t3-env provides:
+- Runtime validation (fails fast if invalid)
+- TypeScript type inference from Zod schemas
+- Protection against accessing server vars in client code (Next.js)
+
+## Production
+
+Set environment variables in your deployment platform:
+
+- **Vercel**: Project Settings → Environment Variables
+- **Google Cloud**: Cloud Run → Environment Variables
+- **AWS**: ECS Task Definition → Environment Variables
+
+## Optional Setup
+
+### Database (PostgreSQL)
+
+For database features, you'll need PostgreSQL. You can use:
+
+- **Local PostgreSQL**: Install PostgreSQL on your machine
+- **Supabase**: Free PostgreSQL hosting with additional features
+- **Other cloud providers**: Neon, Railway, etc.
+
+**Supabase CLI (Optional):**
+
+For local PostgreSQL development with Supabase, install Docker, Docker Compose, and Supabase CLI:
+
+```bash
+pnpm setup:database
+```
+
+This script will install:
+- **Docker** (required): Container runtime for Supabase local development
+- **Docker Compose** (required): Included with Docker
+- **Supabase CLI** (optional): Command-line tool for local PostgreSQL development
+
+Or install manually:
+- **macOS**: 
+  - Docker: `brew install --cask docker` (then start Docker Desktop)
+  - Supabase CLI: `brew install supabase/tap/supabase`
+- **Linux**: 
+  - Docker: Follow [official Docker installation guide](https://docs.docker.com/engine/install/)
+  - Supabase CLI: `wget https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.deb && sudo dpkg -i supabase_linux_amd64.deb && rm supabase_linux_amd64.deb`
+
+Once you have a PostgreSQL instance, set `DATABASE_URL` in your `.env.local`:
+
+```bash
+# apps/fastify/.env.local
+DATABASE_URL=postgresql://user:pass@localhost:5432/dbname
+```
+
+### Smart Contracts
+
+**EVM Contracts (Foundry):**
+
+For EVM contract development, install Foundry:
+
+```bash
+pnpm setup:evm
+```
+
+Or install manually:
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+
+See [EVM Contracts](/docs/blockchain/evm-contracts) for details.
+
+**Solana Contracts (Anchor):**
+
+For Solana contract development, install Anchor:
+
+```bash
+cargo install --git https://github.com/coral-xyz/anchor avm --force
+avm install latest
+avm use latest
+```
+
+See [Solana Contracts](/docs/blockchain/solana-contracts) for details.
+
+## Related Documentation
+
+- [Portability Strategy](/docs/architecture/portability) - Deployment options
+- [Blockchain](/docs/blockchain) - Smart contract development

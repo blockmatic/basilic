@@ -1,0 +1,234 @@
+---
+title: "Cursor Rules"
+description: "AI-readable coding standards that guide the AI assistant to follow project conventions automatically."
+---
+
+## What are Cursor Rules?
+
+Cursor rules are AI-readable coding standards that guide the AI assistant to follow your project's conventions automatically. They ensure consistent code quality and patterns across the codebase.
+
+## Rules Architecture
+
+Rules are organized in `.cursor/rules/` by domain:
+
+```
+.cursor/rules/
+├── base/          # Foundation (all projects)
+├── backend/       # Server-side code
+├── frontend/      # Client-side code
+└── web3/          # Blockchain integration
+```
+
+## Base Rules (Always Applied)
+
+### general.mdc
+- Code quality principles
+- Module system (ESM everywhere)
+- Agent behavior guidelines
+- Package manager (pnpm)
+- Formatting and linting
+
+### typescript.mdc
+- Prefer interfaces over types (exceptions documented)
+- Avoid enums (use maps or unions)
+- RORO pattern for functions
+- Functional over classes
+- Type inference preferred
+
+### environment.mdc
+- Environment variable patterns
+- Validation with Zod
+- `getEnvHelper` for Next.js
+- `validateEnvOrThrow` for servers
+
+### linting.mdc
+- Hybrid Biome + ESLint architecture
+- Biome: formatting, style, imports
+- ESLint: correctness, framework rules
+- Pre-commit hooks
+
+### mcp.mdc
+- MCP server usage guidelines
+- When to use Vercel MCP vs CLI
+- Integration patterns
+- Portability considerations
+
+## Backend Rules
+
+### fastify.mdc
+- Fastify REST API with OpenAPI generation
+- Route organization
+- ESM patterns
+- Error handling
+- Utility libraries
+
+### testing.mdc
+- Vitest patterns
+- Blackbox testing
+- Test organization
+
+## Frontend Rules
+
+### react.mdc
+- Function components only
+- State management decision tree
+- Error boundaries
+- Performance optimization
+
+### react-hooks.mdc
+- TanStack Query patterns
+- Query key factory (critical)
+- Mutations with invalidation
+- Suspense integration
+
+### nextjs.mdc
+- Server Components (default)
+- When to use client components
+- Server actions
+- API client with generated hey-api clients
+
+### stack.mdc
+- Preferred libraries
+- Query Key Factory pattern
+- nuqs for URL state
+- Development tools
+
+### mobile-first.mdc
+- Mobile-first always
+- Tailwind breakpoints
+- Touch targets
+- Progressive enhancement
+
+### shadcnui.mdc
+- Component patterns
+- Customization guidelines
+- v0 integration
+
+### testing.mdc
+- Testing Library patterns
+- Component testing
+- Integration testing
+
+## Web3 Rules
+
+### multichain.mdc
+- General address validation
+- Chain-specific libraries
+- Error handling
+
+### viem.mdc, wagmi.mdc, cosmos.mdc, solana.mdc, solidity.mdc, ponder.mdc
+- Chain-specific patterns
+- Transaction handling
+- Performance optimization
+
+## Using Rules During Development
+
+### Requesting Specific Rules
+
+When working on a task, you can request specific rules:
+
+```
+"Apply the TypeScript and Fastify rules when implementing this API endpoint"
+```
+
+### Rules Are Auto-Applied
+
+Cursor automatically applies relevant rules based on:
+- File type and location
+- Context in conversation
+- Task being performed
+
+### Rule Frontmatter
+
+Each rule has frontmatter defining:
+- `description`: What the rule covers
+- `globs`: File patterns it applies to
+- `alwaysApply`: Whether to always apply (optional)
+
+Example frontmatter:
+```markdown
+---
+description: "TypeScript coding standards and best practices"
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: false
+---
+```
+
+## Authoring New Rules
+
+Guidelines for creating rules:
+
+1. **Focused** - One domain/pattern per rule
+2. **Actionable** - Concrete guidance, not theory
+3. **Scoped** - ~1.5K words maximum
+4. **Examples** - Show, don't just tell
+5. **Frontmatter** - Description + globs
+
+### Rule Structure
+
+```markdown
+---
+description: "Brief description"
+globs: ["**/*.ts", "**/*.tsx"]
+---
+
+# Rule Title
+
+## Section 1
+Content here...
+
+## Section 2
+More content...
+```
+
+## Rules vs Documentation
+
+**Rules** (`.cursor/rules/`):
+- AI-readable coding standards
+- Prescriptive (do this, not that)
+- Code-level guidance
+- Auto-applied during development
+
+**Documentation** (`apps/docu/`):
+- Human-readable explanations
+- Educational (why and how)
+- Architecture and patterns
+- Reference material
+
+## Best Practices
+
+1. **Keep rules focused** - One concern per rule file
+2. **Use examples** - Show correct patterns
+3. **Be specific** - Avoid vague guidance
+4. **Update regularly** - Keep rules in sync with codebase
+5. **Test rules** - Verify they work as expected
+
+## Viewing Rules
+
+Browse rules in `.cursor/rules/`:
+
+```bash
+# View all rules
+ls -R .cursor/rules/
+
+# View a specific rule
+cat .cursor/rules/base/typescript.mdc
+```
+
+## Next Steps
+
+**New to AI-assisted development?** Follow this learning path:
+
+1. [AI Workflow](/docs/getting-started/ai-workflow) - High-level workflow introduction
+2. [Cursor Setup](/docs/getting-started/cursor-setup) - Configure your IDE
+3. **Cursor Rules** (you are here) - Understand the coding standards
+
+## Related Documentation
+
+**AI-Driven Development:**
+- [AI Workflow](/docs/getting-started/ai-workflow) - High-level workflow introduction
+- [Cursor Setup](/docs/getting-started/cursor-setup) - Complete guide to configuring Cursor IDE
+
+**Other Documentation:**
+- [Architecture Overview](/docs/architecture) - Technical stack and design decisions
+- [Core Concepts](/docs/core-concepts) - Fundamental concepts

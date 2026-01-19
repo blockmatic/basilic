@@ -32,9 +32,3 @@ Execute complete quality assurance pass across all apps in monorepo. Performs co
 - [ ] Documentation updated if needed
 - [ ] All repository and Cursor rules followed
 - [ ] Comprehensive summary provided
-
-## Related
-- @.cursor/rules/base/linting.mdc - Linting Rules
-- @.cursor/rules/base/general.mdc - General Agent Rules
-- @.cursor/rules/base/testing.mdc - Testing Rules
-- @.cursor/rules/base/typescript.mdc - TypeScript Rules

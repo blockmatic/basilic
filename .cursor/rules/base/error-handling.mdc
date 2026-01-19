@@ -70,5 +70,5 @@ Must be `UPPER_SNAKE_CASE`: `NETWORK_ERROR`, `USER_NOT_FOUND`, `AI_MODEL_ERROR`
 **Don't**: Never use `console.*` (use `@repo/utils/logger`), never expose internal error details to users, never import from root `@repo/error`, never try to register errors at runtime (all errors are pre-registered)
 
 ## Related
-- @apps/docs/content/docs/architecture/error-handling.mdx - Complete guide with error catalog, build-time validation, adding new error codes
-- @apps/docs/content/docs/core-concepts/packages.mdx - `@repo/error` package structure
+- @apps/docu/content/docs/architecture/error-handling.mdx - Complete guide with error catalog, build-time validation, adding new error codes
+- @apps/docu/content/docs/core-concepts/packages.mdx - `@repo/error` package structure

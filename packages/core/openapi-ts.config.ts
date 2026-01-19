@@ -1,7 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts'
 
 export default defineConfig({
-  input: '../../apps/api/openapi/openapi.json',
+  input: '../../apps/fastify/openapi/openapi.json',
   output: {
     path: './src/gen',
     format: 'prettier',

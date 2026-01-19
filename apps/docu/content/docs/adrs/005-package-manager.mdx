@@ -1,0 +1,103 @@
+---
+title: "ADR 005: Package Manager Selection"
+description: "Selected pnpm for reliable workspace dependency resolution, mature monorepo support, and battle-tested production stability."
+---
+
+## Context
+
+We need to select a package manager for our monorepo that:
+
+- Works reliably with workspace dependencies
+- Supports Next.js, Fastify, and Turbo monorepo setup
+- Handles complex dependency resolution (e.g., `@tailwindcss/postcss` in workspace packages)
+- Provides good performance and developer experience
+- Is production-ready and well-supported
+
+## Considered Options
+
+### Option A – pnpm
+
+Mature, workspace-optimized package manager.
+
+**Pros**
+
+- Correctly hoists and resolves dependencies across workspace packages
+- Handles complex scenarios like `@tailwindcss/postcss` in `@repo/ui` being accessible to `apps/next`
+- Uses symlinks and proper node_modules structure for workspace packages
+- Well-tested with Next.js, Fastify, and Turbo
+- Mature support for monorepo patterns
+- Extensive community adoption and documentation
+- Battle-tested in production environments
+- Reliable builds without workarounds
+- Better tooling support (debugging, monitoring, CI/CD)
+- No module resolution issues during builds
+- Consistent behavior across development and production
+
+**Cons**
+
+- Slightly slower package installation compared to Bun (acceptable trade-off for reliability)
+- Separate package manager and runtime (Node.js for runtime, pnpm for package management)
+
+### Option B – Bun
+
+Fast, all-in-one runtime and package manager.
+
+**Pros**
+
+- Very fast package installation
+- All-in-one runtime and package manager
+- Modern tooling
+
+**Cons**
+
+- Workspace implementation still maturing compared to pnpm
+- Less ecosystem testing for complex monorepo setups with Next.js/Fastify
+- Potential module resolution edge cases in monorepo context
+- Binary lockfile format (`bun.lockb`) is less debuggable than YAML
+- Smaller tooling ecosystem compared to pnpm
+- Some compatibility issues with certain Node.js packages
+- Less production battle-testing in large-scale monorepos
+
+## Decision
+
+We will use **pnpm** as our package manager.
+
+### TLDR: Comparison Table
+
+| Feature | pnpm ✅ | Bun |
+|---------|---------|-----|
+| **Installation speed** | ✅ Fast | ✅ Very fast |
+| **Workspace support** | ✅ Mature | ✅ Mature (2024) |
+| **Monorepo reliability** | ✅ Battle-tested | ⚠️ Improving |
+| **Runtime** | ⚠️ Separate | ✅ All-in-one |
+| **TypeScript support** | ✅ Excellent | ✅ Excellent |
+| **Ecosystem testing** | ✅ Extensive | ✅ Growing |
+| **Lockfile format** | ✅ YAML (`pnpm-lock.yaml`) | ⚠️ Binary (`bun.lockb`) |
+| **CI/CD integration** | ✅ pnpm setup action | ✅ Bun setup action |
+| **Production stability** | ✅ Battle-tested | ⚠️ Maturing |
+| **Tooling ecosystem** | ✅ Extensive | ⚠️ Growing |
+
+**Main reasons:**
+
+- **Reliable workspace resolution**: Correctly hoists and resolves dependencies across workspace packages, handling complex scenarios like `@tailwindcss/postcss` in `@repo/ui` being accessible to `apps/next`
+- **Monorepo maturity**: Well-tested with Next.js, Fastify, and Turbo with mature support for monorepo patterns
+- **Production stability**: Battle-tested in production environments with reliable builds and no module resolution issues
+- **Ecosystem support**: Extensive community adoption, documentation, and better tooling support for debugging, monitoring, and CI/CD
+- **Consistent behavior**: No module resolution workarounds needed, consistent behavior across development and production
+- **Zero build issues**: No dependency resolution edge cases or build failures requiring workarounds
+
+## Notes
+
+- **Runtime**: We use **Node.js LTS** for runtime with pnpm for package management
+- **Workspace protocol**: pnpm supports `workspace:*` protocol for internal package dependencies
+- **Lockfile**: pnpm uses `pnpm-lock.yaml` format (committed to repository)
+- **CI/CD**: All GitHub Actions workflows use pnpm setup action
+- **Installation**: Use `pnpm install` for dependencies, `pnpm add` for new packages
+- **Scripts**: Run scripts with `pnpm run <script>` or `pnpm <script>` for common commands
+- **Hoisting**: pnpm's symlink-based approach ensures proper dependency resolution across workspaces
+
+## Related Documentation
+
+- [Development Tooling](/docs/architecture/dev-tooling) - pnpm workspace configuration and tooling setup
+- [Monorepo Structure](/docs/core-concepts/monorepo-structure) - Turborepo organization and package dependencies
+- [ADR 001: Monorepo vs Standalone](/docs/adrs/001-monorepo-vs-standalone) - Monorepo architecture decision

@@ -41,15 +41,38 @@
   },
   "peerDependencies": {
     "lodash-es": "*",
+    "viem": "*",
+    "zod": "*",
     "nuqs": "*",
     "pino": "*",
     "react": "*",
     "react-use": "*",
     "typescript": "^5.0.0",
     "vconsole": "*",
-    "viem": "*",
-    "zod": "*",
     "zod-validation-error": "*"
+  },
+  "peerDependenciesMeta": {
+    "nuqs": {
+      "optional": true
+    },
+    "pino": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-use": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
+    },
+    "vconsole": {
+      "optional": true
+    },
+    "zod-validation-error": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

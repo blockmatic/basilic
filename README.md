@@ -49,7 +49,7 @@ Runs on all pull requests and pushes to main:
 - **Git history scan** - Scans entire git history for exposed secrets
 - All checks must pass for CI to succeed
 
-See [Security Guide](@apps/docs/content/docs/security/index.mdx) for complete details.
+See [Security Guide](@apps/docu/content/docs/security/index.mdx) for complete details.
 
 ## Structure
 
@@ -62,23 +62,23 @@ See [Security Guide](@apps/docs/content/docs/security/index.mdx) for complete de
 Full documentation: [https://basilic-docs.vercel.app/docs](https://basilic-docs.vercel.app/docs)
 
 ### Get Started
-- [Getting Started](@apps/docs/content/docs/getting-started/index.mdx) - 15-minute setup guide
-- [AI-Driven Development](@apps/docs/content/docs/getting-started/ai-workflow.mdx) - Recommended workflow with Cursor
+- [Getting Started](@apps/docu/content/docs/getting-started/index.mdx) - 15-minute setup guide
+- [AI-Driven Development](@apps/docu/content/docs/getting-started/ai-workflow.mdx) - Recommended workflow with Cursor
 
 ### Core Concepts
-- [Monorepo Structure](@apps/docs/content/docs/core-concepts/monorepo-structure.mdx) - Package organization
-- [API Development](@apps/docs/content/docs/core-concepts/api-architecture.mdx) - REST API with OpenAPI and client generation
-- [Portability Strategy](@apps/docs/content/docs/architecture/portability.mdx) - Zero vendor lock-in
+- [Monorepo Structure](@apps/docu/content/docs/core-concepts/monorepo-structure.mdx) - Package organization
+- [API Development](@apps/docu/content/docs/core-concepts/api-architecture.mdx) - REST API with OpenAPI and client generation
+- [Portability Strategy](@apps/docu/content/docs/architecture/portability.mdx) - Zero vendor lock-in
 
 ### Guides
-- [Security Guide](@apps/docs/content/docs/security/index.mdx) - Security baseline and secret scanning
-- [Error Handling Guide](@apps/docs/content/docs/architecture/error-handling.mdx) - Error handling with Sentry integration
-- [Deployment Guide](@apps/docs/content/docs/deployment/index.mdx) - Deployment options and strategies
-- [Publishing Guide](@apps/docs/content/docs/deployment/publishing.mdx) - Publishing packages to npm
+- [Security Guide](@apps/docu/content/docs/security/index.mdx) - Security baseline and secret scanning
+- [Error Handling Guide](@apps/docu/content/docs/architecture/error-handling.mdx) - Error handling with Sentry integration
+- [Deployment Guide](@apps/docu/content/docs/deployment/index.mdx) - Deployment options and strategies
+- [Publishing Guide](@apps/docu/content/docs/deployment/publishing.mdx) - Publishing packages to npm
 
 ### Cursor Setup
-- [Cursor Setup Guide](@apps/docs/content/docs/getting-started/cursor-setup.mdx) - Configure IDE and MCP servers
-- [Cursor Rules](@apps/docs/content/docs/core-concepts/cursor-rules.mdx) - Coding standards
+- [Cursor Setup Guide](@apps/docu/content/docs/getting-started/cursor-setup.mdx) - Configure IDE and MCP servers
+- [Cursor Rules](@apps/docu/content/docs/core-concepts/cursor-rules.mdx) - Coding standards
 
 ### Deep Dives
-- [Architecture](@apps/docs/content/docs/architecture/index.mdx) - Architecture overview
+- [Architecture](@apps/docu/content/docs/architecture/index.mdx) - Architecture overview

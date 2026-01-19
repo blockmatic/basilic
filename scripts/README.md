@@ -6,9 +6,9 @@ Utility scripts for this monorepo.
 
 For comprehensive guides, see:
 
-- **[Publishing Guide](@apps/docs/content/docs/deployment/publishing.mdx)** - Complete guide to publishing packages
-- **[Security Guide](@apps/docs/content/docs/security/index.mdx)** - Security baseline and secret scanning
-- **[Deployment Guide](@apps/docs/content/docs/deployment/index.mdx)** - Deployment options and strategies
+- **[Publishing Guide](@apps/docu/content/docs/deployment/publishing.mdx)** - Complete guide to publishing packages
+- **[Security Guide](@apps/docu/content/docs/security/index.mdx)** - Security baseline and secret scanning
+- **[Deployment Guide](@apps/docu/content/docs/deployment/index.mdx)** - Deployment options and strategies
 
 ## Publishing Scripts
 
@@ -34,7 +34,7 @@ Runs during `postpack` lifecycle hook (after packing):
 
 **Usage**: Automatically invoked via npm/pnpm lifecycle hooks. No manual execution needed.
 
-**Package Configuration**: Packages using these scripts should have development exports pointing to `src/` in `package.json`. See [Publishing Guide](@apps/docs/content/docs/deployment/publishing.mdx) for complete configuration details.
+**Package Configuration**: Packages using these scripts should have development exports pointing to `src/` in `package.json`. See [Publishing Guide](@apps/docu/content/docs/deployment/publishing.mdx) for complete configuration details.
 
 ## Security Scripts
 

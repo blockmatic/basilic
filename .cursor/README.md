@@ -85,7 +85,7 @@ Model Context Protocol (MCP) servers extend Cursor with specialized capabilities
 **Available servers:**
 - `shadcnui-official` - Canonical shadcn/ui component definitions, variants, and single primitives (no auth required)
 - `shadcnui-jpisnice-react` - shadcn/ui v4 blocks, demos, and page templates for React (requires `GITHUB_TOKEN`)
-- `github` - Repository operations and issue management (requires `GITHUB_TOKEN`)
+- `github` - Repository operations, issue management, and GitHub Actions logs (requires `GITHUB_TOKEN`)
 - `coderabbit` - CodeRabbit AI code review comments and PR insights (requires `GITHUB_TOKEN`)
 - `basilic-docs` - Basilic project documentation context (no auth required)
 - `basilic-api` - Basilic API package context (no auth required)
@@ -122,7 +122,7 @@ export GITHUB_PAT="$GITHUB_TOKEN"     # CodeRabbit MCP expects GITHUB_PAT
 ## Related Resources
 
 **Project documentation:**
-- [Cursor Setup Guide](apps/docs/content/docs/getting-started/cursor-setup.mdx) - MCP servers and IDE configuration
+- [Cursor Setup Guide](apps/docu/content/docs/getting-started/cursor-setup.mdx) - MCP servers and IDE configuration
 - Project tech stack - See main repository README
 
 **External documentation:**

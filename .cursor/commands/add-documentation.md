@@ -1,7 +1,7 @@
 # Add Documentation
 
 ## Overview
-Add comprehensive documentation for current code/feature per project standards (README, apps/docs website, or inline comments).
+Add comprehensive documentation for current code/feature per project standards (README, apps/docu website, or inline comments).
 
 ## Steps
 1. **Overview**: What code/feature does, why it exists, key concepts/terminology

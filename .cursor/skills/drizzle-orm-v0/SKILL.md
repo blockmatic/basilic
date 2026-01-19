@@ -1,55 +1,73 @@
 ---
-name: Drizzle PostgreSQL
+name: Drizzle ORM
 description: |
   Drizzle ORM for TypeScript - type-safe SQL queries, schema definitions, migrations, and relations.
   
-  Use when: building database layers in Next.js or Node.js applications.
+  Use when: building database layers in TypeScript applications.
 ---
 
 # Skill: drizzle-orm
 
 ## Scope
 
-- Applies to: Drizzle ORM v0 for PostgreSQL, MySQL, SQLite - schema definitions, type-safe queries, migrations, relations
-- Does NOT cover: Database drivers setup, migration tooling details, other ORMs
+- Applies to: Drizzle ORM v0.44+ for PostgreSQL, MySQL, SQLite - schema definitions, type-safe queries, migrations, relations
+- Does NOT cover: Database driver setup, connection pooling configuration, other ORMs
 
 ## Assumptions
 
-- Drizzle ORM v0+
-- Drizzle Kit (dev dependency) for migrations
+- Drizzle ORM v0.44+
+- Drizzle Kit v0.31+ (dev dependency) for migrations
 - PostgreSQL, MySQL, or SQLite database
 - TypeScript v5+ with strict mode
+- ESM module system
 
 ## Principles
 
-- Define schemas using `pgTable`, `text`, `varchar`, `timestamp`, etc.
-- Use query helpers (`eq`, `and`, `or`, `like`, etc.) for type-safe queries
-- Use `select()`, `insert()`, `update()`, `delete()` for CRUD operations
-- Use `relations()` for defining relationships
-- Use `db.transaction()` for atomic operations
-- Generate migrations with `drizzle-kit generate`
-- Use `$inferSelect` and `$inferInsert` for type inference
+- Schemas defined using table builders (`pgTable`, `mysqlTable`, `sqliteTable`) with typed columns
+- Column types match database constraints (`varchar` with length, `timestamp` with mode)
+- Indexes defined in table definition second parameter using `index()` helper
+- Identity columns (`generatedAlwaysAsIdentity`) preferred over `serial` in PostgreSQL
+- Query helpers (`eq`, `and`, `or`, `like`) provide type-safe SQL construction
+- Relational query builder (`db.query.*`) preferred for complex relations
+- Type inference via `$inferSelect` and `$inferInsert` eliminates manual types
+- Migrations generated with `drizzle-kit generate` (not `push` in production)
+- Prepared statements optimize frequently executed queries
+- Schemas organized by domain (one file per entity/table)
+- Transactions (`db.transaction`) ensure atomic multi-step operations
 
 ## Constraints
 
 ### MUST
 
 - Use Drizzle Kit for migrations (`drizzle-kit generate`, `drizzle-kit migrate`)
-- Define schemas with proper column types and constraints
-- Use query helpers instead of raw SQL when possible
+- Define column types matching database constraints
+- Use query helpers instead of raw SQL
 
 ### SHOULD
 
 - Use relations for type-safe joins
+- Use relational query builder for complex relations
 - Use transactions for multi-step operations
 - Use prepared statements for frequently executed queries
-- Export types using `$inferSelect` and `$inferInsert`
+- Export types via `$inferSelect` and `$inferInsert`
+- Handle `DrizzleQueryError` for structured error handling
+- Organize schemas by domain (one file per entity)
+- Use selective field loading (not full rows)
+- Use identity columns over `serial` in PostgreSQL
+- Specify length for `varchar` columns
+- Use `index()` helper in table definitions
+- Use PGLite for testing PostgreSQL schemas
 
 ### AVOID
 
-- Raw SQL unless necessary (use query helpers)
+- Raw SQL unless necessary
 - Manual type assertions (use inferred types)
 - Skipping migration generation
+- `serial` in new PostgreSQL tables (use identity columns)
+- Over-indexing (index only where queries justify)
+- Fetching full rows when only few columns needed
+- `push` in production (use `generate` + `migrate`)
+- String-based timestamp mode when DB supports date/time types
 
 ## Interactions
 
@@ -61,19 +79,34 @@ description: |
 ### Schema Definition
 
 ```typescript
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { index, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
-export const users = pgTable('users', {
-  id: text('id').primaryKey(),
-  email: text('email').notNull().unique(),
-  createdAt: timestamp('created_at').defaultNow(),
-})
+export const users = pgTable(
+  'users',
+  {
+    id: text('id').primaryKey(),
+    email: varchar('email', { length: 255 }).notNull().unique(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  table => [index('users_email_idx').on(table.email)],
+)
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
 ```
 
-### Query Pattern
+### Identity Columns
+
+```typescript
+import { pgTable, integer, generatedAlwaysAsIdentity } from 'drizzle-orm/pg-core'
+
+export const posts = pgTable('posts', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+})
+```
+
+### Query Builder
 
 ```typescript
 import { eq } from 'drizzle-orm'
@@ -83,9 +116,19 @@ const user = await db
   .from(users)
   .where(eq(users.id, userId))
   .limit(1)
+
+const userWithPosts = await db.query.users.findFirst({
+  where: eq(users.id, userId),
+  with: { posts: true },
+})
+
+const userEmail = await db
+  .select({ email: users.email })
+  .from(users)
+  .where(eq(users.id, userId))
 ```
 
-### Transaction Pattern
+### Transactions
 
 ```typescript
 await db.transaction(async (tx) => {
@@ -94,7 +137,83 @@ await db.transaction(async (tx) => {
 })
 ```
 
-See [Query Patterns](references/queries.md) and [PostgreSQL Patterns](references/postgresql-patterns.md) for detailed examples.
+### Prepared Statements
+
+```typescript
+import { placeholder } from 'drizzle-orm'
+
+const getUserByEmail = db
+  .select()
+  .from(users)
+  .where(eq(users.email, placeholder('email')))
+  .prepare('get_user_by_email')
+
+const user = await getUserByEmail.execute({ email: 'user@example.com' })
+```
+
+### Error Handling
+
+```typescript
+import { DrizzleQueryError } from 'drizzle-orm'
+
+try {
+  const user = await db.select().from(users).where(eq(users.id, userId))
+} catch (error) {
+  if (error instanceof DrizzleQueryError) {
+    if (error.cause?.code === '23505') {
+      throw new Error('User already exists')
+    }
+  }
+  throw error
+}
+```
+
+### Relations
+
+```typescript
+import { relations } from 'drizzle-orm'
+
+export const usersRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+}))
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(users, {
+    fields: [posts.authorId],
+    references: [users.id],
+  }),
+}))
+```
+
+### Database Connection
+
+```typescript
+import { drizzle } from 'drizzle-orm/node-postgres'
+import { Pool } from 'pg'
+import * as schema from './schema'
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+export const db = drizzle(pool, { schema })
+```
+
+### Drizzle Kit Config
+
+```typescript
+import { defineConfig } from 'drizzle-kit'
+
+export default defineConfig({
+  dialect: 'postgresql',
+  schema: './src/db/schema/index.ts',
+  out: './src/db/migrations',
+  dbCredentials: { url: process.env.DATABASE_URL! },
+  migrations: {
+    table: '__drizzle_migrations',
+    schema: 'public',
+  },
+  verbose: true,
+  strict: true,
+})
+```
 
 ## References
 

@@ -1,56 +1,35 @@
 ---
-description: Guidelines for creating effective Cursor command files
+description: Format enforcement for Cursor command files
 glob: ".cursor/commands/**/*.md"
-alwaysApply: false
+alwaysApply: true
 ---
 
-# Rules for Writing Cursor Commands
+# Cursor Commands Format
 
-## Structure
-- **Consistent format**: Title, Overview, Steps, Checklist
-- **Clear purpose**: Single, well-defined purpose per command
-- **Action-oriented**: Guide agents to perform specific tasks
-- **Descriptive filenames**: kebab-case matching command title
+## Required Structure
+1. **Title**: `# Command Name` (single line, title case)
+2. **Overview**: `## Overview` (1-2 sentences describing purpose/context)
+3. **Steps**: `## Steps` (numbered list `1.`, `2.`, etc. with bold sub-headers `**Title**:` followed by comma-separated actions)
+4. **Checklist**: `## Checklist` (checkbox items `- [ ] Description` covering all critical steps)
 
-## Content Structure
+## Format Rules
+- **Title**: Single `#` heading, title case, matches filename (kebab-case)
+- **Overview**: Brief context, when/why to use, no bullet points
+- **Steps**: Numbered (`1.`, `2.`), bold sub-headers (`**Name**:`), comma-separated actions in description
+- **Checklist**: Checkboxes (`- [ ]`) mirroring Steps, one per critical action/verification
 
-### Required Sections
-1. **Title** (`# Title`) - Clear, action-oriented, matches filename
-2. **Overview** - Brief 1-2 sentence description, context about when/why to use
-3. **Steps** - Numbered list with sub-items, clear actionable language, grouped related actions
-4. **Checklist** - Checkbox list covering all critical aspects from Steps
+## Examples
+```markdown
+# Command Name
 
-### Optional Sections
-- **Best Practices**: Do/Don't lists
-- **Prompt Template**: Reusable templates
-- **Examples**: Code examples/usage patterns
+## Overview
+Brief 1-2 sentence description of what this command does and when to use it.
 
-## Content Quality
-- **Specific and actionable**: Concrete steps, not vague guidance
-- **Project context**: Reference project-specific patterns/tools/conventions
-- **Self-contained**: Embed necessary context directly (no external links)
-- **Follow project patterns**: Reference existing rules/docs/conventions
-- **Consistent terminology**: Match terminology used in rules/docs
+## Steps
+1. **Step Title**: Action one, action two, action three
+2. **Another Step**: Action four, action five
 
-## Command Patterns
-- **Task Execution**: Focus on step-by-step execution, include quality criteria
-- **Setup**: Guide initial setup/planning, include checklists
-- **Refactoring**: Focus on analysis/improvement, include before/after considerations
-- **Integration**: Guide integration with external tools, include best practices/prompt templates
-
-## Best Practices
-**Do**: Follow standard structure, use clear action-oriented language, reference project-specific patterns, include verification steps, provide specific examples, reference related rules using @ syntax
-
-**Don't**: Create overly verbose commands, duplicate information in rules (reference instead), use vague/ambiguous language, skip checklist section, create commands that conflict with existing rules
-
-## Integration with Rules
-- **Reference rules**: Use @ syntax to reference relevant rule files
-- **Complement rules**: Commands provide workflows; rules provide standards
-- **Stay consistent**: Ensure commands align with project rules/conventions
-- **Update together**: When updating rules, check if related commands need updates
-
-## Maintenance
-- **Keep current**: Update when project patterns/tools change
-- **Remove obsolete**: Delete commands no longer relevant
-- **Consolidate**: Merge similar commands to avoid duplication
-- **Test**: Verify commands work as intended
+## Checklist
+- [ ] Action one completed
+- [ ] Action two verified
+```

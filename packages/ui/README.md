@@ -29,4 +29,4 @@ Centralized design system dependencies:
 - Styling utilities (`clsx`, `tailwind-merge`, `class-variance-authority`)
 - Single source of truth for component versions
 
-See [Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx) for design system details.
+See [Frontend Stack](@apps/docu/content/docs/architecture/frontend-stack.mdx) for design system details.

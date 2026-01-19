@@ -1,0 +1,924 @@
+---
+title: "Error Handling"
+description: "Error handling with Sentry integration and centralized error catalog."
+---
+
+Complete guide for using the unified error handling system across the monorepo.
+
+## Overview
+
+The monorepo uses a unified error handling API (`@repo/error`) that provides consistent, type-safe error handling with excellent observability through Sentry integration across all applications.
+
+**Key principles:**
+- Two-track error handling: Sentry gets REAL errors (debugging), API returns SAFE catalog errors (users)
+- Centralized catalog: All error codes defined in package, pre-registered at build time
+- Framework-native: Fastify handlers, React Error Boundaries, Next.js error pages
+- Security-first: Sentry built-in PII scrubbing, no internal leaks
+- Performance: Async Sentry capture, non-blocking, zero latency impact
+
+## Quick Start
+
+### Capture Error (Most Common)
+
+```typescript
+// For Next.js apps
+import { captureError } from '@repo/error/nextjs'
+
+// For Node.js/Fastify apps
+// import { captureError } from '@repo/error/node'
+
+const catalogError = captureError({
+  code: 'NETWORK_ERROR',
+  error, // Real error → Sentry (full stack trace)
+  label: 'API Call',
+  data: { endpoint: '/api/data' }, // Internal context → Sentry
+  tags: { app: 'web' },
+})
+// Returns: { code: 'NETWORK_ERROR', message: 'A network error occurred' }
+// User sees safe message, Sentry gets full details
+```
+
+### Extract Error Message
+
+```typescript
+// Core utilities are available from all platform exports
+// For Next.js apps
+import { getErrorMessage } from '@repo/error/nextjs'
+// For Node.js/Fastify apps
+// import { getErrorMessage } from '@repo/error/node'
+// For browser frameworks
+// import { getErrorMessage } from '@repo/error/browser'
+
+const message = getErrorMessage(error) // Type-safe!
+```
+
+### Initialize Sentry
+
+```typescript
+// For Next.js apps
+import { initSentry } from '@repo/error/nextjs'
+// For Node.js/Fastify apps
+// import { initSentry } from '@repo/error/node'
+
+// Initialize BEFORE framework starts
+initSentry({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+})
+```
+
+**Idempotency:** `initSentry` automatically checks if Sentry is already initialized using `Sentry.getClient()`. You can safely call it multiple times without causing double initialization. This is useful when initializing in both server-side instrumentation and client-side error boundaries.
+
+## Core Concepts
+
+### Two-Track Error Handling
+
+**Critical Distinction:** When an error occurs, two separate things happen:
+
+1. **Sentry (Internal)** - REAL error with full stack trace and internal context for debugging
+2. **API Response (External)** - SAFE catalog error with user-friendly message
+
+```
+User Action → Error Occurs
+     ↓
+     ├─→ [Sentry] Real error + stack trace + internal context (developers)
+     └─→ [API Response] Safe catalog error { code, message } (users)
+```
+
+**Example:**
+```typescript
+// Real error occurs (e.g., database connection failure)
+const realError = new Error('Connection to postgres://internal-db:5432 failed: ECONNREFUSED')
+
+// captureError sends REAL error to Sentry
+const catalogError = captureError({
+  code: 'SERVER_ERROR',
+  error: realError, // ← Full error with stack trace → Sentry
+  label: 'Database Connection',
+  data: { 
+    host: 'internal-db', // Internal details for debugging
+    port: 5432,
+  }
+})
+
+// API returns SAFE catalog error to user
+reply.status(500).send(catalogError)
+// Response: { code: 'SERVER_ERROR', message: 'An internal server error occurred' }
+// ❌ User NEVER sees: stack traces, connection strings, internal IPs
+```
+
+**Why:**
+- **Security**: Users never see sensitive internal details
+- **UX**: Users see friendly, actionable messages
+- **Debugging**: Developers have full context in Sentry
+- **Compliance**: Prevents accidental sensitive data exposure
+
+### Centralized Error Catalog
+
+All error codes are defined in `packages/error/src/catalogs/` and merged at build time:
+
+- `server.ts` - Server-side HTTP errors
+- `client.ts` - Client-side validation and network errors
+- `common.ts` - Common errors used across both
+- `api.ts` - API-specific errors
+- `web.ts` - Web app-specific errors
+
+**Benefits:**
+1. **Centralized**: All errors in one place, easy to discover
+2. **Type Safety**: All codes available as `CoreErrorCode` union type
+3. **Build-time Validation**: Error codes validated at build time, not runtime
+4. **No Registration**: All errors pre-registered, ready to use
+
+**Adding New Error Codes:**
+1. Add them to the appropriate catalog file in `packages/error/src/catalogs/`
+2. Rebuild the package: `cd packages/error && pnpm build`
+3. Use the new error code directly - no registration needed!
+
+### Error Code Format
+
+Error codes must be `UPPER_SNAKE_CASE`:
+
+- ✅ `NETWORK_ERROR`, `USER_NOT_FOUND`, `AI_MODEL_ERROR`
+- ❌ `network-error`, `NetworkError`, `NETWORK_ERROR_`
+
+**Best Practices:**
+- Be specific: `NETWORK_TIMEOUT` > `NETWORK_ERROR`
+- App prefix: `DASHBOARD_*`, `MOBILE_*`, `WALLET_*`
+- Verb form: `LOAD_FAILED`, `PERMISSION_DENIED`
+- No abbreviations: `AUTHENTICATION_ERROR` not `AUTH_ERR`
+
+### Security
+
+**Sentry's Built-in PII Scrubbing**: Sentry automatically handles sensitive data scrubbing. No custom `beforeSend` hook required by default.
+
+**Why Sentry's built-in approach:**
+- Battle-tested and maintained by Sentry
+- Handles edge cases (circular refs, depth limits, etc.)
+- No custom code to maintain
+- Works across all event types (errors, breadcrumbs, contexts)
+- Automatically scrubs: password, token, secret, apiKey, authorization, cookie, session
+
+**Optional Custom Scrubbing:** Add a `beforeSend` hook to Sentry initialization only if you need domain-specific scrubbing beyond Sentry's defaults.
+
+**Never expose internal details to users** - Always return safe catalog errors.
+
+## Framework Integration
+
+### Fastify (Backend API)
+
+#### Global Error Handler Plugin
+
+```typescript
+// apps/fastify/src/plugins/error-handler.ts
+import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
+import type { FastifyError, FastifyInstance } from 'fastify'
+import fp from 'fastify-plugin'
+
+function extractModuleFromRoute(routePath: string): string | null {
+  const match = routePath.match(/^\/([^/]+)/)
+  if (!match) return null
+  
+  const resource = match[1]
+  const singular = resource.replace(/s$/, '')
+  return `${singular}-service`
+}
+
+export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
+  fastify.setErrorHandler((error: FastifyError, request, reply) => {
+    const routePath = (request as { routerPath?: string }).routerPath ?? request.url.split('?')[0]
+    const module = extractModuleFromRoute(routePath) ?? 'api-route'
+    
+    // captureError handles logging via Fastify's native logger (request.log)
+    // Captures REAL error to Sentry with built-in PII scrubbing
+    // Uses Fastify's native Pino logger with request context (requestId via requestIdLogLabel: 'reqId')
+    // mapHttpStatusToErrorCode handles null/undefined/invalid statusCode gracefully
+    const catalogError = captureError({
+      code: mapHttpStatusToErrorCode(error.statusCode),
+      error, // ← Full stack trace → Sentry
+      logger: request.log, // ← Use Fastify's native logger
+      label: `${request.method} ${request.url}`,
+      data: {
+        requestId: request.id,
+        method: request.method,
+        url: request.url,
+        headers: request.headers,
+        body: request.body, // Sentry built-in scrubbing handles sensitive data
+      },
+      tags: {
+        app: 'api',
+        module,
+        route: routePath,
+        method: request.method,
+      },
+    })
+    
+    // Return SAFE catalog error
+    reply.status(error.statusCode ?? 500).send({
+      code: catalogError.code,
+      message: catalogError.message,
+    })
+  })
+})
+```
+
+**Note**: Pass `logger: request.log` to use Fastify's native Pino logger. This ensures errors are logged with request context (requestId, etc.) and avoids duplicate logging. If omitted, `captureError` defaults to the internal logger from `@repo/utils/logger`.
+
+**Setup:**
+```typescript
+// apps/fastify/src/index.ts
+import { initSentry } from '@repo/error/node'
+
+// 1. Initialize Sentry (idempotent - safe to call multiple times)
+initSentry({ dsn: process.env.SENTRY_DSN })
+
+// 2. Start Fastify
+const app = fastify()
+await app.register(import('./plugins/error-handler.js'))
+```
+
+**Note**: All error codes are pre-registered at build time. No need to call `registerErrors()` - just use error codes directly from the catalog.
+
+**Benefits:**
+- ✅ Centralized error handling
+- ✅ Automatic Sentry reporting with PII scrubbing
+- ✅ Structured logging via `@repo/utils/logger` (Pino on server)
+- ✅ Consistent error responses
+- ✅ Less route boilerplate
+- ✅ Works with `fastify-sensible`
+
+Routes can throw errors - the global handler catches and formats them automatically.
+
+### React (Frontend Components)
+
+#### Error Boundaries
+
+**Recommended: Use AppErrorBoundary**
+
+```typescript
+// apps/next/app/layout.tsx
+'use client'
+
+import { AppErrorBoundary } from '@repo/error/react'
+import { captureError } from '@repo/error/nextjs' // or /node, /browser
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AppErrorBoundary app="web" captureError={captureError}>
+      {children}
+    </AppErrorBoundary>
+  )
+}
+```
+
+**Custom Implementation (Alternative)**
+
+If you need more control, you can build a custom error boundary:
+
+```typescript
+// apps/next/components/error-boundary.tsx
+'use client'
+
+import { captureError } from '@repo/error/nextjs'
+import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary'
+
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  return (
+    <div>
+      <h2>Something went wrong</h2>
+      <p>{error instanceof Error ? error.message : String(error)}</p>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  )
+}
+
+export function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <ReactErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => window.location.reload()}
+      onError={(error, errorInfo) => {
+        captureError({
+          code: 'UNEXPECTED_ERROR',
+          error,
+          label: 'React Error Boundary',
+          tags: { app: 'web', component: 'ErrorBoundary' },
+          data: {
+            componentStack: errorInfo.componentStack,
+          },
+        })
+      }}
+    >
+      {children}
+    </ReactErrorBoundary>
+  )
+}
+```
+
+#### Event Handlers
+
+```typescript
+// For Next.js apps
+import { captureError } from '@repo/error/nextjs'
+// For Node.js/Fastify apps
+// import { captureError } from '@repo/error/node'
+
+import { toast } from 'sonner'
+
+async function handleSubmit() {
+  try {
+    await submitForm()
+  } catch (error) {
+    const catalogError = captureError({
+      code: 'NETWORK_ERROR',
+      error,
+      label: 'Form Submission',
+      tags: { app: 'web', module: 'form-handler' },
+      data: { formData: form.getValues() }
+    })
+    toast.error(catalogError.message)
+  }
+}
+```
+
+**Use for**: App-level, section-level, feature-level error handling, third-party component errors
+
+**Don't use for**: Event handlers (use try/catch with `captureError`), async code (use try/catch), SSR errors
+
+### Next.js (App Router)
+
+#### Error Pages
+
+```typescript
+// app/error.tsx
+'use client'
+import { captureError } from '@repo/error/nextjs'
+import { useEffect } from 'react'
+
+export default function ErrorPage({ 
+  error, 
+  reset 
+}: { 
+  error: Error & { digest?: string }
+  reset: () => void 
+}) {
+  useEffect(() => {
+    captureError({
+      code: 'UNEXPECTED_ERROR',
+      error,
+      label: 'Next.js Error Page',
+      tags: { app: 'web', module: 'error-page' },
+      data: {
+        digest: error.digest,
+      },
+    })
+  }, [error])
+
+  return (
+    <div>
+      <h2>Something went wrong</h2>
+      <button onClick={() => reset()}>Try again</button>
+    </div>
+  )
+}
+```
+
+#### Server Actions
+
+**Pattern 1: Return Result Object**
+```typescript
+'use server'
+import { captureError } from '@repo/error/nextjs'
+
+export async function serverAction() {
+  try {
+    const result = await db.query('...')
+    return { success: true, data: result }
+  } catch (error) {
+    const catalogError = captureError({
+      code: 'SERVER_ERROR',
+      error,
+      label: 'Server Action',
+      tags: { app: 'web', module: 'server-action' },
+    })
+    return { success: false, error: catalogError }
+  }
+}
+```
+
+**Pattern 2: Throw Error**
+```typescript
+'use server'
+import { captureError } from '@repo/error/nextjs'
+
+export async function serverAction() {
+  try {
+    return await db.query('...')
+  } catch (error) {
+    captureError({
+      code: 'SERVER_ERROR',
+      error,
+      label: 'Server Action',
+      tags: { app: 'web', module: 'server-action' },
+    })
+    throw error // Next.js handles serialization
+  }
+}
+```
+
+**When to use:**
+- Pattern 1: Explicit control, form actions with `useFormState` (returns result object, not throwing)
+- Pattern 2: Next.js handles serialization, simpler code (throws error, Next.js serializes)
+
+#### Initialization
+
+```typescript
+// apps/next/instrumentation.ts
+import { initSentry } from '@repo/error/nextjs'
+import { env } from './lib/env'
+
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Initialize Sentry (only if DSN is configured)
+    const dsn = env.NEXT_PUBLIC_SENTRY_DSN
+    const environment = env.NEXT_PUBLIC_SENTRY_ENVIRONMENT
+    
+    if (dsn) {
+      initSentry({ dsn, environment })
+    }
+  }
+}
+```
+
+**Idempotency:** `initSentry` automatically checks if Sentry is already initialized before initializing. You can safely call it multiple times (e.g., in both `instrumentation.ts` and error boundaries) without causing double initialization.
+
+## Error Catalogs
+
+All error codes are defined in `packages/error/src/catalogs/` and merged at build time:
+
+- `server.ts` - Server-side HTTP errors
+- `client.ts` - Client-side validation and network errors
+- `common.ts` - Common errors used across both
+- `api.ts` - API-specific errors
+- `web.ts` - Web app-specific errors
+
+### Complete Error Catalog
+
+**Server Errors**: `SERVER_ERROR`, `BAD_REQUEST`, `NOT_FOUND`, `UNAUTHORIZED`, `FORBIDDEN`, `INVALID_INPUT`, `CONFLICT`, `RATE_LIMIT_EXCEEDED`, `BAD_GATEWAY`, `SERVICE_UNAVAILABLE`, `GATEWAY_TIMEOUT`
+
+**Client Errors**: `NETWORK_ERROR`, `NETWORK_TIMEOUT`, `FETCH_ERROR`, `CLIENT_VALIDATION_ERROR`, `CLIENT_FORMAT_ERROR`
+
+**Common**: `UNEXPECTED_ERROR`
+
+**API-Specific**: `AI_MODEL_ERROR`, `AI_RATE_LIMIT_EXCEEDED`, `BLOCKCHAIN_TRX_OP_FAILURE`, `BLOCKCHAIN_BLOCK_PROCESSING_ERROR`
+
+**Web-Specific**: `DASHBOARD_DATA_LOAD_FAILED`
+
+### Build-time Validation
+
+- Each catalog is validated individually (format, duplicates, code property matching)
+- Cross-catalog duplicate detection ensures no code collisions
+- Build fails if validation errors are found
+
+**Type Safety:** All error codes are available as the `CoreErrorCode` union type, exported from platform-specific paths or `/core`. Use `mapHttpStatusToErrorCode()` which returns `CoreErrorCode` for type-safe HTTP status code mapping.
+
+**Unknown Error Codes:** If `captureError` is called with an unknown error code, it returns `UNEXPECTED_ERROR` fallback, logs a warning, and automatically captures to Sentry with `unknownErrorCode: 'true'` tag for runtime misconfiguration detection.
+
+### Adding New Error Codes
+
+To add new error codes:
+
+1. Add them to the appropriate catalog file in `packages/error/src/catalogs/`:
+   - `server.ts` for server-side errors
+   - `client.ts` for client-side errors
+   - `common.ts` for shared errors
+   - `api.ts` for API-specific errors
+   - `web.ts` for web app-specific errors
+
+2. Rebuild the package: `cd packages/error && pnpm build`
+
+3. Use the new error code directly - no registration needed!
+
+## API Reference
+
+### `captureError(options)`
+
+Captures an error to Sentry and returns a safe catalog error for API responses.
+
+```typescript
+interface CaptureErrorOptions {
+  code: CoreErrorCode | string // Error code (core codes get autocomplete, string for app-specific codes)
+  error: unknown // Real error: sent to Sentry
+  label: string // Component/feature label
+  logger?: Logger // Optional logger instance (defaults to internal logger). Use Fastify's request.log for native logging.
+  data?: Record<string, unknown> // Additional context (Sentry only)
+  tags?: {
+    app: 'api' | 'web' | 'mobile' | 'docs' | string // Required: known apps get autocomplete, string for custom apps
+    package?: string // Optional: '@repo/auth'
+    module?: string // Optional: 'user-service'
+    [key: string]: string | undefined
+  }
+  level?: 'error' | 'warning' | 'info'
+}
+
+function captureError(options: CaptureErrorOptions): CatalogError
+```
+
+**Type Safety:**
+- `code` accepts `CoreErrorCode` (union type of all core error codes) for autocomplete and type checking
+- `code` also accepts `string` for flexibility (though all codes should be defined in catalogs and rebuilt)
+- `tags.app` accepts known apps (`'api' | 'web' | 'mobile' | 'docs'`) with autocomplete, or `string` for custom apps
+
+**Returns**: `{ code: string, message: string }` - Safe catalog error for API responses
+
+**Flow:**
+```
+captureError() called
+│
+├─→ [Logger] Log full error using provided logger (or defaults to internal logger)
+│   - Fastify: Use logger: request.log for native Pino logging with request context
+│   - Other: Defaults to @repo/utils/logger (Pino on server, console wrapper on client)
+├─→ [Sentry] Async via Promise.resolve().then(): Send REAL error → Sentry scrubs PII (non-blocking)
+└─→ [Return] SAFE catalog error immediately
+```
+
+**Serverless Limitation**: In serverless environments (AWS Lambda, Vercel Functions), errors may be dropped if the function terminates before the promise executes. For critical paths, call `Sentry.flush()` explicitly before function termination.
+
+### `getErrorMessage(error)`
+
+Extracts error message from unknown error type (type-safe).
+
+```typescript
+function getErrorMessage(error: unknown): string
+```
+
+**Example:**
+```typescript
+try {
+  await someOperation()
+} catch (error) {
+  const message = getErrorMessage(error) // Type-safe extraction
+  console.log(message)
+}
+```
+
+
+### `initSentry(options)`
+
+Initializes Sentry for error tracking. Supports `@sentry/node`, `@sentry/nextjs`, and `@sentry/browser`.
+
+```typescript
+interface InitSentryOptions {
+  dsn?: string
+  environment?: string
+  release?: string
+  beforeSend?: (event: ErrorEvent, hint: EventHint) => ErrorEvent | null
+}
+
+function initSentry(options: InitSentryOptions): void
+```
+
+**Idempotency:** `initSentry` automatically checks if Sentry is already initialized using `Sentry.getClient()` before initializing. You can safely call it multiple times (e.g., in both server-side instrumentation and client-side error boundaries) without causing double initialization.
+
+**Note**: If DSN is not provided, Sentry initialization is skipped gracefully (no errors thrown).
+
+**Platform-Specific Configuration:**
+- **Node.js** (`@repo/error/node`): Only includes `'Non-Error promise rejection'` in `ignoreErrors`. Network-related errors (e.g., `ECONNREFUSED`, `ETIMEDOUT`) should be filtered via `beforeSend` hook if needed.
+- **Next.js/Browser** (`@repo/error/nextjs`, `@repo/error/browser`): Includes browser-specific patterns: `'ResizeObserver loop'`, `'Non-Error promise rejection'`, `'NetworkError'`, `'Failed to fetch'`.
+
+### `mapHttpStatusToErrorCode(statusCode)`
+
+Maps HTTP status codes to error catalog codes. Returns a type-safe `CoreErrorCode` union type.
+
+```typescript
+function mapHttpStatusToErrorCode(statusCode?: number): CoreErrorCode
+```
+
+**Type Safety:** The return type is `CoreErrorCode`, ensuring compile-time guarantee that mapped codes are valid core error codes.
+
+**Validation:**
+- Missing values (`null`/`undefined`) → `SERVER_ERROR`
+- Invalid numeric values (`0`, `NaN`, non-number) → `UNEXPECTED_ERROR`
+- Out-of-range valid numbers (< 100 or > 599) → `UNEXPECTED_ERROR`
+- Valid status codes → proper mapping to catalog codes
+
+**Mappings:**
+- `400` → `BAD_REQUEST`
+- `401` → `UNAUTHORIZED`
+- `403` → `FORBIDDEN`
+- `404` → `NOT_FOUND`
+- `409` → `CONFLICT`
+- `422` → `INVALID_INPUT`
+- `429` → `RATE_LIMIT_EXCEEDED`
+- `500` → `SERVER_ERROR`
+- `502` → `BAD_GATEWAY`
+- `503` → `SERVICE_UNAVAILABLE`
+- `504` → `GATEWAY_TIMEOUT`
+- Unmapped 4xx → `BAD_REQUEST` (fallback)
+- Unmapped 5xx → `SERVER_ERROR` (fallback)
+
+## Type Safety
+
+The package provides compile-time type safety for error codes:
+
+### CoreErrorCode Type
+
+`CoreErrorCode` is a union type of all error codes from the merged catalogs. It's exported from platform-specific paths or `/core`:
+
+```typescript
+import type { CoreErrorCode } from '@repo/error/core' // or platform-specific path
+
+// All catalog codes get autocomplete and type checking
+const code: CoreErrorCode = 'NETWORK_ERROR' // ✅ Type-safe
+const code2: CoreErrorCode = 'AI_MODEL_ERROR' // ✅ Type-safe
+const code3: CoreErrorCode = 'INVALID_CODE' // ❌ Type error
+
+// mapHttpStatusToErrorCode returns CoreErrorCode
+const errorCode = mapHttpStatusToErrorCode(404) // Type: CoreErrorCode
+```
+
+### CaptureErrorOptions Type Safety
+
+```typescript
+import { captureError } from '@repo/error/nextjs'
+import type { CoreErrorCode } from '@repo/error/core'
+
+// All catalog codes get autocomplete
+captureError({
+  code: 'NETWORK_ERROR', // ✅ Autocomplete available
+  error: new Error('test'),
+  label: 'Test',
+  tags: { app: 'web' }, // ✅ Autocomplete for 'api' | 'web' | 'mobile' | 'docs'
+})
+```
+
+**Benefits:**
+- ✅ Autocomplete for all catalog error codes
+- ✅ Compile-time validation for all codes
+- ✅ Autocomplete for known app names in `tags.app`
+
+## Best Practices
+
+### Common Patterns
+
+```typescript
+// Extract message
+const message = getErrorMessage(error)
+
+// Capture with context
+const catalogError = captureError({
+  code: 'OPERATION_ERROR',
+  error,
+  label: 'Operation Name',
+  tags: { app: 'api' },
+})
+
+// Conditional handling
+if (error instanceof ZodError) {
+  return captureError({ code: 'INVALID_INPUT', error, label: 'Validation', tags: { app: 'api' } })
+}
+return captureError({ code: 'SERVER_ERROR', error, label: 'Operation', tags: { app: 'api' } })
+```
+
+### Anti-Patterns
+
+```typescript
+// ❌ DON'T: Silent failures, expose internals, type assertions, console.*
+catch (error) { /* silent */ }
+return { error: error.message, stack: error.stack }
+const message = (error as Error).message
+console.error('Error:', error) // Use logger instead
+
+// ✅ DO: Capture, return safe messages, use type guards, use logger
+captureError({ code: 'OPERATION_ERROR', error, label: 'Op', tags: { app: 'api' } })
+return catalogError // Safe message only
+const message = getErrorMessage(error)
+```
+
+### Decision Tree
+
+```
+Error occurs
+│
+├─ React component render? → Use Error Boundary (automatic)
+├─ Fastify route? → Let error handler catch (automatic)
+├─ Next.js Server Action? → Capture and return error object or throw
+├─ Event handler (onClick, onSubmit)? → Try/catch with captureError + feedback
+├─ Async code (Promise)? → Try/catch with captureError
+├─ Background job/worker? → Capture with captureError, log for monitoring
+├─ API route handler? → Let Fastify error handler catch (automatic)
+└─ Recoverable? 
+   ├─ Yes → Capture with 'warning' + retry/fallback
+   └─ No → Capture with 'error' + show user message
+```
+
+## Testing
+
+### Mocking Sentry
+
+Mock Sentry in tests to avoid external dependencies:
+
+```typescript
+// packages/error/src/__tests__/capture.test.ts
+import { captureError } from '../node/capture' // or '../nextjs/capture', '../browser/capture'
+import * as Sentry from '@sentry/node'
+
+vi.mock('@sentry/node', () => ({
+  getClient: vi.fn(() => ({})),
+  captureException: vi.fn(),
+}))
+
+vi.mock('@repo/utils/logger', () => ({
+  logger: {
+    child: vi.fn(() => ({ error: vi.fn(), warn: vi.fn() })),
+    warn: vi.fn(),
+  },
+}))
+
+describe('captureError', () => {
+  it('should capture error to Sentry', () => {
+    const error = new Error('Test error')
+    const result = captureError({
+      code: 'NETWORK_ERROR',
+      error,
+      label: 'Test',
+      tags: { app: 'web' },
+    })
+    
+    expect(result.code).toBe('NETWORK_ERROR')
+    expect(Sentry.captureException).toHaveBeenCalled()
+  })
+})
+```
+
+### Testing Error Boundaries
+
+```typescript
+// apps/next/__tests__/error-boundary.test.tsx
+import { render, screen } from '@testing-library/react'
+import { ErrorBoundary } from '../components/error-boundary'
+import { captureError } from '@repo/error/nextjs'
+
+vi.mock('@repo/error/nextjs', () => ({
+  captureError: vi.fn(),
+  initSentry: vi.fn(),
+}))
+
+const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
+  if (shouldThrow) {
+    throw new Error('Test error')
+  }
+  return <div>No error</div>
+}
+
+describe('ErrorBoundary', () => {
+  it('should capture error when component throws', () => {
+    render(
+      <ErrorBoundary>
+        <ThrowError shouldThrow={true} />
+      </ErrorBoundary>
+    )
+
+    expect(captureError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'UNEXPECTED_ERROR',
+        tags: expect.objectContaining({ app: 'web' }),
+      })
+    )
+  })
+})
+```
+
+### Testing Fastify Error Handler
+
+```typescript
+// apps/fastify/__tests__/error-handler.test.ts
+import fastify from 'fastify'
+import errorHandler from '../plugins/error-handler'
+import { captureError } from '@repo/error/node'
+
+vi.mock('@repo/error/node', () => ({
+  captureError: vi.fn(() => ({ code: 'SERVER_ERROR', message: 'Error' })),
+  mapHttpStatusToErrorCode: vi.fn(() => 'SERVER_ERROR'),
+}))
+
+describe('Fastify Error Handler', () => {
+  it('should capture errors and return safe catalog error', async () => {
+    const app = fastify({ logger: false })
+    await app.register(errorHandler)
+
+    app.get('/test', async () => {
+      throw new Error('Test error')
+    })
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/test',
+    })
+
+    expect(response.statusCode).toBe(500)
+    expect(JSON.parse(response.body)).toEqual({
+      code: 'SERVER_ERROR',
+      message: 'Error',
+    })
+    expect(captureError).toHaveBeenCalled()
+  })
+})
+```
+
+### Testing Error Catalog Access
+
+```typescript
+// packages/error/src/__tests__/registry.test.ts
+import { getError } from '@repo/error/core'
+
+describe('Error Catalog', () => {
+  it('should return catalog error for registered code', () => {
+    const error = getError('SERVER_ERROR')
+    expect(error).toBeDefined()
+    expect(error?.code).toBe('SERVER_ERROR')
+  })
+
+  it('should return undefined for unregistered code', () => {
+    expect(getError('UNREGISTERED_ERROR')).toBeUndefined()
+  })
+})
+```
+
+## Migration
+
+### From @repo/utils/error to @repo/error
+
+Error utilities have been moved from `@repo/utils/error` to `@repo/error`:
+
+```typescript
+// Old
+import { getErrorMessage } from '@repo/utils/error'
+
+// New (for Next.js apps)
+import { getErrorMessage, captureError } from '@repo/error/nextjs'
+// For Node.js/Fastify apps
+// import { getErrorMessage, captureError } from '@repo/error/node'
+// For browser frameworks
+// import { getErrorMessage, captureError } from '@repo/error/browser'
+```
+
+### Migration Steps
+
+1. **Update imports:**
+   ```typescript
+   // Replace all imports - use platform-specific paths
+   - import { getErrorMessage } from '@repo/utils/error'
+   - import { getErrorMessage } from '@repo/error' // Old root import
+   + import { getErrorMessage, captureError } from '@repo/error/node' // or '/nextjs', '/browser'
+   ```
+
+2. **Add new error codes (if needed):**
+   ```typescript
+   // Add to packages/error/src/catalogs/api.ts (or web.ts, etc.)
+   export const apiErrors = {
+     YOUR_ERROR_CODE: {
+       code: 'YOUR_ERROR_CODE',
+       message: 'Your error message',
+     },
+   } as const satisfies Record<string, CatalogError>
+   
+   // Rebuild package
+   cd packages/error && pnpm build
+   ```
+
+3. **Initialize Sentry in app entry point:**
+   ```typescript
+   // index.ts or instrumentation.ts
+   import { initSentry } from '@repo/error/node' // or '/nextjs', '/browser'
+   
+   initSentry({ dsn: process.env.SENTRY_DSN })
+   ```
+
+4. **Update error handling:**
+   ```typescript
+   // Replace manual error handling with captureError
+   try {
+     await operation()
+   } catch (error) {
+     const catalogError = captureError({
+       code: 'OPERATION_ERROR', // Use existing catalog code or add new one
+       error,
+       label: 'Operation',
+       tags: { app: 'api' },
+     })
+     return catalogError
+   }
+   ```
+
+5. **Update Fastify error handler** (if using Fastify):
+   - Use the error handler plugin pattern shown in Framework Integration section
+
+6. **Update React Error Boundaries** (if using React):
+   - Use the ErrorBoundary pattern shown in Framework Integration section
+
+## Related Documentation
+
+- [Logging Guide](/docs/architecture/logging) - Logging patterns with `@repo/utils/logger`. All logging in `@repo/error` uses `@repo/utils/logger` for unified logging across the monorepo.
+- [Security Guide](/docs/security) - Security best practices and PII handling. Sentry's built-in PII scrubbing automatically handles sensitive data.
+- [Backend Stack](/docs/architecture/backend-stack) - Fastify error handler integration patterns
+- [Frontend Stack](/docs/architecture/frontend-stack) - React Error Boundaries and Next.js error pages

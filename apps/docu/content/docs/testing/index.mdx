@@ -1,0 +1,74 @@
+---
+title: "Testing"
+description: "Testing patterns and best practices for this monorepo."
+---
+
+Testing patterns using Vitest for backend and Testing Library for frontend.
+
+## Overview
+
+- **Backend**: Vitest with blackbox testing
+- **Frontend**: Testing Library with React components
+- **E2E**: Optional Playwright setup
+
+## Backend Testing
+
+### Setup
+
+```typescript
+// apps/fastify/src/routes/users.test.ts
+import { describe, it, expect } from 'vitest'
+import { createApp } from '../app'
+
+describe('GET /users/:id', () => {
+  it('returns user when found', async () => {
+    const app = await createApp()
+    const response = await app.inject({
+      method: 'GET',
+      url: '/users/123',
+    })
+    
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toMatchObject({
+      id: '123',
+      email: 'user@example.com',
+    })
+  })
+})
+```
+
+### Best Practices
+
+- Use blackbox testing (test via HTTP)
+- Test contracts, not implementation
+- Use test database (PGLite for embedded Postgres)
+- Clean up after tests
+
+## Frontend Testing
+
+### Setup
+
+```typescript
+// apps/next/components/UserCard.test.tsx
+import { render, screen } from '@testing-library/react'
+import { UserCard } from './UserCard'
+
+describe('UserCard', () => {
+  it('displays user information', () => {
+    render(<UserCard user={{ id: '1', name: 'John' }} />)
+    expect(screen.getByText('John')).toBeInTheDocument()
+  })
+})
+```
+
+### Best Practices
+
+- Test user interactions, not implementation
+- Use Testing Library queries
+- Mock API calls with MSW for UI-only/unit tests; use real APIs for integration/core tests (see [Frontend Testing](/docs/testing/frontend-testing))
+- Test accessibility
+
+## Related Documentation
+
+- [Frontend Testing](/docs/testing/frontend-testing) - Complete guide for testing React and Next.js applications with real APIs
+- [Backend Stack](/docs/architecture/backend-stack) - Fastify testing patterns with Vitest and blackbox testing

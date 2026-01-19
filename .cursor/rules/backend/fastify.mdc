@@ -4,7 +4,7 @@ alwaysApply: false
 ---
 # Fastify Rules
 
-See @apps/docs/content/docs/architecture/backend-stack.mdx for why Fastify was chosen and architecture details.
+See @apps/docu/content/docs/architecture/backend-stack.mdx for why Fastify was chosen and architecture details.
 
 ## Module Structure
 - Organize routes by domain/feature (e.g., `routes/wallet.ts`, `routes/user.ts`)
@@ -116,12 +116,12 @@ Routes can throw errors - the global handler catches and formats them automatica
 Fastify apps use `validateEnvOrThrow` from `@repo/lib` for environment validation. See @.cursor/rules/base/environment.mdc for pattern.
 
 ## OpenAPI Generation
-See @apps/docs/content/docs/architecture/backend-stack.mdx#openapi-generation for OpenAPI generation details.
+See @apps/docu/content/docs/architecture/backend-stack.mdx#openapi-generation for OpenAPI generation details.
 
 ## Testing
 Use Fastify's `inject()` method for blackbox testing of routes. See @.cursor/rules/backend/testing.mdc for testing patterns.
 
 ## Related
-- @apps/docs/content/docs/architecture/backend-stack.mdx - Why Fastify, app setup, OpenAPI generation
+- @apps/docu/content/docs/architecture/backend-stack.mdx - Why Fastify, app setup, OpenAPI generation
 - @.cursor/rules/base/environment.mdc - Environment variable patterns
 - @.cursor/rules/base/error-handling.mdc - Error handling patterns

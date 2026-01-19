@@ -1,0 +1,408 @@
+---
+title: "Security Baseline"
+description: "OSS-only security baseline to prevent committing secrets and scan for vulnerabilities."
+---
+
+This repository implements a comprehensive security baseline to prevent committing secrets and to scan for vulnerabilities. All tools used are free and open source.
+
+## Overview
+
+The security baseline consists of:
+
+1. **Pre-commit hooks** - Run locally before each commit
+2. **CI workflows** - Run on every pull request and push to main
+
+## Pre-commit Hooks
+
+Pre-commit hooks run automatically via `simple-git-hooks` when you attempt to commit. They perform:
+
+1. **File blocking** - Prevents committing sensitive file types (`.env`, `*.pem`, `*.key`, etc.)
+2. **Secret scanning** - Scans staged files for secrets using gitleaks
+3. **Vulnerability scanning** - Scans dependencies for known vulnerabilities using OSV Scanner
+
+### What Gets Blocked
+
+The following file patterns are blocked from being committed:
+
+- `.env` (but `.env-example`, `.env.schema`, `.env.development`, `.env.staging`, `.env.production`, `.env.test` are allowed)
+- `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`
+- `id_rsa*` (SSH private keys)
+- Certificate files: `*.crt`, `*.cer`, `*.der`, `*.p7b`, `*.p7c`, `*.p7m`, `*.p7s`
+- `*.keytab`
+
+### Secret Scanning
+
+If gitleaks is installed, staged files are scanned for:
+
+- Cryptocurrency private keys (Ethereum, Solana, Cosmos, etc.)
+- Mnemonic phrases and seed phrases
+- API keys and secrets
+- JWT secrets
+- Database passwords
+- AWS credentials
+
+## Required Tools
+
+Install all required security tools automatically with `pnpm run setup` (see [Getting Started](/docs/getting-started)). For manual installation, see the instructions below.
+
+### gitleaks
+
+**macOS:**
+```bash
+brew install gitleaks
+```
+
+**Linux:**
+```bash
+ARCH=$(uname -m)
+if [ "$ARCH" = "x86_64" ]; then ARCH="x64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
+VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed 's/^v//')
+wget -O /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_${ARCH}.tar.gz
+tar -xzf /tmp/gitleaks.tar.gz -C /tmp
+sudo mv /tmp/gitleaks /usr/local/bin/
+```
+
+**Windows:**
+```bash
+# Using Chocolatey
+choco install gitleaks
+
+# Using Scoop
+scoop install gitleaks
+```
+
+**Manual installation:** [gitleaks installation guide](https://github.com/gitleaks/gitleaks#installation)
+
+### osv-scanner (CI only, optional locally)
+
+**macOS:**
+```bash
+brew install osv-scanner
+```
+
+**Linux:**
+```bash
+ARCH=$(uname -m)
+if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
+wget -O /tmp/osv-scanner https://github.com/google/osv-scanner/releases/latest/download/osv-scanner_linux_${ARCH}
+chmod +x /tmp/osv-scanner
+sudo mv /tmp/osv-scanner /usr/local/bin/
+```
+
+**Windows:**
+```bash
+# Using Chocolatey
+choco install osv-scanner
+
+# Using Scoop
+scoop install osv-scanner
+```
+
+**Manual installation:** [OSV Scanner installation guide](https://google.github.io/osv-scanner/installation/)
+
+### trufflehog (CI only, optional locally)
+
+**macOS:**
+```bash
+brew install trufflesecurity/trufflehog/trufflehog
+```
+
+**Linux:**
+```bash
+ARCH=$(uname -m)
+if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
+wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_linux_${ARCH}.tar.gz
+tar -xzf /tmp/trufflehog.tar.gz -C /tmp
+sudo mv /tmp/trufflehog /usr/local/bin/
+```
+
+**Windows:**
+```bash
+# Using Chocolatey
+choco install trufflehog
+
+# Using Scoop
+scoop install trufflehog
+```
+
+**Manual installation:** [TruffleHog installation guide](https://github.com/trufflesecurity/trufflehog#installation)
+
+## Manual Scanning
+
+You can run security scans manually:
+
+```bash
+# Check for blocked secret file types
+pnpm security:block-files
+
+# Scan staged files for secrets
+pnpm security:secrets
+
+# Scan entire repository for secrets
+pnpm security:secrets:full
+
+# Scan dependencies for vulnerabilities (OSV)
+pnpm security:osv
+
+# Run pnpm audit
+pnpm security:audit
+
+# Run all security checks
+pnpm security:check
+```
+
+## CI Workflow
+
+The `.github/workflows/security.yml` workflow runs on every pull request and push to main. It performs:
+
+1. **Lockfile integrity check** - Uses `--frozen-lockfile` to ensure dependencies match lockfile
+2. **Full repository secret scan** - Scans entire repo with gitleaks
+3. **TruffleHog scan** - Scans filesystem and git history
+4. **Dependency vulnerability scan** - Uses OSV Scanner on `pnpm-lock.yaml`
+5. **pnpm audit** - Checks for known vulnerabilities in dependencies
+
+All checks must pass for CI to succeed.
+
+## What to Do If Secrets Are Detected
+
+### 1. Rotate the Secret Immediately
+
+If a secret is detected in your commit:
+
+1. **Rotate the secret immediately** - Change the API key, private key, or password
+2. **Do not commit the fix** - The secret is already exposed in git history
+3. **Clean git history** - See below
+
+### 2. Clean Git History
+
+If a secret was committed:
+
+**Option A: If not yet pushed**
+```bash
+# Remove the secret from the commit
+git reset HEAD~1
+# Edit the file to remove the secret
+# Commit again
+```
+
+**Option B: If already pushed (requires force push)**
+```bash
+# Use git-filter-repo or BFG Repo-Cleaner to remove secrets from history
+# WARNING: This rewrites git history and requires force push
+# Only do this if you have permission and coordinate with your team
+```
+
+**Option C: Add to allowlist (only for false positives)**
+- If the detection is a false positive (e.g., test data), add it to `.gitleaks.toml` allowlist
+- Never add real secrets to the allowlist
+
+### 3. Prevent Future Incidents
+
+- Use `.env` files for secrets (never commit them)
+- Use `.env-example` or `.env.schema` for templates
+- Review staged files before committing: `git diff --cached`
+- Run `pnpm security:secrets` before committing
+
+## Adding Allowlist Entries
+
+If you have a legitimate false positive (e.g., test fixtures, example data), you can add it to `.gitleaks.toml`:
+
+### Allowlist a File Path
+
+```toml
+[allowlist]
+paths = [
+  '''test/fixtures/.*''',
+  '''examples/.*''',
+]
+```
+
+### Allowlist a Regex Pattern
+
+```toml
+[allowlist]
+regexes = [
+  '''test.*private.*key''',
+  '''example.*secret''',
+]
+```
+
+**Important:** Only add entries for obvious test/example data. Never allowlist real secrets.
+
+## Configuration Files
+
+- **`.gitleaks.toml`** - Gitleaks configuration with crypto-focused rules and allowlist
+- **`scripts/block-secret-files.mjs`** - Pre-commit script that blocks sensitive file types
+- **`scripts/ensure-tool.mjs`** - Checks tool availability and prints install instructions
+- **`.github/workflows/security.yml`** - CI workflow for security checks
+
+## Troubleshooting
+
+### Pre-commit hook not running
+
+Ensure simple-git-hooks is installed:
+```bash
+pnpm install
+pnpm simple-git-hooks
+```
+
+### gitleaks not found
+
+The pre-commit hook will show install instructions if gitleaks is missing. Install it using the instructions above.
+
+### False positives
+
+If you get false positives:
+1. Verify it's actually a false positive (not a real secret)
+2. Add to `.gitleaks.toml` allowlist if appropriate
+3. Use specific patterns to avoid allowing real secrets
+
+### CI failing on secrets
+
+If CI detects secrets:
+1. Check the workflow logs to see what was detected
+2. Rotate the secret immediately
+3. Remove it from git history if already pushed
+4. Add to allowlist only if it's a false positive
+
+## Best Practices
+
+1. **Never commit secrets** - Use `.env` files and environment variables
+2. **Use `.env-example`** - Provide templates for required environment variables
+3. **Review before committing** - Check `git diff --cached` before committing
+4. **Rotate secrets regularly** - Even if not exposed, rotate secrets periodically
+5. **Use secret management** - Consider using tools like HashiCorp Vault, AWS Secrets Manager, etc. for production
+
+## API Security
+
+The API implements comprehensive application-layer security measures to protect against common attacks and vulnerabilities. DDoS protection is handled by Vercel/Cloudflare at the infrastructure layer.
+
+### Security Headers
+
+The API automatically sets security headers on all responses:
+
+- **X-Content-Type-Options: nosniff** - Prevents MIME type sniffing
+- **X-Frame-Options: DENY** - Prevents clickjacking attacks
+- **X-XSS-Protection: 1; mode=block** - Enables browser XSS protection
+- **Referrer-Policy: strict-origin-when-cross-origin** - Controls referrer information
+- **Permissions-Policy** - Restricts browser features (camera, microphone, geolocation)
+- **Content-Security-Policy** - Restricts resource loading to prevent XSS
+- **Strict-Transport-Security** - Enforces HTTPS in production (HSTS)
+
+Security headers are configured in `apps/fastify/src/plugins/security.ts` and can be disabled via the `SECURITY_HEADERS_ENABLED` environment variable.
+
+### CORS Configuration
+
+Cross-Origin Resource Sharing (CORS) is configured to restrict which origins can access the API:
+
+- **Allowed Origins**: Configurable via `ALLOWED_ORIGINS` environment variable
+  - Set to `*` to allow all origins (development only)
+  - Set to comma-separated list for production: `https://app.example.com,https://admin.example.com`
+- **Allowed Methods**: GET, POST, PUT, DELETE, PATCH, OPTIONS
+- **Allowed Headers**: Content-Type, Authorization, X-Requested-With
+- **Credentials**: Disabled by default (set to true if cookies are needed)
+
+CORS configuration is in `apps/fastify/src/plugins/cors.ts`.
+
+### Rate Limiting
+
+Rate limiting protects against abuse and brute force attacks:
+
+- **Default Limit**: 100 requests per 60 seconds per IP address
+- **Configurable**: Via `RATE_LIMIT_MAX` and `RATE_LIMIT_TIME_WINDOW` environment variables
+- **IP Detection**: Uses real client IP from `X-Forwarded-For` header (trust proxy enabled)
+- **Response Headers**: Includes rate limit information (`x-ratelimit-limit`, `x-ratelimit-remaining`, `x-ratelimit-reset`)
+- **Error Response**: Returns 429 status with retry information
+
+Rate limiting is configured in `apps/fastify/src/plugins/rate-limit.ts`.
+
+### Trust Proxy Configuration
+
+The API is configured to trust proxy headers from Vercel/Cloudflare:
+
+- **Trust Proxy**: Enabled by default (`TRUST_PROXY=true`)
+- **Real IP Detection**: Extracts client IP from `X-Forwarded-For` header
+- **Rate Limiting**: Uses real client IP for rate limiting
+- **Logging**: Logs real client IP addresses
+
+This is essential for proper IP-based rate limiting and security logging when deployed behind Vercel/Cloudflare.
+
+### Request Validation
+
+All API requests are validated using Zod schemas:
+
+- **Schema Validation**: Defined in route handlers using Fastify's schema option
+- **Type Safety**: End-to-end type safety from OpenAPI spec to runtime validation
+- **Input Sanitization**: Additional sanitization layer in `apps/fastify/src/lib/security.ts`
+- **Error Messages**: Sanitized in production to prevent information leakage
+
+### Security Event Logging
+
+Security events are automatically logged:
+
+- **Suspicious Activity Detection**: Detects common attack patterns (path traversal, XSS attempts, SQL injection, etc.)
+- **Rate Limit Exceeded**: Logs when rate limits are exceeded
+- **Authentication Failures**: Logs 401/403 errors
+- **Request Logging**: All requests logged in production with security context
+
+Security logging is implemented in `apps/fastify/src/plugins/security.ts` and `apps/fastify/src/lib/security.ts`.
+
+### Environment Variables
+
+Security-related environment variables:
+
+```bash
+# CORS Configuration
+ALLOWED_ORIGINS=*  # Development: *, Production: comma-separated origins
+
+# Rate Limiting
+RATE_LIMIT_MAX=100  # Maximum requests per time window
+RATE_LIMIT_TIME_WINDOW=60000  # Time window in milliseconds (default: 60 seconds)
+
+# Security Headers
+SECURITY_HEADERS_ENABLED=true  # Enable/disable security headers
+
+# Trust Proxy
+TRUST_PROXY=true  # Trust proxy headers (required for Vercel/Cloudflare)
+
+# Request Limits
+BODY_LIMIT=1048576  # Maximum request body size in bytes (default: 1MB)
+```
+
+### API Security Best Practices
+
+1. **Always use HTTPS** - Enforced by HSTS header in production
+2. **Restrict CORS origins** - Never use `*` in production
+3. **Configure rate limits** - Adjust based on your API usage patterns
+4. **Monitor security logs** - Review security events regularly
+5. **Keep dependencies updated** - Run `pnpm security:audit` and `pnpm security:osv` regularly
+6. **Validate all inputs** - Use Zod schemas for all request validation
+7. **Sanitize error messages** - Don't expose internal details in production
+8. **Use environment variables** - Never hardcode secrets or configuration
+
+### Incident Response
+
+If a security incident is detected:
+
+1. **Review security logs** - Check `apps/fastify/src/plugins/security.ts` logs
+2. **Identify affected endpoints** - Review request patterns
+3. **Block malicious IPs** - Add to blocklist if needed (requires custom implementation)
+4. **Rotate secrets** - If credentials are compromised
+5. **Update rate limits** - Adjust if under attack
+6. **Notify team** - Escalate if necessary
+
+## Additional Resources
+
+- [gitleaks documentation](https://github.com/gitleaks/gitleaks)
+- [TruffleHog documentation](https://github.com/trufflesecurity/trufflehog)
+- [OSV Scanner documentation](https://google.github.io/osv-scanner/)
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [GitHub Secret Scanning](https://docs.github.com/en/code-security/secret-scanning)
+- [Fastify Security Best Practices](https://www.fastify.io/docs/latest/Guides/Security/)
+- [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
+
+## Related Documentation
+
+- [Error Handling](/docs/architecture/error-handling) - Error handling with Sentry integration and PII scrubbing
+- [Backend Stack](/docs/architecture/backend-stack) - Fastify security headers and CORS configuration
+- [Deployment](/docs/deployment/vercel) - Deployment security considerations

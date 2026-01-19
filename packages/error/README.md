@@ -208,7 +208,7 @@ function getErrorMessage(error: unknown): string
 ### Fastify
 
 ```typescript
-// apps/api/src/plugins/error-handler.ts
+// apps/fastify/src/plugins/error-handler.ts
 import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
 
 fastify.setErrorHandler((error, request, reply) => {
@@ -242,7 +242,7 @@ import { captureError } from '@repo/error/nextjs' // or /node, /browser
 ### Next.js
 
 ```typescript
-// apps/web/instrumentation.ts
+// apps/next/instrumentation.ts
 import { initSentry } from '@repo/error/nextjs'
 
 export async function register() {
@@ -382,9 +382,9 @@ import { getErrorMessage, captureError } from '@repo/error/nextjs'
 
 ## See Also
 
-- [Error Handling Guide](@apps/docs/content/docs/architecture/error-handling.mdx) - Complete guide with examples and best practices
-- [Logging Guide](@apps/docs/content/docs/architecture/logging.mdx) - Logging patterns with @repo/utils/logger
-- [Security Guide](@apps/docs/content/docs/security/index.mdx) - Security best practices and PII handling
+- [Error Handling Guide](@apps/docu/content/docs/architecture/error-handling.mdx) - Complete guide with examples and best practices
+- [Logging Guide](@apps/docu/content/docs/architecture/logging.mdx) - Logging patterns with @repo/utils/logger
+- [Security Guide](@apps/docu/content/docs/security/index.mdx) - Security best practices and PII handling
 
 ## License
 

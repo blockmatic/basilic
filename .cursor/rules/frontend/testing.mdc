@@ -42,4 +42,4 @@ await waitFor(() => expect(result.current.isSuccess).toBe(true))
 ```
 
 ## Related
-- @apps/docs/content/docs/testing/frontend-testing.mdx - Complete testing guide with detailed examples, Vitest configuration, and environment setup
+- @apps/docu/content/docs/testing/frontend-testing.mdx - Complete testing guide with detailed examples, Vitest configuration, and environment setup

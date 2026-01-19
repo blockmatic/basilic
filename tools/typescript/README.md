@@ -166,7 +166,7 @@ Packages that don't override `include` will automatically get `reset.d.ts` from 
 ### Next.js App
 
 ```json
-// apps/web/tsconfig.json
+// apps/next/tsconfig.json
 {
   "extends": "@repo/typescript-config/nextjs",
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

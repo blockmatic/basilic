@@ -29,7 +29,7 @@ const requestLogger = logger.child({ requestId: 'abc-123', userId: 'user-456' })
 requestLogger.info('Processing request') // Includes requestId and userId
 ```
 
-**Build-time conditional exports**: No runtime detection. See @apps/docs/content/docs/architecture/logging.mdx
+**Build-time conditional exports**: No runtime detection. See @apps/docu/content/docs/architecture/logging.mdx
 
 ## Log Levels
 - **`debug`**: Detailed debugging info (development only)
@@ -62,5 +62,5 @@ Use either:
 **Error logging with captureError**: Pass `logger: request.log` to use Fastify's native logger for request context.
 
 ## Related
-- @apps/docs/content/docs/architecture/logging.mdx - Complete logging documentation
+- @apps/docu/content/docs/architecture/logging.mdx - Complete logging documentation
 - @.cursor/rules/base/environment.mdc - Environment variable patterns

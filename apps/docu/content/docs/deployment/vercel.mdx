@@ -1,0 +1,137 @@
+---
+title: "Vercel Deployment"
+description: "Deploy Next.js apps to Vercel for rapid iteration with preview environments."
+---
+
+Vercel is recommended for development and staging environments, with built-in preview deployments for every PR.
+
+## Overview
+
+Vercel provides:
+- ✅ Automatic deployments on push
+- ✅ Preview environments for every PR
+- ✅ Zero-config Next.js support
+- ✅ Edge network (CDN)
+- ✅ Serverless functions
+- ✅ Environment variable management
+
+**Note**: Vercel is great for convenience, but this project is designed to be portable. Other platforms (Google Cloud, AWS, etc.) can be used without code changes. See [Portability Strategy](/docs/architecture/portability) for migration paths.
+
+## Setup
+
+### 1. Connect Repository
+
+1. Log in to [Vercel](https://vercel.com)
+2. Click "Add New Project"
+3. Import your GitHub repository
+4. Vercel auto-detects Next.js configuration
+
+### 2. Configure Environment Variables
+
+Set environment variables in Vercel project settings:
+
+**For API (`apps/fastify`):**
+```bash
+DATABASE_URL=postgresql://user:pass@host:5432/dbname
+PORT=3001
+NODE_ENV=production
+SENTRY_DSN=https://...
+```
+
+**For Web (`apps/next`):**
+```bash
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+NEXT_PUBLIC_SENTRY_DSN=https://...
+```
+
+**For Docs (`apps/docu`):**
+```bash
+NEXT_PUBLIC_SITE_URL=https://docs.yourdomain.com
+```
+
+### 3. Deploy
+
+Push to `main` branch to deploy to production. Pull requests automatically create preview deployments.
+
+## Deployment Configuration
+
+### `vercel.json` (Optional)
+
+Configure deployment settings:
+
+```json
+{
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs"
+}
+```
+
+**Note**: Vercel auto-detects configuration for Next.js apps, so this is usually not needed.
+
+## Environment-Specific Configuration
+
+### Development
+- Preview deployments for every PR
+- Uses staging environment variables
+- Automatic URL generation
+
+### Production
+- Deploys from `main` branch
+- Uses production environment variables
+- Custom domain configuration
+
+## Monorepo Configuration
+
+For monorepo apps, Vercel needs to know the root directory:
+
+1. Go to Vercel project settings
+2. Set "Root Directory" to `apps/next` (or `apps/docu`, `apps/fastify`)
+3. Vercel automatically detects package dependencies
+
+## Custom Domains
+
+1. Go to project settings → Domains
+2. Add your custom domain
+3. Configure DNS records (Vercel provides instructions)
+4. Vercel handles SSL certificates automatically
+
+## Best Practices
+
+1. **Use preview deployments** - Test changes before merging
+2. **Set environment variables** - Don't commit secrets
+3. **Monitor builds** - Check build logs for errors
+4. **Use production branch protection** - Require PR reviews before merging to main
+
+## Migration to Other Platforms
+
+This project is designed to be portable. When you need to move away from Vercel:
+
+- **Google Cloud Run** - Enterprise security and compliance
+- **AWS ECS/EC2** - AWS ecosystem integration
+- **Self-hosted** - Full control and customization
+
+See [Portability Strategy](/docs/architecture/portability) for detailed migration paths.
+
+## Troubleshooting
+
+### Build Fails
+- Check build logs in Vercel dashboard
+- Verify environment variables are set
+- Ensure all dependencies are installed
+
+### Preview Deployment Not Created
+- Verify GitHub integration is active
+- Check project settings for branch configuration
+- Ensure PR is not from a fork (security limitation)
+
+### Environment Variables Not Applied
+- Redeploy after changing environment variables
+- Check variable names match exactly (case-sensitive)
+- Verify variables are set for the correct environment (production/preview)
+
+## Related Documentation
+
+- [Deployment Overview](/docs/deployment) - GitHub Flow and CI/CD pipelines
+- [Portability Strategy](/docs/architecture/portability) - Migration to Google Cloud, AWS, or self-hosted
+- [Installation](/docs/getting-started/installation) - Environment variable configuration

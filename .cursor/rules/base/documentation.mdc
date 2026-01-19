@@ -1,6 +1,6 @@
 ---
 description: Documentation standards and best practices
-glob: "apps/docs/**/*.mdx, **/README.md, **/README.mdc"
+glob: "apps/docu/**/*.mdx, **/README.md, **/README.mdc"
 alwaysApply: false
 ---
 

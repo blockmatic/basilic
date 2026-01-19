@@ -73,7 +73,7 @@ reviews:
         - Ensure platform-specific exports are used (e.g., @repo/error/node vs @repo/error/nextjs)
         - Verify no root exports for packages with subpath exports
     
-    - path: "apps/web/**"
+    - path: "apps/next/**"
       instructions: |
         - Follow Next.js 15 App Router conventions
         - Use React Server Components by default - only add 'use client' when absolutely necessary (interactivity, hooks, browser APIs)
@@ -83,7 +83,7 @@ reviews:
         - Verify proper error handling with captureError from @repo/error/nextjs
         - Check that pages/layouts use default exports (exception to named exports rule)
     
-    - path: "apps/docs/**"
+    - path: "apps/docu/**"
       instructions: |
         - Follow Next.js 15 App Router conventions
         - Use React Server Components by default
@@ -91,7 +91,7 @@ reviews:
         - Verify cross-references use standard markdown links (e.g., [text](/docs/path)) not @ syntax
         - Check that documentation is up to date with code changes
     
-    - path: "apps/api/**"
+    - path: "apps/fastify/**"
       instructions: |
         - Follow Fastify functional patterns (no classes or decorators)
         - Use TypeBox schemas for route validation (not Zod on backend)

@@ -4,7 +4,7 @@
   "tasks": {
     "generate": {
       "dependsOn": [],
-      "inputs": ["$TURBO_DEFAULT$", "../../apps/api/openapi/openapi.json"],
+      "inputs": ["$TURBO_DEFAULT$", "../../apps/fastify/openapi/openapi.json"],
       "outputs": ["src/gen/**"],
       "env": ["NODE_ENV"]
     },

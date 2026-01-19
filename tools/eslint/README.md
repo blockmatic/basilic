@@ -239,7 +239,7 @@ export default config
 ### Next.js App
 
 ```js
-// apps/docs/eslint.config.mjs
+// apps/docu/eslint.config.mjs
 import { nextJsConfig } from '@repo/eslint-config/next-js'
 
 export default nextJsConfig

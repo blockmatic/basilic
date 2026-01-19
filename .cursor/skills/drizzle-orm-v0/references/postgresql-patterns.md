@@ -118,3 +118,61 @@ await db.transaction(async (tx) => {
   await tx.insert(settings).values({ userId: user.id, ...defaultSettings });
 });
 ```
+
+## Error Handling (v0.44+)
+
+```typescript
+import { DrizzleQueryError } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
+
+// Error handling in queries
+try {
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
+} catch (error) {
+  if (error instanceof DrizzleQueryError) {
+    // Handle structured error
+    if (error.cause?.code === '23505') {
+      // Unique constraint violation
+      throw new Error('User already exists');
+    }
+    throw new Error(`Database error: ${error.message}`);
+  }
+  throw error;
+}
+
+// Error handling in mutations
+try {
+  const [newUser] = await db.insert(users).values({
+    email: 'test@example.com',
+    name: 'Test User',
+  }).returning();
+} catch (error) {
+  if (error instanceof DrizzleQueryError) {
+    // Check PostgreSQL error codes
+    const pgError = error.cause;
+    if (pgError?.code === '23505') {
+      throw new Error('Email already exists');
+    }
+    if (pgError?.code === '23503') {
+      throw new Error('Foreign key constraint violation');
+    }
+  }
+  throw error;
+}
+
+// Error handling in transactions
+try {
+  await db.transaction(async (tx) => {
+    const [user] = await tx.insert(users).values(userData).returning();
+    await tx.insert(profiles).values({ userId: user.id, ...profileData });
+  });
+} catch (error) {
+  if (error instanceof DrizzleQueryError) {
+    console.error('Transaction failed:', error.message);
+    console.error('Query:', error.query);
+  }
+  throw error;
+}
+```

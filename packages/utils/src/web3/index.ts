@@ -16,6 +16,7 @@ import {
 import type { ChainType } from './chain-type'
 
 export type { ChainType }
+export * from './alchemy'
 export { chainTypeSchema } from './chain-type'
 
 export interface ChainMetadata {

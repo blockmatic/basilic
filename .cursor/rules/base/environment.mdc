@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Environment Variable Pattern
 
-**Applies consistently across all apps** - Next.js frontend apps, Fastify API (`apps/api`), and other Node.js apps.
+**Applies consistently across all apps** - Next.js frontend apps, Fastify API (`apps/fastify`), and other Node.js apps.
 
 ## Standard: t3-env
 All apps use **t3-env** for environment variable validation:
@@ -26,7 +26,7 @@ All apps use **t3-env** for environment variable validation:
 
 ### Next.js Apps
 ```typescript
-// apps/web/lib/env.ts
+// apps/next/lib/env.ts
 import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
@@ -50,7 +50,7 @@ export const env = createEnv({
 
 ### Server Apps (Fastify/Node)
 ```typescript
-// apps/api/src/lib/env.ts
+// apps/fastify/src/lib/env.ts
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 

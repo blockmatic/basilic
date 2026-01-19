@@ -301,3 +301,69 @@ const getUserByEmail = db
 // Execute with parameters
 const user = await getUserByEmail.execute({ email: "user@example.com" });
 ```
+
+## Error Handling (v0.44+)
+
+Drizzle ORM v0.44+ introduces `DrizzleQueryError` for structured error handling:
+
+```typescript
+import { DrizzleQueryError } from "drizzle-orm";
+
+// Basic error handling
+try {
+  const user = await db.select().from(users).where(eq(users.id, userId));
+} catch (error) {
+  if (error instanceof DrizzleQueryError) {
+    // Access structured error information
+    console.error("Database error:", error.message);
+    console.error("Query:", error.query);
+    console.error("Cause:", error.cause);
+    
+    // Handle specific error types
+    if (error.cause?.code === "23505") {
+      // Unique constraint violation
+      throw new Error("User already exists");
+    }
+  }
+  throw error;
+}
+
+// Error handling in transactions
+try {
+  await db.transaction(async (tx) => {
+    const [user] = await tx.insert(users).values(userData).returning();
+    await tx.insert(profiles).values({ userId: user.id, ...profileData });
+  });
+} catch (error) {
+  if (error instanceof DrizzleQueryError) {
+    // Transaction errors are wrapped with context
+    console.error("Transaction failed:", error.message);
+    console.error("Failed query:", error.query);
+  }
+  throw error;
+}
+
+// Error handling helper function
+async function safeQuery<T>(queryFn: () => Promise<T>): Promise<T> {
+  try {
+    return await queryFn();
+  } catch (error) {
+    if (error instanceof DrizzleQueryError) {
+      // Log structured error information
+      console.error("Query error:", {
+        message: error.message,
+        query: error.query,
+        cause: error.cause,
+      });
+      // Re-throw with user-friendly message
+      throw new Error(`Database operation failed: ${error.message}`);
+    }
+    throw error;
+  }
+}
+
+// Usage
+const user = await safeQuery(() =>
+  db.select().from(users).where(eq(users.id, userId))
+);
+```

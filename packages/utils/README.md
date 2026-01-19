@@ -140,11 +140,37 @@ import { getErrorMessage, captureError } from '@repo/error/node' // or '/nextjs'
 
 ## Peer Dependencies
 
-This package requires the following peer dependencies (provided by consumers):
+This package uses peer dependencies to avoid unnecessary bloat. Only install the dependencies you need based on which subpaths you use.
 
-- `zod` - For validation schemas and error handling
-- `viem` - For EVM chain types and utilities
-- `lodash-es` - For utility functions (imported per-function)
+### Required Peer Dependencies
+
+These are required for the root export (`@repo/utils`) and `@repo/utils/web3`:
+
+- `zod` - For validation schemas (used in `@repo/utils/web3`)
+- `viem` - For EVM chain types and utilities (used in `@repo/utils/web3`)
+- `lodash-es` - For utility functions (used in `@repo/utils/web3`)
+
+### Optional Peer Dependencies
+
+These are only needed if you use specific subpaths:
+
+- `pino` - Required for `@repo/utils/logger` (server-side only)
+- `react` - Required for `@repo/utils/debug`
+- `react-use` - Required for `@repo/utils/debug`
+- `nuqs` - Required for `@repo/utils/debug`
+- `vconsole` - Required for `@repo/utils/debug`
+- `typescript` - Required for TypeScript type checking (optional at runtime)
+- `zod-validation-error` - Optional utility for enhanced Zod error messages
+
+### Dependency Matrix
+
+| Subpath | Required Dependencies | Optional Dependencies |
+|---------|----------------------|---------------------|
+| `@repo/utils` (root) | `lodash-es`, `viem`, `zod` | None |
+| `@repo/utils/async` | None | None |
+| `@repo/utils/web3` | `lodash-es`, `viem`, `zod` | `zod-validation-error` |
+| `@repo/utils/logger` | `pino` (server only) | None |
+| `@repo/utils/debug` | `react`, `react-use`, `nuqs`, `vconsole` | None |
 
 ## Best Practices
 
