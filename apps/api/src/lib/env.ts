@@ -6,7 +6,7 @@ export const env = createEnv({
     PORT: z.coerce.number().int().positive().default(3000),
     HOST: z.string().default('0.0.0.0'),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    DATABASE_URL: z.string().min(1).optional(),
+    DATABASE_URL: z.string().min(1),
     REDIS_URL: z.string().min(1).optional(),
     SENTRY_DSN: z.string().min(1).optional(),
     SENTRY_ENVIRONMENT: z.string().min(1).optional(),
@@ -29,7 +29,7 @@ export const env = createEnv({
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).optional(),
     LOG_SERVICE: z.string().optional(),
     // AI configuration
-    OPENAI_API_KEY: z.string().min(1),
+    OPENAI_API_KEY: z.string().min(1)
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

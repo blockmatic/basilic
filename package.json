@@ -22,12 +22,13 @@
     "security:audit": "pnpm audit --audit-level=moderate",
     "security:check": "node scripts/security-check.mjs",
     "postinstall": "npx simple-git-hooks",
-    "setup": "pnpm install && npx simple-git-hooks && node scripts/setup-security-tools.mjs && node scripts/setup-evm-tools.mjs && node scripts/setup-solana-tools.mjs",
+    "setup": "pnpm install && npx simple-git-hooks && pnpm setup:security && pnpm setup:evm && pnpm setup:solana && pnpm setup:database",
     "setup:security": "node scripts/setup-gitleaks.mjs && node scripts/setup-osv-scanner.mjs",
     "setup:gitleaks": "node scripts/setup-gitleaks.mjs",
     "setup:osv": "node scripts/setup-osv-scanner.mjs",
     "setup:evm": "node scripts/setup-evm-tools.mjs",
     "setup:solana": "node scripts/setup-solana-tools.mjs",
+    "setup:database": "node scripts/setup-database.mjs",
     "qa": "pnpm i && pnpm lint:fix && pnpm checktypes && pnpm run build && pnpm run test"
   },
   "devDependencies": {

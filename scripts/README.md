@@ -224,6 +224,39 @@ node scripts/setup-solana-tools.mjs
 
 **Note**: Anchor is optional. If not installed, Solana contract builds will skip gracefully without failing the build pipeline. On Linux, Rust/Cargo must be installed first.
 
+## Database Development Scripts
+
+Scripts that install database development tools for PostgreSQL with Supabase.
+
+### `setup-database.mjs`
+
+Installs Docker, Docker Compose, and Supabase CLI for local PostgreSQL development and database management.
+
+**What it installs**:
+- **Docker** (required): Container runtime required by Supabase CLI for local development
+- **Docker Compose** (required): Included with Docker, used by Supabase CLI for orchestrating services
+- **Supabase CLI** (optional): Command-line tool for local PostgreSQL development, migrations, and Supabase project management
+
+**Installation methods**:
+- **macOS**: 
+  - Docker: Installs Docker Desktop via Homebrew (`brew install --cask docker`)
+  - Docker Compose: Included with Docker Desktop
+  - Supabase CLI: Uses Homebrew if available (`brew install supabase/tap/supabase`)
+- **Linux**: 
+  - Docker: Installs Docker Engine via official Docker repository (Debian/Ubuntu)
+  - Docker Compose: Included as plugin with Docker Engine
+  - Supabase CLI: Downloads `.deb` package from GitHub releases and installs with `dpkg`
+- **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
+
+**Usage**: Can be run manually:
+```bash
+pnpm setup:database
+# or
+node scripts/setup-database.mjs
+```
+
+**Note**: Docker and Docker Compose are required for Supabase CLI to function. Supabase CLI is optional. Used for local PostgreSQL development with Supabase. Database features will skip if Supabase CLI is not available.
+
 ## Notes
 
 - Publishing scripts use `process.cwd()` to find the package's `package.json` (they run from within each package directory)

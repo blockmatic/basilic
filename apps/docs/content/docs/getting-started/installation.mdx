@@ -160,6 +160,27 @@ For database features, you'll need PostgreSQL. You can use:
 - **Supabase**: Free PostgreSQL hosting with additional features
 - **Other cloud providers**: Neon, Railway, etc.
 
+**Supabase CLI (Optional):**
+
+For local PostgreSQL development with Supabase, install Docker, Docker Compose, and Supabase CLI:
+
+```bash
+pnpm setup:database
+```
+
+This script will install:
+- **Docker** (required): Container runtime for Supabase local development
+- **Docker Compose** (required): Included with Docker
+- **Supabase CLI** (optional): Command-line tool for local PostgreSQL development
+
+Or install manually:
+- **macOS**: 
+  - Docker: `brew install --cask docker` (then start Docker Desktop)
+  - Supabase CLI: `brew install supabase/tap/supabase`
+- **Linux**: 
+  - Docker: Follow [official Docker installation guide](https://docs.docker.com/engine/install/)
+  - Supabase CLI: `wget https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.deb && sudo dpkg -i supabase_linux_amd64.deb && rm supabase_linux_amd64.deb`
+
 Once you have a PostgreSQL instance, set `DATABASE_URL` in your `.env.local`:
 
 ```bash
@@ -172,6 +193,12 @@ DATABASE_URL=postgresql://user:pass@localhost:5432/dbname
 **EVM Contracts (Foundry):**
 
 For EVM contract development, install Foundry:
+
+```bash
+pnpm setup:evm
+```
+
+Or install manually:
 
 ```bash
 curl -L https://foundry.paradigm.xyz | bash

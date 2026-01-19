@@ -23,7 +23,12 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "checktypes": "tsc --noEmit",
-    "generate:openapi": "node --env-file=.env --import tsx scripts/generate-openapi.ts"
+    "generate:openapi": "node --env-file=.env --import tsx scripts/generate-openapi.ts",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:status": "supabase status"
+    
   },
   "keywords": [],
   "author": "",
