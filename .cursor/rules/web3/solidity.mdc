@@ -1,9 +1,7 @@
 ---
 description: Solidity development standards with Foundry
-glob: "**/contracts/**/*.sol, *.sol"
 alwaysApply: false
 ---
-
 # Solidity & Foundry Rules
 
 ## Versions

@@ -1,6 +1,5 @@
 ---
 description: Web3 integration patterns using Wagmi v3
-glob: "*.ts, *.tsx, **/hooks/**/*.tsx, **/hooks/**/*.ts"
 alwaysApply: false
 ---
 # Wagmi v3 Rules
@@ -8,18 +7,13 @@ alwaysApply: false
 ## Core Principles
 - Use Wagmi v3.x (latest v3.3.2) hooks and configurations consistently
 - Handle wallet connection states properly
-- Reference [Viem Rules](@.cursor/rules/web3/viem.mdc) for address validation patterns
+- Reference @.cursor/rules/web3/viem.mdc for address validation patterns
 
 ## Custom Hooks
-- Create specialized hooks for specific contract interactions
-
+Create specialized hooks for specific contract interactions:
 ```tsx
 import { UniswapV3QuoterV2Abi } from '@repo/core/abis'
-import type {
-  AbiParametersToPrimitiveTypes,
-  Address,
-  ExtractAbiFunction,
-} from 'abitype'
+import type { AbiParametersToPrimitiveTypes, Address, ExtractAbiFunction } from 'abitype'
 import { useAccount, useWriteContract } from 'wagmi'
 
 export function useUniswapQuote({ quoterAddress }: { quoterAddress: Address }) {
@@ -40,10 +34,7 @@ export function useUniswapQuote({ quoterAddress }: { quoterAddress: Address }) {
     return result
   }
 
-  return {
-    getQuote,
-    ...o,
-  }
+  return { getQuote, ...o }
 }
 
 export type QuoteInputType = AbiParametersToPrimitiveTypes<
@@ -54,6 +45,6 @@ export type QuoteInputType = AbiParametersToPrimitiveTypes<
 ## Error Handling
 - Consider network conditions and gas price fluctuations
 
-## Related Rules
-- [Viem Rules](@.cursor/rules/web3/viem.mdc) - Address validation and transaction utilities (v2.44.4)
-- [Multichain Rules](@.cursor/rules/web3/multichain.mdc) - Multichain address validation coordination
+## Related
+- @.cursor/rules/web3/viem.mdc - Address validation and transaction utilities (v2.44.4)
+- @.cursor/rules/web3/multichain.mdc - Multichain address validation coordination

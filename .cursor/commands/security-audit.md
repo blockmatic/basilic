@@ -1,27 +1,14 @@
 # Security Audit
 
 ## Overview
-
-Comprehensive security review to identify and fix vulnerabilities in the
-codebase.
+Comprehensive security review to identify and fix vulnerabilities in codebase.
 
 ## Steps
+1. **Dependency audit**: Check for known vulnerabilities, update outdated packages, review third-party dependencies
+2. **Code security review**: Check for common vulnerabilities, review authentication/authorization, audit data handling practices
+3. **Infrastructure security**: Review environment variables, check access controls, audit network security
 
-1. **Dependency audit**
-    - Check for known vulnerabilities
-    - Update outdated packages
-    - Review third-party dependencies
-2. **Code security review**
-    - Check for common vulnerabilities
-    - Review authentication/authorization
-    - Audit data handling practices
-3. **Infrastructure security**
-    - Review environment variables
-    - Check access controls
-    - Audit network security
-
-## Security Checklist
-
+## Checklist
 - [ ] Dependencies updated and secure
 - [ ] No hardcoded secrets
 - [ ] Input validation implemented

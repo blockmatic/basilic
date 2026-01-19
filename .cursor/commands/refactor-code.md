@@ -1,29 +1,14 @@
 # Refactor Code
 
 ## Overview
-
-Refactor the selected code to improve its quality while maintaining the same functionality, providing the refactored code with explanations of the improvements made.
+Refactor selected code to improve quality while maintaining same functionality, providing refactored code with explanations.
 
 ## Steps
+1. **Code Quality**: Extract reusable functions/components, eliminate duplication, improve naming, simplify complex logic/reduce nesting
+2. **Performance**: Identify/fix bottlenecks, optimize algorithms/data structures, reduce unnecessary computations, improve memory usage
+3. **Maintainability**: Make code readable/self-documenting, add appropriate comments, follow SOLID principles/design patterns, improve error handling/edge case coverage
 
-1. **Code Quality Improvements**
-    - Extract reusable functions or components
-    - Eliminate code duplication
-    - Improve variable and function naming
-    - Simplify complex logic and reduce nesting
-2. **Performance Optimizations**
-    - Identify and fix performance bottlenecks
-    - Optimize algorithms and data structures
-    - Reduce unnecessary computations
-    - Improve memory usage
-3. **Maintainability**
-    - Make the code more readable and self-documenting
-    - Add appropriate comments where needed
-    - Follow SOLID principles and design patterns
-    - Improve error handling and edge case coverage
-
-## Refactor Code Checklist
-
+## Checklist
 - [ ] Extracted reusable functions or components
 - [ ] Eliminated code duplication
 - [ ] Improved variable and function naming

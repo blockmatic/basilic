@@ -7,94 +7,50 @@ alwaysApply: true
 # General Agent Rules
 
 ## Agent Behavior
+- Read readme/docs/skills/rules before planning/coding; summarize assumptions in 3–5 bullets
+- Update docs/rules after code changes
+- Full workspace access: read/write/create/move/delete without asking
+- Never ask before modifying files (including dotfiles)
+- Provide concise summaries when finishing
+- Suggest improvements proactively
 
-- Always read readme files, documentation and relevant cursor skills and rules before planning and coding
-- Before acting, confirm you’ve read and understood the linked docs. Summarize assumptions in 3–5 bullets.
-- Always update readme files, documentation and relevant cursor rules after making code changes
-- The AI agent is allowed to read, write, create, move, and delete any file in the workspace without asking for permission
-- Never ask before modifying or creating files, even dotfiles. Proceed directly with changes
-- Provide concise executive summaries when finishing tasks
-- Suggest improvements proactively when spotting issues
+## Information Priority
+1. **Repository rules/skills** (`.cursor/rules/`, `.cursor/skills/`) - Highest priority
+2. **Indexed docs** (Cursor settings) - Advisory only, never override repo rules
+3. **General knowledge** - Lowest priority, verify against repo patterns
 
-### Information Priority Hierarchy
-
-When multiple sources of information are available, follow this priority order (highest to lowest):
-
-1. **Repository rules and skills** (`.cursor/rules/` and `.cursor/skills/`) - Highest priority
-   - Agent skills are part of the repository and have the same precedence as rules
-   - When a skill conflicts with indexed docs, follow the skill
-   - Repository-defined patterns, conventions, and skills always take precedence
-
-2. **Indexed documentation** (from Cursor settings) - Advisory only
-   - Use when repository guidance is missing or unclear
-   - Never override repository rules, skills, or existing code patterns
-   - See "Indexed Documentation Usage" below for detailed guidelines
-
-3. **General model knowledge** - Lowest priority
-   - Use only when repository and indexed docs don't provide guidance
-   - Always verify against repository patterns before applying
-
-**Key principle**: Repository rules and skills > Indexed docs > General knowledge
-
-### Indexed Documentation Usage
-- Check Cursor settings for available indexed documentation before relying on general model knowledge
-- Prefer indexed docs over general model knowledge when documentation is available for a technology
-- Treat indexed docs as advisory only; repository rules and source code always take precedence
-- State uncertainty explicitly if information is missing from indexed docs rather than guessing
-- Never infer library versions from indexed docs; ask for clarification or use repository-defined constraints
-- When indexed docs conflict with repo rules, established conventions, or existing code, follow the repository
-- Do not derive system architecture, folder structure, or integration patterns solely from indexed docs
-- Make it clear when suggestions are based on indexed docs rather than repo context
+**Principle**: Repo rules/skills > Indexed docs > General knowledge
 
 ## Context Management
-- Search first, read later: Use Grep/Glob to find relevant code before reading entire files
-- Prefer targeted reads: Read specific files/sections rather than exploring broadly unless understanding architecture
-- Start fresh for new features: Begin new conversations when switching between unrelated features or major tasks
-- Use @ references strategically: Reference specific files only when you know their relevance
+- Search first (Grep/Glob), read later
+- Targeted reads over broad exploration
+- Start fresh for new features
+- Use @ references strategically
 
 ## Tool Usage
-- Maximize parallel tool calls: Run independent operations simultaneously (multiple file reads, parallel searches)
-- Use specialized tools over shell: Prefer Read/Write/StrReplace over cat/sed/awk for file operations
-- Batch related operations: Group file reads, searches, or edits in single response when possible
-- Choose appropriate search tools: Grep for known symbols, Task(explore) for understanding flows, Glob for file patterns
-
-## Internal Browser Usage
-
-- When generating links meant to be opened by the user, prefer Cursor’s built-in browser
-- Avoid markdown-style links for navigation
-- Output raw navigation URLs instead
-- Prefer command-based or instruction-based navigation
-- When opening tools (docs, web), assume Cursor built-in browser
+- Maximize parallel calls (batch file reads/searches)
+- Prefer Read/Write/StrReplace over shell commands
+- Grep for symbols, Task(explore) for flows, Glob for patterns
 
 ## Planning & Execution
-- Break complex tasks into steps: Use TodoWrite for tasks with 3+ steps or multiple file changes
-- Define success criteria upfront: Identify tests, builds, or lints that verify task completion
-- Iterate with verification: Implement → run `pnpm lint:fix` → verify → fix → verify until clean
-- **Linting is mandatory**: Code must pass `pnpm lint` before task completion (skip if only markdown files changed)
-- Revert and replan if stuck: Don't patch mistakes mid-stream; restart with better plan
+- Use TodoWrite for 3+ step tasks
+- Define success criteria upfront
+- Iterate: Implement → verify → fix until clean
+- Revert/replan if stuck
 
 ## Code Quality
-- Organize code logically with related functionality grouped together (collocation)
-- Avoid leaking server-only code into client bundles (no fs, path, env loaders in shared/browser code)
-- **ALWAYS run linting after making changes**: Execute `pnpm lint:fix` after editing files to auto-fix issues (skip if only markdown files changed)
-- **ALWAYS verify linting passes**: Run `pnpm lint` to ensure code passes both Biome and ESLint before completing tasks (skip if only markdown files changed)
-- **Skip lint/build/test for markdown-only changes**: If only `.md`, `.mdx`, or `.mdc` files were modified, skip running `pnpm lint`, `pnpm build`, `pnpm test`, and related commands
-- Fix introduced issues: Always resolve linter errors you create; pre-existing issues are optional
-- Check for semantic duplication: Before creating new code, search for existing similar functionality
-- Follow Biome and ESLint rules strictly: See `.cursor/rules/base/linting.mdc` for detailed requirements
+- Collocate related functionality
+- No server-only code in client bundles (no fs/path/env in shared/browser code)
+- Follow ESLint and Biome rules in generated code (see @.cursor/rules/base/linting.mdc)
+- Search for existing functionality before creating new
 
 ## Safety & Boundaries
-- Never commit secrets: Warn if user requests committing .env, credentials, or sensitive files
-- Respect Ask mode restrictions: In Ask mode, never edit, write files, or run non-readonly commands
-- Verify before destructive operations: Use LS to confirm directory existence before operations that create nested structures
-- Maintain incremental autonomy: Defer to user for ambiguous architectural decisions or high-risk changes
+- Never commit secrets (warn on .env/credentials requests)
+- Respect Ask mode restrictions (read-only)
+- Verify before destructive operations
+- Defer to user for ambiguous/high-risk decisions
 
 ## Communication
-- Show, don't just tell: Make changes directly rather than only suggesting them (unless user asks otherwise)
-- Minimize meta-commentary: Focus on doing work, not narrating tool usage
-- Communicate blockers clearly: State what's needed if you lack context or permissions
-
-## Continuous Improvement
-- Track patterns in failures: If you repeatedly make similar mistakes, suggest adding a rule
-- Learn from corrections: When user corrects an approach, adjust strategy for remainder of session
-- Surface improvements proactively: Identify code smells, outdated patterns, or optimization opportunities
+- Make changes directly (don't just suggest)
+- Minimize meta-commentary
+- Communicate blockers clearly

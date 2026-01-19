@@ -1,35 +1,15 @@
 # Generate API Documentation
 
 ## Overview
-
-Create comprehensive API documentation for the current endpoints formatted as OpenAPI/Swagger specification or following the project's documentation standards.
+Create comprehensive API documentation for current endpoints formatted as OpenAPI/Swagger specification or following project's documentation standards.
 
 ## Steps
+1. **API Overview**: Service description/purpose, base URL/versioning information, authentication/authorization requirements, rate limiting/usage policies
+2. **Endpoint Documentation**: HTTP method/URL path, request parameters (path/query/body), request/response schemas with data types, example requests/responses, possible error codes/messages
+3. **Data Models**: Define all data models/schemas, include field descriptions/constraints, show relationships between models, provide example payloads
+4. **Usage Examples**: Common use case scenarios, SDK/client library examples, CURL command examples, error handling examples
 
-1. **API Overview**
-    - Service description and purpose
-    - Base URL and versioning information
-    - Authentication and authorization requirements
-    - Rate limiting and usage policies
-2. **Endpoint Documentation**
-    - HTTP method and URL path
-    - Request parameters (path, query, body)
-    - Request/response schemas with data types
-    - Example requests and responses
-    - Possible error codes and messages
-3. **Data Models**
-    - Define all data models and schemas
-    - Include field descriptions and constraints
-    - Show relationships between models
-    - Provide example payloads
-4. **Usage Examples**
-    - Common use case scenarios
-    - SDK and client library examples
-    - CURL command examples
-    - Error handling examples
-
-## API Documentation Checklist
-
+## Checklist
 - [ ] API overview complete
 - [ ] Endpoints documented
 - [ ] Data models defined

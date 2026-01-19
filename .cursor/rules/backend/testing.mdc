@@ -1,12 +1,10 @@
 ---
 description: Backend testing standards and patterns for Fastify
-glob: "*.spec.ts, **/*.e2e-spec.ts, **/*test.ts"
 alwaysApply: false
 ---
-
 # Backend Testing Rules
 
-See [Base Testing Rules](@.cursor/rules/base/testing.mdc) for common testing philosophy, coverage requirements, and mocking guidelines.
+See @.cursor/rules/base/testing.mdc for common testing philosophy, coverage requirements, and mocking guidelines.
 
 ## Test Structure
 ### E2E Tests (Blackbox API Testing)
@@ -23,9 +21,7 @@ See [Base Testing Rules](@.cursor/rules/base/testing.mdc) for common testing phi
 - Test utilities available in `src/test/utils/fastify.ts` for route testing
 
 ## Fastify Route Testing Pattern
-
 Use `fastify.inject()` for blackbox testing of routes:
-
 ```typescript
 import Fastify from 'fastify'
 import { walletRoutes } from '../routes/wallet'
@@ -47,9 +43,7 @@ expect(JSON.parse(response.body)).toMatchObject({
 ```
 
 ## Response Validation Pattern
-
 Test that responses match OpenAPI schemas:
-
 ```typescript
 import { createApi } from '@repo/core'
 import { WalletSchema } from '@repo/core'
@@ -61,14 +55,8 @@ WalletSchema.parse(wallet) // Validate against schema
 ```
 
 ## Running Tests
-
 ```bash
-# Run all tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
-
-# Run tests with coverage
-pnpm test:cov
+pnpm test              # Run all tests
+pnpm test:watch        # Run tests in watch mode
+pnpm test:cov          # Run tests with coverage
 ```

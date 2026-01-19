@@ -7,102 +7,40 @@ alwaysApply: false
 # Agent Skill Writing Standards
 
 ## Scope
-
-This rule applies when creating or modifying files in `.cursor/skills/`. Skills extend the agent with narrow, reusable expertise for a single primary topic (library, tool, framework, or specification).
+Applies when creating/modifying files in `.cursor/skills/`. Skills extend agent with narrow, reusable expertise for a single primary topic.
 
 ## Core Principles
 
 ### 1. One Primary Topic per Skill
-
-A skill MUST represent one primary topic with independent versioning.
-
-If two things version independently (e.g., a framework and a specification; a language and a toolchain), they MUST be separate skills.
-
-Cross-technology guidance belongs in `references/` as integration notes, not in the skill name or primary scope.
+MUST represent one primary topic with independent versioning. If two things version independently, they MUST be separate skills. Cross-technology guidance belongs in `references/` as integration notes.
 
 ### 2. Versioned Skill Directories
+MUST encode major version: `<primary-topic>-v<major>` (e.g., `fastify-v4`, `openapi-v3`, `foundry-v1`)
 
-Each skill directory MUST encode the major version of its primary topic.
-
-Required format: `<primary-topic>-v<major>`
-
-Examples:
-
-* `fastify-v4`
-* `openapi-v3`
-* `foundry-v1`
-* `tanstack-query-v5`
-
-Avoid:
-
-* Unversioned directories
-* Minor or patch versions in directory names
-* Multiple topics in one skill directory
-* Mixing incompatible major versions
-
-Why:
-
-* Prevents version skew and ambiguous applicability
-* Enables independent upgrades and migrations
-* Maintains clear boundaries of responsibility
+Avoid: Unversioned directories, minor/patch versions in names, multiple topics in one directory, mixing incompatible major versions
 
 ### 3. Declarative Over Instructional
-
-State what is true or what must hold, not how to reason.
-
-* ✅ "Use queryKey factories"
-* ✅ "Generated clients are the primary integration surface"
-* ❌ "First analyze the code, then decide…"
-* ❌ "Think carefully before choosing…"
+State what is true or must hold, not how to reason. ✅ "Use queryKey factories" ❌ "First analyze the code, then decide…"
 
 ### 4. Patterns Over Examples
-
-Prefer stable patterns over concrete examples.
-
-* ✅ "Expose one public entrypoint per package"
-* ✅ "Wrap generated clients behind stable facades"
-
-If examples are necessary:
-
-* Keep them minimal and universal
-* Avoid repo-specific file paths
-* Avoid copying real code
+Prefer stable patterns over concrete examples. If examples necessary: keep minimal/universal, avoid repo-specific paths, avoid copying real code.
 
 ### 5. Hard Rules Sparingly
-
-Use MUST or NEVER only when violations cause real harm: bugs, security risk, vendor lock-in, or severe DX regression.
-
-* ✅ "MUST not duplicate OpenAPI schemas manually"
-* ✅ "NEVER introduce a second state manager"
+Use MUST/NEVER only when violations cause real harm: bugs, security risk, vendor lock-in, severe DX regression.
 
 ### 6. Explicit Assumptions
-
-Every skill MUST state what it targets.
-
-Include:
-
-* Version scope (e.g., v5+, v4.x)
-* Runtime constraints (Node 18+, ESM-first, Edge-compatible)
-
-Avoid timeless or ambiguous claims.
+MUST state what it targets: version scope (e.g., v5+, v4.x), runtime constraints (Node 18+, ESM-first, Edge-compatible). Avoid timeless/ambiguous claims.
 
 ### 7. Trade-offs, Not Dogma
-
-When a recommendation is preference rather than constraint, explain why.
-
-* ✅ "Prefer generated clients for portability; manual clients are acceptable for experimental endpoints"
+When recommendation is preference rather than constraint, explain why.
 
 ## Structure Requirements
 
 ### Required Files
-
-Every skill MUST:
-
-* Live in a versioned directory: `<primary-topic>-v<major>`
-* Include `SKILL.md` as the entry point
+- Live in versioned directory: `<primary-topic>-v<major>`
+- Include `SKILL.md` as entry point
 
 ### Minimal Skill Template
-
 ```md
 # Skill: <name>
 
@@ -126,72 +64,34 @@ Every skill MUST:
 ```
 
 ### Supporting Files
-
-Skills may include additional files for progressive disclosure:
-
-* `PATTERNS.md` – Stable patterns (optional)
-* `references/` – Integration notes, adapters, compatibility guidance
-
-`SKILL.md` may link to these files using relative Markdown links.
+- `PATTERNS.md` – Stable patterns (optional)
+- `references/` – Integration notes, adapters, compatibility guidance
 
 ### Integration References
+Put integration notes under the skill that owns the primary decision surface:
+- "How to use X from Y" → Put under **Y** (the caller/host)
+- "How to implement X across many hosts" → Put under **X** (the specification/standard)
+- Neither side owns it → Create dedicated integration skill versioned by integration contract
 
-Put integration notes under the skill that owns the primary decision surface.
-
-* If the integration is "how to use X from Y", put it under **Y** (the caller or host).
-  * Example: `fastify-v4/references/openapi-v3.md`
-* If the integration is "how to implement X across many hosts", put it under **X** (the specification or standard).
-  * Example: `openapi-v3/references/fastify-v4.md`
-* If neither side owns it, create a dedicated integration skill versioned by your integration contract.
-
-Avoid duplicating integration guidance across skills. Choose one canonical location and link from the other.
+Avoid duplicating integration guidance. Choose one canonical location and link from the other.
 
 ## Self-Containment
-
-Skills MUST be self-contained and portable across projects.
-
-* ✅ Cross-skill references (link to another skill's `SKILL.md`)
-* ✅ Links to external documentation (official docs, specifications)
-* ❌ Links to repo-specific files or internal code paths
-* ❌ Mentions of project structure or implementation details
-* ❌ Examples that reference internal codebases
+MUST be self-contained and portable across projects:
+- ✅ Cross-skill references (link to another skill's `SKILL.md`)
+- ✅ Links to external documentation (official docs, specifications)
+- ❌ Links to repo-specific files or internal code paths
+- ❌ Mentions of project structure or implementation details
+- ❌ Examples that reference internal codebases
 
 ## Optimization for Retrieval
-
-Skills are machine-read first.
-
-Prefer:
-
-* Bullets, short sentences, consistent vocabulary
-* Clear section headers
-
-Avoid:
-
-* Long paragraphs
-* Storytelling or metaphors
+Skills are machine-read first. Prefer: bullets, short sentences, consistent vocabulary, clear section headers. Avoid: long paragraphs, storytelling or metaphors.
 
 ## Composition and Conflicts
+**Design for composition**: Assume multiple skills may apply simultaneously, global Cursor rules override skills. Avoid: re-explaining language fundamentals, redefining formatting/linting rules.
 
-### Design for Composition
-
-Assume:
-
-* Multiple skills may apply simultaneously
-* Global Cursor rules override skills
-
-Avoid:
-
-* Re-explaining language fundamentals
-* Redefining formatting or linting rules
-
-### Make Conflicts Explicit
-
-If a skill intentionally diverges from common conventions, state it plainly:
-
-> "This skill intentionally avoids MVC and class-based patterns, even if the framework supports them."
+**Make conflicts explicit**: If skill intentionally diverges from common conventions, state it plainly.
 
 ## Relationship with Rules
-
 | Layer  | Purpose                                  |
 | ------ | ---------------------------------------- |
 | Rules  | Global, opinionated, override everything |
@@ -199,21 +99,17 @@ If a skill intentionally diverges from common conventions, state it plainly:
 | Model  | Reasoning and synthesis                  |
 
 ## Quality Checklist
-
-Before finalizing a skill:
-
-* [ ] One primary topic
-* [ ] Versioned directory name (`<topic>-v<major>`)
-* [ ] `SKILL.md` present and complete
-* [ ] Declarative statements (not instructional)
-* [ ] Patterns favored over examples
-* [ ] Hard rules justified and minimal
-* [ ] Versions and assumptions explicit
-* [ ] Interactions and conflicts documented
-* [ ] Integration notes in `references/` (if needed)
-* [ ] Optimized for retrieval (bullets, concise)
-* [ ] Self-contained (no repo-specific references)
+- [ ] One primary topic
+- [ ] Versioned directory name (`<topic>-v<major>`)
+- [ ] `SKILL.md` present and complete
+- [ ] Declarative statements (not instructional)
+- [ ] Patterns favored over examples
+- [ ] Hard rules justified and minimal
+- [ ] Versions and assumptions explicit
+- [ ] Interactions and conflicts documented
+- [ ] Integration notes in `references/` (if needed)
+- [ ] Optimized for retrieval (bullets, concise)
+- [ ] Self-contained (no repo-specific references)
 
 ## Bottom Line
-
 Great agent skills are boring, precise, scoped, and opinionated only where it matters. If a skill reads like a tutorial or general documentation, it is doing too much.

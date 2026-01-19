@@ -1,7 +1,5 @@
 ---
 description: Ponder indexing standards and best practices
-globs:
-  - "**/ponder/**/*.ts"
 alwaysApply: false
 ---
 # Ponder Rules
@@ -11,13 +9,10 @@ alwaysApply: false
 - Define clear indexing strategies tailored to your use case
 
 ## Ponder Configuration
-- Define networks and transports using `http()` from `viem`
-- Specify contracts with proper start blocks
-
+Define networks and transports using `http()` from `viem`, specify contracts with proper start blocks:
 ```ts
 import { createConfig } from "ponder";
 import { http } from "viem";
-
 import { UniswapV3FactoryAbi } from "./abis/UniswapV3Factory";
 
 export default createConfig({
@@ -43,8 +38,7 @@ export default createConfig({
 ```
 
 ## Schema Design
-- Define tables with `onchainTable()` and use meaningful primary keys
-
+Define tables with `onchainTable()` and use meaningful primary keys:
 ```ts
 import { onchainTable, primaryKey, index } from "ponder";
 

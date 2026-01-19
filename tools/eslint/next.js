@@ -116,6 +116,13 @@ export const nextJsConfig = [
       'import/no-default-export': 'off',
     },
   },
+  // Disable max-lines rule for UI components - complex component implementations legitimately need more lines
+  {
+    files: ['**/components/**/*.{ts,tsx}'],
+    rules: {
+      'max-lines': 'off',
+    },
+  },
   {
     ignores: ['next-env.d.ts'],
   },

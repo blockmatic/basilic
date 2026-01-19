@@ -1,27 +1,22 @@
 ---
 description: Fastify backend development standards and patterns
-glob: "*.ts, **/*route.ts, **/*service.ts, **/*handler.ts"
 alwaysApply: false
 ---
-
 # Fastify Rules
 
-See [Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx) for why Fastify was chosen and architecture details.
+See @apps/docs/content/docs/architecture/backend-stack.mdx for why Fastify was chosen and architecture details.
 
 ## Module Structure
-
 - Organize routes by domain/feature (e.g., `routes/wallet.ts`, `routes/user.ts`)
 - Keep routes focused and single-purpose
 - Use route grouping for related endpoints
 - Keep handlers thin - delegate business logic to services
 
 ## ESM Patterns
-
 **Never use `__dirname` or `__filename`** - use ESM pattern:
 ```typescript
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
-
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 ```
@@ -34,63 +29,42 @@ const { default } = await import(moduleUrl)
 ```
 
 ## Route Handler Pattern
-
 ```typescript
 // routes/wallet.ts
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { createWalletService, getWalletService } from '../services/wallet.service'
 
-const CreateWalletSchema = z.object({
-  name: z.string(),
-  chainId: z.string(),
-})
-
-const WalletSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  chainId: z.string(),
-  createdAt: z.string(),
-})
+const CreateWalletSchema = z.object({ name: z.string(), chainId: z.string() })
+const WalletSchema = z.object({ id: z.string(), name: z.string(), chainId: z.string(), createdAt: z.string() })
 
 export async function walletRoutes(fastify: FastifyInstance) {
   fastify.post('/wallets', {
     schema: {
       body: CreateWalletSchema,
-      response: {
-        201: WalletSchema,
-        400: z.object({ error: z.string() }),
-      },
+      response: { 201: WalletSchema, 400: z.object({ error: z.string() }) },
     },
   }, async (request, reply) => {
     const result = await createWalletService({ input: request.body })
-    
     return reply.code(201).send(result)
   })
 
   fastify.get('/wallets/:id', {
     schema: {
       params: z.object({ id: z.string() }),
-      response: {
-        200: WalletSchema,
-        404: z.object({ error: z.string() }),
-      },
+      response: { 200: WalletSchema, 404: z.object({ error: z.string() }) },
     },
   }, async (request, reply) => {
     const wallet = await getWalletService({ id: request.params.id })
-    
     if (!wallet) {
       return reply.code(404).send({ error: 'Wallet not found' })
     }
-    
     return reply.send(wallet)
   })
 }
 ```
 
-
 ## Schema Validation
-
 - **TypeBox**: Use TypeBox for all route schemas (request/response validation)
   - Native JSON Schema - no conversion overhead
   - Automatic OpenAPI generation
@@ -101,19 +75,16 @@ export async function walletRoutes(fastify: FastifyInstance) {
   - Consistent validation across frontend apps
 
 ## Utility Libraries
-
 - **@repo/utils**: Always use instead of custom implementations
   - Async: `fetchWithTimeout` (external APIs - replaces `fetch`), `delay` (replaces `setTimeout`)
-- **@repo/error**: Error handling utilities with Sentry integration. See [Error Handling Rules](@.cursor/rules/base/error-handling.mdc)
-- **@repo/utils/logger**: Logging utilities. See [Logging Rules](@.cursor/rules/base/logging.mdc)
+- **@repo/error**: Error handling utilities with Sentry integration. See @.cursor/rules/base/error-handling.mdc
+- **@repo/utils/logger**: Logging utilities. See @.cursor/rules/base/logging.mdc
 - **lodash-es**: Use for array/object operations (`isEmpty`, `uniq`, `groupBy`, `merge`), type checking (`isPlainObject`, `isString`, `isArray`). Use per-function imports: `import isEmpty from 'lodash-es/isEmpty'`
 
 ## Error Handling
-
-Use `@repo/error` for all error handling. See [Error Handling Rules](@.cursor/rules/base/error-handling.mdc) for complete patterns.
+Use `@repo/error` for all error handling. See @.cursor/rules/base/error-handling.mdc for complete patterns.
 
 **Error Handler Plugin**:
-
 ```typescript
 // plugins/error-handler.ts
 import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
@@ -142,19 +113,15 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
 Routes can throw errors - the global handler catches and formats them automatically.
 
 ## Environment Variables
-
-Fastify apps use `validateEnvOrThrow` from `@repo/lib` for environment validation. See [Environment Rules](@.cursor/rules/base/environment.mdc) for pattern.
+Fastify apps use `validateEnvOrThrow` from `@repo/lib` for environment validation. See @.cursor/rules/base/environment.mdc for pattern.
 
 ## OpenAPI Generation
-
-See [Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx#openapi-generation) for OpenAPI generation details.
+See @apps/docs/content/docs/architecture/backend-stack.mdx#openapi-generation for OpenAPI generation details.
 
 ## Testing
+Use Fastify's `inject()` method for blackbox testing of routes. See @.cursor/rules/backend/testing.mdc for testing patterns.
 
-Use Fastify's `inject()` method for blackbox testing of routes. See [Backend Testing Rules](@.cursor/rules/backend/testing.mdc) for testing patterns.
-
-## Related Documentation
-
-- [Backend Stack](@apps/docs/content/docs/architecture/backend-stack.mdx) - Why Fastify, app setup, OpenAPI generation
-- [Environment Rules](@.cursor/rules/base/environment.mdc) - Environment variable patterns
-- [Error Handling Rules](@.cursor/rules/base/error-handling.mdc) - Error handling patterns
+## Related
+- @apps/docs/content/docs/architecture/backend-stack.mdx - Why Fastify, app setup, OpenAPI generation
+- @.cursor/rules/base/environment.mdc - Environment variable patterns
+- @.cursor/rules/base/error-handling.mdc - Error handling patterns

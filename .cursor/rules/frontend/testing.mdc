@@ -1,39 +1,32 @@
 ---
 description: Frontend testing standards and patterns for React/Next.js
-glob: "*.spec.tsx, *.test.tsx, **/*.spec.ts, **/*.test.ts"
 alwaysApply: false
 ---
-
 # Frontend Testing Rules
 
-See [Base Testing Rules](@.cursor/rules/base/testing.mdc) for common testing philosophy, coverage requirements, and mocking guidelines.
+See @.cursor/rules/base/testing.mdc for common testing philosophy, coverage requirements, and mocking guidelines.
 
 ## Test Structure
 
 ### Component Tests
-
 - **Location**: `**/*.spec.tsx` or `**/*.test.tsx`
 - **Pattern**: Test component rendering and user interactions
 - **Real APIs**: Use real API calls via TanStack Query hooks
 - **Mocking**: Only mock UI-specific things (window, localStorage), not APIs
 
 ### Integration Tests
-
 - **Location**: `**/*.integration.test.tsx`
 - **Pattern**: Test component integration with real APIs
 - **Real APIs**: All API calls use real endpoints
 - **Setup**: Use real authentication tokens
 
 ### E2E Tests
-
 - **Location**: `e2e/**/*.spec.ts`
 - **Pattern**: Test full user flows with real infrastructure
 - **Tools**: Use Playwright or Cypress
 
 ## TanStack Query Testing
-
 Always test with real API calls. Wrap hooks with `QueryClientProvider`:
-
 ```typescript
 import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -48,6 +41,5 @@ const { result } = renderHook(() => useWallets(), { wrapper })
 await waitFor(() => expect(result.current.isSuccess).toBe(true))
 ```
 
-## Related Documentation
-
-- [Frontend Testing Guide](@apps/docs/content/docs/testing/frontend-testing.mdx) - Complete testing guide with detailed examples, Vitest configuration, and environment setup
+## Related
+- @apps/docs/content/docs/testing/frontend-testing.mdx - Complete testing guide with detailed examples, Vitest configuration, and environment setup

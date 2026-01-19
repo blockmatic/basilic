@@ -1,75 +1,56 @@
 ---
-description: Error handling patterns with @repo/error
-glob: "*.tsx, *.ts"
-alwaysApply: true
+description: Error handling patterns
+alwaysApply: false
 ---
-
 # Error Handling Rules
 
 ## Package: @repo/error
-
-All error handling uses `@repo/error` package with:
-- **Centralized catalog** - All error codes defined in package, pre-registered at build time
-- **Sentry integration** - Automatic error capture with PII scrubbing
-- **Two-track handling** - Real errors to Sentry, safe messages to users
-- **Framework-native** - Fastify handlers, React Error Boundaries, Next.js error pages
+All error handling uses `@repo/error` with:
+- **Centralized catalog**: All error codes pre-registered at build time
+- **Sentry integration**: Automatic error capture with PII scrubbing
+- **Two-track handling**: Real errors to Sentry, safe messages to users
+- **Framework-native**: Fastify handlers, React Error Boundaries, Next.js error pages
 
 ## Export Structure
-
-The package provides platform-specific exports (no root exports):
+Platform-specific exports (no root exports):
 - `@repo/error/core` - Core functionality (types, catalog, utils) - NO Sentry
 - `@repo/error/node` - Node.js/Fastify (uses `@sentry/node`)
 - `@repo/error/nextjs` - Next.js (uses `@sentry/nextjs`) - works for both client and server
 - `@repo/error/browser` - Browser frameworks (uses `@sentry/browser`)
 - `@repo/error/react` - React components
 
-**Import Rules:**
-- All imports must use platform-specific paths (no root `@repo/error` import)
-- Type imports (`CatalogError`, `CoreErrorCode`) → Use platform-specific path or `/core`
-- Runtime imports (`captureError`, `initSentry`) → Use `/node`, `/nextjs`, or `/browser`
-- Core utilities (`getError`, `mapHttpStatusToErrorCode`, `getErrorMessage`) → Available from all platform exports
+**Import Rules**: Always use platform-specific paths (no root `@repo/error` import)
 
 ## Core Patterns
 
 ### Capture Error (Most Common)
-
 ```typescript
-// For Next.js apps
-import { captureError } from '@repo/error/nextjs'
-// For Node.js/Fastify apps
-// import { captureError } from '@repo/error/node'
+// Next.js: import { captureError } from '@repo/error/nextjs'
+// Node/Fastify: import { captureError } from '@repo/error/node'
 
 const catalogError = captureError({
-  code: 'NETWORK_ERROR', // ✅ Autocomplete for all catalog codes (CoreErrorCode | string)
+  code: 'NETWORK_ERROR', // ✅ Autocomplete for CoreErrorCode | string
   error, // Real error → Sentry
   label: 'API Call',
   data: { endpoint: '/api/data' }, // Internal context
-  tags: { app: 'web' }, // ✅ Autocomplete for known apps ('api' | 'web' | 'mobile' | 'docs' | string)
+  tags: { app: 'web' }, // ✅ Autocomplete for known apps
 })
 // Returns: { code: 'NETWORK_ERROR', message: 'A network error occurred' }
 ```
 
-**Type Safety:**
-- `code` accepts `CoreErrorCode` (union type) for autocomplete and type checking
-- `code` also accepts `string` for flexibility
-- `tags.app` accepts known apps with autocomplete, or `string` for custom apps
-
 ### Extract Error Message
-
 ```typescript
 import { getErrorMessage } from '@repo/error/nextjs' // or '/node', '/browser', '/core'
 const message = getErrorMessage(error) // Type-safe
 ```
 
 ## Framework Integration
-
-See framework-specific rules for integration patterns:
-- [Fastify Rules](@.cursor/rules/backend/fastify.mdc) - Error handler plugin pattern
-- [Next.js Rules](@.cursor/rules/frontend/nextjs.mdc) - Error pages and server actions
-- [React Rules](@.cursor/rules/frontend/react.mdc) - Error boundaries
+See framework-specific rules:
+- @.cursor/rules/backend/fastify.mdc - Error handler plugin pattern
+- @.cursor/rules/frontend/nextjs.mdc - Error pages and server actions
+- @.cursor/rules/frontend/react.mdc - Error boundaries
 
 **Initialization** (idempotent - safe to call multiple times):
-
 ```typescript
 // instrumentation.ts (Next.js) or index.ts (Fastify)
 import { initSentry } from '@repo/error/nextjs' // or /node
@@ -81,30 +62,13 @@ initSentry({
 ```
 
 ## Error Code Format
-
-Must be `UPPER_SNAKE_CASE`:
-- ✅ `NETWORK_ERROR`, `USER_NOT_FOUND`, `AI_MODEL_ERROR`
-- ❌ `network-error`, `NetworkError`, `NETWORK_ERROR_`
+Must be `UPPER_SNAKE_CASE`: `NETWORK_ERROR`, `USER_NOT_FOUND`, `AI_MODEL_ERROR`
 
 ## Best Practices
+**Do**: Use `captureError` for all error reporting, use `mapHttpStatusToErrorCode` in Fastify handlers, return safe catalog errors to users, include context in `data` field, import from platform-specific paths
 
-### Do
+**Don't**: Never use `console.*` (use `@repo/utils/logger`), never expose internal error details to users, never import from root `@repo/error`, never try to register errors at runtime (all errors are pre-registered)
 
-- ✅ Use `captureError` for all error reporting
-- ✅ Use `mapHttpStatusToErrorCode` in Fastify handlers
-- ✅ Return safe catalog errors to users
-- ✅ Include context in `data` field
-- ✅ Import from platform-specific paths
-
-### Don't
-
-- ❌ Never use `console.*` (use `@repo/utils/logger`)
-- ❌ Never expose internal error details to users
-- ❌ Never call `captureError` without required fields
-- ❌ Never import from root `@repo/error` (use platform-specific paths)
-- ❌ Never try to register errors at runtime (all errors are pre-registered)
-
-## Related Documentation
-
-- [Error Handling Guide](@apps/docs/content/docs/architecture/error-handling.mdx) - Complete guide with error catalog, build-time validation, and adding new error codes
-- [Packages Reference](@apps/docs/content/docs/core-concepts/packages.mdx) - `@repo/error` package structure
+## Related
+- @apps/docs/content/docs/architecture/error-handling.mdx - Complete guide with error catalog, build-time validation, adding new error codes
+- @apps/docs/content/docs/core-concepts/packages.mdx - `@repo/error` package structure

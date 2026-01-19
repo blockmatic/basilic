@@ -1,7 +1,7 @@
 ---
 description: ShadcnUI component guidelines and patterns
 glob: "*.tsx"
-alwaysApply: false
+alwaysApply: true
 ---
 
 # ShadcnUI Rules
@@ -22,7 +22,6 @@ alwaysApply: false
 - **Single components**: For individual components, check `shadcnui-official` MCP server for canonical implementations before creating variants
 
 ## MCP Server Usage
-
 Two MCP servers are available for shadcn/ui component discovery and installation:
 
 ### shadcnui-official
@@ -48,24 +47,6 @@ Two MCP servers are available for shadcn/ui component discovery and installation
 - **Conflict resolution**: `shadcnui-official` is authoritative when conflicts arise
 - **Optimization**: Only call MCP when unsure about implementation or encountering errors; don't call when confident about the approach
 
-## Planning with MCP Servers
-
-When planning new UI features:
-
-1. **Component composition**: Use `shadcnui-official` to understand component variants and composition patterns
-2. **Full UX/page templates**: Use `shadcnui-jpisnice-react` to discover complete page templates and blocks
-3. **Workflow for new screens**: Start with a block from `shadcnui-jpisnice-react`, then validate component patterns with `shadcnui-official`
-
-## Implementation with MCP Servers
-
-When implementing UI components:
-
-1. **Full block/page**: Query `shadcnui-jpisnice-react` first for complete templates (don't build from scratch if a suitable block exists)
-2. **Single component**: Query `shadcnui-official` first for canonical implementation
-3. **Adapt existing blocks**: Prefer adapting existing blocks to your needs rather than building custom implementations
-4. **Always align**: Ensure all implementations follow monorepo standards (install in `@repo/ui`, use correct import patterns, follow TypeScript rules)
-5. **Call optimization**: Only call MCP servers when unsure about implementation details or encountering errors; rely on existing patterns when confident
-
 ## Installation Pattern
 Components installed in `packages/ui/src/components/`. Each app's `components.json` points to:
 - `"utils": "@repo/ui/lib/utils"`
@@ -79,31 +60,56 @@ import { cn } from "@repo/ui/lib/utils"
 
 ## Component Patterns
 Use class-variance-authority (cva) pattern for variants and `cn` utility for merging class names:
-
 ```tsx
 import { cn } from "@repo/ui/lib/utils"
 import { cva } from "class-variance-authority"
 
-const buttonVariants = cva(
-  "rounded-md font-medium transition-colors",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-white hover:bg-primary/90",
-        secondary: "bg-secondary text-white hover:bg-secondary/90"
-      }
-    },
-    defaultVariants: {
-      variant: "default"
+const buttonVariants = cva("rounded-md font-medium transition-colors", {
+  variants: {
+    variant: {
+      default: "bg-primary text-white hover:bg-primary/90",
+      secondary: "bg-secondary text-white hover:bg-secondary/90"
     }
-  }
-)
+  },
+  defaultVariants: { variant: "default" }
+})
 ```
 
 ## Design System Organization
-- Core UI components in `@repo/ui`
-- Application-specific components in app's `components` folder
-- Hooks and utils collocated with components
+
+### Component Hierarchy
+**Base Components (Primitives) → `@repo/ui`**
+- Single-purpose, reusable components: `Button`, `Sidebar`, `SidebarContent`, `SidebarGroup`, etc.
+- Installed in `packages/ui/src/components/`
+- Shared across all apps
+- Examples: `@repo/ui/components/button`, `@repo/ui/components/sidebar`
+
+**Blocks/Templates → Location depends on reusability**
+
+1. **Reusable across multiple apps → `@repo/ui`**
+   - Install in `packages/ui/src/blocks/` or `packages/ui/src/templates/`
+   - Export via subpath: `@repo/ui/blocks/sidebar-right`
+   - Use when the same pattern is needed in 2+ apps
+   - Examples: Generic sidebar layouts, common form patterns, reusable dashboard layouts
+
+2. **App-specific → App's `components/` folder**
+   - Install in `apps/{app}/components/`
+   - Use when the block is specific to one app's domain
+   - Examples: `GameSidebar` for Mathler, app-specific navigation patterns
+
+**Application-Specific Components → App's `components/` folder**
+- Domain-specific compositions built from base components
+- Hooks and utils collocated with components (same directory)
+- Examples: `apps/mathler/components/game-sidebar.tsx`
+
+### Decision Flow
+```
+Is it a base primitive component?
+├─ Yes → Install in @repo/ui/components/
+└─ No → Is it a block/template?
+    ├─ Reusable across apps? → Install in @repo/ui/blocks/
+    └─ App-specific? → Install in apps/{app}/components/
+```
 
 ## Mobile-First Design
-All components follow mobile-first responsive design. See [Mobile-First Rules](@.cursor/rules/frontend/mobile-first.mdc) for guidelines.
+All components follow mobile-first responsive design. See @.cursor/rules/frontend/mobile-first.mdc for guidelines.

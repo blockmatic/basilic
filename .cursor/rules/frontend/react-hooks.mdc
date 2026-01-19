@@ -1,9 +1,7 @@
 ---
 description: React hooks patterns and best practices
-glob: "*.tsx, *.ts, **/hooks/**/*.ts, **/hooks/**/*.tsx"
 alwaysApply: false
 ---
-
 # React Hooks Rules
 
 ## Core Principles
@@ -16,36 +14,26 @@ alwaysApply: false
 ### Query Key Factory Pattern (CRITICAL)
 Always use `@lukemorales/query-key-factory` for centralized, type-safe query keys.
 
-**File Organization:**
-- `src/queries/articles.ts` - Query key factory for articles
-- `src/queries/users.ts` - Query key factory for users
-- `src/queries/index.ts` - Re-export all query keys
+**File Organization**: `src/queries/articles.ts` - Query key factory for articles, `src/queries/users.ts` - Query key factory for users, `src/queries/index.ts` - Re-export all query keys
 
-**Create Query Key Factory:**
+**Create Query Key Factory**:
 ```tsx
 import { createQueryKeys } from '@lukemorales/query-key-factory'
 
 export const articles = createQueryKeys('articles', {
-  all: {
-    queryKey: null,
-    queryFn: fetchArticles,
-  },
-  detail: (id: string) => ({
-    queryKey: [id],
-    queryFn: () => fetchArticleById(id),
-  }),
+  all: { queryKey: null, queryFn: fetchArticles },
+  detail: (id: string) => ({ queryKey: [id], queryFn: () => fetchArticleById(id) }),
 })
 ```
 
-**Using in Queries:**
+**Using in Queries**:
 ```tsx
 import { useQuery } from '@tanstack/react-query'
 import { articles } from '@/queries/articles'
-
 const { data, isLoading, error } = useQuery(articles.detail(id))
 ```
 
-**Query Options:**
+**Query Options**:
 ```tsx
 const { data } = useQuery({
   ...articles.detail(id),
@@ -56,19 +44,15 @@ const { data } = useQuery({
 })
 ```
 
-**Dependent Queries:**
+**Dependent Queries**:
 ```tsx
 const { data: user } = useQuery(users.detail(userId))
-const { data: posts } = useQuery({
-  ...posts.byUser(userId),
-  enabled: !!user,
-})
+const { data: posts } = useQuery({ ...posts.byUser(userId), enabled: !!user })
 ```
 
-**Mutations with Invalidation:**
+**Mutations with Invalidation**:
 ```tsx
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
 const queryClient = useQueryClient()
 const mutation = useMutation({
   mutationFn: createArticle,
@@ -78,7 +62,7 @@ const mutation = useMutation({
 })
 ```
 
-**Optimistic Updates:**
+**Optimistic Updates**:
 ```tsx
 const mutation = useMutation({
   mutationFn: updateArticle,
@@ -99,7 +83,7 @@ const mutation = useMutation({
 })
 ```
 
-**Infinite Queries:**
+**Infinite Queries**:
 ```tsx
 export const articles = createQueryKeys('articles', {
   infinite: (filters: ArticleFilters) => ({
@@ -107,14 +91,12 @@ export const articles = createQueryKeys('articles', {
     queryFn: ({ pageParam = 0 }) => fetchArticlesPage({ ...filters, page: pageParam }),
   }),
 })
-
 const { data, fetchNextPage, hasNextPage } = useInfiniteQuery(articles.infinite(filters))
 ```
 
-**Suspense Integration:**
+**Suspense Integration**:
 ```tsx
 import { useSuspenseQuery } from '@tanstack/react-query'
-
 function Article({ id }: { id: string }) {
   const { data } = useSuspenseQuery(articles.detail(id))
   return <div>{data.title}</div>
@@ -122,152 +104,41 @@ function Article({ id }: { id: string }) {
 ```
 
 ### Anti-Patterns
-❌ **Don't**: Manually construct query keys
-```tsx
-useQuery({ queryKey: ['articles', id] })
-```
+❌ **Don't**: Manually construct query keys `useQuery({ queryKey: ['articles', id] })`
+✅ **Do**: Use query key factory `useQuery(articles.detail(id))`
 
-✅ **Do**: Use query key factory
-```tsx
-useQuery(articles.detail(id))
-```
-
-❌ **Don't**: Hardcode query keys in invalidations
-```tsx
-queryClient.invalidateQueries({ queryKey: ['articles'] })
-```
-
-✅ **Do**: Use namespace invalidation
-```tsx
-queryClient.invalidateQueries({ queryKey: articles._def })
-```
+❌ **Don't**: Hardcode query keys in invalidations `queryClient.invalidateQueries({ queryKey: ['articles'] })`
+✅ **Do**: Use namespace invalidation `queryClient.invalidateQueries({ queryKey: articles._def })`
 
 ## Async Operations
+**Use TanStack Query for**: Server data fetching, data that needs caching, mutations and optimistic updates
 
-**Use TanStack Query for:**
-- Server data fetching
-- Data that needs caching
-- Mutations and optimistic updates
+**Use `useAsyncFn` from `react-use` for**: One-off async operations (file uploads, form submissions without caching), non-data-fetching async operations
 
-**Use `useAsyncFn` from `react-use` for:**
-- One-off async operations (file uploads, form submissions without caching)
-- Non-data-fetching async operations
-
-See [React Rules](@.cursor/rules/frontend/react.mdc) for state management decision tree and when to use each pattern.
+See @.cursor/rules/frontend/react.mdc for state management decision tree and when to use each pattern.
 
 ## Memoization Hooks
-
 **Default: Don't use `useMemo` or `useCallback`** - Modern React optimizations (React 19.2.3 with Fiber) handle most cases automatically.
 
 ### When Memoization is Actually Needed
-
-**In custom hooks, only use memoization when:**
-
+**In custom hooks, only use memoization when**:
 1. **Returning stable function references** - When hook consumers need stable function identity AND dependencies are stable
-   ```tsx
-   // ✅ Legitimate: Stable dependencies, consumers need stable reference
-   export function useStableAction(id: string) {
-     const action = useCallback(() => {
-       performAction(id)
-     }, [id]) // id is stable
-     return action
-   }
-   ```
-
 2. **Expensive computations in hooks** - When hook performs genuinely expensive work
-   ```tsx
-   // ✅ Legitimate: Expensive computation
-   export function useExpensiveCalculation(data: LargeDataSet) {
-     const result = useMemo(() => {
-       return complexAlgorithm(data)
-     }, [data])
-     return result
-   }
-   ```
-
 3. **Context provider values** - When hook creates context value for provider
-   ```tsx
-   // ✅ Legitimate: Context provider value
-   export function useMyContext() {
-     const value = useMemo(() => ({
-       state,
-       actions,
-     }), [state, actions])
-     return value
-   }
-   ```
 
 ### When NOT to Use Memoization in Hooks
-
-**Remove memoization from custom hooks when:**
-
+**Remove memoization from custom hooks when**:
 1. **Dependencies change frequently** - Memoization becomes ineffective
-   ```tsx
-   // ❌ Bad: Dependencies change frequently
-   export function useInputHandler(state: InputState) {
-     const insertAt = useCallback((char: string) => {
-       // Uses state.cursor, state.input which change frequently
-       setState({ ...state, input: state.input + char })
-     }, [state.cursor, state.input, setState]) // Recreates anyway
-     
-     return { insertAt }
-   }
-   
-   // ✅ Good: Just return function directly
-   export function useInputHandler(state: InputState) {
-     const insertAt = (char: string) => {
-       setState({ ...state, input: state.input + char })
-     }
-     return { insertAt }
-   }
-   ```
-
 2. **Simple operations** - Array operations, object creation, simple conditionals
-   ```tsx
-   // ❌ Bad: Simple computation
-   export function useFilteredItems(items: Item[]) {
-     const filtered = useMemo(() => items.filter(i => i.active), [items])
-     return filtered
-   }
-   
-   // ✅ Good: Just compute directly
-   export function useFilteredItems(items: Item[]) {
-     return items.filter(i => i.active)
-   }
-   ```
-
 3. **useEffect dependencies** - If callback depends on frequently changing state, memoization doesn't help
-   ```tsx
-   // ❌ Bad: Callback depends on frequently changing state
-   export function useGameInitializer(resetInput: () => void, setGameState: Function) {
-     const initialize = useCallback(() => {
-       resetInput()
-       setGameState({ ... })
-     }, [resetInput, setGameState]) // These change frequently
-     
-     useEffect(() => {
-       initialize()
-     }, [initialize]) // Runs too often
-   }
-   
-   // ✅ Good: Use refs or restructure
-   export function useGameInitializer(resetInput: () => void, setGameState: Function) {
-     useEffect(() => {
-       resetInput()
-       setGameState({ ... })
-       // eslint-disable-next-line react-hooks/exhaustive-deps
-     }, []) // Run once on mount
-   }
-   ```
 
 ### Best Practices for Custom Hooks
-
 - **Start without memoization** - Add only when profiling reveals bottlenecks
 - **Prefer primitive dependencies** - Use primitive values in useEffect dependencies instead of memoized functions
 - **Trust React's optimizations** - Modern React handles function recreation efficiently
 - **Profile first** - Only add memoization when you measure actual performance issues
 
-See [React Rules](@.cursor/rules/frontend/react.mdc) for complete memoization guidelines, anti-patterns, and examples.
+See @.cursor/rules/frontend/react.mdc for complete memoization guidelines, anti-patterns, and examples.
 
 ## Custom Hooks Best Practices
 - Combine multiple queries into cohesive hooks
@@ -275,7 +146,7 @@ See [React Rules](@.cursor/rules/frontend/react.mdc) for complete memoization gu
 - Use query key factory for all TanStack Query hooks
 - Never manually manage `isLoading`, `error`, or `isError` states
 
-## Related Rules
-- [React Rules](@.cursor/rules/frontend/react.mdc) - Component patterns
-- [Frontend Stack](@.cursor/rules/frontend/stack.mdc) - Library usage patterns
-- [TypeScript Rules](@.cursor/rules/base/typescript.mdc) - Type safety patterns
+## Related
+- @.cursor/rules/frontend/react.mdc - Component patterns
+- @.cursor/rules/frontend/stack.mdc - Library usage patterns
+- @.cursor/rules/base/typescript.mdc - Type safety patterns

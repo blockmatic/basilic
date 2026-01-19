@@ -4,20 +4,18 @@ glob: "*"
 alwaysApply: true
 ---
 
-# Linting 
+# Linting
 
 ## Architecture Overview
+**Hybrid linting architecture**: Biome and ESLint have distinct, non-overlapping responsibilities.
 
-This monorepo uses a **hybrid linting architecture** where Biome and ESLint have distinct, non-overlapping responsibilities:
-
-- **Biome**: Handles formatting, style, and basic best practices (fast, modern)
-- **ESLint**: Handles correctness, framework rules, and architecture boundaries (ecosystem plugins)
-- **No overlap**: All formatting rules are disabled in ESLint. Each tool owns its domain completely.
+- **Biome**: Formatting, style, basic best practices (fast, modern)
+- **ESLint**: Correctness, framework rules, architecture boundaries (ecosystem plugins)
+- **No overlap**: All formatting rules disabled in ESLint. Each tool owns its domain completely.
 
 ## Tool Responsibilities
 
 ### Biome (Primary - Formatting & Style)
-
 - **Formatting**: All code formatting (indentation, quotes, semicolons, etc.)
 - **Import Organization**: Import sorting and organization
 - **Unused Variables/Imports**: Detection and removal of unused code
@@ -26,60 +24,40 @@ This monorepo uses a **hybrid linting architecture** where Biome and ESLint have
 - **Basic A11y**: Accessibility rules for JSX
 
 ### ESLint (Correctness & Framework Rules)
-
 - **TypeScript Correctness**: Basic TypeScript rules (non-type-aware for speed)
 - **React/React Hooks Rules**: React-specific correctness rules
 - **Next.js Rules**: Next.js framework-specific rules
 - **Import Boundary Enforcement**: Architecture rules (e.g., `import/no-default-export`)
-- **File Size Limits**: Maximum 300 lines per file (`max-lines`) - helps agents maintain manageable file sizes. Test files (`.test.ts`, `.spec.ts`, `.e2e-spec.ts`, etc.) and UI components (`packages/ui/src/components/**`) are exempt as they legitimately need more lines for setup, mocks, comprehensive coverage, or complex component implementations
+- **File Size Limits**: Maximum 300 lines per file (`max-lines`) - helps agents maintain manageable file sizes. Test files (`.test.ts`, `.spec.ts`, `.e2e-spec.ts`, etc.) and UI components (`packages/ui/src/components/**`) are exempt
 - **Turbo Monorepo Rules**: Monorepo-aware linting
 
 ## Agent Requirements
-
 **CRITICAL**: All agents MUST follow these rules:
 
-1. **Always follow Biome and ESLint rules** - Code must pass both linters before completion
-2. **Run linting after making changes** - Execute `pnpm lint:fix` after editing files (skip if only markdown files changed)
-3. **Fix all introduced issues** - Resolve any linting errors you create; pre-existing issues are optional
-4. **Check linting before finishing** - Verify code passes linting as part of task completion (skip if only markdown files changed)
-5. **Skip linting for markdown-only changes** - If only `.md`, `.mdx`, or `.mdc` files were modified, skip all linting, building, and testing commands
+1. **Always follow Biome and ESLint rules** - Generated code must comply with both linter rules
+2. **Write code that passes linting** - Ensure generated code follows Biome formatting and ESLint correctness rules
 
 ## Usage
 
 ### Running Linters
-
 ```bash
-# Run both linters (recommended for CI)
-pnpm lint
-
-# Run Biome only (formatting + style)
-pnpm lint:biome
-pnpm lint:biome:fix  # Auto-fix
-
-# Run ESLint only (correctness)
-pnpm lint:eslint
-pnpm lint:eslint:fix  # Auto-fix
-
-# Fix all issues (RECOMMENDED after making changes)
-pnpm lint:fix
-
-# Format code only (Biome)
-pnpm format
+pnpm lint              # Run both linters (recommended for CI)
+pnpm lint:biome        # Biome only (formatting + style)
+pnpm lint:biome:fix     # Auto-fix
+pnpm lint:eslint       # ESLint only (correctness)
+pnpm lint:eslint:fix   # Auto-fix
+pnpm lint:fix          # Fix all issues (RECOMMENDED after making changes)
+pnpm format            # Format code only (Biome)
 ```
 
 ### Agent Workflow
+When generating code, agents MUST:
 
-After making code changes, agents MUST:
-
-1. **Check file types**: If only `.md`, `.mdx`, or `.mdc` files were modified, skip linting workflow
-2. **Run auto-fix**: `pnpm lint:fix` to automatically fix fixable issues (skip for markdown-only changes)
-3. **Check remaining issues**: `pnpm lint` to see if any issues remain (skip for markdown-only changes)
-4. **Fix manually**: Address any remaining linting errors that couldn't be auto-fixed
-5. **Verify**: Ensure `pnpm lint` passes before marking task complete (skip for markdown-only changes)
+1. **Follow Biome formatting rules** - Use proper indentation, quotes, semicolons, import organization
+2. **Follow ESLint correctness rules** - Adhere to TypeScript, React, Next.js, and architecture rules
+3. **Write compliant code** - Generate code that would pass both linters without requiring fixes
 
 ### Disabling Rules
-
 Use inline comments sparingly and always include a reason:
-
 - **Biome**: `// biome-ignore lint/ruleName: reason`
 - **ESLint**: `// eslint-disable-next-line rule-name`

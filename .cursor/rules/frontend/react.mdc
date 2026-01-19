@@ -1,25 +1,22 @@
 ---
 description: React component patterns and best practices
-glob: "*.tsx, *.ts"
 alwaysApply: false
 ---
-
 # React Rules
 
 ## Component Structure
 - Function components only (never class components)
 - No explicit return types (inferred automatically)
 - Props always use object destructuring: `function Component({ title }: { title: string })`
-- RORO pattern applies to regular functions only, not React components (see [TypeScript Rules](@.cursor/rules/base/typescript.mdc))
+- RORO pattern applies to regular functions only, not React components (see @.cursor/rules/base/typescript.mdc)
 
 ## Component Organization
 - **One component per file** - The `react/no-multi-comp` ESLint rule enforces this (with `ignoreStateless: true`)
-- Each component with state must be in its own file for better maintainability, testability, and reusability (class components are not used)
-- **Stateless (functional) components are allowed** - Multiple stateless components can be in the same file, which is useful for small utility/helper components that are tightly coupled to the main component
-- If a component is truly tiny and only used once, consider inlining it directly in JSX rather than creating a separate component
+- Each component with state must be in its own file
+- **Stateless components allowed** - Multiple stateless components can be in the same file (useful for small utility/helper components)
+- If component is truly tiny and only used once, consider inlining it directly in JSX
 
 ## State Management Decision Tree
-
 1. **URL-shareable UI state** → Use `nuqs` (filters, search, tabs, pagination, view preferences)
 2. **Grouped state not in URL** → Use `useSetState` from `react-use` (game engine, form state, ephemeral UI state)
 3. **Loading/error states from async** → Use TanStack Query's built-in state (`isLoading`, `isError`, `isFetching`)
@@ -28,289 +25,75 @@ alwaysApply: false
 ### nuqs for URL State
 ```tsx
 import { useQueryState, useQueryStates, parseAsString, parseAsInteger } from 'nuqs'
-
 const [search, setSearch] = useQueryState('q', parseAsString.withDefault(''))
-const [filters, setFilters] = useQueryStates({
-  search: parseAsString.withDefault(''),
-  page: parseAsInteger.withDefault(1),
-})
+const [filters, setFilters] = useQueryStates({ search: parseAsString.withDefault(''), page: parseAsInteger.withDefault(1) })
 ```
 
-**Use nuqs for:** Search/filter, tabs, pagination, sort options, view preferences, shareable modal state
+**Use nuqs for**: Search/filter, tabs, pagination, sort options, view preferences, shareable modal state
 
-**Don't use nuqs for:** Game engine state, form input state, component-local UI state, frequently changing state, sensitive data
+**Don't use nuqs for**: Game engine state, form input state, component-local UI state, frequently changing state, sensitive data
 
 ### Loading/Error State Management
 Never manually manage `isLoading`, `error`, or `isError` states. Use TanStack Query hooks or `useAsyncFn` which provide these automatically.
 
-```tsx
-// ✅ Good: TanStack Query provides state
-const { data, isLoading, isError, error } = useQuery(articles.all)
+**When to use TanStack Query state**: Server data fetching (cached, shared across components), mutations and optimistic updates, data that needs background refetching
 
-// ✅ Good: useAsyncFn provides state
-const [saveState, saveData] = useAsyncFn(async (data) => {
-  return await api.save(data)
-}, [])
-// Access: saveState.loading, saveState.error
-```
-
-**When to use TanStack Query state:**
-- Server data fetching (cached, shared across components)
-- Mutations and optimistic updates
-- Data that needs background refetching
-
-**When to use useAsyncFn:**
-- One-off async operations (file uploads, form submissions without caching)
-- Non-data-fetching async operations
+**When to use useAsyncFn**: One-off async operations (file uploads, form submissions without caching), non-data-fetching async operations
 
 ### useSetState for Grouped State
 ```tsx
 import { useSetState } from 'react-use'
-
-const [state, setState] = useSetState<FormState>({
-  message: '',
-  signedMessage: null,
-  txTo: '',
-})
-
-// Update multiple properties atomically
-setState({ signedMessage: data.signedMessage, message: '' })
+const [state, setState] = useSetState<FormState>({ message: '', signedMessage: null, txTo: '' })
+setState({ signedMessage: data.signedMessage, message: '' }) // Update multiple properties atomically
 ```
 
-**Use for:** Multiple related state variables updated together, form state, UI state that changes together (if not URL-shareable), game/app state
+**Use for**: Multiple related state variables updated together, form state, UI state that changes together (if not URL-shareable), game/app state
 
-**Don't use for:** URL-shareable state (use `nuqs`), loading/error states (use TanStack Query)
+**Don't use for**: URL-shareable state (use `nuqs`), loading/error states (use TanStack Query)
 
 ## Rendering Optimization
 
 ### Memoization (Default: Avoid)
-
 **CRITICAL**: With React 19.2.3 and modern JavaScript engines, most memoization is unnecessary and can actually harm performance.
 
 **Default to NOT using `useMemo` or `useCallback`** - Modern React optimizations (Fiber, automatic batching, concurrent rendering) handle most cases automatically.
 
 #### When to Use useMemo/useCallback
-
-Only use these hooks when:
-
+Only use when:
 1. **Context provider values** - Prevents unnecessary re-renders of all consumers
-   ```tsx
-   // ✅ Legitimate: Context provider value
-   const contextValue = useMemo(() => ({
-     state,
-     setState,
-     actions,
-   }), [state, setState, actions])
-   ```
-
 2. **Expensive computations** - Actual heavy calculations (not simple array operations)
-   ```tsx
-   // ✅ Legitimate: Expensive computation
-   const sortedData = useMemo(() => {
-     return largeArray.sort(complexComparisonFunction)
-   }, [largeArray])
-   ```
-
 3. **Stable dependencies for hooks** - When function identity is required AND dependencies are stable
-   ```tsx
-   // ✅ Legitimate: Stable dependencies, required for useEffect
-   const fetchData = useCallback(() => {
-     return api.fetch(id)
-   }, [id]) // id is stable
-   ```
-
 4. **Third-party library requirements** - When library explicitly requires stable references
 
 #### When NOT to Use useMemo/useCallback
-
-**Remove memoization when:**
-
-1. **Dependencies change frequently** - If memoized value depends on frequently changing state, memoization is ineffective and wasteful
-   ```tsx
-   // ❌ Bad: Dependencies change frequently, memoization ineffective
-   const handler = useCallback(() => {
-     doSomething(state.value) // state.value changes every render
-   }, [state.value]) // Recreates on every render anyway
-   
-   // ✅ Good: Just use inline function
-   const handler = () => {
-     doSomething(state.value)
-   }
-   ```
-
+**Remove memoization when**:
+1. **Dependencies change frequently** - Memoization becomes ineffective
 2. **Simple computations** - Array operations, object creation, simple conditionals
-   ```tsx
-   // ❌ Bad: Simple computation, unnecessary memoization
-   const items = useMemo(() => data.filter(x => x.active), [data])
-   
-   // ✅ Good: Just compute directly
-   const items = data.filter(x => x.active)
-   ```
-
 3. **Inline functions** - Modern engines optimize these efficiently
-   ```tsx
-   // ❌ Bad: Unnecessary useCallback for simple handler
-   const handleClick = useCallback(() => {
-     setCount(c => c + 1)
-   }, [])
-   
-   // ✅ Good: Inline function is fine
-   <button onClick={() => setCount(c => c + 1)}>Click</button>
-   ```
-
 4. **JSX memoization** - React handles JSX efficiently
-   ```tsx
-   // ❌ Bad: JSX memoization unnecessary
-   const component = useMemo(() => <MyComponent data={data} />, [data])
-   
-   // ✅ Good: Just render directly
-   <MyComponent data={data} />
-   ```
+5. **useEffect dependencies** - If callback depends on frequently changing state, it defeats the purpose
 
-5. **useEffect dependencies** - If the callback depends on frequently changing state, it defeats the purpose
-   ```tsx
-   // ❌ Bad: Callback depends on frequently changing state
-   const initialize = useCallback(() => {
-     resetInput()
-     setGameState({ ... })
-   }, [resetInput, setGameState]) // These change frequently
-   
-   // ✅ Good: Use refs or restructure to avoid dependency
-   useEffect(() => {
-     initialize()
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [])
-   ```
-
-#### Anti-Patterns
-
-**Common mistakes to avoid:**
-
-- Memoizing functions that depend on frequently changing state
-- Memoizing simple computations (array.filter, object creation)
-- Using useCallback "just in case" without profiling
-- Memoizing JSX elements unnecessarily
-- Over-memoizing in custom hooks when dependencies change frequently
-
-**Best Practice**: Start without memoization. Only add `useMemo` or `useCallback` when profiling reveals an actual bottleneck that affects user experience (lagging, stuttering animations, delays).
+**Best Practice**: Start without memoization. Only add `useMemo` or `useCallback` when profiling reveals an actual bottleneck that affects user experience.
 
 #### Prefer React.memo Over useCallback
-
-Instead of wrapping functions with `useCallback`, prefer `React.memo` for pure components:
-
-```tsx
-// ✅ Good: Use React.memo for component optimization
-const ExpensiveComponent = React.memo(({ value }) => {
-  return <div>{expensiveComputation(value)}</div>
-})
-
-// ❌ Avoid: Wrapping every function with useCallback
-const handleClick = useCallback(() => {
-  // ...
-}, [deps])
-```
+Instead of wrapping functions with `useCallback`, prefer `React.memo` for pure components.
 
 ### Concurrent Rendering Features
+**Transitions** (`useTransition` / `startTransition`): Use for non-urgent updates that shouldn't block UI. Pattern: `startTransition(() => { setFilteredData(expensiveFilter(data)) })`. Use `isPending` to show loading states. **When to use**: Search/filter inputs, tab switching, heavy state updates. **When NOT to use**: Urgent updates (user input), critical UI updates
 
-**Transitions** (`useTransition` / `startTransition`):
-- Use for non-urgent updates that shouldn't block UI
-- Pattern: `startTransition(() => { setFilteredData(expensiveFilter(data)) })`
-- Use `isPending` to show loading states during transitions
-- **When to use**: Search/filter inputs, tab switching, heavy state updates
-- **When NOT to use**: Urgent updates (user input), critical UI updates
+**Deferred Values** (`useDeferredValue`): Use to defer expensive computations while keeping UI responsive. Pattern: `const deferredQuery = useDeferredValue(query)` then use in `useMemo` (only if computation is actually expensive). Keeps previous value visible while new value is computed. **When to use**: Expensive filtering/computation that can be deferred (e.g., filtering large arrays, complex calculations). **When NOT to use**: Critical UI updates that need immediate feedback, simple computations that don't need memoization. **Note**: Only use `useMemo` with `useDeferredValue` if computation is genuinely expensive. For simple operations, compute directly with deferred value.
 
-**Deferred Values** (`useDeferredValue`):
-- Use to defer expensive computations while keeping UI responsive
-- Pattern: `const deferredQuery = useDeferredValue(query)` then use in `useMemo` (only if computation is actually expensive)
-- Keeps previous value visible while new value is computed
-- **When to use**: Expensive filtering/computation that can be deferred (e.g., filtering large arrays, complex calculations)
-- **When NOT to use**: Critical UI updates that need immediate feedback, simple computations that don't need memoization
-- **Note**: Only use `useMemo` with `useDeferredValue` if the computation is genuinely expensive. For simple operations, compute directly with the deferred value.
-
-**Suspense**:
-- Wrap async operations in Suspense boundaries
-- Server Components: automatic via `loading.tsx` files
-- Client Components: manual boundaries for async operations
-- Use multiple Suspense boundaries for independent streaming
+**Suspense**: Wrap async operations in Suspense boundaries. Server Components: automatic via `loading.tsx` files. Client Components: manual boundaries for async operations. Use multiple Suspense boundaries for independent streaming.
 
 ## Error Boundaries
-
-Use `react-error-boundary` with `@repo/error` for error handling:
-
-```tsx
-import { ErrorBoundary } from 'react-error-boundary'
-import { captureError, initSentry } from '@repo/error/nextjs'
-import { useEffect } from 'react'
-
-function ErrorFallback({ error, resetErrorBoundary }: { 
-  error: Error
-  resetErrorBoundary: () => void 
-}) {
-  return (
-    <div>
-      <h2>Something went wrong</h2>
-      <button onClick={resetErrorBoundary}>Try again</button>
-    </div>
-  )
-}
-
-export function AppErrorBoundary({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
-    if (dsn) {
-      initSentry({ dsn, environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT })
-    }
-  }, [])
-
-  return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => window.location.reload()}
-      onError={(error, errorInfo) => {
-        captureError({
-          code: 'UNEXPECTED_ERROR',
-          error,
-          label: 'React Error Boundary',
-          tags: { app: 'web' },
-          data: {
-            componentStack: errorInfo.componentStack,
-          },
-        })
-      }}
-    >
-      {children}
-    </ErrorBoundary>
-  )
-}
-```
-
-**Async errors in event handlers**:
-
-```tsx
-import { captureError } from '@repo/error/nextjs'
-import { toast } from 'sonner'
-
-async function handleSubmit() {
-  try {
-    await submitForm()
-  } catch (error) {
-    const catalogError = captureError({
-      code: 'NETWORK_ERROR',
-      error,
-      label: 'Form Submission',
-      tags: { app: 'web' },
-    })
-    toast.error(catalogError.message)
-  }
-}
-```
+Use `react-error-boundary` with `@repo/error` for error handling. See @.cursor/rules/base/error-handling.mdc for complete patterns.
 
 **Use for**: App-level, section-level, feature-level error handling, third-party component errors
 
 **Don't use for**: Event handlers (use try/catch with `captureError`), async code (use try/catch), SSR errors
 
-## Related Rules
-- [React Hooks Rules](@.cursor/rules/frontend/react-hooks.mdc) - Data fetching patterns
-- [Frontend Stack](@.cursor/rules/frontend/stack.mdc) - Library usage patterns
-- [Next.js Rules](@.cursor/rules/frontend/nextjs.mdc) - Next.js-specific patterns
-- [TypeScript Rules](@.cursor/rules/base/typescript.mdc) - Code style guidelines
+## Related
+- @.cursor/rules/frontend/react-hooks.mdc - Data fetching patterns
+- @.cursor/rules/frontend/stack.mdc - Library usage patterns
+- @.cursor/rules/frontend/nextjs.mdc - Next.js-specific patterns
+- @.cursor/rules/base/typescript.mdc - Code style guidelines

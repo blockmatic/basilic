@@ -1,81 +1,41 @@
 ---
 description: Common testing philosophy and patterns for all test types
-glob: "*.spec.ts, *.spec.tsx, *.test.ts, *.test.tsx, **/*.e2e-spec.ts"
-alwaysApply: true
+alwaysApply: false
 ---
-
 # Testing Rules
 
-## Testing Philosophy
+## Philosophy
+**CRITICAL**: All tests use real APIs with real API keys. NO MOCKS for core functionality.
 
-**CRITICAL**: All tests use real APIs with real API keys. NO MOCKS allowed for core functionality.
-
-- E2E tests hit real API endpoints (no unit tests)
+- E2E tests hit real endpoints (no unit tests)
 - Integration tests use real external services
-- Tests validate against OpenAPI schemas for type safety
-- All API calls use actual credentials from environment variables
+- Validate against OpenAPI schemas
+- Use actual credentials from env vars
 
-**Exception**: UI-only tests (rendering, styling) may mock API calls for performance, but integration tests must use real APIs.
+**Exception**: UI-only tests (rendering/styling) may mock APIs for performance.
 
-## Test-Driven Development (TDD)
+## TDD
+**Optional and agent-discretionary** - use when appropriate, not mandatory unless user requests.
 
-**TDD is optional and agent-discretionary** - agents may choose to use TDD when appropriate, but it's not mandatory unless explicitly requested by the user.
+**When beneficial**: Complex logic, critical paths (auth/payments), refactoring, API contracts.
 
-### When TDD Might Be Beneficial
+**Workflow**: Red (failing test) → Green (minimal pass) → Refactor → Repeat
 
-- **Complex logic**: Algorithms, calculations, or business rules with multiple edge cases
-- **Critical paths**: Authentication, payment processing, or security-sensitive features
-- **Refactoring**: When improving existing code, tests help ensure behavior is preserved
-- **API contracts**: When defining new endpoints, tests help clarify expected behavior
+**Note**: If user requests TDD, use @.cursor/commands/tdd.md
 
-### TDD Workflow (When Used)
+## Coverage Requirements
 
-1. **Red**: Write a failing test that describes desired behavior
-2. **Green**: Implement minimal code to make the test pass
-3. **Refactor**: Improve code quality while keeping tests green
-4. **Repeat**: Continue cycle for each feature increment
+**Endpoints (API only, never unit test):**
+- CRUD operations, error handling, response validation, auth, input validation
 
-### TDD Guidelines
+**Components:**
+- Rendering, user interactions, API integration, error handling, loading states
 
-- Tests should use real APIs (following testing philosophy above)
-- Focus on behavior, not implementation details
-- Keep tests simple and focused on one concern
-- When using TDD, follow the red-green-refactor cycle strictly
+## Mocking
+**Mock**: UI-only tests, window APIs (`window`, `localStorage`), timers
 
-**Note**: If user explicitly requests TDD, use the [TDD Command](@.cursor/commands/tdd.md) for detailed workflow guidance.
+**Never mock**: API calls, external services, authentication, data fetching hooks
 
-## Test Coverage Requirements
-
-**For endpoints only, never unit test in API:**
-- All CRUD operations (Create, Read, Update, Delete)
-- Error Handling (all error cases and validation)
-- Response validation (responses match OpenAPI schemas)
-- Authentication and authorization
-- Input validation (Zod schemas)
-
-**For components:**
-- Component Rendering: Test component renders correctly
-- User Interactions: Test clicks, form submissions, navigation
-- API Integration: Test real API calls and responses
-- Error Handling: Test error states and error messages
-- Loading States: Test loading spinners and states
-
-## Mocking Guidelines
-
-### When to Mock
-
-- **UI-Only Tests**: Mock APIs for pure rendering tests (performance)
-- **Window APIs**: Mock `window`, `localStorage`, `sessionStorage`
-- **Timers**: Mock `setTimeout`, `setInterval` for time-dependent tests
-
-### When NOT to Mock
-
-- **API Calls**: Never mock API calls in integration tests
-- **External Services**: Never mock external services in integration tests
-- **Authentication**: Never mock authentication in integration tests
-- **Data Fetching**: Never mock data fetching hooks in integration tests
-
-## Related Rules
-
-- [Backend Testing Rules](@.cursor/rules/backend/testing.mdc) - Fastify-specific testing patterns
-- [Frontend Testing Rules](@.cursor/rules/frontend/testing.mdc) - React/Next.js-specific testing patterns
+## Related
+- @.cursor/rules/backend/testing.mdc - Fastify patterns
+- @.cursor/rules/frontend/testing.mdc - React/Next.js patterns

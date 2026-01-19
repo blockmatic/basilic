@@ -1,6 +1,5 @@
 ---
 description: Solana address validation patterns and best practices
-glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
 # Solana Rules
@@ -16,7 +15,6 @@ alwaysApply: false
 - Use `@repo/utils/web3` for chain type utilities (`ChainType`, `getChainType`, `getChainMetadata`)
 
 ## Address Handling
-
 ```tsx
 import { PublicKey } from '@solana/web3.js'
 
@@ -32,16 +30,11 @@ function validateSolanaAddress(address: string) {
 ```
 
 ## Transaction Handling
-
 ```tsx
 import { PublicKey, Transaction, SystemProgram } from '@solana/web3.js'
 
 // Create transaction pattern
-export async function sendTransaction({
-  from,
-  to,
-  amount
-}: SendTransactionParams) {
+export async function sendTransaction({ from, to, amount }: SendTransactionParams) {
   try {
     const fromPublicKey = new PublicKey(from)
     const toPublicKey = new PublicKey(to)
@@ -75,5 +68,5 @@ export async function sendTransaction({
 - Use Anchor v0.32.1 framework for program development
 - Test tokens use PDA-based mint authority for open minting (faucet functionality)
 
-## Related Rules
-- [Multichain Rules](@.cursor/rules/web3/multichain.mdc) - Multichain address validation coordination
+## Related
+- @.cursor/rules/web3/multichain.mdc - Multichain address validation coordination

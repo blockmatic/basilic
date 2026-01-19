@@ -1,6 +1,5 @@
 ---
 description: Cosmos address validation patterns and best practices
-glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
 # Cosmos Rules
@@ -12,7 +11,6 @@ alwaysApply: false
 - Never cast directly - always validate format
 
 ## Address Handling
-
 ```tsx
 // Proper address validation
 function validateCosmosAddress(address: string) {
@@ -23,7 +21,6 @@ function validateCosmosAddress(address: string) {
 ```
 
 ## Chain-Specific Prefixes
-
 Common Cosmos chain prefixes:
 - `cosmos` - Cosmos Hub
 - `osmo` - Osmosis
@@ -32,15 +29,9 @@ Common Cosmos chain prefixes:
 - `stars` - Stargaze
 
 ## Transaction Handling
-
 ```tsx
 // Cosmos transaction pattern
-export async function sendTransaction({
-  from,
-  to,
-  amount,
-  chainPrefix = 'cosmos'
-}: SendTransactionParams) {
+export async function sendTransaction({ from, to, amount, chainPrefix = 'cosmos' }: SendTransactionParams) {
   // Validate addresses match chain prefix
   if (!to.startsWith(chainPrefix)) {
     throw new Error(`Invalid address prefix for ${chainPrefix} chain`)
@@ -56,5 +47,5 @@ export async function sendTransaction({
 - Use chain-specific validation libraries when available
 - Handle different Bech32 variants (Bech32, Bech32m)
 
-## Related Rules
-- [Multichain Rules](@.cursor/rules/web3/multichain.mdc) - Multichain address validation coordination
+## Related
+- @.cursor/rules/web3/multichain.mdc - Multichain address validation coordination

@@ -1,29 +1,14 @@
 # Optimize Performance
 
 ## Overview
-
-Analyze the current code for performance bottlenecks and provide optimization recommendations, focusing on measurable improvements while maintaining code quality and readability.
+Analyze current code for performance bottlenecks and provide optimization recommendations, focusing on measurable improvements while maintaining code quality/readability.
 
 ## Steps
+1. **Performance Analysis**: Identify slow algorithms/inefficient data structures, find memory leaks/excessive allocations, detect unnecessary computations/redundant operations, analyze database queries/API calls
+2. **Optimization Strategies**: Suggest algorithm improvements/better data structures, recommend caching strategies, propose lazy loading/pagination, identify parallel processing opportunities
+3. **Implementation**: Provide optimized code with explanations, include performance impact estimates, suggest profiling/monitoring approaches, consider performance/maintainability trade-offs
 
-1. **Performance Analysis**
-    - Identify slow algorithms and inefficient data structures
-    - Find memory leaks and excessive allocations
-    - Detect unnecessary computations and redundant operations
-    - Analyze database queries and API calls
-2. **Optimization Strategies**
-    - Suggest algorithm improvements and better data structures
-    - Recommend caching strategies where appropriate
-    - Propose lazy loading and pagination solutions
-    - Identify opportunities for parallel processing
-3. **Implementation**
-    - Provide optimized code with explanations
-    - Include performance impact estimates
-    - Suggest profiling and monitoring approaches
-    - Consider trade-offs between performance and maintainability
-
-## Optimize Performance Checklist
-
+## Checklist
 - [ ] Identified slow algorithms and inefficient data structures
 - [ ] Found memory leaks and excessive allocations
 - [ ] Detected unnecessary computations and redundant operations

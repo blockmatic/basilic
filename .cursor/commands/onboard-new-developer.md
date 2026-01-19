@@ -1,24 +1,13 @@
 # Onboard New Developer
 
 ## Overview
-
-Comprehensive onboarding process to get a new developer up and running quickly.
+Comprehensive onboarding process to get new developer up and running quickly.
 
 ## Steps
+1. **Environment setup**: Install required tools, set up development environment, configure IDE/extensions, set up git/SSH keys
+2. **Project familiarization**: Review project structure, understand architecture, read key documentation, set up local database
 
-1. **Environment setup**
-    - Install required tools
-    - Set up development environment
-    - Configure IDE and extensions
-    - Set up git and SSH keys
-2. **Project familiarization**
-    - Review project structure
-    - Understand architecture
-    - Read key documentation
-    - Set up local database
-
-## Onboarding Checklist
-
+## Checklist
 - [ ] Development environment ready
 - [ ] All tests passing
 - [ ] Can run application locally

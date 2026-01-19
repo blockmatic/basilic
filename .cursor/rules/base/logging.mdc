@@ -1,173 +1,66 @@
 ---
 description: Logging best practices and rules
-glob: "*.tsx, *.ts, *.jsx, *.js"
-alwaysApply: true
+alwaysApply: false
 ---
-
 # Logging Rules
 
 ## Never Use console.* Directly
-
 **Never use `console.log`, `console.error`, `console.warn`, or `console.info` in app code.**
 
-Always use the unified logger from `@repo/utils/logger`:
-
+Always use unified logger from `@repo/utils/logger`:
 ```typescript
-// ✅ Correct
 import { logger } from '@repo/utils/logger'
 logger.info('User logged in', { userId })
 logger.error('Failed to fetch data', { error })
-
-// ❌ Wrong
-console.log('User logged in')
-console.error('Failed to fetch data')
 ```
 
 ## Unified Logger API
-
-The logger works consistently across server and client:
-
+Works consistently across server and client:
 ```typescript
 import { logger } from '@repo/utils/logger'
 
-// Basic usage
 logger.debug('Debug message', { data })
 logger.info('Info message', { userId: '123' })
 logger.warn('Warning message', { remaining: 10 })
 logger.error('Error message', { error })
 
-// Create child logger with bindings
+// Child logger with bindings
 const requestLogger = logger.child({ requestId: 'abc-123', userId: 'user-456' })
 requestLogger.info('Processing request') // Includes requestId and userId
 ```
 
-## Build-Time Conditional Exports
-
-The logger uses build-time conditional exports - no runtime detection. See [Logging Guide](@apps/docs/content/docs/architecture/logging.mdx#build-time-conditional-exports) for architecture details.
+**Build-time conditional exports**: No runtime detection. See @apps/docs/content/docs/architecture/logging.mdx
 
 ## Log Levels
-
-Use appropriate log levels:
-
-- **`debug`**: Detailed information for debugging (development only)
+- **`debug`**: Detailed debugging info (development only)
 - **`info`**: General informational messages
 - **`warn`**: Warning messages for potentially harmful situations
 - **`error`**: Error messages for failures
 
 ## Best Practices
-
-### 1. Use Structured Fields
-
-Always use structured fields (first parameter) instead of string interpolation:
-
-```typescript
-// ✅ Good
-logger.info({ userId, action: 'login' }, 'User logged in')
-
-// ❌ Bad
-logger.info(`User ${userId} logged in`)
-```
-
-### 2. Request ID Correlation
-
-Use `child()` to create request-scoped loggers for correlation:
-
-```typescript
-// In route handler or API route
-const requestLogger = logger.child({ requestId: request.id, userId })
-
-// Pass to service functions
-await processOrder(requestLogger, orderData)
-
-// All logs from requestLogger will include requestId and userId
-```
-
-### 3. Never Log Secrets
-
-The server-side logger automatically redacts common secret fields, but avoid logging sensitive data:
-
-```typescript
-// ✅ Safe - password will be redacted automatically
-logger.debug({ user: { email: 'user@example.com', password: 'secret123' } }, 'User data')
-
-// ❌ Avoid logging sensitive data even if redacted
-logger.debug({ apiKey: 'sk-123456' }, 'API key received')
-```
-
-### 4. Error Logging
-
-Always include error objects in error logs:
-
-```typescript
-try {
-  // ... code
-} catch (error) {
-  logger.error({ error, context: { userId, orderId } }, 'Failed to process order')
-  throw error
-}
-```
+- **Structured fields**: `logger.info({ userId, action: 'login' }, 'User logged in')` not string interpolation
+- **Request ID correlation**: Use `child()` for request-scoped loggers
+- **Never log secrets**: Server-side logger auto-redacts common secret fields, but avoid logging sensitive data
+- **Error logging**: Always include error objects: `logger.error({ error, context }, 'Failed to process order')`
 
 ## Environment Configuration
+**Server-side**: `LOG_ENABLED`, `LOG_LEVEL` (debug/info/warn/error/silent), `LOG_SERVICE`
 
-### Server-side
-
-- `LOG_ENABLED`: Enable/disable logging (default: `true`)
-- `LOG_LEVEL`: Minimum log level: `debug`, `info`, `warn`, `error`, `silent` (default: `info`)
-- `LOG_SERVICE`: Service name for log entries (optional)
-
-### Client-side
-
-- `NEXT_PUBLIC_LOG_ENABLED`: Enable/disable logging (default: `true` in dev, `false` in prod)
-- `NEXT_PUBLIC_LOG_LEVEL`: Minimum log level (default: `debug` in dev, `info` in prod)
-
-**Note**: Client-side logs are disabled in production by default, so log statements won't execute (no need to remove them).
+**Client-side**: `NEXT_PUBLIC_LOG_ENABLED`, `NEXT_PUBLIC_LOG_LEVEL` (disabled in prod by default)
 
 ## Runtime Differences
+- **Server-side**: Pino for structured JSON logging with automatic secret redaction
+- **Client-side**: Console wrapper with environment-controlled enable/level filtering
 
-- **Server-side**: Uses Pino for structured JSON logging with automatic secret redaction
-- **Client-side**: Uses console wrapper with environment-controlled enable/level filtering
-
-The same API works in both environments - conditional exports handle the selection at build time.
+Same API works in both - conditional exports handle selection at build time.
 
 ## Fastify Integration
+Use either:
+1. **Fastify's request logger**: `request.log.info('Processing request')` (includes request context)
+2. **Shared logger with child bindings**: `const requestLogger = logger.child({ requestId: request.id })`
 
-In Fastify routes, you can use either:
+**Error logging with captureError**: Pass `logger: request.log` to use Fastify's native logger for request context.
 
-1. **Fastify's request logger** (recommended for request-scoped logs):
-   ```typescript
-   request.log.info('Processing request')
-   ```
-
-2. **Shared logger with child bindings**:
-   ```typescript
-   const requestLogger = logger.child({ requestId: request.id })
-   requestLogger.info('Processing request')
-   ```
-
-Both approaches work - Fastify's logger includes request context automatically, while the shared logger gives you more control.
-
-### Error Logging with captureError
-
-When using `captureError` from `@repo/error`, pass Fastify's native logger to ensure errors are logged with request context:
-
-```typescript
-import { captureError } from '@repo/error/node'
-
-fastify.setErrorHandler((error, request, reply) => {
-  const catalogError = captureError({
-    code: 'SERVER_ERROR',
-    error,
-    logger: request.log, // Use Fastify's native logger
-    label: `${request.method} ${request.url}`,
-    tags: { app: 'api' },
-  })
-  reply.status(500).send(catalogError)
-})
-```
-
-This ensures errors are logged through Fastify's native logging system with proper request context (requestId, etc.) and avoids duplicate logging.
-
-## Related Documentation
-
-- [Logging Guide](@apps/docs/content/docs/architecture/logging.mdx) - Complete logging documentation including build-time conditional exports architecture
-- [Environment Variables](@.cursor/rules/base/environment.mdc) - Environment variable patterns
+## Related
+- @apps/docs/content/docs/architecture/logging.mdx - Complete logging documentation
+- @.cursor/rules/base/environment.mdc - Environment variable patterns

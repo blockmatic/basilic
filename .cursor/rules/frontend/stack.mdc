@@ -1,15 +1,12 @@
 ---
 description: Preferred frontend technology stack and library usage patterns
-glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
-
 # Frontend Stack
 
-See [Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx) for complete library documentation and technology choices.
+See @apps/docs/content/docs/architecture/frontend-stack.mdx for complete library documentation and technology choices.
 
 ## Core Libraries
-
 - **@tanstack/react-query**: Primary data fetching (use `@lukemorales/query-key-factory`)
 - **@repo/react**: Generated React Query hooks from Hey API clients
 - **nuqs**: URL-based state for shareable UI state
@@ -39,10 +36,8 @@ import { createApi } from '@repo/core'
 const api = createApi({ baseUrl: process.env.NEXT_PUBLIC_API_URL! })
 ```
 
-See [Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx) for complete library documentation, usage patterns, and best practices.
+See @apps/docs/content/docs/architecture/frontend-stack.mdx for complete library documentation, usage patterns, and best practices.
 
-## Related Documentation
-
-- [Frontend Stack](@apps/docs/content/docs/architecture/frontend-stack.mdx) - Complete library documentation and technology choices
-- [React Hooks Rules](@.cursor/rules/frontend/react-hooks.mdc) - Hooks patterns
-
+## Related
+- @apps/docs/content/docs/architecture/frontend-stack.mdx - Complete library documentation and technology choices
+- @.cursor/rules/frontend/react-hooks.mdc - Hooks patterns

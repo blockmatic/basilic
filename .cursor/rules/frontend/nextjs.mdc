@@ -1,35 +1,21 @@
 ---
 description: Next.js development standards and patterns
-glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
-
 # Next.js Rules
 
 ## React Server Components (CRITICAL)
-
 **ALWAYS default to Server Components. Only use `'use client'` when absolutely necessary.**
 
-**When to Use Client Components (`'use client'`):**
-- Interactive features: `onClick`, `onChange`, `onSubmit` handlers
-- Browser APIs: `window`, `document`, `localStorage`, `navigator`
-- React hooks: `useState`, `useEffect`, `useContext` (for client-side state)
-- Third-party libraries requiring client-side execution
-- Event listeners or real-time subscriptions
+**When to Use Client Components**: Interactive features (`onClick`, `onChange`, `onSubmit`), Browser APIs (`window`, `document`, `localStorage`), React hooks (`useState`, `useEffect`, `useContext`), third-party libraries requiring client-side execution, event listeners/real-time subscriptions
 
-**Component Splitting Pattern:**
+**Component Splitting Pattern**:
 ```tsx
 // ✅ Server Component page
 import { ClientInteractiveSection } from './client-interactive-section'
-
 export default function Page() {
   const data = await fetchData()
-  return (
-    <div>
-      <h1>{data.title}</h1>
-      <ClientInteractiveSection initialData={data} />
-    </div>
-  )
+  return <div><h1>{data.title}</h1><ClientInteractiveSection initialData={data} /></div>
 }
 
 // ✅ Client Component (only when needed)
@@ -39,39 +25,19 @@ export function ClientInteractiveSection({ initialData }) {
 }
 ```
 
-**Anti-Patterns:**
-```tsx
-// ❌ Unnecessary client component
-'use client'
-export default function Page() {
-  return <div>Static content</div>
-}
-
-// ❌ Entire page as client when only small part needs interactivity
-'use client'
-export default function Page() {
-  return (
-    <div>
-      <StaticHeader />
-      <StaticContent />
-      <InteractiveButton /> {/* Only this needs client */}
-    </div>
-  )
-}
-```
+**Anti-Patterns**: Unnecessary client components, entire page as client when only small part needs interactivity
 
 ## Exports
 - **Pages and Layouts**: Default exports required for `app/**/page.tsx` and `app/**/layout.tsx` (exception to named exports rule)
 - **Components**: Named exports for all other components
 
 ## Environment Variables
-
-See [Environment Rules](@.cursor/rules/base/environment.mdc) for environment variable validation patterns using t3-env. Next.js automatically loads `.env` files.
+See @.cursor/rules/base/environment.mdc for t3-env patterns. Next.js automatically loads `.env` files.
 
 ## Deployment
-- **Vercel**: Primary deployment platform for Next.js apps
+- **Vercel**: Primary deployment platform
 - Use Vercel's environment variable management for production secrets
-- Leverage Vercel's edge functions and serverless functions as needed
+- Leverage edge/serverless functions as needed
 - Maintain portability: avoid Vercel-specific features unless scaling/performance needs justify
 
 ## Server Actions
@@ -92,8 +58,7 @@ export const saveAction = createSafeActionClient()
 ```
 
 ## Error Handling
-
-Use `@repo/error` for error handling in Next.js. See [Error Handling Rules](@.cursor/rules/base/error-handling.mdc) for complete patterns.
+Use `@repo/error` for error handling. See @.cursor/rules/base/error-handling.mdc for complete patterns.
 
 **Error Pages**:
 ```tsx
@@ -102,19 +67,8 @@ Use `@repo/error` for error handling in Next.js. See [Error Handling Rules](@.cu
 import { captureError } from '@repo/error/nextjs'
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  captureError({
-    code: 'UNEXPECTED_ERROR',
-    error,
-    label: 'Next.js Error Page',
-    tags: { app: 'web' },
-    data: { digest: error.digest },
-  })
-  return (
-    <div>
-      <h2>Something went wrong</h2>
-      <button onClick={() => reset()}>Try again</button>
-    </div>
-  )
+  captureError({ code: 'UNEXPECTED_ERROR', error, label: 'Next.js Error Page', tags: { app: 'web' }, data: { digest: error.digest } })
+  return <div><h2>Something went wrong</h2><button onClick={() => reset()}>Try again</button></div>
 }
 ```
 
@@ -123,57 +77,31 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 import { createApi } from '@repo/core'
 import { useWallet } from '@repo/react'
 
-// Runtime-agnostic client
-const api = createApi({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL!,
-  getAuthToken: async () => session?.token,
-})
-
-// Type-safe API calls
+const api = createApi({ baseUrl: process.env.NEXT_PUBLIC_API_URL!, getAuthToken: async () => session?.token })
 const wallet = await api.wallets.getWallet({ params: { id: '123' } })
 
 // Or use generated React Query hooks
 function WalletComponent({ id }: { id: string }) {
   const { data, isLoading } = useWallet({ params: { id } })
-  // data is fully typed from OpenAPI spec
 }
 ```
 
 ## Performance Optimization
 
 ### Concurrent Rendering Features
+**Suspense Boundaries**: Leverage automatic Suspense for Server Components via `loading.tsx` files, add manual Suspense boundaries for progressive loading in Client Components, use multiple Suspense boundaries for independent streaming sections
 
-**Suspense Boundaries**:
-- Leverage automatic Suspense for Server Components via `loading.tsx` files
-- Add manual Suspense boundaries for progressive loading in Client Components
-- Use multiple Suspense boundaries for independent streaming sections (critical content first, non-critical streams later)
+**Transitions** (`useTransition` / `startTransition`): Use for search/filter inputs, tab switching, heavy state updates. Pattern: `startTransition(() => { setFilteredData(expensiveFilter(data)) })`. Use `isPending` to show loading states
 
-**Transitions** (`useTransition` / `startTransition`):
-- Use for search/filter inputs to keep input responsive while filtering large lists
-- Use for tab switching to prevent UI blocking during heavy tab content rendering
-- Use for heavy state updates that don't need immediate feedback
-- Pattern: `startTransition(() => { setFilteredData(expensiveFilter(data)) })`
-- Use `isPending` to show loading states during transitions
+**Deferred Values** (`useDeferredValue`): Use for expensive filtering/computation that can be deferred. Pattern: `const deferredQuery = useDeferredValue(query)` then use in `useMemo` (only if computation is genuinely expensive). **Important**: Only use `useMemo` with `useDeferredValue` if computation is actually expensive (filtering 1000+ items, complex calculations). For simple operations, compute directly with deferred value
 
-**Deferred Values** (`useDeferredValue`):
-- Use for expensive filtering/computation that can be deferred
-- Pattern: `const deferredQuery = useDeferredValue(query)` then use in `useMemo` (only if computation is genuinely expensive)
-- Keeps previous value visible while new value is computed
-- **Important**: Only use `useMemo` with `useDeferredValue` if the computation is actually expensive (e.g., filtering large arrays, complex calculations). For simple operations, compute directly with the deferred value.
-- **When to use**: Expensive filtering/computation that can be deferred (filtering 1000+ items, complex calculations)
-- **When NOT to use**: Simple operations that don't need memoization, critical UI updates
-
-**Streaming Patterns**:
-- Use multiple Suspense boundaries for independent streaming sections
-- Show critical content immediately, stream non-critical content progressively
-- Each Suspense boundary streams independently - users see content as it becomes available
+**Streaming Patterns**: Use multiple Suspense boundaries for independent streaming sections, show critical content immediately, stream non-critical content progressively
 
 ### Core Web Vitals & Image Optimization
 - Optimize Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
 - Optimize images: WebP format, proper size data, lazy loading
 
 ### React Compiler: Not Recommended Yet
-
 While React Compiler (v1.0, stable as of October 2025) offers automatic memoization, we're **not enabling it yet** due to:
 - Build performance impact (adds Babel layer, slows CI builds)
 - Library compatibility issues (React Hook Form, some TanStack libraries)
@@ -181,20 +109,16 @@ While React Compiler (v1.0, stable as of October 2025) offers automatic memoizat
 - Code pattern requirements (strict Rules of React adherence needed)
 - Increased complexity for debugging and maintenance
 
-**Recommendation**: Wait 3-6 months for better ecosystem support, or use annotation mode for incremental adoption if performance gains are critical.
+**Recommendation**: Wait 3-6 months for better ecosystem support, or use annotation mode for incremental adoption if performance gains are critical
 
 ## Linting Considerations
-
-- **ESLint**: Next.js apps use `@repo/eslint-config/next-js` which enforces:
-  - Next.js specific rules (`@next/eslint-plugin-next`)
-  - React and React Hooks rules
-  - Import boundary enforcement (default exports allowed for pages/layouts only)
+- **ESLint**: Next.js apps use `@repo/eslint-config/next-js` which enforces Next.js specific rules, React and React Hooks rules, import boundary enforcement (default exports allowed for pages/layouts only)
 - **Biome**: Handles all formatting and stylistic linting
-- See [Linting Rules](@.cursor/rules/base/linting.mdc) for full architecture details
+- See @.cursor/rules/base/linting.mdc for full architecture details
 
-## Related Rules
-- [Linting Rules](@.cursor/rules/base/linting.mdc) - Hybrid Biome + ESLint architecture
-- [React Hooks Rules](@.cursor/rules/frontend/react-hooks.mdc) - TanStack Query patterns
-- [React Rules](@.cursor/rules/frontend/react.mdc) - Component patterns
-- [Environment Rules](@.cursor/rules/base/environment.mdc) - Environment variable patterns
-- [TypeScript Rules](@.cursor/rules/base/typescript.mdc) - Code style guidelines
+## Related
+- @.cursor/rules/base/linting.mdc - Hybrid Biome + ESLint architecture
+- @.cursor/rules/frontend/react-hooks.mdc - TanStack Query patterns
+- @.cursor/rules/frontend/react.mdc - Component patterns
+- @.cursor/rules/base/environment.mdc - Environment variable patterns
+- @.cursor/rules/base/typescript.mdc - Code style guidelines

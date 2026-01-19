@@ -1,6 +1,5 @@
 ---
 description: Viem v2 integration patterns and best practices
-glob: "**/*.{tsx,ts}"
 alwaysApply: false
 ---
 # Viem v2 Rules
@@ -32,18 +31,13 @@ function validateAddress(rawAddress: string) {
 import { type Hash, parseEther } from 'viem'
 
 // Send transaction pattern
-export async function sendTransaction({
-  to,
-  value,
-  data
-}: SendTransactionParams) {
+export async function sendTransaction({ to, value, data }: SendTransactionParams) {
   try {
     const hash = await walletClient.sendTransaction({
       to: getAddress(to),
       value: parseEther(value),
       data
     })
-    
     return { hash }
   } catch (error) {
     if (error.code === 'INSUFFICIENT_FUNDS') {
@@ -58,6 +52,6 @@ export async function sendTransaction({
 - Use multicall for batch requests
 - Use WebSocket for real-time updates
 
-## Related Rules
-- [Wagmi Rules](@.cursor/rules/web3/wagmi.mdc) - React hooks for Ethereum using Wagmi v3
-- [Multichain Rules](@.cursor/rules/web3/multichain.mdc) - Multichain address validation coordination
+## Related
+- @.cursor/rules/web3/wagmi.mdc - React hooks for Ethereum using Wagmi v3
+- @.cursor/rules/web3/multichain.mdc - Multichain address validation coordination

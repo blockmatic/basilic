@@ -98,17 +98,23 @@ Model Context Protocol (MCP) servers extend Cursor with specialized capabilities
 
 ```bash
 export GITHUB_TOKEN=your_token_here  # Required for github, coderabbit, and shadcnui-jpisnice-react
+export GITHUB_PAT="$GITHUB_TOKEN"     # CodeRabbit MCP expects GITHUB_PAT
 ```
 
 2. Reload shell: `source ~/.zshrc` (or `~/.bashrc`)
 3. Restart Cursor
+4. Enable MCP servers in Cursor:
+   - Go to **Settings** > **Tools & MCP**
+   - Turn on the MCP servers you want to use
+   - Some servers (like `github`, `coderabbit`, `shadcnui-jpisnice-react`) require authentication - configure credentials from the settings panel if prompted
 
 **Get API keys:**
 - [GitHub Personal Access Tokens](https://github.com/settings/tokens) - GITHUB_TOKEN (required for GitHub MCP, CodeRabbit MCP, and shadcnui-jpisnice-react)
 
 **CodeRabbit MCP Configuration:**
 - Package: `coderabbitai-mcp@latest` (configured in `.cursor/mcp.json`)
-- Environment variable mapping: `GITHUB_PAT` (reads from your global `GITHUB_TOKEN`)
+- Environment variable: Set `GITHUB_PAT` in your shell (maps from `GITHUB_TOKEN` via `export GITHUB_PAT="$GITHUB_TOKEN"`)
+- MCP config: Also configured in `.cursor/mcp.json` with `GITHUB_PAT: "${GITHUB_TOKEN}"` for redundancy
 - Token scopes: Requires `repo` scope for private repositories or `public_repo` for public repositories
 
 **Note:** All servers use `pnpm dlx` for command execution.

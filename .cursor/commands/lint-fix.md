@@ -1,27 +1,13 @@
 # Lint and Fix Code
 
 ## Overview
-
-Analyze the current file for linting issues and automatically fix them according to the project's coding standards, then apply the fixes directly to the code and explain what changes were made.
+Analyze current file for linting issues and automatically fix them per project coding standards, then apply fixes and explain changes.
 
 ## Steps
+1. **Identify linting issues**: Code formatting/style consistency, unused imports/variables, missing semicolons/indentation, best practice violations, type safety issues
+2. **Apply fixes**: Fix formatting/style, remove unused imports/variables, add missing semicolons/correct indentation, apply best practice corrections, fix type safety issues, explain changes
 
-1. **Identify linting issues**
-    - Code formatting and style consistency
-    - Unused imports and variables
-    - Missing semicolons or proper indentation
-    - Best practice violations
-    - Type safety issues
-2. **Apply fixes**
-    - Fix formatting and style issues
-    - Remove unused imports and variables
-    - Add missing semicolons or correct indentation
-    - Apply best practice corrections
-    - Fix type safety issues
-    - Explain what changes were made
-
-## Lint and Fix Code Checklist
-
+## Checklist
 - [ ] Identified all code formatting and style issues
 - [ ] Identified unused imports and variables
 - [ ] Identified missing semicolons or indentation issues
