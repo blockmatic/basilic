@@ -35,14 +35,15 @@ Model Context Protocol servers extend AI capabilities with specialized tools. Th
 
 ### Available MCP Servers
 
-This project includes 6 MCP servers:
+This project includes 7 MCP servers:
 
 1. **shadcnui-official** - Canonical shadcn/ui component definitions and variants
 2. **shadcnui-jpisnice-react** - shadcn/ui v4 blocks, demos, and page templates for React
 3. **shadcnui-jpisnice-react-native** - shadcn/ui v4 components, blocks, and demos for React Native
 4. **github** - Repository operations and issue management
-5. **basilic-docs** - Basilic project documentation context
-6. **basilic-api** - Basilic API package context
+5. **coderabbit** - CodeRabbit AI code review comments and PR insights
+6. **basilic-docs** - Basilic project documentation context
+7. **basilic-api** - Basilic API package context
 
 **Note:** `shadcnui-jpisnice-react-native` is configured for future React Native support.
 
@@ -72,7 +73,7 @@ source ~/.bashrc
 
 ### Getting API Keys
 
-- **GITHUB_TOKEN**: [GitHub Personal Access Tokens](https://github.com/settings/tokens) (required for GitHub MCP and shadcnui-jpisnice-react)
+- **GITHUB_TOKEN**: [GitHub Personal Access Tokens](https://github.com/settings/tokens) (required for GitHub MCP, CodeRabbit MCP, and shadcnui-jpisnice-react)
 
 ### Verifying MCP Setup
 
@@ -115,6 +116,22 @@ pnpm dev
 - Restart Cursor completely
 - Check `.cursor/mcp.json` syntax
 - Ensure environment variables are loaded in shell
+
+### CodeRabbit MCP Not Working
+
+If the CodeRabbit MCP server fails to connect:
+
+1. **Verify package name**: The correct package is `coderabbitai-mcp@latest` (not `@coderabbitai/mcp-server`)
+2. **Check environment variable**: CodeRabbit MCP expects `GITHUB_PAT` but reads from your global `GITHUB_TOKEN` (configured in `.cursor/mcp.json`)
+3. **Test manually**: Run `GITHUB_PAT="$GITHUB_TOKEN" pnpm dlx coderabbitai-mcp@latest --help` to verify the package works
+4. **Verify token scopes**: Ensure your GitHub token has `repo` scope for private repositories or `public_repo` for public repositories
+5. **Restart Cursor**: After fixing configuration, fully restart Cursor to reload MCP servers
+
+**Common issues:**
+- ❌ Wrong package: `@coderabbitai/mcp-server` (doesn't exist)
+- ✅ Correct package: `coderabbitai-mcp@latest`
+- ❌ Wrong env var: `GITHUB_TOKEN` directly
+- ✅ Correct mapping: `GITHUB_PAT: "${GITHUB_TOKEN}"` (maps your token to the expected variable name)
 
 ### Cursor Rules Not Loading
 

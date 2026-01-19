@@ -39,9 +39,10 @@ This monorepo uses a **hybrid linting architecture** where Biome and ESLint have
 **CRITICAL**: All agents MUST follow these rules:
 
 1. **Always follow Biome and ESLint rules** - Code must pass both linters before completion
-2. **Run linting after making changes** - Execute `pnpm lint:fix` after editing files
+2. **Run linting after making changes** - Execute `pnpm lint:fix` after editing files (skip if only markdown files changed)
 3. **Fix all introduced issues** - Resolve any linting errors you create; pre-existing issues are optional
-4. **Check linting before finishing** - Verify code passes linting as part of task completion
+4. **Check linting before finishing** - Verify code passes linting as part of task completion (skip if only markdown files changed)
+5. **Skip linting for markdown-only changes** - If only `.md`, `.mdx`, or `.mdc` files were modified, skip all linting, building, and testing commands
 
 ## Usage
 
@@ -70,10 +71,11 @@ pnpm format
 
 After making code changes, agents MUST:
 
-1. **Run auto-fix**: `pnpm lint:fix` to automatically fix fixable issues
-2. **Check remaining issues**: `pnpm lint` to see if any issues remain
-3. **Fix manually**: Address any remaining linting errors that couldn't be auto-fixed
-4. **Verify**: Ensure `pnpm lint` passes before marking task complete
+1. **Check file types**: If only `.md`, `.mdx`, or `.mdc` files were modified, skip linting workflow
+2. **Run auto-fix**: `pnpm lint:fix` to automatically fix fixable issues (skip for markdown-only changes)
+3. **Check remaining issues**: `pnpm lint` to see if any issues remain (skip for markdown-only changes)
+4. **Fix manually**: Address any remaining linting errors that couldn't be auto-fixed
+5. **Verify**: Ensure `pnpm lint` passes before marking task complete (skip for markdown-only changes)
 
 ### Disabling Rules
 

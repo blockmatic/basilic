@@ -1,7 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
-
 type ChartDataPoint = {
   label: string
   value: number
@@ -227,7 +225,7 @@ export function DocsChart({
   width = 800,
   height = 400,
 }: DocsChartProps) {
-  const chartComponent = useMemo(() => {
+  const chartComponent = (() => {
     switch (type) {
       case 'bar':
         return <BarChart data={data} width={width} height={height} />
@@ -238,7 +236,7 @@ export function DocsChart({
       default:
         return <BarChart data={data} width={width} height={height} />
     }
-  }, [data, type, width, height])
+  })()
 
   return (
     <figure className="my-8 flex flex-col items-center">

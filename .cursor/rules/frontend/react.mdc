@@ -82,13 +82,156 @@ setState({ signedMessage: data.signedMessage, message: '' })
 **Don't use for:** URL-shareable state (use `nuqs`), loading/error states (use TanStack Query)
 
 ## Rendering Optimization
-- Default to NOT using `useMemo` or `useCallback` (modern React optimizations handle most cases)
-- Only use `useMemo` for computationally expensive operations
-- Only use `useCallback` when:
-  - Function identity required as dependency in hooks
-  - Passing functions through React Context
-  - Profiling reveals actual bottleneck
-- Prefer `React.memo` for pure components over wrapping functions with `useCallback`
+
+### Memoization (Default: Avoid)
+
+**CRITICAL**: With React 19.2.3 and modern JavaScript engines, most memoization is unnecessary and can actually harm performance.
+
+**Default to NOT using `useMemo` or `useCallback`** - Modern React optimizations (Fiber, automatic batching, concurrent rendering) handle most cases automatically.
+
+#### When to Use useMemo/useCallback
+
+Only use these hooks when:
+
+1. **Context provider values** - Prevents unnecessary re-renders of all consumers
+   ```tsx
+   // ✅ Legitimate: Context provider value
+   const contextValue = useMemo(() => ({
+     state,
+     setState,
+     actions,
+   }), [state, setState, actions])
+   ```
+
+2. **Expensive computations** - Actual heavy calculations (not simple array operations)
+   ```tsx
+   // ✅ Legitimate: Expensive computation
+   const sortedData = useMemo(() => {
+     return largeArray.sort(complexComparisonFunction)
+   }, [largeArray])
+   ```
+
+3. **Stable dependencies for hooks** - When function identity is required AND dependencies are stable
+   ```tsx
+   // ✅ Legitimate: Stable dependencies, required for useEffect
+   const fetchData = useCallback(() => {
+     return api.fetch(id)
+   }, [id]) // id is stable
+   ```
+
+4. **Third-party library requirements** - When library explicitly requires stable references
+
+#### When NOT to Use useMemo/useCallback
+
+**Remove memoization when:**
+
+1. **Dependencies change frequently** - If memoized value depends on frequently changing state, memoization is ineffective and wasteful
+   ```tsx
+   // ❌ Bad: Dependencies change frequently, memoization ineffective
+   const handler = useCallback(() => {
+     doSomething(state.value) // state.value changes every render
+   }, [state.value]) // Recreates on every render anyway
+   
+   // ✅ Good: Just use inline function
+   const handler = () => {
+     doSomething(state.value)
+   }
+   ```
+
+2. **Simple computations** - Array operations, object creation, simple conditionals
+   ```tsx
+   // ❌ Bad: Simple computation, unnecessary memoization
+   const items = useMemo(() => data.filter(x => x.active), [data])
+   
+   // ✅ Good: Just compute directly
+   const items = data.filter(x => x.active)
+   ```
+
+3. **Inline functions** - Modern engines optimize these efficiently
+   ```tsx
+   // ❌ Bad: Unnecessary useCallback for simple handler
+   const handleClick = useCallback(() => {
+     setCount(c => c + 1)
+   }, [])
+   
+   // ✅ Good: Inline function is fine
+   <button onClick={() => setCount(c => c + 1)}>Click</button>
+   ```
+
+4. **JSX memoization** - React handles JSX efficiently
+   ```tsx
+   // ❌ Bad: JSX memoization unnecessary
+   const component = useMemo(() => <MyComponent data={data} />, [data])
+   
+   // ✅ Good: Just render directly
+   <MyComponent data={data} />
+   ```
+
+5. **useEffect dependencies** - If the callback depends on frequently changing state, it defeats the purpose
+   ```tsx
+   // ❌ Bad: Callback depends on frequently changing state
+   const initialize = useCallback(() => {
+     resetInput()
+     setGameState({ ... })
+   }, [resetInput, setGameState]) // These change frequently
+   
+   // ✅ Good: Use refs or restructure to avoid dependency
+   useEffect(() => {
+     initialize()
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [])
+   ```
+
+#### Anti-Patterns
+
+**Common mistakes to avoid:**
+
+- Memoizing functions that depend on frequently changing state
+- Memoizing simple computations (array.filter, object creation)
+- Using useCallback "just in case" without profiling
+- Memoizing JSX elements unnecessarily
+- Over-memoizing in custom hooks when dependencies change frequently
+
+**Best Practice**: Start without memoization. Only add `useMemo` or `useCallback` when profiling reveals an actual bottleneck that affects user experience (lagging, stuttering animations, delays).
+
+#### Prefer React.memo Over useCallback
+
+Instead of wrapping functions with `useCallback`, prefer `React.memo` for pure components:
+
+```tsx
+// ✅ Good: Use React.memo for component optimization
+const ExpensiveComponent = React.memo(({ value }) => {
+  return <div>{expensiveComputation(value)}</div>
+})
+
+// ❌ Avoid: Wrapping every function with useCallback
+const handleClick = useCallback(() => {
+  // ...
+}, [deps])
+```
+
+### Concurrent Rendering Features
+
+**Transitions** (`useTransition` / `startTransition`):
+- Use for non-urgent updates that shouldn't block UI
+- Pattern: `startTransition(() => { setFilteredData(expensiveFilter(data)) })`
+- Use `isPending` to show loading states during transitions
+- **When to use**: Search/filter inputs, tab switching, heavy state updates
+- **When NOT to use**: Urgent updates (user input), critical UI updates
+
+**Deferred Values** (`useDeferredValue`):
+- Use to defer expensive computations while keeping UI responsive
+- Pattern: `const deferredQuery = useDeferredValue(query)` then use in `useMemo` (only if computation is actually expensive)
+- Keeps previous value visible while new value is computed
+- **When to use**: Expensive filtering/computation that can be deferred (e.g., filtering large arrays, complex calculations)
+- **When NOT to use**: Critical UI updates that need immediate feedback, simple computations that don't need memoization
+- **Note**: Only use `useMemo` with `useDeferredValue` if the computation is genuinely expensive. For simple operations, compute directly with the deferred value.
+
+**Suspense**:
+- Wrap async operations in Suspense boundaries
+- Server Components: automatic via `loading.tsx` files
+- Client Components: manual boundaries for async operations
+- Use multiple Suspense boundaries for independent streaming
 
 ## Error Boundaries
 

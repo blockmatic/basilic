@@ -1,7 +1,7 @@
 ---
 description: Common testing philosophy and patterns for all test types
 glob: "*.spec.ts, *.spec.tsx, *.test.ts, *.test.tsx, **/*.e2e-spec.ts"
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Testing Rules
@@ -16,6 +16,33 @@ alwaysApply: false
 - All API calls use actual credentials from environment variables
 
 **Exception**: UI-only tests (rendering, styling) may mock API calls for performance, but integration tests must use real APIs.
+
+## Test-Driven Development (TDD)
+
+**TDD is optional and agent-discretionary** - agents may choose to use TDD when appropriate, but it's not mandatory unless explicitly requested by the user.
+
+### When TDD Might Be Beneficial
+
+- **Complex logic**: Algorithms, calculations, or business rules with multiple edge cases
+- **Critical paths**: Authentication, payment processing, or security-sensitive features
+- **Refactoring**: When improving existing code, tests help ensure behavior is preserved
+- **API contracts**: When defining new endpoints, tests help clarify expected behavior
+
+### TDD Workflow (When Used)
+
+1. **Red**: Write a failing test that describes desired behavior
+2. **Green**: Implement minimal code to make the test pass
+3. **Refactor**: Improve code quality while keeping tests green
+4. **Repeat**: Continue cycle for each feature increment
+
+### TDD Guidelines
+
+- Tests should use real APIs (following testing philosophy above)
+- Focus on behavior, not implementation details
+- Keep tests simple and focused on one concern
+- When using TDD, follow the red-green-refactor cycle strictly
+
+**Note**: If user explicitly requests TDD, use the [TDD Command](@.cursor/commands/tdd.md) for detailed workflow guidance.
 
 ## Test Coverage Requirements
 

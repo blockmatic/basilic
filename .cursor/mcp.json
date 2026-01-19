@@ -29,6 +29,14 @@
       },
       "description": "GitHub repository operations and issue management"
     },
+    "coderabbit": {
+      "command": "pnpm",
+      "args": ["dlx", "coderabbitai-mcp@latest"],
+      "env": {
+        "GITHUB_PAT": "${GITHUB_TOKEN}"
+      },
+      "description": "Expose CodeRabbit PR review comments via MCP"
+    },
     "basilic-docs": {
       "url": "https://mcp.vercel.com/gaboesquivel/basilic-docs",
       "description": "Basilic project documentation context"

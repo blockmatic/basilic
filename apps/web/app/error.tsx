@@ -1,7 +1,6 @@
 'use client'
 
 import { captureError } from '@repo/error/nextjs'
-import { useMemo } from 'react'
 
 // eslint-disable-next-line import/no-default-export -- Next.js requires default export for error.tsx
 export default function ErrorPage({
@@ -11,17 +10,15 @@ export default function ErrorPage({
   error: Error & { digest?: string }
   reset: () => void
 }) {
-  const catalogError = useMemo(() => {
-    return captureError({
-      code: 'UNEXPECTED_ERROR',
-      error,
-      label: 'Next.js Error Page',
-      tags: { app: 'web', module: 'error-page' },
-      data: {
-        digest: error.digest,
-      },
-    })
-  }, [error])
+  const catalogError = captureError({
+    code: 'UNEXPECTED_ERROR',
+    error,
+    label: 'Next.js Error Page',
+    tags: { app: 'web', module: 'error-page' },
+    data: {
+      digest: error.digest,
+    },
+  })
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">

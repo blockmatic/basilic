@@ -85,9 +85,10 @@ Model Context Protocol (MCP) servers extend Cursor with specialized capabilities
 **Available servers:**
 - `shadcnui-official` - Canonical shadcn/ui component definitions, variants, and single primitives (no auth required)
 - `shadcnui-jpisnice-react` - shadcn/ui v4 blocks, demos, and page templates for React (requires `GITHUB_TOKEN`)
-- `v0` - UI design and generation (requires `V0_API_KEY`)
-- `github` - Repository management (requires `GITHUB_TOKEN`)
-- `vercel` - Deployment and project management (requires `VERCEL_API_TOKEN`)
+- `github` - Repository operations and issue management (requires `GITHUB_TOKEN`)
+- `coderabbit` - CodeRabbit AI code review comments and PR insights (requires `GITHUB_TOKEN`)
+- `basilic-docs` - Basilic project documentation context (no auth required)
+- `basilic-api` - Basilic API package context (no auth required)
 
 **Note:** `shadcnui-jpisnice-react-native` exists for future React Native support but is not included in the current React workflow.
 
@@ -96,18 +97,19 @@ Model Context Protocol (MCP) servers extend Cursor with specialized capabilities
 1. Add required environment variables to your shell profile (`~/.zshrc` or `~/.bashrc`):
 
 ```bash
-export V0_API_KEY=your_key_here
-export GITHUB_TOKEN=your_token_here
-export VERCEL_API_TOKEN=your_token_here
+export GITHUB_TOKEN=your_token_here  # Required for github, coderabbit, and shadcnui-jpisnice-react
 ```
 
 2. Reload shell: `source ~/.zshrc` (or `~/.bashrc`)
 3. Restart Cursor
 
 **Get API keys:**
-- [v0.dev account settings](https://v0.dev) - V0_API_KEY
-- [GitHub Personal Access Tokens](https://github.com/settings/tokens) - GITHUB_TOKEN (also required for shadcnui-jpisnice-react)
-- [Vercel Account Tokens](https://vercel.com/account/tokens) - VERCEL_API_TOKEN
+- [GitHub Personal Access Tokens](https://github.com/settings/tokens) - GITHUB_TOKEN (required for GitHub MCP, CodeRabbit MCP, and shadcnui-jpisnice-react)
+
+**CodeRabbit MCP Configuration:**
+- Package: `coderabbitai-mcp@latest` (configured in `.cursor/mcp.json`)
+- Environment variable mapping: `GITHUB_PAT` (reads from your global `GITHUB_TOKEN`)
+- Token scopes: Requires `repo` scope for private repositories or `public_repo` for public repositories
 
 **Note:** All servers use `pnpm dlx` for command execution.
 

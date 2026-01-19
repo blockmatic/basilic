@@ -157,9 +157,117 @@ See [React Rules](@.cursor/rules/frontend/react.mdc) for state management decisi
 
 ## Memoization Hooks
 
-**Default: Don't use `useMemo` or `useCallback`** - Modern React optimizations handle most cases automatically.
+**Default: Don't use `useMemo` or `useCallback`** - Modern React optimizations (React 19.2.3 with Fiber) handle most cases automatically.
 
-See [React Rules](@.cursor/rules/frontend/react.mdc) for memoization guidelines and when to use these hooks.
+### When Memoization is Actually Needed
+
+**In custom hooks, only use memoization when:**
+
+1. **Returning stable function references** - When hook consumers need stable function identity AND dependencies are stable
+   ```tsx
+   // ✅ Legitimate: Stable dependencies, consumers need stable reference
+   export function useStableAction(id: string) {
+     const action = useCallback(() => {
+       performAction(id)
+     }, [id]) // id is stable
+     return action
+   }
+   ```
+
+2. **Expensive computations in hooks** - When hook performs genuinely expensive work
+   ```tsx
+   // ✅ Legitimate: Expensive computation
+   export function useExpensiveCalculation(data: LargeDataSet) {
+     const result = useMemo(() => {
+       return complexAlgorithm(data)
+     }, [data])
+     return result
+   }
+   ```
+
+3. **Context provider values** - When hook creates context value for provider
+   ```tsx
+   // ✅ Legitimate: Context provider value
+   export function useMyContext() {
+     const value = useMemo(() => ({
+       state,
+       actions,
+     }), [state, actions])
+     return value
+   }
+   ```
+
+### When NOT to Use Memoization in Hooks
+
+**Remove memoization from custom hooks when:**
+
+1. **Dependencies change frequently** - Memoization becomes ineffective
+   ```tsx
+   // ❌ Bad: Dependencies change frequently
+   export function useInputHandler(state: InputState) {
+     const insertAt = useCallback((char: string) => {
+       // Uses state.cursor, state.input which change frequently
+       setState({ ...state, input: state.input + char })
+     }, [state.cursor, state.input, setState]) // Recreates anyway
+     
+     return { insertAt }
+   }
+   
+   // ✅ Good: Just return function directly
+   export function useInputHandler(state: InputState) {
+     const insertAt = (char: string) => {
+       setState({ ...state, input: state.input + char })
+     }
+     return { insertAt }
+   }
+   ```
+
+2. **Simple operations** - Array operations, object creation, simple conditionals
+   ```tsx
+   // ❌ Bad: Simple computation
+   export function useFilteredItems(items: Item[]) {
+     const filtered = useMemo(() => items.filter(i => i.active), [items])
+     return filtered
+   }
+   
+   // ✅ Good: Just compute directly
+   export function useFilteredItems(items: Item[]) {
+     return items.filter(i => i.active)
+   }
+   ```
+
+3. **useEffect dependencies** - If callback depends on frequently changing state, memoization doesn't help
+   ```tsx
+   // ❌ Bad: Callback depends on frequently changing state
+   export function useGameInitializer(resetInput: () => void, setGameState: Function) {
+     const initialize = useCallback(() => {
+       resetInput()
+       setGameState({ ... })
+     }, [resetInput, setGameState]) // These change frequently
+     
+     useEffect(() => {
+       initialize()
+     }, [initialize]) // Runs too often
+   }
+   
+   // ✅ Good: Use refs or restructure
+   export function useGameInitializer(resetInput: () => void, setGameState: Function) {
+     useEffect(() => {
+       resetInput()
+       setGameState({ ... })
+       // eslint-disable-next-line react-hooks/exhaustive-deps
+     }, []) // Run once on mount
+   }
+   ```
+
+### Best Practices for Custom Hooks
+
+- **Start without memoization** - Add only when profiling reveals bottlenecks
+- **Prefer primitive dependencies** - Use primitive values in useEffect dependencies instead of memoized functions
+- **Trust React's optimizations** - Modern React handles function recreation efficiently
+- **Profile first** - Only add memoization when you measure actual performance issues
+
+See [React Rules](@.cursor/rules/frontend/react.mdc) for complete memoization guidelines, anti-patterns, and examples.
 
 ## Custom Hooks Best Practices
 - Combine multiple queries into cohesive hooks

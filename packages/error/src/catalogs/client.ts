@@ -25,4 +25,8 @@ export const clientErrors = {
     code: 'FETCH_ERROR',
     message: 'Failed to fetch resource',
   },
+  INVALID_EXPRESSION: {
+    code: 'INVALID_EXPRESSION',
+    message: 'Invalid expression',
+  },
 } as const satisfies Record<string, CatalogError>

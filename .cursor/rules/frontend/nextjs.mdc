@@ -140,9 +140,48 @@ function WalletComponent({ id }: { id: string }) {
 ```
 
 ## Performance Optimization
-- Implement streaming with `Suspense` for progressive loading
+
+### Concurrent Rendering Features
+
+**Suspense Boundaries**:
+- Leverage automatic Suspense for Server Components via `loading.tsx` files
+- Add manual Suspense boundaries for progressive loading in Client Components
+- Use multiple Suspense boundaries for independent streaming sections (critical content first, non-critical streams later)
+
+**Transitions** (`useTransition` / `startTransition`):
+- Use for search/filter inputs to keep input responsive while filtering large lists
+- Use for tab switching to prevent UI blocking during heavy tab content rendering
+- Use for heavy state updates that don't need immediate feedback
+- Pattern: `startTransition(() => { setFilteredData(expensiveFilter(data)) })`
+- Use `isPending` to show loading states during transitions
+
+**Deferred Values** (`useDeferredValue`):
+- Use for expensive filtering/computation that can be deferred
+- Pattern: `const deferredQuery = useDeferredValue(query)` then use in `useMemo` (only if computation is genuinely expensive)
+- Keeps previous value visible while new value is computed
+- **Important**: Only use `useMemo` with `useDeferredValue` if the computation is actually expensive (e.g., filtering large arrays, complex calculations). For simple operations, compute directly with the deferred value.
+- **When to use**: Expensive filtering/computation that can be deferred (filtering 1000+ items, complex calculations)
+- **When NOT to use**: Simple operations that don't need memoization, critical UI updates
+
+**Streaming Patterns**:
+- Use multiple Suspense boundaries for independent streaming sections
+- Show critical content immediately, stream non-critical content progressively
+- Each Suspense boundary streams independently - users see content as it becomes available
+
+### Core Web Vitals & Image Optimization
 - Optimize Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
 - Optimize images: WebP format, proper size data, lazy loading
+
+### React Compiler: Not Recommended Yet
+
+While React Compiler (v1.0, stable as of October 2025) offers automatic memoization, we're **not enabling it yet** due to:
+- Build performance impact (adds Babel layer, slows CI builds)
+- Library compatibility issues (React Hook Form, some TanStack libraries)
+- Breaking behavior risks (automatic memoization can change effect dependencies)
+- Code pattern requirements (strict Rules of React adherence needed)
+- Increased complexity for debugging and maintenance
+
+**Recommendation**: Wait 3-6 months for better ecosystem support, or use annotation mode for incremental adoption if performance gains are critical.
 
 ## Linting Considerations
 
