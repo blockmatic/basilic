@@ -11,8 +11,7 @@ alwaysApply: false
 - RORO pattern applies to regular functions only, not React components (see @.cursor/rules/base/typescript.mdc)
 
 ## Component Organization
-- **One component per file** - The `react/no-multi-comp` ESLint rule enforces this (with `ignoreStateless: true`)
-- Each component with state must be in its own file
+- **One component per file** - Each component with state must be in its own file
 - **Stateless components allowed** - Multiple stateless components can be in the same file (useful for small utility/helper components)
 - If component is truly tiny and only used once, consider inlining it directly in JSX
 
@@ -22,16 +21,13 @@ alwaysApply: false
 3. **Loading/error states from async** → Use TanStack Query's built-in state (`isLoading`, `isError`, `isFetching`)
 4. **Simple independent state** → Use `useState` (rare, prefer other options)
 
-### nuqs for URL State
-```tsx
-import { useQueryState, useQueryStates, parseAsString, parseAsInteger } from 'nuqs'
-const [search, setSearch] = useQueryState('q', parseAsString.withDefault(''))
-const [filters, setFilters] = useQueryStates({ search: parseAsString.withDefault(''), page: parseAsInteger.withDefault(1) })
-```
-
 **Use nuqs for**: Search/filter, tabs, pagination, sort options, view preferences, shareable modal state
 
 **Don't use nuqs for**: Game engine state, form input state, component-local UI state, frequently changing state, sensitive data
+
+**Use useSetState for**: Multiple related state variables updated together, form state, UI state that changes together (if not URL-shareable), game/app state
+
+**Don't use useSetState for**: URL-shareable state (use `nuqs`), loading/error states (use TanStack Query)
 
 ### Loading/Error State Management
 Never manually manage `isLoading`, `error`, or `isError` states. Use TanStack Query hooks or `useAsyncFn` which provide these automatically.
@@ -39,17 +35,6 @@ Never manually manage `isLoading`, `error`, or `isError` states. Use TanStack Qu
 **When to use TanStack Query state**: Server data fetching (cached, shared across components), mutations and optimistic updates, data that needs background refetching
 
 **When to use useAsyncFn**: One-off async operations (file uploads, form submissions without caching), non-data-fetching async operations
-
-### useSetState for Grouped State
-```tsx
-import { useSetState } from 'react-use'
-const [state, setState] = useSetState<FormState>({ message: '', signedMessage: null, txTo: '' })
-setState({ signedMessage: data.signedMessage, message: '' }) // Update multiple properties atomically
-```
-
-**Use for**: Multiple related state variables updated together, form state, UI state that changes together (if not URL-shareable), game/app state
-
-**Don't use for**: URL-shareable state (use `nuqs`), loading/error states (use TanStack Query)
 
 ## Rendering Optimization
 

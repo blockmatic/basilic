@@ -59,21 +59,7 @@ import { cn } from "@repo/ui/lib/utils"
 ```
 
 ## Component Patterns
-Use class-variance-authority (cva) pattern for variants and `cn` utility for merging class names:
-```tsx
-import { cn } from "@repo/ui/lib/utils"
-import { cva } from "class-variance-authority"
-
-const buttonVariants = cva("rounded-md font-medium transition-colors", {
-  variants: {
-    variant: {
-      default: "bg-primary text-white hover:bg-primary/90",
-      secondary: "bg-secondary text-white hover:bg-secondary/90"
-    }
-  },
-  defaultVariants: { variant: "default" }
-})
-```
+Use class-variance-authority (cva) pattern for variants and `cn` utility for merging class names. See @.cursor/skills/shadcn-v3 for CVA patterns.
 
 ## Design System Organization
 
@@ -100,7 +86,7 @@ const buttonVariants = cva("rounded-md font-medium transition-colors", {
 **Application-Specific Components → App's `components/` folder**
 - Domain-specific compositions built from base components
 - Hooks and utils collocated with components (same directory)
-- Examples: `apps/mathler/components/game-sidebar.tsx`
+- Examples: `apps/app/components/feature-sidebar.tsx`
 
 ### Decision Flow
 ```

@@ -42,9 +42,14 @@ Please apply @.cursor/rules/base/typescript.mdc when refactoring this code.
 ```
 
 **Guidelines:**
-- Focused and actionable (~1.5K words max)
-- Include frontmatter with description and file patterns
-- Provide code examples
+- **Brutally concise**: Focused and actionable, remove duplication and verbose examples
+- **No duplication**: Each concept lives in one place (e.g., Biome/ESLint only in `linting.mdc`, error handling only in `error-handling.mdc`)
+- **No code examples from skills**: Remove examples that exist in skills (TanStack Query, Fastify routes, CVA patterns, etc.)
+- **Focused scope**: Each rule covers only what its filename/description targets
+- **Industry conventions**: Keep basic patterns and framework conventions, remove verbose explanations
+- **Reference, don't repeat**: Use `@` references to other rules/docs instead of re-explaining
+- **Iterate**: Add rules when AI produces undesirable output or forgets standards
+- **Centralize**: Single source of truth—consolidate standards here, not elsewhere
 
 ### Commands (`commands/`)
 

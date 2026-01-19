@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  api-tests:
+  fastify-tests:
     name: API Tests
     runs-on: ubuntu-latest
     env:

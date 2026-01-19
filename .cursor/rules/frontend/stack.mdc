@@ -16,25 +16,9 @@ See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete library
 - **react-use**: `useAsyncFn` for one-off async operations
 
 ## Essential Patterns
-
-### Query Key Factory
-```tsx
-import { createQueryKeys } from '@lukemorales/query-key-factory'
-export const users = createQueryKeys('users', {
-  detail: (id: string) => ({ queryKey: [id], queryFn: () => fetchUser(id) }),
-})
-```
-
-### nuqs URL State
-```tsx
-const [search, setSearch] = useQueryState('q', parseAsString.withDefault(''))
-```
-
-### API Client Usage
-```tsx
-import { createApi } from '@repo/core'
-const api = createApi({ baseUrl: process.env.NEXT_PUBLIC_API_URL! })
-```
+- **Query Key Factory**: Use `@lukemorales/query-key-factory` for centralized, type-safe query keys
+- **nuqs**: Use for URL-shareable state (search, filters, tabs, pagination)
+- **API Client**: Use `@repo/core` for API client creation
 
 See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete library documentation, usage patterns, and best practices.
 

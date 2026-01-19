@@ -24,25 +24,10 @@ Platform-specific exports (no root exports):
 ## Core Patterns
 
 ### Capture Error (Most Common)
-```typescript
-// Next.js: import { captureError } from '@repo/error/nextjs'
-// Node/Fastify: import { captureError } from '@repo/error/node'
-
-const catalogError = captureError({
-  code: 'NETWORK_ERROR', // ✅ Autocomplete for CoreErrorCode | string
-  error, // Real error → Sentry
-  label: 'API Call',
-  data: { endpoint: '/api/data' }, // Internal context
-  tags: { app: 'web' }, // ✅ Autocomplete for known apps
-})
-// Returns: { code: 'NETWORK_ERROR', message: 'A network error occurred' }
-```
+Use `captureError` from platform-specific path (`@repo/error/nextjs`, `@repo/error/node`, etc.). Returns catalog error with safe message.
 
 ### Extract Error Message
-```typescript
-import { getErrorMessage } from '@repo/error/nextjs' // or '/node', '/browser', '/core'
-const message = getErrorMessage(error) // Type-safe
-```
+Use `getErrorMessage` from platform-specific path for type-safe error message extraction.
 
 ## Framework Integration
 See framework-specific rules:
@@ -50,16 +35,7 @@ See framework-specific rules:
 - @.cursor/rules/frontend/nextjs.mdc - Error pages and server actions
 - @.cursor/rules/frontend/react.mdc - Error boundaries
 
-**Initialization** (idempotent - safe to call multiple times):
-```typescript
-// instrumentation.ts (Next.js) or index.ts (Fastify)
-import { initSentry } from '@repo/error/nextjs' // or /node
-
-initSentry({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  environment: process.env.NODE_ENV,
-})
-```
+**Initialization** (idempotent - safe to call multiple times): Use `initSentry` from platform-specific path in `instrumentation.ts` (Next.js) or `index.ts` (Fastify).
 
 ## Error Code Format
 Must be `UPPER_SNAKE_CASE`: `NETWORK_ERROR`, `USER_NOT_FOUND`, `AI_MODEL_ERROR`

@@ -1,5 +1,5 @@
 ---
-description: Next.js development standards and patterns
+description: Next.js standards
 alwaysApply: false
 ---
 # Next.js Rules
@@ -9,82 +9,7 @@ alwaysApply: false
 
 **When to Use Client Components**: Interactive features (`onClick`, `onChange`, `onSubmit`), Browser APIs (`window`, `document`, `localStorage`), React hooks (`useState`, `useEffect`, `useContext`), third-party libraries requiring client-side execution, event listeners/real-time subscriptions
 
-**Component Splitting Pattern**:
-```tsx
-// ✅ Server Component page
-import { ClientInteractiveSection } from './client-interactive-section'
-export default function Page() {
-  const data = await fetchData()
-  return <div><h1>{data.title}</h1><ClientInteractiveSection initialData={data} /></div>
-}
-
-// ✅ Client Component (only when needed)
-'use client'
-export function ClientInteractiveSection({ initialData }) {
-  const [state, setState] = useState(initialData)
-}
-```
-
 **Anti-Patterns**: Unnecessary client components, entire page as client when only small part needs interactivity
-
-## Exports
-- **Pages and Layouts**: Default exports required for `app/**/page.tsx` and `app/**/layout.tsx` (exception to named exports rule)
-- **Components**: Named exports for all other components
-
-## Environment Variables
-See @.cursor/rules/base/environment.mdc for t3-env patterns. Next.js automatically loads `.env` files.
-
-## Deployment
-- **Vercel**: Primary deployment platform
-- Use Vercel's environment variable management for production secrets
-- Leverage edge/serverless functions as needed
-- Maintain portability: avoid Vercel-specific features unless scaling/performance needs justify
-
-## Server Actions
-```tsx
-'use server'
-import { type ActionResult, success, failure } from '@repo/next'
-import { createSafeActionClient } from 'next-safe-action'
-
-export const saveAction = createSafeActionClient()
-  .schema(actionSchema)
-  .action(async ({ parsedInput }): Promise<ActionResult<T>> => {
-    try {
-      return success(result)
-    } catch (error) {
-      return failure({ code: 'UNEXPECTED_ERROR', error, label: 'saveAction' })
-    }
-  })
-```
-
-## Error Handling
-Use `@repo/error` for error handling. See @.cursor/rules/base/error-handling.mdc for complete patterns.
-
-**Error Pages**:
-```tsx
-// app/error.tsx
-'use client'
-import { captureError } from '@repo/error/nextjs'
-
-export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  captureError({ code: 'UNEXPECTED_ERROR', error, label: 'Next.js Error Page', tags: { app: 'web' }, data: { digest: error.digest } })
-  return <div><h2>Something went wrong</h2><button onClick={() => reset()}>Try again</button></div>
-}
-```
-
-## API Client with Generated Clients
-```tsx
-import { createApi } from '@repo/core'
-import { useWallet } from '@repo/react'
-
-const api = createApi({ baseUrl: process.env.NEXT_PUBLIC_API_URL!, getAuthToken: async () => session?.token })
-const wallet = await api.wallets.getWallet({ params: { id: '123' } })
-
-// Or use generated React Query hooks
-function WalletComponent({ id }: { id: string }) {
-  const { data, isLoading } = useWallet({ params: { id } })
-}
-```
 
 ## Performance Optimization
 
@@ -100,21 +25,6 @@ function WalletComponent({ id }: { id: string }) {
 ### Core Web Vitals & Image Optimization
 - Optimize Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
 - Optimize images: WebP format, proper size data, lazy loading
-
-### React Compiler: Not Recommended Yet
-While React Compiler (v1.0, stable as of October 2025) offers automatic memoization, we're **not enabling it yet** due to:
-- Build performance impact (adds Babel layer, slows CI builds)
-- Library compatibility issues (React Hook Form, some TanStack libraries)
-- Breaking behavior risks (automatic memoization can change effect dependencies)
-- Code pattern requirements (strict Rules of React adherence needed)
-- Increased complexity for debugging and maintenance
-
-**Recommendation**: Wait 3-6 months for better ecosystem support, or use annotation mode for incremental adoption if performance gains are critical
-
-## Linting Considerations
-- **ESLint**: Next.js apps use `@repo/eslint-config/next-js` which enforces Next.js specific rules, React and React Hooks rules, import boundary enforcement (default exports allowed for pages/layouts only)
-- **Biome**: Handles all formatting and stylistic linting
-- See @.cursor/rules/base/linting.mdc for full architecture details
 
 ## Related
 - @.cursor/rules/base/linting.mdc - Hybrid Biome + ESLint architecture

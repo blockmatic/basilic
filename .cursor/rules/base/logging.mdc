@@ -7,27 +7,10 @@ alwaysApply: false
 ## Never Use console.* Directly
 **Never use `console.log`, `console.error`, `console.warn`, or `console.info` in app code.**
 
-Always use unified logger from `@repo/utils/logger`:
-```typescript
-import { logger } from '@repo/utils/logger'
-logger.info('User logged in', { userId })
-logger.error('Failed to fetch data', { error })
-```
+Always use unified logger from `@repo/utils/logger`: `import { logger } from '@repo/utils/logger'` then use `logger.info()`, `logger.error()`, etc.
 
 ## Unified Logger API
-Works consistently across server and client:
-```typescript
-import { logger } from '@repo/utils/logger'
-
-logger.debug('Debug message', { data })
-logger.info('Info message', { userId: '123' })
-logger.warn('Warning message', { remaining: 10 })
-logger.error('Error message', { error })
-
-// Child logger with bindings
-const requestLogger = logger.child({ requestId: 'abc-123', userId: 'user-456' })
-requestLogger.info('Processing request') // Includes requestId and userId
-```
+Works consistently across server and client. Use `logger.debug()`, `logger.info()`, `logger.warn()`, `logger.error()`. Use `logger.child({ bindings })` for request-scoped loggers with context.
 
 **Build-time conditional exports**: No runtime detection. See @apps/docu/content/docs/architecture/logging.mdx
 

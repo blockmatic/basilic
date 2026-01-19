@@ -40,10 +40,6 @@ alwaysApply: true
 - **Explicit return types**: Required for exported functions/API handlers
 - **Validation functions**: Return result objects, never throw
 
-## Framework-Specific
-- **Next.js**: Default exports for `page.tsx`/`layout.tsx`, Server Components by default
-- **Fastify**: Functional patterns, type-safe route schemas
-
 ## Related
 - @.cursor/rules/base/linting.mdc - Linting architecture
 - @.cursor/rules/base/error-handling.mdc - Error patterns

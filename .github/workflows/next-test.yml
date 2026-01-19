@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  web-tests:
+  next-tests:
     name: Web Tests
     runs-on: ubuntu-latest
     env:

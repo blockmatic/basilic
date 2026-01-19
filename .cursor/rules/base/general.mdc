@@ -41,7 +41,7 @@ alwaysApply: true
 ## Code Quality
 - Collocate related functionality
 - No server-only code in client bundles (no fs/path/env in shared/browser code)
-- Follow ESLint and Biome rules in generated code (see @.cursor/rules/base/linting.mdc)
+- Follow linting rules in generated code (see @.cursor/rules/base/linting.mdc)
 - Search for existing functionality before creating new
 
 ## Safety & Boundaries

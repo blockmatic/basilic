@@ -7,62 +7,15 @@ alwaysApply: false
 See @apps/docu/content/docs/architecture/backend-stack.mdx for why Fastify was chosen and architecture details.
 
 ## Module Structure
-- Organize routes by domain/feature (e.g., `routes/wallet.ts`, `routes/user.ts`)
+- Organize routes by domain/feature (e.g., `routes/feature.ts`, `routes/user.ts`)
 - Keep routes focused and single-purpose
 - Use route grouping for related endpoints
 - Keep handlers thin - delegate business logic to services
 
 ## ESM Patterns
-**Never use `__dirname` or `__filename`** - use ESM pattern:
-```typescript
-import { fileURLToPath } from 'node:url'
-import { dirname } from 'node:path'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-```
+**Never use `__dirname` or `__filename`** - use ESM pattern: `fileURLToPath(import.meta.url)` and `dirname()`
 
-**Never use `require()`** - use dynamic `import()`:
-```typescript
-import { pathToFileURL } from 'node:url'
-const moduleUrl = pathToFileURL(join(__dirname, '../dist/index.js')).href
-const { default } = await import(moduleUrl)
-```
-
-## Route Handler Pattern
-```typescript
-// routes/wallet.ts
-import { FastifyInstance } from 'fastify'
-import { z } from 'zod'
-import { createWalletService, getWalletService } from '../services/wallet.service'
-
-const CreateWalletSchema = z.object({ name: z.string(), chainId: z.string() })
-const WalletSchema = z.object({ id: z.string(), name: z.string(), chainId: z.string(), createdAt: z.string() })
-
-export async function walletRoutes(fastify: FastifyInstance) {
-  fastify.post('/wallets', {
-    schema: {
-      body: CreateWalletSchema,
-      response: { 201: WalletSchema, 400: z.object({ error: z.string() }) },
-    },
-  }, async (request, reply) => {
-    const result = await createWalletService({ input: request.body })
-    return reply.code(201).send(result)
-  })
-
-  fastify.get('/wallets/:id', {
-    schema: {
-      params: z.object({ id: z.string() }),
-      response: { 200: WalletSchema, 404: z.object({ error: z.string() }) },
-    },
-  }, async (request, reply) => {
-    const wallet = await getWalletService({ id: request.params.id })
-    if (!wallet) {
-      return reply.code(404).send({ error: 'Wallet not found' })
-    }
-    return reply.send(wallet)
-  })
-}
-```
+**Never use `require()`** - use dynamic `import()` with `pathToFileURL`
 
 ## Schema Validation
 - **TypeBox**: Use TypeBox for all route schemas (request/response validation)
@@ -83,30 +36,6 @@ export async function walletRoutes(fastify: FastifyInstance) {
 
 ## Error Handling
 Use `@repo/error` for all error handling. See @.cursor/rules/base/error-handling.mdc for complete patterns.
-
-**Error Handler Plugin**:
-```typescript
-// plugins/error-handler.ts
-import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
-import type { FastifyError, FastifyInstance } from 'fastify'
-import fp from 'fastify-plugin'
-
-export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
-  fastify.setErrorHandler((error: FastifyError, request, reply) => {
-    const catalogError = captureError({
-      code: mapHttpStatusToErrorCode(error.statusCode),
-      error,
-      logger: request.log, // Use Fastify's native logger for request context
-      label: `${request.method} ${request.url}`,
-      tags: { app: 'api' },
-    })
-    reply.status(error.statusCode ?? 500).send({
-      code: catalogError.code,
-      message: catalogError.message,
-    })
-  })
-})
-```
 
 **Note**: Pass `logger: request.log` to use Fastify's native Pino logger. This ensures errors are logged with request context and avoids duplicate logging.
 

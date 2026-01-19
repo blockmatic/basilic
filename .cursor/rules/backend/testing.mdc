@@ -21,38 +21,10 @@ See @.cursor/rules/base/testing.mdc for common testing philosophy, coverage requ
 - Test utilities available in `src/test/utils/fastify.ts` for route testing
 
 ## Fastify Route Testing Pattern
-Use `fastify.inject()` for blackbox testing of routes:
-```typescript
-import Fastify from 'fastify'
-import { walletRoutes } from '../routes/wallet'
-
-const fastify = Fastify({ logger: false })
-await fastify.register(walletRoutes)
-
-const response = await fastify.inject({
-  method: 'POST',
-  url: '/wallets',
-  payload: { name: 'Test Wallet' },
-})
-
-expect(response.statusCode).toBe(201)
-expect(JSON.parse(response.body)).toMatchObject({
-  id: expect.any(String),
-  name: 'Test Wallet',
-})
-```
+Use `fastify.inject()` for blackbox testing of routes. Register routes, then use `fastify.inject({ method, url, payload })` to test endpoints.
 
 ## Response Validation Pattern
-Test that responses match OpenAPI schemas:
-```typescript
-import { createApi } from '@repo/core'
-import { WalletSchema } from '@repo/core'
-
-const api = createApi({ baseUrl: 'http://localhost:3000' })
-const wallet = await api.wallets.getWallet({ params: { id: '123' } })
-
-WalletSchema.parse(wallet) // Validate against schema
-```
+Test that responses match OpenAPI schemas. Use `createApi` from `@repo/core` and validate responses with Zod schemas.
 
 ## Running Tests
 ```bash

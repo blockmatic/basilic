@@ -26,20 +26,7 @@ See @.cursor/rules/base/testing.mdc for common testing philosophy, coverage requ
 - **Tools**: Use Playwright or Cypress
 
 ## TanStack Query Testing
-Always test with real API calls. Wrap hooks with `QueryClientProvider`:
-```typescript
-import { renderHook, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-    {children}
-  </QueryClientProvider>
-)
-
-const { result } = renderHook(() => useWallets(), { wrapper })
-await waitFor(() => expect(result.current.isSuccess).toBe(true))
-```
+Always test with real API calls. Wrap hooks with `QueryClientProvider` using `renderHook` from `@testing-library/react`. Use `waitFor` to wait for query results.
 
 ## Related
 - @apps/docu/content/docs/testing/frontend-testing.mdx - Complete testing guide with detailed examples, Vitest configuration, and environment setup

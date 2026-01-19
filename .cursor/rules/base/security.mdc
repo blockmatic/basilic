@@ -38,7 +38,7 @@ alwaysApply: false
 - **Exponential backoff**: For rate limit responses
 - **User identification**: By IP/session/user ID
 
-**Pattern**: Use `@fastify/rate-limit` plugin (configured globally in `apps/fastify/src/plugins/rate-limit.ts`)
+**Pattern**: Use `@fastify/rate-limit` plugin (configured globally in app's plugins directory)
 
 ## Security Auditing
 - **Log security events**: Auth attempts, permission failures, sensitive operations, security incidents

@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Environment Variable Pattern
 
-**Applies consistently across all apps** - Next.js frontend apps, Fastify API (`apps/fastify`), and other Node.js apps.
+**Applies consistently across all apps** - Next.js frontend apps, Fastify API, and other Node.js apps.
 
 ## Standard: t3-env
 All apps use **t3-env** for environment variable validation:
@@ -23,47 +23,7 @@ All apps use **t3-env** for environment variable validation:
 2. `.env.{environment}` (based on NODE_ENV, committed configs)
 
 ## Validation Pattern
-
-### Next.js Apps
-```typescript
-// apps/next/lib/env.ts
-import { createEnv } from '@t3-oss/env-nextjs'
-import { z } from 'zod'
-
-export const env = createEnv({
-  server: {
-    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    // Server-only vars (no NEXT_PUBLIC_ prefix)
-  },
-  client: {
-    NEXT_PUBLIC_API_URL: z.string().min(1),
-    // Client vars (must have NEXT_PUBLIC_ prefix)
-  },
-  runtimeEnv: {
-    // MUST include ALL keys from server + client schemas
-    NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  },
-  emptyStringAsUndefined: true,
-})
-```
-
-### Server Apps (Fastify/Node)
-```typescript
-// apps/fastify/src/lib/env.ts
-import { createEnv } from '@t3-oss/env-core'
-import { z } from 'zod'
-
-export const env = createEnv({
-  server: {
-    PORT: z.coerce.number().int().positive().default(3000),
-    DATABASE_URL: z.string().min(1).optional(),
-    // Schema keys match env var names (UPPERCASE)
-  },
-  runtimeEnv: process.env,
-  emptyStringAsUndefined: true,
-})
-```
+Use `createEnv` from `@t3-oss/env-nextjs` (Next.js) or `@t3-oss/env-core` (Node/Fastify) with Zod schemas. Export single `env` object from `lib/env.ts`.
 
 ## Key Principles
 1. **Schema keys are UPPERCASE** - Match actual environment variable names (`DATABASE_URL`, `NEXT_PUBLIC_API_URL`)
@@ -74,16 +34,7 @@ export const env = createEnv({
 6. **Server/client separation** - Next.js `server` vars are private, `client` vars are public (`NEXT_PUBLIC_*`)
 
 ## Consumption Pattern
-**Always import from `lib/env.ts`:**
-```typescript
-// ✅ Correct
-import { env } from '@/lib/env'
-const dbUrl = env.DATABASE_URL
-const apiUrl = env.NEXT_PUBLIC_API_URL
-
-// ❌ Wrong - never use process.env directly
-const dbUrl = process.env.DATABASE_URL
-```
+**Always import from `lib/env.ts`**: `import { env } from '@/lib/env'` then use `env.DATABASE_URL`, `env.NEXT_PUBLIC_API_URL`. Never use `process.env` directly in app code.
 
 **In Next.js Client Components**: Only access `env.NEXT_PUBLIC_*` variables. Accessing server-only vars will throw at runtime (t3-env protection).
 
