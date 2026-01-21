@@ -32,4 +32,12 @@ function MyComponent() {
 - ✅ Built on `@repo/core` generated client
 - ✅ Type-safe from OpenAPI specs
 
+## Dependency Strategy
+
+This package follows the **Framework Wrapper Library** pattern:
+
+- **Peer Dependencies**: Framework dependencies (`react`, `@tanstack/react-query`) - consumers control versions
+- **Bundled Dependencies**: Internal workspace dependencies (`@repo/core`)
+- **Rationale**: Consumers control framework versions, library adapts to their React Query setup
+
 See [API Development](https://basilic-docs.vercel.app/docs/core-concepts/api-architecture#client-consumption) for full integration guide.

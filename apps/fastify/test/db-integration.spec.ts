@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
 import { getDb } from '../src/db/index.js'
-import { users } from '../src/db/schema/users.js'
+import { users } from '../src/db/schema/index.js'
 
 describe('Database Integration', () => {
   it('should initialize database client in test environment', async () => {

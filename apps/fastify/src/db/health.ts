@@ -13,8 +13,8 @@ export async function waitForDatabase(logger?: {
   info: (msg: string) => void
   error: (msg: string, err?: unknown) => void
 }): Promise<void> {
-  // Skip health check for test environment (PGLite doesn't need connection check)
-  if (process.env.NODE_ENV === 'test') {
+  // Skip health check for PGLite (doesn't need connection check)
+  if (env.PGLITE === true || env.NODE_ENV === 'test') {
     return
   }
 
@@ -49,7 +49,7 @@ export async function waitForDatabase(logger?: {
       if (elapsed >= MAX_WAIT_TIME) {
         logger?.error(`Database connection timeout after ${MAX_WAIT_TIME}ms`, err)
         throw new Error(
-          `Database connection failed after ${MAX_WAIT_TIME}ms: ${err instanceof Error ? err.message : String(err)}`,
+          `Database connection failed after ${MAX_WAIT_TIME}ms. Make sure your database is running and accessible via DATABASE_URL. Error: ${err instanceof Error ? err.message : String(err)}`,
         )
       }
 
@@ -65,5 +65,7 @@ export async function waitForDatabase(logger?: {
 
   const elapsed = Date.now() - startTime
   logger?.error(`Database connection failed after ${attempt} attempts (${elapsed}ms)`)
-  throw new Error(`Database connection failed after ${attempt} attempts`)
+  throw new Error(
+    `Database connection failed after ${attempt} attempts. Make sure your database is running and accessible via DATABASE_URL`,
+  )
 }

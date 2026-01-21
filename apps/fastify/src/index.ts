@@ -1,12 +1,11 @@
+import 'dotenv/config'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { initSentry } from '@repo/error/node'
 import Fastify from 'fastify'
 import app from './app.js'
 import { waitForDatabase } from './db/health.js'
 import { runMigrations } from './db/migrate.js'
-import { ensureSupabaseRunning } from './lib/ensure-supabase.js'
 import { env } from './lib/env.js'
-import { isLocalDevelopment } from './lib/env-detection.js'
 
 // Initialize Sentry BEFORE Fastify instance creation
 initSentry({
@@ -48,23 +47,10 @@ async function initialize(): Promise<void> {
   }
 
   try {
-    // 1. Local dev: Ensure Supabase is running
-    if (isLocalDevelopment()) {
-      try {
-        await ensureSupabaseRunning({
-          ...logger,
-          warn: (msg: string, err?: unknown) => fastify.log.warn({ err }, msg),
-        })
-      } catch (err) {
-        fastify.log.error({ err }, 'Supabase startup failed. Start manually with: pnpm db:start')
-        throw err
-      }
-    }
-
-    // 2. Wait for database connection
+    // 1. Wait for database connection
     await waitForDatabase(logger)
 
-    // 3. Run migrations
+    // 2. Run migrations
     await runMigrations(logger)
   } catch (err) {
     fastify.log.error({ err }, 'Initialization failed')

@@ -61,7 +61,7 @@ const initialize = async (): Promise<void> => {
 
   // Create pending promise and store immediately before starting async work
   // This prevents race conditions where concurrent callers see null
-  let resolvePromise: () => void
+  let resolvePromise!: () => void
   const initPromise = new Promise<void>(resolve => {
     resolvePromise = resolve
   })

@@ -1,11 +1,11 @@
 ---
-title: "ESM Module Strategy"
-description: "ESM-first module architecture with dual-mode exports, subpath patterns, and runtime-specific configurations."
+title: "ESM & TypeScript Strategy"
+description: "ESM-first module architecture with TypeScript v5.9.3, dual-mode exports, subpath patterns, ts-reset integration, and runtime-specific configurations."
 ---
 
 ## Overview
 
-This document describes the monorepo's **ESM-first module strategy**, including dual-mode package exports, subpath patterns, and runtime-specific configurations for Next.js and Fastify.
+This document describes the monorepo's **ESM-first module strategy** and **TypeScript configuration**, including dual-mode package exports, subpath patterns, TypeScript v5.9.3 with strict mode, ts-reset integration, and runtime-specific configurations for Next.js and Fastify.
 
 ## ESM-First Architecture
 
@@ -172,6 +172,240 @@ Node.js apps (Fastify API) import TypeScript source directly using a TypeScript 
 - Omit extensions in TypeScript (TypeScript handles resolution)
 - Use `.js` extensions if targeting strict ESM environments
 - Never use `.ts` extensions in import statements
+
+## TypeScript Strategy
+
+The monorepo uses **TypeScript v5.9.3** with strict mode enabled and enhanced type safety via `@total-typescript/ts-reset`. All packages share consistent TypeScript configuration through `@repo/typescript-config`.
+
+### Shared TypeScript Configuration
+
+All packages extend shared TypeScript configs from `@repo/typescript-config`:
+
+**Base Configuration** (`base.json`):
+- Strict mode enabled
+- ES2022 target
+- ESNext modules
+- Bundler module resolution (for Next.js/bundler environments)
+- `noUncheckedIndexedAccess` enabled (safer array/object access)
+- `ts-reset` integration for enhanced type safety
+
+**Next.js Configuration** (`nextjs.json`):
+- Extends base config
+- Next.js plugin support
+- Bundler module resolution
+- JSX preserve mode
+- No emit (Next.js handles compilation)
+
+**React Library Configuration** (`react-library.json`):
+- Extends base config
+- React JSX support
+- Declaration files for library distribution
+
+**Usage:**
+```json
+// tsconfig.json
+{
+  "extends": "@repo/typescript-config/base"
+}
+```
+
+### ts-reset Integration
+
+`@total-typescript/ts-reset` is configured globally to enhance TypeScript's built-in type safety:
+
+**Key Improvements:**
+- `JSON.parse()` returns `unknown` - Forces explicit validation
+- `fetch().json()` returns `unknown` - Ensures API responses are validated
+- Improved `.filter(Boolean)` typing - Correctly filters falsy values
+- Better `.includes()` on `as const` arrays - Less strict type checking
+
+**Example:**
+```typescript
+// ✅ Good: Validate with Zod
+import { z } from 'zod'
+
+const schema = z.object({ name: z.string() })
+const data = schema.parse(JSON.parse(jsonString)) // Type-safe after validation
+
+// ❌ Bad: Using without validation
+const data = JSON.parse(jsonString) // Returns unknown, must validate
+```
+
+### Type Declaration Patterns
+
+**Interfaces vs Types:**
+- **Interfaces** for object shapes: `interface User { name: string }`
+- **Types** for unions/utilities/mapped/Zod inference: `type Status = 'active' | 'inactive'`
+- **Avoid enums**: Use const objects or union types instead
+- **Infer when possible**: Only declare types when reusing
+
+**Example:**
+```typescript
+// ✅ Good: Interface for object shape
+interface User {
+  name: string
+  email: string
+}
+
+// ✅ Good: Type for union
+type Status = 'active' | 'inactive' | 'pending'
+
+// ✅ Good: Infer from Zod schema
+const userSchema = z.object({ name: z.string() })
+type User = z.infer<typeof userSchema>
+
+// ❌ Bad: Using enum
+enum Status {
+  Active = 'active',
+  Inactive = 'inactive'
+}
+```
+
+### Import Patterns
+
+**Type-Only Imports:**
+- Use `import type` for type-only imports to improve tree-shaking
+- Separate type imports from value imports when possible
+
+**Subpath Exports:**
+- Always use subpath imports: `import { delay } from "@repo/utils/async"`
+- Never use root imports: `import { delay } from "@repo/utils"` (no root export)
+- Use directory patterns for UI: `import { Button } from "@repo/ui/components/button"`
+
+**Lodash Imports:**
+- Use per-function imports: `import isEmpty from "lodash-es/isEmpty"`
+- Avoid importing entire lodash: `import _ from "lodash-es"`
+
+**Example:**
+```typescript
+// ✅ Good: Type-only import
+import type { User } from '@repo/core/types'
+
+// ✅ Good: Subpath import
+import { delay } from '@repo/utils/async'
+
+// ✅ Good: Per-function lodash import
+import isEmpty from 'lodash-es/isEmpty'
+
+// ❌ Bad: Root import (no root export)
+import { delay } from '@repo/utils'
+
+// ❌ Bad: Entire lodash import
+import _ from 'lodash-es'
+```
+
+### Type Safety Patterns
+
+**Schema Validation Libraries:**
+This codebase uses different schema libraries depending on the runtime context:
+- **Zod**: Recommended for Next.js API routes (e.g., exported POST handlers in `app/api/` routes)
+- **TypeBox**: Used for Fastify route schemas and validation (all Fastify route handlers)
+
+**Zod for Next.js API Routes:**
+- Validate at boundaries: Next.js API routes, forms, external APIs
+- Infer types from schemas: `type User = z.infer<typeof userSchema>`
+- Colocate schemas: `app/api/users/schema.ts` (feature-specific)
+- ESLint `no-unsafe-*` rules disabled for Zod-first validation
+
+**TypeBox for Fastify Routes:**
+- Use TypeBox for all Fastify route schemas (request/response validation)
+- Native JSON Schema - no conversion overhead
+- Automatic OpenAPI generation
+- Type-safe with TypeBox type provider
+
+**Example (Next.js API Route with Zod):**
+```typescript
+// ✅ Good: Zod schema with type inference for Next.js API routes
+import { z } from 'zod'
+
+const userSchema = z.object({
+  name: z.string(),
+  email: z.string().email()
+})
+
+type User = z.infer<typeof userSchema>
+
+// ✅ Good: Validate at Next.js API boundary
+export async function POST(request: Request) {
+  const body = await request.json()
+  const user = userSchema.parse(body) // Type-safe after validation
+  // ...
+}
+```
+
+**Example (Fastify Route with TypeBox):**
+```typescript
+// ✅ Good: TypeBox schema for Fastify route handlers
+import { Type, Static } from '@sinclair/typebox'
+
+const UserSchema = Type.Object({
+  name: Type.String(),
+  email: Type.String({ format: 'email' })
+})
+
+type User = Static<typeof UserSchema>
+
+// ✅ Good: TypeBox schema in Fastify route
+fastify.post('/users', {
+  schema: {
+    body: UserSchema
+  }
+}, async (request) => {
+  const user = request.body // Type-safe after validation
+  // ...
+})
+```
+
+### Module Resolution Strategies
+
+**Bundler Resolution** (Next.js, React libraries):
+- `moduleResolution: "bundler"` - Optimized for bundlers
+- Works with ESM imports and subpath exports
+- TypeScript resolves to source files via path mappings
+
+**Node Resolution** (Fastify, Node.js apps):
+- `moduleResolution: "NodeNext"` - Native ESM support
+- Requires explicit file extensions in some cases
+- Works with TypeScript runtime (`tsx`)
+
+**Rules:**
+- ✅ Use `bundler` resolution for Next.js apps and React libraries
+- ✅ Use `NodeNext` resolution for Node.js/Fastify apps
+- ✅ Exceptions allowed for infrastructure tooling (Pulumi, Anchor/Solana)
+
+### Function Patterns
+
+**RORO Pattern** (Receive Object, Return Object):
+```typescript
+// ✅ Good: RORO pattern
+const createUser = ({ name, email }: Input) => ({ id: crypto.randomUUID(), name, email })
+
+// ❌ Bad: Multiple parameters
+const createUser = (name: string, email: string) => ({ id: crypto.randomUUID(), name, email })
+```
+
+**Functional Style:**
+- Prefer functional code over classes/decorators
+- Use single-line functions when possible: `const double = (x: number) => x * 2`
+- Early returns with guard clauses: `if (!value) return null`
+
+**Explicit Return Types:**
+- Required for exported functions and API handlers
+- Type inference preferred for internal functions
+
+**Example:**
+```typescript
+// ✅ Good: Explicit return type for exported function
+export function getUser(id: string): Promise<User> {
+  // ...
+}
+
+// ✅ Good: Type inference for internal function
+const processData = (data: Input) => {
+  // TypeScript infers return type
+  return { processed: true, data }
+}
+```
 
 ## Related Documentation
 

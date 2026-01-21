@@ -54,14 +54,16 @@ We chose **Fastify** as the backend framework because it aligns perfectly with o
 - ✅ **Enterprise ready** - Mature, battle-tested, widely supported
 - ✅ **Portability** - Standard SQL, works with any PostgreSQL host
 
-### Initial Provider: Supabase
+### Database Options
 
-**Supabase** accelerates development:
+The API works with any PostgreSQL-compatible database via `DATABASE_URL`. Common options include:
 
-- ✅ **Managed Postgres** - Fast setup for rapid iteration
-- ✅ **Branching** - Preview environments with database branching
-- ✅ **Local development** - Supabase CLI for local Postgres
-- ✅ **Migration path** - Easy to migrate to Cloud SQL/RDS (only `DATABASE_URL` changes)
+- ✅ **Supabase** - Managed Postgres with branching and local development CLI (optional)
+- ✅ **Cloud SQL / RDS** - Enterprise-grade managed PostgreSQL
+- ✅ **Self-hosted PostgreSQL** - Full control over infrastructure
+- ✅ **PGLite** - In-memory PostgreSQL for testing and preview environments (`PGLITE=true`)
+
+**Migration**: Changing databases only requires updating `DATABASE_URL` - no code changes needed.
 
 ### ORM: Drizzle
 
@@ -152,10 +154,28 @@ export const users = pgTable('users', {
 })
 ```
 
-Migrations are managed with `drizzle-kit`:
+### Migrations
 
+Migrations are managed with `drizzle-kit` and follow a host-agnostic strategy:
+
+**Migration Generation:**
 - `db:generate` - Generate migration files from schema changes
-- `db:migrate` - Apply migrations to database
+
+**Migration Execution:**
+- **PostgreSQL**: Migrations run at **build time** via `pnpm build` → `pnpm db:migrate` → `tsc`
+  - Migrations are **skipped at runtime** (already applied at build time)
+  - Faster startup (migrations already applied)
+  - Fails fast if migrations have issues
+  - Works with any deployment platform (Docker, Railway, Fly.io, Render, etc.)
+- **PGLite**: Migrations run at **runtime** when instance is created
+  - PGLite instance doesn't exist at build time
+  - Used for preview branches and local development
+
+**Environment Configuration:**
+- `PGLITE=true` - Uses in-memory PGLite database (preview branches, local dev)
+- `PGLITE=false` (default) - Uses PostgreSQL via `DATABASE_URL`
+
+See [ADR 008: Database Platform & Strategy](/docs/adrs/008-database#migration-strategy) for detailed migration flow and architecture diagram.
 
 ## Portability Strategy
 
@@ -177,7 +197,7 @@ The API implements comprehensive security measures:
 - **Rate Limiting** - Per-IP rate limiting to prevent abuse
 - **Input Validation** - Zod schemas for all requests
 - **Security Logging** - Automatic logging of security events
-- **Trust Proxy** - Proper IP detection behind Vercel/Cloudflare
+- **Trust Proxy** - Proper IP detection behind reverse proxy
 
 See [Security Guide](/docs/security#api-security) for detailed security configuration.
 

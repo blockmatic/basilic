@@ -521,8 +521,138 @@ function MyComponent() {
 
 This architecture stays portable and keeps your boundaries sharp as the codebase grows.
 
+## Dependency Management Strategy
+
+Packages follow different dependency strategies based on their type and purpose. This ensures optimal developer experience, version consistency, and flexibility where needed.
+
+### Package Type Classification
+
+#### 1. Component/Template Libraries (`@repo/ui`, `@repo/email`)
+
+**Strategy**: Bundle dependencies for simplicity and consistency
+
+- **Bundled Dependencies**: All component/template dependencies (`zod`, `date-fns`, `lucide-react`, `next-themes`, `react-hook-form`, Radix UI packages, etc.)
+- **Peer Dependencies**: Framework dependencies only (`react`, `react-dom`)
+- **Rationale**: 
+  - Simpler developer experience - install `@repo/ui`, it works
+  - Version consistency across all apps using the library
+  - Follows industry patterns (shadcn/ui, Material-UI, Chakra UI)
+  - Components are tightly coupled to their dependencies
+
+**Example**: `@repo/ui` bundles `zod`, `date-fns`, `lucide-react` as dependencies, but only `react` and `react-dom` as peer dependencies.
+
+#### 2. Framework Wrapper Libraries (`@repo/react`)
+
+**Strategy**: Use peer dependencies for framework deps
+
+- **Peer Dependencies**: Framework dependencies (`react`, `@tanstack/react-query`)
+- **Bundled Dependencies**: Internal workspace dependencies (`@repo/core`)
+- **Rationale**:
+  - Consumers control framework versions
+  - Library adapts to consumer's React Query setup
+  - Prevents version conflicts
+
+**Example**: `@repo/react` uses `@tanstack/react-query` as a peer dependency, allowing consumers to control the version.
+
+#### 3. Service Libraries (`@repo/notif`)
+
+**Strategy**: Bundle tightly-coupled deps, peer for config/env deps
+
+- **Bundled Dependencies**: Tightly-coupled dependencies (`zod` for schemas, `nanoid`, `resend`)
+- **Peer Dependencies**: Configuration/environment dependencies (`@t3-oss/env-core`)
+- **Rationale**:
+  - Internal schemas should be bundled for simplicity
+  - Environment configuration is consumer's responsibility
+  - Service implementation is self-contained
+
+**Example**: `@repo/notif` bundles `zod` as a dependency but uses `@t3-oss/env-core` as a peer dependency.
+
+#### 4. Utility Libraries (`@repo/utils`)
+
+**Strategy**: Use peer dependencies for flexibility
+
+- **Peer Dependencies**: All runtime dependencies (`zod`, `viem`, `lodash-es`, etc.)
+- **Rationale**:
+  - Utilities are composable and flexible
+  - Consumers may already have these dependencies
+  - Allows version flexibility
+
+**Example**: `@repo/utils` uses peer dependencies for `zod`, `viem`, and `lodash-es`.
+
+#### 5. Platform-Specific Libraries (`@repo/error`)
+
+**Strategy**: Use peer dependencies for optional platform deps
+
+- **Peer Dependencies**: Optional platform dependencies (`@sentry/node`, `@sentry/nextjs`, `@sentry/browser`, `react`)
+- **Rationale**:
+  - Sentry integration is optional
+  - Platform-specific implementations
+  - Consumers choose their error tracking setup
+
+**Example**: `@repo/error` uses peer dependencies for Sentry packages, allowing consumers to choose their platform.
+
+#### 6. Generated Code Libraries (`@repo/core`)
+
+**Strategy**: No runtime dependencies
+
+- **Runtime Dependencies**: None (only devDependencies for build tools)
+- **Rationale**: Generated code package, runtime-agnostic, no dependencies to optimize
+
+**Example**: `@repo/core` has no runtime dependencies, only devDependencies for TypeScript and build tools.
+
+### Decision Tree
+
+When adding dependencies to a package, use this decision tree:
+
+```
+Is it a component/template library?
+├─ Yes → Bundle dependencies (except framework deps)
+└─ No → Is it a framework wrapper?
+   ├─ Yes → Peer dependencies for framework deps
+   └─ No → Is it a utility library?
+      ├─ Yes → Peer dependencies for flexibility
+      └─ No → Is it a service library?
+         ├─ Yes → Bundle tightly-coupled deps, peer for config/env
+         └─ No → Evaluate on case-by-case basis
+```
+
+### Benefits
+
+**Component Libraries (Bundle Dependencies)**:
+- ✅ Simpler DX: Consumers install the package and it works
+- ✅ Version Consistency: All apps get the same versions automatically
+- ✅ Industry Standard: Follows patterns from shadcn/ui, Material-UI, Chakra UI
+- ✅ Less Configuration: No need to manage peer dependencies
+
+**Framework/Utility Libraries (Peer Dependencies)**:
+- ✅ Version Flexibility: Consumers control versions
+- ✅ Reduced Duplication: Consumers can reuse their existing dependencies
+- ✅ Framework Compatibility: Adapts to consumer's framework setup
+
+### Peer Dependencies in devDependencies
+
+All peer dependencies should also be listed in `devDependencies` for:
+- TypeScript type checking
+- Local development and testing
+- Ensuring compatibility during development
+
+**Example**:
+```json
+{
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.90.17",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.90.17",
+    "react": "^19.2.3"
+  }
+}
+```
+
 ## Related Documentation
 
 - [Monorepo Structure](/docs/core-concepts/monorepo-structure) - High-level monorepo overview
 - [API Architecture](/docs/core-concepts/api-architecture) - REST API with OpenAPI and client generation
+- [Packages Reference](/docs/core-concepts/packages) - Complete package reference with dependency strategies
 - [Architecture Overview](/docs/architecture) - All architecture topics

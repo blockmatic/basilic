@@ -11,19 +11,35 @@ The API provides a RESTful interface with end-to-end type safety from OpenAPI sp
 
 ## Development
 
+**Important**: You must start your database before running the dev server:
+
 ```bash
+# For local development with Supabase (run this first)
+pnpm db:start
+
+# In another terminal, start the dev server
 pnpm dev
 ```
 
-Starts Fastify server with hot reload at [http://localhost:3000](http://localhost:3000).
+**Note**: The `db:start` script uses Supabase CLI for local development. For other PostgreSQL databases, ensure your database is running and `DATABASE_URL` is configured. Alternatively, use `PGLITE=true` for in-memory database (no setup required).
+
+The dev server will start with hot reload at [http://localhost:3000](http://localhost:3000).
+
+If the database is not available, the server will error with a clear message. Make sure your database is running and accessible before starting the dev server.
 
 ## Scripts
 
-- `pnpm dev` - Development server with hot reload
-- `pnpm build` - Build TypeScript
+- `pnpm dev` - Development server with hot reload (requires database to be running - see Development section)
+- `pnpm build` - Run database migrations and build TypeScript
 - `pnpm start` - Production server (requires build)
 - `pnpm test` - Run tests
 - `pnpm checktypes` - Type-check without emitting output
+- `pnpm db:start` - Start local database instance (Supabase CLI - must be run before `pnpm dev` for local development)
+- `pnpm db:stop` - Stop local database instance (Supabase CLI)
+- `pnpm db:status` - Check local database status (Supabase CLI)
+- `pnpm db:migrate` - Run database migrations (PostgreSQL only; PGLite migrations run at runtime)
+- `pnpm db:generate` - Generate migrations from schema changes
+- `pnpm db:push` - Push schema changes directly (dev only, no migrations)
 - `pnpm generate:openapi` - Generate OpenAPI specification from Fastify routes (uses dummy `OPENAI_API_KEY` if missing)
 
 All runtime scripts build `@repo/utils` first to ensure compiled workspace dependencies are available.
@@ -43,7 +59,11 @@ The server loads `apps/fastify/.env` using Node.js native `--env-file` flag (Nod
 ### Optional
 - `PORT` - Server port (default: `3000`)
 - `HOST` - Server host (default: `0.0.0.0`)
-- `DATABASE_URL` - PostgreSQL connection string
+- `PGLITE` - Use in-memory PGLite database instead of PostgreSQL (default: `false`)
+  - Set to `true` for preview branches, local dev without PostgreSQL, or ephemeral environments
+  - When `PGLITE=true`, `DATABASE_URL` is optional and defaults to PGLite URL
+  - When `PGLITE=false`, `DATABASE_URL` is required
+- `DATABASE_URL` - PostgreSQL connection string (required when `PGLITE=false`)
 - `REDIS_URL` - Redis connection string
 - `OPENAI_API_KEY` - OpenAI API key (required in production; dev uses a dummy default)
 - `SENTRY_DSN` - Sentry DSN for error tracking
@@ -87,4 +107,17 @@ REST API architecture using OpenAPI:
 
 Fastify routes are the source of truth. The OpenAPI specification is automatically generated from route definitions, ensuring consistency between implementation and documentation. This enables type-safe client generation across the entire stack from API to client.
 
-See [Backend Stack](@apps/docu/content/docs/architecture/backend-stack.mdx) and [API Development](@apps/docu/content/docs/core-concepts/api-architecture.mdx) for details.
+## Database Migrations
+
+The API supports two migration strategies depending on database type:
+
+- **PostgreSQL** (`PGLITE=false`): Migrations run at build time via `pnpm build` → `pnpm db:migrate` → `tsc`
+  - Faster startup (migrations already applied)
+  - Fails fast if migrations have issues
+  - Works with any deployment platform (Vercel, Docker, Railway, etc.)
+
+- **PGLite** (`PGLITE=true`): Migrations skip at build time, run at runtime when instance is created
+  - PGLite instance doesn't exist at build time
+  - Migrations run during app initialization (`src/index.ts` or `api/[...].ts`)
+
+See [Backend Stack](/docs/architecture/backend-stack), [API Development](/docs/core-concepts/api-architecture), and [ADR 008: Database](/docs/adrs/008-database) for detailed migration flow and architecture.

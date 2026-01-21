@@ -25,7 +25,8 @@
       "!pnpm-lock.yaml",
       "!.pnp.js",
       "!.DS_Store",
-      "!*.pem"
+      "!*.pem",
+      "!**/.react-email"
     ],
     "maxSize": 1048576
   },

@@ -76,13 +76,17 @@ Each application is self-contained but can import shared packages:
 
 ### Shared Packages (`packages/`)
 
-Packages follow strict dependency rules:
+Packages follow strict dependency rules and use different dependency strategies based on package type:
 
-- **`core`** - Generated runtime-agnostic API client + types (via hey-api from OpenAPI)
-- **`react`** - React-specific hooks and TanStack Query integration (generated via hey-api)
-- **`ui`** - Shared UI components (Shadcn/ui based)
-- **`error`** - Error handling utilities with Sentry integration (platform-specific exports)
-- **`utils`** - Shared utilities (logger, async helpers, web3 utilities)
+- **`core`** - Generated runtime-agnostic API client + types (via hey-api from OpenAPI) - no runtime dependencies
+- **`react`** - React-specific hooks and TanStack Query integration (generated via hey-api) - peer dependencies for framework deps
+- **`ui`** - Shared UI components (Shadcn/ui based) - bundles dependencies for simplicity
+- **`email`** - Email template library (React Email) - bundles dependencies for consistency
+- **`notif`** - Notification service - bundles tightly-coupled deps, peer for config/env
+- **`error`** - Error handling utilities with Sentry integration (platform-specific exports) - peer dependencies for optional platform deps
+- **`utils`** - Shared utilities (logger, async helpers, web3 utilities) - peer dependencies for flexibility
+
+See [Package Conventions](/docs/architecture/package-conventions#dependency-management-strategy) for detailed dependency management strategies.
 
 ### Dependency Direction
 

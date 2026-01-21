@@ -55,7 +55,8 @@
       "tar@<7.5.3": ">=7.5.3",
       "esbuild@<0.25.0": ">=0.25.0",
       "path-to-regexp@<6.3.0": ">=6.3.0",
-      "undici@<6.23.0": ">=6.23.0"
+      "undici@<6.23.0": ">=6.23.0",
+      "next@<16.0.9": ">=16.1.2"
     },
     "onlyBuiltDependencies": [
       "@sentry/cli",
