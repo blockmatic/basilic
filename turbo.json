@@ -50,7 +50,10 @@
         "CI",
         "PLAYWRIGHT_TEST_BASE_URL",
         "PORT",
-        "OPENAI_API_KEY"
+        "OPENAI_API_KEY",
+        "ENCRYPTION_KEY",
+        "VERCEL",
+        "VERCEL_GIT_COMMIT_REF"
       ]
     },
     "lint:eslint:fix": {
@@ -61,7 +64,10 @@
         "CI",
         "PLAYWRIGHT_TEST_BASE_URL",
         "PORT",
-        "OPENAI_API_KEY"
+        "OPENAI_API_KEY",
+        "ENCRYPTION_KEY",
+        "VERCEL",
+        "VERCEL_GIT_COMMIT_REF"
       ]
     },
     "checktypes": {
@@ -69,7 +75,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "env": ["NODE_ENV", "OPENAI_API_KEY", "CI"]
+      "env": ["NODE_ENV", "OPENAI_API_KEY", "ENCRYPTION_KEY", "CI"]
     },
     "dev": {
       "dependsOn": ["^build"],

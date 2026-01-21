@@ -17,8 +17,6 @@ jobs:
   packages-tests:
     name: Packages Tests
     runs-on: ubuntu-latest
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

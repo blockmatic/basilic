@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
       # DATABASE_URL will be set by vitest.setup.ts to use PGLite
       # This fallback ensures env validation passes before tests run
       DATABASE_URL: postgresql://localhost/test
-      ENCRYPTION_KEY: 0000000000000000000000000000000000000000000000000000000000000000
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

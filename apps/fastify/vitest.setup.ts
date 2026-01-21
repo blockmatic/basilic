@@ -1,36 +1,33 @@
-// Set DATABASE_URL before env validation
+// Set all required environment variables before env validation
 // This must happen before any imports that use env.ts
-process.env.DATABASE_URL = 'postgresql://localhost/test'
 process.env.NODE_ENV = 'test'
+// Always use test database URL in test environment, overriding .env file
+process.env.DATABASE_URL = 'postgresql://localhost/test'
+process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY || 'test-openai-key'
+process.env.ENCRYPTION_KEY =
+  process.env.ENCRYPTION_KEY || '0000000000000000000000000000000000000000000000000000000000000000'
 
-import { readdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { migrate as migratePGLite } from 'drizzle-orm/pglite/migrator'
+// Dynamic env vars are passed from CI secrets if available
+// They're optional and will be undefined if not provided
+
+import { logger } from '@repo/utils/logger'
 import { afterAll, beforeAll } from 'vitest'
-import { getDb } from './src/db/index.js'
+import { runMigrations } from './src/db/migrate.js'
 import { closeTestDatabase, getTestDatabase } from './test/utils/db.js'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
 
 beforeAll(async () => {
   await getTestDatabase()
-  const db = await getDb()
 
-  // Try to run migrations if they exist
-  const migrationsDir = join(__dirname, '..', 'src', 'db', 'migrations')
+  // Run migrations if they exist
+  // Errors are logged and rethrown to fail tests on migration regressions
   try {
-    const files = await readdir(migrationsDir)
-    const sqlFiles = files.filter(file => file.endsWith('.sql'))
-    if (sqlFiles.length > 0) {
-      await migratePGLite(db as Parameters<typeof migratePGLite>[0], {
-        migrationsFolder: migrationsDir,
-      })
-      return
-    }
-  } catch {
-    // Migrations directory doesn't exist, continue to manual setup
+    await runMigrations({
+      info: (msg: string) => logger.info({ migration: true }, msg),
+      error: (msg: string, err?: unknown) => logger.error({ migration: true, error: err }, msg),
+    })
+  } catch (err) {
+    logger.error({ migration: true, error: err }, 'Migration failed')
+    throw err
   }
 
   // Fallback: Create tables manually using SQL
