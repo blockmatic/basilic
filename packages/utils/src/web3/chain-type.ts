@@ -2,7 +2,6 @@ import { z } from 'zod'
 
 /**
  * Schema for validating chain type.
- * Chain types supported by Dynamic SDK.
  */
 export const chainTypeSchema = z.enum([
   'evm',

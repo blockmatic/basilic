@@ -61,7 +61,7 @@ const response = await fetchWithTimeout({
 
 #### `getChainMetadata`
 
-Get chain metadata from chain ID or Dynamic network ID.
+Get chain metadata from chain ID.
 
 ```typescript
 import { getChainMetadata } from '@repo/utils/web3'
@@ -72,22 +72,12 @@ const metadata = getChainMetadata(1) // Ethereum Mainnet
 
 #### `getChainType`
 
-Get chain type from chain ID or Dynamic network ID.
+Get chain type from chain ID.
 
 ```typescript
 import { getChainType } from '@repo/utils/web3'
 
 const chainType = getChainType(1) // Returns: 'evm'
-```
-
-#### `getDynamicNetworkId`
-
-Get Dynamic network ID from chain ID.
-
-```typescript
-import { getDynamicNetworkId } from '@repo/utils/web3'
-
-const networkId = getDynamicNetworkId(1) // Returns: '1'
 ```
 
 #### `isSupportedChain`
@@ -130,7 +120,7 @@ Import utilities using subpath exports:
 
 ```typescript
 import { delay, fetchWithTimeout } from '@repo/utils/async'
-import { getChainMetadata, getChainType, ChainType, chainTypeSchema } from '@repo/utils/web3'
+import { getChainMetadata, getChainType, isSupportedChain, ChainType, chainTypeSchema } from '@repo/utils/web3'
 ```
 
 **Error Handling**: Error utilities have been moved to `@repo/error`. Import from `@repo/error` instead:

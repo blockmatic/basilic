@@ -42,7 +42,10 @@
         "EMAIL_FROM",
         "APP_URL",
         "EMAIL_ASSETS_URL",
-        "ENCRYPTION_KEY"
+        "ENCRYPTION_KEY",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_TRUSTED_ORIGINS"
       ]
     },
     "lint": {
@@ -63,7 +66,13 @@
         "VERCEL",
         "VERCEL_GIT_COMMIT_REF",
         "APP_URL",
-        "EMAIL_ASSETS_URL"
+        "EMAIL_ASSETS_URL",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_TRUSTED_ORIGINS",
+        "RESEND_API_KEY",
+        "EMAIL_FROM",
+        "EMAIL_FROM_NAME"
       ]
     },
     "lint:eslint:fix": {
@@ -79,14 +88,29 @@
         "OPENAI_API_KEY",
         "ENCRYPTION_KEY",
         "VERCEL",
+        "VERCEL_URL",
         "VERCEL_GIT_COMMIT_REF",
         "APP_URL",
-        "EMAIL_ASSETS_URL"
+        "EMAIL_ASSETS_URL",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_TRUSTED_ORIGINS",
+        "RESEND_API_KEY",
+        "EMAIL_FROM",
+        "EMAIL_FROM_NAME"
       ]
     },
     "checktypes": {
       "dependsOn": ["^checktypes"],
-      "env": ["NODE_ENV", "RESEND_API_KEY", "EMAIL_FROM"]
+      "env": [
+        "NODE_ENV",
+        "RESEND_API_KEY",
+        "EMAIL_FROM",
+        "EMAIL_FROM_NAME",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_TRUSTED_ORIGINS"
+      ]
     },
     "test": {
       "dependsOn": ["^build"],
@@ -98,7 +122,12 @@
         "ENCRYPTION_KEY",
         "CI",
         "RESEND_API_KEY",
-        "EMAIL_FROM"
+        "EMAIL_FROM",
+        "EMAIL_FROM_NAME",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_TRUSTED_ORIGINS",
+        "VITEST_WORKER_ID"
       ]
     },
     "dev": {
@@ -128,7 +157,11 @@
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
         "RESEND_API_KEY",
-        "EMAIL_FROM"
+        "EMAIL_FROM",
+        "EMAIL_FROM_NAME",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_TRUSTED_ORIGINS"
       ]
     }
   }

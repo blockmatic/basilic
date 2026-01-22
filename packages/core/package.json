@@ -20,9 +20,9 @@
     "test": "echo \"no test\""
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "^0.90.8",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@hey-api/openapi-ts": "^0.90.3",
     "eslint": "^9.39.2",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"

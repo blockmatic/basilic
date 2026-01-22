@@ -2,10 +2,10 @@ import 'dotenv/config'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { initSentry } from '@repo/error/node'
 import Fastify from 'fastify'
-import app from './app.js'
-import { waitForDatabase } from './db/health.js'
-import { runMigrations } from './db/migrate.js'
-import { env } from './lib/env.js'
+import app from './src/app.js'
+import { waitForDatabase } from './src/db/health.js'
+import { runMigrations } from './src/db/migrate.js'
+import { env } from './src/lib/env.js'
 
 // Initialize Sentry BEFORE Fastify instance creation
 initSentry({

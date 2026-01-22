@@ -1,13 +1,16 @@
-import { logger } from '@repo/utils/logger'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { initSentry as initSentryBrowser } from '../browser/sentry.js'
 import { initSentry as initSentryNextjs } from '../nextjs/sentry.js'
 import { initSentry as initSentryNode } from '../node/sentry.js'
 
-// Mock logger
+// Mock logger - use vi.hoisted to define mocks before hoisted mock factories
+const { mockLoggerWarn } = vi.hoisted(() => ({
+  mockLoggerWarn: vi.fn(),
+}))
+
 vi.mock('@repo/utils/logger', () => ({
   logger: {
-    warn: vi.fn(),
+    warn: mockLoggerWarn,
   },
 }))
 
@@ -76,7 +79,7 @@ describe('sentry', () => {
     it('should warn if DSN is not provided', () => {
       initSentry({ dsn: undefined })
 
-      expect(logger.warn).toHaveBeenCalledWith(
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
         'Sentry DSN not configured - error reporting disabled',
       )
       expect(mockInit).not.toHaveBeenCalled()

@@ -38,3 +38,12 @@ export async function getDb() {
   }
   return db
 }
+
+/**
+ * Reset the database instance cache.
+ * Used in tests to ensure a fresh database connection after resetting the underlying database.
+ */
+export function resetDbInstance() {
+  db = null
+  // Note: pgLiteInstance is managed by test utils, don't reset it here
+}

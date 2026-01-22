@@ -4,8 +4,16 @@ TypeScript monorepo with REST API architecture.
 
 ## Requirements
 
-- **Node.js**: `>=22`
+- **Node.js**: `22.x`
 - **pnpm**: `10.28.0`
+
+### Node.js Setup
+
+Install and set Node.js 22 as default using nvm:
+
+```bash
+nvm install 22 && nvm alias default 22
+```
 
 ## Quick Start
 

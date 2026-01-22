@@ -40,15 +40,14 @@
     "test": "echo \"no test\""
   },
   "peerDependencies": {
-    "lodash-es": "*",
-    "viem": "*",
-    "zod": "*",
     "nuqs": "*",
     "pino": "*",
     "react": "*",
     "react-use": "*",
     "typescript": "^5.0.0",
     "vconsole": "*",
+    "viem": "*",
+    "zod": "*",
     "zod-validation-error": "*"
   },
   "peerDependenciesMeta": {
@@ -78,10 +77,10 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/lodash-es": "latest",
-    "@types/node": "^25.0.9",
-    "@types/react": "^19.2.8",
+    "@types/node": "22.x",
+    "@types/react": "^19.2.9",
     "eslint": "^9.39.2",
-    "lodash-es": "latest",
+    "lodash-es": "^4.17.23",
     "nuqs": "^2.8.6",
     "react": "^19.2.3",
     "react-use": "^17.6.0",

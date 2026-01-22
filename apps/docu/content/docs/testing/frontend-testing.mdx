@@ -119,7 +119,7 @@ test.describe('Wallet E2E', () => {
     // Navigate to app (uses real API)
     await page.goto('http://localhost:3000')
     
-    // Login (uses real Dynamic auth)
+    // Login (uses real auth)
     await page.click('text=Login')
     await page.fill('[name=email]', 'test@example.com')
     await page.click('text=Sign In')
@@ -195,7 +195,6 @@ describe('useWallets', () => {
 Tests require these environment variables:
 
 - `NEXT_PUBLIC_API_URL` - API base URL
-- `NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID` - Dynamic environment ID
 - `TEST_AUTH_TOKEN` (optional) - Pre-configured auth token
 
 ### Test Utilities

@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from 'fastify'
+import { env } from '../lib/env.js'
 
 const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
   fastify.get('/', async (_request, reply) => {
@@ -115,7 +116,7 @@ const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
     </ul>
     
     <h2>🚀 Quick Start</h2>
-    <pre><code>curl -X GET http://localhost:3000/health</code></pre>
+    <pre><code>curl -X GET http://localhost:${env.PORT}/health</code></pre>
     
     <h2>💡 Features</h2>
     <ul>

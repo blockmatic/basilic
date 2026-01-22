@@ -48,6 +48,29 @@ All runtime scripts build `@repo/utils` first to ensure compiled workspace depen
 
 Tests run with Vitest in ESM mode against the TypeScript source.
 
+### Test Database
+
+Tests use **per-worker file-based PGLite databases** for test isolation:
+
+- **Per-worker instances**: Each Vitest worker creates its own file-based PGLite database instance before test files in that worker execute
+- **Worker isolation**: Tests within the same worker share the same database instance, but different workers have isolated databases
+- **State sharing within worker**: Tests in the same worker can share state/data (e.g., create an account in one test file, then test login in another within the same worker)
+- **Automatic cleanup**: Each worker's database instance is automatically deleted after all tests in that worker complete
+- **Failure handling**: If tests fail, the worker database instance is still cleaned up in the worker's teardown
+
+**Lifecycle:**
+1. **Per-worker Setup** (`vitest.setup.ts`): Each worker creates its own file-based database instance and runs migrations directly using SQL execution before any test files in that worker execute
+2. **Tests run**: All test files within the same worker share the same database instance; different workers have isolated databases
+3. **Per-worker Teardown** (`vitest.setup.ts`): Each worker closes and deletes its database instance after all tests in that worker complete
+
+**Test Isolation:**
+- Each worker gets its own database file: `/tmp/basilic-fastify-test-db-{workerId}`
+- State is isolated per-worker rather than shared across all test files
+- Tests within a worker share state, but tests across workers are isolated
+- If you need cross-worker persistence or explicit cleanup, clean up data in your tests or use transactions
+
+**Implementation**: See `vitest.setup.ts` for per-worker database setup and migrations, and `vitest.global-setup.ts` for global environment variable configuration.
+
 ## Environment Variables
 
 The API uses environment variables for configuration. See [Environment Setup Guide](@apps/docu/content/docs/getting-started/installation.mdx) for complete details.
@@ -118,6 +141,15 @@ The API supports two migration strategies depending on database type:
 
 - **PGLite** (`PGLITE=true`): Migrations skip at build time, run at runtime when instance is created
   - PGLite instance doesn't exist at build time
-  - Migrations run during app initialization (`src/index.ts` or `api/[...].ts`)
+  - Migrations run during app initialization (`server.ts` or `api/[...].ts`)
+  - **Direct SQL execution**: Migrations are executed directly using PGLite's `exec()` method rather than Drizzle's `migratePGLite()` function
+    - `migratePGLite()` silently fails to apply migrations in some contexts
+    - Direct SQL execution ensures migrations are reliably applied
+    - Migration SQL files are read and executed in order, handling multiple statements per file
+
+**Test Environment**:
+- Uses per-worker file-based PGLite instances created in `vitest.setup.ts`
+- Migrations run once per worker before test files in that worker execute using direct SQL execution
+- All test files within the same worker share the same database instance and schema; different workers have isolated databases
 
 See [Backend Stack](/docs/architecture/backend-stack), [API Development](/docs/core-concepts/api-architecture), and [ADR 008: Database](/docs/adrs/008-database) for detailed migration flow and architecture.

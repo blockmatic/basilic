@@ -56,6 +56,56 @@ export const env = createEnv({
       .string()
       .length(64)
       .regex(/^[0-9a-fA-F]+$/, 'Must be a 32-byte hex string'),
+    // Auth configuration
+    BETTER_AUTH_SECRET: z.string().min(32),
+    BETTER_AUTH_URL: z
+      .string()
+      .optional()
+      .transform((val): string => {
+        // Use VERCEL_URL if available (Vercel deployments)
+        if (process.env.VERCEL_URL) {
+          return `https://${process.env.VERCEL_URL}`
+        }
+        // Fallback to explicit env var if set
+        if (val) {
+          return val
+        }
+        // Otherwise use localhost with PORT for local development
+        const port = process.env.PORT || '3000'
+        return `http://localhost:${port}`
+      })
+      .pipe(z.string().url()),
+    BETTER_AUTH_TRUSTED_ORIGINS: z
+      .string()
+      .default('')
+      .transform(val => {
+        const origins: string[] = []
+
+        // Include VERCEL_URL if available
+        if (process.env.VERCEL_URL) {
+          origins.push(`https://${process.env.VERCEL_URL}`)
+        }
+
+        // Include explicitly set origins from env var
+        const explicitOrigins = val
+          .split(',')
+          .map(origin => origin.trim())
+          .filter(Boolean)
+        origins.push(...explicitOrigins)
+
+        // Include localhost for local development (if not already included)
+        const port = process.env.PORT || '3000'
+        const localhostOrigin = `http://localhost:${port}`
+        if (!origins.includes(localhostOrigin)) {
+          origins.push(localhostOrigin)
+        }
+
+        return origins
+      }),
+    // Email configuration
+    RESEND_API_KEY: z.string().min(1),
+    EMAIL_FROM: z.string().email(),
+    EMAIL_FROM_NAME: z.string().default('App'),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

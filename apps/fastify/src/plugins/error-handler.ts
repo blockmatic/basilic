@@ -60,6 +60,7 @@ function redactBody(body: unknown): unknown {
     'apiKey',
     'accessToken',
     'refreshToken',
+    'idToken',
     'authorization',
   ]
 

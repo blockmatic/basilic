@@ -22,7 +22,6 @@ export { chainTypeSchema } from './chain-type'
 export interface ChainMetadata {
   chainType: ChainType
   chainId: number | string
-  dynamicNetworkId: string
   name: string
   viemChain?: Chain
   defaultRpcUrl?: string
@@ -34,7 +33,6 @@ const EVM_CHAINS: Record<number, ChainMetadata> = {
   1: {
     chainType: 'evm',
     chainId: 1,
-    dynamicNetworkId: '1',
     name: 'Ethereum Mainnet',
     viemChain: mainnet,
     defaultRpcUrl: 'https://cloudflare-eth.com',
@@ -42,7 +40,6 @@ const EVM_CHAINS: Record<number, ChainMetadata> = {
   11155111: {
     chainType: 'evm',
     chainId: 11155111,
-    dynamicNetworkId: '11155111',
     name: 'Ethereum Sepolia',
     viemChain: sepolia,
   },
@@ -50,14 +47,12 @@ const EVM_CHAINS: Record<number, ChainMetadata> = {
   42161: {
     chainType: 'evm',
     chainId: 42161,
-    dynamicNetworkId: '42161',
     name: 'Arbitrum One',
     viemChain: arbitrum,
   },
   421614: {
     chainType: 'evm',
     chainId: 421614,
-    dynamicNetworkId: '421614',
     name: 'Arbitrum Sepolia',
     viemChain: arbitrumSepolia,
   },
@@ -65,14 +60,12 @@ const EVM_CHAINS: Record<number, ChainMetadata> = {
   8453: {
     chainType: 'evm',
     chainId: 8453,
-    dynamicNetworkId: '8453',
     name: 'Base Mainnet',
     viemChain: base,
   },
   84532: {
     chainType: 'evm',
     chainId: 84532,
-    dynamicNetworkId: '84532',
     name: 'Base Sepolia',
     viemChain: baseSepolia,
   },
@@ -80,14 +73,12 @@ const EVM_CHAINS: Record<number, ChainMetadata> = {
   10: {
     chainType: 'evm',
     chainId: 10,
-    dynamicNetworkId: '10',
     name: 'Optimism',
     viemChain: optimism,
   },
   11155420: {
     chainType: 'evm',
     chainId: 11155420,
-    dynamicNetworkId: '11155420',
     name: 'Optimism Sepolia',
     viemChain: optimismSepolia,
   },
@@ -95,14 +86,12 @@ const EVM_CHAINS: Record<number, ChainMetadata> = {
   137: {
     chainType: 'evm',
     chainId: 137,
-    dynamicNetworkId: '137',
     name: 'Polygon',
     viemChain: polygon,
   },
   80002: {
     chainType: 'evm',
     chainId: 80002,
-    dynamicNetworkId: '80002',
     name: 'Polygon Amoy',
     viemChain: polygonAmoy,
   },
@@ -113,41 +102,38 @@ const SOLANA_CLUSTERS: Record<string, ChainMetadata> = {
   'mainnet-beta': {
     chainType: 'solana',
     chainId: 'mainnet-beta',
-    dynamicNetworkId: 'solana-mainnet',
     name: 'Solana Mainnet',
     defaultRpcUrl: 'https://api.mainnet-beta.solana.com',
   },
   devnet: {
     chainType: 'solana',
     chainId: 'devnet',
-    dynamicNetworkId: 'solana-devnet',
     name: 'Solana Devnet',
     defaultRpcUrl: 'https://api.devnet.solana.com',
   },
   testnet: {
     chainType: 'solana',
     chainId: 'testnet',
-    dynamicNetworkId: 'solana-testnet',
     name: 'Solana Testnet',
     defaultRpcUrl: 'https://api.testnet.solana.com',
   },
 }
 
-// Combined chain registry (Dynamic Network ID -> Metadata)
+// Combined chain registry (Chain ID -> Metadata)
 const CHAIN_REGISTRY = new Map<string, ChainMetadata>()
 
 // Populate registry from EVM chains
 Object.values(EVM_CHAINS).forEach(chain => {
-  CHAIN_REGISTRY.set(chain.dynamicNetworkId, chain)
+  CHAIN_REGISTRY.set(String(chain.chainId), chain)
 })
 
 // Populate registry from Solana clusters
 Object.values(SOLANA_CLUSTERS).forEach(chain => {
-  CHAIN_REGISTRY.set(chain.dynamicNetworkId, chain)
+  CHAIN_REGISTRY.set(String(chain.chainId), chain)
 })
 
 /**
- * Get chain type from chain ID or Dynamic network ID
+ * Get chain type from chain ID
  */
 export function getChainType(chainId: number | string): ChainType | undefined {
   const metadata = getChainMetadata(chainId)
@@ -155,13 +141,13 @@ export function getChainType(chainId: number | string): ChainType | undefined {
 }
 
 /**
- * Get chain metadata from chain ID or Dynamic network ID
+ * Get chain metadata from chain ID
  */
 export function getChainMetadata(chainId: number | string): ChainMetadata | undefined {
-  // Try as Dynamic network ID (string)
+  // Try as string chain ID
   if (isString(chainId)) {
-    const byDynamicId = CHAIN_REGISTRY.get(chainId)
-    if (byDynamicId) return byDynamicId
+    const byChainId = CHAIN_REGISTRY.get(chainId)
+    if (byChainId) return byChainId
 
     // Try as Solana cluster name
     const bySolanaCluster = SOLANA_CLUSTERS[chainId]
@@ -180,14 +166,6 @@ export function getChainMetadata(chainId: number | string): ChainMetadata | unde
   }
 
   return undefined
-}
-
-/**
- * Get Dynamic network ID from chain ID
- */
-export function getDynamicNetworkId(chainId: number | string): string | undefined {
-  const metadata = getChainMetadata(chainId)
-  return metadata?.dynamicNetworkId
 }
 
 /**

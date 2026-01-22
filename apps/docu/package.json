@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "scripts": {
     "build": "next build",
@@ -18,10 +18,10 @@
     "@repo/ui": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.10",
     "fumadocs-core": "16.4.7",
-    "fumadocs-mdx": "14.2.5",
+    "fumadocs-mdx": "14.2.6",
     "fumadocs-ui": "16.4.7",
     "lucide-react": "^0.562.0",
-    "next": "16.1.2",
+    "next": "16.1.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "zod": "^4.3.5"
@@ -30,8 +30,8 @@
     "@repo/eslint-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
-    "@types/node": "^25.0.9",
-    "@types/react": "^19.2.8",
+    "@types/node": "22.x",
+    "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
     "browserslist": "^4.28.1",
     "eslint": "^9.39.2",

@@ -27,11 +27,28 @@ jobs:
       # DATABASE_URL will be set by vitest.setup.ts to use PGLite
       # This fallback ensures env validation passes before tests run
       DATABASE_URL: postgresql://localhost/test
+      # Auth configuration
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      # Email configuration
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Set test environment variables with fallbacks
+        run: |
+          if [ -z "$BETTER_AUTH_SECRET" ]; then
+            echo "BETTER_AUTH_SECRET=test-secret-key-that-is-at-least-32-characters-long" >> $GITHUB_ENV
+          fi
+          if [ -z "$RESEND_API_KEY" ]; then
+            echo "RESEND_API_KEY=re_test_key" >> $GITHUB_ENV
+          fi
+          if [ -z "$EMAIL_FROM" ]; then
+            echo "EMAIL_FROM=test@example.com" >> $GITHUB_ENV
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

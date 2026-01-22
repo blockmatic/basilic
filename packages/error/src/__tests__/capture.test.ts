@@ -1,17 +1,21 @@
-import { logger } from '@repo/utils/logger'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { captureError as captureErrorBrowser } from '../browser/capture.js'
 import { captureError as captureErrorNextjs } from '../nextjs/capture.js'
 import { captureError as captureErrorNode } from '../node/capture.js'
 
-// Mock logger
+// Mock logger - use vi.hoisted to define mocks before hoisted mock factories
+const { mockLoggerChild, mockLoggerWarn } = vi.hoisted(() => ({
+  mockLoggerChild: vi.fn(() => ({
+    error: vi.fn(),
+    warn: vi.fn(),
+  })),
+  mockLoggerWarn: vi.fn(),
+}))
+
 vi.mock('@repo/utils/logger', () => ({
   logger: {
-    child: vi.fn(() => ({
-      error: vi.fn(),
-      warn: vi.fn(),
-    })),
-    warn: vi.fn(),
+    child: mockLoggerChild,
+    warn: mockLoggerWarn,
   },
 }))
 
@@ -118,7 +122,7 @@ describe('capture', () => {
         data: { extra: 'data' },
       })
 
-      expect(logger.child).toHaveBeenCalledWith({
+      expect(mockLoggerChild).toHaveBeenCalledWith({
         errorCode: 'SERVER_ERROR',
         label: 'Test Label',
         app: 'test',

@@ -134,6 +134,7 @@ export default defineConfig({
   test: {
     include: ['**/*.{test,spec,e2e-spec}.?(c|m)[jt]s?(x)'],
     setupFiles: ['./vitest.setup.ts'],
+    globalSetup: ['./vitest.global-setup.ts'],
     globals: true,
     environment: 'node',
     testTimeout: 30000, // 30 seconds for API calls
