@@ -17,6 +17,14 @@ const root = pino({
   },
 })
 
+/**
+ * Wraps a Pino logger instance to match the Logger interface.
+ *
+ * Converts Pino's logging API to the unified Logger interface used across
+ * the codebase. Handles optional data parameter correctly.
+ *
+ * @internal
+ */
 const wrap = (x: pino.Logger): Logger => ({
   debug: (data, msg) => {
     if (data !== undefined) {
@@ -49,4 +57,22 @@ const wrap = (x: pino.Logger): Logger => ({
   child: bindings => wrap(x.child(bindings)),
 })
 
+/**
+ * Node.js/server-side logger implementation.
+ *
+ * Uses Pino for structured logging with automatic PII redaction. Configure via
+ * `LOG_ENABLED` and `LOG_LEVEL` environment variables. Automatically redacts
+ * sensitive fields like passwords, tokens, and authorization headers.
+ *
+ * @example
+ * ```ts
+ * import { logger } from '@repo/utils/logger'
+ *
+ * logger.info({ userId: '123', action: 'login' }, 'User logged in')
+ * logger.error({ err: error, requestId: 'abc' }, 'Request failed')
+ *
+ * const requestLogger = logger.child({ requestId: 'abc' })
+ * requestLogger.debug('Processing request')
+ * ```
+ */
 export const logger: Logger = wrap(root)

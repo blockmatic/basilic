@@ -1,13 +1,6 @@
-# Git Push (sync with origin)
+Push current branch to origin and sync with remote updates, including all changes such as untracked files, after removing any debug instrumentations.
 
-## Overview
-Push current branch to origin and sync with remote updates.
-
-## Steps
-1. **Fetch and rebase onto latest main (optional but recommended)**: `git fetch origin`, `git rebase origin/main || git rebase --abort` (if not on main, rebase feature branch onto latest main)
-2. **Push current branch**: `git push -u origin HEAD`
-3. **If push rejected due to remote updates**: Rebase and push: `git pull --rebase && git push`
-
-## Notes
-- Prefer `rebase` over `merge` for linear history
-- If you need to force push after rebase: ask user if they want to force push: `git push --force-with-lease`
+1. **Check changes**: Look at the current git changes to understand what will be pushed
+2. **Remove debug code**: Remove all debug instrumentations that you've added before pushing
+3. **Stage and commit**: Stage all changes including untracked files, create commit with conventional commit message summarizing the changes nicely
+4. **Push**: Push the branch to the remote repository

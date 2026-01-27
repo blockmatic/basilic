@@ -1,13 +1,18 @@
 import { Body, Container, Heading, Preview, Text } from '@react-email/components'
-import { Footer } from '../components/footer'
-import { Logo } from '../components/logo'
-import { EmailThemeProvider, getEmailInlineStyles, getEmailThemeClasses } from '../components/theme'
+import 'react'
+import { Footer } from '../components/footer.js'
+import { Logo } from '../components/logo.js'
+import {
+  EmailThemeProvider,
+  getEmailInlineStyles,
+  getEmailThemeClasses,
+} from '../components/theme.js'
 
 interface Props {
   fullName?: string
 }
 
-export const WelcomeEmail = ({ fullName = '' }: Props) => {
+export function WelcomeEmail({ fullName = '' }: Props) {
   const firstName = fullName ? fullName.split(' ').at(0) : ''
   const text = `${firstName ? `Hi ${firstName}, ` : ''}Welcome! We're excited to have you.`
   const themeClasses = getEmailThemeClasses()

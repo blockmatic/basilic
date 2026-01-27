@@ -1,45 +1,37 @@
 ---
+description: TypeScript conventions
 alwaysApply: true
 ---
-# TypeScript Rules
 
-## Project Context
-- **TypeScript**: v5.9.3 (strict mode)
-- **ts-reset**: `@total-typescript/ts-reset` configured globally
-- **Module system**: ESM with bundler/Node resolution
-- **Monorepo**: Shared packages via `@repo/*` with subpath exports
+- TypeScript strict mode
+- Never use `any`
+- Use ts-reset (`@total-typescript/ts-reset`)
+- `no-unsafe-*` disabled
+- ESM with bundler/Node resolution
+- Never use CommonJS (`__dirname`, `__filename`, `require`, `module.exports`)
+- ESM: `fileURLToPath(import.meta.url)` with descriptive names (`scriptDir`, not `__dirname`)
+- Monorepo with `@repo/*` subpath exports
+- Subpath exports (`@repo/utils/async`)
+- Named exports (exception: Next.js pages/layouts)
+- Type-only (`import type`)
+- Interfaces for object shapes
+- Types for unions/utilities/mapped/Zod inference
+- Avoid enums (use const objects/union types)
+- Infer types when possible (`type User = z.infer<typeof userSchema>`)
+- Always camelCase variables
+- Booleans with aux verbs (`isLoading`, `hasError`)
+- Lowercase-with-dashes directories
+- RORO (`({ name }: Input) => ({ id, name })`)
+- Functional (avoid classes/decorators)
+- Use `function` keyword for named function definitions, arrow functions for inline functions and React component methods
+- Early returns (guard clauses): reduces nesting, keep success path at same indentation level, avoid else after early returns
+- Single-line (`if (!value) return null`)
+- Explicit return types for exported functions/API handlers
+- Zod-first (validate at boundaries)
+- Colocate schemas (`app/api/users/schema.ts`)
+- Validation functions return results (never throw)
+- Avoid unnecessary runtime validations in functions, we validate at build time
+- Prefer inline expressions, minimize code without sacrificing readability
+- No intermediate vars unless reused (`process(fetch())` not `const data = fetch(); process(data)`). Exceptions: destructuring, readability, error handling
+- Lodash per-function (`import isEmpty from "lodash-es/isEmpty"`)
 
-## Type Declarations
-- **Interfaces** for object shapes, **types** for unions/utilities/mapped/Zod inference
-- **Avoid enums**: use const objects or union types
-- **Infer when possible**: only declare when reusing
-
-## Naming
-- **Variables**: camelCase, booleans with aux verbs (`isLoading`, `hasError`, `canEdit`)
-- **Directories**: lowercase-with-dashes (`components/auth-wizard`)
-- **Exports**: named (exception: Next.js pages/layouts require default)
-
-## Function Patterns
-- **RORO**: `({ name, email }: Input) => ({ id, name, email })`
-- **Functional**: avoid classes/decorators (exception: framework requirements)
-- **Single-line**: `if (!value) return null`, `const double = (x: number) => x * 2`
-- **Early returns**: guard clauses, avoid unnecessary `else`
-
-## Imports
-- **Type-only**: `import type` for types
-- **Subpath exports**: Always use subpaths (`@repo/utils/async`, `@repo/error/nextjs`)
-- **Lodash**: `import isEmpty from "lodash-es/isEmpty"` (per-function imports)
-
-## Type Safety
-- **Zod-first**: Validate at boundaries (API routes, forms, external APIs)
-- **Infer types**: `type User = z.infer<typeof userSchema>`
-- **Colocate schemas**: `app/api/users/schema.ts` (feature-specific)
-- **Disabled TS ESLint rules**: `no-unsafe-*` disabled for Zod-first validation
-
-## Architecture
-- **Explicit return types**: Required for exported functions/API handlers
-- **Validation functions**: Return result objects, never throw
-
-## Related
-- @.cursor/rules/base/linting.mdc - Linting architecture
-- @.cursor/rules/base/error-handling.mdc - Error patterns

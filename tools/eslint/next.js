@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import pluginNext from '@next/eslint-plugin-next'
+import pluginCheckFile from 'eslint-plugin-check-file'
 import pluginImport from 'eslint-plugin-import'
 import pluginReact from 'eslint-plugin-react'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
@@ -7,6 +8,17 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 import { config as baseConfig } from './base.js'
+
+// Note: eslint-plugin-react-server-components has ESM compatibility issues
+// Temporarily disabled until fixed upstream
+// See: https://github.com/Pyr33x/eslint-plugin-react-server-components/issues
+let pluginReactServer = null
+try {
+  pluginReactServer = await import('eslint-plugin-react-server-components')
+  pluginReactServer = pluginReactServer.default || pluginReactServer
+} catch {
+  // Plugin not available or has compatibility issues
+}
 
 /**
  * ESLint configuration for Next.js applications - Correctness-only rules.
@@ -46,6 +58,8 @@ export const nextJsConfig = [
   {
     plugins: {
       'react-hooks': pluginReactHooks,
+      ...(pluginReactServer && { 'react-server-components': pluginReactServer }),
+      'check-file': pluginCheckFile,
       import: pluginImport,
     },
     settings: { react: { version: 'detect' } },
@@ -98,8 +112,39 @@ export const nextJsConfig = [
       // Enforce one component per file - helps agents maintain component separation
       // Allow stateless (functional) components in the same file for utility/helper components
       'react/no-multi-comp': ['error', { ignoreStateless: true }],
+      // Enforce function declaration syntax for named components
+      'react/function-component-definition': [
+        'error',
+        {
+          namedComponents: 'function-declaration',
+          unnamedComponents: 'function-expression',
+        },
+      ],
       // Enforce named exports, except for Next.js pages and layouts
       'import/no-default-export': 'error',
+      // Enforce kebab-case naming for hook files
+      'check-file/filename-naming-convention': [
+        'error',
+        {
+          '**/**/hooks/**/*.{ts,tsx}': 'KEBAB_CASE',
+        },
+        {
+          ignoreMiddleExtensions: true,
+        },
+      ],
+      // Detect manual query key construction - use @lukemorales/query-key-factory instead
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Property[key.name="queryKey"] > ArrayExpression',
+          message:
+            'Use query key factory (@lukemorales/query-key-factory) instead of manual query key construction.',
+        },
+      ],
+      // Detect unnecessary 'use client' directives (only if plugin is available)
+      ...(pluginReactServer && {
+        'react-server-components/no-unnecessary-use-client': 'warn',
+      }),
     },
   },
   // Allow default exports for Next.js pages and layouts
@@ -121,6 +166,21 @@ export const nextJsConfig = [
     files: ['**/components/**/*.{ts,tsx}'],
     rules: {
       'max-lines': 'off',
+    },
+  },
+  // Allow manual query keys in query factory files (this is where we define them)
+  {
+    files: ['**/queries/**/*.ts', '**/src/queries/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': 'off',
+    },
+  },
+  // Allow manual query keys in generated hooks from OpenAPI
+  {
+    files: ['**/packages/react/src/hooks/**/*.ts', 'src/hooks/**/*.ts', 'hooks/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': 'off',
+      'check-file/filename-naming-convention': 'off', // Generated hooks use camelCase
     },
   },
   {

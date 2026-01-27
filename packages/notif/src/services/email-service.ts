@@ -62,7 +62,7 @@ const buildEmailPayload = async ({ email }: { email: EmailInput }): Promise<Crea
   const template = getTemplate(templateName)
   const html = await render(template(email.data as TemplatePropsMap[typeof templateName]))
 
-  const recipients = email.to || [email.user.email]
+  const recipients = Array.isArray(email.to) && email.to.length > 0 ? email.to : [email.user.email]
 
   const fromAddress = email.from || env.EMAIL_FROM
   if (!fromAddress) {
@@ -77,8 +77,8 @@ const buildEmailPayload = async ({ email }: { email: EmailInput }): Promise<Crea
     subject: email.subject,
     html,
     headers: {
-      'X-Entity-Ref-ID': nanoid(),
       ...email.headers,
+      'X-Entity-Ref-ID': email.headers?.['X-Entity-Ref-ID'] ?? nanoid(),
     },
   }
 

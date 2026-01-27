@@ -1,50 +1,14 @@
 ---
 description: Web3 integration patterns using Wagmi v3
+glob: "apps/next/**/*.{ts,tsx}"
 alwaysApply: false
 ---
-# Wagmi v3 Rules
 
 ## Core Principles
-- Use Wagmi v3.x (latest v3.3.2) hooks and configurations consistently
-- Handle wallet connection states properly
-- Reference @.cursor/rules/web3/viem.mdc for address validation patterns
+Wagmi v3.x (latest v3.3.2), handle wallet connection states, see @.cursor/rules/web3/viem.mdc for address validation
 
 ## Custom Hooks
-Create specialized hooks for specific contract interactions:
-```tsx
-import { UniswapV3QuoterV2Abi } from '@repo/core/abis'
-import type { AbiParametersToPrimitiveTypes, Address, ExtractAbiFunction } from 'abitype'
-import { useAccount, useWriteContract } from 'wagmi'
-
-export function useUniswapQuote({ quoterAddress }: { quoterAddress: Address }) {
-  const { address: account } = useAccount()
-  const { writeContract, ...o } = useWriteContract()
-
-  const getQuote = async (args: QuoteInputType) => {
-    if (!account) throw new Error('Wallet not connected')
-
-    const result = await writeContract({
-      address: quoterAddress,
-      abi: UniswapV3QuoterV2Abi,
-      functionName: 'quoteExactInput',
-      args,
-      account,
-      chain: undefined, // Let wagmi infer the current chain
-    })
-    return result
-  }
-
-  return { getQuote, ...o }
-}
-
-export type QuoteInputType = AbiParametersToPrimitiveTypes<
-  ExtractAbiFunction<typeof UniswapV3QuoterV2Abi, 'quoteExactInput'>['inputs']
->
-```
+Create specialized hooks for contract interactions. Use `useAccount`, `useWriteContract`, extract ABI types with `AbiParametersToPrimitiveTypes` and `ExtractAbiFunction`, check account connection, let wagmi infer chain
 
 ## Error Handling
-- Consider network conditions and gas price fluctuations
-
-## Related
-- @.cursor/rules/web3/viem.mdc - Address validation and transaction utilities (v2.44.4)
-- @.cursor/rules/web3/multichain.mdc - Multichain address validation coordination
+Consider network conditions and gas price fluctuations

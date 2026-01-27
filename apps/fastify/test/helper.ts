@@ -9,9 +9,9 @@ export type TestContext = {
   after: typeof test.after
 }
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const AppPath = path.join(__dirname, '..', 'src', 'app.ts')
+const helperFile = fileURLToPath(import.meta.url)
+const helperDir = path.dirname(helperFile)
+const AppPath = path.join(helperDir, '..', 'src', 'app.ts')
 
 // Fill in this config with all the configurations
 // needed for testing the application

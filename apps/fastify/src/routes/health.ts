@@ -1,11 +1,10 @@
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { getInitializationStatus } from '../lib/init-state.js'
+import { isDbReady } from '../db/index.js'
 
 export const HealthResponseSchema = Type.Object({
   ok: Type.Boolean(),
-  initialized: Type.Boolean(),
-  now: Type.String({ format: 'date-time' }),
+  dbReady: Type.Boolean(),
 })
 
 const healthRoutes: FastifyPluginAsync = async fastify => {
@@ -17,17 +16,21 @@ const healthRoutes: FastifyPluginAsync = async fastify => {
         description: 'Health check endpoint',
         summary: 'Returns server health status with current ISO datetime',
         tags: ['health'],
+        security: [],
         response: {
           200: HealthResponseSchema,
         },
       },
     },
-    async (_request, reply) => {
-      const initialized = getInitializationStatus()
+    async (request, reply) => {
+      fastify.log.info(
+        { origin: request.headers.origin, url: request.url },
+        'Health check request received',
+      )
+      const dbReady = isDbReady()
       return reply.code(200).send({
         ok: true,
-        initialized,
-        now: new Date().toISOString(),
+        dbReady,
       })
     },
   )

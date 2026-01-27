@@ -14,14 +14,16 @@
     "@next/eslint-plugin-next": "^16.1.4",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
-    "eslint": "^9.39.2",
+    "@typescript/native-preview": "7.0.0-dev.20260124.1",
+    "eslint": "*",
+    "eslint-plugin-check-file": "^2.8.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-server-components": "^1.2.0",
     "eslint-plugin-turbo": "^2.7.5",
     "globals": "^17.0.0",
-    "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.1"
   }
 }

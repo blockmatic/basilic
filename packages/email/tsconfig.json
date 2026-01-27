@@ -3,7 +3,9 @@
   "include": ["emails", "components", "render.ts", "../../tools/typescript/reset.d.ts"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "baseUrl": ".",
+    "paths": {
+      "*": ["./*"]
+    },
     "outDir": "dist",
     "rootDir": "."
   }

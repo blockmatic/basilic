@@ -1,4 +1,4 @@
-# Skill: solidity-development
+# Skill: solidity
 
 ## Scope
 
@@ -11,8 +11,17 @@
 - OpenZeppelin Contracts integration
 
 Does NOT cover:
-- Frontend wallet integration (see `web3-frontend` skill)
-- Solana development (see `solana` skill)
+- Frontend wallet integration (see wagmi skill)
+- Solana development (see solana skill)
+
+## Assumptions
+
+- Solidity 0.8.24
+- Foundry (forge, cast, anvil) for testing and deployment
+- viem v2.44.4 for client interactions
+- OpenZeppelin Contracts v5.x
+- TypeScript v5+ for client code
+- Node.js 18+
 
 ## Principles
 
@@ -28,27 +37,35 @@ Does NOT cover:
 
 ## Constraints
 
-- MUST use Solidity 0.8.24
-- MUST use Foundry for testing and deployment (not Hardhat or other tools)
-- MUST follow CEI pattern for external calls (prevents reentrancy)
-- MUST validate inputs (zero address checks, bounds checking)
-- MUST use access control on admin functions
-- MUST use viem v2 for client interactions
-- MUST validate addresses with `getAddress()` from viem (never cast directly)
-- SHOULD use OpenZeppelin Contracts via remappings (`@openzeppelin/=lib/openzeppelin-contracts/`)
-- SHOULD use custom errors instead of require strings (gas efficient)
-- SHOULD use EIP-1559 transactions (type 2) for predictable fees
-- SHOULD write fuzz tests for functions with numeric inputs
-- SHOULD write invariant tests for system-wide properties
-- SHOULD cache storage reads in memory when used in loops
-- SHOULD use `calldata` for read-only function parameters
-- SHOULD use `unchecked` blocks for safe math operations (loop counters, bounded increments)
-- AVOID storage reads in loops (cache first)
-- AVOID unnecessary overflow checks when overflow is impossible
-- AVOID contract size > 24KB (split into libraries if needed)
-- AVOID relying on SSTORE refunds (EIP-3529 removed them)
-- AVOID trusting external calls without validation
-- AVOID using `block.timestamp` for critical logic (miners can manipulate)
+### MUST
+
+- Use Solidity 0.8.24
+- Use Foundry for testing and deployment (not Hardhat)
+- Follow CEI pattern for external calls (prevents reentrancy)
+- Validate inputs (zero address checks, bounds checking)
+- Use access control on admin functions
+- Use viem v2 for client interactions
+- Validate addresses with `getAddress()` from viem (never cast directly)
+
+### SHOULD
+
+- Use OpenZeppelin Contracts via remappings (`@openzeppelin/=lib/openzeppelin-contracts/`)
+- Use custom errors instead of require strings (gas efficient)
+- Use EIP-1559 transactions (type 2) for predictable fees
+- Write fuzz tests for functions with numeric inputs
+- Write invariant tests for system-wide properties
+- Cache storage reads in memory when used in loops
+- Use `calldata` for read-only function parameters
+- Use `unchecked` blocks for safe math operations (loop counters, bounded increments)
+
+### AVOID
+
+- Storage reads in loops (cache first)
+- Unnecessary overflow checks when overflow is impossible
+- Contract size > 24KB (split into libraries if needed)
+- Relying on SSTORE refunds (EIP-3529 removed them)
+- Trusting external calls without validation
+- Using `block.timestamp` for critical logic (miners can manipulate)
 
 ## Foundry Configuration
 

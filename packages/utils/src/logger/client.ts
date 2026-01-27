@@ -14,9 +14,19 @@ const rank: Record<Exclude<LogLevel, 'silent'>, number> = {
   error: 40,
 }
 
+/**
+ * Checks if a log level should be emitted based on current log level.
+ *
+ * @internal
+ */
 const should = (kind: Exclude<LogLevel, 'silent'>): boolean =>
   level !== 'silent' && rank[kind] >= rank[level as Exclude<LogLevel, 'silent'>]
 
+/**
+ * Emits a log message to the console.
+ *
+ * @internal
+ */
 const emit = (kind: Exclude<LogLevel, 'silent'>, data?: unknown, msg?: string): void => {
   if (!enabled) return
   if (!should(kind)) return
@@ -27,6 +37,11 @@ const emit = (kind: Exclude<LogLevel, 'silent'>, data?: unknown, msg?: string): 
   consoleMethod?.(msg ?? '', data ?? '')
 }
 
+/**
+ * Creates a child logger with merged bindings.
+ *
+ * @internal
+ */
 const makeChild = (bindings: Record<string, unknown>): Logger => {
   const merge = (data?: unknown) =>
     data && typeof data === 'object' && !Array.isArray(data)
@@ -42,4 +57,22 @@ const makeChild = (bindings: Record<string, unknown>): Logger => {
   }
 }
 
+/**
+ * Browser/client-side logger implementation.
+ *
+ * Uses `console` API for logging. Logging is disabled by default in production
+ * builds. Configure via `NEXT_PUBLIC_LOG_ENABLED` and `NEXT_PUBLIC_LOG_LEVEL`
+ * environment variables.
+ *
+ * @example
+ * ```ts
+ * import { logger } from '@repo/utils/logger'
+ *
+ * logger.info({ userId: '123' }, 'User logged in')
+ * logger.error({ err: error }, 'Request failed')
+ *
+ * const requestLogger = logger.child({ requestId: 'abc' })
+ * requestLogger.debug('Processing request')
+ * ```
+ */
 export const logger: Logger = makeChild({})

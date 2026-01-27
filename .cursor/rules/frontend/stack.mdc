@@ -1,27 +1,18 @@
 ---
 description: Preferred frontend technology stack and library usage patterns
-alwaysApply: false
+alwaysApply: true
 ---
-# Frontend Stack
 
-See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete library documentation and technology choices.
+See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete documentation
 
 ## Core Libraries
-- **@tanstack/react-query**: Primary data fetching (use `@lukemorales/query-key-factory`)
-- **@repo/react**: Generated React Query hooks from Hey API clients
-- **nuqs**: URL-based state for shareable UI state
-- **zod**: Primary schema validation tool
-- **@repo/lib**: Utility library (prefer over custom implementations)
-- **lodash-es**: Common operations (per-function imports)
-- **react-use**: `useAsyncFn` for one-off async operations
+- `@tanstack/react-query`: Data fetching/async (use `@lukemorales/query-key-factory`)
+- `@repo/react`: Generated React Query hooks from Hey API clients
+- `nuqs`: URL-based state (search/filters/tabs/pagination)
+- `zod`: Schema validation
+- `@repo/lib`: Utility library
+- `lodash-es`: Common operations (per-function imports)
+- `ahooks`: `useSetState` (grouped state), `useLocalStorageState` (localStorage)
 
 ## Essential Patterns
-- **Query Key Factory**: Use `@lukemorales/query-key-factory` for centralized, type-safe query keys
-- **nuqs**: Use for URL-shareable state (search, filters, tabs, pagination)
-- **API Client**: Use `@repo/core` for API client creation
-
-See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete library documentation, usage patterns, and best practices.
-
-## Related
-- @apps/docu/content/docs/architecture/frontend-stack.mdx - Complete library documentation and technology choices
-- @.cursor/rules/frontend/react-hooks.mdc - Hooks patterns
+Query Key Factory (see @.cursor/rules/frontend/react-hooks.mdc), nuqs for URL-shareable state, `@repo/core` for API clients

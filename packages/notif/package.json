@@ -21,7 +21,7 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "format": "biome format --write .",
-    "checktypes": "tsc --noEmit"
+    "checktypes": "tsgo --noEmit"
   },
   "dependencies": {
     "@repo/email": "workspace:*",
@@ -37,10 +37,10 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@t3-oss/env-core": "^0.13.10",
-    "@types/node": "22.x",
-    "@types/react": "^19.2.9",
-    "eslint": "^9.39.2",
+    "@types/node": "*",
+    "@types/react": "*",
+    "eslint": "*",
     "react": "^19.2.3",
-    "typescript": "^5.9.3"
+    "@typescript/native-preview": "7.0.0-dev.20260124.1"
   }
 }

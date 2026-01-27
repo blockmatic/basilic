@@ -2,28 +2,17 @@
  * Vitest Global Setup
  *
  * Runs once before ALL test files/suites.
- * Sets up environment variables for tests.
+ * Sets up minimal environment variables for tests.
  * Database setup and migrations are handled per-worker in vitest.setup.ts.
+ *
+ * Note: Most test defaults are now handled by `src/lib/env.ts` which loads `.env.test`
+ * and applies test-only defaults. This file only sets minimal, deterministic overrides.
  */
 
-// Set all required environment variables before env validation
-// This must happen before any imports that use env.ts
+// Set NODE_ENV to 'test' to signal test context (env.ts uses this to detect test mode)
 process.env.NODE_ENV = 'test'
-// Always use test database URL in test environment, overriding .env file
-process.env.DATABASE_URL = 'postgresql://localhost/test'
-process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY || 'test-openai-key'
-process.env.ENCRYPTION_KEY =
-  process.env.ENCRYPTION_KEY || '0000000000000000000000000000000000000000000000000000000000000000'
-// Better Auth configuration for tests
-process.env.BETTER_AUTH_SECRET =
-  process.env.BETTER_AUTH_SECRET || 'test-secret-key-that-is-at-least-32-characters-long'
-process.env.BETTER_AUTH_URL =
-  process.env.BETTER_AUTH_URL || `http://localhost:${process.env.PORT || 3000}`
-process.env.BETTER_AUTH_TRUSTED_ORIGINS = process.env.BETTER_AUTH_TRUSTED_ORIGINS || ''
-// Email configuration for tests
-process.env.RESEND_API_KEY = process.env.RESEND_API_KEY || 're_test_key'
-process.env.EMAIL_FROM = process.env.EMAIL_FROM || 'test@example.com'
-process.env.EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || 'Test App'
+// Force fake email provider for all tests (deterministic override)
+process.env.USE_FAKE_EMAIL = 'true'
 
 import type { GlobalSetupContext } from 'vitest/node'
 

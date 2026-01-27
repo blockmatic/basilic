@@ -1,0 +1,11 @@
+---
+description: Guidelines for creating effective Cursor rule files
+glob: ".cursor/rules/**/*.mdc"
+alwaysApply: true
+---
+
+- Modular: Separate files per language/domain, not monolithic
+- Scoped: Use glob patterns (`*` for global, specific patterns for targeted). Globs can be comma-separated string or YAML array
+- Auto-attach: Leverage globs so rules apply only where relevant
+- Brutally concise: Patterns, standards, conventions, not verbose examples, only h2 for sections if required, no h1 title, avoid vague advice
+- Reference internal files: Use `@` syntax to pull in existing repo docs/rules instead of re-explaining

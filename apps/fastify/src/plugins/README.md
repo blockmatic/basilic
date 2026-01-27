@@ -17,10 +17,9 @@ Check out:
 
 ## Auth Plugin
 
-The `auth.ts` plugin integrates Better Auth with Fastify:
+The `auth.ts` plugin provides JWT-based session validation:
 
-- **Session Middleware**: Attaches session to `request.session` on every request
-- **Auth Routes**: Mounts Better Auth routes at `/api/auth/*`
+- **Session Middleware**: Attaches session to `request.session` on every request via Bearer token validation
 - **Request Extension**: Extends `FastifyRequest` with `session` property
 
 ### Usage
@@ -38,23 +37,4 @@ fastify.get('/protected', async (request, reply) => {
 })
 ```
 
-### Helper Functions
-
-Use helper functions from `src/lib/auth-helpers.ts`:
-
-- `requireAuth(request)` - Throws if no session, returns session otherwise
-- `getOptionalAuth(request)` - Returns session or null
-- `getUserId(request)` - Extracts user ID from session
-
-```typescript
-import { requireAuth } from '../lib/auth-helpers.js'
-
-fastify.get('/wallets', async (request) => {
-  const { user } = requireAuth(request)
-  // user.id is guaranteed to exist
-})
-```
-
-### Better Auth Instance
-
-The Better Auth instance is available via `fastify.auth` after the plugin is registered. However, it's recommended to use the helper functions and session middleware instead of accessing the auth instance directly.
+The plugin validates Bearer tokens, verifies JWTs, and loads session data from the database. Routes should check `request.session` directly to determine authentication status.

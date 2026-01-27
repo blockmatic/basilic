@@ -13,17 +13,43 @@ import {
   polygonAmoy,
   sepolia,
 } from 'viem/chains'
-import type { ChainType } from './chain-type'
+import type { ChainType } from './chain-type.js'
 
 export type { ChainType }
-export * from './alchemy'
-export { chainTypeSchema } from './chain-type'
+export * from './alchemy.js'
+export { chainTypeSchema } from './chain-type.js'
 
+/**
+ * Metadata for a blockchain network.
+ *
+ * Contains information about the chain type, ID, name, and optional
+ * Viem chain configuration and default RPC URL.
+ *
+ * @example
+ * ```ts
+ * const metadata: ChainMetadata = {
+ *   chainType: 'evm',
+ *   chainId: 1,
+ *   name: 'Ethereum Mainnet',
+ *   viemChain: mainnet,
+ *   defaultRpcUrl: 'https://cloudflare-eth.com',
+ * }
+ * ```
+ */
 export interface ChainMetadata {
+  /** Type of blockchain (e.g., 'evm', 'solana') */
   chainType: ChainType
+
+  /** Chain ID (number for EVM, string for Solana clusters) */
   chainId: number | string
+
+  /** Human-readable chain name */
   name: string
+
+  /** Optional Viem chain configuration (for EVM chains) */
   viemChain?: Chain
+
+  /** Optional default RPC endpoint URL */
   defaultRpcUrl?: string
 }
 
@@ -133,7 +159,16 @@ Object.values(SOLANA_CLUSTERS).forEach(chain => {
 })
 
 /**
- * Get chain type from chain ID
+ * Gets the chain type from a chain ID.
+ *
+ * @param chainId - Chain ID (number for EVM, string for Solana clusters)
+ * @returns Chain type if found, undefined otherwise
+ *
+ * @example
+ * ```ts
+ * const chainType = getChainType(1) // Returns: 'evm'
+ * const solanaType = getChainType('mainnet-beta') // Returns: 'solana'
+ * ```
  */
 export function getChainType(chainId: number | string): ChainType | undefined {
   const metadata = getChainMetadata(chainId)
@@ -141,7 +176,22 @@ export function getChainType(chainId: number | string): ChainType | undefined {
 }
 
 /**
- * Get chain metadata from chain ID
+ * Gets full chain metadata from a chain ID.
+ *
+ * Supports both EVM chains (numeric IDs) and Solana clusters (string names).
+ * Returns undefined if the chain is not supported.
+ *
+ * @param chainId - Chain ID (number for EVM, string for Solana clusters)
+ * @returns Chain metadata if found, undefined otherwise
+ *
+ * @example
+ * ```ts
+ * const metadata = getChainMetadata(1)
+ * // Returns: { chainType: 'evm', chainId: 1, name: 'Ethereum Mainnet', ... }
+ *
+ * const solanaMetadata = getChainMetadata('mainnet-beta')
+ * // Returns: { chainType: 'solana', chainId: 'mainnet-beta', name: 'Solana Mainnet', ... }
+ * ```
  */
 export function getChainMetadata(chainId: number | string): ChainMetadata | undefined {
   // Try as string chain ID
@@ -169,7 +219,17 @@ export function getChainMetadata(chainId: number | string): ChainMetadata | unde
 }
 
 /**
- * Check if chain is supported
+ * Checks if a chain ID is supported by the registry.
+ *
+ * @param chainId - Chain ID (number for EVM, string for Solana clusters)
+ * @returns True if the chain is supported, false otherwise
+ *
+ * @example
+ * ```ts
+ * if (isSupportedChain(chainId)) {
+ *   // Chain is supported, proceed with operations
+ * }
+ * ```
  */
 export function isSupportedChain(chainId: number | string): boolean {
   return getChainMetadata(chainId) !== undefined

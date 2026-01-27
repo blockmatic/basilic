@@ -38,14 +38,30 @@ pnpm install
 
 ### Running the Application
 
-```bash
-# From monorepo root (runs all apps)
-pnpm dev
+**Recommended: From monorepo root** (runs all apps with watch mode):
 
-# Or from this directory
+```bash
+# From monorepo root
+pnpm dev
+```
+
+This starts all development servers including:
+- Fastify API server (with OpenAPI generation)
+- Next.js frontend (this app)
+- Package watchers for automatic rebuilds
+
+**Alternative: Run directly** (requires building dependencies first):
+
+```bash
+# Build required packages first
+pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/utils
+
+# Then run from this directory
 cd apps/next
 pnpm dev
 ```
+
+**Note**: When running directly, you must rebuild dependencies (`@repo/core`, `@repo/react`, `@repo/error`, `@repo/utils`) whenever they change. Using `pnpm dev` from the root handles this automatically with watch mode.
 
 The application will be available at `http://localhost:3000` (or the next available port).
 
@@ -68,15 +84,15 @@ pnpm build
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
-- `pnpm test` - Run unit tests
+- `pnpm test` - Run component tests (Vitest)
 - `pnpm test:watch` - Run tests in watch mode
+- `pnpm test:e2e` - Run E2E tests (Playwright)
+- `pnpm test:e2e:ui` - Run E2E tests with UI
+- `pnpm test:e2e:debug` - Debug E2E tests
 
 ### Environment Variables
 
 Optional environment variables (see `.env-example`):
-
-- `NEXT_PUBLIC_SENTRY_DSN` - Sentry DSN for error tracking
-- `NEXT_PUBLIC_SENTRY_ENVIRONMENT` - Sentry environment name
 
 ## Project Structure
 
@@ -96,12 +112,50 @@ apps/next/
 
 ## Providers
 
-The app uses two main providers:
+The app uses the following providers:
 
+- **QueryClientProvider** - TanStack Query for data fetching and caching
+- **ReactApiProvider** - API client context from `@repo/react` with auth token injection
 - **NuqsAdapter** - URL state management for query parameters
 - **NextThemesProvider** - Theme management (light/dark mode)
 
 See `components/providers.tsx` for the provider setup.
+
+## Authentication
+
+This app implements a Backend-for-Frontend (BFF) pattern for authentication:
+
+**BFF Auth Proxy** (`app/api/auth/[...path]/route.ts`):
+- Proxies authentication requests to Fastify API
+- Stores JWT tokens in HttpOnly cookies (secure, XSS-protected)
+- Automatically injects `Authorization: Bearer` headers in API requests
+- Handles magic link verification and token storage
+
+**Authentication Flow:**
+1. User clicks magic link from email
+2. Next.js BFF fetches JWT from Fastify (`format=jwt`)
+3. BFF stores JWT in HttpOnly cookie
+4. Server Components and API routes read cookie and inject bearer header
+5. Fastify validates bearer token and resolves to session
+
+See [Authentication Architecture](@apps/docu/content/docs/architecture/authentication.mdx) for complete details.
+
+## Testing
+
+This app uses multiple testing approaches:
+
+- **Component Tests** (`**/*.spec.tsx`): Vitest with Testing Library - UI-focused tests that may use `fetchMock` for performance
+- **E2E Tests** (`e2e/**/*.spec.ts`): Playwright - Full integration tests using real Fastify server and Next.js server
+
+**E2E Test Setup:**
+
+E2E tests automatically start both servers:
+- Fastify API server on port 3001 (dev mode locally, start mode in CI)
+- Next.js frontend on port 3000
+
+Tests wait for both servers to be ready before running. All E2E tests use real infrastructure - no mocks.
+
+See [Frontend Testing Documentation](@apps/docu/content/docs/testing/frontend-testing.mdx) for complete testing patterns and examples.
 
 ## Vercel Deployment
 

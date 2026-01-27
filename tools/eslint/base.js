@@ -60,10 +60,115 @@ export const config = [
 
       // Logic rules - PRESERVE (DO NOT TOUCH)
       'turbo/no-undeclared-env-vars': 'warn',
-      // Allow single-line if statements without brackets
-      curly: 'off',
+      // Enforce curly braces for multi-line blocks, allow single-line without braces
+      curly: ['error', 'multi-line', 'consistent'],
       // Prefer interfaces over types for object definitions
       '@typescript-eslint/consistent-type-definitions': 'off',
+      // Ban CommonJS globals (__dirname, __filename) - enforce ESM patterns
+      'no-restricted-globals': [
+        'error',
+        {
+          name: '__dirname',
+          message: 'Use ESM pattern: const scriptDir = dirname(fileURLToPath(import.meta.url))',
+        },
+        {
+          name: '__filename',
+          message: 'Use ESM pattern: const scriptFile = fileURLToPath(import.meta.url)',
+        },
+      ],
+      // Ban direct process.env access - enforce t3-env validation via lib/env.ts
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'process',
+          property: 'env',
+          message: 'Never use process.env in app code. Always import { env } from lib/env.ts',
+        },
+      ],
+      // Enforce type-only imports for better tree-shaking and bundling
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'separate-type-imports',
+          disallowTypeAnnotations: false, // Allow type annotations in dynamic imports (vi.importActual<typeof import('ai')>)
+        },
+      ],
+      // Enforce naming conventions: error codes must be UPPER_SNAKE_CASE
+      // Note: Boolean naming (aux verbs) not enforced automatically to avoid type-aware linting overhead
+      '@typescript-eslint/naming-convention': [
+        'error',
+        // Error code variables: UPPER_SNAKE_CASE for variables ending in _ERROR or _CODE
+        {
+          selector: 'variable',
+          filter: {
+            regex: '(_ERROR|_CODE)$',
+            match: true,
+          },
+          format: ['UPPER_CASE'],
+        },
+        // Allow double underscore variables (CommonJS compatibility: __filename, __dirname, test globals)
+        {
+          selector: 'variable',
+          filter: {
+            regex: '^__',
+            match: true,
+          },
+          format: null, // Allow any format for double underscore variables
+        },
+        // Variables: allow camelCase, PascalCase (for schemas/classes), and UPPER_CASE (for constants)
+        {
+          selector: 'variable',
+          format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+          leadingUnderscore: 'allow',
+          trailingUnderscore: 'allow',
+        },
+        // Type-like: PascalCase
+        {
+          selector: 'typeLike',
+          format: ['PascalCase'],
+        },
+      ],
+      // Ban TypeScript enums - prefer const objects or union types
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSEnumDeclaration',
+          message:
+            'Avoid enums. Use const objects or union types instead. See .cursor/rules/base/typescript.mdc',
+        },
+      ],
+      // Enforce subpath imports for @repo packages
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@repo/error',
+              message:
+                'Use subpath imports: @repo/error/nextjs, @repo/error/node, @repo/error/react, etc.',
+            },
+            {
+              name: '@repo/utils',
+              message:
+                'Use subpath imports: @repo/utils/logger, @repo/utils/async, @repo/utils/web3, etc.',
+            },
+            // Note: @repo/core doesn't have subpath exports yet - restriction will be added when subpaths are implemented
+            {
+              name: '@repo/ui',
+              message:
+                'Use subpath imports: @repo/ui/components/*, @repo/ui/lib/utils, @repo/ui/radix, etc.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@radix-ui/react-*'],
+              message:
+                'Import from @repo/ui/radix instead. See packages/ui/src/radix/index.tsx for available exports.',
+            },
+          ],
+        },
+      ],
       // File size limit - helps agents maintain manageable file sizes
       'max-lines': ['error', { max: 300 }],
       // Disable unsafe rules - we use Zod-first validation strategy instead
@@ -82,10 +187,70 @@ export const config = [
     },
   },
   // Disable max-lines rule for test files - they legitimately need more lines for setup, mocks, and comprehensive coverage
+  // Also allow type annotations in dynamic imports for Vitest mocking patterns
   {
     files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/*.e2e-spec.{ts,tsx}'],
     rules: {
       'max-lines': 'off',
+      '@typescript-eslint/consistent-type-imports': 'off', // Allow type annotations in vi.mock() patterns
+    },
+  },
+  // Allow CommonJS globals in config files and scripts (they often need them for tooling)
+  {
+    files: [
+      '**/*.config.{js,mjs,ts}',
+      '**/vitest.setup.{ts,js}',
+      '**/vitest.global-setup.{ts,js}',
+      '**/scripts/**/*.ts',
+      '**/scripts/**/*.js',
+      '**/test/**/*.ts',
+      '**/test/**/*.js',
+    ],
+    rules: {
+      'no-restricted-globals': 'off',
+      // Allow __filename and __dirname naming in scripts/config files
+      '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+  // Allow process.env in env.ts files, logger files, error core, scripts, tests, email templates, instrumentation, and config files (infrastructure that reads env vars)
+  {
+    files: [
+      '**/lib/env.ts',
+      '**/env.ts',
+      '**/load-env.ts',
+      '**/logger/**/*.ts',
+      'packages/error/src/core/**/*.ts',
+      '**/scripts/**/*.ts',
+      '**/scripts/**/*.js',
+      '**/test/**/*.ts',
+      '**/test/**/*.js',
+      '**/*.test.{ts,tsx}',
+      '**/*.spec.{ts,tsx}',
+      '**/*.e2e-spec.{ts,tsx}',
+      'packages/email/**/*.{ts,tsx}', // Email templates need direct process.env access
+      '**/instrumentation.ts', // Next.js instrumentation files need direct process.env access
+    ],
+    rules: {
+      'no-restricted-properties': 'off',
+    },
+  },
+  {
+    files: [
+      '**/*.config.{js,mjs,ts}',
+      '**/vitest.setup.{ts,js}',
+      '**/vitest.global-setup.{ts,js}',
+      '**/playwright.config.{ts,js}',
+      '**/drizzle.config.{ts,js}',
+    ],
+    rules: {
+      'no-restricted-properties': 'off',
+    },
+  },
+  // Allow direct Radix imports in UI package (this is where we centralize Radix imports)
+  {
+    files: ['packages/ui/src/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': 'off',
     },
   },
   {

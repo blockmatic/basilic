@@ -8,7 +8,11 @@
     "target": "ES2022",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "jsx": "react-jsx",
+    "paths": {
+      "@repo/email/*": ["../../packages/email/*"]
+    }
   },
-  "include": ["src/**/*.ts", "api/**/*.ts"]
+  "include": ["server.ts", "src/**/*.ts", "api/**/*.ts"]
 }

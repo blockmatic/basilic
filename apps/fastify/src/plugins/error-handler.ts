@@ -1,6 +1,7 @@
-import { captureError, mapHttpStatusToErrorCode } from '@repo/error/node'
+import { captureError } from '@repo/sentry/node'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
+import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
 
 /**
  * Exception map for irregular plural-to-singular conversions
@@ -93,11 +94,12 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
     const sanitizedHeaders = redactHeaders(request.headers as Record<string, unknown>)
     const sanitizedBody = redactBody(request.body)
 
-    // captureError handles logging via Fastify's native logger (request.log)
-    // Captures REAL error to Sentry with built-in PII scrubbing
-    // Uses Fastify's native Pino logger with request context (requestId via requestIdLogLabel: 'reqId')
-    const catalogError = captureError({
-      code: mapHttpStatusToErrorCode(statusCode),
+    // Map status code to error code
+    const errorCode = mapHttpStatusToErrorCode(statusCode)
+
+    // Report to Sentry (non-blocking)
+    captureError({
+      code: errorCode,
       error, // ← Full stack trace → Sentry
       logger: request.log, // ← Use Fastify's native logger
       label: `${request.method} ${request.url}`,
@@ -114,6 +116,13 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
         method: request.method,
       },
     })
+
+    // Get catalog error from app's own catalog
+    const catalogError = getError(errorCode) ??
+      getError('UNEXPECTED_ERROR') ?? {
+        code: 'UNEXPECTED_ERROR',
+        message: 'An unexpected error occurred',
+      }
 
     // Return SAFE catalog error with type-safe status code
     reply.status(statusCode).send({

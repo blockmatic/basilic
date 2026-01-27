@@ -6,7 +6,7 @@
   "scripts": {
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
-    "checktypes": "tsc --noEmit",
+    "checktypes": "tsgo --noEmit",
     "test": "echo \"no test\""
   },
   "dependencies": {
@@ -61,12 +61,12 @@
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@turbo/gen": "^2.7.5",
-    "@types/node": "22.x",
-    "@types/react": "^19.2.9",
+    "@types/node": "*",
+    "@types/react": "*",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.2",
+    "eslint": "*",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "@typescript/native-preview": "7.0.0-dev.20260124.1"
   },
   "peerDependencies": {
     "react": "^19.0.0",

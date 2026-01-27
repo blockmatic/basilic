@@ -9,7 +9,7 @@
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "checktypes": "fumadocs-mdx && tsc --noEmit",
+    "checktypes": "fumadocs-mdx && tsgo --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint:eslint": "eslint .",
     "lint:eslint:fix": "eslint . --fix"
@@ -30,13 +30,13 @@
     "@repo/eslint-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
-    "@types/node": "22.x",
-    "@types/react": "^19.2.9",
+    "@types/node": "*",
+    "@types/react": "*",
     "@types/react-dom": "^19.2.3",
     "browserslist": "^4.28.1",
-    "eslint": "^9.39.2",
+    "eslint": "*",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "@typescript/native-preview": "7.0.0-dev.20260124.1"
   }
 }

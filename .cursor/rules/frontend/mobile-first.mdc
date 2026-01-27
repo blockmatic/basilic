@@ -1,121 +1,30 @@
 ---
 description: Mobile-first responsive design patterns and best practices
-glob: "**/*.{tsx,ts,css}"
-alwaysApply: false
+glob: "**/*.{tsx,css}"
+alwaysApply: true
 ---
-# Mobile-First Development Rules
 
 ## Core Principle
-**Always design and develop mobile-first.** Start with mobile styles as the base, then enhance for larger screens using Tailwind's responsive breakpoints.
-
-## Why Mobile-First?
-- **Performance**: Mobile-first CSS loads faster on mobile devices
-- **Progressive Enhancement**: Start with essential features, add enhancements for larger screens
-- **Better UX**: Ensures mobile users get a great experience first
-- **Easier Maintenance**: Base styles are simpler, enhancements are additive
+Always design/develop mobile-first. Start with mobile styles, enhance for larger screens using Tailwind breakpoints
 
 ## Tailwind Breakpoints
-Tailwind uses mobile-first breakpoints. Base styles apply to mobile, then override/enhance for larger screens:
-- **Base (no prefix)**: Mobile (default, < 640px)
-- **`sm:`**: Small screens (≥ 640px)
-- **`md:`**: Medium screens (≥ 768px)
-- **`lg:`**: Large screens (≥ 1024px)
-- **`xl:`**: Extra large screens (≥ 1280px)
-- **`2xl:`**: 2X large screens (≥ 1536px)
+Mobile-first: Base (no prefix, <640px) → `sm:` (≥640px) → `md:` (≥768px) → `lg:` (≥1024px) → `xl:` (≥1280px) → `2xl:` (≥1536px)
 
 ## Patterns
-
-### Layout
-✅ **Do**: Start with mobile layout, enhance for desktop
-```tsx
-// Mobile-first: column on mobile, row on larger screens
-<div className="flex flex-col sm:flex-row gap-4">
-  <div>Content 1</div>
-  <div>Content 2</div>
-</div>
-```
-
-❌ **Don't**: Start with desktop layout
-
-### Typography
-✅ **Do**: Start with smaller text, increase for larger screens
-```tsx
-<h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl">Responsive Heading</h1>
-```
-
-### Spacing
-✅ **Do**: Use smaller spacing on mobile, increase for larger screens
-```tsx
-<div className="p-4 sm:p-6 md:p-8">Content with responsive padding</div>
-```
-
-### Visibility
-✅ **Do**: Hide/show elements based on screen size
-```tsx
-{/* Mobile-only */}
-<div className="block sm:hidden">Mobile Menu</div>
-{/* Desktop-only */}
-<div className="hidden sm:block">Desktop Menu</div>
-```
-
-### Grid and Columns
-✅ **Do**: Single column on mobile, multiple on larger screens
-```tsx
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-  {items.map(item => <Item key={item.id} />)}
-</div>
-```
+**Layout**: `flex flex-col sm:flex-row` (column mobile, row desktop)
+**Typography**: `text-xl sm:text-2xl md:text-3xl` (smaller to larger)
+**Spacing**: `p-4 sm:p-6 md:p-8` (smaller to larger)
+**Visibility**: `block sm:hidden` (mobile-only), `hidden sm:block` (desktop-only)
+**Grid**: `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` (single to multiple columns)
 
 ## Component Examples
-
-### Dialog/Modal
-```tsx
-// Mobile-first dialog: full screen on mobile, centered on desktop
-<DialogContent className="w-full h-full sm:w-auto sm:h-auto sm:max-w-lg">
-  <DialogHeader className="text-center sm:text-left">
-    <DialogTitle>Title</DialogTitle>
-  </DialogHeader>
-  <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end">
-    <Button variant="outline">Cancel</Button>
-    <Button>Confirm</Button>
-  </DialogFooter>
-</DialogContent>
-```
-
-### Navigation
-```tsx
-// Mobile: hamburger menu, Desktop: horizontal nav
-<nav className="flex flex-col sm:flex-row gap-4">
-  <button className="sm:hidden">☰</button>
-  <div className="hidden sm:flex gap-4">
-    <Link href="/">Home</Link>
-    <Link href="/about">About</Link>
-  </div>
-</nav>
-```
+**Dialog**: `w-full h-full sm:w-auto sm:h-auto` (fullscreen mobile, centered desktop)
+**Nav**: `flex-col sm:flex-row` with hamburger (`sm:hidden`) and horizontal menu (`hidden sm:flex`)
 
 ## Testing
-1. **Test on mobile devices first** - Use browser dev tools mobile emulation
-2. **Verify touch targets** - Ensure buttons/links are at least 44x44px
-3. **Check text readability** - Ensure text is readable without zooming
-4. **Test landscape orientation** - Verify layouts work in both orientations
-5. **Progressive enhancement** - Verify core functionality works without JavaScript
+Test mobile first (dev tools emulation), verify touch targets (≥44x44px), check text readability, test landscape
 
 ## Common Mistakes
-❌ **Don't**: Use desktop-first breakpoints `flex-row max-md:flex-col`
-❌ **Don't**: Assume desktop is the default `lg:flex lg:gap-4` (missing mobile base)
-❌ **Don't**: Ignore mobile touch targets `<button className="w-6 h-6">×</button>` (too small)
-
-## Best Practices
-- **Start with mobile styles** - Write base styles for mobile first
-- **Use responsive utilities** - Leverage Tailwind's responsive prefixes
-- **Test frequently** - Check mobile view during development
-- **Progressive enhancement** - Add features for larger screens, don't remove for mobile
-- **Touch-friendly** - Ensure interactive elements are easy to tap
-- **Readable text** - Use appropriate font sizes for mobile screens
-- **Performance** - Optimize images and assets for mobile networks
-
-## Related
-- @.cursor/rules/frontend/shadcnui.mdc - Component-specific patterns
-- @.cursor/rules/frontend/react.mdc - Component structure
-- @.cursor/rules/frontend/nextjs.mdc - Next.js-specific patterns
+❌ Desktop-first: `flex-row max-md:flex-col`
+❌ Missing mobile base: `lg:flex lg:gap-4`
+❌ Small touch targets: `w-6 h-6` buttons

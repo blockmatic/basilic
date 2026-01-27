@@ -2,15 +2,8 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import Fastify from 'fastify'
 import app from '../src/app.js'
-import { waitForDatabase } from '../src/db/health.js'
 import { runMigrations } from '../src/db/migrate.js'
 import { env } from '../src/lib/env.js'
-import {
-  getInitializationPromise,
-  getInitializationStatus,
-  setInitializationPromise,
-  setInitializationStatus,
-} from '../src/lib/init-state.js'
 
 const fastify = Fastify({
   logger: {
@@ -26,17 +19,7 @@ const fastify = Fastify({
 fastify.register(app)
 
 let isReady = false
-
-/**
- * Emit initialization failure metric
- */
-const emitInitFailureMetric = () => {
-  // Log as metric event for monitoring systems to pick up
-  fastify.log.warn(
-    { metric: 'init_failure', timestamp: Date.now() },
-    'Initialization failure metric',
-  )
-}
+let initPromise: Promise<void> | null = null
 
 /**
  * Initialize database and run migrations (runs once per serverless function instance)
@@ -44,13 +27,12 @@ const emitInitFailureMetric = () => {
  */
 const initialize = async (): Promise<void> => {
   // Return existing promise if initialization is already in progress
-  const existingPromise = getInitializationPromise()
-  if (existingPromise) {
-    return existingPromise
+  if (initPromise) {
+    return initPromise
   }
 
   // If already initialized, return immediately
-  if (getInitializationStatus()) {
+  if (isReady) {
     return Promise.resolve()
   }
 
@@ -59,37 +41,23 @@ const initialize = async (): Promise<void> => {
     error: (msg: string, err?: unknown) => fastify.log.error({ err }, msg),
   }
 
-  // Create pending promise and store immediately before starting async work
+  // Create promise and store immediately before starting async work
   // This prevents race conditions where concurrent callers see null
-  let resolvePromise!: () => void
-  const initPromise = new Promise<void>(resolve => {
-    resolvePromise = resolve
-  })
-
-  // Store promise immediately before async work begins
-  setInitializationPromise(initPromise)
-
-  // Start async work after promise is stored
-  ;(async () => {
+  initPromise = (async () => {
     try {
-      // Wait for database connection
-      await waitForDatabase(logger)
-
-      // Run migrations
+      // Run migrations (getDb() handles connection for PostgreSQL)
       await runMigrations(logger)
-
-      setInitializationStatus(true)
-      resolvePromise()
     } catch (err) {
       fastify.log.error({ err }, 'Initialization failed')
-      setInitializationStatus(false)
-      emitInitFailureMetric()
+      fastify.log.warn(
+        { metric: 'init_failure', timestamp: Date.now() },
+        'Initialization failure metric',
+      )
       // Don't throw - allow function to start even if migrations fail
       // This prevents complete failure if there's a transient issue
-      resolvePromise()
     } finally {
-      // Clear promise lock after completion so subsequent calls see isInitialized
-      setInitializationPromise(null)
+      // Clear promise lock after completion
+      initPromise = null
     }
   })()
 

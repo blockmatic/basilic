@@ -1,12 +1,13 @@
 import { Body, Container, Heading, Preview, Section, Text } from '@react-email/components'
-import { Footer } from '../components/footer'
-import { Logo } from '../components/logo'
+import 'react'
+import { Footer } from '../components/footer.js'
+import { Logo } from '../components/logo.js'
 import {
   Button,
   EmailThemeProvider,
   getEmailInlineStyles,
   getEmailThemeClasses,
-} from '../components/theme'
+} from '../components/theme.js'
 
 interface Props {
   magicLink: string
@@ -14,11 +15,7 @@ interface Props {
   fullName?: string
 }
 
-export const MagicLinkLoginEmail = ({
-  magicLink,
-  expirationMinutes = 15,
-  fullName = '',
-}: Props) => {
+export function MagicLinkLoginEmail({ magicLink, expirationMinutes = 15, fullName = '' }: Props) {
   const firstName = fullName ? fullName.split(' ').at(0) : ''
   const previewText = `${firstName ? `Hi ${firstName}, ` : ''}Sign in to your account`
   const themeClasses = getEmailThemeClasses()

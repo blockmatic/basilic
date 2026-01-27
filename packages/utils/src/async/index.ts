@@ -1,2 +1,2 @@
-export * from './delay'
-export * from './fetch-with-timeout'
+export * from './delay.js'
+export * from './fetch-with-timeout.js'

@@ -13,4 +13,11 @@ export default [
       'max-lines': 'off', // Email templates are often long
     },
   },
+  // Email templates and components need direct process.env access (rendered server-side)
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-properties': 'off',
+    },
+  },
 ]

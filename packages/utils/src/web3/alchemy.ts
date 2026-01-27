@@ -1,4 +1,4 @@
-import { getChainMetadata } from './index'
+import { getChainMetadata } from './index.js'
 
 // EVM ChainId -> Alchemy network slug mapping
 const ALCHEMY_EVM_SLUGS: Record<number, string> = {
@@ -27,10 +27,24 @@ const ALCHEMY_SOLANA_SLUGS: Record<string, string> = {
 } as const
 
 /**
- * Get Alchemy RPC endpoint URL for a given chainId
+ * Gets the Alchemy RPC endpoint URL for a given chain ID.
+ *
+ * Supports EVM chains (Ethereum, Arbitrum, Base, Optimism, Polygon) and
+ * Solana clusters (mainnet-beta, devnet, testnet). Returns undefined if
+ * the chain is not supported by Alchemy.
+ *
  * @param chainId - EVM chain ID (number) or Solana cluster name (string)
  * @param apiKey - Alchemy API key
- * @returns Alchemy RPC URL or undefined if chain not supported
+ * @returns Alchemy RPC URL or undefined if chain not supported by Alchemy
+ *
+ * @example
+ * ```ts
+ * const rpcUrl = getAlchemyRpcUrl(1, 'your-api-key')
+ * // Returns: 'https://eth-mainnet.g.alchemy.com/v2/your-api-key'
+ *
+ * const solanaUrl = getAlchemyRpcUrl('mainnet-beta', 'your-api-key')
+ * // Returns: 'https://solana-mainnet.g.alchemy.com/v2/your-api-key'
+ * ```
  */
 export function getAlchemyRpcUrl(chainId: number | string, apiKey: string): string | undefined {
   const metadata = getChainMetadata(chainId)
@@ -50,11 +64,26 @@ export function getAlchemyRpcUrl(chainId: number | string, apiKey: string): stri
 }
 
 /**
- * Get RPC endpoint with fallback: Alchemy -> Default RPC
+ * Gets an RPC endpoint URL with fallback strategy: Alchemy -> Default RPC.
+ *
+ * First attempts to use Alchemy if an API key is provided and the chain is supported.
+ * Falls back to the default RPC URL from chain metadata if Alchemy is unavailable.
+ *
  * @param chainId - EVM chain ID (number) or Solana cluster name (string)
  * @param alchemyApiKey - Optional Alchemy API key
  * @returns RPC endpoint URL
- * @throws Error if no RPC endpoint is available
+ * @throws Error if no RPC endpoint is available (chain not supported or no default RPC)
+ *
+ * @example
+ * ```ts
+ * // With Alchemy API key (preferred)
+ * const rpcUrl = getRpcEndpoint(1, 'your-api-key')
+ * // Returns: 'https://eth-mainnet.g.alchemy.com/v2/your-api-key'
+ *
+ * // Without Alchemy API key (fallback to default)
+ * const defaultUrl = getRpcEndpoint(1)
+ * // Returns: 'https://cloudflare-eth.com'
+ * ```
  */
 export function getRpcEndpoint(chainId: number | string, alchemyApiKey?: string): string {
   // Try Alchemy first if API key provided
@@ -73,9 +102,17 @@ export function getRpcEndpoint(chainId: number | string, alchemyApiKey?: string)
 }
 
 /**
- * Check if Alchemy supports a given chain
+ * Checks if Alchemy supports a given chain.
+ *
  * @param chainId - EVM chain ID (number) or Solana cluster name (string)
- * @returns true if Alchemy supports the chain, false otherwise
+ * @returns True if Alchemy supports the chain, false otherwise
+ *
+ * @example
+ * ```ts
+ * if (isAlchemySupported(chainId)) {
+ *   const rpcUrl = getAlchemyRpcUrl(chainId, apiKey)
+ * }
+ * ```
  */
 export function isAlchemySupported(chainId: number | string): boolean {
   const metadata = getChainMetadata(chainId)

@@ -16,26 +16,12 @@ export type HealthCheckResponses = {
      * Default Response
      */
     200: {
-        ok: true;
-        now: string;
+        ok: boolean;
+        dbReady: boolean;
     };
 };
 
 export type HealthCheckResponse = HealthCheckResponses[keyof HealthCheckResponses];
-
-export type GetData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/';
-};
-
-export type GetResponses = {
-    /**
-     * Default Response
-     */
-    200: unknown;
-};
 
 export type ChatData = {
     body: {
@@ -43,7 +29,10 @@ export type ChatData = {
             role: 'user' | 'assistant' | 'system';
             content: string;
         }>;
+        stream?: boolean;
         model?: string;
+        temperature?: number;
+        tools?: unknown;
     };
     path?: never;
     query?: never;
@@ -55,6 +44,13 @@ export type ChatErrors = {
      * Default Response
      */
     400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
         code: string;
         message: string;
     };
@@ -75,25 +71,128 @@ export type ChatResponses = {
      */
     200: {
         text: string;
-    };
+    } | string;
 };
 
 export type ChatResponse = ChatResponses[keyof ChatResponses];
 
-export type ChatStreamData = {
+export type MagiclinkRequestData = {
     body: {
-        messages: Array<{
-            role: 'user' | 'assistant' | 'system';
-            content: string;
-        }>;
-        model?: string;
+        email: string;
+        callbackUrl: string;
     };
     path?: never;
     query?: never;
-    url: '/ai/chat/stream';
+    url: '/auth/magiclink/request';
 };
 
-export type ChatStreamErrors = {
+export type MagiclinkRequestErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+};
+
+export type MagiclinkRequestError = MagiclinkRequestErrors[keyof MagiclinkRequestErrors];
+
+export type MagiclinkRequestResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: boolean;
+    };
+};
+
+export type MagiclinkRequestResponse = MagiclinkRequestResponses[keyof MagiclinkRequestResponses];
+
+export type MagiclinkVerifyData = {
+    body: {
+        token: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/magiclink/verify';
+};
+
+export type MagiclinkVerifyErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        code: string;
+        message: string;
+    };
+};
+
+export type MagiclinkVerifyError = MagiclinkVerifyErrors[keyof MagiclinkVerifyErrors];
+
+export type MagiclinkVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type MagiclinkVerifyResponse = MagiclinkVerifyResponses[keyof MagiclinkVerifyResponses];
+
+export type LogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/session/logout';
+};
+
+export type LogoutErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type LogoutError = LogoutErrors[keyof LogoutErrors];
+
+export type LogoutResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: boolean;
+    };
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
+
+export type RefreshData = {
+    body: {
+        refreshToken: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/session/refresh';
+};
+
+export type RefreshErrors = {
     /**
      * Default Response
      */
@@ -104,19 +203,108 @@ export type ChatStreamErrors = {
     /**
      * Default Response
      */
-    500: {
+    401: {
         code: string;
         message: string;
     };
 };
 
-export type ChatStreamError = ChatStreamErrors[keyof ChatStreamErrors];
+export type RefreshError = RefreshErrors[keyof RefreshErrors];
 
-export type ChatStreamResponses = {
+export type RefreshResponses = {
     /**
-     * Streaming text response
+     * Default Response
      */
-    200: string;
+    200: {
+        token: string;
+        refreshToken: string;
+    };
 };
 
-export type ChatStreamResponse = ChatStreamResponses[keyof ChatStreamResponses];
+export type RefreshResponse = RefreshResponses[keyof RefreshResponses];
+
+export type GetUserData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/session/user';
+};
+
+export type GetUserErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type GetUserError = GetUserErrors[keyof GetUserErrors];
+
+export type GetUserResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        user: {
+            id: string;
+            email: string | unknown;
+            name: string | unknown;
+            emailVerified: boolean | unknown;
+        };
+    };
+};
+
+export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
+
+export type TestAuthedData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/test/authed/';
+};
+
+export type TestAuthedErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type TestAuthedError = TestAuthedErrors[keyof TestAuthedErrors];
+
+export type TestAuthedResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        user: {
+            id: string;
+            email: string | unknown;
+        };
+    };
+};
+
+export type TestAuthedResponse = TestAuthedResponses[keyof TestAuthedResponses];
+
+export type GetLastMagicLinkTokenData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/test/magic-link/last';
+};
+
+export type GetLastMagicLinkTokenResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string | unknown;
+    };
+};
+
+export type GetLastMagicLinkTokenResponse = GetLastMagicLinkTokenResponses[keyof GetLastMagicLinkTokenResponses];

@@ -19,7 +19,7 @@ Reference these guidelines when:
 - Reviewing code for performance issues
 - Refactoring existing React/Next.js code
 - Optimizing bundle size or load times
-
+ 
 ## Rule Categories by Priority
 
 | Priority | Category | Impact | Prefix |

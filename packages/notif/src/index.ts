@@ -26,6 +26,11 @@ type CreateEmailInputInput<T extends keyof NotificationTypes> = {
   options?: NotificationOptions
 }
 
+/**
+ * Creates an email input from notification data and user.
+ *
+ * @internal
+ */
 const createEmailInput = <T extends keyof NotificationTypes>({
   type,
   handler,
@@ -64,7 +69,7 @@ type CreateInput<T extends keyof NotificationTypes> = {
   payload: NotificationTypes[T]
   options?: NotificationOptions
 }
-
+/** Internal function to create a notification. Validates payload, creates activities, and optionally sends emails. */
 const create = async <T extends keyof NotificationTypes>({
   emailService,
   type,
@@ -87,7 +92,6 @@ const create = async <T extends keyof NotificationTypes>({
     }
 
     let activities = 0
-
     // Create activities if handler supports it
     if (handler.createActivity) {
       const activityInputs: CreateActivityInput[] = []
@@ -135,9 +139,7 @@ const create = async <T extends keyof NotificationTypes>({
         activities = activityInputs.length
       }
     }
-
     const sendEmail = options?.sendEmail ?? false
-
     if (!sendEmail || !handler.createEmail) {
       return {
         type: type as string,
@@ -148,9 +150,7 @@ const create = async <T extends keyof NotificationTypes>({
 
     const firstUser = validatedData.users[0]
     if (!firstUser) throw new Error('No users available for email context')
-
     // TODO: Fetch team name from team service/DAO using firstUser.team_id
-    // For now using fallback - team name should be fetched and set here
     const teamContext = {
       id: firstUser.team_id,
       name: 'Your Team', // Fallback - should be fetched from team service
@@ -166,9 +166,9 @@ const create = async <T extends keyof NotificationTypes>({
     )(validatedData, firstUser, teamContext)
 
     if (sampleEmail.emailType === 'customer') {
-      const emailInputs = [
-        createEmailInput({ type, handler, validatedData, user: firstUser, teamContext, options }),
-      ]
+      const emailInputs = validatedData.users.map((user: UserData) =>
+        createEmailInput({ type, handler, validatedData, user, teamContext, options }),
+      )
 
       emails = await emailService.sendBulk({
         emails: emailInputs,
@@ -176,11 +176,9 @@ const create = async <T extends keyof NotificationTypes>({
       })
     } else if (sampleEmail.emailType === 'owners') {
       const ownerUsers = validatedData.users.filter((user: UserData) => user.role === 'owner')
-
       const emailInputs = ownerUsers.map((user: UserData) =>
         createEmailInput({ type, handler, validatedData, user, teamContext, options }),
       )
-
       emails = await emailService.sendBulk({
         emails: emailInputs,
         notificationType: type as string,
@@ -207,7 +205,30 @@ const create = async <T extends keyof NotificationTypes>({
   }
 }
 
+/**
+ * Creates a notification service instance.
+ *
+ * Factory function that returns a service with a `create` method for sending notifications.
+ * This is the preferred way to use the notification service (over the `Notifications` class).
+ *
+ * @returns Notification service with `create` method
+ *
+ * @example
+ * ```ts
+ * const notifications = createNotifications()
+ *
+ * await notifications.create('login_notification', {
+ *   users: [{ id: '123', full_name: 'John', email: 'john@example.com', team_id: 'team-1' }],
+ *   timestamp: new Date().toISOString(),
+ *   ipAddress: '192.168.1.1',
+ *   location: 'San Francisco',
+ *   device: 'Chrome',
+ *   userAgent: 'Mozilla/5.0...',
+ * })
+ * ```
+ */
 export const createNotifications = (): {
+  /** Creates a notification of the specified type. */
   create: <T extends keyof NotificationTypes>(input: CreateInput<T>) => Promise<NotificationResult>
 } => {
   const emailService = createEmailService()
@@ -218,7 +239,26 @@ export const createNotifications = (): {
   }
 }
 
-// Backward compatibility - export class wrapper for existing code
+/**
+ * Notification service class (backward compatibility).
+ *
+ * Class-based wrapper around the `createNotifications` factory function.
+ * Prefer using `createNotifications()` for new code.
+ *
+ * @example
+ * ```ts
+ * const service = new Notifications()
+ *
+ * await service.create('login_notification', {
+ *   users: [{ id: '123', full_name: 'John', email: 'john@example.com', team_id: 'team-1' }],
+ *   timestamp: new Date().toISOString(),
+ *   ipAddress: '192.168.1.1',
+ *   location: 'San Francisco',
+ *   device: 'Chrome',
+ *   userAgent: 'Mozilla/5.0...',
+ * })
+ * ```
+ */
 export class Notifications {
   #service: ReturnType<typeof createNotifications>
 
@@ -226,6 +266,7 @@ export class Notifications {
     this.#service = createNotifications()
   }
 
+  /** Creates a notification of the specified type. */
   async create<T extends keyof NotificationTypes>(
     type: T,
     payload: NotificationTypes[T],
@@ -254,8 +295,5 @@ export {
   shouldShowInSettings,
 } from './notification-types'
 export type { NotificationTypes } from './schemas'
-// Export schemas and types
-export {
-  loginNotificationSchema,
-  transactionsCreatedSchema,
-} from './schemas'
+// Export schemas
+export { loginNotificationSchema, transactionsCreatedSchema } from './schemas'

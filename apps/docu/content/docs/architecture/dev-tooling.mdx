@@ -124,6 +124,56 @@ ESLint configured to disable checks Biome handles:
 - Focused on TypeScript, React, Next.js, Fastify rules
 - No formatting rules (Biome handles those)
 
+## Turborepo Task Orchestration
+
+**Turborepo** orchestrates builds, tests, and other tasks across the monorepo:
+
+### Task Configuration
+
+Tasks are configured in `turbo.json` with:
+- **Dependencies** - Task execution order (`dependsOn`)
+- **Outputs** - Build artifacts for caching (`.next/**`, `dist/**`, `.react-email/**`)
+- **Environment variables** - Required env vars for each task
+- **Caching** - Intelligent caching based on inputs and outputs
+
+### Development Workflow
+
+**`pnpm dev`** - Starts all development servers with watch mode:
+
+- **`@repo/core`** - Watches OpenAPI spec and regenerates API client
+- **`@repo/react`** - Watches OpenAPI spec and regenerates React hooks, watches TypeScript for rebuilds
+- **`@repo/error`** - Watches TypeScript for rebuilds
+- **`@repo/utils`** - Watches TypeScript for rebuilds
+- **`@repo/fastify`** - Starts Fastify API server with OpenAPI generation watcher
+- **`@repo/next`** - Starts Next.js development server
+
+**Key Features:**
+- Watch mode for automatic rebuilds
+- OpenAPI regeneration when spec changes
+- Hot module replacement for fast development
+
+### Quality Assurance
+
+**`pnpm qa`** - Complete quality check before commits/PRs:
+
+1. Install dependencies (`pnpm i`)
+2. Auto-fix linting (`pnpm lint:fix`)
+3. Type-check, build, and test all packages (`turbo run checktypes build test`)
+
+### Running Individual Apps
+
+You can run apps directly, but build dependencies first:
+
+```bash
+# Build required packages
+pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/utils
+
+# Then run the app
+cd apps/next
+pnpm dev
+```
+
 ## Related Documentation
 
 - [Package Conventions](/docs/architecture/package-conventions) - Package architecture and tooling
+- [Monorepo Structure](/docs/core-concepts/monorepo-structure) - Turborepo organization

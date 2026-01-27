@@ -1,65 +1,25 @@
 ---
 description: General multichain address validation patterns and best practices
+glob: "packages/utils/src/web3/**/*"
 alwaysApply: false
 ---
-# Multichain Rules
 
 ## Core Principles
-- Always validate addresses based on chain type before use
-- Use chain-specific libraries when available (viem for EVM, @solana/web3.js for Solana)
-- Never cast addresses directly - always validate first
-- Follow RORO pattern for validation functions
-- Document address formats per chain in code comments
-- **Delegate to chain-specific rules** for implementation details
+Always validate addresses by chain type, use chain-specific libraries (viem for EVM, @solana/web3.js for Solana), never cast directly, RORO pattern, document formats, delegate to chain-specific rules
 
 ## Address Validation Pattern
-This rule coordinates multichain validation. For implementation details, see chain-specific rules:
-```tsx
-import type { ChainType } from '@repo/utils/web3'
-
-// RORO pattern for validation - delegates to chain-specific rules
-export function validateAddress({ address, chainType }: { address: string; chainType: ChainType }): boolean {
-  switch (chainType) {
-    case 'evm':
-      // See @.cursor/rules/web3/viem.mdc for EVM address validation
-      return validateEVMAddress(address)
-    case 'solana':
-      // See @.cursor/rules/web3/solana.mdc for Solana address validation
-      return validateSolanaAddress(address)
-    case 'cosmos':
-      // See @.cursor/rules/web3/cosmos.mdc for Cosmos address validation
-      return validateCosmosAddress(address)
-    default:
-      return false
-  }
-}
-```
+Coordinates multichain validation. Delegate to chain-specific rules: validateAddress switches on chainType (evm/solana/cosmos). See chain-specific rules for implementation
 
 ## Chain-Specific Libraries
-This rule delegates to chain-specific rules for implementation:
-- **EVM**: See @.cursor/rules/web3/viem.mdc - Use `getAddress()` from `viem` v2.44.4
-- **Solana**: See @.cursor/rules/web3/solana.mdc - Use `PublicKey` from `@solana/web3.js` v1.98.4
-- **Cosmos**: See @.cursor/rules/web3/cosmos.mdc - Use Bech32 validation
-- **Other chains**: Use appropriate validation libraries when available
+EVM: @.cursor/rules/web3/viem.mdc (getAddress from viem v2.44.4), Solana: @.cursor/rules/web3/solana.mdc (PublicKey from @solana/web3.js v1.98.4), Cosmos: @.cursor/rules/web3/cosmos.mdc (Bech32)
 
 ## Error Handling
-```tsx
-// Provide chain-aware error messages
-if (!validateAddress({ address: to, chainType })) {
-  throw new BadRequestException(
-    `Invalid address format for chain type ${chainType}. Please provide a valid ${chainType} address.`
-  )
-}
-```
+Chain-aware error messages: Invalid address format for chain type
 
 ## Best Practices
-1. **Validate Early**: Check address format before creating transactions
-2. **Chain-Aware Errors**: Provide helpful error messages indicating expected format
-3. **Use Libraries**: Leverage existing validation libraries instead of custom regex when possible
-4. **Document Formats**: Comment address formats in code for reference
-5. **Fail Fast**: Return false immediately on validation failure
+Validate early (before transactions), chain-aware errors, use libraries (not custom regex), document formats, fail fast
 
 ## Related
-- @.cursor/rules/web3/viem.mdc - EVM address validation
-- @.cursor/rules/web3/solana.mdc - Solana address validation
-- @.cursor/rules/web3/cosmos.mdc - Cosmos address validation
+- @.cursor/rules/web3/viem.mdc - EVM validation
+- @.cursor/rules/web3/solana.mdc - Solana validation
+- @.cursor/rules/web3/cosmos.mdc - Cosmos validation

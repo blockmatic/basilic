@@ -18,9 +18,9 @@
   },
   "devDependencies": {
     "@types/chai": "^5.2.3",
-    "@types/node": "22.x",
+    "@types/node": "*",
     "ts-mocha": "^11.1.0",
-    "typescript": "^5.9.3"
+    "@typescript/native-preview": "7.0.0-dev.20260124.1"
   },
   "engines": {
     "node": "22.x"

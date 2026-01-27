@@ -8,13 +8,16 @@ type CorsPluginOptions = Record<string, never>
 const corsPlugin: FastifyPluginAsync<CorsPluginOptions> = async fastify => {
   await fastify.register(cors, {
     origin: (origin, callback) => {
+      fastify.log.debug({ origin, allowedOrigins: env.ALLOWED_ORIGINS }, 'CORS origin check')
       // Allow requests with no origin (mobile apps, Postman, etc.)
       if (!origin) {
+        fastify.log.debug('CORS: Allowing request with no origin')
         return callback(null, true)
       }
 
       // Allow all origins if configured as '*'
       if (env.ALLOWED_ORIGINS === '*') {
+        fastify.log.debug('CORS: Allowing all origins (*)')
         return callback(null, true)
       }
 
@@ -24,10 +27,12 @@ const corsPlugin: FastifyPluginAsync<CorsPluginOptions> = async fastify => {
         : [env.ALLOWED_ORIGINS]
 
       if (allowedOrigins.includes(origin)) {
+        fastify.log.debug({ origin }, 'CORS: Origin allowed')
         return callback(null, true)
       }
 
       // Reject origin
+      fastify.log.warn({ origin, allowedOrigins }, 'CORS: Origin rejected')
       return callback(new Error('Not allowed by CORS'), false)
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

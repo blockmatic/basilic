@@ -1,10 +1,12 @@
 'use client'
 
+import { useLocalStorageState } from 'ahooks'
 import { useEffect } from 'react'
-import { useLocalStorage } from 'react-use'
 
 export function useNuqsDebug() {
-  const [debug, setDebug] = useLocalStorage('debug', '')
+  const [debug, setDebug] = useLocalStorageState<string>('debug', {
+    defaultValue: '',
+  })
 
   useEffect(() => {
     if (debug !== 'nuqs') {

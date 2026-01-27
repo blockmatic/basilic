@@ -116,6 +116,17 @@ When deploying to Vercel, the serverless function is located at `api/[...].ts` (
 - **OpenAPI Spec**: `/reference/openapi.json`
 - **Health Check**: `GET /health`
 
+## Authentication
+
+The API uses JWT-only authentication:
+
+- **Protected routes** require `Authorization: Bearer <token>` header
+- **No session cookies** - Fastify does not accept cookie-based authentication
+- **Magic link flow** - Use `format=jwt` parameter to get JWT token in response body
+- **Session lookup** - Bearer tokens are resolved to database sessions via Better Auth
+
+See [Authentication Architecture](@apps/docu/content/docs/architecture/authentication.mdx) for complete details.
+
 ## Architecture
 
 REST API architecture using OpenAPI:

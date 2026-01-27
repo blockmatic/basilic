@@ -40,6 +40,13 @@ export async function getDb() {
 }
 
 /**
+ * Check if database is ready (initialized)
+ */
+export function isDbReady(): boolean {
+  return db !== null
+}
+
+/**
  * Reset the database instance cache.
  * Used in tests to ensure a fresh database connection after resetting the underlying database.
  */

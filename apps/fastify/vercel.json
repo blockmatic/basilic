@@ -5,7 +5,8 @@
   "installCommand": "cd ../.. && pnpm install",
   "functions": {
     "api/[...].ts": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "excludeFiles": "{server.ts,server.js,src/app.ts,dist/**}"
     }
   },
   "rewrites": [

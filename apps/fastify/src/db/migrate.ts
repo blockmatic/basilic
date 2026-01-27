@@ -5,11 +5,11 @@ import type { PGlite } from '@electric-sql/pglite'
 import { env } from '../lib/env.js'
 import { getDb } from './index.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const migrateFile = fileURLToPath(import.meta.url)
+const dbDir = dirname(migrateFile)
 // migrationsDir is relative to this file: src/db/migrate.ts
 // So migrations are at: src/db/migrations (same level as migrate.ts)
-const migrationsDir = join(__dirname, 'migrations')
+const migrationsDir = join(dbDir, 'migrations')
 
 async function readMigrationFiles(migrationDir: string): Promise<string[]> {
   try {

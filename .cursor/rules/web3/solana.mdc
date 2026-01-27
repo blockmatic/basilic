@@ -1,72 +1,29 @@
 ---
 description: Solana address validation patterns and best practices
+glob: "contracts/solana/**/*, **/*solana*"
 alwaysApply: false
 ---
-# Solana Rules
 
 ## Versions
-- **@solana/web3.js**: v1.98.4 (from `contracts/solana/package.json`)
-- **Anchor**: v0.32.1 (from `contracts/solana/package.json`)
+@solana/web3.js v1.98.4, Anchor v0.32.1
 
 ## Core Principles
-- Use `PublicKey` from `@solana/web3.js` v1.98.4 for address validation
-- Never cast directly - always validate through PublicKey constructor
-- Use `PublicKey.isOnCurve()` for additional validation
-- Use `@repo/utils/web3` for chain type utilities (`ChainType`, `getChainType`, `getChainMetadata`)
+Use PublicKey from @solana/web3.js v1.98.4, never cast directly (validate through PublicKey constructor), use PublicKey.isOnCurve(), use @repo/utils/web3 for chain utilities
 
 ## Address Handling
-```tsx
-import { PublicKey } from '@solana/web3.js'
-
-// Proper address validation
-function validateSolanaAddress(address: string) {
-  try {
-    const publicKey = new PublicKey(address)
-    return PublicKey.isOnCurve(publicKey)
-  } catch (error) {
-    return false
-  }
-}
-```
+new PublicKey(address) in try/catch, PublicKey.isOnCurve(publicKey) for validation
 
 ## Transaction Handling
-```tsx
-import { PublicKey, Transaction, SystemProgram } from '@solana/web3.js'
+Create transaction: new Transaction().add(SystemProgram.transfer({ fromPubkey, toPubkey, lamports }))
 
-// Create transaction pattern
-export async function sendTransaction({ from, to, amount }: SendTransactionParams) {
-  try {
-    const fromPublicKey = new PublicKey(from)
-    const toPublicKey = new PublicKey(to)
-    
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: fromPublicKey,
-        toPubkey: toPublicKey,
-        lamports: amount,
-      })
-    )
-    
-    return { transaction }
-  } catch (error) {
-    throw new Error('Invalid Solana address')
-  }
-}
-```
-
-## Performance Optimization
-- Reuse PublicKey instances when possible
-- Validate addresses early before creating transactions
+## Performance
+Reuse PublicKey instances, validate addresses early
 
 ## Anchor Setup
-- **Installation**: Use `pnpm setup:solana` to install Anchor v0.32.1 automatically, or install manually via Homebrew/avm
-- **Package location**: Solana programs are in `contracts/solana/` and use `@repo/contracts-solana` package name
-- **Build behavior**: If Anchor isn't installed, builds skip gracefully without failing the pipeline
-- **Linux requirement**: Rust/Cargo must be installed first on Linux
+Install: pnpm setup:solana (auto Anchor v0.32.1) or manual (Homebrew/avm), location: contracts/solana/ (@repo/contracts-solana), build skips gracefully without Anchor, Linux: Rust/Cargo required first
 
 ## Contract Development
-- Use Anchor v0.32.1 framework for program development
-- Test tokens use PDA-based mint authority for open minting (faucet functionality)
+Anchor v0.32.1 framework, test tokens use PDA-based mint authority (faucet)
 
 ## Related
-- @.cursor/rules/web3/multichain.mdc - Multichain address validation coordination
+- @.cursor/rules/web3/multichain.mdc - Multichain coordination

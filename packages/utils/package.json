@@ -8,31 +8,36 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "import": "./dist/index.js"
+      "import": "./src/index.ts"
     },
     "./async": {
       "types": "./src/async/index.ts",
-      "import": "./dist/async/index.js"
+      "import": "./src/async/index.ts"
     },
     "./web3": {
       "types": "./src/web3/index.ts",
-      "import": "./dist/web3/index.js"
+      "import": "./src/web3/index.ts"
     },
     "./logger": {
       "types": "./src/logger/index.ts",
-      "browser": "./dist/logger/client.js",
-      "node": "./dist/logger/server.js",
-      "import": "./dist/logger/server.js",
-      "default": "./dist/logger/server.js"
+      "browser": "./src/logger/client.ts",
+      "node": "./src/logger/server.ts",
+      "import": "./src/logger/server.ts",
+      "default": "./src/logger/server.ts"
     },
     "./debug": {
       "types": "./src/debug/index.ts",
-      "import": "./dist/debug/index.js"
+      "import": "./src/debug/index.ts"
+    },
+    "./error": {
+      "types": "./src/error/index.ts",
+      "import": "./src/error/index.ts"
     }
   },
   "scripts": {
     "build": "tsup",
-    "checktypes": "tsc --noEmit",
+    "checktypes": "tsgo --noEmit",
+    "dev": "tsup --watch",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
@@ -40,10 +45,10 @@
     "test": "echo \"no test\""
   },
   "peerDependencies": {
+    "ahooks": "*",
     "nuqs": "*",
     "pino": "*",
     "react": "*",
-    "react-use": "*",
     "typescript": "^5.0.0",
     "vconsole": "*",
     "viem": "*",
@@ -51,6 +56,9 @@
     "zod-validation-error": "*"
   },
   "peerDependenciesMeta": {
+    "ahooks": {
+      "optional": true
+    },
     "nuqs": {
       "optional": true
     },
@@ -58,9 +66,6 @@
       "optional": true
     },
     "react": {
-      "optional": true
-    },
-    "react-use": {
       "optional": true
     },
     "typescript": {
@@ -77,15 +82,15 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/lodash-es": "latest",
-    "@types/node": "22.x",
-    "@types/react": "^19.2.9",
-    "eslint": "^9.39.2",
+    "@types/node": "*",
+    "@types/react": "*",
+    "eslint": "*",
+    "ahooks": "^3.9.6",
     "lodash-es": "^4.17.23",
     "nuqs": "^2.8.6",
     "react": "^19.2.3",
-    "react-use": "^17.6.0",
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
+    "tsup": "*",
+    "@typescript/native-preview": "7.0.0-dev.20260124.1",
     "vconsole": "^3.15.1",
     "viem": "2.44.4",
     "zod": "^4.3.5",

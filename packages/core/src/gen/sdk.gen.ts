@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ChatData, ChatErrors, ChatResponses, ChatStreamData, ChatStreamErrors, ChatStreamResponses, GetData, GetResponses, HealthCheckData, HealthCheckResponses } from './types.gen';
+import type { ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -25,14 +25,13 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  */
 export const healthCheck = <ThrowOnError extends boolean = false>(options?: Options<HealthCheckData, ThrowOnError>) => (options?.client ?? client).get<HealthCheckResponses, unknown, ThrowOnError>({ url: '/health', ...options });
 
-export const get = <ThrowOnError extends boolean = false>(options?: Options<GetData, ThrowOnError>) => (options?.client ?? client).get<GetResponses, unknown, ThrowOnError>({ url: '/', ...options });
-
 /**
  * Generate AI chat response
  *
- * Chat with AI using OpenAI
+ * Chat with AI using OpenAI. Supports both streaming and non-streaming responses.
  */
 export const chat = <ThrowOnError extends boolean = false>(options: Options<ChatData, ThrowOnError>) => (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/ai/chat',
     ...options,
     headers: {
@@ -42,15 +41,83 @@ export const chat = <ThrowOnError extends boolean = false>(options: Options<Chat
 });
 
 /**
- * Stream AI chat response
+ * Request magic link
  *
- * Stream AI chat response using OpenAI
+ * Request magic link for authentication
  */
-export const chatStream = <ThrowOnError extends boolean = false>(options: Options<ChatStreamData, ThrowOnError>) => (options.client ?? client).post<ChatStreamResponses, ChatStreamErrors, ThrowOnError>({
-    url: '/ai/chat/stream',
+export const magiclinkRequest = <ThrowOnError extends boolean = false>(options: Options<MagiclinkRequestData, ThrowOnError>) => (options.client ?? client).post<MagiclinkRequestResponses, MagiclinkRequestErrors, ThrowOnError>({
+    url: '/auth/magiclink/request',
     ...options,
     headers: {
         'Content-Type': 'application/json',
         ...options.headers
     }
 });
+
+/**
+ * Verify magic link
+ *
+ * Verify magic link token and return JWTs
+ */
+export const magiclinkVerify = <ThrowOnError extends boolean = false>(options: Options<MagiclinkVerifyData, ThrowOnError>) => (options.client ?? client).post<MagiclinkVerifyResponses, MagiclinkVerifyErrors, ThrowOnError>({
+    url: '/auth/magiclink/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Logout
+ *
+ * Logout user and invalidate session
+ */
+export const logout = <ThrowOnError extends boolean = false>(options?: Options<LogoutData, ThrowOnError>) => (options?.client ?? client).post<LogoutResponses, LogoutErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/auth/session/logout',
+    ...options
+});
+
+/**
+ * Refresh token
+ *
+ * Refresh access token
+ */
+export const refresh = <ThrowOnError extends boolean = false>(options: Options<RefreshData, ThrowOnError>) => (options.client ?? client).post<RefreshResponses, RefreshErrors, ThrowOnError>({
+    url: '/auth/session/refresh',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get user
+ *
+ * Get current user information
+ */
+export const getUser = <ThrowOnError extends boolean = false>(options?: Options<GetUserData, ThrowOnError>) => (options?.client ?? client).get<GetUserResponses, GetUserErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/auth/session/user',
+    ...options
+});
+
+/**
+ * Test authenticated endpoint
+ *
+ * Dummy authenticated endpoint for testing (requires Bearer token)
+ */
+export const testAuthed = <ThrowOnError extends boolean = false>(options?: Options<TestAuthedData, ThrowOnError>) => (options?.client ?? client).get<TestAuthedResponses, TestAuthedErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/test/authed/',
+    ...options
+});
+
+/**
+ * Get last magic link token
+ *
+ * Get last magic link token from fake email provider (test only)
+ */
+export const getLastMagicLinkToken = <ThrowOnError extends boolean = false>(options?: Options<GetLastMagicLinkTokenData, ThrowOnError>) => (options?.client ?? client).get<GetLastMagicLinkTokenResponses, unknown, ThrowOnError>({ url: '/test/magic-link/last', ...options });

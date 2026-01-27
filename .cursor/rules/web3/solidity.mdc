@@ -1,74 +1,26 @@
 ---
 description: Solidity development standards with Foundry
+glob: "contracts/evm/**/*"
 alwaysApply: false
 ---
-# Solidity & Foundry Rules
 
 ## Versions
-- **Solidity**: v0.8.24 (from `contracts/evm/foundry.toml`)
+Solidity v0.8.24 (foundry.toml)
 
 ## Core Principles
-- Use Solidity v0.8.24 (as configured in `foundry.toml`)
-- Use custom errors instead of revert strings (when validation is needed)
-- For test contracts with intentionally open access (e.g., faucet tokens), custom errors may not be necessary
+Use Solidity v0.8.24, custom errors (not revert strings), test contracts with open access may skip custom errors
 
 ## Foundry Setup
-- **Installation**: Use `pnpm setup:evm` to install Foundry automatically, or install manually via Homebrew/foundryup
-- **Package location**: EVM contracts are in `contracts/evm/` and use `@repo/contracts-evm` package name
-- **Build behavior**: If Foundry isn't installed, builds skip gracefully without failing the pipeline
-- **Solidity version**: Configured in `foundry.toml` as `solc = "0.8.24"`
+Install: pnpm setup:evm (auto) or manual (Homebrew/foundryup), location: contracts/evm/ (@repo/contracts-evm), build skips gracefully without Foundry, version in foundry.toml
 
 ## Foundry Dependencies
-- **Never manually edit files in `lib/` directory**: Contains third-party dependencies (e.g., OpenZeppelin Contracts) managed by Foundry
-- **Update dependencies via Foundry**: Use `forge update` or `pnpm --filter @repo/contracts-evm deps:update`
-- **Formatting protection**: `lib/` directory excluded from formatting via `foundry.toml` and `.prettierignore`
-- **Dependency management**: All dependencies installed/updated through Foundry (`forge install`, `forge update`)
+NEVER edit lib/ manually (third-party deps), update via forge update or pnpm --filter @repo/contracts-evm deps:update, lib/ excluded from formatting, all deps via Foundry (forge install/update)
 
 ## Contract Structure
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
-
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
-error Unauthorized();
-error InvalidAmount();
-
-contract ExampleContract is Ownable, ReentrancyGuard {
-    event Deposited(address indexed user, uint256 amount);
-    
-    uint256 public constant MIN_DEPOSIT = 0.1 ether;
-    mapping(address => uint256) public balances;
-    
-    function deposit() external payable nonReentrant {
-        if (msg.value < MIN_DEPOSIT) revert InvalidAmount();
-        balances[msg.sender] += msg.value;
-        emit Deposited(msg.sender, msg.value);
-    }
-}
-```
+Custom errors, proper imports, events, constants, storage mapping
 
 ## Gas Optimization
-- Use unchecked blocks for safe math operations
-- Pack storage variables efficiently
-- Cache storage variables in memory
-
-```solidity
-contract GasOptimized {
-    struct UserInfo {
-        uint96 balance;
-        uint96 stakedAmount;
-        uint64 lastUpdate;
-    }
-}
-```
+Unchecked blocks, pack storage, cache storage in memory
 
 ## Test Token Patterns
-For test tokens and faucet contracts (e.g., DNMC, mocked USDC/USDT):
-- **Reuse existing contracts**: Use `TestToken.sol` with separate deployment scripts rather than creating duplicate contracts
-- **Open minting/burning**: Test tokens may have intentionally open access controls for faucet functionality
-- **Configurable decimals**: Support different decimal values (6 for stablecoins, 18 for utility tokens)
-- **Deployment scripts**: Create separate scripts for each token (e.g., `DNMC.s.sol`, `USDC.s.sol`, `USDT.s.sol`) that configure the same base contract
-- **Environment variables**: Use `vm.envOr()` and `vm.envUint()` for configuration with sensible defaults
-- **Documentation**: Clearly mark mocked/test tokens as such in documentation to avoid confusion with real tokens
+Reuse TestToken.sol with separate deployment scripts, open minting/burning for faucet, configurable decimals (6 stablecoins/18 utility), separate scripts per token, vm.envOr()/vm.envUint() with defaults, clearly mark mocked/test tokens

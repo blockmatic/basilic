@@ -1,11 +1,21 @@
 // Mock lucide-react icons for Vitest tests
 // This avoids ESM import issues in tests
 
-export const Mic = () => null
-export const MicOff = () => null
+export function Mic() {
+  return null
+}
+export function MicOff() {
+  return null
+}
 
 // Export all other icons as empty functions
 // Add more as needed for tests
-export const X = () => null
-export const Check = () => null
-export const ChevronDown = () => null
+export function X() {
+  return null
+}
+export function Check() {
+  return null
+}
+export function ChevronDown() {
+  return null
+}

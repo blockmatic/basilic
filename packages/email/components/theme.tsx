@@ -2,7 +2,7 @@ import { Font, Head, Html, Tailwind } from '@react-email/components'
 import type React from 'react'
 
 // Re-export Button component for convenience
-export { Button } from './button'
+export { Button } from './button.js'
 
 // Email-optimized theme colors (avoiding pure white/black for better email client compatibility)
 export const emailTheme = {

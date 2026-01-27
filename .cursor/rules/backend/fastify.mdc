@@ -1,56 +1,29 @@
 ---
 description: Fastify backend development standards and patterns
-alwaysApply: false
+glob: "apps/fastify/**/*"
+alwaysApply: true
 ---
-# Fastify Rules
 
-See @apps/docu/content/docs/architecture/backend-stack.mdx for why Fastify was chosen and architecture details.
-
-## Module Structure
-- Organize routes by domain/feature (e.g., `routes/feature.ts`, `routes/user.ts`)
-- Keep routes focused and single-purpose
-- Use route grouping for related endpoints
-- Keep handlers thin - delegate business logic to services
-
-## ESM Patterns
-**Never use `__dirname` or `__filename`** - use ESM pattern: `fileURLToPath(import.meta.url)` and `dirname()`
-
-**Never use `require()`** - use dynamic `import()` with `pathToFileURL`
-
-## Schema Validation
-- **TypeBox**: Use TypeBox for all route schemas (request/response validation)
-  - Native JSON Schema - no conversion overhead
-  - Automatic OpenAPI generation
-  - Type-safe with TypeBox type provider
-  - Better performance than Zod on backend
-- **Zod**: Generated on frontend from OpenAPI spec (via hey-api)
-  - Frontend uses Zod schemas generated from OpenAPI
-  - Consistent validation across frontend apps
-
-## Utility Libraries
-- **@repo/utils**: Always use instead of custom implementations
-  - Async: `fetchWithTimeout` (external APIs - replaces `fetch`), `delay` (replaces `setTimeout`)
-- **@repo/error**: Error handling utilities with Sentry integration. See @.cursor/rules/base/error-handling.mdc
-- **@repo/utils/logger**: Logging utilities. See @.cursor/rules/base/logging.mdc
-- **lodash-es**: Use for array/object operations (`isEmpty`, `uniq`, `groupBy`, `merge`), type checking (`isPlainObject`, `isString`, `isArray`). Use per-function imports: `import isEmpty from 'lodash-es/isEmpty'`
-
-## Error Handling
-Use `@repo/error` for all error handling. See @.cursor/rules/base/error-handling.mdc for complete patterns.
-
-**Note**: Pass `logger: request.log` to use Fastify's native Pino logger. This ensures errors are logged with request context and avoids duplicate logging.
-
-Routes can throw errors - the global handler catches and formats them automatically.
-
-## Environment Variables
-Fastify apps use `validateEnvOrThrow` from `@repo/lib` for environment validation. See @.cursor/rules/base/environment.mdc for pattern.
-
-## OpenAPI Generation
-See @apps/docu/content/docs/architecture/backend-stack.mdx#openapi-generation for OpenAPI generation details.
+- CRITICAL: never edit db/migrations, openapi schema files directly
+- Each endpoint in its own file. Structure mirrors URL path: `routes/{domain}/{group}/{action}.ts`. 
+  Examples: `routes/auth/magiclink/request.ts`, `routes/auth/magiclink/verify.ts`
+- Keep handler code lean inside the route definition to leverage typescript inference (typebox schema based)
+- Collocate route definition, handler and typebox schema
+- Keep routes focused/single-purpose, use route grouping, thin handlers
+- Use @sinclair/typebox route schemas
+- Avoid unnecessary validations - Fastify already validates inputs based on route schemas
+- Pass `logger: request.log` to `@repo/error` for Fastify's Pino logger with request context. 
+- Routes can throw - global handler catches/formats
+- Always use @fastify/sensible
 
 ## Testing
-Use Fastify's `inject()` method for blackbox testing of routes. See @.cursor/rules/backend/testing.mdc for testing patterns.
 
-## Related
-- @apps/docu/content/docs/architecture/backend-stack.mdx - Why Fastify, app setup, OpenAPI generation
-- @.cursor/rules/base/environment.mdc - Environment variable patterns
-- @.cursor/rules/base/error-handling.mdc - Error handling patterns
+- Use `fastify.inject()` for integration testing
+- Vitest ESM-native, tests TypeScript source directly (not built output)
+- CRITICAL: pglite does NOT support concurrent writers reliably. Vitest parallelizes. Control worker boundaries and DB lifecycle strictly.
+- Group entry pattern: `routes/{domain}/{group}/{group}.spec.ts` is the only Vitest-discovered file per group. Owns Fastify + DB lifecycle. Imports route-level test modules
+- Route-level tests: `routes/{domain}/{group}/{endpoint}.test.ts` contains pure test definitions (`describe/it`). No Fastify bootstrapping, no DB setup/teardown. Executes in same worker as importing `.spec.ts`
+- Vitest config: `include: ['**/*.spec.ts']` only. Never include `*.test.ts` in include patterns, handle pglite db instantiation and teardown removal per worker.
+- Naming: `*.spec.ts` = test entrypoints/worker boundary, `*.test.ts` = imported test modules. Do not mix `.e2e-spec.ts`, `.spec.ts`, `.test.ts` arbitrarily
+- Parallelism: Vitest runs test files in parallel, not `describe()` blocks or imports. Imported files execute in same worker. DB initialized once per group entry file
+

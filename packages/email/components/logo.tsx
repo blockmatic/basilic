@@ -1,6 +1,8 @@
 import { Img, Section } from '@react-email/components'
 
 const baseUrl = process.env.EMAIL_ASSETS_URL || ''
+const isAbsoluteUrl = baseUrl && /^https?:\/\//.test(baseUrl)
+const src = isAbsoluteUrl ? `${baseUrl}/email/logo.png` : null
 
 export function Logo() {
   // CSS-blended version for automatic dark mode adaptation
@@ -32,13 +34,15 @@ export function Logo() {
           }
         `}</style>
 
-      <Img
-        src={`${baseUrl}/email/logo.png`}
-        width="40"
-        height="40"
-        alt="Logo"
-        className="my-0 mx-auto block logo-blend"
-      />
+      {src ? (
+        <Img
+          src={src}
+          width="40"
+          height="40"
+          alt="Logo"
+          className="my-0 mx-auto block logo-blend"
+        />
+      ) : null}
     </Section>
   )
 }

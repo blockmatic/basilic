@@ -6,15 +6,17 @@
  * The debug console is only initialized when debug mode is active.
  */
 
+import { useLocalStorageState } from 'ahooks'
 import { useQueryState } from 'nuqs'
 import { useEffect, useRef } from 'react'
-import { useLocalStorage } from 'react-use'
 import VConsole from 'vconsole'
 import { logger } from '../logger/client.js'
 
 export function useVConsole() {
   const [debugQuery, setDebugQuery] = useQueryState('debug')
-  const [debugStorage, setDebugStorage] = useLocalStorage('debug', false)
+  const [debugStorage, setDebugStorage] = useLocalStorageState<boolean>('debug', {
+    defaultValue: false,
+  })
   const vconsoleRef = useRef<VConsole | undefined>(undefined)
   const isFirstMount = useRef(true)
 

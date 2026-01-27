@@ -1,0 +1,97 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    paths:
+      - 'apps/next/e2e/**'
+      - 'apps/next/**'
+      - 'apps/fastify/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/next/e2e/**'
+      - 'apps/next/**'
+      - 'apps/fastify/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-tests:
+    name: E2E Tests (Next.js + Fastify)
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      PGLITE: true
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || 'sk-test-dummy-key-for-openapi' }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY != '' && secrets.ENCRYPTION_KEY || '0000000000000000000000000000000000000000000000000000000000000000' }}
+      DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: ${{ secrets.JWT_SECRET != '' && secrets.JWT_SECRET || 'test-secret-key-that-is-at-least-32-characters-long' }}
+      RESEND_API_KEY: re_test_key
+      EMAIL_FROM: test@example.com
+      EMAIL_FROM_NAME: Test App
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      PLAYWRIGHT_HTML_REPORT_OPEN: never
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: |
+          pnpm --filter @repo/next exec playwright install chromium --with-deps
+          pnpm --filter @repo/fastify exec playwright install chromium --with-deps
+
+      - name: Build shared packages
+        run: pnpm turbo run build --filter './packages/**'
+
+      - name: Run E2E tests (sequential, root script)
+        run: pnpm test:e2e
+
+      - name: Upload Next.js Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-nextjs
+          path: apps/next/playwright-report/
+          retention-days: 30
+
+      - name: Upload Fastify Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-fastify
+          path: apps/fastify/playwright-report/
+          retention-days: 30

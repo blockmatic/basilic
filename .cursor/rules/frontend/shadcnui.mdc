@@ -1,101 +1,27 @@
 ---
 description: ShadcnUI component guidelines and patterns
-glob: "*.tsx"
+glob: "**/*.{tsx,css}"
 alwaysApply: true
 ---
 
-# ShadcnUI Rules
-
 ## Core Principles
-- Install ShadcnUI components in `@repo/ui` (packages/ui)
-- Always import from `@repo/ui/components/*`, never directly from packages/ui
-- All Radix UI primitives must be imported from `@repo/ui/radix`; never import any `@radix-ui/react-*` packages directly in apps or other packages
-- Update Tailwind preset/tokens in packages/ui (not per app)
-- Application-specific components go in app's `components` folder
-- Hooks and utils must be collocated with components (same directory)
+Install in `@repo/ui` (packages/ui), import from `@repo/ui/components/*`, all Radix UI from `@repo/ui/radix` (never direct `@radix-ui/react-*`), update Tailwind in packages/ui, app-specific in app's `components`, hooks/utils collocated
 
 ## Don't Reinvent the Wheel
-**Always check for existing blocks/templates before building custom components:**
-- **Full page/block templates**: Query `shadcnui-jpisnice-react` MCP server first for complete templates (auth screens, dashboards, calendars, etc.)
-- **Adapt before building**: Prefer adapting existing blocks to your needs rather than building from scratch
-- **Only build custom when necessary**: Only create custom implementations if no suitable block exists or if adaptation would be more complex than building new
-- **Single components**: For individual components, check `shadcnui-official` MCP server for canonical implementations before creating variants
-
-## MCP Server Usage
-Two MCP servers are available for shadcn/ui component discovery and installation:
-
-### shadcnui-official
-**Use for:** Canonical component definitions, variants, and single primitives
-- Component variants and props reference
-- Single component installation (Button, Dialog, Form, etc.)
-- Official component patterns and best practices
-- Source of truth when conflicts arise
-
-### shadcnui-jpisnice-react
-**Use for:** Full blocks, demos, and page templates for React
-- Complete page templates (auth screens, dashboards, calendars)
-- Full component blocks and demos
-- React-specific implementations
-- Complex UI patterns and compositions
-
-**Note:** `shadcnui-jpisnice-react-native` exists for future React Native support but is not included in the current React workflow.
-
-### Decision Tree
-- **Full page/block template**: Use `shadcnui-jpisnice-react` first (don't reinvent the wheel - check for existing templates)
-- **Single component or variant**: Use `shadcnui-official` first
-- **Cross-check patterns**: After finding a block template, cross-check individual component patterns with `shadcnui-official`
-- **Conflict resolution**: `shadcnui-official` is authoritative when conflicts arise
-- **Optimization**: Only call MCP when unsure about implementation or encountering errors; don't call when confident about the approach
+Check existing blocks/templates before building. Full page/block → `shadcnui-jpisnice-react` MCP. Single component → `shadcnui-official` MCP. Only call MCP when unsure/errors
 
 ## Installation Pattern
-Components installed in `packages/ui/src/components/`. Each app's `components.json` points to:
-- `"utils": "@repo/ui/lib/utils"`
-- `"ui": "@repo/ui/components"`
+Components in `packages/ui/src/components/`. App's `components.json`: `"utils": "@repo/ui/lib/utils"`, `"ui": "@repo/ui/components"`
 
 ## Import Patterns
-```tsx
-import { Button } from "@repo/ui/components/button"
-import { cn } from "@repo/ui/lib/utils"
-```
+`import { Button } from "@repo/ui/components/button"`, `import { cn } from "@repo/ui/lib/utils"`
 
 ## Component Patterns
-Use class-variance-authority (cva) pattern for variants and `cn` utility for merging class names. See @.cursor/skills/shadcn-v3 for CVA patterns.
+Use cva for variants, `cn` for class merging. See @.cursor/skills/shadcn-v3
 
 ## Design System Organization
-
-### Component Hierarchy
-**Base Components (Primitives) → `@repo/ui`**
-- Single-purpose, reusable components: `Button`, `Sidebar`, `SidebarContent`, `SidebarGroup`, etc.
-- Installed in `packages/ui/src/components/`
-- Shared across all apps
-- Examples: `@repo/ui/components/button`, `@repo/ui/components/sidebar`
-
-**Blocks/Templates → Location depends on reusability**
-
-1. **Reusable across multiple apps → `@repo/ui`**
-   - Install in `packages/ui/src/blocks/` or `packages/ui/src/templates/`
-   - Export via subpath: `@repo/ui/blocks/sidebar-right`
-   - Use when the same pattern is needed in 2+ apps
-   - Examples: Generic sidebar layouts, common form patterns, reusable dashboard layouts
-
-2. **App-specific → App's `components/` folder**
-   - Install in `apps/{app}/components/`
-   - Use when the block is specific to one app's domain
-   - Examples: `GameSidebar` for Mathler, app-specific navigation patterns
-
-**Application-Specific Components → App's `components/` folder**
-- Domain-specific compositions built from base components
-- Hooks and utils collocated with components (same directory)
-- Examples: `apps/app/components/feature-sidebar.tsx`
-
-### Decision Flow
-```
-Is it a base primitive component?
-├─ Yes → Install in @repo/ui/components/
-└─ No → Is it a block/template?
-    ├─ Reusable across apps? → Install in @repo/ui/blocks/
-    └─ App-specific? → Install in apps/{app}/components/
-```
+**Base (Primitives) → `@repo/ui`**: `packages/ui/src/components/`, shared across apps
+**Blocks/Templates**: Reusable (2+ apps) → `@repo/ui/blocks/`, App-specific → `apps/{app}/components/`
 
 ## Mobile-First Design
-All components follow mobile-first responsive design. See @.cursor/rules/frontend/mobile-first.mdc for guidelines.
+All components mobile-first. See @.cursor/rules/frontend/mobile-first.mdc

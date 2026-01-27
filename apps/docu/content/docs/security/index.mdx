@@ -300,7 +300,7 @@ Cross-Origin Resource Sharing (CORS) is configured to restrict which origins can
   - Set to comma-separated list for production: `https://app.example.com,https://admin.example.com`
 - **Allowed Methods**: GET, POST, PUT, DELETE, PATCH, OPTIONS
 - **Allowed Headers**: Content-Type, Authorization, X-Requested-With
-- **Credentials**: Disabled by default (set to true if cookies are needed)
+- **Credentials**: Disabled (JWT-only auth, no cookies required)
 
 CORS configuration is in `apps/fastify/src/plugins/cors.ts`.
 

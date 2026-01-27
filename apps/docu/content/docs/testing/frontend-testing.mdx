@@ -22,10 +22,10 @@ Complete guide for testing frontend applications with real APIs, TanStack Query,
 
 - **Location**: `**/*.spec.tsx` or `**/*.test.tsx`
 - **Pattern**: Test component rendering and user interactions
-- **Real APIs**: Use real API calls via TanStack Query hooks
-- **Mocking**: Only mock UI-specific things (window, localStorage), not APIs
+- **Real APIs**: Use real API calls via TanStack Query hooks (preferred)
+- **Mocking**: UI-only tests may mock `fetch` for performance (see Mocking Guidelines below)
 
-**Example Structure:**
+**Example with Real API:**
 ```typescript
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -50,6 +50,53 @@ describe('WalletList', () => {
     // Wait for real API call to complete
     const wallets = await screen.findAllByRole('listitem')
     expect(wallets.length).toBeGreaterThan(0)
+  })
+})
+```
+
+**Example with fetchMock (UI-only tests):**
+
+For UI-focused tests that verify form submission behavior, error display, or input validation without needing real API responses:
+
+```typescript
+import { render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { vi } from 'vitest'
+import { LoginForm } from './login-form'
+
+describe('LoginForm', () => {
+  let queryClient: QueryClient
+  let fetchMock: ReturnType<typeof vi.fn<typeof fetch>>
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    fetchMock = vi.fn<typeof fetch>()
+    global.fetch = fetchMock as typeof fetch
+  })
+
+  it('should call correct API endpoint on form submission', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ status: true }),
+    } as Response)
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <LoginForm />
+      </QueryClientProvider>
+    )
+
+    await userEvent.type(screen.getByLabelText(/email/i), 'test@example.com')
+    await userEvent.click(screen.getByRole('button', { name: /send/i }))
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/auth/sign-in/magic-link',
+        expect.objectContaining({ method: 'POST' })
+      )
+    })
   })
 })
 ```
@@ -109,28 +156,38 @@ describe('WalletIntegration', () => {
 - **Pattern**: Test full user flows with real infrastructure
 - **Real APIs**: All tests use real APIs and infrastructure
 - **Tools**: Use Playwright or Cypress
+- **Server Setup**: Playwright automatically starts both Fastify API server and Next.js frontend server
+
+**Server Configuration:**
+
+E2E tests use the real Fastify server (not mocks). Playwright's `webServer` configuration automatically starts both servers:
+
+- **Fastify API**: Runs on port 3001 (dev mode locally, start mode in CI)
+- **Next.js Frontend**: Runs on port 3000
+- Tests wait for both servers to be ready before running
 
 **Example Structure:**
 ```typescript
 import { test, expect } from '@playwright/test'
 
-test.describe('Wallet E2E', () => {
-  test('should create wallet and view balance', async ({ page }) => {
-    // Navigate to app (uses real API)
+test.describe('Magic Link Auth E2E', () => {
+  test('should complete full authentication flow', async ({ page }) => {
+    // Navigate to app (uses real Next.js server)
     await page.goto('http://localhost:3000')
     
-    // Login (uses real auth)
-    await page.click('text=Login')
-    await page.fill('[name=email]', 'test@example.com')
-    await page.click('text=Sign In')
+    // Submit form (makes real API call to Fastify server)
+    await page.fill('input[type="email"]', 'test@example.com')
+    await page.click('button[type="submit"]')
     
-    // Create wallet (uses real API)
-    await page.click('text=Create Wallet')
-    await page.selectOption('[name=chainId]', '421614')
-    await page.click('text=Create')
+    // Extract token from real Fastify test endpoint
+    const response = await fetch('http://localhost:3001/api/test/last-magic-link')
+    const { token } = await response.json()
     
-    // Verify wallet created (real API response)
-    await expect(page.locator('text=Wallet created')).toBeVisible()
+    // Verify magic link (uses Next.js BFF + Fastify)
+    await page.goto(`/api/auth/magic-link/verify?token=${token}&callbackURL=/dashboard`)
+    
+    // Verify authenticated state (HttpOnly JWT cookie)
+    await expect(page.locator('text=Dashboard')).toBeVisible()
   })
 })
 ```
@@ -251,16 +308,35 @@ Vitest is the test runner for all frontend tests:
 
 ### When to Mock
 
-- **UI-Only Tests**: Mock APIs for pure rendering tests (performance)
+- **UI-Only Component Tests**: Mock `fetch` for tests focused on form submission behavior, error message display, or input validation UI (use `fetchMock` pattern)
 - **Window APIs**: Mock `window`, `localStorage`, `sessionStorage`
 - **Timers**: Mock `setTimeout`, `setInterval` for time-dependent tests
 
+**fetchMock Pattern for UI-Only Tests:**
+
+```typescript
+let fetchMock: ReturnType<typeof vi.fn<typeof fetch>>
+
+beforeEach(() => {
+  fetchMock = vi.fn<typeof fetch>()
+  global.fetch = fetchMock as typeof fetch
+})
+
+// In test:
+fetchMock.mockResolvedValueOnce({
+  ok: false,
+  status: 400,
+  json: async () => ({ code: 'VALIDATION_ERROR', message: 'Invalid email' }),
+} as Response)
+```
+
 ### When NOT to Mock
 
-- **API Calls**: Never mock API calls in integration tests
+- **E2E Tests**: Never mock - E2E tests use real Fastify server and Next.js server
+- **Integration Tests**: Never mock API calls - use real endpoints
+- **Component Tests with Real Data**: Prefer real APIs when testing data fetching and display
 - **TanStack Query**: Never mock TanStack Query hooks
-- **Authentication**: Never mock authentication in integration tests
-- **Data Fetching**: Never mock data fetching hooks
+- **Authentication**: Never mock authentication in integration or E2E tests
 
 ## Future Work
 

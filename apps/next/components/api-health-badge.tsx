@@ -14,7 +14,7 @@ export function ApiHealthBadge() {
     return <Badge variant="destructive">API Down</Badge>
   }
 
-  if (data?.ok === true) {
+  if (data && typeof data === 'object' && 'ok' in data && data.ok === true) {
     return <Badge variant="default">API OK</Badge>
   }
 

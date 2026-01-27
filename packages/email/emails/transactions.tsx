@@ -1,14 +1,15 @@
 import { Body, Container, Heading, Link, Preview, Section, Text } from '@react-email/components'
 import { cn } from '@repo/ui/lib/utils'
 import { format, isValid, parseISO } from 'date-fns'
-import { Footer } from '../components/footer'
-import { Logo } from '../components/logo'
+import type React from 'react'
+import { Footer } from '../components/footer.js'
+import { Logo } from '../components/logo.js'
 import {
   Button,
   EmailThemeProvider,
   getEmailInlineStyles,
   getEmailThemeClasses,
-} from '../components/theme'
+} from '../components/theme.js'
 
 const formatTransactionDate = (date: string): string => {
   try {
@@ -146,11 +147,11 @@ const defaultTransactions = [
   },
 ]
 
-export const TransactionsEmail = ({
+export function TransactionsEmail({
   fullName = '',
   transactions = defaultTransactions,
   teamName = '',
-}: Props): React.ReactElement => {
+}: Props): React.ReactElement {
   const hasAppUrl = Boolean(process.env.APP_URL)
   const baseAppUrl = process.env.APP_URL || ''
   const firstName = fullName ? fullName.split(' ').at(0) : ''

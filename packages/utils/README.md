@@ -19,11 +19,6 @@ import { delay } from '@repo/utils/async'
 import { getChainMetadata } from '@repo/utils/web3'
 ```
 
-**Note**: Error handling utilities have been moved to `@repo/error`. Use platform-specific imports:
-- `import { getErrorMessage, captureError } from '@repo/error/node'` for Node.js/Fastify
-- `import { getErrorMessage, captureError } from '@repo/error/nextjs'` for Next.js
-- `import { getErrorMessage, captureError } from '@repo/error/browser'` for browser frameworks
-
 **Important**: Do not import from `@repo/utils` directly. Always use subpath imports.
 
 Runtime exports resolve to `dist/`, so make sure `pnpm --filter @repo/utils build` runs before production usage.
@@ -123,9 +118,10 @@ import { delay, fetchWithTimeout } from '@repo/utils/async'
 import { getChainMetadata, getChainType, isSupportedChain, ChainType, chainTypeSchema } from '@repo/utils/web3'
 ```
 
-**Error Handling**: Error utilities have been moved to `@repo/error`. Import from `@repo/error` instead:
+**Error Handling**: Error utilities are in `@repo/utils/error`. For error reporting to Sentry, use `@repo/sentry`:
 ```typescript
-import { getErrorMessage, captureError } from '@repo/error/node' // or '/nextjs', '/browser'
+import { getErrorMessage } from '@repo/utils/error'
+import { captureError } from '@repo/sentry/nextjs' // or '/node', '/browser'
 ```
 
 ## Peer Dependencies
@@ -146,7 +142,7 @@ These are only needed if you use specific subpaths:
 
 - `pino` - Required for `@repo/utils/logger` (server-side only)
 - `react` - Required for `@repo/utils/debug`
-- `react-use` - Required for `@repo/utils/debug`
+- `ahooks` - Required for `@repo/utils/debug`
 - `nuqs` - Required for `@repo/utils/debug`
 - `vconsole` - Required for `@repo/utils/debug`
 - `typescript` - Required for TypeScript type checking (optional at runtime)
@@ -160,7 +156,8 @@ These are only needed if you use specific subpaths:
 | `@repo/utils/async` | None | None |
 | `@repo/utils/web3` | `lodash-es`, `viem`, `zod` | `zod-validation-error` |
 | `@repo/utils/logger` | `pino` (server only) | None |
-| `@repo/utils/debug` | `react`, `react-use`, `nuqs`, `vconsole` | None |
+| `@repo/utils/debug` | `react`, `ahooks`, `nuqs`, `vconsole` | None |
+| `@repo/utils/error` | None | None |
 
 ## Best Practices
 

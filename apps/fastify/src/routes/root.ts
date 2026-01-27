@@ -2,8 +2,17 @@ import type { FastifyPluginAsync } from 'fastify'
 import { env } from '../lib/env.js'
 
 const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
-  fastify.get('/', async (_request, reply) => {
-    const html = `
+  fastify.get(
+    '/',
+    {
+      schema: {
+        hide: true,
+        tags: ['public'],
+        security: [],
+      },
+    },
+    async (_request, reply) => {
+      const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -129,8 +138,9 @@ const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 </body>
 </html>
     `
-    return reply.type('text/html').send(html)
-  })
+      return reply.type('text/html').send(html)
+    },
+  )
 }
 
 export default root

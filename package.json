@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build --filter='!./contracts/**'",
-    "dev": "turbo dev",
+    "dev": "turbo run dev --filter='@repo/core' --filter='@repo/react' --filter='@repo/sentry' --filter='@repo/utils' --filter='@repo/fastify' --filter='@repo/next'",
     "checktypes": "turbo checktypes",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "lint:biome": "biome check .",
@@ -12,6 +12,7 @@
     "lint:eslint:fix": "turbo run lint:eslint:fix",
     "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
     "test": "turbo run test --filter='!./contracts/**'",
+    "test:e2e": "pnpm --filter @repo/fastify test:e2e && pnpm --filter @repo/next test:e2e",
     "format": "biome format . --write",
     "hooks:pre-commit": "pnpm run hooks:security && biome check --write --staged --no-errors-on-unmatched && git update-index --again",
     "hooks:security": "node scripts/block-secret-files.mjs && node scripts/scan-secrets-staged.mjs && node scripts/scan-osv.mjs",
@@ -29,16 +30,23 @@
     "setup:evm": "node scripts/setup-evm-tools.mjs",
     "setup:solana": "node scripts/setup-solana-tools.mjs",
     "setup:database": "node scripts/setup-database.mjs",
-    "qa": "pnpm i && pnpm lint:fix && pnpm checktypes && pnpm run build && pnpm run test",
-    "update-deps": "pnpm up --latest --recursive"
+    "qa": "pnpm i --no-frozen-lockfile && pnpm lint:fix && turbo run checktypes test --concurrency=100% --filter='!./contracts/**'",
+    "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "22.x",
+    "@types/react": "^19.2.9",
+    "@typescript/native-preview": "7.0.0-dev.20260124.1",
+    "@vitest/coverage-v8": "^4.0.17",
+    "ahooks": "^3.9.6",
+    "eslint": "^9.39.2",
     "simple-git-hooks": "2.13.1",
+    "tsup": "^8.5.1",
     "turbo": "^2.7.5",
-    "typescript": "5.9.3"
+    "vitest": "^4.0.17"
   },
   "engines": {
     "node": "22.x"

@@ -1,8 +1,13 @@
 import { Body, Container, Heading, Preview, Section, Text } from '@react-email/components'
-import { Button } from '../components/button'
-import { Footer } from '../components/footer'
-import { Logo } from '../components/logo'
-import { EmailThemeProvider, getEmailInlineStyles, getEmailThemeClasses } from '../components/theme'
+import 'react'
+import { Button } from '../components/button.js'
+import { Footer } from '../components/footer.js'
+import { Logo } from '../components/logo.js'
+import {
+  EmailThemeProvider,
+  getEmailInlineStyles,
+  getEmailThemeClasses,
+} from '../components/theme.js'
 
 interface Props {
   timestamp: string
@@ -15,7 +20,7 @@ interface Props {
   thisWasMeUrl?: string
 }
 
-export const LoginNotificationEmail = ({
+export function LoginNotificationEmail({
   timestamp,
   ipAddress,
   location,
@@ -24,7 +29,7 @@ export const LoginNotificationEmail = ({
   fullName = '',
   secureAccountUrl,
   thisWasMeUrl,
-}: Props) => {
+}: Props) {
   const firstName = fullName ? fullName.split(' ').at(0) : ''
   const previewText = `${firstName ? `Hi ${firstName}, ` : ''}New sign-in detected`
   const themeClasses = getEmailThemeClasses()

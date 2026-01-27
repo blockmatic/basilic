@@ -3,10 +3,11 @@ import { writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import swagger from '@fastify/swagger'
+import { logger } from '@repo/utils/logger'
 import Fastify from 'fastify'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const scriptPath = fileURLToPath(import.meta.url)
+const scriptDir = dirname(scriptPath)
 
 /**
  * Post-process OpenAPI schema to remove fields with default values from required arrays.
@@ -107,6 +108,7 @@ async function generateOpenAPI() {
   // Create Fastify instance (same as production)
   const fastify = Fastify({
     logger: false, // Disable logging for generation
+    pluginTimeout: 30000, // Increase timeout for plugin loading (30 seconds)
   })
 
   try {
@@ -119,6 +121,15 @@ async function generateOpenAPI() {
           version: '1.0.0',
           description: 'Basilic API documentation',
         },
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: 'http',
+              scheme: 'bearer',
+            },
+          },
+        },
+        security: [{ bearerAuth: [] }],
       },
     })
 
@@ -136,12 +147,12 @@ async function generateOpenAPI() {
     const processedDocument = removeDefaultsFromRequired(openApiDocument) as typeof openApiDocument
 
     // Write to openapi.json
-    const outputPath = join(__dirname, '../openapi/openapi.json')
+    const outputPath = join(scriptDir, '../openapi/openapi.json')
     await writeFile(outputPath, JSON.stringify(processedDocument, null, 2), 'utf-8')
 
-    console.log(`✅ OpenAPI spec generated: ${outputPath}`)
+    logger.info({ outputPath }, 'OpenAPI spec generated')
   } catch (error) {
-    console.error('❌ Failed to generate OpenAPI spec:', error)
+    logger.error({ error }, 'Failed to generate OpenAPI spec')
     process.exit(1)
   } finally {
     await fastify.close()

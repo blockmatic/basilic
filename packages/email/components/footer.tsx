@@ -1,5 +1,5 @@
 import { Hr, Section, Text } from '@react-email/components'
-import { getEmailInlineStyles, getEmailThemeClasses } from './theme'
+import { getEmailInlineStyles, getEmailThemeClasses } from './theme.js'
 
 export function Footer() {
   const themeClasses = getEmailThemeClasses()

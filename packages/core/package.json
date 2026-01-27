@@ -11,20 +11,27 @@
   },
   "scripts": {
     "build": "tsup",
-    "checktypes": "tsc --noEmit",
+    "checktypes": "tsgo --noEmit",
+    "dev": "node --import tsx scripts/wait-and-watch.mjs",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
+    "lint:biome": "biome check .",
+    "lint:biome:fix": "biome check . --write",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs",
-    "generate": "openapi-ts",
+    "generate": "openapi-ts && node --import tsx scripts/generate-wrapper.mjs",
     "test": "echo \"no test\""
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.90.8",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^9.39.2",
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "@repo/utils": "workspace:*",
+    "chokidar-cli": "^3.0.0",
+    "eslint": "*",
+    "tsup": "*",
+    "tsx": "^4.21.0",
+    "@typescript/native-preview": "7.0.0-dev.20260124.1"
   }
 }

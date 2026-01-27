@@ -1,84 +1,32 @@
 ---
 description: React component patterns and best practices
-alwaysApply: false
+glob: "**/*.{tsx,css}"
+alwaysApply: true
 ---
-# React Rules
 
 ## Component Structure
-- Function components only (never class components)
-- No explicit return types (inferred automatically)
-- Props always use object destructuring: `function Component({ title }: { title: string })`
-- RORO pattern applies to regular functions only, not React components (see @.cursor/rules/base/typescript.mdc)
+Function components only (never class), function declaration syntax (`function Component() {}`), no explicit return types (inferred), props use object destructuring, RORO for regular functions only (see @.cursor/rules/base/typescript.mdc)
 
 ## Component Organization
-- **One component per file** - Each component with state must be in its own file
-- **Stateless components allowed** - Multiple stateless components can be in the same file (useful for small utility/helper components)
-- If component is truly tiny and only used once, consider inlining it directly in JSX
+One component per file (if stateful), stateless components can share file, inline tiny single-use components in JSX
 
 ## State Management Decision Tree
-1. **URL-shareable UI state** → Use `nuqs` (filters, search, tabs, pagination, view preferences)
-2. **Grouped state not in URL** → Use `useSetState` from `react-use` (game engine, form state, ephemeral UI state)
-3. **Loading/error states from async** → Use TanStack Query's built-in state (`isLoading`, `isError`, `isFetching`)
-4. **Simple independent state** → Use `useState` (rare, prefer other options)
-
-**Use nuqs for**: Search/filter, tabs, pagination, sort options, view preferences, shareable modal state
-
-**Don't use nuqs for**: Game engine state, form input state, component-local UI state, frequently changing state, sensitive data
-
-**Use useSetState for**: Multiple related state variables updated together, form state, UI state that changes together (if not URL-shareable), game/app state
-
-**Don't use useSetState for**: URL-shareable state (use `nuqs`), loading/error states (use TanStack Query)
-
-### Loading/Error State Management
-Never manually manage `isLoading`, `error`, or `isError` states. Use TanStack Query hooks or `useAsyncFn` which provide these automatically.
-
-**When to use TanStack Query state**: Server data fetching (cached, shared across components), mutations and optimistic updates, data that needs background refetching
-
-**When to use useAsyncFn**: One-off async operations (file uploads, form submissions without caching), non-data-fetching async operations
+1. URL-shareable UI → `nuqs` (filters/search/tabs/pagination/view preferences)
+2. Grouped state not in URL → `useSetState` from `ahooks` (forms/ephemeral UI)
+3. Loading/error from async → TanStack Query built-in (`isLoading`/`isError`/`isFetching`)
+4. Simple independent → `useState` (rare)
 
 ## Rendering Optimization
 
-### Memoization (Default: Avoid)
-**CRITICAL**: With React 19.2.3 and modern JavaScript engines, most memoization is unnecessary and can actually harm performance.
+### Memoization
+Default: avoid. React 19.2.3 + modern engines handle most cases. See @.cursor/rules/frontend/react-hooks.mdc
 
-**Default to NOT using `useMemo` or `useCallback`** - Modern React optimizations (Fiber, automatic batching, concurrent rendering) handle most cases automatically.
+### Concurrent Rendering
+**Transitions** (`useTransition`/`startTransition`): Non-urgent updates (search/filter inputs, tab switching, heavy state updates)
 
-#### When to Use useMemo/useCallback
-Only use when:
-1. **Context provider values** - Prevents unnecessary re-renders of all consumers
-2. **Expensive computations** - Actual heavy calculations (not simple array operations)
-3. **Stable dependencies for hooks** - When function identity is required AND dependencies are stable
-4. **Third-party library requirements** - When library explicitly requires stable references
+**Deferred Values** (`useDeferredValue`): Defer expensive computations (filtering/computation). Only use `useMemo` with it if genuinely expensive
 
-#### When NOT to Use useMemo/useCallback
-**Remove memoization when**:
-1. **Dependencies change frequently** - Memoization becomes ineffective
-2. **Simple computations** - Array operations, object creation, simple conditionals
-3. **Inline functions** - Modern engines optimize these efficiently
-4. **JSX memoization** - React handles JSX efficiently
-5. **useEffect dependencies** - If callback depends on frequently changing state, it defeats the purpose
-
-**Best Practice**: Start without memoization. Only add `useMemo` or `useCallback` when profiling reveals an actual bottleneck that affects user experience.
-
-#### Prefer React.memo Over useCallback
-Instead of wrapping functions with `useCallback`, prefer `React.memo` for pure components.
-
-### Concurrent Rendering Features
-**Transitions** (`useTransition` / `startTransition`): Use for non-urgent updates that shouldn't block UI. Pattern: `startTransition(() => { setFilteredData(expensiveFilter(data)) })`. Use `isPending` to show loading states. **When to use**: Search/filter inputs, tab switching, heavy state updates. **When NOT to use**: Urgent updates (user input), critical UI updates
-
-**Deferred Values** (`useDeferredValue`): Use to defer expensive computations while keeping UI responsive. Pattern: `const deferredQuery = useDeferredValue(query)` then use in `useMemo` (only if computation is actually expensive). Keeps previous value visible while new value is computed. **When to use**: Expensive filtering/computation that can be deferred (e.g., filtering large arrays, complex calculations). **When NOT to use**: Critical UI updates that need immediate feedback, simple computations that don't need memoization. **Note**: Only use `useMemo` with `useDeferredValue` if computation is genuinely expensive. For simple operations, compute directly with deferred value.
-
-**Suspense**: Wrap async operations in Suspense boundaries. Server Components: automatic via `loading.tsx` files. Client Components: manual boundaries for async operations. Use multiple Suspense boundaries for independent streaming.
+**Suspense**: Wrap async ops. Server: automatic via `loading.tsx`. Client: manual boundaries. Use multiple for independent streaming
 
 ## Error Boundaries
-Use `react-error-boundary` with `@repo/error` for error handling. See @.cursor/rules/base/error-handling.mdc for complete patterns.
-
-**Use for**: App-level, section-level, feature-level error handling, third-party component errors
-
-**Don't use for**: Event handlers (use try/catch with `captureError`), async code (use try/catch), SSR errors
-
-## Related
-- @.cursor/rules/frontend/react-hooks.mdc - Data fetching patterns
-- @.cursor/rules/frontend/stack.mdc - Library usage patterns
-- @.cursor/rules/frontend/nextjs.mdc - Next.js-specific patterns
-- @.cursor/rules/base/typescript.mdc - Code style guidelines
+Use `react-error-boundary` with `@repo/error` (see @.cursor/rules/base/error-handling.mdc). Use for app/section/feature-level, third-party component errors. Not for event handlers (try/catch with `captureError`), async code (try/catch), SSR errors

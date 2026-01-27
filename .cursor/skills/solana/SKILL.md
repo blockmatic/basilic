@@ -1,4 +1,4 @@
-# Skill: solana-dev
+# Skill: solana
 
 ## Scope
 
@@ -11,8 +11,18 @@
 - Address validation and transaction patterns
 
 Does NOT cover:
-- EVM frontend development (see `web3-frontend` skill)
-- General blockchain concepts (see `blockchain-basics` skill)
+- EVM frontend development (see wagmi skill)
+- General blockchain concepts
+
+## Assumptions
+
+- Anchor 0.32.1 for program development
+- `@solana/client` and `@solana/react-hooks` for UI development
+- `@solana/kit` for client/RPC/transaction code
+- `@solana/web3.js` v1.x for legacy compatibility
+- React 18+ or Next.js 14+ for UI
+- TypeScript v5+ with strict mode
+- Node.js 18+
 
 ## Principles
 
@@ -22,31 +32,33 @@ Does NOT cover:
 - Validate addresses with `PublicKey` from `@solana/web3.js`
 - Use Wallet Standard for wallet discovery and connection
 - Isolate `@solana/web3.js` to adapter boundaries when legacy dependencies require it
-- Organize contracts using standard Anchor project structure
+- Organize programs using standard Anchor project structure
+- Use LiteSVM or Mollusk for unit tests
+- Use Surfpool for integration tests against realistic cluster state
 
-## Default stack decisions (opinionated)
-1) **UI: framework-kit first**
-- Use `@solana/client` + `@solana/react-hooks`.
-- Prefer Wallet Standard discovery/connect via the framework-kit client.
+## Constraints
 
-2) **SDK: @solana/kit first**
-- Prefer Kit types (`Address`, `Signer`, transaction message APIs, codecs).
-- Prefer `@solana-program/*` instruction builders over hand-rolled instruction data.
+### MUST
 
-3) **Legacy compatibility: web3.js only at boundaries**
-- If you must integrate a library that expects web3.js objects (`PublicKey`, `Transaction`, `Connection`),
-  use `@solana/web3-compat` as the boundary adapter.
-- Do not let web3.js types leak across the entire app; contain them to adapter modules.
+- Validate addresses with `PublicKey.isOnCurve()` before use
+- Use Anchor test framework for program testing
+- Organize programs in `programs/` directory
+- Use `@solana/web3-compat` for legacy adapter boundaries
 
-4) **Programs**
-- Default: Anchor (fast iteration, IDL generation, mature tooling).
-- Performance/footprint: Pinocchio when you need CU optimization, minimal binary size,
-  zero dependencies, or fine-grained control over parsing/allocations.
+### SHOULD
 
-5) **Testing**
-- Default: LiteSVM or Mollusk for unit tests (fast feedback, runs in-process).
-- Use Surfpool for integration tests against realistic cluster state (mainnet/devnet) locally.
-- Use solana-test-validator only when you need specific RPC behaviors not emulated by LiteSVM.
+- Use `@solana/kit` types (`Address`, `Signer`) over web3.js types
+- Prefer `@solana-program/*` instruction builders over hand-rolled instruction data
+- Use Wallet Standard for wallet discovery/connect
+- Use LiteSVM or Mollusk for unit tests (fast feedback)
+- Use Surfpool for integration tests against realistic cluster state
+- Contain `@solana/web3.js` types to adapter modules (don't leak across app)
+
+### AVOID
+
+- Letting `@solana/web3.js` types leak across entire app
+- Using solana-test-validator when LiteSVM/Mollusk suffice
+- Skipping address validation before use
 
 ## Patterns
 

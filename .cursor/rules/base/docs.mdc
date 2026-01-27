@@ -1,0 +1,28 @@
+---
+description: Documentation standards and best practices
+glob: "apps/docu/**/*.mdx, **/README.md, **/README.mdc"
+alwaysApply: true
+---
+
+## Writing Principles
+- Simple, succinct, technical, factual
+- Active voice, concrete examples, consistent terminology
+- 300-500 words/section, remove redundancy
+
+## Content Structure
+- Most important information first
+- Clear headings, one concept per section
+- Link related pages at end
+- Page structure: Title/description → 2-3 sentence intro → Main content (H2/H3) → Examples → Related links
+
+## Navigation
+- Max 5-7 top categories, max 3 levels deep
+- Breadcrumb-friendly, bidirectional links, search-optimized
+
+## Organization
+- DRY, progressive complexity (simple → advanced)
+- Task-based guides, separate reference from tutorials, modular
+
+## READMEs
+- Lean with links to docs site
+- Structure: Requirements → Quick Start → Links, no duplication

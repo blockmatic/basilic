@@ -10,7 +10,8 @@ The authentication system uses Better Auth as the core framework, integrated wit
 ## Architecture Principles
 
 - **Backend-controlled**: All authentication flows are verified server-side
-- **Session-based**: Cookie-based sessions for web clients, JWTs optional for non-browser clients
+- **JWT-only**: Fastify accepts only `Authorization: Bearer` tokens
+- **BFF pattern**: Next.js stores JWTs in HttpOnly cookies and proxies auth requests
 - **Drizzle as source of truth**: All schema and migrations controlled by Drizzle ORM
 - **Portable**: Works with PostgreSQL (production) or PGLite (testing/preview)
 - **No vendor lock-in**: Self-hosted, no SaaS dependencies
@@ -23,7 +24,20 @@ Passwordless authentication via email links. Users receive a magic link that sig
 
 **Endpoints:**
 - `POST /api/auth/sign-in/magic-link` - Send magic link to email
-- `GET /api/auth/magic-link/verify` - Verify magic link token
+  - Request body: `{ email: string, callbackURL?: string }`
+  - Response: `{ status: true }`
+  - Sends email with verification link containing a token
+  
+- `GET /api/auth/magic-link/verify?token=xxx&format=jwt` - Verify magic link token and return JWT
+  - Query params: `token` (required), `format=jwt` (required for JWT response)
+  - Response: `{ token: "jwt..." }` (JWT token in response body, no cookies set)
+  - Used by Next.js BFF to fetch JWT for HttpOnly cookie storage
+  
+**JWT-Only Flow:**
+- All magic link verifications with `format=jwt` return JWT in response body
+- No session cookies are set when `format=jwt` is used
+- Clients must store JWT and send as `Authorization: Bearer <token>`
+- Web clients should use the Next.js BFF for HttpOnly cookie storage
 
 ### Web3 Wallet Authentication
 
@@ -41,11 +55,37 @@ Web3 wallet authentication infrastructure exists but is currently disabled. The 
 
 ## Session Management
 
-Sessions are stored in PostgreSQL and managed by Better Auth. Session cookies are:
-- HttpOnly (not accessible via JavaScript)
-- Secure in production (HTTPS only)
-- SameSite: lax (CSRF protection)
-- 7-day expiration with 1-day update age
+Sessions are stored in PostgreSQL and managed by Better Auth with JWT-based access:
+
+**JWT Token Flow:**
+- Magic link verification with `format=jwt` returns a JWT token in the response body
+- Next.js BFF stores JWT in an HttpOnly cookie (client cannot access)
+- All subsequent API requests include `Authorization: Bearer <token>` header
+- Fastify validates bearer tokens by looking up sessions in the database
+- JWT expiration configured via `JWT_EXPIRES_IN` environment variable
+
+**Session Lookup:**
+- Fastify's bearer plugin converts Authorization headers to session tokens
+- Auth middleware queries the database to resolve JWT tokens to active sessions
+- Protected routes access `request.session` populated by auth middleware
+
+## Next.js BFF Pattern
+
+The Next.js app acts as a Backend-for-Frontend, proxying auth requests and managing JWT storage:
+
+**Request Flow:**
+1. **Magic link verify**: Next.js receives `/api/auth/magic-link/verify?token=xxx&format=jwt`
+2. **JWT fetch**: BFF requests JWT from Fastify: `GET /api/auth/magic-link/verify?token=xxx&format=jwt`
+3. **Token storage**: Fastify returns `{token: "jwt..."}`, BFF stores in HttpOnly cookie
+4. **Redirect**: BFF redirects to dashboard with cookie set
+5. **SSR/API requests**: BFF reads cookie server-side and injects `Authorization: Bearer` header
+6. **Sign out**: BFF clears HttpOnly cookie and proxies sign-out to Fastify
+
+**Security Benefits:**
+- JWT never exposed to client JavaScript (HttpOnly cookie)
+- BFF handles token refresh and rotation server-side
+- Client code doesn't manage authentication state
+- Server Components get authenticated requests automatically
 
 ## Data Model
 
@@ -142,7 +182,89 @@ Sessions are stored in PostgreSQL and managed by Better Auth. Session cookies ar
 - Unique constraint on `(chain, address)`
 - Indexes on `userId` and `address`
 
+## Technical Implementation
+
+### Fastify Auth Middleware
+
+The auth plugin (`apps/fastify/src/plugins/auth.ts`) implements JWT-only authentication:
+
+1. **Bearer Token Extraction**: Extracts JWT from `Authorization: Bearer <token>` header
+2. **Better Auth Bearer Plugin**: Enables bearer token support in Better Auth framework
+3. **Session Lookup**: Queries database to resolve JWT to active session via `getSessionFromToken` helper
+4. **Request Context**: Populates `request.session` for protected route access
+
+**Protected Routes:**
+- Use `requireAuth(request)` helper to enforce authentication
+- Returns typed session with `user` and `session` objects
+- Automatically throws 401 if not authenticated
+
+**Session Lookup (`apps/fastify/src/lib/auth-session.ts`):**
+- Calls Better Auth's `auth.handler` with bearer token
+- Resolves JWT to session by querying database
+- Caches session in `request.session` for route handlers
+
+### Magic Link JWT Proxy
+
+The auth proxy (`apps/fastify/src/lib/auth-proxy.ts`) handles JWT-formatted responses:
+
+**When `format=jwt` is present:**
+1. Calls Better Auth verification endpoint (without `format` param)
+2. Better Auth verifies token and creates session
+3. Extracts session cookie from Better Auth response
+4. Calls `/api/auth/token` endpoint with session cookie
+5. Returns JWT token in response body: `{ token: "jwt..." }`
+6. Never sets cookies in response to client
+
+**Implementation Strategy:**
+- Isolates Better Auth's internal session cookies from clients
+- Converts session-cookie-based flow to JWT-only for external consumption
+- Ensures `format=jwt` requests are truly stateless (no cookies required or sent)
+
+### Next.js BFF Proxy
+
+The Next.js BFF (`apps/next/app/api/auth/[...path]/route.ts`) provides secure JWT storage:
+
+**Magic Link Verification:**
+1. Intercepts `/api/auth/magic-link/verify` requests
+2. Adds `format=jwt` parameter when proxying to Fastify
+3. Receives JWT in response body
+4. Stores JWT in HttpOnly cookie (`better-auth.jwt_token`)
+5. Redirects to callback URL with cookie set
+
+**General Auth Proxying:**
+- Reads JWT from HttpOnly cookie server-side
+- Injects `Authorization: Bearer` header in proxied requests
+- Strips all cookies from proxied requests (JWT-only to Fastify)
+- Returns responses without cookie headers
+
 ## Authentication Flow Diagrams
+
+### Magic Link Web Flow
+
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant NextBFF as Next.js BFF
+  participant FastifyAPI as Fastify API
+  participant DB as PostgreSQL
+
+  Browser->>NextBFF: GET /api/auth/magic-link/verify?token=...&callbackURL=...
+  NextBFF->>FastifyAPI: GET /api/auth/magic-link/verify?token=...&format=jwt
+  FastifyAPI->>FastifyAPI: Verify token with Better Auth
+  FastifyAPI->>DB: Create/verify session
+  FastifyAPI->>FastifyAPI: Get JWT from Better Auth /token endpoint
+  FastifyAPI-->>NextBFF: {token: "jwt..."}
+  NextBFF->>NextBFF: Store in HttpOnly cookie
+  NextBFF-->>Browser: Redirect to /dashboard with cookie set
+  
+  Browser->>NextBFF: GET /dashboard (SSR)
+  NextBFF->>NextBFF: Read JWT from cookie
+  NextBFF->>FastifyAPI: GET /api/auth/get-session<br/>Authorization: Bearer <jwt>
+  FastifyAPI->>DB: Lookup session by JWT
+  DB-->>FastifyAPI: Session + User
+  FastifyAPI-->>NextBFF: {user, session}
+  NextBFF-->>Browser: Render dashboard with user data
+```
 
 ### High-Level Web3 Auth Flow
 
@@ -162,7 +284,7 @@ sequenceDiagram
     API->>API: verify signature (SIWE/SIWS)
     API->>DB: find or create user
     API->>DB: create session
-    API->>Client: set session cookie
+    API->>Client: return JWT token
 ```
 
 ### Data Relationships
@@ -206,6 +328,10 @@ erDiagram
 ## Security Considerations
 
 - **HTTPS only** in production
+- **JWT-only authentication** - No session cookies accepted by Fastify
+- **HttpOnly cookie storage** - JWT stored in HttpOnly cookie by Next.js BFF (prevents XSS)
+- **Bearer token validation** - All API requests validated via Authorization header
+- **Database session lookup** - JWT tokens resolved to active sessions via database queries
 - **Strict domain validation** in SIWE/SIWS messages
 - **Short-lived nonces** (5-minute TTL)
 - **Rate limiting** on auth endpoints
@@ -235,16 +361,22 @@ This ensures migrations work across all deployment platforms (Docker, Railway, F
 ## Implementation Status
 
 **Implemented:**
-- Better Auth foundation with Drizzle adapter
+- Better Auth foundation with Drizzle adapter and bearer plugin
+- JWT-only authentication flow (no cookie-based auth)
+- Magic link authentication with JWT token response (`format=jwt`)
+- Next.js BFF with HttpOnly cookie storage for web clients
+- Database-backed session lookup for bearer tokens
 - Sessions table and management
-- Magic link authentication (fully functional)
 - Verification table for magic link tokens
 - Account table (OAuth ready, no password field)
 - Error handling with `@repo/error/node`
+- Auth proxy for JWT conversion from Better Auth sessions
 - Web3 auth plugin structure (infrastructure only)
 - Wallet identities table (infrastructure only)
 
 **Architecture Decisions:**
+- **JWT-only**: Fastify accepts only `Authorization: Bearer` tokens, no session cookies
+- **BFF pattern**: Next.js stores JWTs in HttpOnly cookies and injects bearer headers
 - **Magic link only**: Password authentication removed in favor of passwordless email-based login
 - **OAuth ready**: Account table prepared for future OAuth provider integration
 - **Web3 disabled**: Infrastructure exists but tests are disabled until full implementation

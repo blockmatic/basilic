@@ -12,8 +12,11 @@ description = "Allowlist for test fixtures and example files"
 paths = [
   '''\.env-example$''',
   '''\.env\.example$''',
+  '''\.env-sample$''',
+  '''\.env\.sample$''',
   '''\.env\.schema$''',
   '''\.env\.test$''',
+  '''\.github/workflows/.*\.yml$''',
   '''test.*\.(ts|tsx|js|jsx|mjs)$''',
   '''.*\.test\.(ts|tsx|js|jsx|mjs)$''',
   '''.*\.spec\.(ts|tsx|js|jsx|mjs)$''',
@@ -30,6 +33,8 @@ regexes = [
   '''test.*mnemonic''',
   '''example.*key''',
   '''dummy.*secret''',
+  '''test.*secret.*key''',
+  '''test-secret-key-that-is-at-least''',
 ]
 
 [allowlist.regexDescription]

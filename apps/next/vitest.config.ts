@@ -6,7 +6,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
-    include: ['**/*.spec.ts', '**/*.spec.tsx'],
+    include: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.test.ts', '**/*.test.tsx'],
     exclude: ['node_modules', '.next', 'e2e'],
     coverage: {
       provider: 'v8',
@@ -14,6 +14,7 @@ export default defineConfig({
       include: ['lib/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}'],
       exclude: ['**/*.d.ts', '**/node_modules/**'],
     },
+    testTimeout: 15000,
   },
   resolve: {
     alias: {

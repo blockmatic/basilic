@@ -1,9 +1,10 @@
 import { eq } from 'drizzle-orm'
-import { describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { decryptAccountTokens, encryptAccountTokens } from '../src/db/account.js'
 import { getDb } from '../src/db/index.js'
 import { account, users } from '../src/db/schema/index.js'
 import { decrypt, encrypt, validateEncryptionKey } from '../src/lib/crypto.js'
+import { cleanupGroupDatabase, setupGroupDatabase } from './utils/db-setup.js'
 
 describe('Crypto Utility', () => {
   describe('validateEncryptionKey', () => {
@@ -139,6 +140,14 @@ describe('Crypto Utility', () => {
 })
 
 describe('Account Token Encryption', () => {
+  beforeAll(async () => {
+    await setupGroupDatabase()
+  })
+
+  afterAll(async () => {
+    await cleanupGroupDatabase()
+  })
+
   describe('encryptAccountTokens', () => {
     it('should encrypt all token fields', () => {
       const accountData = {

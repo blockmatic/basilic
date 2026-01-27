@@ -1,34 +1,16 @@
 ---
 description: Next.js standards
-alwaysApply: false
+glob: "**/*.{tsx,css}"
+alwaysApply: true
 ---
-# Next.js Rules
 
 ## React Server Components (CRITICAL)
-**ALWAYS default to Server Components. Only use `'use client'` when absolutely necessary.**
+ALWAYS default to Server Components. Only `'use client'` when necessary: interactive features (`onClick`/`onChange`/`onSubmit`), Browser APIs (`window`/`document`/`localStorage`), React hooks (`useState`/`useEffect`/`useContext`), client-side libraries, event listeners
 
-**When to Use Client Components**: Interactive features (`onClick`, `onChange`, `onSubmit`), Browser APIs (`window`, `document`, `localStorage`), React hooks (`useState`, `useEffect`, `useContext`), third-party libraries requiring client-side execution, event listeners/real-time subscriptions
-
-**Anti-Patterns**: Unnecessary client components, entire page as client when only small part needs interactivity
+❌ Unnecessary client components, entire page as client
 
 ## Performance Optimization
+See @.cursor/rules/frontend/react.mdc for concurrent rendering (Suspense/Transitions/Deferred Values)
 
-### Concurrent Rendering Features
-**Suspense Boundaries**: Leverage automatic Suspense for Server Components via `loading.tsx` files, add manual Suspense boundaries for progressive loading in Client Components, use multiple Suspense boundaries for independent streaming sections
-
-**Transitions** (`useTransition` / `startTransition`): Use for search/filter inputs, tab switching, heavy state updates. Pattern: `startTransition(() => { setFilteredData(expensiveFilter(data)) })`. Use `isPending` to show loading states
-
-**Deferred Values** (`useDeferredValue`): Use for expensive filtering/computation that can be deferred. Pattern: `const deferredQuery = useDeferredValue(query)` then use in `useMemo` (only if computation is genuinely expensive). **Important**: Only use `useMemo` with `useDeferredValue` if computation is actually expensive (filtering 1000+ items, complex calculations). For simple operations, compute directly with deferred value
-
-**Streaming Patterns**: Use multiple Suspense boundaries for independent streaming sections, show critical content immediately, stream non-critical content progressively
-
-### Core Web Vitals & Image Optimization
-- Optimize Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
-- Optimize images: WebP format, proper size data, lazy loading
-
-## Related
-- @.cursor/rules/base/linting.mdc - Hybrid Biome + ESLint architecture
-- @.cursor/rules/frontend/react-hooks.mdc - TanStack Query patterns
-- @.cursor/rules/frontend/react.mdc - Component patterns
-- @.cursor/rules/base/environment.mdc - Environment variable patterns
-- @.cursor/rules/base/typescript.mdc - Code style guidelines
+### Core Web Vitals & Images
+Optimize Core Web Vitals (LCP <2.5s, FID <100ms, CLS <0.1), images (WebP, proper sizes, lazy loading)

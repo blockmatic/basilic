@@ -1,8 +1,8 @@
 {
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
+      "*": ["./*"],
       "@/*": ["./*"],
       "@repo/ui/*": ["../../packages/ui/src/*"],
       "@repo/core": ["../../packages/core/src/index.ts"],
@@ -16,11 +16,11 @@
   },
   "include": [
     "next-env.d.ts",
-    "next.config.ts",
+    "next.config.mjs",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "../../config/typescript/reset.d.ts"
+    "../../tools/typescript/reset.d.ts"
   ],
   "exclude": ["node_modules"]
 }

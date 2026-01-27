@@ -1,9 +1,9 @@
 'use client'
-import { useNuqsDebug } from './use-nuqs-debug'
-import { useVConsole } from './use-vconsole'
+import { useNuqsDebug } from './use-nuqs-debug.js'
+import { useVConsole } from './use-vconsole.js'
 
-export * from './use-nuqs-debug'
-export * from './use-vconsole'
+export * from './use-nuqs-debug.js'
+export * from './use-vconsole.js'
 
 export function useDevtools() {
   return {

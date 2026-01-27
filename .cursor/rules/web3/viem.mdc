@@ -1,57 +1,24 @@
 ---
 description: Viem v2 integration patterns and best practices
-alwaysApply: false
+glob: "**/*.{ts,tsx}"
+alwaysApply: true
 ---
-# Viem v2 Rules
 
 ## Version
-- **Viem**: v2.44.4 (from `packages/utils/package.json`)
+Viem v2.44.4 (from `packages/utils/package.json`)
 
 ## Core Principles
-- Use `getAddress` for address validation
-- Never cast directly as Address type
-- Use `@repo/utils/web3` for chain type utilities (`ChainType`, `getChainType`, `getChainMetadata`)
+Use `getAddress` for address validation, never cast as Address type, use `@repo/utils/web3` for chain utilities (`ChainType`, `getChainType`, `getChainMetadata`)
 
 ## Address Handling
-```tsx
-import { getAddress, type Address } from 'viem'
-
-// Proper address validation
-function validateAddress(rawAddress: string) {
-  try {
-    return getAddress(rawAddress)
-  } catch (error) {
-    throw new Error('Invalid Ethereum address')
-  }
-}
-```
+`getAddress(rawAddress)` in try/catch, throw on invalid Ethereum address
 
 ## Transaction Handling
-```tsx
-import { type Hash, parseEther } from 'viem'
+Send transaction: `walletClient.sendTransaction({ to: getAddress(to), value: parseEther(value), data })`, catch `INSUFFICIENT_FUNDS`
 
-// Send transaction pattern
-export async function sendTransaction({ to, value, data }: SendTransactionParams) {
-  try {
-    const hash = await walletClient.sendTransaction({
-      to: getAddress(to),
-      value: parseEther(value),
-      data
-    })
-    return { hash }
-  } catch (error) {
-    if (error.code === 'INSUFFICIENT_FUNDS') {
-      throw new Error('Insufficient balance')
-    }
-    throw error
-  }
-}
-```
-
-## Performance Optimization
-- Use multicall for batch requests
-- Use WebSocket for real-time updates
+## Performance
+Use multicall for batch requests, WebSocket for real-time updates
 
 ## Related
-- @.cursor/rules/web3/wagmi.mdc - React hooks for Ethereum using Wagmi v3
-- @.cursor/rules/web3/multichain.mdc - Multichain address validation coordination
+- @.cursor/rules/web3/wagmi.mdc - React hooks (Wagmi v3)
+- @.cursor/rules/web3/multichain.mdc - Multichain validation

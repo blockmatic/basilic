@@ -1,9 +1,17 @@
 import { eq } from 'drizzle-orm'
-import { describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { getDb } from '../src/db/index.js'
 import { users } from '../src/db/schema/index.js'
+import { cleanupGroupDatabase, setupGroupDatabase } from './utils/db-setup.js'
 
 describe('Database Integration', () => {
+  beforeAll(async () => {
+    await setupGroupDatabase()
+  })
+
+  afterAll(async () => {
+    await cleanupGroupDatabase()
+  })
   it('should initialize database client in test environment', async () => {
     const db = await getDb()
     expect(db).toBeDefined()

@@ -70,11 +70,11 @@ const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
       // Relaxed CSP for Swagger UI (/reference routes) or development
       const cspDirectives = [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // unsafe-eval needed for Swagger UI
-        "style-src 'self' 'unsafe-inline'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net", // Allow Scalar CDN
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
         "img-src 'self' data: https:",
-        "font-src 'self' data:",
-        "connect-src 'self'",
+        "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.scalar.com", // Allow Scalar fonts
+        "connect-src 'self' http://localhost:* https://fonts.scalar.com", // Allow localhost with any port and Scalar fonts
         "frame-ancestors 'none'",
       ]
       reply.header('Content-Security-Policy', cspDirectives.join('; '))

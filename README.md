@@ -25,12 +25,79 @@ pnpm dev
 ## Commands
 
 ### Development
-- `pnpm dev` - Start all apps in development mode
+- `pnpm dev` - Start all apps in development mode (see [Development Workflow](#development-workflow))
 - `pnpm build` - Build all apps and packages
 - `pnpm lint` - Lint all code (Biome + ESLint)
 - `pnpm format` - Format all code (Biome)
 - `pnpm checktypes` - Type check all TypeScript
 - `pnpm test` - Run all tests
+- `pnpm qa` - Quality assurance: install dependencies, lint, type-check, build, and test everything
+
+## Development Workflow
+
+### Turborepo Setup
+
+This monorepo uses **Turborepo** for task orchestration and caching. Turborepo provides:
+
+- **Intelligent caching** - Only rebuilds what changed
+- **Parallel execution** - Runs independent tasks simultaneously
+- **Task dependencies** - Ensures correct build order
+- **Remote caching** - Share cache across team and CI/CD
+
+### `pnpm dev` - Development Mode
+
+The `pnpm dev` command starts all development servers with watch mode:
+
+```bash
+pnpm dev
+```
+
+This runs:
+- **`@repo/core`** - Watches for OpenAPI changes and regenerates API client
+- **`@repo/react`** - Watches for OpenAPI changes and regenerates React hooks, watches TypeScript for rebuilds
+- **`@repo/error`** - Watches TypeScript for rebuilds
+- **`@repo/utils`** - Watches TypeScript for rebuilds
+- **`@repo/fastify`** - Starts Fastify API server with OpenAPI generation watcher
+- **`@repo/next`** - Starts Next.js development server
+
+**Key Features:**
+- **Watch mode** - All packages automatically rebuild when source files change
+- **OpenAPI regeneration** - `core` and `react` packages watch for OpenAPI spec changes and regenerate clients
+- **Hot reload** - Next.js and Fastify support hot module replacement
+
+### `pnpm qa` - Quality Assurance
+
+The `pnpm qa` command runs a complete quality check:
+
+```bash
+pnpm qa
+```
+
+This executes:
+1. **`pnpm i`** - Install/update dependencies
+2. **`pnpm lint:fix`** - Auto-fix linting issues (ESLint + Biome)
+3. **`turbo run checktypes build test`** - Type-check, build, and test all packages (excluding contracts)
+
+**Use Cases:**
+- Before committing changes
+- Before opening a pull request
+- In CI/CD pipelines
+- When verifying the entire codebase
+
+### Running Individual Apps
+
+You can run individual apps directly, but remember to build dependencies first:
+
+```bash
+# Build required packages
+pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/utils
+
+# Then run the app
+cd apps/next
+pnpm dev
+```
+
+See individual app READMEs (e.g., `apps/next/README.md`) for app-specific instructions.
 
 ### Security
 - `pnpm secrets:scan:staged` - Scan staged files for secrets (gitleaks)
@@ -79,6 +146,7 @@ Full documentation: [https://basilic-docs.vercel.app/docs](https://basilic-docs.
 - [Portability Strategy](@apps/docu/content/docs/architecture/portability.mdx) - Zero vendor lock-in
 
 ### Guides
+- [Development Tooling](@apps/docu/content/docs/architecture/dev-tooling.mdx) - Turborepo setup, pnpm dev, and pnpm qa workflows
 - [Security Guide](@apps/docu/content/docs/security/index.mdx) - Security baseline and secret scanning
 - [Error Handling Guide](@apps/docu/content/docs/architecture/error-handling.mdx) - Error handling with Sentry integration
 - [Deployment Guide](@apps/docu/content/docs/deployment/index.mdx) - Deployment options and strategies

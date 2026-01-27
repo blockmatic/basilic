@@ -1,65 +1,12 @@
 ---
 description: React hooks patterns and best practices
-alwaysApply: false
+glob: "**/*.{tsx,css}"
+alwaysApply: true
 ---
-# React Hooks Rules
 
-## Core Principles
-- Use TanStack Query for data fetching
-- Use `useAsyncFn` for one-off async operations
-- Follow hooks naming: `use-kebab-case.ts`
-
-## TanStack Query Patterns
-
-### Query Key Factory Pattern (CRITICAL)
-Always use `@lukemorales/query-key-factory` for centralized, type-safe query keys.
-
-**File Organization**: `src/queries/articles.ts` - Query key factory for articles, `src/queries/users.ts` - Query key factory for users, `src/queries/index.ts` - Re-export all query keys
-
-### Anti-Patterns
-❌ **Don't**: Manually construct query keys `useQuery({ queryKey: ['articles', id] })`
-✅ **Do**: Use query key factory `useQuery(articles.detail(id))`
-
-❌ **Don't**: Hardcode query keys in invalidations `queryClient.invalidateQueries({ queryKey: ['articles'] })`
-✅ **Do**: Use namespace invalidation `queryClient.invalidateQueries({ queryKey: articles._def })`
-
-## Async Operations
-**Use TanStack Query for**: Server data fetching, data that needs caching, mutations and optimistic updates
-
-**Use `useAsyncFn` from `react-use` for**: One-off async operations (file uploads, form submissions without caching), non-data-fetching async operations
-
-See @.cursor/rules/frontend/react.mdc for state management decision tree and when to use each pattern.
-
-## Memoization Hooks
-**Default: Don't use `useMemo` or `useCallback`** - Modern React optimizations (React 19.2.3 with Fiber) handle most cases automatically.
-
-### When Memoization is Actually Needed
-**In custom hooks, only use memoization when**:
-1. **Returning stable function references** - When hook consumers need stable function identity AND dependencies are stable
-2. **Expensive computations in hooks** - When hook performs genuinely expensive work
-3. **Context provider values** - When hook creates context value for provider
-
-### When NOT to Use Memoization in Hooks
-**Remove memoization from custom hooks when**:
-1. **Dependencies change frequently** - Memoization becomes ineffective
-2. **Simple operations** - Array operations, object creation, simple conditionals
-3. **useEffect dependencies** - If callback depends on frequently changing state, memoization doesn't help
-
-### Best Practices for Custom Hooks
-- **Start without memoization** - Add only when profiling reveals bottlenecks
-- **Prefer primitive dependencies** - Use primitive values in useEffect dependencies instead of memoized functions
-- **Trust React's optimizations** - Modern React handles function recreation efficiently
-- **Profile first** - Only add memoization when you measure actual performance issues
-
-See @.cursor/rules/frontend/react.mdc for complete memoization guidelines, anti-patterns, and examples.
-
-## Custom Hooks Best Practices
-- Combine multiple queries into cohesive hooks
-- Extract query logic into custom hooks for reusability
-- Use query key factory for all TanStack Query hooks
-- Never manually manage `isLoading`, `error`, or `isError` states
-
-## Related
-- @.cursor/rules/frontend/react.mdc - Component patterns
-- @.cursor/rules/frontend/stack.mdc - Library usage patterns
-- @.cursor/rules/base/typescript.mdc - Type safety patterns
+- Use TanStack Query for ANY async calls in client side react component. 
+- Hooks naming: `use-kebab-case.ts`
+- Don't use `useMemo`/`useCallback`** - React 19.2.3 + Fiber handle most cases
+- Prefer `React.memo` over `useCallback`
+- Combine queries into cohesive hooks, extract query logic for reusability
+- Never manually manage `isLoading`/`error`/`isError`

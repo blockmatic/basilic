@@ -1,11 +1,25 @@
-import 'dotenv/config'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { initSentry } from '@repo/error/node'
+import { initSentry } from '@repo/sentry/node'
+import { tryCatch } from '@repo/utils/error'
 import Fastify from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
+import { getDb } from './src/db/index.js'
 import { runMigrations } from './src/db/migrate.js'
+import { setTestEmailProvider } from './src/lib/auth.js'
 import { env } from './src/lib/env.js'
+
+// Dynamically import FakeEmailProvider only when explicitly enabled
+async function setupFakeEmailProvider() {
+  // Only use fake email provider if explicitly enabled via USE_FAKE_EMAIL env var
+  // This allows development to use real Resend emails by default
+  if (!env.USE_FAKE_EMAIL) return
+
+  return tryCatch(async () => {
+    const { FakeEmailProvider } = await import('./test/utils/fake-email.js')
+    setTestEmailProvider(new FakeEmailProvider())
+  })
+}
 
 // Initialize Sentry BEFORE Fastify instance creation
 initSentry({
@@ -50,7 +64,10 @@ async function initialize(): Promise<void> {
     // 1. Wait for database connection
     await waitForDatabase(logger)
 
-    // 2. Run migrations
+    // 2. Initialize database connection (sets db for isDbReady())
+    await getDb()
+
+    // 3. Run migrations
     await runMigrations(logger)
   } catch (err) {
     fastify.log.error({ err }, 'Initialization failed')
@@ -70,6 +87,9 @@ const start = async () => {
 
 const startServer = async () => {
   try {
+    // Set up fake email provider for E2E tests (before auth instance is created)
+    await setupFakeEmailProvider()
+
     // Initialize database and migrations before starting server
     await initialize()
 
