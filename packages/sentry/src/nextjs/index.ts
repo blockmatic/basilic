@@ -1,7 +1,6 @@
 // Re-export core functionality (types, utils)
 export * from '../core/index.js'
 
-// Export Next.js-specific Sentry functions
+// Next.js: use Sentry's standard setup (sentry.server.config.ts, instrumentation-client.ts, instrumentation.ts).
+// This package only provides the common captureError interface.
 export { captureError } from './capture.js'
-export type { InitSentryOptions } from './sentry.js'
-export { initSentry } from './sentry.js'

@@ -98,7 +98,6 @@
       "env": ["NODE_ENV", "RESEND_API_KEY", "EMAIL_FROM", "EMAIL_FROM_NAME"]
     },
     "test": {
-      "dependsOn": ["^build"],
       "env": [
         "NODE_ENV",
         "DATABASE_URL",
@@ -115,7 +114,6 @@
       ]
     },
     "@repo/next#test": {
-      "dependsOn": ["@repo/fastify#test", "^build"],
       "env": [
         "NODE_ENV",
         "DATABASE_URL",
@@ -132,7 +130,6 @@
       ]
     },
     "test:unit": {
-      "dependsOn": ["^build"],
       "env": [
         "NODE_ENV",
         "DATABASE_URL",
@@ -149,7 +146,6 @@
       ]
     },
     "test:e2e": {
-      "dependsOn": ["^build"],
       "env": [
         "NODE_ENV",
         "CI",

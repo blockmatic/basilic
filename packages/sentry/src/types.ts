@@ -1,4 +1,3 @@
-import type { ErrorWithMessage } from '@repo/utils/error'
 import type { Logger } from '@repo/utils/logger'
 
 /**
@@ -69,6 +68,3 @@ export interface CaptureErrorOptions {
    */
   logger?: Logger
 }
-
-// Re-export ErrorWithMessage for convenience
-export type { ErrorWithMessage }

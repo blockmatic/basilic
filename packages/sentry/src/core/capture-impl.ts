@@ -1,3 +1,4 @@
+// Error normalization: use @repo/utils/error only (no local duplication)
 import { toErrorWithMessage } from '@repo/utils/error'
 import { logger } from '@repo/utils/logger'
 import type { CaptureErrorOptions } from '../types.js'

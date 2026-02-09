@@ -1,6 +1,6 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { initSentry } from '@repo/sentry/node'
 import { tryCatch } from '@repo/utils/error'
+import * as Sentry from '@sentry/node'
 import Fastify from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
@@ -21,11 +21,15 @@ async function setupFakeEmailProvider() {
   })
 }
 
-// Initialize Sentry BEFORE Fastify instance creation
-initSentry({
-  dsn: env.SENTRY_DSN,
-  environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
-})
+// Initialize Sentry before other app code (conventional Node setup)
+if (env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: env.SENTRY_DSN,
+    environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
+    tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
+    ignoreErrors: ['Non-Error promise rejection'],
+  })
+}
 
 const fastify = Fastify({
   logger: {

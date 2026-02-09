@@ -30,7 +30,7 @@
     "setup:evm": "node scripts/setup-evm-tools.mjs",
     "setup:solana": "node scripts/setup-solana-tools.mjs",
     "setup:database": "node scripts/setup-database.mjs",
-    "qa": "pnpm i --no-frozen-lockfile && pnpm lint:fix && turbo run checktypes test --concurrency=100% --filter='!./contracts/**'",
+    "qa": "pnpm i --no-frozen-lockfile && turbo run checktypes --concurrency=100% && pnpm run lint:fix && pnpm build && turbo run test --concurrency=100% --filter='!./contracts/**'",
     "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },
   "devDependencies": {
@@ -45,7 +45,7 @@
     "eslint": "^9.39.2",
     "simple-git-hooks": "2.13.1",
     "tsup": "^8.5.1",
-    "turbo": "^2.7.5",
+    "turbo": "^2.8.3",
     "vitest": "^4.0.17"
   },
   "engines": {
@@ -61,11 +61,12 @@
       "js-yaml@<4.1.1": ">=4.1.1",
       "diff@<8.0.3": ">=8.0.3",
       "bigint-buffer": "npm:bigint-buffer-fixed@1.1.6",
-      "tar@<7.5.3": ">=7.5.3",
+      "tar@<7.5.7": ">=7.5.7",
+      "@isaacs/brace-expansion@5.0.0": "5.0.1",
       "esbuild@<0.25.0": ">=0.25.0",
       "path-to-regexp@<6.3.0": ">=6.3.0",
       "undici@<6.23.0": ">=6.23.0",
-      "next@<16.0.9": ">=16.1.2",
+      "next@<16.1.5": ">=16.1.5",
       "lodash@<4.17.23": ">=4.17.23",
       "lodash-es@<4.17.23": ">=4.17.23"
     },

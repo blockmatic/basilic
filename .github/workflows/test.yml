@@ -24,10 +24,10 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     env:
+      NODE_ENV: test
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-      # DATABASE_URL will be set by vitest.setup.ts to use PGLite
-      # This fallback ensures env validation passes before tests run
+      # DATABASE_URL ensures env validation passes; db:migrate skips when NODE_ENV=test (PGLite at test time)
       DATABASE_URL: postgresql://localhost/test
       # JWT configuration
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -64,6 +64,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm turbo run build --filter='!./contracts/**'
 
       - name: Run all unit tests
         run: pnpm turbo run test:unit --filter '!./contracts/**'

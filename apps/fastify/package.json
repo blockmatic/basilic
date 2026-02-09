@@ -64,7 +64,7 @@
     "bs58": "^6.0.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
-    "fastify": "^5.7.1",
+    "fastify": "^5.7.3",
     "fastify-cli": "^7.4.1",
     "fastify-plugin": "^5.1.0",
     "pg": "^8.17.2",

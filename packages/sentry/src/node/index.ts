@@ -1,7 +1,5 @@
-// Re-export core functionality (types, registry, utils)
+// Re-export core functionality (types)
 export * from '../core/index.js'
 
-// Export Node.js-specific Sentry functions
+// Single public interface: captureError. Init Sentry per Sentry Node docs.
 export { captureError } from './capture.js'
-export type { InitSentryOptions } from './sentry.js'
-export { initSentry } from './sentry.js'
