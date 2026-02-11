@@ -14,5 +14,5 @@ export default defineConfig({
   clean: true,
   outDir: 'dist',
   noExternal: ['@repo/utils'],
-  external: ['@sentry/node', '@sentry/nextjs', '@sentry/browser', 'react'],
+  external: ['@sentry/node', '@sentry/nextjs', '@sentry/browser', 'react', 'pino'],
 })

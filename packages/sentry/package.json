@@ -37,6 +37,7 @@
   },
   "peerDependencies": {
     "@repo/utils": "workspace:*",
+    "pino": "*",
     "@sentry/browser": "^10.34.0",
     "@sentry/nextjs": "^10.34.0",
     "@sentry/node": "^10.34.0",
