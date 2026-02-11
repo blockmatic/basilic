@@ -8,30 +8,30 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "import": "./src/index.ts"
+      "import": "./dist/index.js"
     },
     "./async": {
       "types": "./src/async/index.ts",
-      "import": "./src/async/index.ts"
+      "import": "./dist/async/index.js"
     },
     "./web3": {
       "types": "./src/web3/index.ts",
-      "import": "./src/web3/index.ts"
+      "import": "./dist/web3/index.js"
     },
     "./logger": {
       "types": "./src/logger/index.ts",
-      "browser": "./src/logger/client.ts",
-      "node": "./src/logger/server.ts",
-      "import": "./src/logger/server.ts",
-      "default": "./src/logger/server.ts"
+      "browser": "./dist/logger/client.js",
+      "node": "./dist/logger/server.js",
+      "import": "./dist/logger/server.js",
+      "default": "./dist/logger/server.js"
     },
     "./debug": {
       "types": "./src/debug/index.ts",
-      "import": "./src/debug/index.ts"
+      "import": "./dist/debug/index.js"
     },
     "./error": {
       "types": "./src/error/index.ts",
-      "import": "./src/error/index.ts"
+      "import": "./dist/error/index.js"
     }
   },
   "scripts": {
