@@ -8,6 +8,12 @@
       "outputs": ["src/gen/**"],
       "env": ["NODE_ENV"]
     },
+    "@repo/core#generate": {
+      "dependsOn": ["@repo/fastify#build"],
+      "inputs": ["$TURBO_DEFAULT$", "../../apps/fastify/openapi/openapi.json"],
+      "outputs": ["src/gen/**"],
+      "env": ["NODE_ENV"]
+    },
     "build": {
       "dependsOn": ["^build", "generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],

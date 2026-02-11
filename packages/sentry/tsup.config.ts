@@ -13,12 +13,6 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   outDir: 'dist',
-  external: [
-    '@repo/utils',
-    '@repo/utils/logger',
-    '@sentry/node',
-    '@sentry/nextjs',
-    '@sentry/browser',
-    'react',
-  ],
+  noExternal: ['@repo/utils'],
+  external: ['@sentry/node', '@sentry/nextjs', '@sentry/browser', 'react', 'pino'],
 })
