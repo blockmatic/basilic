@@ -30,7 +30,7 @@ export function Hero() {
           className="mb-6 gap-2 border-border/60 bg-secondary/50 px-3 py-1 text-xs font-normal text-muted-foreground md:mb-8"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-          v2.0 now available
+          alpha now available
           <ArrowRight className="h-3 w-3" />
         </Badge>
 
