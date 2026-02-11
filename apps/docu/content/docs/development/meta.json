@@ -1,0 +1,12 @@
+{
+  "title": "Development",
+  "pages": [
+    "index",
+    "ai-workflow",
+    "cursor-setup",
+    "dev-tooling",
+    "openapi-generation",
+    "package-conventions",
+    "packages"
+  ]
+}

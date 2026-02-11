@@ -12,11 +12,11 @@ alwaysApply: true
 ## Content Structure
 - Most important information first
 - Clear headings, one concept per section
-- Link related pages at end
-- Page structure: Title/description → 2-3 sentence intro → Main content (H2/H3) → Examples → Related links
+- Link related pages at end (optional)
+- Page structure: Title/description → short intro → Main content (H2/H3) → Examples → Related links (when relevant)
 
 ## Navigation
-- Max 5-7 top categories, max 3 levels deep
+- Max 5-7 top categories, max 2 levels deep
 - Breadcrumb-friendly, bidirectional links, search-optimized
 
 ## Organization
@@ -25,4 +25,4 @@ alwaysApply: true
 
 ## READMEs
 - Lean with links to docs site
-- Structure: Requirements → Quick Start → Links, no duplication
+- Structure: Requirements → Quick Start → Links, no duplication ( links to docs site )

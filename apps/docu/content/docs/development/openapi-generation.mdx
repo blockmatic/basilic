@@ -57,7 +57,7 @@ fastify.get('/users/:id', {
 The OpenAPI specification is automatically generated from Fastify routes:
 
 ```bash
-pnpm --filter @repo/fastify gen:openapi
+pnpm --filter @repo/fastify generate:openapi
 ```
 
 This runs `generate-openapi.ts` which:
@@ -75,11 +75,8 @@ This runs `generate-openapi.ts` which:
 Hey API generates type-safe clients from the OpenAPI spec:
 
 ```bash
-# Generate runtime-agnostic client
-pnpm --filter @repo/core gen
-
-# Generate React Query hooks
-pnpm --filter @repo/react gen
+# Generate runtime-agnostic client and types
+pnpm --filter @repo/core generate
 ```
 
 This generates:
@@ -129,8 +126,8 @@ const { data, isLoading, error } = useUser({ id: '123' })
 When adding a new endpoint:
 
 1. **Implement route** - Define TypeBox schemas and implement Fastify route
-2. **Generate OpenAPI** - Run `pnpm --filter @repo/fastify gen:openapi`
-3. **Generate clients** - Run `pnpm --filter @repo/core gen` and `pnpm --filter @repo/react gen`
+2. **Generate OpenAPI** - Run `pnpm --filter @repo/fastify generate:openapi`
+3. **Generate clients** - Run `pnpm --filter @repo/core generate` (generates client and types; `@repo/react` consumes `@repo/core`)
 4. **Use typed client** - Import and use in frontend with full type safety
 
 ## OpenAPI Spec Location
@@ -146,8 +143,3 @@ Client generation is configured in:
 - **Core package**: `packages/core/openapi-ts.config.ts` (Hey API config)
 - **React package**: `packages/react/openapi-ts.config.ts` (Hey API config with TanStack Query plugin)
 
-## Related Documentation
-
-- [API Architecture](/docs/core-concepts/api-architecture) - REST API with Fastify and OpenAPI
-- [Packages Reference](/docs/core-concepts/packages) - Complete package reference
-- [Backend Stack](/docs/architecture/backend-stack) - Fastify and backend architecture

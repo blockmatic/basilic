@@ -73,7 +73,7 @@ Tests use **per-worker file-based PGLite databases** for test isolation:
 
 ## Environment Variables
 
-The API uses environment variables for configuration. See [Environment Setup Guide](@apps/docu/content/docs/getting-started/installation.mdx) for complete details.
+The API uses environment variables for configuration. See [Environment Setup Guide](@apps/docu/content/docs/development/index.mdx) for complete details.
 The server loads `apps/fastify/.env` using Node.js native `--env-file` flag (Node.js 20.6+).
 
 ### Required
@@ -104,7 +104,7 @@ The API can be deployed to multiple platforms with zero code changes:
 - **Google Cloud Run** (Production) - Containerized deployment
 - **AWS ECS/EC2** (Production) - Container or VM deployment
 
-See [Deployment Guide](https://basilic-docs.vercel.app/docs/guides/deployment) for detailed deployment instructions and [Portability Strategy](https://basilic-docs.vercel.app/docs/portability) for migration paths.
+See [Deployment Guide](https://basilic-docs.vercel.app/docs/deployment) for detailed deployment instructions and [Portability Strategy](https://basilic-docs.vercel.app/docs/architecture/portability) for migration paths.
 
 ### Vercel Deployment
 
@@ -163,4 +163,4 @@ The API supports two migration strategies depending on database type:
 - Migrations run once per worker before test files in that worker execute using direct SQL execution
 - All test files within the same worker share the same database instance and schema; different workers have isolated databases
 
-See [Backend Stack](/docs/architecture/backend-stack), [API Development](/docs/core-concepts/api-architecture), and [ADR 008: Database](/docs/adrs/008-database) for detailed migration flow and architecture.
+See [API Development](/docs/architecture/api), and [ADR 008: Database](/docs/adrs/008-database) for detailed migration flow and architecture.

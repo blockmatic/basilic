@@ -26,7 +26,8 @@
       "!.pnp.js",
       "!.DS_Store",
       "!*.pem",
-      "!**/.react-email"
+      "!**/.react-email",
+      "!**/__dev"
     ],
     "maxSize": 1048576
   },
@@ -75,9 +76,8 @@
           "options": {
             "paths": {
               "lodash-es": "Use per-function imports: lodash-es/<fn> (e.g., lodash-es/isEmpty).",
-              "@repo/error": "Use subpath imports: @repo/error/nextjs, @repo/error/node, etc.",
+              "@repo/sentry": "Use subpath imports: @repo/sentry/nextjs, @repo/sentry/node, etc.",
               "@repo/utils": "Use subpath imports: @repo/utils/logger, @repo/utils/async, etc.",
-              "@repo/core": "Use subpath imports: @repo/core/api, @repo/core/types, etc.",
               "@repo/ui": "Use subpath imports: @repo/ui/components/*, @repo/ui/radix, etc."
             }
           }

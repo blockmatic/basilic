@@ -2,17 +2,9 @@
 
 TypeScript monorepo with REST API architecture.
 
-## Requirements
 
-- **Node.js**: `22.x`
-- **pnpm**: `10.28.0`
 
-### Node.js Setup
 
-Install and set Node.js 22 as default using nvm:
-
-```bash
-nvm install 22 && nvm alias default 22
 ```
 
 ## Quick Start
@@ -28,6 +20,7 @@ pnpm dev
 - `pnpm dev` - Start all apps in development mode (see [Development Workflow](#development-workflow))
 - `pnpm build` - Build all apps and packages
 - `pnpm lint` - Lint all code (Biome + ESLint)
+- `pnpm lint:fix` - Auto-fix lint issues (Biome + ESLint)
 - `pnpm format` - Format all code (Biome)
 - `pnpm checktypes` - Type check all TypeScript
 - `pnpm test` - Run all tests
@@ -55,7 +48,7 @@ pnpm dev
 This runs:
 - **`@repo/core`** - Watches for OpenAPI changes and regenerates API client
 - **`@repo/react`** - Watches for OpenAPI changes and regenerates React hooks, watches TypeScript for rebuilds
-- **`@repo/error`** - Watches TypeScript for rebuilds
+- **`@repo/sentry`** - Watches TypeScript for rebuilds
 - **`@repo/utils`** - Watches TypeScript for rebuilds
 - **`@repo/fastify`** - Starts Fastify API server with OpenAPI generation watcher
 - **`@repo/next`** - Starts Next.js development server
@@ -75,8 +68,10 @@ pnpm qa
 
 This executes:
 1. **`pnpm i`** - Install/update dependencies
-2. **`pnpm lint:fix`** - Auto-fix linting issues (ESLint + Biome)
-3. **`turbo run checktypes build test`** - Type-check, build, and test all packages (excluding contracts)
+2. **`turbo run checktypes`** - Type-check all packages
+3. **`pnpm lint:fix`** - Auto-fix linting (ESLint + Biome)
+4. **`pnpm build`** - Build all packages (excluding contracts)
+5. **`turbo run test`** - Test all packages (excluding contracts)
 
 **Use Cases:**
 - Before committing changes
@@ -90,7 +85,7 @@ You can run individual apps directly, but remember to build dependencies first:
 
 ```bash
 # Build required packages
-pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/utils
+pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/sentry --filter=@repo/utils
 
 # Then run the app
 cd apps/next
@@ -130,31 +125,30 @@ See [Security Guide](@apps/docu/content/docs/security/index.mdx) for complete de
 
 - **`apps/`** - Applications (API, Web, Docs)
 - **`packages/`** - Shared packages (core, react, ui, utils)
-- **`devtools/`** - Shared development tooling (eslint, react, typescript configs)
+- **`tools/`** - Shared development tooling (eslint, typescript configs)
 
 ## Documentation
 
 Full documentation: [https://basilic-docs.vercel.app/docs](https://basilic-docs.vercel.app/docs)
 
 ### Get Started
-- [Getting Started](@apps/docu/content/docs/getting-started/index.mdx) - 15-minute setup guide
-- [AI-Driven Development](@apps/docu/content/docs/getting-started/ai-workflow.mdx) - Recommended workflow with Cursor
+- [Getting Started](@apps/docu/content/docs/development/index.mdx) - 15-minute setup guide
+- [AI-Driven Development](@apps/docu/content/docs/development/ai-workflow.mdx) - Recommended workflow with Cursor
 
-### Core Concepts
-- [Monorepo Structure](@apps/docu/content/docs/core-concepts/monorepo-structure.mdx) - Package organization
-- [API Development](@apps/docu/content/docs/core-concepts/api-architecture.mdx) - REST API with OpenAPI and client generation
+### Architecture
+- [Monorepo Structure](@apps/docu/content/docs/architecture/monorepo.mdx) - Package organization
+- [API Development](@apps/docu/content/docs/architecture/api.mdx) - REST API with OpenAPI and client generation
 - [Portability Strategy](@apps/docu/content/docs/architecture/portability.mdx) - Zero vendor lock-in
 
 ### Guides
-- [Development Tooling](@apps/docu/content/docs/architecture/dev-tooling.mdx) - Turborepo setup, pnpm dev, and pnpm qa workflows
-- [Security Guide](@apps/docu/content/docs/security/index.mdx) - Security baseline and secret scanning
+- [Development Tooling](@apps/docu/content/docs/development/dev-tooling.mdx) - Turborepo setup, pnpm dev, and pnpm qa workflows
+- [Security Guide](@apps/docu/content/docs/architecture/security.mdx) - Security baseline and secret scanning
 - [Error Handling Guide](@apps/docu/content/docs/architecture/error-handling.mdx) - Error handling with Sentry integration
 - [Deployment Guide](@apps/docu/content/docs/deployment/index.mdx) - Deployment options and strategies
 - [Publishing Guide](@apps/docu/content/docs/deployment/publishing.mdx) - Publishing packages to npm
 
 ### Cursor Setup
-- [Cursor Setup Guide](@apps/docu/content/docs/getting-started/cursor-setup.mdx) - Configure IDE and MCP servers
-- [Cursor Rules](@apps/docu/content/docs/core-concepts/cursor-rules.mdx) - Coding standards
+- [Cursor Setup Guide](@apps/docu/content/docs/development/cursor-setup.mdx) - Configure IDE and MCP servers
 
 ### Deep Dives
 - [Architecture](@apps/docu/content/docs/architecture/index.mdx) - Architecture overview

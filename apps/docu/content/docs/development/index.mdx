@@ -3,20 +3,17 @@ title: "Getting Started"
 description: "Get up and running with this project in under 15 minutes. Perfect for projects needing SDKs or modular service architecture."
 ---
 
-
 ## Prerequisites
-
-- Node.js 22.x
-- pnpm 10.28.0
-- (Optional) PostgreSQL or Supabase account
-
-## Setup
 
 ### Install Node.js
 
 Install and set Node.js 22 as default using nvm:
 
 ```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
 nvm install 22 && nvm alias default 22
 ```
 
@@ -47,28 +44,47 @@ pnpm --version
 
 ## Quick Start
 
-### 1. Clone and Install (2 min)
+### 1. Clone and Setup
 
 ```bash
 git clone <repository-url>
 cd <project-name>
-pnpm install
+pnpm run setup
 ```
 
-### 2. Explore the Running Apps (3 min)
+The setup script runs, in order:
+
+- pnpm install – installs workspace dependencies
+- npx simple-git-hooks – configures git hooks (e.g. pre-commit)
+- pnpm setup:security – installs gitleaks and OSV scanner
+- pnpm setup:evm – installs Foundry for EVM contracts
+- pnpm setup:solana – installs Anchor for Solana
+- pnpm setup:database – sets up the database ( docker + supabase )
+
+Together this brings the monorepo to a working dev environment with security tooling, blockchain tooling, and the database.
+
+### 2. Environment variables
+
+- copy fastify/.env-sample over to fastify/.env and update the values
+
+### 3. Explore the Running Apps 
 
 ```bash
 pnpm dev
 ```
 
-- **API**: http://localhost:3001 (`GET /health`, `/reference` for docs)
-- **Docs**: http://localhost:3002
+This will start the main applications and the packages in watch mode. 
 
-### 3. Understand the Structure (5 min)
+- **API**: http://localhost:3001 (`GET /health`, `/reference` for docs)
+- **Next**: http://localhost:3000 (Next.js app)
+
+To run the docs site: `pnpm --filter @repo/docu dev` (e.g. http://localhost:3002).
+
+### 4. Understand the Structure
 
 **Apps:** `apps/fastify/` (Fastify backend), `apps/next/` (Next.js frontend), `apps/docu/` (documentation)
 
-**Packages:** `core/` (generated API client + types), `react/` (React Query hooks), `ui/` (components), `error/` (error handling), `utils/` (utilities)
+**Packages:** `core/` (generated API client + types), `react/` (React Query hooks), `ui/` (components), `sentry/` (Sentry integration), `utils/` (utilities)
 
 ```mermaid
 flowchart TB
@@ -88,28 +104,20 @@ flowchart TB
   UI --> Docs
 ```
 
-### 4. Make Your First Change (5 min)
-
-1. Open `apps/next/app/page.tsx` in your editor
-2. Make a small change (e.g., update the heading text)
-3. Save the file - the dev server will hot-reload automatically
-4. Open http://localhost:3000 in your browser to see your changes
-5. Verify the change appears correctly
-
 ## Next Steps
 
 **Continue your AI-assisted development setup:**
-- [Installation](/docs/getting-started/installation) - Environment variables and optional database setup
-- [AI Workflow](/docs/getting-started/ai-workflow) - Recommended development workflow
-- [Cursor Setup](/docs/getting-started/cursor-setup) - Configure your IDE
+- [Installation](/docs/development) - Environment variables and optional database setup
+- [AI Workflow](/docs/development/ai-workflow) - Recommended development workflow
+- [Cursor Setup](/docs/development/cursor-setup) - Configure your IDE
 
 **Understand Core Concepts:**
-- [Core Concepts](/docs/core-concepts) - Fundamental concepts like monorepo structure, API architecture, and OpenAPI generation
+- [Architecture](/docs/architecture) - Monorepo structure, API architecture, and OpenAPI generation
 - [Architecture](/docs/architecture) - Deep technical details and design decisions
 
 **Optional Setup:**
 
-For database features, you'll need PostgreSQL. See [Installation](/docs/getting-started/installation).
+For database features, you'll need PostgreSQL. See [Installation](/docs/development).
 
 For EVM contract development, install Foundry. See [EVM Contracts](/docs/blockchain/evm-contracts).
 For Solana contract development, install Anchor. See [Solana Contracts](/docs/blockchain/solana-contracts).

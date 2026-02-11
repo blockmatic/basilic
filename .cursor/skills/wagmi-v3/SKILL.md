@@ -543,7 +543,7 @@ Comprehensive error handling with user-friendly messages:
 ```tsx
 import { useWriteContract } from 'wagmi'
 import { BaseError } from 'viem'
-import { captureError } from '@repo/error/nextjs'
+import { captureError } from '@repo/sentry/nextjs'
 import type { WriteContractParameters } from 'wagmi/actions'
 
 function useContractWriteWithErrorHandling() {

@@ -230,8 +230,7 @@ Frontend consumes the API via generated clients:
 
 ```bash
 # Generate TypeScript clients
-pnpm --filter @repo/core gen
-pnpm --filter @repo/react gen
+pnpm --filter @repo/core generate
 
 # For other languages, generate from OpenAPI spec
 curl https://api.your-domain.com/reference/openapi.json > openapi.json
@@ -244,6 +243,6 @@ oapi-codegen -package client openapi.json > client.go
 
 ## Related Documentation
 
-- [API Architecture](/docs/core-concepts/api-architecture) - OpenAPI generation workflow
-- [Backend Stack](/docs/architecture/backend-stack) - Fastify implementation details
+- [API Architecture](/docs/architecture/api) - OpenAPI generation workflow
+- [API Development](/docs/architecture/api) - Fastify and OpenAPI implementation
 - [Package Conventions](/docs/architecture/package-conventions) - Client package structure

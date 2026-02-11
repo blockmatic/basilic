@@ -114,8 +114,8 @@ This package integrates `@total-typescript/ts-reset` to enhance TypeScript's bui
 Since `JSON.parse()` and `response.json()` now return `unknown`, you must validate the data before use. This aligns perfectly with the monorepo's use of Zod for validation:
 
 ```typescript
-// ✅ Good: Validate with Zod, use @repo/lib utilities
-import { fetchWithTimeout, parseJsonWithSchema } from '@repo/lib'
+// ✅ Good: Validate with Zod, use @repo/utils utilities
+import { fetchWithTimeout } from '@repo/utils/async'
 import { z } from 'zod'
 
 const response = await fetchWithTimeout({

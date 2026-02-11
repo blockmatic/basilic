@@ -1,8 +1,13 @@
 # Error Handling
 
-Handle errors gracefully in Next.js applications.
+Handle errors in Next.js with **Sentry reporting** (`@repo/sentry/*`) and **structured logging** (`@repo/utils/logger`).
 
 Reference: https://nextjs.org/docs/app/getting-started/error-handling
+
+## Observability (Required)
+
+- Report unexpected errors with `captureError` from `@repo/sentry/nextjs`
+- Log operational context with `logger` from `@repo/utils/logger` (never `console.*`)
 
 ## Error Boundaries
 
@@ -13,6 +18,10 @@ Catches errors in a route segment and its children:
 ```tsx
 'use client'
 
+import { captureError } from '@repo/sentry/nextjs'
+import { logger } from '@repo/utils/logger'
+import { useEffect } from 'react'
+
 export default function Error({
   error,
   reset,
@@ -20,6 +29,17 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    captureError({
+      code: 'UNEXPECTED_ERROR',
+      error,
+      label: 'Next.js error.tsx',
+      tags: { runtime: 'nextjs' },
+      data: { digest: error.digest },
+    })
+    logger.error({ error, digest: error.digest }, 'Unhandled error in route segment')
+  }, [error])
+
   return (
     <div>
       <h2>Something went wrong!</h2>
@@ -33,10 +53,14 @@ export default function Error({
 
 ### `global-error.tsx`
 
-Catches errors in root layout:
+Catches errors in the root layout. Same capture pattern as `error.tsx`, but it **must** render `<html>` and `<body>`:
 
 ```tsx
 'use client'
+
+import { captureError } from '@repo/sentry/nextjs'
+import { logger } from '@repo/utils/logger'
+import { useEffect } from 'react'
 
 export default function GlobalError({
   error,
@@ -45,6 +69,11 @@ export default function GlobalError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    captureError({ error, label: 'Next.js global-error.tsx', code: 'UNEXPECTED_ERROR', data: { digest: error.digest } })
+    logger.error({ error, digest: error.digest }, 'Unhandled error in root layout')
+  }, [error])
+
   return (
     <html>
       <body>
@@ -58,87 +87,52 @@ export default function GlobalError({
 
 **Important:** Must include `<html>` and `<body>` tags.
 
-## Server Actions: Navigation API Gotcha
+## Navigation APIs + `try/catch` (Critical)
 
-**Do NOT wrap navigation APIs in try-catch.** They throw special errors that Next.js handles internally.
+`redirect()`, `permanentRedirect()`, `notFound()`, `forbidden()`, and `unauthorized()` throw special errors that Next.js handles internally. If you catch broadly, you must re-throw them.
 
 Reference: https://nextjs.org/docs/app/api-reference/functions/redirect#behavior
 
 ```tsx
 'use server'
 
-import { redirect } from 'next/navigation'
-import { notFound } from 'next/navigation'
+import { redirect, unstable_rethrow } from 'next/navigation'
+import { captureError } from '@repo/sentry/nextjs'
+import { logger } from '@repo/utils/logger'
 
-// Bad: try-catch catches the navigation "error"
-async function createPost(formData: FormData) {
+export async function action() {
   try {
-    const post = await db.post.create({ ... })
-    redirect(`/posts/${post.id}`)  // This throws!
+    // ...
+    redirect('/success') // throws
   } catch (error) {
-    // redirect() throw is caught here - navigation fails!
-    return { error: 'Failed to create post' }
-  }
-}
-
-// Good: Call navigation APIs outside try-catch
-async function createPost(formData: FormData) {
-  let post
-  try {
-    post = await db.post.create({ ... })
-  } catch (error) {
-    return { error: 'Failed to create post' }
-  }
-  redirect(`/posts/${post.id}`)  // Outside try-catch
-}
-
-// Good: Re-throw navigation errors
-async function createPost(formData: FormData) {
-  try {
-    const post = await db.post.create({ ... })
-    redirect(`/posts/${post.id}`)
-  } catch (error) {
-    if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
-      throw error  // Re-throw navigation errors
-    }
-    return { error: 'Failed to create post' }
+    unstable_rethrow(error)
+    captureError({ error, label: 'Server action', code: 'UNEXPECTED_ERROR' })
+    logger.error({ error }, 'Server action failed')
+    return { ok: false as const }
   }
 }
 ```
 
-Same applies to:
-- `redirect()` - 307 temporary redirect
-- `permanentRedirect()` - 308 permanent redirect
-- `notFound()` - 404 not found
-- `forbidden()` - 403 forbidden
-- `unauthorized()` - 401 unauthorized
+## Server Actions & Route Handlers (Pattern)
 
-Use `unstable_rethrow()` to re-throw these errors in catch blocks:
+Capture, log, then return a safe result. If navigation APIs may be involved, call `unstable_rethrow(error)` first.
 
 ```tsx
 import { unstable_rethrow } from 'next/navigation'
+import { captureError } from '@repo/sentry/nextjs'
+import { logger } from '@repo/utils/logger'
 
 async function action() {
   try {
     // ...
-    redirect('/success')
+    return { ok: true as const }
   } catch (error) {
-    unstable_rethrow(error) // Re-throws Next.js internal errors
-    return { error: 'Something went wrong' }
+    unstable_rethrow(error)
+    captureError({ error, label: 'Route handler / server action', code: 'UNEXPECTED_ERROR' })
+    logger.error({ error }, 'Request failed')
+    return { ok: false as const }
   }
 }
-```
-
-## Redirects
-
-```tsx
-import { redirect, permanentRedirect } from 'next/navigation'
-
-// 307 Temporary - use for most cases
-redirect('/new-path')
-
-// 308 Permanent - use for URL migrations (cached by browsers)
-permanentRedirect('/new-url')
 ```
 
 ## Auth Errors

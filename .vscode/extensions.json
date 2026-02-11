@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "coderabbit.coderabbit-vscode",
+    "dbaeumer.vscode-eslint",
     "biomejs.biome",
     "bradlc.vscode-tailwindcss",
     "bierner.markdown-mermaid",

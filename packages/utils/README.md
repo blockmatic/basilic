@@ -163,8 +163,8 @@ These are only needed if you use specific subpaths:
 
 ### Error Handling
 
-- Error handling utilities have been moved to `@repo/error`
-- Use `getErrorMessage` and `captureError` from `@repo/error` for error handling
+- Use `getErrorMessage` from `@repo/utils/error` for error message extraction
+- Use `captureError` from `@repo/sentry/node` (or `/nextjs`, `/browser`) for Sentry reporting
 - Use lodash-es utilities (`isPlainObject`, `isEmpty`) for type checking instead of manual checks
 
 ### Fetch Calls

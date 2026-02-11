@@ -27,7 +27,7 @@ Add `@repo/react` and `@repo/core` to `transpilePackages` in your `next.config.m
 // next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/error', '@repo/utils'],
+  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/sentry', '@repo/utils'],
   webpack: config => {
     // Resolve .js imports to .ts files for transpiled packages
     config.resolve.extensionAlias = {
@@ -329,4 +329,4 @@ Hooks provide sensible default query keys (e.g., `['healthCheck', params]`) but 
 - Override capability enables advanced use cases (shared queries, custom invalidation, etc.)
 - Query keys are fully typed and can include params for automatic cache differentiation
 
-See [API Development](https://basilic-docs.vercel.app/docs/core-concepts/api-architecture#client-consumption) for full integration guide.
+See [API Development](https://basilic-docs.vercel.app/docs/architecture/api#client-consumption) for full integration guide.

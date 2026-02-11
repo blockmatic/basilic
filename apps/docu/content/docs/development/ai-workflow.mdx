@@ -1,0 +1,76 @@
+---
+title: "AI Development Workflow"
+description: "Proven workflow for AI-assisted development using Plan Mode, iterative review, and incremental execution."
+---
+
+## Philosophy
+
+AI excels at implementation but requires clear guidelines and critical oversight. When AI handles code generation, engineering work shifts to defining constraints, reviewing architectural decisions, catching conceptual errors, and maintaining quality standards. Real judgment and craftsmanship show up in the planning and review phases—not just the execution.
+
+This project uses Cursor as the primary tool with Claude support (see CLAUDE.md). Engineers must choose the right tool for each task, follow a deliberate process, and critically review both plans and outcomes. This approach maximizes quality while maintaining velocity.
+
+Read more: [Engineering in the AI Era - The Responsibility Shift](https://gaboesquivel.com/blog/2026-02-engineering-ai-era)
+
+## Model Selection
+
+Choose the right model for each task:
+
+| Model            | Primary Use                    | When to Use                                               | Strength                                     |
+| ---------------- | ------------------------------ | --------------------------------------------------------- | -------------------------------------------- |
+| **Opus**         | 🧠 Planning                    | Architecture, system design, complex decisions            | Deep reasoning & big-picture thinking        |
+| **Composer**     | 💻 Implementation              | Feature work, edits, understanding code context           | Fast, efficient, great for day-to-day coding |
+| **GPT**          | 🐛 Debugging                   | Investigating errors, fixing bugs, log analysis           | Strong at diagnosing and explaining issues   |
+| **GPT Codex**    | 📂 Long Tasks                  | Large features, multi-file work, extended coding sessions | Handles long, iterative coding flows well    |
+| **Sonnet / GPT** | 📝 Writing & General Questions | Docs, explanations, research, conceptual discussions      | Clear communication, structured answers      |
+
+**AI Guidance Hierarchy:**
+
+| Layer  | Purpose                                  |
+| ------ | ---------------------------------------- |
+| Rules  | Global, opinionated, override everything |
+| Skills | Local expertise, patterns, constraints   |
+| Model  | Reasoning and synthesis                  |
+| Docs   | Indexed documentation for planning       |
+
+## Research & Discovery
+
+**Before Implementation:**
+
+- **Perplexity** - Research APIs, libraries, technical concepts with sourced information
+- **ChatGPT** - Brainstorm approaches, explore patterns, understand trade-offs
+
+## The Workflow
+
+### 1. Plan Mode (Always Start Here)
+
+Use Claude Opus for planning, better reasoning produces better results. Break down complex tasks into clear steps and get a reviewed plan before coding. Planning identifies edge cases early and reduces iterations.
+
+### 2. Review and Iterate
+
+Read the plan carefully. Ask clarifying questions. Refine until satisfied. Don't rush to execution.
+
+**Key questions:** Are edge cases covered? Is scope appropriate? Are dependencies identified? Is the approach optimal?
+
+### 3. Execute Incrementally
+
+Use Composer for multi-file edits. Follow the plan step-by-step. Make small, incremental changes.
+
+**Execute one step at a time, test between steps, review before proceeding.**
+
+### 4. Commit Small Tasks
+
+Break work into &lt;30-minute chunks. Commit after each complete task. Test between commits. Keep changes easy to review and revert.
+
+**Benefits:** Clear progress tracking, simple rollbacks, focused code reviews.
+
+## Automated Reviews
+
+**CodeRabbit** provides automated code reviews on pull requests, checking adherence to project standards and identifying potential issues.
+
+## Reference Documentation
+
+MDX files can be used directly in prompts:
+
+```
+"Using the patterns from @api-architecture, create a new API endpoint..."
+```

@@ -170,7 +170,7 @@ Instead of relying on ESLint's unsafe rules, we enforce type safety through:
 ```typescript
 // ✅ Good: Validate at the boundary
 import { z } from 'zod'
-import { fetchWithTimeout } from '@repo/lib'
+import { fetchWithTimeout } from '@repo/utils/async'
 
 const apiResponseSchema = z.object({
   id: z.string(),
@@ -198,7 +198,7 @@ const user = await fetchUser('123') // Type: { id: string; name: string }
 - **Export typed interfaces** from internal modules for type safety
 - **Trust type inference** - let TypeScript infer types from validated data and function return types
 - **Validate, don't assert** - Use Zod's `.parse()` or `.safeParse()` instead of type assertions
-- **Use utility libraries**: Always leverage `@repo/lib` (error handling, delays, fetch with timeout), `zod` (validation), and `lodash` (array/object operations, type checking) instead of custom implementations
+- **Use utility libraries**: Always leverage `@repo/utils` (async, error, logger via subpaths), `zod` (validation), and `lodash-es` (per-function imports) instead of custom implementations
 
 For more details, see:
 

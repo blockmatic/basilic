@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev -p 3002",
     "start": "next start",
     "checktypes": "fumadocs-mdx && tsgo --noEmit",
     "postinstall": "fumadocs-mdx",
@@ -21,7 +21,9 @@
     "fumadocs-mdx": "14.2.6",
     "fumadocs-ui": "16.4.7",
     "lucide-react": "^0.562.0",
+    "mermaid": "^11.12.2",
     "next": "16.1.5",
+    "next-themes": "^0.4.6",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "zod": "^4.3.5"
@@ -33,10 +35,10 @@
     "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "^19.2.3",
+    "@typescript/native-preview": "7.0.0-dev.20260124.1",
     "browserslist": "^4.28.1",
     "eslint": "*",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.18",
-    "@typescript/native-preview": "7.0.0-dev.20260124.1"
+    "tailwindcss": "^4.1.18"
   }
 }

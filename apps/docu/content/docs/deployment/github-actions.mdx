@@ -84,7 +84,7 @@ jobs:
       - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v4
       - run: pnpm install
-      - run: pnpm --filter @repo/error test
+      - run: pnpm --filter @repo/sentry test
       - run: pnpm --filter @repo/utils test
 ```
 

@@ -2,14 +2,14 @@
   "title": "Architecture",
   "pages": [
     "index",
-    "backend-stack",
+    "monorepo",
+    "api",
     "authentication",
-    "frontend-stack",
-    "esm-strategy",
-    "package-conventions",
+    "frontend",
     "portability",
-    "dev-tooling",
+    "esm-strategy",
     "error-handling",
-    "logging"
+    "logging",
+    "security"
   ]
 }

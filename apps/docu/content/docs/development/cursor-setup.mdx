@@ -1,0 +1,89 @@
+---
+title: "Cursor IDE Setup"
+description: "Complete guide to configuring Cursor for optimal AI-assisted development."
+---
+
+Cursor rules/skills for this repo are already set up. Do the steps below once to get the best AI context and tooling.
+
+## Step 1: Add Documentation Sites
+
+Cursor can index external documentation sites (Fastify, Next.js, Viem, etc.) by crawling and embedding them as scoped AI reference, separate from your workspace code index and managed via the Cursor settings UI. Cursor re-crawls these sources periodically on its own schedule (not configurable), so the content can change as upstream docs evolve; treat the results as helpful, current guidance for planning, reasoning, and API suggestions, but not as behavioral constraints—repository rules and source code remain the final authority, and indexed docs may conflict with each other or repo conventions.
+
+Add these in Cursor Settings → **Indexing & Docs**:
+
+1. Open Cursor Settings (Cmd/Ctrl + ,)
+2. Go to **Indexing & Docs**
+3. Add:
+   - [Basilic Docs](https://basilic-docs.vercel.app/docs) (`https://basilic-docs.vercel.app/docs`)
+   - [Cursor](https://docs.cursor.com/) (`https://docs.cursor.com/`)
+   - [Next.js](https://nextjs.org/docs) (`https://nextjs.org/docs`)
+   - [Fastify](https://fastify.dev/docs) (`https://fastify.dev/docs`)
+   - [Drizzle ORM](https://orm.drizzle.team/docs) (`https://orm.drizzle.team/docs`)
+   - [TanStack Query](https://tanstack.com/query/latest/docs) (`https://tanstack.com/query/latest/docs`)
+   - [Fumadocs](https://fumadocs.dev/docs) (`https://fumadocs.dev/docs`)
+   - [OpenAPI-TS (Hey API)](https://heyapi.dev/openapi-ts/) (`https://heyapi.dev/openapi-ts/`)
+   - [shadcn/ui](https://ui.shadcn.com/docs) (`https://ui.shadcn.com/docs`)
+   - [v0](https://vercel.com/docs/v0) (`https://vercel.com/docs/v0`)
+   - [Vercel AI SDK](https://sdk.vercel.ai/docs) (`https://sdk.vercel.ai/docs`)
+   - [Viem](https://viem.sh/docs) (`https://viem.sh/docs`)
+   - [Wagmi](https://wagmi.sh/react/getting-started) (`https://wagmi.sh/react/getting-started`)
+   - [Ponder](https://ponder.sh/docs/) (`https://ponder.sh/docs/`)
+   - [Dynamic](https://docs.dynamic.xyz/) (`https://docs.dynamic.xyz/`)
+   - [Alchemy](https://docs.alchemy.com/) (`https://docs.alchemy.com/`)
+   - [React Email](https://react.email/docs) (`https://react.email/docs`)
+   - [ahooks](https://ahooks.js.org/) (`https://ahooks.js.org/`)
+   - [Turborepo](https://turbo.build/docs) (`https://turbo.build/docs`)
+   - [Biome](https://biomejs.dev/guides/getting-started/) (`https://biomejs.dev/guides/getting-started/`)
+   - [ESLint](https://eslint.org/docs/latest) (`https://eslint.org/docs/latest`)
+
+## Step 2: Configure MCP Servers
+
+This repo ships an MCP config in `.cursor/mcp.json` (no edits needed). You only need to provide a GitHub token and restart Cursor.
+
+Included servers:
+- **GitHub**: repo operations
+- **CodeRabbit**: PR/review insights
+- **shadcnui-official**: canonical components
+- **shadcnui-jpisnice-react**: blocks/templates
+- **shadcnui-jpisnice-react-native**: future RN blocks/templates
+- **docu**, **fastify**, **next**: Vercel project context
+
+### API key
+
+Set `GITHUB_TOKEN` (used by GitHub/CodeRabbit and some shadcn MCP tools), then restart Cursor:
+
+```bash
+export GITHUB_TOKEN="your_github_token_here"
+```
+
+Get one here: [GitHub Personal Access Tokens](https://github.com/settings/tokens) (use `repo` scope for private repos; `public_repo` for public).
+
+### Verify MCP setup
+
+After restart:
+
+1. Restart Cursor
+2. Cursor Settings → **MCP Servers**
+3. Confirm servers show **Connected**
+
+## Step 3: Plugins
+
+Recommended extensions are listed in `.vscode/extensions.json`.
+
+## Troubleshooting
+
+### MCP Servers Not Connecting
+
+- Ensure `GITHUB_TOKEN` is exported in the shell that launched Cursor
+- Fully restart Cursor (not just the window)
+
+### CodeRabbit MCP Not Working
+
+If CodeRabbit fails to connect:
+
+1. Ensure your token scopes are correct (`repo` / `public_repo`)
+2. Quick sanity check:
+
+```bash
+GITHUB_PAT="$GITHUB_TOKEN" pnpm dlx coderabbitai-mcp@latest --help
+```

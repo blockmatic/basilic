@@ -1,0 +1,199 @@
+---
+title: "Packages Reference"
+description: "Complete reference for all shared packages and their subpath exports in the monorepo."
+---
+
+This document is a reference for shared packages (`@repo/*`) and their **public entrypoints**.
+
+For architectural rules (boundaries, dependency strategy, API generation flow), see **[Package Conventions](/docs/development/package-conventions)**.
+
+## Import Rules
+
+Only import from **exported entrypoints** (package root or documented subpaths). Never deep-import internal files.
+
+### Root vs subpath entrypoints
+
+- **Root-only packages** (import from the package root):
+  - `@repo/core`
+  - `@repo/react`
+- **Subpath-only packages** (no root export):
+  - `@repo/ui/*`
+  - `@repo/sentry/*`
+  - `@repo/email/*`
+  - `@repo/notif/*`
+- **Mixed**:
+  - `@repo/utils` has a root barrel **and** subpath exports. Prefer subpaths for clarity and smaller import surfaces.
+
+Examples:
+
+- ✅ `import { createClient } from '@repo/core'`
+- ✅ `import { Button } from '@repo/ui/components/button'`
+- ✅ `import { delay } from '@repo/utils/async'`
+- ❌ `import { delay } from '@repo/utils'` (allowed by exports, but discouraged)
+- ❌ `import { something } from '@repo/core/src/...'`
+
+## Package catalog
+
+| Package | What it is | Entrypoints |
+| --- | --- | --- |
+| `@repo/core` | Generated OpenAPI client + types | `@repo/core` |
+| `@repo/react` | React Query hooks + React utilities | `@repo/react` |
+| `@repo/utils` | Cross-runtime utilities | `@repo/utils/*` (prefer subpaths) |
+| `@repo/ui` | Shared shadcn/ui components | `@repo/ui/components/*`, `@repo/ui/lib/*`, `@repo/ui/radix` |
+| `@repo/sentry` | Error reporting interface | `@repo/sentry/node`, `/nextjs`, `/browser`, `/react` |
+| `@repo/email` | Email templates + renderer | `@repo/email/emails/*`, `@repo/email/render` |
+| `@repo/notif` | Notification env/types (no root export) | `@repo/notif/node`, `@repo/notif/types/*` |
+
+## Core packages
+
+### `@repo/core` — API client & types
+
+Generated client and types from `apps/fastify/openapi/openapi.json`.
+
+**Exports** (public):
+- `createClient()` — nested namespace API (recommended)
+- `createApi()` — simplified flat API
+- `api` — generated wrapper map (advanced usage)
+- `ApiError` — error class for API failures
+- `export type *` — all generated OpenAPI types
+
+**Usage**:
+
+```ts
+import { createClient } from '@repo/core'
+
+const client = createClient({ baseUrl: 'http://localhost:3001' })
+
+// Nested namespace API
+await client.auth.magiclink.request({
+  body: { email: 'me@example.com', callbackUrl: 'http://localhost:3000' },
+})
+```
+
+### `@repo/react` — React Query hooks
+
+React-only helpers built on top of `@repo/core`.
+
+**Exports** (public):
+- `ReactApiProvider`
+- `useReactApiConfig`
+- `useHealthCheck`
+- `useMagicLink`
+- `LoginForm`
+- `createReactApiConfig`
+
+**Usage** (minimal):
+
+```tsx
+'use client'
+
+import { createClient } from '@repo/core'
+import { ReactApiProvider, useHealthCheck } from '@repo/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
+const coreClient = createClient({ baseUrl: 'http://localhost:3001' })
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ReactApiProvider client={coreClient}>{children}</ReactApiProvider>
+    </QueryClientProvider>
+  )
+}
+
+export function HealthStatus() {
+  const { data, isLoading, error } = useHealthCheck()
+  if (isLoading) return <div>Loading…</div>
+  if (error) return <div>Health check failed</div>
+  return <div>Server time: {data?.datetime}</div>
+}
+```
+
+## Utility packages
+
+### `@repo/utils` — utilities
+
+Prefer subpath imports:
+
+- `@repo/utils/async` — async helpers (`delay`, `fetchWithTimeout`, …)
+- `@repo/utils/error` — error normalization (`getErrorMessage`, `tryCatch`, …)
+- `@repo/utils/web3` — chain metadata + helpers
+- `@repo/utils/logger` — logger with conditional exports (browser vs node)
+- `@repo/utils/debug` — client-only debug hooks (`useDevtools`, `useNuqsDebug`, `useVconsole`)
+
+```ts
+import { delay } from '@repo/utils/async'
+import { logger } from '@repo/utils/logger'
+
+await delay(250)
+logger.info('delayed')
+```
+
+### `@repo/ui` — UI components
+
+Subpath-only exports:
+
+- `@repo/ui/components/*`
+- `@repo/ui/lib/*`
+- `@repo/ui/hooks/*`
+- `@repo/ui/radix`
+
+```ts
+import { Button } from '@repo/ui/components/button'
+import { cn } from '@repo/ui/lib/utils'
+```
+
+## Error reporting
+
+### `@repo/sentry` — capture interface
+
+Subpath-only exports (choose the platform path):
+
+- `@repo/sentry/node`
+- `@repo/sentry/nextjs`
+- `@repo/sentry/browser`
+- `@repo/sentry/react`
+
+```ts
+import { captureError } from '@repo/sentry/node' // or /nextjs, /browser
+
+captureError({ error, label: 'API Call', tags: { app: 'api' } })
+```
+
+## Email
+
+### `@repo/email` — templates
+
+Email template library built with React Email.
+
+Entrypoints:
+- `@repo/email/emails/*`
+- `@repo/email/render` (server-only)
+
+**Usage:**
+```typescript
+import { WelcomeEmail } from '@repo/email/emails/welcome'
+import { render } from '@repo/email/render'
+
+const html = await render(<WelcomeEmail fullName="John Doe" />)
+```
+
+## Notifications
+
+### `@repo/notif` — env + types (no root export)
+
+This package does **not** currently export a root entrypoint.
+
+Entrypoints:
+- `@repo/notif/node` — server env schema (Resend/email configuration)
+- `@repo/notif/types/*` — notification type modules
+
+```typescript
+import { env } from '@repo/notif/node'
+
+env.RESEND_API_KEY
+```
+
+If you need to consume the notification service API from other packages/apps, the package’s `exports` map needs a root entrypoint (or an additional subpath) first.
+

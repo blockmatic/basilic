@@ -1,24 +1,42 @@
 ---
 title: "Architecture Overview"
-description: "Technical stack and design decisions for this monorepo."
+description: "Technical stack and design decisions."
 ---
 
-This section documents the technical architecture and design decisions for this project. Each page focuses on **what was chosen and why**.
+The architecture is guided by these principles:
+
+- Composability and reusability
+- Security and automation
+- Designed for scale
+- API as source of truth
+- Multiple clients (web, mobile, desktop, other servers)
+- No vendor lock-in
+- Tooling chosen for long-term and community support
+
+## Architecture Flow
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as Fastify API
+  participant Drizzle as Drizzle ORM
+  participant DB as PostgreSQL
+
+  Client->>API: HTTP Request
+  API->>API: Validate
+  API->>Drizzle: Type-safe query
+  Drizzle->>DB: Plain SQL query
+  DB-->>Drizzle: Query result
+  Drizzle-->>API: Typed data
+  API-->>Client: JSON response
+```
 
 ## Architecture Topics
 
-- **[Monorepo Structure](/docs/core-concepts/monorepo-structure)** - Turborepo organization and package architecture
-  - See also: [ADR 001: Monorepo vs Standalone](/docs/adrs/001-monorepo-vs-standalone)
-- **[Backend Stack](/docs/architecture/backend-stack)** - Node.js, Fastify, PostgreSQL, Drizzle ORM
-  - See also: [ADR 002: Backend Framework](/docs/adrs/002-backend-framework), [ADR 007: Backend ORM](/docs/adrs/007-backend-orm), [ADR 008: Database](/docs/adrs/008-database), [ADR 009: API Architecture](/docs/adrs/009-api-architecture)
-- **[Authentication](/docs/architecture/authentication)** - Better Auth integration with email, magic link, and Web3 wallet authentication
-- **[Frontend Stack](/docs/architecture/frontend-stack)** - Next.js, Shadcn/ui, Tailwind CSS
-  - See also: [ADR 003: Frontend Framework](/docs/adrs/003-frontend-framework), [ADR 004: Design System](/docs/adrs/004-design-system)
-- **[Development Tooling](/docs/architecture/dev-tooling)** - pnpm, Biome, ESLint
-  - See also: [ADR 005: Package Manager](/docs/adrs/005-package-manager), [ADR 006: Linters](/docs/adrs/006-linters)
-- **[Package Conventions](/docs/architecture/package-conventions)** - Package architecture, dependency management strategies, and conventions
-- **[Packages Reference](/docs/core-concepts/packages)** - Complete reference for all shared packages
+- **[Monorepo Structure](/docs/architecture/monorepo)** - Turborepo organization and package architecture
+- **[API Architecture](/docs/architecture/api)** - Node.js, Fastify, PostgreSQL, Drizzle ORM
+- **[Authentication](/docs/architecture/authentication)** - Magic link, OAuth and Web3 wallet authentication
+- **[Frontend Architecture](/docs/architecture/frontend)** - Next.js, Shadcn/ui, Tailwind CSS
 - **[ESM & TypeScript Strategy](/docs/architecture/esm-strategy)** - ESM module system architecture and TypeScript configuration
-- **[Portability Strategy](/docs/architecture/portability)** - Zero vendor lock-in, migration paths
-
-For detailed package architecture conventions, see [Package Conventions](/docs/architecture/package-conventions).
+- **[Error Handling](/docs/architecture/error-handling)** - Error handling and logging 
+- **[Portability Strategy](/docs/architecture/portability)** - Zero vendor lock-in strategy

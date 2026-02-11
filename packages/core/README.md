@@ -139,4 +139,4 @@ If you're seeing type errors:
 2. Ensure you're importing types from `@repo/core`, not from generated files
 3. Check that your TypeScript version matches the package requirements
 
-See [API Development](https://basilic-docs.vercel.app/docs/core-concepts/api-architecture#client-consumption) for integration patterns.
+See [API Development](https://basilic-docs.vercel.app/docs/architecture/api#client-consumption) for integration patterns.

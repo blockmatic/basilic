@@ -171,8 +171,6 @@ Comprehensive security check script that runs all security scans.
 ```bash
 pnpm security:check
 # or
-pnpm security:scan
-# or
 node scripts/security-check.mjs
 ```
 

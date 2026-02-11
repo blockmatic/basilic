@@ -18,12 +18,14 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
-        <MDX
-          components={getMDXComponents({
-            // this allows you to link to other pages with relative file paths
-            a: createRelativeLink(source, page) as MDXComponents['a'],
-          } as MDXComponents)}
-        />
+        <div className="mb-14">
+          <MDX
+            components={getMDXComponents({
+              // this allows you to link to other pages with relative file paths
+              a: createRelativeLink(source, page) as MDXComponents['a'],
+            } as MDXComponents)}
+          />
+        </div>
       </DocsBody>
     </DocsPage>
   )

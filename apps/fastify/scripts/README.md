@@ -36,4 +36,4 @@ This script ensures the OpenAPI spec stays in sync with route implementations, e
 
 - **[Deployment Guide](@apps/docu/content/docs/deployment/index.mdx)** - Deployment options and strategies
 - **[Backend Stack](@apps/docu/content/docs/architecture/backend-stack.mdx)** - Technology choices and architecture
-- **[API Development](@apps/docu/content/docs/core-concepts/api-architecture.mdx)** - REST API with OpenAPI and hey-api client generation
+- **[API Development](@apps/docu/content/docs/architecture/api.mdx)** - REST API with OpenAPI and hey-api client generation
