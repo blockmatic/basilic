@@ -39,8 +39,8 @@ export function Hero() {
         </h1>
 
         <p className="mx-auto mt-4 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base md:mt-6 md:text-lg">
-          Build production-ready APIs with TypeScript, Fastify, and OpenAPI. AI-native development,
-          portable architecture, and first-class web3 support built in.
+          Production-ready frontends and APIs with TypeScript, Next.js, Fastify, and OpenAPI.
+          AI-native development, portable architecture, and first-class web3 support built in.
         </p>
 
         {/* CTA */}
