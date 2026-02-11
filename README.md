@@ -30,6 +30,3 @@ Full-stack monorepo starter for Web3 and AI applications.
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup and guidelines.
