@@ -8,7 +8,7 @@ Start database first (`pnpm db:start`), then `pnpm dev`. Uses Supabase CLI for P
 
 ## Vercel
 
-Serverless handler at `api/[...].ts`. All requests rewrite to `/api/$1`. Uses relative imports (no `@/` path aliases). Migrations run on first request per instance.
+Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time; PGLite migrations run at runtime.
 
 ## pnpm commands
 
