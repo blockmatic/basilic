@@ -58,7 +58,6 @@
     "@sinclair/typebox": "^0.34.47",
     "@solana/web3.js": "^1.98.4",
     "@t3-oss/env-core": "^0.13.10",
-    "@vercel/node": "^5.5.26",
     "ai": "^6.0.45",
     "bs58": "^6.0.0",
     "dotenv": "^17.2.3",
