@@ -30,13 +30,8 @@ jobs:
     env:
       CI: true
       PGLITE: true
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || 'sk-test-dummy-key-for-openapi' }}
-      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY != '' && secrets.ENCRYPTION_KEY || '0000000000000000000000000000000000000000000000000000000000000000' }}
       DATABASE_URL: postgresql://localhost/test
-      JWT_SECRET: ${{ secrets.JWT_SECRET != '' && secrets.JWT_SECRET || 'test-secret-key-that-is-at-least-32-characters-long' }}
-      RESEND_API_KEY: re_test_key
-      EMAIL_FROM: test@example.com
-      EMAIL_FROM_NAME: Test App
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-e2e' }}
       NEXT_PUBLIC_API_URL: http://localhost:3001
       PLAYWRIGHT_HTML_REPORT_OPEN: never
     steps:

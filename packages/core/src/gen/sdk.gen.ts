@@ -28,7 +28,7 @@ export const healthCheck = <ThrowOnError extends boolean = false>(options?: Opti
 /**
  * Generate AI chat response
  *
- * Chat with AI using OpenAI. Supports both streaming and non-streaming responses.
+ * Chat with AI via Open Router. Default model: Aurora Alpha. Supports streaming and tools.
  */
 export const chat = <ThrowOnError extends boolean = false>(options: Options<ChatData, ThrowOnError>) => (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

@@ -2,6 +2,11 @@ import 'dotenv/config'
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
+const hex64 = z
+  .string()
+  .length(64)
+  .regex(/^[0-9a-fA-F]+$/, 'Must be a 32-byte hex string')
+
 export const env = createEnv({
   server: {
     PORT: z.coerce.number().int().positive().default(3001),
@@ -12,31 +17,12 @@ export const env = createEnv({
       .string()
       .optional()
       .transform(val => {
-        // Note: Must check process.env.PGLITE here because env.PGLITE isn't available during transform phase
-        if (process.env.PGLITE === 'true' && !val) {
-          return 'postgresql://localhost/test'
-        }
+        if (process.env.PGLITE === 'true' && !val) return 'postgresql://localhost/test'
         return val ?? ''
       })
-      .refine(
-        val => {
-          // When PGLITE is not true, DATABASE_URL must be non-empty
-          if (process.env.PGLITE !== 'true') {
-            return val !== undefined && val.length > 0
-          }
-          return true
-        },
-        {
-          message: 'DATABASE_URL is required when PGLITE is not enabled',
-        },
-      ),
-    REDIS_URL: z.string().min(1).optional(),
-    SENTRY_DSN: z.string().min(1).optional(),
-    SENTRY_ENVIRONMENT: z.string().min(1).optional(),
-    SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(1),
-    SENTRY_REPLACES_HEADERS: z.coerce.boolean().default(false),
-    SENTRY_REPLACES_PROD_ENV: z.coerce.boolean().default(false),
-    // Security configuration
+      .refine(val => (process.env.PGLITE !== 'true' ? val !== undefined && val.length > 0 : true), {
+        message: 'DATABASE_URL is required when PGLITE is not enabled',
+      }),
     ALLOWED_ORIGINS: z
       .string()
       .default('*')
@@ -45,22 +31,16 @@ export const env = createEnv({
     RATE_LIMIT_TIME_WINDOW: z.coerce.number().int().positive().default(60000),
     TRUST_PROXY: z.coerce.boolean().default(true),
     SECURITY_HEADERS_ENABLED: z.coerce.boolean().default(true),
-    BODY_LIMIT: z.coerce.number().int().positive().default(1048576), // 1MB default
-    REQUEST_TIMEOUT: z.coerce.number().int().positive().default(30000), // 30s default
-    // Logging configuration
-    LOG_ENABLED: z.coerce.boolean().optional(),
+    BODY_LIMIT: z.coerce.number().int().positive().default(1048576),
+    REQUEST_TIMEOUT: z.coerce.number().int().positive().default(30000),
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).default('info'),
-    LOG_SERVICE: z.string().optional(),
-    // AI configuration
-    OPENAI_API_KEY: z.string().min(1),
-    ENCRYPTION_KEY: z
-      .string()
-      .length(64)
-      .regex(/^[0-9a-fA-F]+$/, 'Must be a 32-byte hex string'),
-    // JWT configuration
-    JWT_SECRET: z.string().min(32),
-    ACCESS_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(900), // 15 minutes
-    REFRESH_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(604800), // 7 days
+    SENTRY_DSN: z.string().min(1).optional(),
+    SENTRY_ENVIRONMENT: z.string().min(1).optional(),
+    OPEN_ROUTER_API_KEY: z.string().min(1),
+    ENCRYPTION_KEY: hex64.default('0'.repeat(64)),
+    JWT_SECRET: z.string().min(32).default('default-jwt-secret-min-32-chars-for-dev'),
+    ACCESS_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(900),
+    REFRESH_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(604800),
     JWT_ISSUER: z.string().default('api.yourapp.com'),
     JWT_AUDIENCE: z
       .string()
@@ -70,9 +50,8 @@ export const env = createEnv({
       .string()
       .optional()
       .transform(val => (val ? val.split(',').map(host => host.trim()) : undefined)),
-    // Email configuration
-    RESEND_API_KEY: z.string().min(1),
-    EMAIL_FROM: z.string().email(),
+    RESEND_API_KEY: z.string().min(1).default('re_placeholder'),
+    EMAIL_FROM: z.string().email().default('noreply@localhost'),
     EMAIL_FROM_NAME: z.string().default('App'),
     USE_FAKE_EMAIL: z.coerce.boolean().default(false),
   },

@@ -10,6 +10,10 @@ Start database first (`pnpm db:start`), then `pnpm dev`. Uses Supabase CLI for P
 
 Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time; PGLite migrations run at runtime.
 
+## Testing
+
+Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest loads it when present.
+
 ## pnpm commands
 
 - `pnpm dev` — Dev server with hot reload (requires db)

@@ -34,7 +34,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { resetDbInstance } from '../../src/db/index.js'
-import { closeTestDatabase, getTestDatabase } from './db.js'
+import { getTestDatabase, truncateAllTables } from './db.js'
 
 const setupFile = fileURLToPath(import.meta.url)
 const setupDir = dirname(setupFile)
@@ -105,9 +105,9 @@ export async function setupGroupDatabase() {
 
 /**
  * Cleanup database for a group entry test file.
- * Closes database instance and resets Drizzle instance cache.
+ * Truncates tables for next spec (does not close PGLite - that causes Aborted when reopening).
  */
 export async function cleanupGroupDatabase() {
-  await closeTestDatabase()
+  await truncateAllTables()
   resetDbInstance()
 }
