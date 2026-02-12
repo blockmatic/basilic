@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build --filter='!./contracts/**'",
-    "dev": "turbo run dev --filter='@repo/core,@repo/react,@repo/sentry,@repo/utils,@repo/fastify,@repo/next'",
+    "dev": "turbo run dev",
     "qa": "pnpm i --no-frozen-lockfile && turbo run checktypes --concurrency=100% && pnpm lint:fix && pnpm build && turbo run test --concurrency=100% --filter='!./contracts/**'",
     "checktypes": "turbo checktypes",
     "format": "biome format . --write",
