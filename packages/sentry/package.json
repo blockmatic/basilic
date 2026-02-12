@@ -35,6 +35,9 @@
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs"
   },
+  "dependencies": {
+    "@repo/utils": "workspace:*"
+  },
   "peerDependencies": {
     "@repo/utils": "workspace:*",
     "pino": "*",
