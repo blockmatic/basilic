@@ -25,9 +25,6 @@ importers:
       '@biomejs/biome':
         specifier: ^2.3.11
         version: 2.3.14
-      '@esbuild-plugins/tsconfig-paths':
-        specifier: ^0.1.2
-        version: 0.1.2(esbuild@0.27.3)(typescript@5.9.3)
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:tools/typescript
@@ -454,9 +451,6 @@ importers:
 
   packages/core:
     devDependencies:
-      '@esbuild-plugins/tsconfig-paths':
-        specifier: ^0.1.2
-        version: 0.1.2(esbuild@0.27.3)(typescript@5.9.3)
       '@hey-api/openapi-ts':
         specifier: ^0.90.8
         version: 0.90.10(magicast@0.5.2)(typescript@5.9.3)
@@ -589,9 +583,6 @@ importers:
         specifier: ^4.3.5
         version: 4.3.6
     devDependencies:
-      '@esbuild-plugins/tsconfig-paths':
-        specifier: ^0.1.2
-        version: 0.1.2(esbuild@0.27.3)(typescript@5.9.3)
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../tools/eslint
@@ -647,9 +638,6 @@ importers:
         specifier: '*'
         version: 10.3.1
     devDependencies:
-      '@esbuild-plugins/tsconfig-paths':
-        specifier: ^0.1.2
-        version: 0.1.2(esbuild@0.27.3)(typescript@5.9.3)
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../tools/eslint
@@ -661,7 +649,7 @@ importers:
         version: 10.38.0
       '@sentry/nextjs':
         specifier: ^10.36.0
-        version: 10.38.0(@opentelemetry/context-async-hooks@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.0(@opentelemetry/api@1.9.0))(encoding@0.1.13)(next@16.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.105.1(esbuild@0.27.3))
+        version: 10.38.0(@opentelemetry/context-async-hooks@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.0(@opentelemetry/api@1.9.0))(encoding@0.1.13)(next@16.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.105.1)
       '@sentry/node':
         specifier: ^10.36.0
         version: 10.38.0
@@ -864,6 +852,9 @@ importers:
 
   packages/utils:
     dependencies:
+      lodash-es:
+        specifier: '>=4.17.23'
+        version: 4.17.23
       pino:
         specifier: '*'
         version: 10.3.1
@@ -871,9 +862,6 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
     devDependencies:
-      '@esbuild-plugins/tsconfig-paths':
-        specifier: ^0.1.2
-        version: 0.1.2(esbuild@0.27.3)(typescript@5.9.3)
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../tools/eslint
@@ -898,9 +886,6 @@ importers:
       eslint:
         specifier: '*'
         version: 9.39.2(jiti@2.6.1)
-      lodash-es:
-        specifier: ^4.17.23
-        version: 4.17.23
       nuqs:
         specifier: ^2.8.6
         version: 2.8.8(next@16.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
@@ -1272,12 +1257,6 @@ packages:
   '@esbuild-kit/esm-loader@2.6.5':
     resolution: {integrity: sha512-FxEMIkJKnodyA1OaCUoEvbYRkoZlLZ4d/eXFu9Fh8CbBBgP5EmZxrfTRyN0qpXZ4vOvqnE5YdRdcrmUUXuU+dA==}
     deprecated: 'Merged into tsx: https://tsx.is'
-
-  '@esbuild-plugins/tsconfig-paths@0.1.2':
-    resolution: {integrity: sha512-TusFR26Y+Ze+Zm+NdfqZTSG4XyrXKxIaAfYCL3jASEI/gHjSdoCujATjzNWaaXs6Sk6Bv2D7NLr4Jdz1gysy/Q==}
-    peerDependencies:
-      esbuild: '>=0.25.0'
-      typescript: '*'
 
   '@esbuild/aix-ppc64@0.25.12':
     resolution: {integrity: sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==}
@@ -10234,16 +10213,6 @@ snapshots:
       '@esbuild-kit/core-utils': 3.3.2
       get-tsconfig: 4.13.6
 
-  '@esbuild-plugins/tsconfig-paths@0.1.2(esbuild@0.27.3)(typescript@5.9.3)':
-    dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
-      esbuild: 0.27.3
-      find-up: 5.0.0
-      strip-json-comments: 3.1.1
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - supports-color
-
   '@esbuild/aix-ppc64@0.25.12':
     optional: true
 
@@ -12471,7 +12440,7 @@ snapshots:
 
   '@sentry/core@10.38.0': {}
 
-  '@sentry/nextjs@10.38.0(@opentelemetry/context-async-hooks@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.0(@opentelemetry/api@1.9.0))(encoding@0.1.13)(next@16.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.105.1(esbuild@0.27.3))':
+  '@sentry/nextjs@10.38.0(@opentelemetry/context-async-hooks@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.0(@opentelemetry/api@1.9.0))(encoding@0.1.13)(next@16.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.105.1)':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/semantic-conventions': 1.39.0
@@ -12483,7 +12452,7 @@ snapshots:
       '@sentry/opentelemetry': 10.38.0(@opentelemetry/api@1.9.0)(@opentelemetry/context-async-hooks@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.39.0)
       '@sentry/react': 10.38.0(react@19.2.4)
       '@sentry/vercel-edge': 10.38.0
-      '@sentry/webpack-plugin': 4.9.1(encoding@0.1.13)(webpack@5.105.1(esbuild@0.27.3))
+      '@sentry/webpack-plugin': 4.9.1(encoding@0.1.13)(webpack@5.105.1)
       next: 16.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       rollup: 4.57.1
       stacktrace-parser: 0.1.11
@@ -12573,12 +12542,12 @@ snapshots:
       '@opentelemetry/resources': 2.5.0(@opentelemetry/api@1.9.0)
       '@sentry/core': 10.38.0
 
-  '@sentry/webpack-plugin@4.9.1(encoding@0.1.13)(webpack@5.105.1(esbuild@0.27.3))':
+  '@sentry/webpack-plugin@4.9.1(encoding@0.1.13)(webpack@5.105.1)':
     dependencies:
       '@sentry/bundler-plugin-core': 4.9.1(encoding@0.1.13)
       unplugin: 1.0.1
       uuid: 9.0.1
-      webpack: 5.105.1(esbuild@0.27.3)
+      webpack: 5.105.1
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -18895,16 +18864,14 @@ snapshots:
       minizlib: 3.1.0
       yallist: 5.0.0
 
-  terser-webpack-plugin@5.3.16(esbuild@0.27.3)(webpack@5.105.1(esbuild@0.27.3)):
+  terser-webpack-plugin@5.3.16(webpack@5.105.1):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       serialize-javascript: 6.0.2
       terser: 5.46.0
-      webpack: 5.105.1(esbuild@0.27.3)
-    optionalDependencies:
-      esbuild: 0.27.3
+      webpack: 5.105.1
 
   terser@5.46.0:
     dependencies:
@@ -19527,7 +19494,7 @@ snapshots:
 
   webpack-virtual-modules@0.5.0: {}
 
-  webpack@5.105.1(esbuild@0.27.3):
+  webpack@5.105.1:
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -19551,7 +19518,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.0
-      terser-webpack-plugin: 5.3.16(esbuild@0.27.3)(webpack@5.105.1(esbuild@0.27.3))
+      terser-webpack-plugin: 5.3.16(webpack@5.105.1)
       watchpack: 2.5.1
       webpack-sources: 3.3.3
     transitivePeerDependencies:

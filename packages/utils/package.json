@@ -69,6 +69,7 @@
   },
   "peerDependencies": {
     "ahooks": "*",
+    "lodash-es": "^4.17.0",
     "nuqs": "*",
     "pino": "*",
     "react": "*",
@@ -102,7 +103,6 @@
     }
   },
   "devDependencies": {
-    "@esbuild-plugins/tsconfig-paths": "^0.1.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/lodash-es": "latest",
@@ -110,7 +110,6 @@
     "@types/react": "*",
     "eslint": "*",
     "ahooks": "^3.9.6",
-    "lodash-es": "^4.17.23",
     "nuqs": "^2.8.6",
     "react": "^19.2.3",
     "tsup": "*",

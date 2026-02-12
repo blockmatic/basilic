@@ -45,7 +45,7 @@ describe('GET /', () => {
       url: '/',
     })
 
-    expect(response.body).toContain('Basilic API')
+    expect(response.body).toContain('Basilic Fastify API')
     expect(response.body).toContain('Type-safe REST API built with Fastify & OpenAPI')
     expect(response.body).toContain('/health')
     expect(response.body).toContain('/reference')

@@ -114,7 +114,7 @@ const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 <body>
   <div class="container">
     <span class="badge">v1.0.0</span>
-    <h1>🌿 Basilic API</h1>
+    <h1>Basilic Fastify API</h1>
     <p class="subtitle">Type-safe REST API built with Fastify & OpenAPI</p>
     
     <h2>📚 Resources</h2>

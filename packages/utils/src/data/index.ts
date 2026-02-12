@@ -1,3 +1,5 @@
+const defaultCompare = <T>(a: T, b: T) => (a > b ? 1 : a < b ? -1 : 0)
+
 /**
  * Creates a bidirectional map supporting fast lookup in both directions (K -> V and V -> K).
  * Also supports efficient sorted queries and binary search on keys and values.
@@ -13,6 +15,8 @@ export function createBiMap<K, V>() {
   let sortedKeys: K[] = []
   let sortedValues: V[] = []
   let dirty = false
+  let keyCompare: (a: K, b: K) => number = defaultCompare
+  let valueCompare: (a: V, b: V) => number = defaultCompare
 
   /**
    * Performs a binary search for the given target in a sorted array.
@@ -43,12 +47,13 @@ export function createBiMap<K, V>() {
 
   /**
    * Lazily rebuilds sorted key/value arrays if needed.
+   * Uses stored comparator so binary search and sort stay consistent.
    * dirty is set on set/delete so we only sort when the map has changed.
    */
   function ensureSorted() {
     if (!dirty) return
-    sortedKeys = [...fwd.keys()].sort((a, b) => (a > b ? 1 : a < b ? -1 : 0))
-    sortedValues = [...rev.keys()].sort((a, b) => (a > b ? 1 : a < b ? -1 : 0))
+    sortedKeys = [...fwd.keys()].sort(keyCompare)
+    sortedValues = [...rev.keys()].sort(valueCompare)
     dirty = false
   }
 
@@ -61,6 +66,10 @@ export function createBiMap<K, V>() {
      * @param {V} value - The value to associate with the key.
      */
     set(key: K, value: V): void {
+      const oldValue = fwd.get(key)
+      if (oldValue !== undefined) rev.delete(oldValue)
+      const oldKey = rev.get(value)
+      if (oldKey !== undefined) fwd.delete(oldKey)
       fwd.set(key, value)
       rev.set(value, key)
       dirty = true
@@ -89,12 +98,11 @@ export function createBiMap<K, V>() {
      * @param {K} key - The key to delete.
      */
     delete(key: K): void {
-      const value = fwd.get(key)
-      if (value !== undefined) {
-        rev.delete(value)
-        fwd.delete(key)
-        dirty = true
-      }
+      if (!fwd.has(key)) return
+      const value = fwd.get(key) as V
+      rev.delete(value)
+      fwd.delete(key)
+      dirty = true
     },
 
     /**
@@ -105,6 +113,8 @@ export function createBiMap<K, V>() {
      * @returns {V | undefined} The associated value, or undefined if not found.
      */
     searchKey(target: K, compareFn: (a: K, b: K) => number): V | undefined {
+      keyCompare = compareFn
+      dirty = true
       ensureSorted()
       const idx = binarySearch(sortedKeys, target, compareFn)
       if (idx === -1) return undefined
@@ -120,6 +130,8 @@ export function createBiMap<K, V>() {
      * @returns {K | undefined} The associated key, or undefined if not found.
      */
     searchValue(target: V, compareFn: (a: V, b: V) => number): K | undefined {
+      valueCompare = compareFn
+      dirty = true
       ensureSorted()
       const idx = binarySearch(sortedValues, target, compareFn)
       if (idx === -1) return undefined
@@ -136,6 +148,8 @@ export function createBiMap<K, V>() {
      * @returns {[K, V][]} Array of [key, value] pairs within the range.
      */
     rangeByKey(min: K, max: K, compareFn: (a: K, b: K) => number): [K, V][] {
+      keyCompare = compareFn
+      dirty = true
       ensureSorted()
       const result: [K, V][] = []
       for (const key of sortedKeys) {

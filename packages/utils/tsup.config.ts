@@ -1,4 +1,3 @@
-import { TsconfigPathsPlugin } from '@esbuild-plugins/tsconfig-paths'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -18,5 +17,4 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   outDir: 'dist',
-  esbuildPlugins: [TsconfigPathsPlugin({})],
 })

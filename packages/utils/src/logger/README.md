@@ -17,7 +17,7 @@ logger.info({ userId: '123' }, 'User logged in')
 logger.error({ err }, 'Request failed')
 
 const reqLogger = logger.child({ requestId: 'abc' })
-reqLogger.debug('Processing')
+reqLogger.debug(undefined, 'Processing')  // (data?, msg?) — message as second arg
 ```
 
 ## Env (server)
