@@ -113,8 +113,10 @@ export function createBiMap<K, V>() {
      * @returns {V | undefined} The associated value, or undefined if not found.
      */
     searchKey(target: K, compareFn: (a: K, b: K) => number): V | undefined {
-      keyCompare = compareFn
-      dirty = true
+      if (keyCompare !== compareFn) {
+        keyCompare = compareFn
+        dirty = true
+      }
       ensureSorted()
       const idx = binarySearch(sortedKeys, target, compareFn)
       if (idx === -1) return undefined
@@ -130,8 +132,10 @@ export function createBiMap<K, V>() {
      * @returns {K | undefined} The associated key, or undefined if not found.
      */
     searchValue(target: V, compareFn: (a: V, b: V) => number): K | undefined {
-      valueCompare = compareFn
-      dirty = true
+      if (valueCompare !== compareFn) {
+        valueCompare = compareFn
+        dirty = true
+      }
       ensureSorted()
       const idx = binarySearch(sortedValues, target, compareFn)
       if (idx === -1) return undefined
@@ -148,8 +152,10 @@ export function createBiMap<K, V>() {
      * @returns {[K, V][]} Array of [key, value] pairs within the range.
      */
     rangeByKey(min: K, max: K, compareFn: (a: K, b: K) => number): [K, V][] {
-      keyCompare = compareFn
-      dirty = true
+      if (keyCompare !== compareFn) {
+        keyCompare = compareFn
+        dirty = true
+      }
       ensureSorted()
       const result: [K, V][] = []
       for (const key of sortedKeys) {
