@@ -41,7 +41,7 @@ Packages expose TypeScript source for workspace consumption. Two patterns exist:
 }
 ```
 
-**Pattern B** – `source` condition for bundlers, `import` for Node (packages like `@repo/utils`, `@repo/sentry`):
+**Pattern B** – `source` condition for bundlers, `node`/`import` for Node (packages like `@repo/utils`, `@repo/sentry`):
 
 ```json
 {
@@ -49,13 +49,16 @@ Packages expose TypeScript source for workspace consumption. Two patterns exist:
     "./async": {
       "types": "./src/async/index.ts",
       "source": "./src/async/index.ts",
-      "import": "./dist/async/index.js"
+      "node": "./dist/async/index.js",
+      "import": "./dist/async/index.js",
+      "default": "./dist/async/index.js"
     }
   }
 }
 ```
 
-Next.js apps resolve the `source` condition first (via webpack config) to consume TypeScript directly.
+- **Next.js** (webpack): resolves `source` first to consume TypeScript directly.
+- **Node / serverless** (Vercel, etc.): resolves `node` or `import` to compiled `dist/`. The explicit `node` and `default` conditions ensure serverless runtimes always get the compiled output, avoiding `ERR_MODULE_NOT_FOUND` when resolvers prefer non-standard conditions.
 
 ### Publishing Mode (npm)
 
@@ -197,7 +200,7 @@ Node.js apps use native ESM and typically run TypeScript in development via `tsx
 - ✅ Use `tsx` (or equivalent) for dev execution when you need to run TS directly
 - ✅ Use `tsgo` for builds and `--noEmit` typechecks (default across apps/packages)
 - ✅ Configure `moduleResolution: "NodeNext"` for proper ESM support
-- ✅ Import workspace packages normally - they resolve to `src/` exports
+- ✅ Import workspace packages normally – dev resolves to `src/` (tsx); built output resolves to `dist/` (Pattern B packages include `node`/`default` conditions for serverless)
 
 ## Import Extension Rules
 
