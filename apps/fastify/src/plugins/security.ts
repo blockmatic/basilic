@@ -52,9 +52,11 @@ const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
     )
 
     // Content Security Policy - more restrictive in production
-    const isReferenceRoute = request.url.startsWith('/reference')
+    const path = request.url?.split('?')[0] ?? ''
+    const isReferenceRoute = path.startsWith('/reference')
+    const isRootLanding = path === '/' || path === ''
 
-    if (env.NODE_ENV === 'production' && !isReferenceRoute) {
+    if (env.NODE_ENV === 'production' && !isReferenceRoute && !isRootLanding) {
       // Strict CSP for API routes in production
       const cspDirectives = [
         "default-src 'self'",
