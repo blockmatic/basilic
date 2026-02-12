@@ -9,7 +9,7 @@
       "env": ["NODE_ENV"]
     },
     "@repo/fastify#generate:openapi": {
-      "dependsOn": [],
+      "dependsOn": ["@repo/utils#build", "@repo/sentry#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
       "env": ["NODE_ENV"]
