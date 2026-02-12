@@ -3,16 +3,27 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "source": "./src/index.ts",
+      "node": "./dist/index.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
     "./types/*": {
-      "types": "./dist/types/*.d.ts",
-      "import": "./dist/types/*.js"
+      "types": "./src/types/*.ts",
+      "source": "./src/types/*.ts",
+      "node": "./dist/types/*.js",
+      "import": "./dist/types/*.js",
+      "default": "./dist/types/*.js"
     },
     "./node": {
-      "types": "./dist/env.d.ts",
-      "import": "./dist/env.js"
+      "types": "./src/env.ts",
+      "source": "./src/env.ts",
+      "node": "./dist/env.js",
+      "import": "./dist/env.js",
+      "default": "./dist/env.js"
     }
   },
   "scripts": {
@@ -21,7 +32,8 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "format": "biome format --write .",
-    "checktypes": "tsgo --noEmit"
+    "checktypes": "tsgo --noEmit",
+    "build": "tsgo"
   },
   "dependencies": {
     "@repo/email": "workspace:*",
