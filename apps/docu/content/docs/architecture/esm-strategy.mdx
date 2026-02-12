@@ -111,12 +111,15 @@ Next.js apps import TypeScript source directly using **package interpolation**:
 // next.config.mjs
 export default {
   transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/sentry', '@repo/utils'],
-  webpack: (config) => {
+  serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
+  webpack: config => {
     // Resolve "source" condition so Next.js uses TypeScript source from workspace packages
     config.resolve.conditionNames = ['source', ...(config.resolve.conditionNames ?? ['...'])]
     // Allow .js imports to resolve to .ts/.tsx in transpiled packages
+    // Merge with existing extensionAlias if present to preserve Next.js defaults
+    const existingExtensionAlias = config.resolve.extensionAlias || {}
     config.resolve.extensionAlias = {
-      ...config.resolve.extensionAlias,
+      ...existingExtensionAlias,
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.jsx': ['.tsx', '.jsx'],
     }

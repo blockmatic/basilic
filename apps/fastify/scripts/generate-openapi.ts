@@ -3,7 +3,6 @@ import { writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import swagger from '@fastify/swagger'
-import { logger } from '@repo/utils/logger'
 import Fastify from 'fastify'
 
 const scriptPath = fileURLToPath(import.meta.url)
@@ -158,9 +157,9 @@ async function generateOpenAPI() {
     const outputPath = join(scriptDir, '../openapi/openapi.json')
     await writeFile(outputPath, JSON.stringify(processedDocument, null, 2), 'utf-8')
 
-    logger.info({ outputPath }, 'OpenAPI spec generated')
+    console.log('OpenAPI spec generated:', outputPath)
   } catch (error) {
-    logger.error({ error }, 'Failed to generate OpenAPI spec')
+    console.error('Failed to generate OpenAPI spec', error)
     process.exit(1)
   } finally {
     await fastify.close()
