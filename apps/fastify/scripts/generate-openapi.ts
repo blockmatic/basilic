@@ -97,10 +97,18 @@ function removeDefaultsFromRequired(schema: unknown): unknown {
 }
 
 async function generateOpenAPI() {
-  // Set dummy key for OpenAPI generation if not provided
-  // This avoids requiring a real key just to generate the spec
-  if (!process.env.OPENAI_API_KEY) {
-    process.env.OPENAI_API_KEY = 'sk-test-dummy-key-for-openapi'
+  // Stub required env for OpenAPI generation when missing (e.g. Vercel Next build)
+  // Allows generate:openapi to run without real credentials
+  const stubs: Record<string, string> = {
+    OPENAI_API_KEY: 'sk-test-dummy-key-for-openapi',
+    PGLITE: 'true', // avoids DATABASE_URL
+    ENCRYPTION_KEY: '0'.repeat(64),
+    JWT_SECRET: 'openapi-gen-dummy-secret-min-32-chars',
+    RESEND_API_KEY: 're_dummy_for_openapi_generation',
+    EMAIL_FROM: 'noreply@openapi-gen.local',
+  }
+  for (const [k, v] of Object.entries(stubs)) {
+    if (!process.env[k]) process.env[k] = v
   }
 
   const { default: app } = await import('../src/app.js')

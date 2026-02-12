@@ -25,6 +25,7 @@ paths = [
   '''fixtures/''',
   '''examples/''',
   '''docs/''',
+  '''apps/fastify/scripts/generate-openapi\.ts$''',
 ]
 
 regexes = [
