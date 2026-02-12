@@ -8,18 +8,22 @@
   "exports": {
     "./node": {
       "types": "./src/node/index.ts",
+      "source": "./src/node/index.ts",
       "import": "./dist/node.js"
     },
     "./nextjs": {
       "types": "./src/nextjs/index.ts",
+      "source": "./src/nextjs/index.ts",
       "import": "./dist/nextjs.js"
     },
     "./browser": {
       "types": "./src/browser/index.ts",
+      "source": "./src/browser/index.ts",
       "import": "./dist/browser.js"
     },
     "./react": {
       "types": "./src/react/index.ts",
+      "source": "./src/react/index.ts",
       "import": "./dist/react.js"
     }
   },

@@ -4,7 +4,7 @@ export default defineConfig({
   input: '../../apps/fastify/openapi/openapi.json',
   output: {
     path: './src/gen',
-    format: 'prettier',
+    postProcess: ['prettier'],
   },
   types: {
     enums: 'typescript',

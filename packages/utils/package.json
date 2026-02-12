@@ -8,18 +8,22 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
+      "source": "./src/index.ts",
       "import": "./dist/index.js"
     },
     "./async": {
       "types": "./src/async/index.ts",
+      "source": "./src/async/index.ts",
       "import": "./dist/async/index.js"
     },
     "./web3": {
       "types": "./src/web3/index.ts",
+      "source": "./src/web3/index.ts",
       "import": "./dist/web3/index.js"
     },
     "./logger": {
       "types": "./src/logger/index.ts",
+      "source": "./src/logger/index.ts",
       "browser": "./dist/logger/client.js",
       "node": "./dist/logger/server.js",
       "import": "./dist/logger/server.js",
@@ -27,10 +31,12 @@
     },
     "./debug": {
       "types": "./src/debug/index.ts",
+      "source": "./src/debug/index.ts",
       "import": "./dist/debug/index.js"
     },
     "./error": {
       "types": "./src/error/index.ts",
+      "source": "./src/error/index.ts",
       "import": "./dist/error/index.js"
     }
   },

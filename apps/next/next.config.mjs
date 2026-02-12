@@ -5,6 +5,8 @@ const nextConfig = {
   // @/ alias is automatically resolved from tsconfig.json paths
   // Webpack config forces Next.js to use webpack instead of Turbopack
   webpack: config => {
+    // Resolve "source" condition from internal packages for direct TS imports
+    config.resolve.conditionNames = ['source', ...(config.resolve.conditionNames ?? ['...'])]
     // Resolve .js imports to .ts files for transpiled packages
     // Merge with existing extensionAlias if present to preserve Next.js defaults
     const existingExtensionAlias = config.resolve.extensionAlias || {}

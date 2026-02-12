@@ -6,11 +6,13 @@
   "exports": {
     "./emails/*": {
       "types": "./emails/*.tsx",
+      "source": "./emails/*.tsx",
       "import": "./emails/*.tsx",
       "require": "./emails/*.tsx"
     },
     "./render": {
       "types": "./render.ts",
+      "source": "./render.ts",
       "node": {
         "import": "./render.ts",
         "require": "./render.ts"
@@ -25,7 +27,7 @@
     "format": "biome format --write .",
     "checktypes": "tsgo --noEmit",
     "dev": "email dev -p 3003",
-    "build": "email build",
+    "build": "NEXT_TELEMETRY_DISABLED=1 email build",
     "start": "email start"
   },
   "dependencies": {
