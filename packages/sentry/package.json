@@ -23,16 +23,12 @@
     "./browser": {
       "types": "./src/browser/index.ts",
       "source": "./src/browser/index.ts",
-      "import": "./dist/browser.js",
-      "node": "./dist/browser.js",
-      "default": "./dist/browser.js"
+      "import": "./dist/browser.js"
     },
     "./react": {
       "types": "./src/react/index.ts",
       "source": "./src/react/index.ts",
-      "import": "./dist/react.js",
-      "node": "./dist/react.js",
-      "default": "./dist/react.js"
+      "import": "./dist/react.js"
     }
   },
   "scripts": {
