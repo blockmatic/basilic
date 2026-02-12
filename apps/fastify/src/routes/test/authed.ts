@@ -1,7 +1,7 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { ErrorResponseSchema } from '@/routes/schemas.js'
+import { ErrorResponseSchema } from '../schemas.js'
 
 const AuthedResponseSchema = Type.Object({
   user: Type.Object({

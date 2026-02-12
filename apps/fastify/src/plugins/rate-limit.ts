@@ -1,7 +1,7 @@
 import rateLimit from '@fastify/rate-limit'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
-import { env } from '@/lib/env.js'
+import { env } from '../lib/env.js'
 
 type RateLimitPluginOptions = Record<string, never>
 

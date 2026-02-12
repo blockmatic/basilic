@@ -1,7 +1,7 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { env } from '@/lib/env.js'
+import { env } from '../../lib/env.js'
 
 const MagicLinkTokenResponseSchema = Type.Object({
   token: Type.Union([Type.String(), Type.Null()]),

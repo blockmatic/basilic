@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "fastify",
   "buildCommand": "cd ../.. && pnpm install && pnpm turbo build --filter=@repo/fastify",
   "installCommand": "cd ../.. && pnpm install",
   "functions": {

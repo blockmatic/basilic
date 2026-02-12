@@ -1,7 +1,7 @@
 import { captureError } from '@repo/sentry/node'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
-import { getError, mapHttpStatusToErrorCode } from '@/lib/catalogs/mapper.js'
+import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
 
 /**
  * Exception map for irregular plural-to-singular conversions

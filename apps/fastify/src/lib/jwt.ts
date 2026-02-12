@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto'
-import { env } from '@/lib/env.js'
+import { env } from './env.js'
 
 type AccessTokenPayload = {
   typ: 'access'

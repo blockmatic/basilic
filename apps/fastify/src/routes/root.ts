@@ -1,5 +1,5 @@
 import type { FastifyPluginAsync } from 'fastify'
-import { env } from '@/lib/env.js'
+import { env } from '../lib/env.js'
 
 const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
   fastify.get(

@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
-import { env } from '@/lib/env.js'
+import { env } from './env.js'
 
 /**
  * Encryption algorithm: AES-256-GCM
