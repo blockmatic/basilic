@@ -1,6 +1,6 @@
-# Basilic: Web3 & AI App Starters
+# Basilic: Web3 & AI App Starter
 
-Full-stack monorepo starter for Web3 and AI applications.
+Full-stack monorepo starter for Web3 and AI apps. Built for teams shipping products that need SDKs, public APIs, and multichain support—without rebuilding auth, OpenAPI tooling, or design systems from scratch. Ship features faster; security, docs, and AI-assisted workflows are included.
 
 > 🚧 **Active development** — Explore, fork, and contribute. 🏗️
 

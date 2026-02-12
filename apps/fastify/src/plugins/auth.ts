@@ -2,8 +2,8 @@ import { captureError } from '@repo/sentry/node'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
-import { getDb } from '@/db/index.js'
-import { sessions, users } from '@/db/schema/index.js'
+import { getDb } from '../db/index.js'
+import { sessions, users } from '../db/schema/index.js'
 
 declare module 'fastify' {
   interface FastifyRequest {

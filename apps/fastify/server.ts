@@ -2,12 +2,12 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { tryCatch } from '@repo/utils/error'
 import * as Sentry from '@sentry/node'
 import Fastify from 'fastify'
-import app from '@/app.js'
-import { waitForDatabase } from '@/db/health.js'
-import { getDb } from '@/db/index.js'
-import { runMigrations } from '@/db/migrate.js'
-import { setTestEmailProvider } from '@/lib/auth.js'
-import { env } from '@/lib/env.js'
+import app from './src/app.js'
+import { waitForDatabase } from './src/db/health.js'
+import { getDb } from './src/db/index.js'
+import { runMigrations } from './src/db/migrate.js'
+import { setTestEmailProvider } from './src/lib/auth.js'
+import { env } from './src/lib/env.js'
 
 // Dynamically import FakeEmailProvider only when explicitly enabled
 async function setupFakeEmailProvider() {

@@ -1,9 +1,9 @@
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '@/db/index.js'
-import { sessions } from '@/db/schema/index.js'
-import { ErrorResponseSchema } from '@/routes/schemas.js'
+import { getDb } from '../../../db/index.js'
+import { sessions } from '../../../db/schema/index.js'
+import { ErrorResponseSchema } from '../../schemas.js'
 
 const LogoutResponseSchema = Type.Object({
   ok: Type.Boolean(),

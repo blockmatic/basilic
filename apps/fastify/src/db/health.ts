@@ -1,5 +1,5 @@
 import { Pool } from 'pg'
-import { env } from '@/lib/env.js'
+import { env } from '../lib/env.js'
 
 const MAX_RETRIES = 10
 const INITIAL_RETRY_DELAY = 1000 // 1 second

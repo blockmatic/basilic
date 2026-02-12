@@ -4,8 +4,8 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import { generateText, streamText, type ToolSet } from 'ai'
 import type { FastifyPluginAsync } from 'fastify'
-import { env } from '@/lib/env.js'
-import { ErrorResponseSchema } from '@/routes/schemas.js'
+import { env } from '../../lib/env.js'
+import { ErrorResponseSchema } from '../schemas.js'
 
 const ChatMessageSchema = Type.Object({
   role: Type.Union([Type.Literal('user'), Type.Literal('assistant'), Type.Literal('system')]),

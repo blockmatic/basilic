@@ -2,8 +2,8 @@ import { readdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { PGlite } from '@electric-sql/pglite'
-import { getDb } from '@/db/index.js'
-import { env } from '@/lib/env.js'
+import { env } from '../lib/env.js'
+import { getDb } from './index.js'
 
 const migrateFile = fileURLToPath(import.meta.url)
 const dbDir = dirname(migrateFile)
