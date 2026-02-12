@@ -26,15 +26,6 @@ Full-stack monorepo starter for Web3 and AI applications.
 - **Web3:** Solidity, Viem, Wagmi, Ponder, Solana
 - **DevOps:** pnpm, TurboRepo, TypeScript, Biome, ESLint
 
-## Scripts
-
-- `pnpm setup` - Full setup (install, hooks, security, EVM, Solana, database)
-- `pnpm dev` - Start all apps (Fastify, Next, watchers)
-- `pnpm build` - Build packages and apps
-- `pnpm test` - Run tests
-- `pnpm lint` / `pnpm lint:fix` - Lint and fix
-- `pnpm qa` - Pre-commit quality check (install, checktypes, lint, build, test)
-
 ## Apps
 
 - **[API](apps/fastify/README.md)** — Type-safe REST API built with Fastify & OpenAPI
@@ -50,6 +41,43 @@ Full-stack monorepo starter for Web3 and AI applications.
 - **[@repo/sentry](packages/sentry/README.md)** — Common `captureError` interface for error reporting
 - **[@repo/email](packages/email/README.md)** — Email template library built with React Email
 - **[@repo/notif](packages/notif/README.md)** — Notification service (email, activity) with type-safe schemas
+
+
+## Scripts
+
+Run with `pnpm <script>`.
+
+**Setup**
+  - `setup` — Full setup (install, hooks, gitleaks, osv, evm, solana, database)
+  - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
+  - `setup:evm`, `setup:solana`, `setup:database` — EVM tools, Solana CLI, database
+**Primary**
+  - `build` — Build packages and apps (excludes contracts)
+  - `dev` — Start dev (core, react, sentry, utils, fastify, next)
+  - `qa` — Full check: install → checktypes → lint → build → test
+**Format / Lint**
+  - `checktypes` — Type-check all packages
+  - `format` — Format code (Biome)
+  - `lint` — Lint with Biome + ESLint
+  - `lint:biome`, `lint:biome:fix` — Biome check, fix
+  - `lint:eslint`, `lint:eslint:fix` — ESLint check, fix
+  - `lint:fix` — Fix both linters
+ **Test**
+  - `test` — Run tests (excludes contracts)
+  - `test:e2e` — E2E (Fastify + Next)
+**Security**
+  - `security:block-files` — Block sensitive file patterns
+  - `security:secrets` — Scan staged files for secrets
+  - `security:secrets:full` — Full Gitleaks scan
+  - `security:osv` — OSV vulnerability scan
+  - `security:audit` — pnpm audit (moderate+)
+  - `security:check` — Run security check script
+**Hooks**
+  - `hooks:pre-commit` — Pre-commit: security + Biome staged
+  - `hooks:security` — Block files, scan secrets, OSV
+**Misc**
+  - `update-deps` — Update pnpm and all dependencies
+
 
 ## Documentation
 
