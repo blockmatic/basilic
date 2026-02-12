@@ -48,6 +48,13 @@
       "import": "./dist/error/index.js",
       "node": "./dist/error/index.js",
       "default": "./dist/error/index.js"
+    },
+    "./data": {
+      "types": "./src/data/index.ts",
+      "source": "./src/data/index.ts",
+      "import": "./dist/data/index.js",
+      "node": "./dist/data/index.js",
+      "default": "./dist/data/index.js"
     }
   },
   "scripts": {
@@ -95,6 +102,7 @@
     }
   },
   "devDependencies": {
+    "@esbuild-plugins/tsconfig-paths": "^0.1.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/lodash-es": "latest",

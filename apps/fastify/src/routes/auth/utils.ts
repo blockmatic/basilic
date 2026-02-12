@@ -1,4 +1,4 @@
-import { env } from '../../lib/env.js'
+import { env } from '@/lib/env.js'
 
 export function validateCallbackUrl(callbackUrl: string): boolean {
   if (!callbackUrl || typeof callbackUrl !== 'string') {

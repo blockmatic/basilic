@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
-import { env } from '../lib/env.js'
-import { detectSuspiciousActivity, logSecurityEvent } from '../lib/security.js'
+import { env } from '@/lib/env.js'
+import { detectSuspiciousActivity, logSecurityEvent } from '@/lib/security.js'
 
 type SecurityPluginOptions = Record<string, never>
 

@@ -1,3 +1,4 @@
+import { TsconfigPathsPlugin } from '@esbuild-plugins/tsconfig-paths'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -10,10 +11,12 @@ export default defineConfig({
     'src/logger/server.ts',
     'src/debug/index.ts',
     'src/error/index.ts',
+    'src/data/index.ts',
   ],
   format: ['esm'],
   dts: true,
   sourcemap: true,
   clean: true,
   outDir: 'dist',
+  esbuildPlugins: [TsconfigPathsPlugin({})],
 })

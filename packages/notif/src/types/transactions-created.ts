@@ -1,6 +1,6 @@
-import type { NotificationHandler } from '../base'
-import type { TransactionsCreatedInput } from '../schemas'
-import { transactionsCreatedSchema } from '../schemas'
+import type { NotificationHandler } from '@/base'
+import type { TransactionsCreatedInput } from '@/schemas'
+import { transactionsCreatedSchema } from '@/schemas'
 
 export const transactionsCreated: NotificationHandler<TransactionsCreatedInput> = {
   schema: transactionsCreatedSchema,

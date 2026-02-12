@@ -152,3 +152,8 @@ This package follows the **Component Library** pattern:
 - **Rationale**: Simpler developer experience - install `@repo/ui` and it works. Version consistency across all apps. Follows industry patterns (shadcn/ui, Material-UI, Chakra UI)
 
 See [Frontend Stack](@apps/docu/content/docs/architecture/frontend-stack.mdx) for design system details.
+
+## Scripts
+
+- `pnpm --filter @repo/ui checktypes` - Type-check
+- `pnpm --filter @repo/ui test` - Run tests

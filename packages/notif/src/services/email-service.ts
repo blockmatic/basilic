@@ -7,8 +7,8 @@ import { logger } from '@repo/utils/logger'
 import { nanoid } from 'nanoid'
 import type { ComponentProps, ReactNode } from 'react'
 import { type CreateEmailOptions, Resend } from 'resend'
-import type { EmailInput } from '../base'
-import { env } from '../env'
+import type { EmailInput } from '@/base'
+import { env } from '@/env'
 
 // Extract prop types from email components
 type MagicLinkLoginProps = ComponentProps<typeof MagicLinkLoginEmail>

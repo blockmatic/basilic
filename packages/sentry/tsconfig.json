@@ -4,7 +4,10 @@
     "outDir": "dist",
     "rootDir": "src",
     "jsx": "react-jsx",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["src/__tests__/types.test-d.ts"]

@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify'
-import { env } from '../lib/env.js'
-import { getReferenceHtml } from './reference/template.js'
+import { env } from '@/lib/env.js'
+import { getReferenceHtml } from '@/routes/reference/template.js'
 
 const referenceRoutes: FastifyPluginAsync = async fastify => {
   // Serve OpenAPI JSON

@@ -1,3 +1,4 @@
+import { TsconfigPathsPlugin } from '@esbuild-plugins/tsconfig-paths'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -15,4 +16,5 @@ export default defineConfig({
   outDir: 'dist',
   noExternal: ['@repo/utils'],
   external: ['@sentry/node', '@sentry/nextjs', '@sentry/browser', 'react', 'pino'],
+  esbuildPlugins: [TsconfigPathsPlugin({})],
 })

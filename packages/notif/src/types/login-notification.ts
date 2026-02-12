@@ -1,6 +1,6 @@
-import type { NotificationHandler } from '../base'
-import type { LoginNotificationInput } from '../schemas'
-import { loginNotificationSchema } from '../schemas'
+import type { NotificationHandler } from '@/base'
+import type { LoginNotificationInput } from '@/schemas'
+import { loginNotificationSchema } from '@/schemas'
 
 export const loginNotification: NotificationHandler<LoginNotificationInput> = {
   schema: loginNotificationSchema,

@@ -25,6 +25,7 @@
     "test": "echo \"no test\""
   },
   "devDependencies": {
+    "@esbuild-plugins/tsconfig-paths": "^0.1.2",
     "@hey-api/openapi-ts": "^0.90.8",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

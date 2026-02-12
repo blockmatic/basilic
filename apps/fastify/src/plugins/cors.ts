@@ -1,7 +1,7 @@
 import cors from '@fastify/cors'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
-import { env } from '../lib/env.js'
+import { env } from '@/lib/env.js'
 
 type CorsPluginOptions = Record<string, never>
 
