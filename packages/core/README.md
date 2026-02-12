@@ -140,3 +140,8 @@ If you're seeing type errors:
 3. Check that your TypeScript version matches the package requirements
 
 See [API Development](https://basilic-docs.vercel.app/docs/architecture/api#client-consumption) for integration patterns.
+
+## Scripts
+
+- `pnpm --filter @repo/core build` - Build package
+- `pnpm --filter @repo/core generate` - Regenerate client and types from OpenAPI spec

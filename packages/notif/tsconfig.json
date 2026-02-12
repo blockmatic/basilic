@@ -2,7 +2,10 @@
   "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*", "../../tools/typescript/reset.d.ts"],
   "exclude": ["node_modules", "dist"]

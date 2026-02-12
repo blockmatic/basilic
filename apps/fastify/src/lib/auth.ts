@@ -1,4 +1,4 @@
-import type { EmailProvider } from './email.js'
+import type { EmailProvider } from '@/lib/email.js'
 
 declare global {
   var __testEmailProvider: EmailProvider | null | undefined

@@ -1,9 +1,9 @@
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import { Resend } from 'resend'
+import type { EmailProvider } from '@/lib/email.js'
+import { env } from '@/lib/env.js'
 import type { FakeEmailProvider } from '../../test/utils/fake-email.js'
-import type { EmailProvider } from '../lib/email.js'
-import { env } from '../lib/env.js'
 
 declare module 'fastify' {
   interface FastifyInstance {

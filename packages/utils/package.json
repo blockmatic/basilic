@@ -9,17 +9,23 @@
     ".": {
       "types": "./src/index.ts",
       "source": "./src/index.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "node": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./async": {
       "types": "./src/async/index.ts",
       "source": "./src/async/index.ts",
-      "import": "./dist/async/index.js"
+      "import": "./dist/async/index.js",
+      "node": "./dist/async/index.js",
+      "default": "./dist/async/index.js"
     },
     "./web3": {
       "types": "./src/web3/index.ts",
       "source": "./src/web3/index.ts",
-      "import": "./dist/web3/index.js"
+      "import": "./dist/web3/index.js",
+      "node": "./dist/web3/index.js",
+      "default": "./dist/web3/index.js"
     },
     "./logger": {
       "types": "./src/logger/index.ts",
@@ -32,12 +38,23 @@
     "./debug": {
       "types": "./src/debug/index.ts",
       "source": "./src/debug/index.ts",
-      "import": "./dist/debug/index.js"
+      "import": "./dist/debug/index.js",
+      "node": "./dist/debug/index.js",
+      "default": "./dist/debug/index.js"
     },
     "./error": {
       "types": "./src/error/index.ts",
       "source": "./src/error/index.ts",
-      "import": "./dist/error/index.js"
+      "import": "./dist/error/index.js",
+      "node": "./dist/error/index.js",
+      "default": "./dist/error/index.js"
+    },
+    "./data": {
+      "types": "./src/data/index.ts",
+      "source": "./src/data/index.ts",
+      "import": "./dist/data/index.js",
+      "node": "./dist/data/index.js",
+      "default": "./dist/data/index.js"
     }
   },
   "scripts": {
@@ -52,6 +69,7 @@
   },
   "peerDependencies": {
     "ahooks": "*",
+    "lodash-es": "^4.17.0",
     "nuqs": "*",
     "pino": "*",
     "react": "*",
@@ -92,7 +110,6 @@
     "@types/react": "*",
     "eslint": "*",
     "ahooks": "^3.9.6",
-    "lodash-es": "^4.17.23",
     "nuqs": "^2.8.6",
     "react": "^19.2.3",
     "tsup": "*",

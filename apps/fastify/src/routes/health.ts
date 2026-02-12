@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { isDbReady } from '../db/index.js'
+import { isDbReady } from '@/db/index.js'
 
 export const HealthResponseSchema = Type.Object({
   ok: Type.Boolean(),

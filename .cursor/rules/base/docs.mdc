@@ -1,6 +1,6 @@
 ---
 description: Documentation standards and best practices
-glob: "apps/docu/**/*.mdx, **/README.md, **/README.mdc"
+glob: "apps/docu/**/*.mdx"
 alwaysApply: true
 ---
 
@@ -22,7 +22,3 @@ alwaysApply: true
 ## Organization
 - DRY, progressive complexity (simple → advanced)
 - Task-based guides, separate reference from tutorials, modular
-
-## READMEs
-- Lean with links to docs site
-- Structure: Requirements → Quick Start → Links, no duplication ( links to docs site )

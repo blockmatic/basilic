@@ -123,55 +123,7 @@ contracts/evm/
 
 ## Usage
 
-### Build Contracts
-
-```bash
-pnpm --filter @repo/contracts-evm build
-# or
-cd contracts/evm && forge build
-```
-
-### Run Tests
-
-```bash
-pnpm --filter @repo/contracts-evm test
-# or
-cd contracts/evm && forge test
-```
-
-### Start Local Node
-
-```bash
-pnpm --filter @repo/contracts-evm deploy:anvil
-# or
-cd contracts/evm && anvil
-```
-
-### Update Dependencies
-
-```bash
-pnpm --filter @repo/contracts-evm deps:update
-# or
-cd contracts/evm && forge update
-```
-
-### Format Code
-
-```bash
-cd contracts/evm && forge fmt
-```
-
-### Deploy Contracts
-
-```bash
-# Deploy to local Anvil
-pnpm --filter @repo/contracts-evm deploy:local
-
-# Deploy to testnet (requires .env with RPC_URL and PRIVATE_KEY)
-pnpm --filter @repo/contracts-evm deploy:dnmc
-pnpm --filter @repo/contracts-evm deploy:usdc
-pnpm --filter @repo/contracts-evm deploy:usdt
-```
+See [contracts/evm/README.md](../../../../contracts/evm/README.md) for build, test, deploy, and Cast commands.
 
 ## Build Pipeline Integration
 
@@ -193,24 +145,6 @@ When Foundry is installed:
 ```bash
 # Normal build output
 forge build
-```
-
-## Package Scripts
-
-The `@repo/contracts-evm` package supports standard monorepo scripts:
-
-```bash
-# Build
-pnpm --filter @repo/contracts-evm build
-
-# Test
-pnpm --filter @repo/contracts-evm test
-
-# Format
-pnpm --filter @repo/contracts-evm fmt
-
-# Update dependencies
-pnpm --filter @repo/contracts-evm deps:update
 ```
 
 ## Troubleshooting

@@ -221,6 +221,11 @@ try {
 }
 ```
 
+## Scripts
+
+- `pnpm --filter @repo/notif build` - Build package
+- `pnpm --filter @repo/notif checktypes` - Type-check
+
 ## Dependency Strategy
 
 This package follows the **Service Library** pattern:

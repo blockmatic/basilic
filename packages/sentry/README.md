@@ -91,6 +91,12 @@ captureError({ error, label: 'Checkout', tags: { app: 'web' } })
 - Sentry’s built-in PII scrubbing is used; add `beforeSend` for domain-specific filtering.
 - Capture is async (`Promise.resolve().then(...)`), non-blocking. In serverless, consider `Sentry.flush()` before returning if the process exits quickly.
 
+## Scripts
+
+- `pnpm --filter @repo/sentry build` - Build package
+- `pnpm --filter @repo/sentry checktypes` - Type-check
+- `pnpm --filter @repo/sentry test` - Run tests
+
 ## See also
 
 - [Error Handling Guide](/docs/architecture/error-handling)

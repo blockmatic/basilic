@@ -1,0 +1,11 @@
+---
+alwaysApply: true
+glob: "**/README.md"
+---
+
+- Simple, succinct, technical, factual
+- Active voice, concrete examples, consistent terminology
+- Lean with links to docs site
+- Structure:  
+ - Apps: Description -> Additional Info (optional) → Links, no duplication ( links to docs site ) -> pnpm commands list
+ - Packages: Description -> Usage -> Additional Info (optional) → Links, no duplication ( links to docs site ) -> pnpm commands list

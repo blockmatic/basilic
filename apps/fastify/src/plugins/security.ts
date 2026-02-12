@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
-import { env } from '../lib/env.js'
-import { detectSuspiciousActivity, logSecurityEvent } from '../lib/security.js'
+import { env } from '@/lib/env.js'
+import { detectSuspiciousActivity, logSecurityEvent } from '@/lib/security.js'
 
 type SecurityPluginOptions = Record<string, never>
 
@@ -52,9 +52,11 @@ const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
     )
 
     // Content Security Policy - more restrictive in production
-    const isReferenceRoute = request.url.startsWith('/reference')
+    const path = request.url?.split('?')[0] ?? ''
+    const isReferenceRoute = path.startsWith('/reference')
+    const isRootLanding = path === '/' || path === ''
 
-    if (env.NODE_ENV === 'production' && !isReferenceRoute) {
+    if (env.NODE_ENV === 'production' && !isReferenceRoute && !isRootLanding) {
       // Strict CSP for API routes in production
       const cspDirectives = [
         "default-src 'self'",

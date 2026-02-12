@@ -3,20 +3,20 @@
   "private": true,
   "scripts": {
     "build": "turbo run build --filter='!./contracts/**'",
-    "build:next": "turbo run build --filter=@repo/next",
-    "dev": "turbo run dev --filter='@repo/core' --filter='@repo/react' --filter='@repo/sentry' --filter='@repo/utils' --filter='@repo/fastify' --filter='@repo/next'",
+    "dev": "turbo run dev",
+    "qa": "pnpm i --no-frozen-lockfile && turbo run checktypes --concurrency=100% && pnpm lint:fix && pnpm build && turbo run test --concurrency=100% --filter='!./contracts/**'",
     "checktypes": "turbo checktypes",
-    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "format": "biome format . --write",
+    "lint": "pnpm lint:biome && pnpm lint:eslint",
     "lint:biome": "biome check .",
     "lint:biome:fix": "biome check . --write",
     "lint:eslint": "turbo run lint:eslint",
     "lint:eslint:fix": "turbo run lint:eslint:fix",
-    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
+    "lint:fix": "pnpm lint:eslint:fix && pnpm lint:biome:fix",
     "test": "turbo run test --filter='!./contracts/**'",
-    "test:e2e": "pnpm --filter @repo/fastify test:e2e && pnpm --filter @repo/next test:e2e",
-    "format": "biome format . --write",
-    "hooks:pre-commit": "pnpm run hooks:security && biome check --write --staged --no-errors-on-unmatched && git update-index --again",
-    "hooks:security": "node scripts/block-secret-files.mjs && node scripts/scan-secrets-staged.mjs && node scripts/scan-osv.mjs",
+    "test:e2e": "pnpm -F @repo/fastify test:e2e && pnpm -F @repo/next test:e2e",
+    "hooks:pre-commit": "pnpm hooks:security && biome check --write --staged --no-errors-on-unmatched && git update-index --again",
+    "hooks:security": "pnpm security:block-files && pnpm security:secrets && pnpm security:osv",
     "security:block-files": "node scripts/block-secret-files.mjs",
     "security:secrets": "node scripts/scan-secrets-staged.mjs",
     "security:secrets:full": "gitleaks detect --redact --verbose --config .gitleaks.toml",
@@ -24,14 +24,12 @@
     "security:audit": "pnpm audit --audit-level=moderate",
     "security:check": "node scripts/security-check.mjs",
     "postinstall": "npx simple-git-hooks",
-    "setup": "pnpm install && npx simple-git-hooks && pnpm setup:security && pnpm setup:evm && pnpm setup:solana && pnpm setup:database",
-    "setup:security": "node scripts/setup-gitleaks.mjs && node scripts/setup-osv-scanner.mjs",
+    "setup": "pnpm i && npx simple-git-hooks && pnpm setup:gitleaks && pnpm setup:osv && pnpm setup:evm && pnpm setup:solana && pnpm setup:database",
     "setup:gitleaks": "node scripts/setup-gitleaks.mjs",
     "setup:osv": "node scripts/setup-osv-scanner.mjs",
     "setup:evm": "node scripts/setup-evm-tools.mjs",
     "setup:solana": "node scripts/setup-solana-tools.mjs",
     "setup:database": "node scripts/setup-database.mjs",
-    "qa": "pnpm i --no-frozen-lockfile && turbo run checktypes --concurrency=100% && pnpm run lint:fix && pnpm build && turbo run test --concurrency=100% --filter='!./contracts/**'",
     "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },
   "devDependencies": {
@@ -54,7 +52,7 @@
   },
   "packageManager": "pnpm@10.28.0",
   "simple-git-hooks": {
-    "pre-commit": "pnpm run hooks:pre-commit"
+    "pre-commit": "pnpm hooks:pre-commit"
   },
   "pnpm": {
     "overrides": {

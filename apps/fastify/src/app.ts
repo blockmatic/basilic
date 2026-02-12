@@ -22,7 +22,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     dir: path.join(appDir, 'plugins'),
     options: opts,
     forceESM: true,
-    ignorePattern: /\.(spec|test)\.ts$/,
+    ignorePattern: /\.(spec|test)\.(ts|js)$/,
   })
 
   // This loads all plugins defined in routes
@@ -32,7 +32,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     dir: path.join(appDir, 'routes'),
     options: opts,
     forceESM: true,
-    ignorePattern: /\.(spec|test)\.ts$/,
+    ignorePattern: /\.(spec|test)\.(ts|js)$/,
   })
 }
 

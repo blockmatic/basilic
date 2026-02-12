@@ -5,12 +5,12 @@ import { render } from '@repo/email/render'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import { users, verification } from '../../../db/schema/index.js'
-import { env } from '../../../lib/env.js'
-import { generateToken, hashToken } from '../../../lib/jwt.js'
-import { ErrorResponseSchema } from '../../schemas.js'
-import { validateCallbackUrl } from '../utils.js'
+import { getDb } from '@/db/index.js'
+import { users, verification } from '@/db/schema/index.js'
+import { env } from '@/lib/env.js'
+import { generateToken, hashToken } from '@/lib/jwt.js'
+import { validateCallbackUrl } from '@/routes/auth/utils.js'
+import { ErrorResponseSchema } from '@/routes/schemas.js'
 
 const RequestSchema = Type.Object({
   email: Type.String({ format: 'email' }),

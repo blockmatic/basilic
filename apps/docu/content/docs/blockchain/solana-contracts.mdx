@@ -127,52 +127,7 @@ contracts/solana/
 
 ## Usage
 
-### Build Programs
-
-```bash
-pnpm --filter @repo/contracts-solana build
-# or
-cd contracts/solana && anchor build
-```
-
-### Run Tests
-
-```bash
-pnpm --filter @repo/contracts-solana test
-# or
-cd contracts/solana && anchor test
-```
-
-### Run Tests Without Local Validator
-
-```bash
-pnpm --filter @repo/contracts-solana test:local
-# or
-cd contracts/solana && anchor test --skip-local-validator
-```
-
-### Deploy Programs
-
-**To localnet:**
-```bash
-pnpm --filter @repo/contracts-solana deploy:local
-# or
-cd contracts/solana && anchor deploy
-```
-
-**To devnet:**
-```bash
-pnpm --filter @repo/contracts-solana deploy:devnet
-# or
-cd contracts/solana && anchor deploy --provider.cluster devnet
-```
-
-**To testnet:**
-```bash
-pnpm --filter @repo/contracts-solana deploy:testnet
-# or
-cd contracts/solana && anchor deploy --provider.cluster testnet
-```
+See [contracts/solana/README.md](../../../../contracts/solana/README.md) for build, test, and deploy commands.
 
 ## Build Pipeline Integration
 
@@ -194,23 +149,6 @@ When Anchor is installed:
 ```bash
 # Normal build output
 anchor build
-```
-
-## Package Scripts
-
-The `@repo/contracts-solana` package supports standard monorepo scripts:
-
-```bash
-# Build
-pnpm --filter @repo/contracts-solana build
-
-# Test
-pnpm --filter @repo/contracts-solana test
-
-# Deploy
-pnpm --filter @repo/contracts-solana deploy:local
-pnpm --filter @repo/contracts-solana deploy:devnet
-pnpm --filter @repo/contracts-solana deploy:testnet
 ```
 
 ## Troubleshooting

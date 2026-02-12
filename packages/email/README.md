@@ -130,20 +130,7 @@ await emailService.send({
 
 ### Development Server
 
-Preview and develop email templates locally:
-
-```bash
-# Start development server (runs on port 3003)
-pnpm --filter @repo/email dev
-
-# Build templates
-pnpm --filter @repo/email build
-
-# Start preview server (after build)
-pnpm --filter @repo/email start
-```
-
-The dev server provides a web interface to preview all email templates with different props.
+Preview and develop email templates locally. Run from monorepo root: `pnpm --filter @repo/email dev` (port 3003), `pnpm --filter @repo/email build`, `pnpm --filter @repo/email start`. See Scripts below.
 
 ## Troubleshooting
 
@@ -163,6 +150,13 @@ The dev server provides a web interface to preview all email templates with diff
 - Ensure you're importing template components from `@repo/email/emails/*`
 - Check that props match the template's TypeScript interface
 - Run `pnpm --filter @repo/email checktypes` to verify types
+
+## Scripts
+
+- `pnpm --filter @repo/email dev` - Email preview server (port 3003)
+- `pnpm --filter @repo/email build` - Build templates
+- `pnpm --filter @repo/email start` - Start preview server
+- `pnpm --filter @repo/email checktypes` - Type-check
 
 ## Dependency Strategy
 

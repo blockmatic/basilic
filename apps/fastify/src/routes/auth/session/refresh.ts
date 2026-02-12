@@ -3,16 +3,16 @@ import { captureError } from '@repo/sentry/node'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import { sessions } from '../../../db/schema/index.js'
-import { env } from '../../../lib/env.js'
+import { getDb } from '@/db/index.js'
+import { sessions } from '@/db/schema/index.js'
+import { env } from '@/lib/env.js'
 import {
   createAccessTokenPayload,
   createRefreshTokenPayload,
   generateJti,
   hashToken,
-} from '../../../lib/jwt.js'
-import { ErrorResponseSchema } from '../../schemas.js'
+} from '@/lib/jwt.js'
+import { ErrorResponseSchema } from '@/routes/schemas.js'
 
 const RefreshSchema = Type.Object({
   refreshToken: Type.String(),

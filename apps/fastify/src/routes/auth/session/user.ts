@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { ErrorResponseSchema } from '../../schemas.js'
+import { ErrorResponseSchema } from '@/routes/schemas.js'
 
 const UserResponseSchema = Type.Object({
   user: Type.Object({

@@ -330,3 +330,9 @@ Hooks provide sensible default query keys (e.g., `['healthCheck', params]`) but 
 - Query keys are fully typed and can include params for automatic cache differentiation
 
 See [API Development](https://basilic-docs.vercel.app/docs/architecture/api#client-consumption) for full integration guide.
+
+## Scripts
+
+- `pnpm --filter @repo/react build` - Build package
+- `pnpm --filter @repo/react checktypes` - Type-check
+- `pnpm --filter @repo/react test` - Run tests

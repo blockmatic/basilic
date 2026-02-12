@@ -75,9 +75,11 @@ const ensureReady = async () => {
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   await ensureReady()
-  fastify.server.emit(
-    'request',
-    req as unknown as IncomingMessage,
-    res as unknown as ServerResponse,
-  )
+  // Vercel rewrite (.*) -> /api/$1 means the function receives /api/... paths.
+  // Strip /api prefix so Fastify routes (e.g. /reference/openapi.json) match.
+  const msg = req as unknown as IncomingMessage
+  if (msg.url?.startsWith('/api')) {
+    msg.url = msg.url.slice(4) || '/'
+  }
+  fastify.server.emit('request', msg, res as unknown as ServerResponse)
 }

@@ -52,16 +52,7 @@ cd <project-name>
 pnpm run setup
 ```
 
-The setup script runs, in order:
-
-- pnpm install – installs workspace dependencies
-- npx simple-git-hooks – configures git hooks (e.g. pre-commit)
-- pnpm setup:security – installs gitleaks and OSV scanner
-- pnpm setup:evm – installs Foundry for EVM contracts
-- pnpm setup:solana – installs Anchor for Solana
-- pnpm setup:database – sets up the database ( docker + supabase )
-
-Together this brings the monorepo to a working dev environment with security tooling, blockchain tooling, and the database.
+Setup runs install, git hooks, security tools, EVM (Foundry), Solana (Anchor), and database. See the root README in the repository for the full script reference. Together this brings the monorepo to a working dev environment with security tooling, blockchain tooling, and the database.
 
 ### 2. Environment variables
 

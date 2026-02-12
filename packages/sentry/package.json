@@ -9,12 +9,16 @@
     "./node": {
       "types": "./src/node/index.ts",
       "source": "./src/node/index.ts",
-      "import": "./dist/node.js"
+      "import": "./dist/node.js",
+      "node": "./dist/node.js",
+      "default": "./dist/node.js"
     },
     "./nextjs": {
       "types": "./src/nextjs/index.ts",
       "source": "./src/nextjs/index.ts",
-      "import": "./dist/nextjs.js"
+      "import": "./dist/nextjs.js",
+      "node": "./dist/nextjs.js",
+      "default": "./dist/nextjs.js"
     },
     "./browser": {
       "types": "./src/browser/index.ts",

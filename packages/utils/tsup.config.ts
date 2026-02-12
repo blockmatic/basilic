@@ -10,6 +10,7 @@ export default defineConfig({
     'src/logger/server.ts',
     'src/debug/index.ts',
     'src/error/index.ts',
+    'src/data/index.ts',
   ],
   format: ['esm'],
   dts: true,

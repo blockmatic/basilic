@@ -2,9 +2,8 @@ import { PGlite } from '@electric-sql/pglite'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { drizzle as drizzlePGLite } from 'drizzle-orm/pglite'
 import { Pool } from 'pg'
-import { getTestDatabase } from '../../test/utils/db.js'
-import { env } from '../lib/env.js'
-import * as schema from './schema/index.js'
+import * as schema from '@/db/schema/index.js'
+import { env } from '@/lib/env.js'
 
 let db: ReturnType<typeof drizzle> | ReturnType<typeof drizzlePGLite> | null = null
 let pgLiteInstance: PGlite | null = null
@@ -19,6 +18,7 @@ export async function getDb() {
   if (!db) {
     if (shouldUsePGLite()) {
       if (env.NODE_ENV === 'test') {
+        const { getTestDatabase } = await import('../../test/utils/db.js')
         const { instance } = await getTestDatabase()
         db = drizzlePGLite(instance, { schema })
       } else {

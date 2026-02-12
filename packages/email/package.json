@@ -7,16 +7,16 @@
     "./emails/*": {
       "types": "./emails/*.tsx",
       "source": "./emails/*.tsx",
-      "import": "./emails/*.tsx",
-      "require": "./emails/*.tsx"
+      "node": "./dist/emails/*.js",
+      "import": "./dist/emails/*.js",
+      "default": "./dist/emails/*.js"
     },
     "./render": {
       "types": "./render.ts",
       "source": "./render.ts",
-      "node": {
-        "import": "./render.ts",
-        "require": "./render.ts"
-      }
+      "node": "./dist/render.js",
+      "import": "./dist/render.js",
+      "default": "./dist/render.js"
     }
   },
   "scripts": {
@@ -27,7 +27,8 @@
     "format": "biome format --write .",
     "checktypes": "tsgo --noEmit",
     "dev": "email dev -p 3003",
-    "build": "NEXT_TELEMETRY_DISABLED=1 email build",
+    "build": "tsgo",
+    "build:preview": "NEXT_TELEMETRY_DISABLED=1 email build",
     "start": "email start"
   },
   "dependencies": {
@@ -47,9 +48,9 @@
     "@repo/typescript-config": "workspace:*",
     "@types/node": "*",
     "@types/react": "*",
-    "eslint": "*",
-    "react": "^19.2.3",
     "@typescript/native-preview": "7.0.0-dev.20260124.1",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "eslint": "*",
+    "react": "^19.2.3"
   }
 }
