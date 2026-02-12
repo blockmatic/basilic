@@ -17,7 +17,6 @@ overrides:
   next@<16.1.5: '>=16.1.5'
   lodash@<4.17.23: '>=4.17.23'
   lodash-es@<4.17.23: '>=4.17.23'
-  baseline-browser-mapping: latest
 
 importers:
 
@@ -291,7 +290,7 @@ importers:
         version: 7.19.0
       vite-tsconfig-paths:
         specifier: ^6.0.4
-        version: 6.0.4(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+        version: 6.0.4(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       vitest:
         specifier: '*'
         version: 4.0.18(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.0)(@types/node@22.19.7)(@vitest/ui@4.0.18)(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@2.0.1)(bufferutil@4.1.0)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
@@ -516,9 +515,6 @@ importers:
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260124.1
         version: 7.0.0-dev.20260124.1
-      baseline-browser-mapping:
-        specifier: latest
-        version: 2.9.19
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
@@ -4702,10 +4698,6 @@ packages:
 
   baseline-browser-mapping@2.9.17:
     resolution: {integrity: sha512-agD0MgJFUP/4nvjqzIB29zRPUuCF7Ge6mEv9s8dHrtYD7QWXRcx75rOADE/d5ah1NI+0vkDl0yorDd5U852IQQ==}
-    hasBin: true
-
-  baseline-browser-mapping@2.9.19:
-    resolution: {integrity: sha512-ipDqC8FrAl/76p2SSWKSI+H9tFwm7vYqXQrItCuiVPt26Km0jS+NzSsBWAaBusvSbQcfJG+JitdMm+wZAgTYqg==}
     hasBin: true
 
   basic-ftp@5.1.0:
@@ -13607,8 +13599,6 @@ snapshots:
 
   baseline-browser-mapping@2.9.17: {}
 
-  baseline-browser-mapping@2.9.19: {}
-
   basic-ftp@5.1.0: {}
 
   bidi-js@1.0.3:
@@ -19118,13 +19108,13 @@ snapshots:
       - utf-8-validate
       - zod
 
-  vite-tsconfig-paths@6.0.4(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)):
+  vite-tsconfig-paths@6.0.4(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 3.1.6(typescript@5.9.3)
     optionalDependencies:
-      vite: 7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 6.4.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
       - typescript

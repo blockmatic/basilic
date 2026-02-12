@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/error', '@repo/utils'],
+  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/sentry', '@repo/utils'],
   serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
   // @/ alias is automatically resolved from tsconfig.json paths
   // Webpack config forces Next.js to use webpack instead of Turbopack

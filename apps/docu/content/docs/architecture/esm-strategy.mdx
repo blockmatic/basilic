@@ -28,23 +28,38 @@ Packages use a **dual-mode export strategy** for optimal developer experience an
 
 ### Development Mode (Monorepo)
 
-Packages export TypeScript source files directly for fast local development:
+Packages expose TypeScript source for workspace consumption. Two patterns exist:
+
+**Pattern A** – `import` points to source (packages like `@repo/core`, `@repo/react`):
 
 ```json
 {
   "type": "module",
   "exports": {
+    ".": { "types": "./src/index.ts", "import": "./src/index.ts" }
+  }
+}
+```
+
+**Pattern B** – `source` condition for bundlers, `import` for Node (packages like `@repo/utils`, `@repo/sentry`):
+
+```json
+{
+  "exports": {
     "./async": {
       "types": "./src/async/index.ts",
-      "import": "./src/async/index.ts"
+      "source": "./src/async/index.ts",
+      "import": "./dist/async/index.js"
     }
   }
 }
 ```
 
+Next.js apps resolve the `source` condition first (via webpack config) to consume TypeScript directly.
+
 ### Publishing Mode (npm)
 
-The `prepack` script automatically switches exports to compiled `dist/` before publishing:
+The `prepack` script transforms exports to compiled `dist/` before publishing. Subpath exports are preserved.
 
 ```json
 {
@@ -62,8 +77,8 @@ The `prepack` script automatically switches exports to compiled `dist/` before p
 
 1. `prepack` runs before `pnpm pack`/`publish`
 2. Package is built (ESM + `.d.ts`)
-3. `exports` are switched from `src/` → `dist/`
-4. `postpack` restores the original `src/` exports after packing
+3. `prepare-publish.mjs` switches all export paths from `src/` → `dist/`
+4. `postpack` restores the original exports after packing
 
 ## Directory/Subpath Exports
 
@@ -95,7 +110,18 @@ Next.js apps import TypeScript source directly using **package interpolation**:
 ```js
 // next.config.mjs
 export default {
-  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/sentry', '@repo/utils']
+  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/sentry', '@repo/utils'],
+  webpack: (config) => {
+    // Resolve "source" condition so Next.js uses TypeScript source from workspace packages
+    config.resolve.conditionNames = ['source', ...(config.resolve.conditionNames ?? ['...'])]
+    // Allow .js imports to resolve to .ts/.tsx in transpiled packages
+    config.resolve.extensionAlias = {
+      ...config.resolve.extensionAlias,
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+      '.jsx': ['.tsx', '.jsx'],
+    }
+    return config
+  },
 }
 ```
 
@@ -113,10 +139,11 @@ export default {
 ```
 
 **How It Works:**
-1. TypeScript resolves imports to `src/` via path mappings
-2. Next.js `transpilePackages` transpiles workspace packages during build
-3. No pre-build step required - Next.js handles compilation
-4. Fast refresh works with direct TypeScript source
+1. `conditionNames: ['source', ...]` makes Next.js prefer the `source` export when packages define it
+2. `extensionAlias` lets `.js` imports resolve to `.ts`/`.tsx` in transpiled packages
+3. TypeScript path mappings resolve `@repo/*` to `src/` for packages that need them
+4. `transpilePackages` ensures workspace packages are transpiled during build
+5. No pre-build step required – Fast refresh works with direct TypeScript source
 
 **Rules:**
 - ✅ Add all workspace packages to `transpilePackages` array
