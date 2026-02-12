@@ -52,6 +52,7 @@
         "tags": ["ai"],
         "description": "Chat with AI using OpenAI. Supports both streaming and non-streaming responses.",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -103,8 +104,7 @@
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "security": [
           {
@@ -203,6 +203,7 @@
         "tags": ["auth"],
         "description": "Request magic link for authentication",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -220,8 +221,7 @@
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "security": [],
         "responses": {
@@ -270,6 +270,7 @@
         "tags": ["auth"],
         "description": "Verify magic link token and return JWTs",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -282,8 +283,7 @@
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "security": [],
         "responses": {
@@ -407,6 +407,7 @@
         "tags": ["auth"],
         "description": "Refresh access token",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -419,8 +420,7 @@
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "security": [],
         "responses": {

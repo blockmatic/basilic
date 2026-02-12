@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build --filter='!./contracts/**'",
+    "build:next": "turbo run build --filter=@repo/next",
     "dev": "turbo run dev --filter='@repo/core' --filter='@repo/react' --filter='@repo/sentry' --filter='@repo/utils' --filter='@repo/fastify' --filter='@repo/next'",
     "checktypes": "turbo checktypes",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

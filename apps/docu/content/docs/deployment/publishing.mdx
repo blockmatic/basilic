@@ -28,7 +28,7 @@ Runs before `pnpm pack` or `pnpm publish`:
 
 1. Builds the package (`pnpm build` runs first via the prepack script)
 2. Stores original `package.json` exports/main/types in `.package-originals.json`
-3. Switches `exports`, `main`, and `types` to point to `dist/`
+3. Transforms all export paths from `src/` to `dist/` (subpath exports preserved)
 4. Sets `files: ["dist"]` to ensure only built files are included
 
 ### `postpack` Hook
@@ -55,20 +55,20 @@ Packages that use these scripts should have:
 }
 ```
 
-**Publishing exports** (automatically set by `prepare-publish.mjs`):
+**Publishing exports** (automatically transformed by `prepare-publish.mjs`):
 ```json
 {
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./async": { "types": "./dist/async/index.d.ts", "import": "./dist/async/index.js" }
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": ["dist"]
 }
 ```
+
+Packages with subpath exports have all paths transformed; `main` and `types` are only set when a root (`.`) export exists.
 
 ## Usage
 

@@ -3,7 +3,6 @@ import { writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import swagger from '@fastify/swagger'
-import { logger } from '@repo/utils/logger'
 import Fastify from 'fastify'
 
 const scriptPath = fileURLToPath(import.meta.url)
@@ -97,10 +96,18 @@ function removeDefaultsFromRequired(schema: unknown): unknown {
 }
 
 async function generateOpenAPI() {
-  // Set dummy key for OpenAPI generation if not provided
-  // This avoids requiring a real key just to generate the spec
-  if (!process.env.OPENAI_API_KEY) {
-    process.env.OPENAI_API_KEY = 'sk-test-dummy-key-for-openapi'
+  // Stub required env for OpenAPI generation when missing (e.g. Vercel Next build)
+  // Allows generate:openapi to run without real credentials
+  const stubs: Record<string, string> = {
+    OPENAI_API_KEY: 'sk-test-dummy-key-for-openapi',
+    PGLITE: 'true', // avoids DATABASE_URL
+    ENCRYPTION_KEY: '0'.repeat(64),
+    JWT_SECRET: 'openapi-gen-dummy-secret-min-32-chars',
+    RESEND_API_KEY: 're_dummy_for_openapi_generation',
+    EMAIL_FROM: 'noreply@openapi-gen.local',
+  }
+  for (const [k, v] of Object.entries(stubs)) {
+    if (!process.env[k]) process.env[k] = v
   }
 
   const { default: app } = await import('../src/app.js')
@@ -150,9 +157,9 @@ async function generateOpenAPI() {
     const outputPath = join(scriptDir, '../openapi/openapi.json')
     await writeFile(outputPath, JSON.stringify(processedDocument, null, 2), 'utf-8')
 
-    logger.info({ outputPath }, 'OpenAPI spec generated')
+    console.log('OpenAPI spec generated:', outputPath)
   } catch (error) {
-    logger.error({ error }, 'Failed to generate OpenAPI spec')
+    console.error('Failed to generate OpenAPI spec', error)
     process.exit(1)
   } finally {
     await fastify.close()
