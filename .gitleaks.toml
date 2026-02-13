@@ -127,9 +127,4 @@ paths = [
   '''package-lock\.json''',
   '''yarn\.lock''',
   '''\.git/''',
-  '''contracts/evm/out/''',
-  '''contracts/evm/cache/''',
-  '''contracts/evm/broadcast/''',
-  '''contracts/solana/target/''',
-  '''contracts/solana/\.anchor/''',
 ]

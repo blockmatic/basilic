@@ -58,7 +58,7 @@ const features = [
     icon: Network,
     title: 'Multichain Support',
     description:
-      'EVM, Solana, and Cosmos with shared validation and chain-specific rules. Smart contract tooling (e.g. Foundry) included—one codebase, multiple chains.',
+      'EVM, Solana, and Cosmos with shared validation and chain-specific rules. One codebase, multiple chains.',
   },
   {
     icon: BookOpen,

@@ -117,14 +117,6 @@ reviews:
           - .cursor/rules/base/typescript.mdc
           - .cursor/rules/base/general.mdc
     
-    - path: "contracts/**"
-      instructions: |
-        - Verify security best practices and contract patterns
-        - Follow all coding standards defined in:
-          - .cursor/rules/web3/solidity.mdc
-          - .cursor/rules/web3/solana.mdc
-          - .cursor/rules/base/general.mdc
-    
     - path: "**/*.{ts,tsx}"
       instructions: |
         - Verify TypeScript patterns and code style

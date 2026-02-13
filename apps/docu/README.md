@@ -30,7 +30,6 @@ Documentation content in `content/docs/`:
 - `development/` - Quick start, setup, tooling, and AI-assisted development
 - `deployment/` - Deployment options, GitHub Actions, publishing, Vercel
 - `testing/` - Testing patterns and frontend testing
-- `blockchain/` - EVM and Solana contract development
 
 ## Documentation
 

@@ -176,52 +176,6 @@ node scripts/security-check.mjs
 
 **Note**: Scripts will skip gracefully if tools are not installed, but will report warnings.
 
-## Contract Development Scripts
-
-Scripts that install contract development tools for EVM and Solana smart contracts.
-
-### `setup-evm-tools.mjs`
-
-Installs Foundry toolkit for EVM smart contract development.
-
-**What it installs**:
-- **Foundry** (optional): EVM smart contract development toolkit (`forge`, `cast`, `anvil`, `chisel`)
-
-**Installation methods**:
-- **macOS**: Uses Homebrew if available, otherwise uses foundryup installer
-- **Linux**: Uses foundryup installer (`curl -L https://foundry.paradigm.xyz | bash`)
-- **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
-
-**Usage**: Automatically runs during `pnpm setup`. Can be run manually:
-```bash
-pnpm setup:evm
-# or
-node scripts/setup-evm-tools.mjs
-```
-
-**Note**: Foundry is optional. If not installed, EVM contract builds will skip gracefully without failing the build pipeline.
-
-### `setup-solana-tools.mjs`
-
-Installs Anchor framework for Solana smart contract development.
-
-**What it installs**:
-- **Anchor** (optional): Solana smart contract development framework
-
-**Installation methods**:
-- **macOS**: Uses Homebrew if available, otherwise uses avm (Anchor Version Manager)
-- **Linux**: Uses avm via cargo (requires Rust/Cargo to be installed first)
-- **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
-
-**Usage**: Automatically runs during `pnpm setup`. Can be run manually:
-```bash
-pnpm setup:solana
-# or
-node scripts/setup-solana-tools.mjs
-```
-
-**Note**: Anchor is optional. If not installed, Solana contract builds will skip gracefully without failing the build pipeline. On Linux, Rust/Cargo must be installed first.
-
 ## Database Development Scripts
 
 Scripts that install database development tools for PostgreSQL with Supabase.
