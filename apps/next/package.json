@@ -13,7 +13,7 @@
     "build": "NODE_ENV=production next build --webpack",
     "build:validate": "NODE_ENV=production next build --webpack",
     "start": "next start",
-    "start:e2e": "NEXT_PUBLIC_API_URL=http://localhost:3001 next build --webpack && next start",
+    "start:e2e": "NEXT_PUBLIC_API_URL=http://localhost:3001 next build --webpack && NODE_ENV=test next start",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "lint:biome": "biome check .",
     "lint:biome:fix": "biome check . --write",
