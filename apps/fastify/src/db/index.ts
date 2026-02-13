@@ -18,9 +18,12 @@ export async function getDb() {
   if (!db) {
     if (shouldUsePGLite()) {
       if (env.NODE_ENV === 'test') {
-        const { getTestDatabase } = await import('../../test/utils/db.js')
-        const { instance } = await getTestDatabase()
-        db = drizzlePGLite(instance, { schema })
+        const g = globalThis as { __testPgliteInstance?: PGlite }
+        const instance = g.__testPgliteInstance
+          ? g.__testPgliteInstance
+          : (await import('../../test/utils/db.js')).getTestDatabase().then(x => x.instance)
+        const pglite = instance instanceof PGlite ? instance : await instance
+        db = drizzlePGLite(pglite, { schema })
       } else {
         if (!pgLiteInstance) {
           pgLiteInstance = new PGlite()

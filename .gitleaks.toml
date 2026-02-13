@@ -36,6 +36,8 @@ regexes = [
   '''dummy.*secret''',
   '''test.*secret.*key''',
   '''test-secret-key-that-is-at-least''',
+  # Sentinel value used only to reject weak JWT default in production (env.ts)
+  '''REJECTED_DEV_DEFAULT\s*=\s*['"]default-jwt-secret''',
 ]
 
 [allowlist.regexDescription]

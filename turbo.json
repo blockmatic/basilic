@@ -12,7 +12,7 @@
       "dependsOn": ["@repo/utils#build", "@repo/sentry#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
-      "env": ["NODE_ENV"]
+      "env": ["NODE_ENV", "OPEN_ROUTER_API_KEY"]
     },
     "@repo/core#generate": {
       "dependsOn": ["@repo/fastify#generate:openapi"],
@@ -24,105 +24,67 @@
       "dependsOn": ["^build", "generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", ".react-email/**"],
+      "env": ["NODE_ENV", "OPEN_ROUTER_API_KEY", "DATABASE_URL", "PGLITE"]
+    },
+    "lint": {},
+    "lint:eslint": {
       "env": [
         "NODE_ENV",
-        "NEXT_RUNTIME",
-        "PORT",
-        "HOST",
+        "CI",
         "DATABASE_URL",
         "PGLITE",
-        "REDIS_URL",
-        "SENTRY_DSN",
-        "SENTRY_ENVIRONMENT",
-        "SENTRY_TRACES_SAMPLE_RATE",
-        "SENTRY_REPLACES_HEADERS",
-        "SENTRY_REPLACES_PROD_ENV",
-        "SENTRY_ORG",
-        "SENTRY_PROJECT",
-        "NEXT_PUBLIC_API_URL",
-        "NEXT_PUBLIC_SENTRY_DSN",
-        "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
-        "NEXT_PUBLIC_SITE_URL",
+        "OPEN_ROUTER_API_KEY",
+        "VITEST",
         "LOG_ENABLED",
         "LOG_LEVEL",
         "LOG_SERVICE",
         "VERCEL_ENV",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
-        "OPENAI_API_KEY",
-        "JWT_SECRET",
-        "RESEND_API_KEY",
-        "EMAIL_FROM",
-        "APP_URL",
-        "EMAIL_ASSETS_URL",
-        "ENCRYPTION_KEY"
-      ]
-    },
-    "lint": {},
-    "lint:eslint": {
-      "env": [
-        "NODE_ENV",
-        "NEXT_RUNTIME",
-        "CI",
-        "PLAYWRIGHT_TEST_BASE_URL",
+        "PLAYWRIGHT_HTML_REPORT_OPEN",
         "PLAYWRIGHT_API_URL",
-        "PORT",
-        "DATABASE_URL",
-        "PGLITE",
-        "OPENAI_API_KEY",
-        "ENCRYPTION_KEY",
-        "VERCEL",
-        "VERCEL_GIT_COMMIT_REF",
+        "PLAYWRIGHT_TEST_BASE_URL",
+        "NEXT_RUNTIME",
+        "DEBUG_TEST",
         "APP_URL",
-        "EMAIL_ASSETS_URL",
-        "RESEND_API_KEY",
-        "EMAIL_FROM",
-        "EMAIL_FROM_NAME",
-        "USE_FAKE_EMAIL"
+        "EMAIL_ASSETS_URL"
       ]
     },
     "lint:eslint:fix": {
       "cache": false,
       "env": [
         "NODE_ENV",
-        "NEXT_RUNTIME",
         "CI",
-        "PLAYWRIGHT_TEST_BASE_URL",
-        "PLAYWRIGHT_API_URL",
-        "PLAYWRIGHT_HTML_REPORT_OPEN",
-        "PORT",
         "DATABASE_URL",
         "PGLITE",
-        "OPENAI_API_KEY",
-        "ENCRYPTION_KEY",
-        "VERCEL",
-        "VERCEL_URL",
-        "VERCEL_GIT_COMMIT_REF",
+        "OPEN_ROUTER_API_KEY",
+        "VITEST",
+        "LOG_ENABLED",
+        "LOG_LEVEL",
+        "LOG_SERVICE",
+        "VERCEL_ENV",
+        "NEXT_PUBLIC_LOG_ENABLED",
+        "NEXT_PUBLIC_LOG_LEVEL",
+        "PLAYWRIGHT_HTML_REPORT_OPEN",
+        "PLAYWRIGHT_API_URL",
+        "PLAYWRIGHT_TEST_BASE_URL",
+        "NEXT_RUNTIME",
+        "DEBUG_TEST",
         "APP_URL",
-        "EMAIL_ASSETS_URL",
-        "RESEND_API_KEY",
-        "EMAIL_FROM",
-        "EMAIL_FROM_NAME",
-        "USE_FAKE_EMAIL"
+        "EMAIL_ASSETS_URL"
       ]
     },
-    "checktypes": {
-      "env": ["NODE_ENV", "RESEND_API_KEY", "EMAIL_FROM", "EMAIL_FROM_NAME"]
-    },
+    "checktypes": { "env": ["NODE_ENV"] },
     "test": {
       "env": [
         "NODE_ENV",
         "DATABASE_URL",
         "PGLITE",
-        "OPENAI_API_KEY",
-        "ENCRYPTION_KEY",
-        "JWT_SECRET",
+        "OPEN_ROUTER_API_KEY",
         "CI",
-        "RESEND_API_KEY",
-        "EMAIL_FROM",
-        "EMAIL_FROM_NAME",
         "VITEST_WORKER_ID",
-        "USE_FAKE_EMAIL"
+        "USE_FAKE_EMAIL",
+        "VITEST"
       ]
     },
     "@repo/next#test": {
@@ -130,15 +92,11 @@
         "NODE_ENV",
         "DATABASE_URL",
         "PGLITE",
-        "OPENAI_API_KEY",
-        "ENCRYPTION_KEY",
-        "JWT_SECRET",
+        "OPEN_ROUTER_API_KEY",
         "CI",
-        "RESEND_API_KEY",
-        "EMAIL_FROM",
-        "EMAIL_FROM_NAME",
         "VITEST_WORKER_ID",
-        "USE_FAKE_EMAIL"
+        "USE_FAKE_EMAIL",
+        "VITEST"
       ]
     },
     "test:unit": {
@@ -146,33 +104,22 @@
         "NODE_ENV",
         "DATABASE_URL",
         "PGLITE",
-        "OPENAI_API_KEY",
-        "ENCRYPTION_KEY",
-        "JWT_SECRET",
+        "OPEN_ROUTER_API_KEY",
         "CI",
-        "RESEND_API_KEY",
-        "EMAIL_FROM",
-        "EMAIL_FROM_NAME",
         "VITEST_WORKER_ID",
-        "USE_FAKE_EMAIL"
+        "USE_FAKE_EMAIL",
+        "VITEST"
       ]
     },
     "test:e2e": {
       "env": [
         "NODE_ENV",
         "CI",
-        "PLAYWRIGHT_TEST_BASE_URL",
-        "PLAYWRIGHT_HTML_REPORT_OPEN",
         "PORT",
         "HOST",
         "DATABASE_URL",
         "PGLITE",
-        "OPENAI_API_KEY",
-        "ENCRYPTION_KEY",
-        "JWT_SECRET",
-        "RESEND_API_KEY",
-        "EMAIL_FROM",
-        "EMAIL_FROM_NAME",
+        "OPEN_ROUTER_API_KEY",
         "NEXT_PUBLIC_API_URL"
       ]
     },
@@ -182,29 +129,12 @@
       "persistent": true,
       "env": [
         "NODE_ENV",
-        "NEXT_RUNTIME",
         "PORT",
         "HOST",
         "DATABASE_URL",
         "PGLITE",
-        "REDIS_URL",
-        "SENTRY_DSN",
-        "SENTRY_ENVIRONMENT",
-        "SENTRY_ORG",
-        "SENTRY_PROJECT",
-        "NEXT_PUBLIC_API_URL",
-        "NEXT_PUBLIC_SENTRY_DSN",
-        "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
-        "NEXT_PUBLIC_SITE_URL",
-        "LOG_ENABLED",
-        "LOG_LEVEL",
-        "LOG_SERVICE",
-        "VERCEL_ENV",
-        "NEXT_PUBLIC_LOG_ENABLED",
-        "NEXT_PUBLIC_LOG_LEVEL",
-        "RESEND_API_KEY",
-        "EMAIL_FROM",
-        "EMAIL_FROM_NAME"
+        "OPEN_ROUTER_API_KEY",
+        "NEXT_PUBLIC_API_URL"
       ]
     }
   }

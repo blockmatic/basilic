@@ -127,6 +127,9 @@ export default defineConfig({
     environment: 'node',
     testTimeout: 30000, // 30 seconds for API calls
     hookTimeout: 30000, // 30 seconds for hooks (database initialization)
+    // PGLite/WASM is unstable with parallel workers - use single worker, sequential files
+    fileParallelism: false,
+    maxWorkers: 1,
   },
   resolve: {
     // Order matters: try .ts first, then .js

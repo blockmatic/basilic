@@ -50,7 +50,7 @@
         "operationId": "chat",
         "summary": "Generate AI chat response",
         "tags": ["ai"],
-        "description": "Chat with AI using OpenAI. Supports both streaming and non-streaming responses.",
+        "description": "Chat with AI via Open Router. Default model: Aurora Alpha. Supports streaming and tools.",
         "requestBody": {
           "required": true,
           "content": {
@@ -92,7 +92,7 @@
                     "type": "boolean"
                   },
                   "model": {
-                    "default": "gpt-4o-mini",
+                    "default": "openrouter/aurora-alpha",
                     "type": "string"
                   },
                   "temperature": {

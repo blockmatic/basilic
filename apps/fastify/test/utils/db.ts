@@ -29,10 +29,13 @@
  * @module test/utils/db
  */
 
-import { rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { PGlite } from '@electric-sql/pglite'
+
+declare global {
+  var __testPgliteInstance: PGlite | undefined
+}
 
 // Per-worker singleton pattern for test database - each worker gets its own instance
 let pgLiteInstance: PGlite | null = null
@@ -61,13 +64,14 @@ function getWorkerDbDir(): string {
  */
 export async function getTestDatabase() {
   if (!pgLiteInstance) {
-    const dbDir = getWorkerDbDir()
-    // Use file-based PGLite with worker-specific directory
-    // Each worker gets its own isolated database
-    pgLiteInstance = new PGlite(dbDir)
+    // Use in-memory PGLite - more stable than file-based with Vitest (avoids Aborted)
+    pgLiteInstance = new PGlite()
     await pgLiteInstance.waitReady
-    // Generate connection string compatible with PostgreSQL clients
     dbUrl = TEST_DATABASE_URL
+    // Expose for getDb() to use same instance (avoids dynamic import resolution issues in Vitest)
+    if (typeof globalThis !== 'undefined') {
+      globalThis.__testPgliteInstance = pgLiteInstance
+    }
   }
   return {
     instance: pgLiteInstance,
@@ -76,40 +80,46 @@ export async function getTestDatabase() {
   }
 }
 
+/** Tables to truncate (order respects FK: users referenced by others) */
+const TABLES = ['account', 'sessions', 'wallet_identities', 'users', 'verification'] as const
+
+/**
+ * Truncate all tables. Keeps PGLite instance alive (creating a new one after close causes Aborted).
+ * Use between spec files for clean state.
+ */
+export async function truncateAllTables() {
+  if (!pgLiteInstance) return
+  try {
+    await pgLiteInstance.exec(`TRUNCATE ${TABLES.join(', ')} RESTART IDENTITY CASCADE`)
+  } catch {
+    // Tables may not exist (e.g. db.spec runs without migrations)
+  }
+}
+
 /**
  * Close and delete the test database instance and worker database directory.
- * This ensures clean state and frees disk space.
- * Called in `vitest.setup.ts` afterAll hook to clean up after all tests in worker complete.
+ * NOTE: PGLite aborts when creating a second instance after close in the same process.
+ * Prefer truncateAllTables() between specs; only call this when worker is exiting.
  */
 export async function closeTestDatabase() {
   if (pgLiteInstance) {
-    const dbDir = getWorkerDbDir()
     await pgLiteInstance.close()
     pgLiteInstance = null
     dbUrl = null
-
-    // Clean up worker database directory
-    try {
-      await rm(dbDir, { recursive: true, force: true })
-    } catch {
-      // Ignore cleanup errors (directory might not exist or already deleted)
+    if (typeof globalThis !== 'undefined') {
+      globalThis.__testPgliteInstance = undefined
     }
   }
 }
 
 /**
- * Reset the test database by closing existing instance and creating a fresh one.
- * This ensures a completely clean database.
+ * Reset the test database by truncating all tables.
+ * Keeps instance alive (PGLite aborts when creating new instance after close).
  *
- * **Note**: This is NOT used in the standard test setup. The test suite uses a single
- * shared instance created in global setup. Only use this if you need to reset the
- * database mid-test (not recommended).
- *
- * @returns Fresh database instance and connection URL
+ * @returns Database instance and connection URL
  */
 export async function resetTestDatabase() {
-  // Always close and recreate for fresh database
-  await closeTestDatabase()
+  await truncateAllTables()
   return await getTestDatabase()
 }
 

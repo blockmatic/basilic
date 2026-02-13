@@ -25,16 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-      # DATABASE_URL ensures env validation passes; db:migrate skips when NODE_ENV=test (PGLite at test time)
+      PGLITE: true
       DATABASE_URL: postgresql://localhost/test
-      # JWT configuration
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      # Email configuration
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-      EMAIL_FROM_NAME: Test App
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

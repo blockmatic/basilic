@@ -17,7 +17,7 @@ describe('GET /health', () => {
   })
 
   afterAll(async () => {
-    await fastify.close()
+    if (fastify) await fastify.close()
     await cleanupGroupDatabase()
   })
 

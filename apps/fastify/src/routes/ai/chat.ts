@@ -1,9 +1,13 @@
 import { Readable } from 'node:stream'
-import { createOpenAI } from '@ai-sdk/openai'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { Type } from '@sinclair/typebox'
-import { generateText, streamText, type ToolSet } from 'ai'
+import { generateText, streamText, type ToolSet, tool } from 'ai'
+import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
+import { z } from 'zod'
+import { getDb } from '../../db/index.js'
+import { users } from '../../db/schema/index.js'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 
@@ -15,7 +19,7 @@ const ChatMessageSchema = Type.Object({
 const ChatRequestSchema = Type.Object({
   messages: Type.Array(ChatMessageSchema, { minItems: 1 }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(Type.String({ default: 'gpt-4o-mini' })),
+  model: Type.Optional(Type.String({ default: 'openrouter/aurora-alpha' })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
   tools: Type.Optional(Type.Any()),
 })
@@ -24,9 +28,47 @@ const ChatResponseSchema = Type.Object({
   text: Type.String(),
 })
 
-const openai = createOpenAI({
-  apiKey: env.OPENAI_API_KEY,
-})
+const DEFAULT_MODEL = 'openrouter/aurora-alpha'
+
+const MODEL_ALIASES: Record<string, string> = {
+  'aurora-alpha': DEFAULT_MODEL,
+  grok: 'x-ai/grok-3-mini',
+  'grok-3-mini': 'x-ai/grok-3-mini',
+  sonnet: 'anthropic/claude-3-5-sonnet',
+  opus: 'anthropic/claude-3-opus',
+}
+
+function getOpenRouter() {
+  return createOpenRouter({ apiKey: env.OPEN_ROUTER_API_KEY })
+}
+
+function resolveModel(model?: string) {
+  const m = model ?? DEFAULT_MODEL
+  const modelId = MODEL_ALIASES[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
+  return getOpenRouter().chat(modelId)
+}
+
+function createAccountInfoTool(userId: string) {
+  return tool({
+    description:
+      'Returns information about the current authenticated account. Use when the user asks who they are, their account details, when they joined, or similar.',
+    inputSchema: z.object({}),
+    execute: async () => {
+      const db = await getDb()
+      const [user] = await db.select().from(users).where(eq(users.id, userId))
+      if (!user) return 'Account not found.'
+      const joined = new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      }).format(user.createdAt)
+      const parts = [`You joined in ${joined}`]
+      if (user.email) parts.push(`Email: ${user.email}`)
+      if (user.name) parts.push(`Name: ${user.name}`)
+      return parts.join('. ')
+    },
+  })
+}
 
 const chatRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
@@ -35,7 +77,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'chat',
         description:
-          'Chat with AI using OpenAI. Supports both streaming and non-streaming responses.',
+          'Chat with AI via Open Router. Default model: Aurora Alpha. Supports streaming and tools.',
         summary: 'Generate AI chat response',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],
@@ -59,51 +101,46 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const { messages, stream, model, temperature, tools } = request.body
+      if (!env.OPEN_ROUTER_API_KEY) {
+        return reply.code(500).send({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Server misconfiguration: OPEN_ROUTER_API_KEY is not set',
+        })
+      }
+
+      const { messages, stream, model, temperature } = request.body
+      const resolvedModel = resolveModel(model)
 
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
       const shouldStream = stream === true || acceptHeader.includes('text/event-stream')
 
+      const mergedTools: ToolSet = {
+        getAccountInfo: createAccountInfoTool(request.session.user.id),
+      }
+
       request.log.debug(
-        { messages: messages.length, model, stream: shouldStream, temperature, hasTools: !!tools },
+        { messages: messages.length, model, stream: shouldStream, temperature },
         'Processing chat request',
       )
 
+      const baseOptions = {
+        model: resolvedModel,
+        messages,
+        tools: mergedTools,
+        ...(temperature !== undefined && { temperature }),
+      }
+
       if (shouldStream) {
-        const streamOptions = {
-          model: openai(model ?? 'gpt-4o-mini'),
-          messages,
-          ...(temperature !== undefined && { temperature }),
-          ...(tools != null &&
-            typeof tools === 'object' &&
-            Object.keys(tools).length > 0 && { tools: tools as ToolSet }),
-        }
-
-        const result = streamText(streamOptions)
-
+        const result = streamText(baseOptions)
         reply.header('Content-Type', 'text/event-stream')
         reply.header('Cache-Control', 'no-cache')
         reply.header('Connection', 'keep-alive')
-
-        // Convert async iterable to Node.js Readable stream and pipe to response
         const nodeStream = Readable.from(result.textStream)
         return reply.send(nodeStream as never)
       }
 
-      const generateOptions = {
-        model: openai(model ?? 'gpt-4o-mini'),
-        messages,
-        ...(temperature !== undefined && { temperature }),
-        ...(tools != null &&
-          typeof tools === 'object' &&
-          Object.keys(tools).length > 0 && { tools: tools as ToolSet }),
-      }
-
-      const result = await generateText(generateOptions)
-
-      return reply.code(200).send({
-        text: result.text,
-      })
+      const result = await generateText(baseOptions)
+      return reply.code(200).send({ text: result.text })
     },
   )
 }
