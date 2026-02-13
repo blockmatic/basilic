@@ -18,8 +18,19 @@ import { users } from '../../db/schema/index.js'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 
+const ChatMessageItemSchema = Type.Union([
+  Type.Object({
+    role: Type.String(),
+    content: Type.String(),
+    name: Type.Optional(Type.String()),
+  }),
+  Type.Object({
+    role: Type.String(),
+    parts: Type.Array(Type.Any()),
+  }),
+])
 const ChatRequestSchema = Type.Object({
-  messages: Type.Array(Type.Any(), { minItems: 1 }),
+  messages: Type.Array(ChatMessageItemSchema, { minItems: 1, maxItems: 50 }),
   stream: Type.Optional(Type.Boolean()),
   model: Type.Optional(Type.String({ default: 'openrouter/aurora-alpha' })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
@@ -69,10 +80,7 @@ function isCoreMessage(msg: unknown): msg is { role: string; content: string } {
   )
 }
 
-async function resolveMessages(
-  rawMessages: unknown[],
-  tools: ToolSet,
-): Promise<{ role: string; content: string }[]> {
+async function resolveMessages(rawMessages: unknown[], tools: ToolSet): Promise<ModelMessage[]> {
   const first = rawMessages[0]
   if (isUIMessage(first)) {
     const allUIMessage = rawMessages.every(isUIMessage)
@@ -82,14 +90,14 @@ async function resolveMessages(
     return convertToModelMessages(rawMessages as Parameters<typeof convertToModelMessages>[0], {
       tools,
       ignoreIncompleteToolCalls: true,
-    }) as Promise<{ role: string; content: string }[]>
+    })
   }
   if (isCoreMessage(first)) {
     const allCore = rawMessages.every(isCoreMessage)
     if (!allCore) {
       throw new Error('Invalid request: mixed UIMessage and CoreMessage formats')
     }
-    return rawMessages as { role: string; content: string }[]
+    return rawMessages as ModelMessage[]
   }
   throw new Error(
     'Invalid request: each message must have parts (UIMessage) or content (CoreMessage)',
@@ -183,7 +191,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
 
       const baseOptions = {
         model: resolvedModel,
-        messages: messages as ModelMessage[],
+        messages,
         tools: mergedTools,
         ...(temperature !== undefined && { temperature }),
       }

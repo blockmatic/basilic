@@ -57,6 +57,8 @@ export function ChatAssistant() {
     sendMessage({ text })
   }
 
+  const lastAssistantMessage = [...messages].reverse().find(m => m.role === 'assistant')
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -85,7 +87,9 @@ export function ChatAssistant() {
               ) : (
                 messages.map(message => {
                   const isStreamingAssistant =
-                    message.role === 'assistant' && status === 'streaming'
+                    status === 'streaming' &&
+                    message.role === 'assistant' &&
+                    message.id === lastAssistantMessage?.id
                   const elements: ReactNode[] = []
                   let hasContent = false
                   message.parts.forEach((p, i) => {

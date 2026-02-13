@@ -170,14 +170,16 @@ describe('LoginForm', () => {
     await userEvent.click(submitButton)
 
     // Simulate mutation error by calling captured onError callback
-    if (capturedOnError) {
-      capturedOnError(
-        validationError,
-        { email: 'test@example.com', callbackUrl: '/dashboard' },
-        undefined,
-        undefined,
-      )
-    }
+    await act(async () => {
+      if (capturedOnError) {
+        capturedOnError(
+          validationError,
+          { email: 'test@example.com', callbackUrl: '/dashboard' },
+          undefined,
+          undefined,
+        )
+      }
+    })
 
     // Wait for error to appear
     await waitFor(() => {

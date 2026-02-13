@@ -47,12 +47,10 @@ test.describe('Chat Assistant', () => {
     await expect(sheet.locator('[data-role="user"]').filter({ hasText: 'Who am I?' })).toBeVisible({
       timeout: 10000,
     })
-    // Assistant responds when auth works; or error banner when auth/API fails
-    await expect(
-      sheet
-        .locator('[data-role="assistant"]')
-        .or(sheet.getByText(/UNAUTHORIZED|Authentication required/)),
-    ).toBeVisible({ timeout: 30000 })
+    // Assistant must respond (auth is validated in beforeEach)
+    const assistantEl = sheet.locator('[data-role="assistant"]')
+    await expect(assistantEl).toBeVisible({ timeout: 30000 })
+    await expect(assistantEl).not.toBeEmpty()
   })
 
   test('should send message via input and show conversation', async ({ page }) => {
@@ -69,11 +67,9 @@ test.describe('Chat Assistant', () => {
     await expect(sheet.locator('[data-role="user"]').filter({ hasText: 'Hi' })).toBeVisible({
       timeout: 10000,
     })
-    // Assistant responds when auth works; or error banner when auth/API fails
-    await expect(
-      sheet
-        .locator('[data-role="assistant"]')
-        .or(sheet.getByText(/UNAUTHORIZED|Authentication required/)),
-    ).toBeVisible({ timeout: 30000 })
+    // Assistant must respond (auth is validated in beforeEach)
+    const assistantEl = sheet.locator('[data-role="assistant"]')
+    await expect(assistantEl).toBeVisible({ timeout: 30000 })
+    await expect(assistantEl).not.toBeEmpty()
   })
 })

@@ -61,8 +61,40 @@
                 "properties": {
                   "messages": {
                     "minItems": 1,
+                    "maxItems": 50,
                     "type": "array",
-                    "items": {}
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": ["role", "content"],
+                          "properties": {
+                            "role": {
+                              "type": "string"
+                            },
+                            "content": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": ["role", "parts"],
+                          "properties": {
+                            "role": {
+                              "type": "string"
+                            },
+                            "parts": {
+                              "type": "array",
+                              "items": {}
+                            }
+                          }
+                        }
+                      ]
+                    }
                   },
                   "stream": {
                     "type": "boolean"
