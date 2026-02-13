@@ -24,6 +24,7 @@ export function useChatFromConfig(
 
   const api = `${config.baseUrl.replace(/\/$/, '')}/ai/chat`
   const getAuthToken = config.getAuthToken
+  const stream = (options as { stream?: boolean })?.stream !== false
 
   const transport = new DefaultChatTransport({
     api,
@@ -33,7 +34,12 @@ export function useChatFromConfig(
       if (token && !headers.has('Authorization')) {
         headers.set('Authorization', `Bearer ${token}`)
       }
-      headers.set('Accept', 'text/event-stream')
+      const initWithStream = init as RequestInit & { keepStream?: boolean }
+      const wantsStreaming =
+        stream || headers.get('X-Stream') === '1' || initWithStream?.keepStream === true
+      if (!headers.has('Accept') && wantsStreaming) {
+        headers.set('Accept', 'text/event-stream')
+      }
       return fetch(input, { ...init, headers })
     },
   })

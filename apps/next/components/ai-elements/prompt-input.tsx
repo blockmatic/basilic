@@ -4,7 +4,7 @@ import { Button } from '@repo/ui/components/button'
 import { Textarea } from '@repo/ui/components/textarea'
 import { cn } from '@repo/ui/lib/utils'
 import { SendIcon, SquareIcon } from 'lucide-react'
-import type { ComponentProps, FormEvent, KeyboardEvent } from 'react'
+import type { ChangeEvent, ComponentProps, FormEvent, KeyboardEvent } from 'react'
 
 type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
 
@@ -45,7 +45,13 @@ export function PromptInputTextarea({
       const el = e.currentTarget
       const { selectionStart, selectionEnd, value } = el
       const newValue = `${value.slice(0, selectionStart)}\n${value.slice(selectionEnd)}`
-      onChange?.({ currentTarget: { value: newValue } } as React.ChangeEvent<HTMLTextAreaElement>)
+      const syntheticTarget = Object.assign({}, el, { value: newValue })
+      const syntheticEvent = {
+        target: syntheticTarget,
+        currentTarget: syntheticTarget,
+        nativeEvent: e.nativeEvent,
+      } as unknown as ChangeEvent<HTMLTextAreaElement>
+      onChange?.(syntheticEvent)
       requestAnimationFrame(() => el.setSelectionRange(selectionStart + 1, selectionStart + 1))
     } else {
       e.preventDefault()

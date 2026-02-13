@@ -36,7 +36,7 @@ export function MessageContent({ from = 'assistant', className, ...props }: Mess
   return (
     <div
       className={cn(
-        'rounded-lg px-4 py-2 max-w-[85%] prose prose-sm dark:prose-invert max-w-none',
+        'rounded-lg px-4 py-2 max-w-[85%] prose prose-sm dark:prose-invert',
         from === 'user' ? 'bg-primary text-primary-foreground ml-auto' : 'bg-muted text-foreground',
         className,
       )}
