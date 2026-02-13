@@ -36,8 +36,10 @@ jobs:
       PLAYWRIGHT_HTML_REPORT_OPEN: never
     steps:
       - name: Verify OPEN_ROUTER_API_KEY
+        env:
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
         run: |
-          if [ -z "${{ secrets.OPEN_ROUTER_API_KEY }}" ]; then
+          if [ -z "$OPEN_ROUTER_API_KEY" ]; then
             echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
             exit 1
           fi

@@ -106,6 +106,9 @@ export async function closeTestDatabase() {
     await pgLiteInstance.close()
     pgLiteInstance = null
     dbUrl = null
+    if (typeof globalThis !== 'undefined') {
+      globalThis.__testPgliteInstance = undefined
+    }
   }
 }
 
