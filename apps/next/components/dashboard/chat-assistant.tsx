@@ -149,7 +149,10 @@ export function ChatAssistant() {
           </Conversation>
 
           {error && (
-            <div className="border-destructive/50 bg-destructive/10 text-destructive mx-4 mb-2 rounded-md border px-3 py-2 text-sm">
+            <div
+              data-testid="chat-error"
+              className="border-destructive/50 bg-destructive/10 text-destructive mx-4 mb-2 rounded-md border px-3 py-2 text-sm"
+            >
               <p>{error.message}</p>
               <Button
                 variant="link"

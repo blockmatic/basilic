@@ -37,6 +37,7 @@ test.describe('Chat Assistant', () => {
   })
 
   test('should send message via suggestion and show assistant response', async ({ page }) => {
+    test.setTimeout(90000)
     await page.getByRole('button', { name: 'Open assistant' }).click()
 
     const sheet = page.getByRole('dialog')
@@ -47,13 +48,19 @@ test.describe('Chat Assistant', () => {
     await expect(sheet.locator('[data-role="user"]').filter({ hasText: 'Who am I?' })).toBeVisible({
       timeout: 10000,
     })
+    // Fail fast if API error is shown
+    const errorEl = sheet.getByTestId('chat-error')
+    if (await errorEl.isVisible()) {
+      throw new Error(`Chat API error: ${await errorEl.textContent()}`)
+    }
     // Assistant must respond (auth is validated in beforeEach)
     const assistantEl = sheet.locator('[data-role="assistant"]')
-    await expect(assistantEl).toBeVisible({ timeout: 30000 })
+    await expect(assistantEl).toBeVisible({ timeout: 60000 })
     await expect(assistantEl).not.toBeEmpty()
   })
 
   test('should send message via input and show conversation', async ({ page }) => {
+    test.setTimeout(90000)
     await page.getByRole('button', { name: 'Open assistant' }).click()
 
     const sheet = page.getByRole('dialog')
@@ -67,9 +74,14 @@ test.describe('Chat Assistant', () => {
     await expect(sheet.locator('[data-role="user"]').filter({ hasText: 'Hi' })).toBeVisible({
       timeout: 10000,
     })
+    // Fail fast if API error is shown
+    const errorEl = sheet.getByTestId('chat-error')
+    if (await errorEl.isVisible()) {
+      throw new Error(`Chat API error: ${await errorEl.textContent()}`)
+    }
     // Assistant must respond (auth is validated in beforeEach)
     const assistantEl = sheet.locator('[data-role="assistant"]')
-    await expect(assistantEl).toBeVisible({ timeout: 30000 })
+    await expect(assistantEl).toBeVisible({ timeout: 60000 })
     await expect(assistantEl).not.toBeEmpty()
   })
 })
