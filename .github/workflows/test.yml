@@ -68,5 +68,5 @@ jobs:
       - name: Build
         run: pnpm turbo run build
 
-      - name: Run all unit tests
-        run: pnpm turbo run test:unit
+      - name: Run unit tests
+        run: pnpm turbo run test
