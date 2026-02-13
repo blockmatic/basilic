@@ -34,7 +34,7 @@ import { join } from 'node:path'
 import { PGlite } from '@electric-sql/pglite'
 
 declare global {
-  var __testPgliteInstance: PGlite | null | undefined
+  var __testPgliteInstance: PGlite | undefined
 }
 
 // Per-worker singleton pattern for test database - each worker gets its own instance

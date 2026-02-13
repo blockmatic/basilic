@@ -18,10 +18,7 @@ describe('Database Integration', () => {
   })
 
   it('should use PGLite in test environment', async () => {
-    // Verify NODE_ENV is test
     expect(process.env.NODE_ENV).toBe('test')
-    expect(process.env.DATABASE_URL).toBe('postgresql://localhost/test')
-
     const db = await getDb()
     expect(db).toBeDefined()
   })

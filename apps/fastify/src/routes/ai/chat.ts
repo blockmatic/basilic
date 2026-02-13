@@ -46,7 +46,8 @@ function getOpenRouter() {
 function resolveModel(model?: string): LanguageModel {
   const m = model ?? DEFAULT_MODEL
   const modelId = MODEL_ALIASES[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
-  return getOpenRouter()(modelId) as unknown as LanguageModel
+  const provider = getOpenRouter()
+  return provider(modelId) as LanguageModel
 }
 
 function createAccountInfoTool(userId: string) {
@@ -103,13 +104,13 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       }
 
       if (!env.OPEN_ROUTER_API_KEY) {
-        return reply.code(400).send({
-          code: 'BAD_REQUEST',
-          message: 'OPEN_ROUTER_API_KEY is required',
+        return reply.code(500).send({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Server misconfiguration: OPEN_ROUTER_API_KEY is not set',
         })
       }
 
-      const { messages, stream, model, temperature, tools: clientTools } = request.body
+      const { messages, stream, model, temperature } = request.body
       const resolvedModel = resolveModel(model)
 
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
@@ -117,7 +118,6 @@ const chatRoute: FastifyPluginAsync = async fastify => {
 
       const mergedTools: ToolSet = {
         getAccountInfo: createAccountInfoTool(request.session.user.id),
-        ...(clientTools != null && typeof clientTools === 'object' ? (clientTools as ToolSet) : {}),
       }
 
       request.log.debug(

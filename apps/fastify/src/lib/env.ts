@@ -7,6 +7,27 @@ const hex64 = z
   .length(64)
   .regex(/^[0-9a-fA-F]+$/, 'Must be a 32-byte hex string')
 
+const isProduction = process.env.NODE_ENV === 'production'
+const WEAK_ENCRYPTION_KEY = '0'.repeat(64)
+const REJECTED_DEV_DEFAULT = 'default-jwt-secret-min-32-chars-for-dev'
+
+const encryptionKeySchema = isProduction
+  ? hex64.refine(
+      val => val !== WEAK_ENCRYPTION_KEY,
+      'ENCRYPTION_KEY must not be the all-zero default in production',
+    )
+  : hex64.default(WEAK_ENCRYPTION_KEY)
+
+const jwtSecretSchema = isProduction
+  ? z
+      .string()
+      .min(32)
+      .refine(
+        val => val !== REJECTED_DEV_DEFAULT,
+        'JWT_SECRET must not be the dev default in production',
+      )
+  : z.string().min(32).default(REJECTED_DEV_DEFAULT)
+
 export const env = createEnv({
   server: {
     PORT: z.coerce.number().int().positive().default(3001),
@@ -37,8 +58,8 @@ export const env = createEnv({
     SENTRY_DSN: z.string().min(1).optional(),
     SENTRY_ENVIRONMENT: z.string().min(1).optional(),
     OPEN_ROUTER_API_KEY: z.string().min(1),
-    ENCRYPTION_KEY: hex64.default('0'.repeat(64)),
-    JWT_SECRET: z.string().min(32).default('default-jwt-secret-min-32-chars-for-dev'),
+    ENCRYPTION_KEY: encryptionKeySchema,
+    JWT_SECRET: jwtSecretSchema,
     ACCESS_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(900),
     REFRESH_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(604800),
     JWT_ISSUER: z.string().default('api.yourapp.com'),

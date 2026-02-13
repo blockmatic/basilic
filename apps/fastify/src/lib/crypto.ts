@@ -19,15 +19,19 @@ function getEncryptionKey(): Buffer {
   return Buffer.from(env.ENCRYPTION_KEY, 'hex')
 }
 
+const WEAK_ENCRYPTION_KEY = '0'.repeat(64)
+
 /**
- * Validates that ENCRYPTION_KEY is properly configured
- * This is called implicitly when accessing env.ENCRYPTION_KEY, but
- * we can add additional validation if needed
+ * Validates that ENCRYPTION_KEY is properly configured.
+ * In production, rejects the all-zero default.
  */
 export function validateEncryptionKey(): void {
   const key = env.ENCRYPTION_KEY
   if (!key || key.length !== 64 || !/^[0-9a-fA-F]+$/.test(key)) {
     throw new Error('ENCRYPTION_KEY must be a 64-character hex string (32 bytes)')
+  }
+  if (env.NODE_ENV === 'production' && key === WEAK_ENCRYPTION_KEY) {
+    throw new Error('ENCRYPTION_KEY must not be the all-zero default in production')
   }
 }
 

@@ -43,6 +43,8 @@
         "NEXT_PUBLIC_LOG_LEVEL",
         "PLAYWRIGHT_HTML_REPORT_OPEN",
         "PLAYWRIGHT_API_URL",
+        "PLAYWRIGHT_TEST_BASE_URL",
+        "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
         "EMAIL_ASSETS_URL"
@@ -65,6 +67,8 @@
         "NEXT_PUBLIC_LOG_LEVEL",
         "PLAYWRIGHT_HTML_REPORT_OPEN",
         "PLAYWRIGHT_API_URL",
+        "PLAYWRIGHT_TEST_BASE_URL",
+        "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
         "EMAIL_ASSETS_URL"
