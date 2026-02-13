@@ -2,6 +2,7 @@
 
 import { createClient } from '@repo/core'
 import { ReactApiProvider } from '@repo/react'
+import { logger } from '@repo/utils/logger'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
@@ -17,6 +18,8 @@ async function getAuthToken() {
   const data = await response.json()
   return data.token ?? null
 }
+
+logger.info('env.NEXT_PUBLIC_API_URL', env.NEXT_PUBLIC_API_URL)
 
 const coreClient = createClient({
   baseUrl: env.NEXT_PUBLIC_API_URL,
