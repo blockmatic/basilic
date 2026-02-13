@@ -2,7 +2,6 @@ import { Readable } from 'node:stream'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { Type } from '@sinclair/typebox'
-import type { LanguageModel } from 'ai'
 import { generateText, streamText, type ToolSet, tool } from 'ai'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
@@ -43,11 +42,10 @@ function getOpenRouter() {
   return createOpenRouter({ apiKey: env.OPEN_ROUTER_API_KEY })
 }
 
-function resolveModel(model?: string): LanguageModel {
+function resolveModel(model?: string) {
   const m = model ?? DEFAULT_MODEL
   const modelId = MODEL_ALIASES[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
-  const provider = getOpenRouter()
-  return provider(modelId) as LanguageModel
+  return getOpenRouter().chat(modelId)
 }
 
 function createAccountInfoTool(userId: string) {
