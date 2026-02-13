@@ -41,7 +41,12 @@ export default defineConfig({
       env: {
         USE_FAKE_EMAIL: 'true',
         PGLITE: 'true',
+        DATABASE_URL: process.env.DATABASE_URL || 'postgresql://localhost/test',
         JWT_SECRET: process.env.JWT_SECRET || 'e2e-jwt-secret-min-32-chars-for-tests',
+        ...(process.env.OPEN_ROUTER_API_KEY && {
+          OPEN_ROUTER_API_KEY: process.env.OPEN_ROUTER_API_KEY,
+        }),
+        NODE_ENV: 'test',
       },
     },
     {
