@@ -44,7 +44,7 @@ export function PromptInputTextarea({
       e.preventDefault()
       const el = e.currentTarget
       const { selectionStart, selectionEnd, value } = el
-      const newValue = value.slice(0, selectionStart) + '\n' + value.slice(selectionEnd)
+      const newValue = `${value.slice(0, selectionStart)}\n${value.slice(selectionEnd)}`
       onChange?.({ currentTarget: { value: newValue } } as React.ChangeEvent<HTMLTextAreaElement>)
       requestAnimationFrame(() => el.setSelectionRange(selectionStart + 1, selectionStart + 1))
     } else {

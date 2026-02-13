@@ -48,8 +48,8 @@ describe('POST /ai/chat', () => {
     expect(body).toBeTypeOf('string')
     const lines = body.split('\n').filter(line => line.startsWith('data:'))
     expect(lines.length).toBeGreaterThan(0)
-    const firstData = lines[0]!.replace(/^data:\s*/, '')
-    if (firstData !== '[DONE]') {
+    const firstData = lines[0]?.replace(/^data:\s*/, '')
+    if (firstData && firstData !== '[DONE]') {
       const parsed = JSON.parse(firstData) as { type?: string }
       expect(parsed.type).toBeDefined()
       expect(['start', 'text-start', 'text-delta', 'text-end', 'finish', 'finish-step']).toContain(
