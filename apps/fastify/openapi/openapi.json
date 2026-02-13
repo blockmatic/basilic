@@ -61,31 +61,39 @@
                 "properties": {
                   "messages": {
                     "minItems": 1,
+                    "maxItems": 50,
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "required": ["role", "content"],
-                      "properties": {
-                        "role": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "enum": ["user"]
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": ["role", "content"],
+                          "properties": {
+                            "role": {
+                              "type": "string"
                             },
-                            {
-                              "type": "string",
-                              "enum": ["assistant"]
+                            "content": {
+                              "type": "string"
                             },
-                            {
-                              "type": "string",
-                              "enum": ["system"]
+                            "name": {
+                              "type": "string"
                             }
-                          ]
+                          }
                         },
-                        "content": {
-                          "type": "string"
+                        {
+                          "type": "object",
+                          "required": ["role", "parts"],
+                          "properties": {
+                            "role": {
+                              "type": "string"
+                            },
+                            "parts": {
+                              "type": "array",
+                              "items": {}
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   },
                   "stream": {

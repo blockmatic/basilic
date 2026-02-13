@@ -31,6 +31,7 @@ jobs:
       CI: true
       PGLITE: true
       DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
       NEXT_PUBLIC_API_URL: http://localhost:3001
       PLAYWRIGHT_HTML_REPORT_OPEN: never

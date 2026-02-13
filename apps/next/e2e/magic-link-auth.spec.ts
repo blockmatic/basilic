@@ -23,14 +23,10 @@ async function sendMagicLink(page: Page) {
   expect(response.status()).toBe(200)
 
   // Wait for the success message indicating email was sent
-  // The message appears in a FieldDescription component with green text
-  const successMessage = page
-    .locator('[data-slot="field-description"]')
-    .filter({ hasText: /check your email for the magic link/i })
+  const successMessage = page.getByText(/check your email for the magic link/i)
   await expect(successMessage).toBeVisible({ timeout: 10000 })
 
-  // Additional small delay to ensure email is stored in FakeEmailProvider outbox
-  await page.waitForTimeout(200)
+  await new Promise(r => setTimeout(r, 200))
 }
 
 /**
@@ -212,12 +208,8 @@ test.describe('Magic Link Authentication', () => {
       const emailInput = page.locator('input[type="email"]')
       await emailInput.fill('invalid-email')
 
-      // Submit the form
       const submitButton = page.locator('button[type="submit"]')
       await submitButton.click()
-
-      // Wait for error to appear below input field
-      await page.waitForTimeout(1000) // Allow time for API call and error display
 
       // Check error message is displayed below input field using FieldError
       const fieldError = page.locator('[data-slot="field-error"]')

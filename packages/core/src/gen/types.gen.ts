@@ -26,8 +26,12 @@ export type HealthCheckResponse = HealthCheckResponses[keyof HealthCheckResponse
 export type ChatData = {
     body: {
         messages: Array<{
-            role: 'user' | 'assistant' | 'system';
+            role: string;
             content: string;
+            name?: string;
+        } | {
+            role: string;
+            parts: Array<unknown>;
         }>;
         stream?: boolean;
         model?: string;

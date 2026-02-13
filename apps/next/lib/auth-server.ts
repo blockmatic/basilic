@@ -16,6 +16,21 @@ const getAuthCookieOptions = ({ maxAge }: AuthCookieOptions) => ({
   secure: env.NODE_ENV === 'production',
 })
 
+export type SetAuthCookiesInput = {
+  token: string
+  refreshToken: string
+}
+
+export function setAuthCookiesOnResponse(
+  response: { cookies: { set: (name: string, value: string, opts?: object) => void } },
+  { token, refreshToken }: SetAuthCookiesInput,
+) {
+  const opts = getAuthCookieOptions({})
+  const cleanOpts = Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined))
+  response.cookies.set(authCookieName, token, cleanOpts as typeof opts)
+  response.cookies.set(authRefreshCookieName, refreshToken, cleanOpts as typeof opts)
+}
+
 export async function getServerAuthToken() {
   const cookieStore = await cookies()
   return { token: cookieStore.get(authCookieName)?.value ?? null }

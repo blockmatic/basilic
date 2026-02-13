@@ -74,7 +74,9 @@
         "EMAIL_ASSETS_URL"
       ]
     },
-    "checktypes": { "env": ["NODE_ENV"] },
+    "checktypes": {
+      "env": ["NODE_ENV"]
+    },
     "test": {
       "env": [
         "NODE_ENV",
@@ -120,7 +122,11 @@
         "DATABASE_URL",
         "PGLITE",
         "OPEN_ROUTER_API_KEY",
-        "NEXT_PUBLIC_API_URL"
+        "NEXT_PUBLIC_API_URL",
+        "PLAYWRIGHT_REUSE_SERVER",
+        "JWT_SECRET",
+        "PLAYWRIGHT_HTML_REPORT_OPEN",
+        "PLAYWRIGHT_TEST_BASE_URL"
       ]
     },
     "dev": {

@@ -2,6 +2,7 @@
 export { LoginForm } from './components/login-form'
 export { useReactApiConfig } from './context'
 // Export hooks
+export { useChatFromConfig } from './hooks/use-chat'
 export { useHealthCheck } from './hooks/use-health-check'
 export { useMagicLink } from './hooks/use-magic-link'
 // Export provider and context

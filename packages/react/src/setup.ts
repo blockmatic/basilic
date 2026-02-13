@@ -20,6 +20,12 @@ export type ReactApiConfig = {
   /** API client instance from `@repo/core` */
   client: ReturnType<typeof createClient>
 
+  /** Base URL for chat API (e.g. env.NEXT_PUBLIC_API_URL). Required for useChat. */
+  baseUrl?: string
+
+  /** Callback to get Bearer token for chat requests. Required for useChat. */
+  getAuthToken?: () => Promise<string | null>
+
   /** Optional TanStack Query client instance */
   queryClient?: QueryClient
 
@@ -40,6 +46,12 @@ export type ReactApiConfig = {
 export type ReactApiConfigValue = {
   /** API client instance from `@repo/core` */
   client: ReturnType<typeof createClient>
+
+  /** Base URL for chat API */
+  baseUrl?: string
+
+  /** Callback to get Bearer token for chat requests */
+  getAuthToken?: () => Promise<string | null>
 
   /** Optional TanStack Query client instance */
   queryClient?: QueryClient
@@ -65,6 +77,8 @@ export type ReactApiConfigValue = {
 export function createReactApiConfig(options: ReactApiConfig): ReactApiConfigValue {
   return {
     client: options.client,
+    baseUrl: options.baseUrl,
+    getAuthToken: options.getAuthToken,
     queryClient: options.queryClient,
     queryClientDefaults: options.queryClientDefaults ?? {},
   }

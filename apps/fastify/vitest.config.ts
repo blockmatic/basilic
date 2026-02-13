@@ -16,47 +16,32 @@ if (existsSync(envTestFile)) {
   config({ path: envTestFile })
 }
 
+function toTsPath(id: string, importer?: string): string | null {
+  if (!id.endsWith('.js') || id.includes('node_modules')) return null
+  let tsPath: string | null = null
+  if (id.startsWith('.')) {
+    if (!importer) return null
+    const cleanImporter = importer.replace(/^\/@(id|fs)\//, '')
+    tsPath = resolve(dirname(cleanImporter), id.replace(/\.js$/, '.ts'))
+  } else if (isAbsolute(id)) {
+    if (id.startsWith(projectRoot)) tsPath = id.replace(/\.js$/, '.ts')
+  } else if (id.startsWith('/') && !id.startsWith('/@')) {
+    tsPath = resolve(projectRoot, id.replace(/\.js$/, '.ts'))
+  } else if (id.startsWith('file://')) {
+    const pathPart = id.slice(7)
+    if (pathPart.startsWith(projectRoot) && pathPart.endsWith('.js')) {
+      tsPath = pathPart.replace(/\.js$/, '.ts')
+    }
+  }
+  return tsPath && existsSync(tsPath) ? tsPath : null
+}
+
 const resolveJsToTsPlugin = (): Plugin => ({
   name: 'resolve-js-to-ts',
   enforce: 'pre',
   async resolveId(id, importer) {
-    // Skip node_modules and non-.js files
-    if (id.includes('node_modules') || !id.endsWith('.js')) {
-      return null
-    }
-
-    let tsPath: string | null = null
-
-    // Handle relative imports (e.g., './env.js' or '../lib/env.js')
-    if (id.startsWith('.')) {
-      if (!importer) return null
-      // Clean Vite virtual paths like /@id/ or /@fs/
-      const cleanImporter = importer.replace(/^\/@(id|fs)\//, '')
-      const importerDir = dirname(cleanImporter)
-      tsPath = resolve(importerDir, id.replace(/\.js$/, '.ts'))
-    }
-    // Handle absolute file system paths (this is the key case!)
-    else if (isAbsolute(id)) {
-      // Only process paths within project
-      if (id.startsWith(projectRoot)) {
-        tsPath = id.replace(/\.js$/, '.ts')
-      } else {
-        return null
-      }
-    }
-    // Handle Vite virtual paths (e.g., '/src/lib/env.js')
-    else if (id.startsWith('/') && !id.startsWith('/@')) {
-      tsPath = resolve(projectRoot, id.replace(/\.js$/, '.ts'))
-    } else {
-      return null
-    }
-
-    // Return .ts path if it exists
-    if (tsPath && existsSync(tsPath)) {
-      return tsPath
-    }
-
-    return null
+    const tsPath = toTsPath(id, importer)
+    return tsPath ?? null
   },
   // Transform import statements to rewrite .js to .ts - CRITICAL: This must run before Node resolves
   transform(code, id) {
@@ -140,6 +125,11 @@ export default defineConfig({
         // This handles imports like '../lib/env.js' -> '../lib/env' -> '../lib/env.ts'
         find: /^(\.\.?\/[^'"]*?)\.js$/,
         replacement: '$1',
+      },
+      {
+        // Resolve db/index.js to .ts (fixes auth plugin and other imports when loaded via autoload)
+        find: /^(.*\/)db\/index\.js$/,
+        replacement: '$1db/index.ts',
       },
       {
         // Handle absolute paths within src directory

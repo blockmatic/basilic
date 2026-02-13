@@ -1,6 +1,7 @@
 import { ApiError, createClient } from '@repo/core'
 import { logger } from '@repo/utils/logger'
-import { setServerAuthToken, setServerRefreshToken } from '@/lib/auth-server'
+import { NextResponse } from 'next/server'
+import { setAuthCookiesOnResponse } from '@/lib/auth-server'
 import { env } from '@/lib/env'
 import type { AuthProxyOptions } from './utils'
 import { getRedirectUrl } from './utils'
@@ -61,20 +62,10 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
     const refreshToken = (response as unknown as { token: string; refreshToken: string })
       .refreshToken
 
-    await setServerAuthToken({ token: accessToken })
-
-    if (refreshToken && typeof refreshToken === 'string') {
-      await setServerRefreshToken({ refreshToken })
-    }
-
     const { redirectUrl } = getRedirectUrl({ request, callbackURL })
-
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: redirectUrl,
-      },
-    })
+    const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url))
+    setAuthCookiesOnResponse(redirectResponse, { token: accessToken, refreshToken })
+    return redirectResponse
   } catch (error) {
     logger.error(
       {

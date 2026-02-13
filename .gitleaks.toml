@@ -12,6 +12,7 @@ description = "Allowlist for test fixtures and example files"
 paths = [
   '''\.env-example$''',
   '''\.env\.example$''',
+  '''\.env\.test\.example$''',
   '''\.env-sample$''',
   '''\.env\.sample$''',
   '''\.env\.schema$''',
