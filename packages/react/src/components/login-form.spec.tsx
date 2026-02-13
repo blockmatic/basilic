@@ -2,7 +2,7 @@ import type { MagiclinkRequestData, MagiclinkRequestResponse } from '@repo/core'
 import { createClient } from '@repo/core'
 import type { UseMutationResult } from '@tanstack/react-query'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as useMagicLinkModule from '../hooks/use-magic-link'
@@ -211,15 +211,16 @@ describe('LoginForm', () => {
     await userEvent.type(emailInput, 'test@example.com')
     await userEvent.click(submitButton)
 
-    // Simulate mutation success by calling captured onSuccess callback
-    if (capturedOnSuccess) {
-      capturedOnSuccess(
-        { ok: true },
-        { email: 'test@example.com', callbackUrl: '/dashboard' },
-        undefined,
-        undefined,
-      )
-    }
+    await act(async () => {
+      if (capturedOnSuccess) {
+        capturedOnSuccess(
+          { ok: true },
+          { email: 'test@example.com', callbackUrl: '/dashboard' },
+          undefined,
+          undefined,
+        )
+      }
+    })
 
     // Wait for success message to appear
     const successMessage = await screen.findByText(

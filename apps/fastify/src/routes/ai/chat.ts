@@ -1,8 +1,15 @@
-import { Readable } from 'node:stream'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { Type } from '@sinclair/typebox'
-import { generateText, streamText, type ToolSet, tool } from 'ai'
+import {
+  convertToModelMessages,
+  generateText,
+  type ModelMessage,
+  smoothStream,
+  streamText,
+  type ToolSet,
+  tool,
+} from 'ai'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { z } from 'zod'
@@ -11,13 +18,8 @@ import { users } from '../../db/schema/index.js'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 
-const ChatMessageSchema = Type.Object({
-  role: Type.Union([Type.Literal('user'), Type.Literal('assistant'), Type.Literal('system')]),
-  content: Type.String(),
-})
-
 const ChatRequestSchema = Type.Object({
-  messages: Type.Array(ChatMessageSchema, { minItems: 1 }),
+  messages: Type.Array(Type.Any(), { minItems: 1 }),
   stream: Type.Optional(Type.Boolean()),
   model: Type.Optional(Type.String({ default: 'openrouter/aurora-alpha' })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
@@ -46,6 +48,52 @@ function resolveModel(model?: string) {
   const m = model ?? DEFAULT_MODEL
   const modelId = MODEL_ALIASES[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
   return getOpenRouter().chat(modelId)
+}
+
+function isUIMessage(msg: unknown): msg is { role: string; parts: unknown[] } {
+  return (
+    typeof msg === 'object' &&
+    msg !== null &&
+    'parts' in msg &&
+    Array.isArray((msg as { parts?: unknown[] }).parts)
+  )
+}
+
+function isCoreMessage(msg: unknown): msg is { role: string; content: string } {
+  return (
+    typeof msg === 'object' &&
+    msg !== null &&
+    'content' in msg &&
+    typeof (msg as { content?: unknown }).content === 'string' &&
+    'role' in msg
+  )
+}
+
+async function resolveMessages(
+  rawMessages: unknown[],
+  tools: ToolSet,
+): Promise<{ role: string; content: string }[]> {
+  const first = rawMessages[0]
+  if (isUIMessage(first)) {
+    const allUIMessage = rawMessages.every(isUIMessage)
+    if (!allUIMessage) {
+      throw new Error('Invalid request: mixed UIMessage and CoreMessage formats')
+    }
+    return convertToModelMessages(rawMessages as Parameters<typeof convertToModelMessages>[0], {
+      tools,
+      ignoreIncompleteToolCalls: true,
+    }) as Promise<{ role: string; content: string }[]>
+  }
+  if (isCoreMessage(first)) {
+    const allCore = rawMessages.every(isCoreMessage)
+    if (!allCore) {
+      throw new Error('Invalid request: mixed UIMessage and CoreMessage formats')
+    }
+    return rawMessages as { role: string; content: string }[]
+  }
+  throw new Error(
+    'Invalid request: each message must have parts (UIMessage) or content (CoreMessage)',
+  )
 }
 
 function createAccountInfoTool(userId: string) {
@@ -108,7 +156,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const { messages, stream, model, temperature } = request.body
+      const { messages: rawMessages, stream, model, temperature } = request.body
       const resolvedModel = resolveModel(model)
 
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
@@ -118,6 +166,16 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         getAccountInfo: createAccountInfoTool(request.session.user.id),
       }
 
+      let messages: Awaited<ReturnType<typeof resolveMessages>>
+      try {
+        messages = await resolveMessages(rawMessages as unknown[], mergedTools)
+      } catch (err) {
+        return reply.code(400).send({
+          code: 'BAD_REQUEST',
+          message: err instanceof Error ? err.message : 'Invalid message format',
+        })
+      }
+
       request.log.debug(
         { messages: messages.length, model, stream: shouldStream, temperature },
         'Processing chat request',
@@ -125,18 +183,23 @@ const chatRoute: FastifyPluginAsync = async fastify => {
 
       const baseOptions = {
         model: resolvedModel,
-        messages,
+        messages: messages as ModelMessage[],
         tools: mergedTools,
         ...(temperature !== undefined && { temperature }),
       }
 
       if (shouldStream) {
-        const result = streamText(baseOptions)
-        reply.header('Content-Type', 'text/event-stream')
-        reply.header('Cache-Control', 'no-cache')
-        reply.header('Connection', 'keep-alive')
-        const nodeStream = Readable.from(result.textStream)
-        return reply.send(nodeStream as never)
+        const result = streamText({
+          ...baseOptions,
+          experimental_transform: smoothStream({
+            delayInMs: 15,
+            chunking: 'word',
+          }),
+        })
+        const response = result.toUIMessageStreamResponse()
+        for (const [k, v] of response.headers) reply.raw.setHeader(k, v)
+        reply.raw.statusCode = response.status
+        return reply.send(response.body as never)
       }
 
       const result = await generateText(baseOptions)

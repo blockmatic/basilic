@@ -62,31 +62,7 @@
                   "messages": {
                     "minItems": 1,
                     "type": "array",
-                    "items": {
-                      "type": "object",
-                      "required": ["role", "content"],
-                      "properties": {
-                        "role": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "enum": ["user"]
-                            },
-                            {
-                              "type": "string",
-                              "enum": ["assistant"]
-                            },
-                            {
-                              "type": "string",
-                              "enum": ["system"]
-                            }
-                          ]
-                        },
-                        "content": {
-                          "type": "string"
-                        }
-                      }
-                    }
+                    "items": {}
                   },
                   "stream": {
                     "type": "boolean"

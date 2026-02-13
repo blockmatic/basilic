@@ -1,4 +1,5 @@
 import { ApiHealthBadge } from '@/components/api-health-badge'
+import { ChatAssistant } from './chat-assistant'
 import { SignOutButton } from './sign-out-button'
 
 type User = {
@@ -52,6 +53,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
           </div>
         </div>
       </div>
+      <ChatAssistant />
     </div>
   )
 }

@@ -11,16 +11,18 @@ import { env } from '@/lib/env'
 // Create clients at module level (singleton pattern)
 const queryClient = new QueryClient()
 
+async function getAuthToken() {
+  const response = await fetch('/api/auth/get-session', { credentials: 'include' })
+  if (!response.ok) return null
+  const data = await response.json()
+  return data.token ?? null
+}
+
 const coreClient = createClient({
   baseUrl: env.NEXT_PUBLIC_API_URL,
-  getAuthToken: async () => {
-    const response = await fetch('/api/auth/get-session')
-    if (!response.ok) return null
-    const data = await response.json()
-    return data.token ?? null
-  },
+  getAuthToken,
   getRefreshToken: async () => {
-    const response = await fetch('/api/auth/get-session')
+    const response = await fetch('/api/auth/get-session', { credentials: 'include' })
     if (!response.ok) return null
     const data = await response.json()
     return data.refreshToken ?? null
@@ -32,6 +34,7 @@ const coreClient = createClient({
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ token, refreshToken }),
+      credentials: 'include',
     })
   },
 })
@@ -39,7 +42,11 @@ const coreClient = createClient({
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactApiProvider client={coreClient}>
+      <ReactApiProvider
+        client={coreClient}
+        baseUrl={env.NEXT_PUBLIC_API_URL}
+        getAuthToken={getAuthToken}
+      >
         <NuqsAdapter>
           <NextThemesProvider
             attribute="class"
