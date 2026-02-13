@@ -36,7 +36,7 @@ Viem v2.44.4 integration patterns for EVM chains. Address validation (`getAddres
 **Related**: Referenced by [wagmi.mdc](./wagmi.mdc) and [multichain.mdc](./multichain.mdc).
 
 ### [solana.mdc](./solana.mdc)
-Solana address validation and transaction handling.
+Solana address validation and transaction handling for dApp development.
 
 **Related**: Referenced by [multichain.mdc](./multichain.mdc).
 

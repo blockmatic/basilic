@@ -27,8 +27,6 @@
     "setup": "pnpm i && npx simple-git-hooks && pnpm setup:gitleaks && pnpm setup:osv && pnpm setup:database",
     "setup:gitleaks": "node scripts/setup-gitleaks.mjs",
     "setup:osv": "node scripts/setup-osv-scanner.mjs",
-    "setup:evm": "node scripts/setup-evm-tools.mjs",
-    "setup:solana": "node scripts/setup-solana-tools.mjs",
     "setup:database": "node scripts/setup-database.mjs",
     "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },
