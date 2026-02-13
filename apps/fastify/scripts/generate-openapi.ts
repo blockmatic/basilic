@@ -100,6 +100,8 @@ async function generateOpenAPI() {
   const stubs: Record<string, string> = {
     OPEN_ROUTER_API_KEY: 'sk-or-v1-dummy-for-openapi-generation',
     PGLITE: 'true',
+    ENCRYPTION_KEY: 'deadbeef'.repeat(8), // 64-char hex (valid, not weak)
+    JWT_SECRET: 'openapi-gen-jwt-secret-placeholder-32ch',
   }
   for (const [k, v] of Object.entries(stubs)) {
     if (!process.env[k]) process.env[k] = v
