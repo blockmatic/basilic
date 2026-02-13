@@ -24,7 +24,15 @@
       "dependsOn": ["^build", "generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", ".react-email/**"],
-      "env": ["NODE_ENV", "OPEN_ROUTER_API_KEY", "DATABASE_URL", "PGLITE"]
+      "env": [
+        "NODE_ENV",
+        "OPEN_ROUTER_API_KEY",
+        "DATABASE_URL",
+        "PGLITE",
+        "VERCEL",
+        "VERCEL_ENV",
+        "VERCEL_GIT_COMMIT_REF"
+      ]
     },
     "lint": {},
     "lint:eslint": {
@@ -38,6 +46,8 @@
         "LOG_ENABLED",
         "LOG_LEVEL",
         "LOG_SERVICE",
+        "VERCEL",
+        "VERCEL_GIT_COMMIT_REF",
         "VERCEL_ENV",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
@@ -62,6 +72,8 @@
         "LOG_ENABLED",
         "LOG_LEVEL",
         "LOG_SERVICE",
+        "VERCEL",
+        "VERCEL_GIT_COMMIT_REF",
         "VERCEL_ENV",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",

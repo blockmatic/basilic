@@ -161,6 +161,15 @@ export const nextJsConfig = [
       'import/no-default-export': 'off',
     },
   },
+  // Node.js globals for Next.js config (runs in Node at build time)
+  {
+    files: ['**/next.config.{js,mjs,ts}'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
   // Disable max-lines rule for UI components - complex component implementations legitimately need more lines
   {
     files: ['**/components/**/*.{ts,tsx}'],
