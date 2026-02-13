@@ -14,7 +14,7 @@ Full-stack monorepo starter for Web3 and AI apps. Built for teams shipping produ
 - 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
 - 🛡️ **Security & quality** — Automated checks in CI (e.g. Gitleaks, OSV)
-- ⛓️ **Multichain** — EVM, Solana, Cosmos; tooling and smart contract dev environments
+- ⛓️ **Multichain** — EVM, Solana, Cosmos; shared validation and chain-specific tooling
 - 📐 **Conventions** — Cursor rules per domain, @repo/sentry, Pino logging, shared TS and style
 - 🧑‍💻 **TypeScript-first** — End-to-end types from database to frontend
 
@@ -48,11 +48,11 @@ Full-stack monorepo starter for Web3 and AI apps. Built for teams shipping produ
 Run with `pnpm <script>`.
 
 **Setup**
-  - `setup` — Full setup (install, hooks, gitleaks, osv, evm, solana, database)
+  - `setup` — Full setup (install, hooks, gitleaks, osv, database)
   - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
-  - `setup:evm`, `setup:solana`, `setup:database` — EVM tools, Solana CLI, database
+  - `setup:database` — Database tools
 **Primary**
-  - `build` — Build packages and apps (excludes contracts)
+  - `build` — Build packages and apps
   - `dev` — Start dev (core, react, sentry, utils, fastify, next)
   - `qa` — Full check: install → checktypes → lint → build → test
 **Format / Lint**
@@ -63,7 +63,7 @@ Run with `pnpm <script>`.
   - `lint:eslint`, `lint:eslint:fix` — ESLint check, fix
   - `lint:fix` — Fix both linters
  **Test**
-  - `test` — Run tests (excludes contracts)
+  - `test` — Run tests
   - `test:e2e` — E2E (Fastify + Next)
 **Security**
   - `security:block-files` — Block sensitive file patterns

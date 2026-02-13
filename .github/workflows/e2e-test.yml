@@ -75,7 +75,7 @@ jobs:
           pnpm --filter @repo/fastify exec playwright install chromium --with-deps
 
       - name: Build
-        run: pnpm turbo run build --filter='!./contracts/**'
+        run: pnpm turbo run build
 
       - name: Run E2E tests (sequential, root script)
         run: pnpm test:e2e

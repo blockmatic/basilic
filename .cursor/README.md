@@ -78,7 +78,7 @@ Specialized knowledge bundles for technologies and patterns.
 - **Framework skills**: Next.js 15, React best practices (Vercel Labs), Tailwind v4
 - **Backend skills**: Fastify, Drizzle ORM, TypeBox, OpenTelemetry
 - **AI skills**: Vercel AI SDK (core & UI)
-- **Web3 skills**: Ethereum development, Solidity, Solana, smart contract security, web3 frontend
+- **Web3 skills**: Ethereum development, Solana, web3 frontend
 - **Tools & Patterns**: TypeScript advanced patterns, OpenAPI codegen
 
 **Usage:** Read skill files for detailed guidance on specific technologies or patterns.
