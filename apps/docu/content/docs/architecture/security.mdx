@@ -293,11 +293,9 @@ Security headers are configured in `apps/fastify/src/plugins/security.ts` and ca
 
 ### CORS Configuration
 
-Cross-Origin Resource Sharing (CORS) is configured to restrict which origins can access the API:
+Cross-Origin Resource Sharing (CORS) allows all origins. Security is enforced via JWT authentication rather than origin restriction.
 
-- **Allowed Origins**: Configurable via `ALLOWED_ORIGINS` environment variable
-  - Set to `*` to allow all origins (development only)
-  - Set to comma-separated list for production: `https://app.example.com,https://admin.example.com`
+- **Allowed Origins**: All (`*`)
 - **Allowed Methods**: GET, POST, PUT, DELETE, PATCH, OPTIONS
 - **Allowed Headers**: Content-Type, Authorization, X-Requested-With
 - **Credentials**: Disabled (JWT-only auth, no cookies required)
@@ -352,9 +350,6 @@ Security logging is implemented in `apps/fastify/src/plugins/security.ts` and `a
 Security-related environment variables:
 
 ```bash
-# CORS Configuration
-ALLOWED_ORIGINS=*  # Development: *, Production: comma-separated origins
-
 # Rate Limiting
 RATE_LIMIT_MAX=100  # Maximum requests per time window
 RATE_LIMIT_TIME_WINDOW=60000  # Time window in milliseconds (default: 60 seconds)
@@ -372,13 +367,12 @@ BODY_LIMIT=1048576  # Maximum request body size in bytes (default: 1MB)
 ### API Security Best Practices
 
 1. **Always use HTTPS** - Enforced by HSTS header in production
-2. **Restrict CORS origins** - Never use `*` in production
-3. **Configure rate limits** - Adjust based on your API usage patterns
-4. **Monitor security logs** - Review security events regularly
-5. **Keep dependencies updated** - Run `pnpm security:audit` and `pnpm security:osv` regularly
-6. **Validate all inputs** - Use Zod schemas for all request validation
-7. **Sanitize error messages** - Don't expose internal details in production
-8. **Use environment variables** - Never hardcode secrets or configuration
+2. **Configure rate limits** - Adjust based on your API usage patterns
+3. **Monitor security logs** - Review security events regularly
+4. **Keep dependencies updated** - Run `pnpm security:audit` and `pnpm security:osv` regularly
+5. **Validate all inputs** - Use Zod schemas for all request validation
+6. **Sanitize error messages** - Don't expose internal details in production
+7. **Use environment variables** - Never hardcode secrets or configuration
 
 ### Incident Response
 

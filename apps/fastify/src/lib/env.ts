@@ -44,10 +44,6 @@ export const env = createEnv({
       .refine(val => (process.env.PGLITE !== 'true' ? val !== undefined && val.length > 0 : true), {
         message: 'DATABASE_URL is required when PGLITE is not enabled',
       }),
-    ALLOWED_ORIGINS: z
-      .string()
-      .default('*')
-      .transform(val => (val === '*' ? '*' : val.split(',').map(origin => origin.trim()))),
     RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
     RATE_LIMIT_TIME_WINDOW: z.coerce.number().int().positive().default(60000),
     TRUST_PROXY: z.coerce.boolean().default(true),
