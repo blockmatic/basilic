@@ -129,17 +129,18 @@ jobs:
 
       - name: Wait for Vercel Fastify deployment
         id: vercel-url
-        uses: tj-actions/vercel-wait@v1
-        with:
-          token: ${{ secrets.VERCEL_TOKEN }}
-          project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          team-id: ${{ secrets.VERCEL_TEAM_ID }}
-          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-          timeout: '900'
+        env:
+          SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          PROJECT: basilic-fastify
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_SLUG: ${{ secrets.VERCEL_TEAM_SLUG }}
+        run: |
+          URL=$(node scripts/wait-vercel.mjs)
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
 
       - name: Run E2E tests
         env:
-          PLAYWRIGHT_API_URL: ${{ steps.vercel-url.outputs.deployment-url }}
+          PLAYWRIGHT_API_URL: ${{ steps.vercel-url.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
         run: pnpm --filter @repo/fastify test:e2e
 
