@@ -79,6 +79,12 @@ Run with `pnpm <script>`.
   - `update-deps` — Update pnpm and all dependencies
 
 
+## E2E and Vercel deployments
+
+E2E tests run after Vercel deployments via GitHub `deployment_status` events. One workflow per project: `api-e2e-test.yml`, `next-e2e-test.yml`. Success → run tests; deployment failure/error → abort (PR check red); pending → skip.
+
+**Finding the environment filter string**: Check the PR’s **Deployments** tab or Actions → workflow run → **Event** payload → `deployment.environment`. Adjust the `contains(...)` condition in each workflow if the format differs.
+
 ## Documentation
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)

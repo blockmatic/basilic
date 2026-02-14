@@ -1,0 +1,95 @@
+# E2E for basilic-next: runs after Vercel deployment_status.
+# Filters by deployment.environment containing "basilic-next".
+# Success → run tests. Failure/error → abort (PR red). Pending → skip.
+# Uses github.event only (no Vercel API).
+name: Next e2e test
+
+on:
+  deployment_status:
+
+run-name: E2E – ${{ github.event.deployment.environment }}
+
+concurrency:
+  group: e2e-${{ github.event.deployment.environment }}-${{ github.event.deployment.sha }}
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    name: Next (E2E)
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.deployment_status.state != 'pending'
+      && contains(github.event.deployment.environment, 'basilic-next')
+    env:
+      NODE_ENV: test
+      CI: true
+      PGLITE: true
+      DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+    steps:
+      - name: Abort on deployment failure
+        if: >-
+          github.event.deployment_status.state == 'failure'
+          || github.event.deployment_status.state == 'error'
+        run: |
+          echo "::error::Vercel deployment failed (state=${{ github.event.deployment_status.state }}), aborting E2E"
+          exit 1
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @repo/next exec playwright install chromium --with-deps
+
+      - name: Verify OPEN_ROUTER_API_KEY for E2E
+        env:
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+        run: |
+          if [ -z "$OPEN_ROUTER_API_KEY" ]; then
+            echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
+            exit 1
+          fi
+
+      - name: Run E2E tests
+        id: e2e
+        env:
+          PLAYWRIGHT_APP_URL: ${{ github.event.deployment_status.target_url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
+        run: pnpm --filter @repo/next test:e2e
+
+      - name: Upload Playwright report
+        if: failure() && steps.e2e.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-nextjs
+          path: apps/next/playwright-report/
+          retention-days: 30
