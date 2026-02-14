@@ -16,7 +16,6 @@ jobs:
       PGLITE: true
       DATABASE_URL: postgresql://localhost/test
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-lint' }}
-      PLAYWRIGHT_HTML_REPORT_OPEN: never
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,12 +28,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.28.0
+          version: 10.29.3
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Setup pnpm cache
         uses: actions/cache@v4

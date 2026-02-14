@@ -24,7 +24,15 @@
       "dependsOn": ["^build", "generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", ".react-email/**"],
-      "env": ["NODE_ENV", "OPEN_ROUTER_API_KEY", "DATABASE_URL", "PGLITE"]
+      "env": [
+        "NODE_ENV",
+        "OPEN_ROUTER_API_KEY",
+        "DATABASE_URL",
+        "PGLITE",
+        "VERCEL",
+        "VERCEL_ENV",
+        "VERCEL_GIT_COMMIT_REF"
+      ]
     },
     "lint": {},
     "lint:eslint": {
@@ -38,10 +46,11 @@
         "LOG_ENABLED",
         "LOG_LEVEL",
         "LOG_SERVICE",
+        "VERCEL",
+        "VERCEL_GIT_COMMIT_REF",
         "VERCEL_ENV",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
-        "PLAYWRIGHT_HTML_REPORT_OPEN",
         "PLAYWRIGHT_API_URL",
         "PLAYWRIGHT_TEST_BASE_URL",
         "NEXT_RUNTIME",
@@ -62,10 +71,11 @@
         "LOG_ENABLED",
         "LOG_LEVEL",
         "LOG_SERVICE",
+        "VERCEL",
+        "VERCEL_GIT_COMMIT_REF",
         "VERCEL_ENV",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
-        "PLAYWRIGHT_HTML_REPORT_OPEN",
         "PLAYWRIGHT_API_URL",
         "PLAYWRIGHT_TEST_BASE_URL",
         "NEXT_RUNTIME",
@@ -125,7 +135,6 @@
         "NEXT_PUBLIC_API_URL",
         "PLAYWRIGHT_REUSE_SERVER",
         "JWT_SECRET",
-        "PLAYWRIGHT_HTML_REPORT_OPEN",
         "PLAYWRIGHT_TEST_BASE_URL"
       ]
     },

@@ -26,9 +26,13 @@ reqLogger.debug(undefined, 'Processing')  // (data?, msg?) — message as second
 - **LOG_LEVEL** — `debug` | `info` | `warn` | `error` | `silent` (default `info`)
 - **LOG_SERVICE** — Service name in base (default `app`)
 
+In CI, or when `NODE_ENV=test` or `VITEST` is set, the default level is `silent` unless `LOG_LEVEL` is explicitly set. Override with `LOG_LEVEL=debug` in `.env.test` to debug tests.
+
 ## Env (browser)
 
 - **NEXT_PUBLIC_LOG_ENABLED** — Default off in production
 - **NEXT_PUBLIC_LOG_LEVEL** — Same as server
+
+Same CI/test default (`silent`) when `CI`, `NODE_ENV=test`, or `VITEST` is set.
 
 Server logger redacts `authorization`, `password`, `token`, `secret` by default.

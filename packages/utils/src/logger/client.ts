@@ -4,8 +4,10 @@ import { normalizeLevel, parseBool } from './types.js'
 // Off by default in production browser builds
 const enabledDefault = process.env.NODE_ENV !== 'production'
 const enabled = parseBool(process.env.NEXT_PUBLIC_LOG_ENABLED, enabledDefault)
-
-const level: LogLevel = enabled ? normalizeLevel(process.env.NEXT_PUBLIC_LOG_LEVEL) : 'silent'
+const isTestOrCi =
+  process.env.CI === 'true' || process.env.NODE_ENV === 'test' || process.env.VITEST === 'true'
+const rawLevel = process.env.NEXT_PUBLIC_LOG_LEVEL ?? (isTestOrCi ? 'silent' : undefined)
+const level: LogLevel = enabled ? normalizeLevel(rawLevel) : 'silent'
 
 const rank: Record<Exclude<LogLevel, 'silent'>, number> = {
   debug: 10,

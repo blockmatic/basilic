@@ -19,12 +19,20 @@ import { config as baseConfig } from './base.js'
  * ESLint focuses on correctness: TypeScript, React, and architecture rules.
  *
  * @type {import("eslint").Linter.Config} */
+// Restrict React plugin to JSX/TSX - eslint-plugin-react 7.x uses context.getFilename() removed in ESLint 10
+const reactFiles = ['**/*.{jsx,tsx}']
+const tsxFiles = ['**/*.{ts,tsx}']
+
 export const config = [
   ...baseConfig,
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  pluginReact.configs.flat.recommended,
   {
+    files: reactFiles,
+    ...pluginReact.configs.flat.recommended,
+  },
+  {
+    files: reactFiles,
     languageOptions: {
       ...pluginReact.configs.flat.recommended.languageOptions,
       globals: {
@@ -34,18 +42,34 @@ export const config = [
     },
   },
   {
+    files: reactFiles,
     plugins: {
       'react-hooks': pluginReactHooks,
-      'check-file': pluginCheckFile,
-      import: pluginImport,
     },
     settings: { react: { version: 'detect' } },
     rules: {
       ...pluginReactHooks.configs.recommended.rules,
-      // Disable React Compiler rules if not using React Compiler
-      // These are enabled by default in eslint-plugin-react-hooks v7+
       'react-hooks/compiler': 'off',
-      // Formatting rules - disabled (Biome handles)
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'react/jsx-no-leaked-render': 'off',
+      'react/no-multi-comp': ['error', { ignoreStateless: true }],
+      'react/function-component-definition': [
+        'error',
+        {
+          namedComponents: 'function-declaration',
+          unnamedComponents: 'function-expression',
+        },
+      ],
+    },
+  },
+  {
+    files: tsxFiles,
+    plugins: {
+      'check-file': pluginCheckFile,
+      import: pluginImport,
+    },
+    rules: {
       semi: 'off',
       quotes: 'off',
       '@typescript-eslint/quotes': 'off',
@@ -79,25 +103,6 @@ export const config = [
       '@typescript-eslint/space-infix-ops': 'off',
       'space-unary-ops': 'off',
       'spaced-comment': 'off',
-
-      // Logic rules - PRESERVE (DO NOT TOUCH)
-      // React scope no longer necessary with new JSX transform.
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      // Prefer ternaries over && in JSX
-      'react/jsx-no-leaked-render': 'off',
-      // Enforce one component per file - helps agents maintain component separation
-      // Allow stateless (functional) components in the same file for utility/helper components
-      'react/no-multi-comp': ['error', { ignoreStateless: true }],
-      // Enforce function declaration syntax for named components
-      'react/function-component-definition': [
-        'error',
-        {
-          namedComponents: 'function-declaration',
-          unnamedComponents: 'function-expression',
-        },
-      ],
-      // Enforce named exports for React components
       'import/no-default-export': 'error',
       // Enforce kebab-case naming for hook files
       'check-file/filename-naming-convention': [

@@ -2,8 +2,11 @@ import pino from 'pino'
 import type { Logger } from './types.js'
 import { normalizeLevel, parseBool } from './types.js'
 
+const isTestOrCi =
+  process.env.CI === 'true' || process.env.NODE_ENV === 'test' || process.env.VITEST === 'true'
 const enabled = parseBool(process.env.LOG_ENABLED, true)
-const level = enabled ? normalizeLevel(process.env.LOG_LEVEL) : 'silent'
+const rawLevel = process.env.LOG_LEVEL ?? (isTestOrCi ? 'silent' : undefined)
+const level = enabled ? normalizeLevel(rawLevel) : 'silent'
 
 const root = pino({
   level,

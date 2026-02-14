@@ -314,7 +314,7 @@ fetchMock.mockResolvedValueOnce({
 
 ### When NOT to Mock
 
-- **E2E Tests**: Never mock - E2E tests use real Fastify server and Next.js server
+- **E2E Tests**: Never mock — E2E tests use real Fastify and Next.js servers (started via `scripts/run-next-e2e.mjs` in CI or Playwright webServer locally)
 - **Integration Tests**: Never mock API calls - use real endpoints
 - **Component Tests with Real Data**: Prefer real APIs when testing data fetching and display
 - **TanStack Query**: Never mock TanStack Query hooks

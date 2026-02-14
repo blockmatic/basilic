@@ -7,86 +7,35 @@ GitHub Actions workflows automate quality checks on every pull request and push 
 
 ## Workflows
 
-### CI Workflow
+CI uses [dorny/paths-filter](https://github.com/dorny/paths-filter) so tests run only when relevant code changes. Path filters are defined in `.github/paths-filter.yml`.
 
-Tests, type checking, and linting on every PR:
+### Next CI (`next-ci.yml`)
 
-```yaml
-# .github/workflows/ci.yml (simplified)
-name: CI
+Unit and E2E tests for the Next.js app. Runs when `apps/next`, `scripts/`, or dependencies (core, react, ui, utils) change.
 
-on:
-  pull_request:
-  push:
-    branches: [main]
+- Build (`turbo build --filter=@repo/next...`)
+- Unit tests (`turbo test --filter=@repo/next`)
+- E2E tests (`node scripts/run-next-e2e.mjs`) — spawns Fastify and Next as peer processes, then runs Playwright with `PLAYWRIGHT_REUSE_SERVER=true` to avoid OOM (exit 137) on CI runners
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 10.28.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: pnpm install
-      - run: pnpm lint
-      - run: pnpm checktypes
-      - run: pnpm test
-```
+### API CI (`api-ci.yml`)
 
-### Security Workflow
+Unit and E2E tests for the Fastify API. Runs when `apps/fastify` or its dependencies (email, sentry, utils) change.
 
-Security scans on every PR:
+- Build (`turbo build --filter=@repo/fastify...`)
+- Unit tests (`turbo test --filter=@repo/fastify`)
+- E2E tests (Playwright API-only)
 
-```yaml
-# .github/workflows/security.yml (simplified)
-name: Security
+### Docu CI (`docu-ci.yml`)
 
-on:
-  pull_request:
-  push:
-    branches: [main]
+Build validation for the docs site. Runs when `apps/docu` or `packages/ui` change. No unit or E2E tests.
 
-jobs:
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Gitleaks scan
-        uses: gitleaks/gitleaks-action@v2
-      - name: OSV Scanner
-        uses: google/osv-scanner-action/osv-scanner-action@v1.8.5
-```
+### Lint (`lint.yml`)
 
-### Package Tests
+Linting and type checking on every PR. Runs on all changes.
 
-Tests for specific packages:
+### Security (`security.yml`)
 
-```yaml
-# .github/workflows/packages-test.yml (simplified)
-name: Packages Tests
-
-on:
-  pull_request:
-  push:
-    branches: [main]
-
-jobs:
-  test-packages:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-      - run: pnpm install
-      - run: pnpm --filter @repo/sentry test
-      - run: pnpm --filter @repo/utils test
-```
+Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main.
 
 ## CodeRabbit Integration
 
@@ -140,11 +89,11 @@ Pre-commit hooks check:
 ## Workflow Files
 
 All workflows are in `.github/workflows/`:
-- `api-test.yml` - API tests
+- `next-ci.yml` - Next.js unit + E2E (path-filtered)
+- `api-ci.yml` - Fastify API unit + E2E (path-filtered)
+- `docu-ci.yml` - Docs build validation (path-filtered)
 - `lint.yml` - Linting checks
-- `packages-test.yml` - Package tests
 - `security.yml` - Security scans
-- `web-test.yml` - Web app tests
 
 ## Related Documentation
 
