@@ -64,15 +64,15 @@ async function main() {
     NEXT_PUBLIC_API_URL: 'http://localhost:3001',
   }
 
-  const fastify = spawn('pnpm', ['--filter', '@repo/fastify', 'start:ci'], {
-    cwd: repoRoot,
-    env,
-    stdio: 'inherit',
+  const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
+    cwd: join(repoRoot, 'apps/fastify'),
+    env: { ...env },
+    stdio: 'ignore',
   })
-  const next = spawn('pnpm', ['--filter', '@repo/next', 'start:e2e:server'], {
-    cwd: repoRoot,
+  const next = spawn('npx', ['next', 'start'], {
+    cwd: join(repoRoot, 'apps/next'),
     env: { ...env, PORT: '3000' },
-    stdio: 'inherit',
+    stdio: 'ignore',
   })
 
   const killAll = (signal = 'SIGTERM') => {
@@ -113,7 +113,7 @@ async function main() {
   })
   const code = await new Promise(r => pw.on('exit', c => r(c ?? 1)))
   killAll('SIGTERM')
-  await waitForExits()
+  await waitForExits(5000)
   if (fastify.exitCode == null) fastify.kill('SIGKILL')
   if (next.exitCode == null) next.kill('SIGKILL')
   process.exit(code)

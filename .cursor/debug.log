@@ -1,2 +1,0 @@
-{"location":"playwright-global-setup.ts","message":"Next e2e setup: ports before cleanup","data":{"port3000InUse":false,"port3001InUse":false},"timestamp":1771026609237,"hypothesisId":"H1"}
-{"location":"playwright-global-setup.ts","message":"Next e2e setup: ports after cleanup","data":{"port3000InUse":false,"port3001InUse":false},"timestamp":1771026609351,"hypothesisId":"H1"}
