@@ -12,8 +12,7 @@
  * On success: prints deployment URL (https://...) to stdout, exits 0.
  * On timeout/error: exits 1.
  */
-const INITIAL_DELAY_MS = 5 * 60 * 1000 // 5 min before first poll
-const MAX_ATTEMPTS = 120 // 120 * 5s = 10 min
+const TIMEOUT_MS = 5 * 60 * 1000 // 5 min total
 const POLL_INTERVAL_MS = 5_000
 
 async function getDeployment() {
@@ -58,10 +57,11 @@ async function main() {
   const sha = process.env.SHA
 
   process.stderr.write(`Waiting for Vercel ${project} deployment (sha: ${sha.slice(0, 7)})...\n`)
-  process.stderr.write(`Initial delay: ${INITIAL_DELAY_MS / 60_000} min\n`)
-  await new Promise(r => setTimeout(r, INITIAL_DELAY_MS))
 
-  for (let i = 1; i <= MAX_ATTEMPTS; i++) {
+  const start = Date.now()
+  let attempt = 0
+  while (Date.now() - start < TIMEOUT_MS) {
+    attempt++
     let deployment
     try {
       deployment = await getDeployment()
@@ -77,22 +77,21 @@ async function main() {
         console.log(url)
         return
       }
-      if (state === 'ERROR' || state === 'CANCELED') {
-        console.error(`::error::Vercel ${project} deployment failed: ${state}`)
+      if (state === 'ERROR' || state === 'CANCELED' || state === 'DELETED') {
+        const msg = deployment.errorMessage ?? deployment.aliasError?.message ?? state
+        console.error(`::error::Vercel ${project} deployment failed: ${msg}`)
         process.exit(1)
       }
     }
 
-    if (i < MAX_ATTEMPTS) {
-      process.stderr.write(
-        `Waiting... (${i}/${MAX_ATTEMPTS})${deployment ? ` state=${deployment.state}` : ' (no deployment yet)'}\n`,
-      )
-      await new Promise(r => setTimeout(r, POLL_INTERVAL_MS))
-    }
+    process.stderr.write(
+      `Waiting... (${attempt})${deployment ? ` state=${deployment.state}` : ' (no deployment yet)'}\n`,
+    )
+    await new Promise(r => setTimeout(r, POLL_INTERVAL_MS))
   }
 
   console.error(
-    `::error::Vercel ${project} deployment did not become ready within ${(INITIAL_DELAY_MS + MAX_ATTEMPTS * POLL_INTERVAL_MS) / 60_000} minutes`,
+    `::error::Vercel ${project} deployment did not become ready within ${TIMEOUT_MS / 60_000} minutes`,
   )
   process.exit(1)
 }
