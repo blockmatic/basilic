@@ -1,4 +1,5 @@
 import { ApiHealthBadge } from '@/components/api-health-badge'
+import { AuthBadge } from '@/components/auth-badge'
 import { ChatAssistant } from './chat-assistant'
 import { SignOutButton } from './sign-out-button'
 
@@ -23,7 +24,10 @@ export function DashboardContent({ user }: DashboardContentProps) {
               Welcome back, {user.email ?? user.name ?? 'User'}!
             </p>
           </div>
-          <ApiHealthBadge />
+          <div className="flex gap-2">
+            <ApiHealthBadge />
+            <AuthBadge />
+          </div>
         </div>
 
         <div className="rounded-lg border bg-card p-6">

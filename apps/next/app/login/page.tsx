@@ -3,6 +3,7 @@ import { GalleryVerticalEnd } from 'lucide-react'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { ApiHealthBadge } from '@/components/api-health-badge'
+import { AuthBadge } from '@/components/auth-badge'
 import { getAuthStatus } from '@/lib/auth-utils'
 
 type LoginPageProps = {
@@ -43,7 +44,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               Acme Inc.
             </a>
           </div>
-          <ApiHealthBadge />
+          <div className="flex gap-2">
+            <ApiHealthBadge />
+            <AuthBadge />
+          </div>
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">

@@ -63,7 +63,7 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
       .refreshToken
 
     const { redirectUrl } = getRedirectUrl({ request, callbackURL })
-    const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url))
+    const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url), 303)
     setAuthCookiesOnResponse(redirectResponse, { token: accessToken, refreshToken })
     return redirectResponse
   } catch (error) {

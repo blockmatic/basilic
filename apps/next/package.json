@@ -29,7 +29,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:cov": "vitest run --coverage",
-    "test:e2e": "pnpm build:e2e && playwright test",
+    "test:e2e": "node ../../scripts/run-next-e2e.mjs",
     "test:e2e:reuse": "playwright test",
     "start:e2e:servers": "node scripts/start-e2e-servers.mjs",
     "test:e2e:ui": "playwright test --ui",
