@@ -1,14 +1,34 @@
 #!/usr/bin/env node
+import { spawn } from 'node:child_process'
 /**
  * Runs Next.js e2e tests with servers started separately.
  * Use when Playwright's webServer causes exit 137 (OOM kill) on constrained VMs.
+ *
+ * OPEN_ROUTER_API_KEY: loaded from apps/fastify/.env.test (local) or CI secrets.
  */
-import { spawn } from 'node:child_process'
-import { dirname } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = dirname(scriptDir)
+
+function loadEnvTest() {
+  const path = join(repoRoot, 'apps/fastify/.env.test')
+  if (!existsSync(path)) return {}
+  const lines = readFileSync(path, 'utf8').split('\n')
+  const out = {}
+  for (const line of lines) {
+    const idx = line.indexOf('=')
+    if (idx < 0 || line.startsWith('#')) continue
+    const key = line.slice(0, idx).trim()
+    let val = line.slice(idx + 1).trim()
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
+      val = val.slice(1, -1)
+    out[key] = val
+  }
+  return out
+}
 
 function waitForUrl(url, timeoutMs = 30000) {
   const start = Date.now()
@@ -37,6 +57,7 @@ async function main() {
 
   const env = {
     ...process.env,
+    ...loadEnvTest(),
     USE_FAKE_EMAIL: 'true',
     PGLITE: 'true',
     NODE_ENV: 'test',
@@ -84,7 +105,8 @@ async function main() {
     process.exit(1)
   }
 
-  const pw = spawn('pnpm', ['-F', '@repo/next', 'exec', 'playwright', 'test'], {
+  const pwArgs = ['-F', '@repo/next', 'exec', 'playwright', 'test', ...process.argv.slice(2)]
+  const pw = spawn('pnpm', pwArgs, {
     cwd: repoRoot,
     env: { ...process.env, PLAYWRIGHT_REUSE_SERVER: 'true' },
     stdio: 'inherit',
