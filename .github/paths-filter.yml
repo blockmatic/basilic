@@ -1,5 +1,6 @@
 next:
   - 'apps/next/**'
+  - 'scripts/**'
   - 'packages/core/**'
   - 'packages/react/**'
   - 'packages/ui/**'

@@ -31,7 +31,7 @@
     "@repo/utils": "workspace:*",
     "@typescript/native-preview": "7.0.0-dev.20260213.1",
     "chokidar-cli": "^3.0.0",
-    "eslint": "^10.0.0",
+    "eslint": "^9.0.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0"
   }

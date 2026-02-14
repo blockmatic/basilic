@@ -19,11 +19,30 @@ function toBranchSlug(ref) {
 function getApiUrl() {
   const vercelEnv = process.env.VERCEL_ENV
   const branch = process.env.VERCEL_GIT_COMMIT_REF
-  if (!vercelEnv || !branch) return undefined
-  const url =
-    vercelEnv === 'production' || branch === 'main' || branch === 'develop'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : `https://${API_PROJECT_NAME}-git-${toBranchSlug(branch)}-${TEAM_SLUG}.vercel.app`
+
+  if (!vercelEnv || !branch) {
+    const missing = []
+    if (!vercelEnv) missing.push('VERCEL_ENV')
+    if (!branch) missing.push('VERCEL_GIT_COMMIT_REF')
+    // biome-ignore lint/suspicious/noConsole: build-time warning for URL resolution
+    console.warn(
+      `[next.config] getApiUrl: cannot resolve API URL: ${missing.join(' and ')} must be set (vercelEnv=${vercelEnv ?? 'undefined'}, branch=${branch ?? 'undefined'})`,
+    )
+    return undefined
+  }
+
+  const isProductionBranch = vercelEnv === 'production' || branch === 'main' || branch === 'develop'
+  const url = isProductionBranch
+    ? process.env.NEXT_PUBLIC_API_URL
+    : `https://${API_PROJECT_NAME}-git-${toBranchSlug(branch)}-${TEAM_SLUG}.vercel.app`
+
+  if (isProductionBranch && !url) {
+    const msg = `[next.config] getApiUrl: NEXT_PUBLIC_API_URL must be configured for production/main/develop deployments (vercelEnv=${vercelEnv}, branch=${branch})`
+    // biome-ignore lint/suspicious/noConsole: build-time error
+    console.error(msg)
+    throw new Error(msg)
+  }
+
   if (process.env.VERCEL) {
     // biome-ignore lint/suspicious/noConsole: build-time debug for Vercel build logs
     console.log('[next.config] NEXT_PUBLIC_API_URL:', url)

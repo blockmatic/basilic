@@ -39,15 +39,6 @@ jobs:
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
       NEXT_PUBLIC_API_URL: http://localhost:3001
     steps:
-      - name: Verify OPEN_ROUTER_API_KEY for E2E
-        env:
-          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-        run: |
-          if [ -z "$OPEN_ROUTER_API_KEY" ]; then
-            echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
-            exit 1
-          fi
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -58,11 +49,13 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
@@ -84,8 +77,17 @@ jobs:
       - name: Run unit tests
         run: pnpm turbo run test --filter=@repo/next
 
+      - name: Verify OPEN_ROUTER_API_KEY for E2E
+        env:
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+        run: |
+          if [ -z "$OPEN_ROUTER_API_KEY" ]; then
+            echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
+            exit 1
+          fi
+
       - name: Run E2E tests
-        run: pnpm --filter @repo/next test:e2e
+        run: node scripts/run-next-e2e.mjs
 
       - name: Upload Playwright report
         if: always()

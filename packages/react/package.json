@@ -41,7 +41,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.14",
     "@typescript/native-preview": "7.0.0-dev.20260213.1",
-    "eslint": "^10.0.0",
+    "eslint": "^9.0.0",
     "jsdom": "^28.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

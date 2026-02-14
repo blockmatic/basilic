@@ -11,11 +11,11 @@ CI uses [dorny/paths-filter](https://github.com/dorny/paths-filter) so tests run
 
 ### Next CI (`next-ci.yml`)
 
-Unit and E2E tests for the Next.js app. Runs when `apps/next` or its dependencies (core, react, ui, utils) change.
+Unit and E2E tests for the Next.js app. Runs when `apps/next`, `scripts/`, or dependencies (core, react, ui, utils) change.
 
 - Build (`turbo build --filter=@repo/next...`)
 - Unit tests (`turbo test --filter=@repo/next`)
-- E2E tests (Playwright, starts Fastify + Next)
+- E2E tests (`node scripts/run-next-e2e.mjs`) — spawns Fastify and Next as peer processes, then runs Playwright with `PLAYWRIGHT_REUSE_SERVER=true` to avoid OOM (exit 137) on CI runners
 
 ### API CI (`api-ci.yml`)
 

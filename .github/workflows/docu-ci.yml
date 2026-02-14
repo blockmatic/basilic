@@ -28,30 +28,41 @@ jobs:
   docu-ci:
     name: Docu Build
     needs: paths
-    if: needs.paths.outputs.docu == 'true'
+    if: always()
     runs-on: ubuntu-latest
     env:
       PGLITE: true
       DATABASE_URL: postgresql://localhost/test
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key' }}
     steps:
+      - name: Skip - no docu changes
+        if: needs.paths.outputs.docu != 'true'
+        run: echo "No docu changes detected, skipping build"
+
       - name: Checkout code
+        if: needs.paths.outputs.docu == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: needs.paths.outputs.docu == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Setup pnpm
+        if: needs.paths.outputs.docu == 'true'
         uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
 
       - name: Get pnpm store directory
+        if: needs.paths.outputs.docu == 'true'
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Setup pnpm cache
+        if: needs.paths.outputs.docu == 'true'
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
@@ -60,7 +71,9 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
+        if: needs.paths.outputs.docu == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Build
+        if: needs.paths.outputs.docu == 'true'
         run: pnpm turbo run build --filter=@repo/docu...

@@ -58,6 +58,14 @@ async function main() {
     fastify.kill(signal)
     next.kill(signal)
   }
+  const waitForExits = (timeoutMs = 2000) =>
+    Promise.race([
+      Promise.all([
+        new Promise(r => fastify.once('exit', r)),
+        new Promise(r => next.once('exit', r)),
+      ]),
+      new Promise(r => setTimeout(r, timeoutMs)),
+    ])
   process.on('SIGINT', () => {
     killAll()
     process.exit(130)
@@ -82,7 +90,10 @@ async function main() {
     stdio: 'inherit',
   })
   const code = await new Promise(r => pw.on('exit', c => r(c ?? 1)))
-  killAll()
+  killAll('SIGTERM')
+  await waitForExits()
+  if (fastify.exitCode == null) fastify.kill('SIGKILL')
+  if (next.exitCode == null) next.kill('SIGKILL')
   process.exit(code)
 }
 

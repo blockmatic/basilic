@@ -73,7 +73,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@typescript/native-preview": "7.0.0-dev.20260213.1",
-    "eslint": "^10.0.0",
+    "eslint": "^9.0.0",
     "tailwindcss": "^4.1.18"
   },
   "peerDependencies": {
