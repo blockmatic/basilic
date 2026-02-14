@@ -54,7 +54,13 @@ export const authHelpers = {
   async verifyMagicLink(page: Page, token: string) {
     const verifyUrl = `/api/auth/magic-link/verify?token=${encodeURIComponent(token)}&callbackURL=/`
     await page.goto(verifyUrl)
-    await page.waitForURL(/\//, { timeout: 5000 })
+    await page.waitForURL(
+      url => {
+        const path = new URL(url).pathname
+        return path === '/' || path === ''
+      },
+      { timeout: 10000 },
+    )
   },
 
   async loginAsTestUser(page: Page) {
