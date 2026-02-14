@@ -33,6 +33,7 @@ export const env = createEnv({
     PORT: z.coerce.number().int().positive().default(3001),
     HOST: z.string().default('0.0.0.0'),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    CI: z.coerce.boolean().default(false),
     PGLITE: z.coerce.boolean().default(false),
     DATABASE_URL: z
       .string()

@@ -11,8 +11,8 @@
     "start": "next start",
     "checktypes": "fumadocs-mdx && tsgo --noEmit",
     "postinstall": "fumadocs-mdx",
-    "lint:eslint": "eslint .",
-    "lint:eslint:fix": "eslint . --fix"
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",

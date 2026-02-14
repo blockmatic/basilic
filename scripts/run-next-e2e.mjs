@@ -46,12 +46,12 @@ async function main() {
   const fastify = spawn('pnpm', ['--filter', '@repo/fastify', 'start:ci'], {
     cwd: repoRoot,
     env,
-    stdio: 'pipe',
+    stdio: 'inherit',
   })
   const next = spawn('pnpm', ['--filter', '@repo/next', 'start:e2e:server'], {
     cwd: repoRoot,
     env: { ...env, PORT: '3000' },
-    stdio: 'pipe',
+    stdio: 'inherit',
   })
 
   const killAll = (signal = 'SIGTERM') => {

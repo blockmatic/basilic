@@ -1,6 +1,7 @@
 import js from '@eslint/js'
 import onlyWarn from 'eslint-plugin-only-warn'
 import turboPlugin from 'eslint-plugin-turbo'
+import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 /**
@@ -203,6 +204,7 @@ export const config = [
       '**/vitest.global-setup.{ts,js}',
       '**/scripts/**/*.ts',
       '**/scripts/**/*.js',
+      '**/scripts/**/*.mjs',
       '**/test/**/*.ts',
       '**/test/**/*.js',
     ],
@@ -210,6 +212,13 @@ export const config = [
       'no-restricted-globals': 'off',
       // Allow __filename and __dirname naming in scripts/config files
       '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+  // Node globals for standalone .mjs scripts (run with node, need process etc.)
+  {
+    files: ['**/scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { ...globals.node },
     },
   },
   // Allow process.env in env.ts files, logger files, error core, scripts, tests, email templates, instrumentation, and config files (infrastructure that reads env vars)
@@ -222,11 +231,13 @@ export const config = [
       'packages/error/src/core/**/*.ts',
       '**/scripts/**/*.ts',
       '**/scripts/**/*.js',
+      '**/scripts/**/*.mjs',
       '**/test/**/*.ts',
       '**/test/**/*.js',
       '**/*.test.{ts,tsx}',
       '**/*.spec.{ts,tsx}',
       '**/*.e2e-spec.{ts,tsx}',
+      '**/playwright-global-setup.ts', // Playwright test setup needs process.env for PLAYWRIGHT_REUSE_SERVER
       'packages/email/**/*.{ts,tsx}', // Email templates need direct process.env access
       '**/instrumentation.ts', // Next.js instrumentation files need direct process.env access
     ],

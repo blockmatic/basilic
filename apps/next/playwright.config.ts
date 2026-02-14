@@ -52,6 +52,7 @@ export default defineConfig({
       env: {
         NEXT_PUBLIC_API_URL: 'http://localhost:3001',
         NODE_OPTIONS: '--max-old-space-size=1024',
+        NODE_ENV: 'test',
       },
     },
   ],

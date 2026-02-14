@@ -10,7 +10,7 @@ import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
-const repoRoot = dirname(dirname(scriptDir))
+const repoRoot = dirname(dirname(dirname(scriptDir)))
 
 const env = {
   ...process.env,
