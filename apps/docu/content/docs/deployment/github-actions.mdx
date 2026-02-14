@@ -23,7 +23,7 @@ Unit and E2E tests for the Fastify API. Runs when `apps/fastify` or its dependen
 
 - Build (`turbo build --filter=@repo/fastify...`)
 - Unit tests (`turbo test --filter=@repo/fastify`)
-- E2E tests (`pnpm --filter @repo/fastify test:e2e:local`) — spawns Fastify API with PGLite, polls until healthy, runs Playwright (Scalar login), cleanup on exit. See [E2E Testing](/docs/testing/e2e-testing).
+- E2E tests — waits for Vercel Fastify deployment (branch preview URL), runs Playwright against the deployed API. Requires `VERCEL_AUTOMATION_BYPASS_SECRET`. See [E2E Testing](/docs/testing/e2e-testing).
 
 ### Docu CI (`docu-ci.yml`)
 

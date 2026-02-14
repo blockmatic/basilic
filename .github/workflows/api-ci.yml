@@ -85,8 +85,56 @@ jobs:
             exit 1
           fi
 
+      - name: Verify VERCEL_AUTOMATION_BYPASS_SECRET for E2E
+        run: |
+          if [ -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+            echo "::error::VERCEL_AUTOMATION_BYPASS_SECRET secret is required for E2E against Vercel previews. Add it in repository secrets."
+            exit 1
+          fi
+
+      - name: Get branch ref for Vercel deployment URL
+        id: vercel-url
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            REF="${{ github.head_ref }}"
+          else
+            REF="${GITHUB_REF#refs/heads/}"
+          fi
+          SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-\|-$//g' | cut -c1-63)
+          URL="https://basilic-fastify-git-${SLUG}-gaboesquivel.vercel.app"
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+          echo "Branch ref: $REF → URL: $URL"
+
+      - name: Wait for Vercel Fastify deployment
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          URL="${{ steps.vercel-url.outputs.url }}"
+          for i in $(seq 1 72); do
+            if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then
+              CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+                -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" \
+                -H "x-vercel-set-bypass-cookie: true" \
+                "${URL}/health" 2>/dev/null) || CODE="000"
+            else
+              CODE=$(curl -s -o /dev/null -w '%{http_code}' "${URL}/health" 2>/dev/null) || CODE="000"
+            fi
+            if [ "$CODE" = "200" ]; then
+              echo "Deployment ready at $URL"
+              echo "PLAYWRIGHT_API_URL=$URL" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            echo "Waiting for deployment... ($i/72) got $CODE"
+            sleep 5
+          done
+          echo "::error::Vercel Fastify deployment did not become ready at $URL within 6 minutes"
+          exit 1
+
       - name: Run E2E tests
-        run: pnpm --filter @repo/fastify test:e2e:local
+        env:
+          PLAYWRIGHT_API_URL: ${{ steps.vercel-url.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: pnpm --filter @repo/fastify test:e2e
 
       - name: Upload Playwright report
         if: always()
