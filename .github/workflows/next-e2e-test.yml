@@ -1,16 +1,21 @@
-# E2E for basilic-next: runs after Vercel deployment_status.
-# Filters by deployment.environment containing "basilic-next".
-# Success → run tests. Failure/error → abort (PR red). Pending → skip.
-# Uses github.event only (no Vercel API).
+# E2E for basilic-next: runs after Vercel repository_dispatch.
+# Only Vercel publishes these events. Success → run tests. Error/failed → fail (PR red). Skipped/ignored/canceled → skip.
 name: Next e2e test
 
 on:
-  deployment_status:
+  repository_dispatch:
+    types:
+      - 'vercel.deployment.success'
+      - 'vercel.deployment.error'
+      - 'vercel.deployment.failed'
+      - 'vercel.deployment.skipped'
+      - 'vercel.deployment.ignored'
+      - 'vercel.deployment.canceled'
 
-run-name: E2E – ${{ github.event.deployment.environment }}
+run-name: E2E – ${{ github.event.client_payload.project.name || 'unknown' }}
 
 concurrency:
-  group: e2e-${{ github.event.deployment.environment }}-${{ github.event.deployment.sha }}
+  group: e2e-next-${{ github.event.client_payload.project.name }}-${{ github.event.client_payload.git.sha }}
   cancel-in-progress: false
 
 jobs:
@@ -18,8 +23,10 @@ jobs:
     name: Next (E2E)
     runs-on: ubuntu-latest
     if: >-
-      github.event.deployment_status.state != 'pending'
-      && contains(github.event.deployment.environment, 'basilic-next')
+      contains(github.event.client_payload.project.name, 'basilic-next')
+      && (github.event.action == 'vercel.deployment.success'
+          || github.event.action == 'vercel.deployment.error'
+          || github.event.action == 'vercel.deployment.failed')
     env:
       NODE_ENV: test
       CI: true
@@ -28,18 +35,31 @@ jobs:
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
     steps:
+      - name: Debug repository_dispatch payload
+        run: |
+          echo "::group::Vercel repository_dispatch payload"
+          echo "event.action=${{ github.event.action }}"
+          echo "project.name=${{ github.event.client_payload.project.name }}"
+          echo "project.id=${{ github.event.client_payload.project.id }}"
+          echo "environment=${{ github.event.client_payload.environment }}"
+          echo "url=${{ github.event.client_payload.url }}"
+          echo "git.sha=${{ github.event.client_payload.git.sha }}"
+          echo "git.ref=${{ github.event.client_payload.git.ref }}"
+          echo "deployment.id=${{ github.event.client_payload.id }}"
+          echo "::endgroup::"
+
       - name: Abort on deployment failure
         if: >-
-          github.event.deployment_status.state == 'failure'
-          || github.event.deployment_status.state == 'error'
+          github.event.action == 'vercel.deployment.error'
+          || github.event.action == 'vercel.deployment.failed'
         run: |
-          echo "::error::Vercel deployment failed (state=${{ github.event.deployment_status.state }}), aborting E2E"
+          echo "::error::Vercel deployment failed (action=${{ github.event.action }}), aborting E2E"
           exit 1
 
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.deployment.sha }}
+          ref: ${{ github.event.client_payload.git.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -82,7 +102,7 @@ jobs:
       - name: Run E2E tests
         id: e2e
         env:
-          PLAYWRIGHT_APP_URL: ${{ github.event.deployment_status.target_url }}
+          PLAYWRIGHT_APP_URL: ${{ github.event.client_payload.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
         run: pnpm --filter @repo/next test:e2e
 

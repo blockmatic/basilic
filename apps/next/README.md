@@ -171,6 +171,11 @@ This app includes a `vercel.json` configuration file. If deploying to Vercel:
 
 **Important**: If you see build errors about a package named "mathler" or any other incorrect filter, check your Vercel project settings and ensure they match the `vercel.json` configuration. Vercel project settings override `vercel.json`, so make sure they're aligned.
 
+## CI & Builds
+
+- **Unit tests** — Run on PR when `apps/next` or its dependencies change (path-filtered)
+- **E2E tests** — Run after Vercel deployment succeeds (`repository_dispatch`). Project name must contain `basilic-next` for the workflow to match
+
 ## Related Documentation
 
 - [Monorepo Structure](@apps/docu/content/docs/architecture/monorepo.mdx) - Package organization

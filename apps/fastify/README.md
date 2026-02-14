@@ -12,6 +12,8 @@ Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as t
 
 **OPTIONS Allowlist (CORS preflight):** When Deployment Protection is enabled on preview deployments, add `/` (or `/auth`) to **Project Settings > Deployment Protection > OPTIONS Allowlist**. Otherwise, preflight OPTIONS requests are blocked before reaching Fastify and CORS fails for cross-origin clients.
 
+**CI & Builds:** Unit tests run on PR when `apps/fastify` or its dependencies change. E2E runs after Vercel deployment succeeds; project name must contain `basilic-fastify`.
+
 ## Testing
 
 Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest loads it when present.

@@ -18,7 +18,7 @@ Build and unit tests for the Next.js app. Runs when `apps/next`, `scripts/`, or 
 
 ### Next E2E Test (`next-e2e-test.yml`)
 
-E2E tests for the Next.js app. Runs after Vercel deployment via `deployment_status`. See [E2E Testing](/docs/testing/e2e-testing).
+E2E tests for the Next.js app. Runs after Vercel deployment via `repository_dispatch` (success/error/failed only). See [E2E Testing](/docs/testing/e2e-testing).
 
 ### API Unit Test (`api-unit-test.yml`)
 
@@ -29,7 +29,7 @@ Build and unit tests for the Fastify API. Runs when `apps/fastify` or its depend
 
 ### API E2E Test (`api-e2e-test.yml`)
 
-E2E tests for the Fastify API. Runs after Vercel deployment via `deployment_status`. See [E2E Testing](/docs/testing/e2e-testing).
+E2E tests for the Fastify API. Runs after Vercel deployment via `repository_dispatch` (success/error/failed only). See [E2E Testing](/docs/testing/e2e-testing).
 
 ### Docu CI (`docu-ci.yml`)
 
@@ -96,9 +96,9 @@ Pre-commit hooks check:
 
 All workflows are in `.github/workflows/`:
 - `next-unit-test.yml` - Next.js build + unit (path-filtered)
-- `next-e2e-test.yml` - Next.js E2E (deployment_status)
+- `next-e2e-test.yml` - Next.js E2E (repository_dispatch)
 - `api-unit-test.yml` - Fastify API build + unit (path-filtered)
-- `api-e2e-test.yml` - Fastify API E2E (deployment_status)
+- `api-e2e-test.yml` - Fastify API E2E (repository_dispatch)
 - `docu-ci.yml` - Docs build validation (path-filtered)
 - `lint.yml` - Linting checks
 - `security.yml` - Security scans
