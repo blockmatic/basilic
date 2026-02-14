@@ -72,7 +72,10 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
 
       const storePlain =
-        env.ALLOW_TEST === true && typeof email === 'string' && email.endsWith('@test.ai')
+        env.NODE_ENV !== 'production' &&
+        env.ALLOW_TEST === true &&
+        typeof email === 'string' &&
+        email.endsWith('@test.ai')
       await db.insert(verification).values({
         id: randomUUID(),
         identifier: email,

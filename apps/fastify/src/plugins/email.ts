@@ -26,6 +26,13 @@ const emailPlugin: FastifyPluginAsync = async fastify => {
     fakeForTestAi = new FakeEmailProvider()
   }
 
+  let resolvedFake: FakeEmailProvider | null = fakeForTestAi
+  if (globalTestProvider) {
+    const { FakeEmailProvider } = await import('../../test/utils/fake-email.js')
+    resolvedFake =
+      globalTestProvider instanceof FakeEmailProvider ? globalTestProvider : fakeForTestAi
+  }
+
   const composite: EmailProvider = {
     emails: {
       send: async options => {
@@ -39,10 +46,7 @@ const emailPlugin: FastifyPluginAsync = async fastify => {
   }
 
   fastify.decorate('emailProvider', composite)
-  fastify.decorate(
-    'fakeEmail',
-    globalTestProvider ? (globalTestProvider as FakeEmailProvider) : fakeForTestAi,
-  )
+  fastify.decorate('fakeEmail', resolvedFake)
 }
 
 export default fp(emailPlugin, {
