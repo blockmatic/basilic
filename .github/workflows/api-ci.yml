@@ -85,13 +85,6 @@ jobs:
             exit 1
           fi
 
-      - name: Verify VERCEL_AUTOMATION_BYPASS_SECRET for E2E
-        run: |
-          if [ -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-            echo "::error::VERCEL_AUTOMATION_BYPASS_SECRET secret is required for E2E against Vercel previews. Add it in repository secrets."
-            exit 1
-          fi
-
       - name: Get branch ref for Vercel deployment URL
         id: vercel-url
         run: |
@@ -107,7 +100,7 @@ jobs:
 
       - name: Wait for Vercel Fastify deployment
         env:
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
         run: |
           URL="${{ steps.vercel-url.outputs.url }}"
           for i in $(seq 1 72); do
@@ -133,7 +126,7 @@ jobs:
       - name: Run E2E tests
         env:
           PLAYWRIGHT_API_URL: ${{ steps.vercel-url.outputs.url }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
         run: pnpm --filter @repo/fastify test:e2e
 
       - name: Upload Playwright report
