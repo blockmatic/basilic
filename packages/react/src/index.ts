@@ -5,6 +5,7 @@ export { useReactApiConfig } from './context'
 export { useChatFromConfig } from './hooks/use-chat'
 export { useHealthCheck } from './hooks/use-health-check'
 export { useMagicLink } from './hooks/use-magic-link'
+export { useUser } from './hooks/use-user'
 // Export provider and context
 export { ReactApiProvider } from './provider'
 export type { ReactApiConfig } from './setup'

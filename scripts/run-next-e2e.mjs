@@ -1,14 +1,34 @@
 #!/usr/bin/env node
+import { spawn } from 'node:child_process'
 /**
  * Runs Next.js e2e tests with servers started separately.
  * Use when Playwright's webServer causes exit 137 (OOM kill) on constrained VMs.
+ *
+ * OPEN_ROUTER_API_KEY: loaded from apps/fastify/.env.test (local) or CI secrets.
  */
-import { spawn } from 'node:child_process'
-import { dirname } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = dirname(scriptDir)
+
+function loadEnvTest() {
+  const path = join(repoRoot, 'apps/fastify/.env.test')
+  if (!existsSync(path)) return {}
+  const lines = readFileSync(path, 'utf8').split('\n')
+  const out = {}
+  for (const line of lines) {
+    const idx = line.indexOf('=')
+    if (idx < 0 || line.startsWith('#')) continue
+    const key = line.slice(0, idx).trim()
+    let val = line.slice(idx + 1).trim()
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
+      val = val.slice(1, -1)
+    out[key] = val
+  }
+  return out
+}
 
 function waitForUrl(url, timeoutMs = 30000) {
   const start = Date.now()
@@ -37,21 +57,22 @@ async function main() {
 
   const env = {
     ...process.env,
+    ...loadEnvTest(),
     USE_FAKE_EMAIL: 'true',
     PGLITE: 'true',
     NODE_ENV: 'test',
     NEXT_PUBLIC_API_URL: 'http://localhost:3001',
   }
 
-  const fastify = spawn('pnpm', ['--filter', '@repo/fastify', 'start:ci'], {
-    cwd: repoRoot,
-    env,
-    stdio: 'inherit',
+  const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
+    cwd: join(repoRoot, 'apps/fastify'),
+    env: { ...env },
+    stdio: 'ignore',
   })
-  const next = spawn('pnpm', ['--filter', '@repo/next', 'start:e2e:server'], {
-    cwd: repoRoot,
+  const next = spawn('npx', ['next', 'start'], {
+    cwd: join(repoRoot, 'apps/next'),
     env: { ...env, PORT: '3000' },
-    stdio: 'inherit',
+    stdio: 'ignore',
   })
 
   const killAll = (signal = 'SIGTERM') => {
@@ -84,14 +105,15 @@ async function main() {
     process.exit(1)
   }
 
-  const pw = spawn('pnpm', ['-F', '@repo/next', 'exec', 'playwright', 'test'], {
+  const pwArgs = ['-F', '@repo/next', 'exec', 'playwright', 'test', ...process.argv.slice(2)]
+  const pw = spawn('pnpm', pwArgs, {
     cwd: repoRoot,
     env: { ...process.env, PLAYWRIGHT_REUSE_SERVER: 'true' },
     stdio: 'inherit',
   })
   const code = await new Promise(r => pw.on('exit', c => r(c ?? 1)))
   killAll('SIGTERM')
-  await waitForExits()
+  await waitForExits(5000)
   if (fastify.exitCode == null) fastify.kill('SIGKILL')
   if (next.exitCode == null) next.kill('SIGKILL')
   process.exit(code)

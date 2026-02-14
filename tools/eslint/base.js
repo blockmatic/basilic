@@ -238,6 +238,7 @@ export const config = [
       '**/*.spec.{ts,tsx}',
       '**/*.e2e-spec.{ts,tsx}',
       '**/playwright-global-setup.ts', // Playwright test setup needs process.env for PLAYWRIGHT_REUSE_SERVER
+      '**/e2e/**/*.ts', // E2E fixtures and helpers need process.env for PLAYWRIGHT_TEST_BASE_URL etc.
       'packages/email/**/*.{ts,tsx}', // Email templates need direct process.env access
       '**/instrumentation.ts', // Next.js instrumentation files need direct process.env access
     ],
