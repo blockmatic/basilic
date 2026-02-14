@@ -139,10 +139,16 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
         })
         .where(eq(sessions.id, session.id))
 
+      const wallet =
+        session.walletChain && session.walletAddress
+          ? { chain: session.walletChain, address: session.walletAddress }
+          : undefined
+
       // Issue new JWTs
       const accessPayload = createAccessTokenPayload({
         userId: decoded.sub,
         sessionId: decoded.sid,
+        wallet,
       })
       const refreshPayload = createRefreshTokenPayload({
         userId: decoded.sub,

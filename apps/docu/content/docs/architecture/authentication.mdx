@@ -33,16 +33,53 @@ Magic link sign-in issues a **single-use token** over email, then exchanges it f
 
 OAuth sign-in uses provider authorization + callback flows and issues access + refresh JWTs. Provider accounts are stored in `account` (provider id, account id, and encrypted tokens at rest).
 
-### Web3
+### Web3 (SIWE / SIWS)
 
-Web3 sign-in follows a nonce → sign → verify flow (SIWE/SIWS-style) and returns access + refresh JWTs:
+Web3 sign-in follows a **nonce → sign → verify** flow and returns access + refresh JWTs. Nonce and verify requests go **directly to Fastify**; the **callback** (token → cookie exchange) goes through the Next.js backend when cookies are needed.
+
+- **EIP-155 (SIWE)**: Sign-In with Ethereum using EIP-4361
+- **Solana (SIWS)**: Sign-In with Solana using an EIP-4361-style message format
+
+**Flow:** Client fetches nonce → builds message (domain, address, nonce) → signs with wallet → POSTs verify to Fastify → receives `{ token, refreshToken }` → if `authCallbackUrl` is set (Next.js), POSTs tokens to callback to set HttpOnly cookies and redirect.
+
+**Framework support:** React (`useWalletAuth`, `useWeb3Nonce`), vanilla (fetch), Vue (composable or fetch).
+
+**Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error.
+
+**Data model:** Nonces are stored in `web3_nonce` (5-min TTL); identities in `wallet_identities`.
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant FastifyAPI
+  participant Wallet
+  participant NextBFF as Next.js BFF (optional)
+
+  Client->>FastifyAPI: GET /auth/web3/:chain/nonce?address=...
+  FastifyAPI->>FastifyAPI: validate address, upsert nonce (web3_nonce)
+  FastifyAPI-->>Client: { nonce }
+
+  Client->>Client: build SIWE/SIWS message (domain, address, nonce)
+  Client->>Wallet: request signature
+  Wallet-->>Client: signature
+
+  Client->>FastifyAPI: POST /auth/web3/:chain/verify { message, signature }
+  FastifyAPI->>FastifyAPI: verify nonce + signature, create/link user
+  FastifyAPI-->>Client: { token, refreshToken }
+
+  opt When authCallbackUrl set (Next.js)
+    Client->>NextBFF: POST /api/auth/callback { token, refreshToken }
+    NextBFF->>NextBFF: set HttpOnly cookies
+    NextBFF-->>Client: redirect
+  end
+```
 
 ## Tokens & sessions
 
 ### Access token (JWT)
 
 - **Type**: `typ = "access"`
-- **Claims**: `sub` (user id), `sid` (session id), `iss`, `aud`
+- **Claims**: `sub` (user id), `sid` (session id), `wal` (optional session wallet when JWT created by wallet sign-in), `iss`, `aud`
 - **Lifetime**: `ACCESS_JWT_EXPIRES_IN_SECONDS`
 - **Validation**: Fastify verifies the JWT, then loads the session + user from DB and attaches `request.session`
 
@@ -76,7 +113,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `POST /auth/web3/:chain/verify` → `{ token, refreshToken }`
   - `:chain` is `eip155` or `solana`
 - **Session**
-  - `GET /auth/session/user` (Bearer) → `{ user }`
+  - `GET /auth/session/user` (Bearer) → `{ user }` (includes optional `wallet`, always `linkedWallets`)
   - `POST /auth/session/logout` (Bearer) → `204`
   - `POST /auth/session/refresh` → `{ token, refreshToken }`
 
@@ -126,8 +163,8 @@ sequenceDiagram
 The auth system relies on these tables:
 
 - **`users`**: user identity (email-based for magic link)
-- **`verification`**: single-use magic link tokens (stored hashed, with TTL)
-- **`sessions`**: server-side session state (stores hashed refresh `jti`, plus expiry)
+- **`verification`**: single-use tokens (stored hashed, with TTL); `type` = `magic_link` | `link_email` (link_email reserved for Phase 1b)
+- **`sessions`**: server-side session state (stores hashed refresh `jti`, expiry, optional `wallet_chain`/`wallet_address` for wallet sessions)
 - **`account`**: OAuth provider accounts (provider id + encrypted tokens at rest)
 - **`wallet_identities`**: Web3 identities (`eip155`/`solana` + normalized address)
 

@@ -6,6 +6,8 @@ export { useChatFromConfig } from './hooks/use-chat'
 export { useHealthCheck } from './hooks/use-health-check'
 export { useMagicLink } from './hooks/use-magic-link'
 export { useUser } from './hooks/use-user'
+export { useWalletAuth } from './hooks/use-wallet-auth'
+export { useWeb3Nonce } from './hooks/use-web3-nonce'
 // Export provider and context
 export { ReactApiProvider } from './provider'
 export type { ReactApiConfig } from './setup'

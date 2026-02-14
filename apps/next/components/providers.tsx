@@ -3,11 +3,18 @@
 import { createClient } from '@repo/core'
 import { ReactApiProvider } from '@repo/react'
 import { logger } from '@repo/utils/logger'
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
+import { clusterApiUrl } from '@solana/web3.js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import type { ReactNode } from 'react'
+import { type ReactNode, useMemo } from 'react'
+import { WagmiProvider } from 'wagmi'
 import { env } from '@/lib/env'
+import { wagmiConfig } from '@/lib/wagmi-config'
+import '@solana/wallet-adapter-react-ui/styles.css'
 
 // Create clients at module level (singleton pattern)
 const queryClient = new QueryClient()
@@ -43,25 +50,36 @@ const coreClient = createClient({
 })
 
 export function Providers({ children }: { children: ReactNode }) {
+  const solanaEndpoint = useMemo(() => clusterApiUrl(WalletAdapterNetwork.Mainnet), [])
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactApiProvider
-        client={coreClient}
-        baseUrl={env.NEXT_PUBLIC_API_URL}
-        getAuthToken={getAuthToken}
-      >
-        <NuqsAdapter>
-          <NextThemesProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme
-          >
-            {children}
-          </NextThemesProvider>
-        </NuqsAdapter>
-      </ReactApiProvider>
-    </QueryClientProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <ConnectionProvider endpoint={solanaEndpoint}>
+        <WalletProvider wallets={[]} autoConnect>
+          <WalletModalProvider>
+            <QueryClientProvider client={queryClient}>
+              <ReactApiProvider
+                client={coreClient}
+                baseUrl={env.NEXT_PUBLIC_API_URL}
+                getAuthToken={getAuthToken}
+                authCallbackUrl="/api/auth/callback"
+              >
+                <NuqsAdapter>
+                  <NextThemesProvider
+                    attribute="class"
+                    defaultTheme="dark"
+                    enableSystem
+                    disableTransitionOnChange
+                    enableColorScheme
+                  >
+                    {children}
+                  </NextThemesProvider>
+                </NuqsAdapter>
+              </ReactApiProvider>
+            </QueryClientProvider>
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    </WagmiProvider>
   )
 }

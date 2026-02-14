@@ -5,6 +5,7 @@ type AccessTokenPayload = {
   typ: 'access'
   sub: string // userId
   sid: string // sessionId
+  wal?: { chain: string; address: string } // session wallet (when JWT created by wallet)
   iss: string
   aud: string[]
   iat: number
@@ -37,14 +38,17 @@ export function generateJti(): string {
 export function createAccessTokenPayload({
   userId,
   sessionId,
+  wallet,
 }: {
   userId: string
   sessionId: string
+  wallet?: { chain: string; address: string }
 }): Omit<AccessTokenPayload, 'iat' | 'exp'> {
   return {
     typ: 'access',
     sub: userId,
     sid: sessionId,
+    ...(wallet && { wal: wallet }),
     iss: env.JWT_ISSUER,
     aud: env.JWT_AUDIENCE,
   }

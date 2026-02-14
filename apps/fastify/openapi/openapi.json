@@ -19,7 +19,9 @@
       "get": {
         "operationId": "healthCheck",
         "summary": "Returns server health status with current ISO datetime",
-        "tags": ["health"],
+        "tags": [
+          "health"
+        ],
         "description": "Health check endpoint",
         "security": [],
         "responses": {
@@ -29,7 +31,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "dbReady"],
+                  "required": [
+                    "ok",
+                    "dbReady"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean"
@@ -49,7 +54,9 @@
       "post": {
         "operationId": "chat",
         "summary": "Generate AI chat response",
-        "tags": ["ai"],
+        "tags": [
+          "ai"
+        ],
         "description": "Chat with AI via Open Router. Default model: Aurora Alpha. Supports streaming and tools.",
         "requestBody": {
           "required": true,
@@ -57,7 +64,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["messages"],
+                "required": [
+                  "messages"
+                ],
                 "properties": {
                   "messages": {
                     "minItems": 1,
@@ -67,7 +76,10 @@
                       "anyOf": [
                         {
                           "type": "object",
-                          "required": ["role", "content"],
+                          "required": [
+                            "role",
+                            "content"
+                          ],
                           "properties": {
                             "role": {
                               "type": "string"
@@ -82,7 +94,10 @@
                         },
                         {
                           "type": "object",
-                          "required": ["role", "parts"],
+                          "required": [
+                            "role",
+                            "parts"
+                          ],
                           "properties": {
                             "role": {
                               "type": "string"
@@ -128,7 +143,9 @@
                   "anyOf": [
                     {
                       "type": "object",
-                      "required": ["text"],
+                      "required": [
+                        "text"
+                      ],
                       "properties": {
                         "text": {
                           "type": "string"
@@ -150,7 +167,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -169,7 +189,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -188,7 +211,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -208,7 +234,9 @@
       "post": {
         "operationId": "magiclinkRequest",
         "summary": "Request magic link",
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "description": "Request magic link for authentication",
         "requestBody": {
           "required": true,
@@ -216,7 +244,10 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "callbackUrl"],
+                "required": [
+                  "email",
+                  "callbackUrl"
+                ],
                 "properties": {
                   "email": {
                     "format": "email",
@@ -239,7 +270,9 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok"],
+                  "required": [
+                    "ok"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean"
@@ -255,7 +288,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -275,7 +311,9 @@
       "post": {
         "operationId": "magiclinkVerify",
         "summary": "Verify magic link",
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "description": "Verify magic link token and return JWTs",
         "requestBody": {
           "required": true,
@@ -283,7 +321,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["token"],
+                "required": [
+                  "token"
+                ],
                 "properties": {
                   "token": {
                     "type": "string"
@@ -301,7 +341,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["token", "refreshToken"],
+                  "required": [
+                    "token",
+                    "refreshToken"
+                  ],
                   "properties": {
                     "token": {
                       "type": "string"
@@ -320,7 +363,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -339,7 +385,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -359,7 +408,9 @@
       "post": {
         "operationId": "logout",
         "summary": "Logout",
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "description": "Logout user and invalidate session",
         "security": [
           {
@@ -373,7 +424,9 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok"],
+                  "required": [
+                    "ok"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean"
@@ -392,7 +445,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -412,7 +468,9 @@
       "post": {
         "operationId": "refresh",
         "summary": "Refresh token",
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "description": "Refresh access token",
         "requestBody": {
           "required": true,
@@ -420,7 +478,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["refreshToken"],
+                "required": [
+                  "refreshToken"
+                ],
                 "properties": {
                   "refreshToken": {
                     "type": "string"
@@ -438,7 +498,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["token", "refreshToken"],
+                  "required": [
+                    "token",
+                    "refreshToken"
+                  ],
                   "properties": {
                     "token": {
                       "type": "string"
@@ -457,7 +520,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -476,7 +542,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -496,7 +565,9 @@
       "get": {
         "operationId": "getUser",
         "summary": "Get user",
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "description": "Get current user information",
         "security": [
           {
@@ -510,11 +581,19 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["user"],
+                  "required": [
+                    "user"
+                  ],
                   "properties": {
                     "user": {
                       "type": "object",
-                      "required": ["id", "email", "name", "emailVerified"],
+                      "required": [
+                        "id",
+                        "email",
+                        "name",
+                        "emailVerified",
+                        "linkedWallets"
+                      ],
                       "properties": {
                         "id": {
                           "type": "string"
@@ -548,6 +627,39 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "wallet": {
+                          "type": "object",
+                          "required": [
+                            "chain",
+                            "address"
+                          ],
+                          "properties": {
+                            "chain": {
+                              "type": "string"
+                            },
+                            "address": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "linkedWallets": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "chain",
+                              "address"
+                            ],
+                            "properties": {
+                              "chain": {
+                                "type": "string"
+                              },
+                              "address": {
+                                "type": "string"
+                              }
+                            }
+                          }
                         }
                       }
                     }
@@ -562,7 +674,296 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/web3/eip155/nonce": {
+      "get": {
+        "operationId": "web3Eip155Nonce",
+        "summary": "Get EIP-155 nonce",
+        "tags": [
+          "auth"
+        ],
+        "description": "Get nonce for SIWE (Sign-In with Ethereum)",
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "address",
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "nonce"
+                  ],
+                  "properties": {
+                    "nonce": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/web3/eip155/verify": {
+      "post": {
+        "operationId": "web3Eip155Verify",
+        "summary": "Verify EIP-155 signature",
+        "tags": [
+          "auth"
+        ],
+        "description": "Verify SIWE signature and return JWTs",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "message",
+                  "signature"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "signature": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "refreshToken"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/web3/solana/nonce": {
+      "get": {
+        "operationId": "web3SolanaNonce",
+        "summary": "Get Solana nonce",
+        "tags": [
+          "auth"
+        ],
+        "description": "Get nonce for SIWS (Sign-In with Solana)",
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "address",
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "nonce"
+                  ],
+                  "properties": {
+                    "nonce": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/web3/solana/verify": {
+      "post": {
+        "operationId": "web3SolanaVerify",
+        "summary": "Verify Solana signature",
+        "tags": [
+          "auth"
+        ],
+        "description": "Verify SIWS signature and return JWTs",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "message",
+                  "signature"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "signature": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "refreshToken"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -582,7 +983,9 @@
       "get": {
         "operationId": "testAuthed",
         "summary": "Test authenticated endpoint",
-        "tags": ["test"],
+        "tags": [
+          "test"
+        ],
         "description": "Dummy authenticated endpoint for testing (requires Bearer token)",
         "responses": {
           "200": {
@@ -591,11 +994,16 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["user"],
+                  "required": [
+                    "user"
+                  ],
                   "properties": {
                     "user": {
                       "type": "object",
-                      "required": ["id", "email"],
+                      "required": [
+                        "id",
+                        "email"
+                      ],
                       "properties": {
                         "id": {
                           "type": "string"
@@ -623,7 +1031,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["code", "message"],
+                  "required": [
+                    "code",
+                    "message"
+                  ],
                   "properties": {
                     "code": {
                       "type": "string"
@@ -643,7 +1054,9 @@
       "get": {
         "operationId": "getLastMagicLinkToken",
         "summary": "Get last magic link token",
-        "tags": ["test"],
+        "tags": [
+          "test"
+        ],
         "description": "Get last magic link token from DB (test only, @test.ai)",
         "security": [],
         "responses": {
@@ -653,7 +1066,9 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["token"],
+                  "required": [
+                    "token"
+                  ],
                   "properties": {
                     "token": {
                       "anyOf": [

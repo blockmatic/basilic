@@ -7,6 +7,9 @@ export const verification = pgTable(
     identifier: text('identifier').notNull(), // Email for magic links
     value: text('value').notNull(), // Token hash
     tokenPlain: text('token_plain'), // Plain token for @test.ai when ALLOW_TEST (DB-backed, no fake outbox)
+    type: text('type', { enum: ['magic_link', 'link_email'] })
+      .default('magic_link')
+      .notNull(),
     expiresAt: timestamp('expires_at').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
