@@ -15,7 +15,7 @@ Unit and E2E tests for the Next.js app. Runs when `apps/next`, `scripts/`, or de
 
 - Build (`turbo build --filter=@repo/next...`)
 - Unit tests (`turbo test --filter=@repo/next`)
-- E2E tests (`pnpm --filter @repo/next test:e2e:local`) — spawns Fastify and Next, polls until healthy, runs Playwright, cleanup on exit. See [E2E Testing](/docs/testing/e2e-testing).
+- E2E tests — uses `tj-actions/vercel-wait` to wait for Vercel Fastify and Next deployments, runs Playwright against deployed URLs. Requires `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_NEXT_PROJECT_ID`, and `VERCEL_AUTOMATION_BYPASS_SECRET`. See [E2E Testing](/docs/testing/e2e-testing).
 
 ### API CI (`api-ci.yml`)
 
@@ -23,7 +23,7 @@ Unit and E2E tests for the Fastify API. Runs when `apps/fastify` or its dependen
 
 - Build (`turbo build --filter=@repo/fastify...`)
 - Unit tests (`turbo test --filter=@repo/fastify`)
-- E2E tests — waits for Vercel Fastify deployment (branch preview URL), runs Playwright against the deployed API. Requires `VERCEL_AUTOMATION_BYPASS_SECRET`. See [E2E Testing](/docs/testing/e2e-testing).
+- E2E tests — uses `tj-actions/vercel-wait` to wait for Vercel Fastify deployment, runs Playwright against the deployed API. Requires `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, and `VERCEL_AUTOMATION_BYPASS_SECRET`. See [E2E Testing](/docs/testing/e2e-testing).
 
 ### Docu CI (`docu-ci.yml`)
 

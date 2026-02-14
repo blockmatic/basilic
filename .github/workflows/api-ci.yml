@@ -25,8 +25,56 @@ jobs:
         with:
           filters: .github/paths-filter.yml
 
-  api-ci:
-    name: API (Unit + E2E)
+  build-unit:
+    name: API (Build + Unit)
+    needs: paths
+    if: needs.paths.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      CI: true
+      PGLITE: true
+      DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm turbo run build --filter=@repo/fastify...
+
+      - name: Run unit tests
+        run: pnpm turbo run test --filter=@repo/fastify
+
+  e2e:
+    name: API (E2E)
     needs: paths
     if: needs.paths.outputs.api == 'true'
     runs-on: ubuntu-latest
@@ -70,12 +118,6 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
 
-      - name: Build
-        run: pnpm turbo run build --filter=@repo/fastify...
-
-      - name: Run unit tests
-        run: pnpm turbo run test --filter=@repo/fastify
-
       - name: Verify OPEN_ROUTER_API_KEY for E2E
         env:
           OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
@@ -85,45 +127,19 @@ jobs:
             exit 1
           fi
 
-      - name: Get branch ref for Vercel deployment URL
-        id: vercel-url
-        env:
-          REF_INPUT: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-        run: |
-          REF="${REF_INPUT:-}"
-          SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-\|-$//g' | cut -c1-63)
-          URL="https://basilic-fastify-git-${SLUG}-gaboesquivel.vercel.app"
-          echo "url=${URL}" >> "$GITHUB_OUTPUT"
-          echo "Branch ref: $REF → URL: $URL"
-
       - name: Wait for Vercel Fastify deployment
-        env:
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
-        run: |
-          URL="${{ steps.vercel-url.outputs.url }}"
-          for i in $(seq 1 72); do
-            if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then
-              CODE=$(curl -s -o /dev/null -w '%{http_code}' \
-                -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" \
-                -H "x-vercel-set-bypass-cookie: true" \
-                "${URL}/health" 2>/dev/null) || CODE="000"
-            else
-              CODE=$(curl -s -o /dev/null -w '%{http_code}' "${URL}/health" 2>/dev/null) || CODE="000"
-            fi
-            if [ "$CODE" = "200" ]; then
-              echo "Deployment ready at $URL"
-              echo "PLAYWRIGHT_API_URL=$URL" >> "$GITHUB_ENV"
-              exit 0
-            fi
-            echo "Waiting for deployment... ($i/72) got $CODE"
-            sleep 5
-          done
-          echo "::error::Vercel Fastify deployment did not become ready at $URL within 6 minutes"
-          exit 1
+        id: vercel-url
+        uses: tj-actions/vercel-wait@v1
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          team-id: ${{ secrets.VERCEL_TEAM_ID }}
+          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          timeout: '360'
 
       - name: Run E2E tests
         env:
-          PLAYWRIGHT_API_URL: ${{ steps.vercel-url.outputs.url }}
+          PLAYWRIGHT_API_URL: ${{ steps.vercel-url.outputs.deployment-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
         run: pnpm --filter @repo/fastify test:e2e
 

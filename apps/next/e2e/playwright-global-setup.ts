@@ -8,11 +8,16 @@ const appUrl =
 const apiUrl =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 
+const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+const fetchHeaders = bypassSecret
+  ? { 'x-vercel-protection-bypass': bypassSecret, 'x-vercel-set-bypass-cookie': 'true' }
+  : undefined
+
 async function waitForUrl(url: string, timeoutMs: number): Promise<boolean> {
   const start = Date.now()
   while (Date.now() - start < timeoutMs) {
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(2000) })
+      const res = await fetch(url, { signal: AbortSignal.timeout(2000), headers: fetchHeaders })
       if (res.ok || res.status === 307) return true
     } catch {
       // continue polling

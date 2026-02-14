@@ -25,8 +25,8 @@ jobs:
         with:
           filters: .github/paths-filter.yml
 
-  next-ci:
-    name: Next (Unit + E2E)
+  build-unit:
+    name: Next (Build + Unit)
     needs: paths
     if: needs.paths.outputs.next == 'true'
     runs-on: ubuntu-latest
@@ -37,7 +37,54 @@ jobs:
       DATABASE_URL: postgresql://localhost/test
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
-      NEXT_PUBLIC_API_URL: http://localhost:3001
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm turbo run build --filter=@repo/next...
+
+      - name: Run unit tests
+        run: pnpm turbo run test --filter=@repo/next
+
+  e2e:
+    name: Next (E2E)
+    needs: paths
+    if: needs.paths.outputs.next == 'true'
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      CI: true
+      PGLITE: true
+      DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -71,12 +118,6 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm --filter @repo/next exec playwright install chromium --with-deps
 
-      - name: Build
-        run: pnpm turbo run build --filter=@repo/next...
-
-      - name: Run unit tests
-        run: pnpm turbo run test --filter=@repo/next
-
       - name: Verify OPEN_ROUTER_API_KEY for E2E
         env:
           OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
@@ -86,8 +127,32 @@ jobs:
             exit 1
           fi
 
+      - name: Wait for Vercel Fastify deployment
+        id: vercel-fastify
+        uses: tj-actions/vercel-wait@v1
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          team-id: ${{ secrets.VERCEL_TEAM_ID }}
+          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          timeout: '360'
+
+      - name: Wait for Vercel Next deployment
+        id: vercel-next
+        uses: tj-actions/vercel-wait@v1
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          project-id: ${{ secrets.VERCEL_NEXT_PROJECT_ID }}
+          team-id: ${{ secrets.VERCEL_TEAM_ID }}
+          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          timeout: '360'
+
       - name: Run E2E tests
-        run: pnpm --filter @repo/next test:e2e:local
+        env:
+          PLAYWRIGHT_APP_URL: ${{ steps.vercel-next.outputs.deployment-url }}
+          PLAYWRIGHT_API_URL: ${{ steps.vercel-fastify.outputs.deployment-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
+        run: pnpm --filter @repo/next test:e2e
 
       - name: Upload Playwright report
         if: always()

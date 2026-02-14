@@ -55,8 +55,8 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-- **Next CI**: `pnpm --filter @repo/next test:e2e:local` — builds, spawns Fastify + Next with PGLite, runs Playwright, uploads report on failure.
-- **API CI**: Waits for Vercel Fastify deployment (branch preview URL), runs `pnpm --filter @repo/fastify test:e2e` against the deployed API, uploads report on failure. Requires `VERCEL_AUTOMATION_BYPASS_SECRET`.
+- **Next CI**: Uses `tj-actions/vercel-wait` to wait for Vercel Fastify and Next deployments, runs `pnpm --filter @repo/next test:e2e` against deployed URLs. Requires `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_NEXT_PROJECT_ID`, and `VERCEL_AUTOMATION_BYPASS_SECRET`.
+- **API CI**: Uses `tj-actions/vercel-wait` to wait for Vercel Fastify deployment, runs `pnpm --filter @repo/fastify test:e2e` against the deployed API. Requires `VERCEL_TOKEN`, `VERCEL_PROJECT_ID` (and `VERCEL_TEAM_ID` for team projects), `VERCEL_AUTOMATION_BYPASS_SECRET`.
 
 ## Vercel Deployment Protection
 
@@ -73,7 +73,8 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 ## Environment Variables
 
 - **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server.
-- **API CI (Vercel E2E)**: Requires `VERCEL_AUTOMATION_BYPASS_SECRET` in GitHub secrets to bypass deployment protection when polling and running Playwright against preview URLs.
+- **API CI (Vercel E2E)**: Requires `VERCEL_TOKEN` (from [vercel.com/account/tokens](https://vercel.com/account/tokens)), `VERCEL_PROJECT_ID` (basilic-fastify), optionally `VERCEL_TEAM_ID` for team projects, and `VERCEL_AUTOMATION_BYPASS_SECRET`.
+- **Next CI (Vercel E2E)**: Same plus `VERCEL_NEXT_PROJECT_ID` (basilic-next project settings).
 
 ## ALLOW_TEST
 
