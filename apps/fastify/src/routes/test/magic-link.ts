@@ -1,6 +1,9 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
+import { and, desc, isNotNull, like } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
+import { getDb } from '../../db/index.js'
+import { verification } from '../../db/schema/index.js'
 import { env } from '../../lib/env.js'
 
 const MagicLinkTokenResponseSchema = Type.Object({
@@ -13,7 +16,7 @@ const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
     {
       schema: {
         operationId: 'getLastMagicLinkToken',
-        description: 'Get last magic link token from fake email provider (test only)',
+        description: 'Get last magic link token from DB (test only, @test.ai)',
         summary: 'Get last magic link token',
         tags: ['test'],
         security: [],
@@ -23,19 +26,19 @@ const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (_request, reply) => {
-      // Only available when USE_FAKE_EMAIL is enabled
-      // Return null token if not in test mode (rather than 404 to keep response schema consistent)
-      if (!env.USE_FAKE_EMAIL) {
+      if (!env.ALLOW_TEST || env.NODE_ENV === 'production') {
         return reply.code(200).send({ token: null })
       }
 
-      // Check if fakeEmail is available
-      if (!fastify.fakeEmail) {
-        return reply.code(200).send({ token: null })
-      }
+      const db = await getDb()
+      const [row] = await db
+        .select({ tokenPlain: verification.tokenPlain })
+        .from(verification)
+        .where(and(like(verification.identifier, '%@test.ai'), isNotNull(verification.tokenPlain)))
+        .orderBy(desc(verification.createdAt))
+        .limit(1)
 
-      const token = fastify.fakeEmail.extractToken()
-      return reply.code(200).send({ token })
+      return reply.code(200).send({ token: row?.tokenPlain ?? null })
     },
   )
 }

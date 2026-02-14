@@ -1,5 +1,6 @@
 import { expect, test } from './fixtures'
 
+// TODO: Re-enable when UNAUTHORIZED is fixed — getAuthToken/Bearer propagation to Fastify /ai/chat fails in E2E despite authenticatedPage
 test.describe
   .skip('Chat Assistant', () => {
     test('should send message via Who am I? and show assistant response', async ({

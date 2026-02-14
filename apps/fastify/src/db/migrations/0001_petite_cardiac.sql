@@ -1,0 +1,1 @@
+ALTER TABLE "verification" ADD COLUMN "token_plain" text;

@@ -1,4 +1,4 @@
-name: API CI
+name: API unit test
 
 on:
   pull_request:
@@ -25,8 +25,8 @@ jobs:
         with:
           filters: .github/paths-filter.yml
 
-  api-ci:
-    name: API (Unit + E2E)
+  build-unit:
+    name: API (Build + Unit)
     needs: paths
     if: needs.paths.outputs.api == 'true'
     runs-on: ubuntu-latest
@@ -67,31 +67,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright browsers
-        run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
-
       - name: Build
         run: pnpm turbo run build --filter=@repo/fastify...
 
       - name: Run unit tests
         run: pnpm turbo run test --filter=@repo/fastify
-
-      - name: Verify OPEN_ROUTER_API_KEY for E2E
-        env:
-          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-        run: |
-          if [ -z "$OPEN_ROUTER_API_KEY" ]; then
-            echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
-            exit 1
-          fi
-
-      - name: Run E2E tests
-        run: pnpm --filter @repo/fastify test:e2e
-
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report-fastify
-          path: apps/fastify/playwright-report/
-          retention-days: 30

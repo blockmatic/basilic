@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-const TEST_EMAIL = 'test@example.com'
+const TEST_EMAIL = 'test@test.ai'
 const API_URL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:3001'
 
 /**

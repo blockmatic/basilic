@@ -155,16 +155,10 @@ describe('WalletIntegration', () => {
 - **Location**: `e2e/**/*.spec.ts`
 - **Pattern**: Test full user flows with real infrastructure
 - **Real APIs**: All tests use real APIs and infrastructure
-- **Tools**: Use Playwright or Cypress
-- **Server Setup**: Playwright automatically starts both Fastify API server and Next.js frontend server
+- **Tools**: Playwright
+- **Commands**: Next: `pnpm --filter @repo/next test:e2e:local` (spawn servers) or `pnpm test:e2e` (URLs from env/params). Root: `pnpm test:e2e` runs Fastify + Next E2E.
 
-**Server Configuration:**
-
-E2E tests use the real Fastify server (not mocks). Playwright's `webServer` configuration automatically starts both servers:
-
-- **Fastify API**: Runs on port 3001 (dev mode locally, start mode in CI)
-- **Next.js Frontend**: Runs on port 3000
-- Tests wait for both servers to be ready before running
+See [E2E Testing](/docs/testing/e2e-testing) for full documentation.
 
 **Example Structure:**
 ```typescript
@@ -176,11 +170,11 @@ test.describe('Magic Link Auth E2E', () => {
     await page.goto('http://localhost:3000')
     
     // Submit form (makes real API call to Fastify server)
-    await page.fill('input[type="email"]', 'test@example.com')
+    await page.fill('input[type="email"]', 'test@test.ai')
     await page.click('button[type="submit"]')
     
     // Extract token from real Fastify test endpoint
-    const response = await fetch('http://localhost:3001/api/test/last-magic-link')
+    const response = await fetch('http://localhost:3001/test/magic-link/last')
     const { token } = await response.json()
     
     // Verify magic link (uses Next.js BFF + Fastify)
@@ -196,10 +190,10 @@ test.describe('Magic Link Auth E2E', () => {
 
 - **workers: 1** — Required for PGlite (Fastify test DB) to avoid concurrent writer issues
 - **Test order** — Auth project first (magic-link-auth: error tests, login/logout; ends with logout). Chromium: unauth badge tests first, then first authed test triggers fixture and confirms session, then remaining authed tests run consecutively
+- **Chat E2E** — Requires `OPEN_ROUTER_API_KEY`; see [E2E Testing](/docs/testing/e2e-testing) for env vars. If UNAUTHORIZED, session/Bearer propagation to Fastify `/ai/chat` needs debugging.
 - **Session model** — One login per worker via `authenticatedStorageState` fixture; cookies/storage saved to `test-results/.auth/user.json` (gitignored); each authed test gets a new context created with that storageState. No per-test login
 - **Login/logout tests** — Import from `@playwright/test`, use `page`; need fresh contexts to verify the flow
 - **Authed feature tests** — Import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body. Each test gets a fresh context with saved storageState; navigate to target route (e.g. `goto('/')`) before asserting
-- **Chat E2E** — Disabled for now (`test.describe.skip`); to be tested in a later iteration
 
 Example for authed tests:
 
@@ -355,7 +349,7 @@ fetchMock.mockResolvedValueOnce({
 
 ### When NOT to Mock
 
-- **E2E Tests**: Never mock — E2E tests use real Fastify and Next.js servers (started via `scripts/run-next-e2e.mjs` in CI or Playwright webServer locally)
+- **E2E Tests**: Never mock — E2E tests use real Fastify and Next.js servers (started via `pnpm test:e2e:local` in CI or manually)
 - **Integration Tests**: Never mock API calls - use real endpoints
 - **Component Tests with Real Data**: Prefer real APIs when testing data fetching and display
 - **TanStack Query**: Never mock TanStack Query hooks

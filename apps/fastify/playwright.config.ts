@@ -1,6 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const isCi = !!process.env.CI
+const apiUrl =
+  process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
+const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 
 export default defineConfig({
   testDir: './test',
@@ -13,9 +16,15 @@ export default defineConfig({
   globalSetup: './test/playwright-global-setup.ts',
   globalTeardown: './test/playwright-global-teardown.ts',
   use: {
-    baseURL: process.env.PLAYWRIGHT_API_URL || 'http://localhost:3001',
+    baseURL: apiUrl,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    ...(bypassSecret && {
+      extraHTTPHeaders: {
+        'x-vercel-protection-bypass': bypassSecret,
+        'x-vercel-set-bypass-cookie': 'true',
+      },
+    }),
   },
   projects: [
     {
@@ -23,16 +32,4 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'pnpm start:ci',
-    url: 'http://localhost:3001/health',
-    reuseExistingServer: !isCi,
-    timeout: 120000,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    env: {
-      USE_FAKE_EMAIL: 'true',
-      PGLITE: 'true',
-    },
-  },
 })

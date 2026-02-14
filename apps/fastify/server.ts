@@ -1,24 +1,16 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { tryCatch } from '@repo/utils/error'
+import { logger } from '@repo/utils/logger'
 import * as Sentry from '@sentry/node'
 import Fastify from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
 import { getDb } from './src/db/index.js'
 import { runMigrations } from './src/db/migrate.js'
-import { setTestEmailProvider } from './src/lib/auth.js'
 import { env } from './src/lib/env.js'
 
-// Dynamically import FakeEmailProvider only when explicitly enabled
-async function setupFakeEmailProvider() {
-  // Only use fake email provider if explicitly enabled via USE_FAKE_EMAIL env var
-  // This allows development to use real Resend emails by default
-  if (!env.USE_FAKE_EMAIL) return
-
-  return tryCatch(async () => {
-    const { FakeEmailProvider } = await import('./test/utils/fake-email.js')
-    setTestEmailProvider(new FakeEmailProvider())
-  })
+if (env.NODE_ENV === 'production' && env.ALLOW_TEST) {
+  logger.error('ALLOW_TEST must not be true in production')
+  process.exit(1)
 }
 
 // Initialize Sentry before other app code (conventional Node setup)
@@ -92,9 +84,6 @@ const start = async () => {
 
 const startServer = async () => {
   try {
-    // Set up fake email provider for E2E tests (before auth instance is created)
-    await setupFakeEmailProvider()
-
     // Initialize database and migrations before starting server
     await initialize()
 

@@ -112,6 +112,10 @@ For monorepo apps, Vercel needs to know the root directory:
 3. Configure DNS records (Vercel provides instructions)
 4. Vercel handles SSL certificates automatically
 
+## E2E Against Preview Deployments
+
+To run E2E against Vercel preview deployments: enable **Protection Bypass for Automation** in both projects, add `VERCEL_AUTOMATION_BYPASS_SECRET` to GitHub, set `ALLOW_TEST=true` for Preview env, optionally add OPTIONS Allowlist for CORS. See [E2E Testing](/docs/testing/e2e-testing).
+
 ## Best Practices
 
 1. **Use preview deployments** - Test changes before merging

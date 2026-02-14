@@ -3,7 +3,8 @@ import { dirname, join } from 'node:path'
 import { test as base, expect } from '@playwright/test'
 import { authHelpers } from './auth-helpers'
 
-const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000'
+const baseURL =
+  process.env.PLAYWRIGHT_APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 // test-results is gitignored and in gitleaks exclude; contains JWT tokens
 const authFile = join(process.cwd(), 'test-results', '.auth', 'user.json')
 

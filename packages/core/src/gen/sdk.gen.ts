@@ -118,6 +118,6 @@ export const testAuthed = <ThrowOnError extends boolean = false>(options?: Optio
 /**
  * Get last magic link token
  *
- * Get last magic link token from fake email provider (test only)
+ * Get last magic link token from DB (test only, @test.ai)
  */
 export const getLastMagicLinkToken = <ThrowOnError extends boolean = false>(options?: Options<GetLastMagicLinkTokenData, ThrowOnError>) => (options?.client ?? client).get<GetLastMagicLinkTokenResponses, unknown, ThrowOnError>({ url: '/test/magic-link/last', ...options });

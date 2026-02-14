@@ -1,0 +1,97 @@
+---
+title: "E2E Testing"
+description: "Playwright E2E tests for Next.js app and Fastify API (Scalar login)."
+---
+
+End-to-end tests run full user flows using Playwright. Two suites: **Next E2E** (apps/next) tests the web app + auth; **Fastify E2E** (apps/fastify) tests Scalar UI login. Both use `test@test.ai` for magic-link when `ALLOW_TEST=true`.
+
+**Root QA**: `pnpm qa` runs the full pipeline (install → checktypes → lint → build → test) and ends with `pnpm test:e2e`, which runs Fastify E2E then Next E2E via `scripts/run-e2e.mjs` (both use `test:e2e:local` to spawn servers).
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm test:e2e` (root) | Run Fastify API E2E, then Next E2E (spawns local servers) |
+| `pnpm test:e2e` (in apps/next) | Run E2E; expects URLs via env or `--app`/`--api` params |
+| `pnpm test:e2e:local` (in apps/next) | Build, spawn Fastify + Next, poll until healthy, run tests, cleanup |
+| `pnpm test:e2e` (in apps/fastify) | Run E2E; expects API URL via env or `--api` param |
+| `pnpm test:e2e:local` (in apps/fastify) | Spawn API, poll until healthy, run tests, cleanup |
+| `pnpm test:e2e:ui` (in apps/next or apps/fastify) | Run with Playwright UI |
+| `pnpm test:e2e:debug` (in apps/next or apps/fastify) | Run in debug mode |
+
+## URL Configuration
+
+`test:e2e` accepts URL params. Next: `--app` and `--api`. Fastify: `--api` only. Params override environment variables.
+
+```bash
+# Next (both app and API)
+pnpm test:e2e --app=https://my-app.vercel.app --api=https://my-api.vercel.app
+pnpm test:e2e -- --app https://localhost:3000 --api https://localhost:3001
+
+# Fastify (API only)
+pnpm test:e2e --api=https://my-api.vercel.app
+pnpm test:e2e -- --api https://localhost:3001
+
+# Environment (defaults when no params)
+PLAYWRIGHT_APP_URL=https://... PLAYWRIGHT_API_URL=https://... pnpm test:e2e
+```
+
+Defaults: Next `NEXT_PUBLIC_APP_URL` or `http://localhost:3000`; API `NEXT_PUBLIC_API_URL` or `http://localhost:3001`.
+
+## Local Development
+
+1. **Full suite** (root): `pnpm test:e2e` — runs Fastify E2E then Next E2E (both spawn servers, poll, run, cleanup).
+2. **Next only**: `pnpm --filter @repo/next test:e2e:local` — builds, spawns Fastify + Next, runs Next E2E, cleanup.
+3. **Fastify only**: `pnpm --filter @repo/fastify test:e2e:local` — spawns API, runs Scalar login E2E, cleanup.
+4. **Manual** (two terminals): Build with `pnpm --filter @repo/next build:e2e`, run `pnpm --filter @repo/next start:e2e:servers` in one terminal and `pnpm --filter @repo/next test:e2e` in another.
+5. **External URLs**: Use `--app` and `--api` (Next) or `--api` (Fastify) to target already-running servers or Vercel previews.
+
+## Test Email (test@test.ai)
+
+Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is stored in the database (`verification.token_plain`) and read from `/test/magic-link/last`. No fake outbox; works with Vercel serverless (shared DB across instances).
+
+- **Local**: `test:e2e:local` and `start:ci` set `ALLOW_TEST=true`.
+- **Vercel previews**: Set `ALLOW_TEST=true` for the Preview environment in project env vars.
+
+## CI
+
+- **Next CI**: Waits for Vercel Fastify and Next deployments via Vercel API (deployment URL from integration result), runs `pnpm --filter @repo/next test:e2e` against deployed URLs. Requires `VERCEL_TOKEN`, `VERCEL_TEAM_SLUG` (for team projects), and `VERCEL_AUTOMATION_BYPASS_SECRET`.
+- **API CI**: Waits for Vercel Fastify deployment (same, via API), runs `pnpm --filter @repo/fastify test:e2e` against the deployed API.
+
+## Vercel Deployment Protection
+
+To run E2E against Vercel preview deployments with Deployment Protection enabled:
+
+1. **Protection Bypass for Automation**: In each project (Next, Fastify): Settings → Deployment Protection → Protection Bypass for Automation → enable → generate secret.
+2. Use the same bypass secret for both projects.
+3. Add `VERCEL_AUTOMATION_BYPASS_SECRET` to GitHub secrets.
+4. When running E2E, set `VERCEL_AUTOMATION_BYPASS_SECRET` in the env. Playwright adds `x-vercel-protection-bypass` and `x-vercel-set-bypass-cookie` headers automatically.
+5. **OPTIONS Allowlist** (for CORS): In Fastify project, Deployment Protection → OPTIONS Allowlist → add `/` or `/auth` so CORS preflight succeeds.
+
+See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation).
+
+## Environment Variables
+
+- **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server.
+- **API CI and Next CI (Vercel E2E)**: Require `VERCEL_TOKEN` (from [vercel.com/account/tokens](https://vercel.com/account/tokens)), `VERCEL_TEAM_SLUG` (team slug, e.g. "gaboesquivel", for team projects; leave empty for personal), and `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass. Deployment URLs come from the Vercel API (actual deployment from GitHub integration).
+
+## ALLOW_TEST
+
+`ALLOW_TEST=true` enables:
+
+- Fake email for `@test.ai` (no Resend)
+- DB-backed token storage for `/test/magic-link/last`
+- Production guard: server exits if `ALLOW_TEST` is true in production
+
+## Troubleshooting
+
+- **Tests fail with unreachable URLs**: Ensure both servers are running, or pass correct `--app` / `--api` URLs.
+- **Token extraction fails**: Verify `ALLOW_TEST=true` and email is `test@test.ai`.
+- **Vercel CORS errors**: Add `/` or `/auth` to OPTIONS Allowlist in Fastify Deployment Protection.
+- **Protection bypass not working**: Ensure `VERCEL_AUTOMATION_BYPASS_SECRET` matches the secret in both Vercel projects.
+
+## Related
+
+- [Frontend Testing](/docs/testing/frontend-testing) - Unit and integration patterns
+- [GitHub Actions](/docs/deployment/github-actions) - CI workflow
+- [Vercel Deployment](/docs/deployment/vercel) - Preview deployment and env vars

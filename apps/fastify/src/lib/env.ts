@@ -71,7 +71,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().min(1).default('re_placeholder'),
     EMAIL_FROM: z.string().email().default('noreply@localhost'),
     EMAIL_FROM_NAME: z.string().default('App'),
-    USE_FAKE_EMAIL: z.coerce.boolean().default(false),
+    ALLOW_TEST: z.coerce.boolean().default(false),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

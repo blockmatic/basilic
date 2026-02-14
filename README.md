@@ -54,7 +54,7 @@ Run with `pnpm <script>`.
 **Primary**
   - `build` — Build packages and apps
   - `dev` — Start dev (core, react, sentry, utils, fastify, next)
-  - `qa` — Full check: install → checktypes → lint → build → test
+  - `qa` — Full check: install → checktypes → lint → build → test (unit) → test:e2e (Fastify + Next, local spawn)
 **Format / Lint**
   - `checktypes` — Type-check all packages
   - `format` — Format code (Biome)
@@ -78,6 +78,12 @@ Run with `pnpm <script>`.
 **Misc**
   - `update-deps` — Update pnpm and all dependencies
 
+
+## E2E and Vercel deployments
+
+E2E tests run after Vercel deployments via GitHub `deployment_status` events. One workflow per project: `api-e2e-test.yml`, `next-e2e-test.yml`. Success → run tests; deployment failure/error → abort (PR check red); pending → skip.
+
+**Finding the environment filter string**: Check the PR’s **Deployments** tab or Actions → workflow run → **Event** payload → `deployment.environment`. Adjust the `contains(...)` condition in each workflow if the format differs.
 
 ## Documentation
 

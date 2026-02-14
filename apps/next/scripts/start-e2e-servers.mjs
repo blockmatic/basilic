@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Starts Fastify (API) and Next.js servers for e2e tests.
- * Run in one terminal, then in another: PLAYWRIGHT_REUSE_SERVER=true pnpm test:e2e:reuse
+ * Run in one terminal, then in another: pnpm test:e2e
  *
  * Use when Playwright's webServer spawns processes that get OOM killed (exit 137) on constrained VMs.
  */
@@ -14,7 +14,7 @@ const repoRoot = dirname(dirname(dirname(scriptDir)))
 
 const env = {
   ...process.env,
-  USE_FAKE_EMAIL: 'true',
+  ALLOW_TEST: 'true',
   PGLITE: 'true',
   NODE_ENV: 'test',
   NEXT_PUBLIC_API_URL: 'http://localhost:3001',

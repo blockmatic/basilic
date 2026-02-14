@@ -644,7 +644,7 @@
         "operationId": "getLastMagicLinkToken",
         "summary": "Get last magic link token",
         "tags": ["test"],
-        "description": "Get last magic link token from fake email provider (test only)",
+        "description": "Get last magic link token from DB (test only, @test.ai)",
         "security": [],
         "responses": {
           "200": {

@@ -86,9 +86,13 @@ pnpm build
 - `pnpm lint` - Run ESLint
 - `pnpm test` - Run component tests (Vitest)
 - `pnpm test:watch` - Run tests in watch mode
-- `pnpm test:e2e` - Run E2E tests (Playwright)
-- `pnpm test:e2e:ui` - Run E2E tests with UI
+- `pnpm test:e2e` - Run E2E tests (Playwright; expects URLs via env or `--app`/`--api` params)
+- `pnpm test:e2e:local` - Build, spawn servers, run E2E, cleanup (recommended for local/CI)
+- `pnpm start:e2e:servers` - Start Fastify + Next for manual E2E; run `pnpm test:e2e` in another terminal (run `pnpm build:e2e` first)
+- `pnpm test:e2e:ui` - Run E2E with Playwright UI
 - `pnpm test:e2e:debug` - Debug E2E tests
+
+See [E2E Testing](@apps/docu/content/docs/testing/e2e-testing.mdx) for full details.
 
 ### Environment Variables
 

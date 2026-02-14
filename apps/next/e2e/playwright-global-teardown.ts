@@ -1,8 +1,5 @@
-import { killPort } from './kill-port'
-
 async function globalTeardown() {
-  // Kill any processes on ports 3000 (Next.js) and 3001 (Fastify) after tests complete
-  await Promise.all([killPort(3000), killPort(3001)])
+  // No port killing — URLs may be Vercel deployments or reused servers
 }
 
 // Playwright requires default export for globalTeardown

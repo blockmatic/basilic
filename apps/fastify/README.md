@@ -22,7 +22,10 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 - `pnpm build` — Migrations + TypeScript build
 - `pnpm start` — Production server
 - `pnpm test` — Unit tests (Vitest)
-- `pnpm test:e2e` — E2E tests (Playwright)
+- `pnpm test:e2e` — E2E (expects API URL via env or `--api`)
+- `pnpm test:e2e:local` — Spawn API, poll, run E2E, cleanup
+- `pnpm test:e2e:ui` — E2E with Playwright UI
+- `pnpm test:e2e:debug` — Debug E2E tests
 - `pnpm checktypes` — Type-check
 - `pnpm db:start` — Start Supabase (local)
 - `pnpm db:stop` — Stop Supabase
