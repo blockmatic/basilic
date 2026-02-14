@@ -37,4 +37,8 @@ const pw = spawn('pnpm', ['exec', 'playwright', 'test', ...rest], {
   stdio: 'inherit',
   env: process.env,
 })
+pw.on('error', err => {
+  process.stderr.write(`${String(err)}\n`)
+  process.exit(1)
+})
 pw.on('exit', code => process.exit(code ?? 1))
