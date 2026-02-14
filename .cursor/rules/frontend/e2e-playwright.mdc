@@ -1,14 +1,15 @@
 ---
-description: Playwright E2E patterns for Next.js
-glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts"
+description: Playwright E2E patterns for Next.js and Fastify API
+glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/*, apps/fastify/playwright.config.ts"
 ---
 
 ## Config
 - No webServer; URLs from `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL` (env or `--app` / `--api` params)
+- Fastify: only `--api` param; `test:e2e` = URL-based, `test:e2e:local` = spawn API, poll, run, cleanup
 - Param format: `--app=URL` or `--app URL`, `--api=URL` or `--api URL`
 - CI: test:e2e:local (spawn local). Optional: Vercel previews with `VERCEL_AUTOMATION_BYPASS_SECRET`, `ALLOW_TEST=true` for preview
-- Local: `pnpm test:e2e:local` = slim script (spawn Fastify + Next, poll, run, kill on exit)
-- workers: 1 (PGlite does not support concurrent writers)
+- Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
+- workers: Next 1 (PGlite). Fastify: 1 in CI, undefined locally
 - projects: auth first (`magic-link-auth.spec.ts`), chromium second (all other specs)
 
 ## Session Model

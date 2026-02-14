@@ -17,7 +17,7 @@ function run(cmd, args, opts = {}) {
 }
 
 async function main() {
-  await run('pnpm', ['-F', '@repo/fastify', 'test:e2e'])
+  await run('pnpm', ['-F', '@repo/fastify', 'test:e2e:local'])
   await run('pnpm', ['-F', '@repo/next', 'test:e2e:local'])
 }
 

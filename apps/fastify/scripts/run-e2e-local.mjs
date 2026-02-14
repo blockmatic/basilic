@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * E2E local: build, spawn Fastify + Next, poll until healthy, run Playwright, cleanup on exit.
- * No wait-on. Uses ALLOW_TEST, PGLITE, DB-backed token for @test.ai.
+ * E2E local: spawn Fastify API, poll until healthy, run Playwright, cleanup on exit.
+ * No wait-on. Uses ALLOW_TEST, PGLITE, NODE_ENV=test.
  */
 import { spawn } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -9,8 +9,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
-const nextDir = dirname(scriptDir)
-const repoRoot = dirname(dirname(nextDir))
+const fastifyDir = dirname(scriptDir)
+const repoRoot = dirname(dirname(fastifyDir))
 
 function loadEnvTest() {
   const path = join(repoRoot, 'apps/fastify/.env.test')
@@ -48,13 +48,6 @@ function waitForUrl(url, timeoutMs = 60_000) {
 }
 
 async function main() {
-  const build = spawn('pnpm', ['-F', '@repo/next', 'run', 'build:e2e'], {
-    cwd: repoRoot,
-    stdio: 'inherit',
-  })
-  const buildCode = await new Promise(r => build.on('exit', c => r(c ?? 1)))
-  if (buildCode !== 0) process.exit(buildCode)
-
   const loaded = loadEnvTest()
   const env = {
     ...process.env,
@@ -62,38 +55,17 @@ async function main() {
     ALLOW_TEST: 'true',
     PGLITE: 'true',
     NODE_ENV: 'test',
-    NEXT_PUBLIC_API_URL: 'http://localhost:3001',
     JWT_SECRET:
       loaded.JWT_SECRET ?? process.env.JWT_SECRET ?? 'e2e-jwt-secret-min-32-chars-for-tests',
   }
 
-  const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
-    cwd: join(repoRoot, 'apps/fastify'),
+  const fastify = spawn('pnpm', ['start:ci'], {
+    cwd: fastifyDir,
     env,
     stdio: 'ignore',
   })
-  const next = spawn('npx', ['next', 'start'], {
-    cwd: nextDir,
-    env: { ...env, PORT: '3000' },
-    stdio: 'ignore',
-  })
 
-  const killAll = (signal = 'SIGTERM') => {
-    fastify.kill(signal)
-    next.kill(signal)
-  }
-  const waitForExits = (timeoutMs = 2000) =>
-    Promise.race([
-      Promise.all([
-        new Promise(r => fastify.once('exit', r)),
-        new Promise(r => next.once('exit', r)),
-      ]),
-      new Promise(r => setTimeout(r, timeoutMs)),
-    ])
-
-  const cleanup = () => {
-    killAll('SIGTERM')
-  }
+  const cleanup = () => fastify.kill('SIGTERM')
   process.on('SIGINT', () => {
     cleanup()
     process.exit(130)
@@ -104,19 +76,14 @@ async function main() {
   })
 
   if (!(await waitForUrl('http://localhost:3001/health'))) {
-    killAll('SIGKILL')
+    fastify.kill('SIGKILL')
     process.stderr.write('E2E local: API unreachable at http://localhost:3001/health\n')
-    process.exit(1)
-  }
-  if (!(await waitForUrl('http://localhost:3000'))) {
-    killAll('SIGKILL')
-    process.stderr.write('E2E local: App unreachable at http://localhost:3000\n')
     process.exit(1)
   }
 
   const pwArgs = ['exec', 'playwright', 'test', ...process.argv.slice(2)]
   const pw = spawn('pnpm', pwArgs, {
-    cwd: nextDir,
+    cwd: fastifyDir,
     env: process.env,
     stdio: 'inherit',
   })
@@ -127,9 +94,13 @@ async function main() {
 
   await new Promise(r => pw.on('exit', r))
   cleanup()
-  await waitForExits(5000)
+  const waitForExit = (timeoutMs = 5000) =>
+    Promise.race([
+      new Promise(r => fastify.once('exit', r)),
+      new Promise(r => setTimeout(r, timeoutMs)),
+    ])
+  await waitForExit()
   if (fastify.exitCode == null) fastify.kill('SIGKILL')
-  if (next.exitCode == null) next.kill('SIGKILL')
   process.exit(exitCode)
 }
 

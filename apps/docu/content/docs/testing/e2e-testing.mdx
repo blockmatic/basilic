@@ -1,9 +1,11 @@
 ---
 title: "E2E Testing"
-description: "Playwright E2E tests for Next.js app against Fastify API."
+description: "Playwright E2E tests for Next.js app and Fastify API (Scalar login)."
 ---
 
 End-to-end tests run full user flows using Playwright. Two suites: **Next E2E** (apps/next) tests the web app + auth; **Fastify E2E** (apps/fastify) tests Scalar UI login. Both use `test@test.ai` for magic-link when `ALLOW_TEST=true`.
+
+**Root QA**: `pnpm qa` runs the full pipeline (install → checktypes → lint → build → test) and ends with `pnpm test:e2e`, which runs Fastify E2E then Next E2E via `scripts/run-e2e.mjs` (both use `test:e2e:local` to spawn servers).
 
 ## Commands
 
@@ -12,29 +14,37 @@ End-to-end tests run full user flows using Playwright. Two suites: **Next E2E** 
 | `pnpm test:e2e` (root) | Run Fastify API E2E, then Next E2E (spawns local servers) |
 | `pnpm test:e2e` (in apps/next) | Run E2E; expects URLs via env or `--app`/`--api` params |
 | `pnpm test:e2e:local` (in apps/next) | Build, spawn Fastify + Next, poll until healthy, run tests, cleanup |
-| `pnpm test:e2e:ui` | Run with Playwright UI |
-| `pnpm test:e2e:debug` | Run in debug mode |
+| `pnpm test:e2e` (in apps/fastify) | Run E2E; expects API URL via env or `--api` param |
+| `pnpm test:e2e:local` (in apps/fastify) | Spawn API, poll until healthy, run tests, cleanup |
+| `pnpm test:e2e:ui` (in apps/next or apps/fastify) | Run with Playwright UI |
+| `pnpm test:e2e:debug` (in apps/next or apps/fastify) | Run in debug mode |
 
 ## URL Configuration
 
-`test:e2e` accepts `--app` and `--api` URL params. Params override environment variables.
+`test:e2e` accepts URL params. Next: `--app` and `--api`. Fastify: `--api` only. Params override environment variables.
 
 ```bash
-# Params (both formats supported)
+# Next (both app and API)
 pnpm test:e2e --app=https://my-app.vercel.app --api=https://my-api.vercel.app
 pnpm test:e2e -- --app https://localhost:3000 --api https://localhost:3001
+
+# Fastify (API only)
+pnpm test:e2e --api=https://my-api.vercel.app
+pnpm test:e2e -- --api https://localhost:3001
 
 # Environment (defaults when no params)
 PLAYWRIGHT_APP_URL=https://... PLAYWRIGHT_API_URL=https://... pnpm test:e2e
 ```
 
-Defaults: `NEXT_PUBLIC_APP_URL` or `http://localhost:3000`; `NEXT_PUBLIC_API_URL` or `http://localhost:3001`.
+Defaults: Next `NEXT_PUBLIC_APP_URL` or `http://localhost:3000`; API `NEXT_PUBLIC_API_URL` or `http://localhost:3001`.
 
 ## Local Development
 
-1. **All-in-one** (recommended): `pnpm test:e2e:local` — builds, spawns both servers, runs tests, kills servers on exit.
-2. **Manual** (two terminals): Build first with `pnpm --filter @repo/next build:e2e`, then run `pnpm --filter @repo/next start:e2e:servers` in one terminal and `pnpm --filter @repo/next test:e2e` in another.
-3. **External URLs**: Use `--app` and `--api` to target already-running servers or Vercel previews.
+1. **Full suite** (root): `pnpm test:e2e` — runs Fastify E2E then Next E2E (both spawn servers, poll, run, cleanup).
+2. **Next only**: `pnpm --filter @repo/next test:e2e:local` — builds, spawns Fastify + Next, runs Next E2E, cleanup.
+3. **Fastify only**: `pnpm --filter @repo/fastify test:e2e:local` — spawns API, runs Scalar login E2E, cleanup.
+4. **Manual** (two terminals): Build with `pnpm --filter @repo/next build:e2e`, run `pnpm --filter @repo/next start:e2e:servers` in one terminal and `pnpm --filter @repo/next test:e2e` in another.
+5. **External URLs**: Use `--app` and `--api` (Next) or `--api` (Fastify) to target already-running servers or Vercel previews.
 
 ## Test Email (test@test.ai)
 
@@ -45,7 +55,8 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-Next CI runs `pnpm --filter @repo/next test:e2e:local` — builds, spawns Fastify + Next with PGLite, runs Playwright, uploads report on failure.
+- **Next CI**: `pnpm --filter @repo/next test:e2e:local` — builds, spawns Fastify + Next with PGLite, runs Playwright, uploads report on failure.
+- **API CI**: `pnpm --filter @repo/fastify test:e2e:local` — spawns Fastify API with PGLite, runs Playwright (Scalar login), uploads report on failure.
 
 ## Vercel Deployment Protection
 
@@ -58,6 +69,10 @@ To run E2E against Vercel preview deployments with Deployment Protection enabled
 5. **OPTIONS Allowlist** (for CORS): In Fastify project, Deployment Protection → OPTIONS Allowlist → add `/` or `/auth` so CORS preflight succeeds.
 
 See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation).
+
+## Environment Variables
+
+- **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server.
 
 ## ALLOW_TEST
 

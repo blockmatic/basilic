@@ -86,7 +86,7 @@ jobs:
           fi
 
       - name: Run E2E tests
-        run: pnpm --filter @repo/fastify test:e2e
+        run: pnpm --filter @repo/fastify test:e2e:local
 
       - name: Upload Playwright report
         if: always()
