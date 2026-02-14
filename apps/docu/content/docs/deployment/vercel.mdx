@@ -85,9 +85,11 @@ Configure deployment settings:
 
 Each Vercel project uses `ignoreCommand` in `vercel.json` to skip builds when irrelevant files change:
 
-- **docu** — Builds when `apps/docu`, `packages/ui`, `package.json`, or `pnpm-lock.yaml` change
-- **next** — Builds when `apps/next`, `packages`, `package.json`, or `pnpm-lock.yaml` change
-- **fastify** — Builds when `apps/fastify`, `apps/next`, or their dependencies change (see Branch Preview Coupling below)
+- **docu** — Uses `turbo-ignore @repo/docu` (Turbo dependency graph). Skips when only other apps change.
+- **next** — Uses `turbo-ignore @repo/next` (Turbo dependency graph). Skips when only other apps change.
+- **fastify** — Uses `scripts/vercel-ignore.sh` with custom paths including `apps/next` (see Branch Preview Coupling below)
+
+`turbo-ignore` and the fastify script use `--fallback=HEAD~10` / `HEAD~10` when `VERCEL_GIT_PREVIOUS_SHA` is empty (first deploy, PR preview), avoiding unnecessary builds.
 
 ## Branch Preview Coupling
 
