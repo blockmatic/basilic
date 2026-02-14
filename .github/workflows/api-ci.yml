@@ -87,12 +87,10 @@ jobs:
 
       - name: Get branch ref for Vercel deployment URL
         id: vercel-url
+        env:
+          REF_INPUT: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            REF="${{ github.head_ref }}"
-          else
-            REF="${GITHUB_REF#refs/heads/}"
-          fi
+          REF="${REF_INPUT:-}"
           SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-\|-$//g' | cut -c1-63)
           URL="https://basilic-fastify-git-${SLUG}-gaboesquivel.vercel.app"
           echo "url=${URL}" >> "$GITHUB_OUTPUT"
