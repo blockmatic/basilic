@@ -10,6 +10,8 @@ Start database first (`pnpm db:start`), then `pnpm dev`. Uses Supabase CLI for P
 
 Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time; PGLite migrations run at runtime.
 
+**OPTIONS Allowlist (CORS preflight):** When Deployment Protection is enabled on preview deployments, add `/` (or `/auth`) to **Project Settings > Deployment Protection > OPTIONS Allowlist**. Otherwise, preflight OPTIONS requests are blocked before reaching Fastify and CORS fails for cross-origin clients.
+
 ## Testing
 
 Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest loads it when present.
