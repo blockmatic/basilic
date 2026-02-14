@@ -25,14 +25,14 @@
     "test": "echo \"no test\""
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.90.8",
+    "@hey-api/openapi-ts": "^0.92.4",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/utils": "workspace:*",
+    "@typescript/native-preview": "7.0.0-dev.20260213.1",
     "chokidar-cli": "^3.0.0",
-    "eslint": "*",
-    "tsup": "*",
-    "tsx": "^4.21.0",
-    "@typescript/native-preview": "7.0.0-dev.20260124.1"
+    "eslint": "^10.0.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0"
   }
 }

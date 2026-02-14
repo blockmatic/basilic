@@ -32,25 +32,25 @@
     "start": "email start"
   },
   "dependencies": {
-    "@react-email/components": "1.0.6",
+    "@react-email/components": "1.0.7",
     "@react-email/render": "2.0.4",
-    "@react-email/tailwind": "2.0.3",
+    "@react-email/tailwind": "2.0.4",
     "@repo/ui": "workspace:*",
     "date-fns": "^4.1.0",
-    "react-email": "5.2.5"
+    "react-email": "5.2.8"
   },
   "peerDependencies": {
     "react": "^19.0.0"
   },
   "devDependencies": {
-    "@react-email/preview-server": "5.2.5",
+    "@react-email/preview-server": "5.2.8",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "*",
-    "@types/react": "*",
-    "@typescript/native-preview": "7.0.0-dev.20260124.1",
-    "cross-env": "^7.0.3",
-    "eslint": "*",
-    "react": "^19.2.3"
+    "@types/node": "^25.2.3",
+    "@types/react": "^19.2.14",
+    "@typescript/native-preview": "7.0.0-dev.20260213.1",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.0.0",
+    "react": "^19.2.4"
   }
 }

@@ -16,7 +16,6 @@ jobs:
       PGLITE: true
       DATABASE_URL: postgresql://localhost/test
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-lint' }}
-      PLAYWRIGHT_HTML_REPORT_OPEN: never
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

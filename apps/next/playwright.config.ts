@@ -2,13 +2,6 @@ import { defineConfig, devices } from '@playwright/test'
 
 const isCi = !!process.env.CI
 const reuseServer = process.env.PLAYWRIGHT_REUSE_SERVER === 'true'
-const htmlReportOpenEnv = process.env.PLAYWRIGHT_HTML_REPORT_OPEN
-const htmlReportOpen =
-  htmlReportOpenEnv === 'always' ||
-  htmlReportOpenEnv === 'never' ||
-  htmlReportOpenEnv === 'on-failure'
-    ? htmlReportOpenEnv
-    : 'never'
 
 export default defineConfig({
   testDir: './e2e',
@@ -16,7 +9,7 @@ export default defineConfig({
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
   workers: isCi ? 1 : undefined,
-  reporter: isCi ? 'github' : [['html', { open: htmlReportOpen }]],
+  reporter: isCi ? 'github' : 'list',
   globalSetup: './e2e/playwright-global-setup.ts',
   globalTeardown: './e2e/playwright-global-teardown.ts',
   use: {

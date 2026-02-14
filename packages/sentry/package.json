@@ -48,10 +48,10 @@
   },
   "peerDependencies": {
     "@repo/utils": "workspace:*",
-    "pino": "*",
     "@sentry/browser": "^10.34.0",
     "@sentry/nextjs": "^10.34.0",
     "@sentry/node": "^10.34.0",
+    "pino": "*",
     "react": "^19.0.0"
   },
   "peerDependenciesMeta": {
@@ -68,15 +68,15 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@sentry/browser": "^10.36.0",
-    "@sentry/nextjs": "^10.36.0",
-    "@sentry/node": "^10.36.0",
-    "@types/node": "*",
-    "@types/react": "*",
-    "eslint": "*",
-    "react": "^19.2.3",
-    "tsup": "*",
-    "@typescript/native-preview": "7.0.0-dev.20260124.1",
-    "vitest": "*"
+    "@sentry/browser": "^10.38.0",
+    "@sentry/nextjs": "^10.38.0",
+    "@sentry/node": "^10.38.0",
+    "@types/node": "^25.2.3",
+    "@types/react": "^19.2.14",
+    "@typescript/native-preview": "7.0.0-dev.20260213.1",
+    "eslint": "^10.0.0",
+    "react": "^19.2.4",
+    "tsup": "^8.5.1",
+    "vitest": "^4.0.18"
   }
 }

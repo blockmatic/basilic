@@ -31,9 +31,10 @@ if (env.SENTRY_DSN) {
   })
 }
 
+const isTestOrCi = env.NODE_ENV === 'test' || process.env.CI === 'true'
 const fastify = Fastify({
   logger: {
-    level: env.NODE_ENV === 'production' ? 'info' : 'debug',
+    level: isTestOrCi ? 'silent' : env.NODE_ENV === 'production' ? 'info' : 'debug',
     transport:
       env.NODE_ENV === 'development'
         ? {

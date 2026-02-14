@@ -38,7 +38,6 @@ jobs:
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
       NEXT_PUBLIC_API_URL: http://localhost:3001
-      PLAYWRIGHT_HTML_REPORT_OPEN: never
     steps:
       - name: Verify OPEN_ROUTER_API_KEY for E2E
         env:

@@ -138,6 +138,10 @@ NEXT_PUBLIC_LOG_LEVEL=info
 
 **Important**: Client-side logs are disabled in production by default. This means log statements won't execute, improving performance and reducing bundle size.
 
+### CI and Test Environments
+
+When running in CI (`CI=true`), or when `NODE_ENV=test` or `VITEST` is set (e.g. Vitest, Playwright E2E), the default log level is `silent` for both server and client. This reduces noise during tests. To enable logs for debugging, set `LOG_LEVEL=debug` (or `info`, `warn`, `error`) in `.env.test` or pass it when running tests.
+
 ## Architecture
 
 ### Build-Time Conditional Exports

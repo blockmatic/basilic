@@ -1,13 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const isCi = !!process.env.CI
-const htmlReportOpenEnv = process.env.PLAYWRIGHT_HTML_REPORT_OPEN
-const htmlReportOpen =
-  htmlReportOpenEnv === 'always' ||
-  htmlReportOpenEnv === 'never' ||
-  htmlReportOpenEnv === 'on-failure'
-    ? htmlReportOpenEnv
-    : 'never'
 
 export default defineConfig({
   testDir: './test',
@@ -16,7 +9,7 @@ export default defineConfig({
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
   workers: isCi ? 1 : undefined,
-  reporter: isCi ? 'github' : [['html', { open: htmlReportOpen }]],
+  reporter: isCi ? 'github' : 'list',
   globalSetup: './test/playwright-global-setup.ts',
   globalTeardown: './test/playwright-global-teardown.ts',
   use: {
