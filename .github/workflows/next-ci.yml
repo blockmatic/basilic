@@ -87,7 +87,7 @@ jobs:
           fi
 
       - name: Run E2E tests
-        run: node scripts/run-next-e2e.mjs
+        run: pnpm --filter @repo/next test:e2e:local
 
       - name: Upload Playwright report
         if: always()

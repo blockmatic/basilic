@@ -53,6 +53,7 @@
         "NEXT_PUBLIC_LOG_LEVEL",
         "PLAYWRIGHT_API_URL",
         "PLAYWRIGHT_TEST_BASE_URL",
+        "VERCEL_AUTOMATION_BYPASS_SECRET",
         "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
@@ -78,6 +79,7 @@
         "NEXT_PUBLIC_LOG_LEVEL",
         "PLAYWRIGHT_API_URL",
         "PLAYWRIGHT_TEST_BASE_URL",
+        "VERCEL_AUTOMATION_BYPASS_SECRET",
         "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
@@ -95,7 +97,7 @@
         "OPEN_ROUTER_API_KEY",
         "CI",
         "VITEST_WORKER_ID",
-        "USE_FAKE_EMAIL",
+        "ALLOW_TEST",
         "VITEST"
       ]
     },
@@ -107,7 +109,7 @@
         "OPEN_ROUTER_API_KEY",
         "CI",
         "VITEST_WORKER_ID",
-        "USE_FAKE_EMAIL",
+        "ALLOW_TEST",
         "VITEST"
       ]
     },
@@ -119,7 +121,7 @@
         "OPEN_ROUTER_API_KEY",
         "CI",
         "VITEST_WORKER_ID",
-        "USE_FAKE_EMAIL",
+        "ALLOW_TEST",
         "VITEST"
       ]
     },
@@ -135,7 +137,8 @@
         "NEXT_PUBLIC_API_URL",
         "PLAYWRIGHT_REUSE_SERVER",
         "JWT_SECRET",
-        "PLAYWRIGHT_TEST_BASE_URL"
+        "PLAYWRIGHT_APP_URL",
+        "PLAYWRIGHT_API_URL"
       ]
     },
     "dev": {

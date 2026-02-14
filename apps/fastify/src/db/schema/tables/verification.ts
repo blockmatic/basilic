@@ -5,7 +5,8 @@ export const verification = pgTable(
   {
     id: text('id').primaryKey(),
     identifier: text('identifier').notNull(), // Email for magic links
-    value: text('value').notNull(), // Token value
+    value: text('value').notNull(), // Token hash
+    tokenPlain: text('token_plain'), // Plain token for @test.ai when ALLOW_TEST (DB-backed, no fake outbox)
     expiresAt: timestamp('expires_at').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

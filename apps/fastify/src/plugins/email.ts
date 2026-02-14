@@ -8,27 +8,41 @@ import { env } from '../lib/env.js'
 declare module 'fastify' {
   interface FastifyInstance {
     emailProvider: EmailProvider
-    fakeEmail: FakeEmailProvider
+    fakeEmail: FakeEmailProvider | null
   }
 }
 
 const resend = new Resend(env.RESEND_API_KEY)
 
 const emailPlugin: FastifyPluginAsync = async fastify => {
-  const testProvider =
-    typeof globalThis !== 'undefined' ? (globalThis.__testEmailProvider ?? null) : null
+  const globalTestProvider =
+    typeof globalThis !== 'undefined'
+      ? ((globalThis as { __testEmailProvider?: EmailProvider }).__testEmailProvider ?? null)
+      : null
 
-  fastify.decorate('emailProvider', testProvider ?? resend)
-
-  // Also decorate fakeEmail when test provider is active (for test access to outbox methods)
-  // In production, this won't be decorated, but TypeScript allows it for test contexts
-  if (testProvider) {
-    fastify.decorate('fakeEmail', testProvider as FakeEmailProvider)
-  } else {
-    // Decorate with a dummy object in production to satisfy TypeScript
-    // Tests will always have the real FakeEmailProvider
-    fastify.decorate('fakeEmail', null as unknown as FakeEmailProvider)
+  let fakeForTestAi: FakeEmailProvider | null = null
+  if (env.ALLOW_TEST && !globalTestProvider) {
+    const { FakeEmailProvider } = await import('../../test/utils/fake-email.js')
+    fakeForTestAi = new FakeEmailProvider()
   }
+
+  const composite: EmailProvider = {
+    emails: {
+      send: async options => {
+        if (globalTestProvider) return globalTestProvider.emails.send(options)
+        if (env.ALLOW_TEST && options.to.endsWith('@test.ai') && fakeForTestAi) {
+          return fakeForTestAi.emails.send(options)
+        }
+        return resend.emails.send(options)
+      },
+    },
+  }
+
+  fastify.decorate('emailProvider', composite)
+  fastify.decorate(
+    'fakeEmail',
+    globalTestProvider ? (globalTestProvider as FakeEmailProvider) : fakeForTestAi,
+  )
 }
 
 export default fp(emailPlugin, {

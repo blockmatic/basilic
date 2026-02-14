@@ -1,7 +1,8 @@
 import type { Page } from '@playwright/test'
 
-const TEST_EMAIL = 'test@example.com'
-const API_URL = 'http://localhost:3001'
+const TEST_EMAIL = 'test@test.ai'
+const API_URL =
+  process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 
 export const authHelpers = {
   TEST_EMAIL,

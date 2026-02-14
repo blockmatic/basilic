@@ -1,9 +1,14 @@
+import { like } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { getDb } from '../../db/index.js'
+import { verification } from '../../db/schema/index.js'
 import { fastify } from './test.spec.js'
 
 describe('GET /test/magic-link/last', () => {
-  beforeEach(() => {
-    fastify.fakeEmail?.clear()
+  beforeEach(async () => {
+    fastify.fakeEmail?.clear?.()
+    const db = await getDb()
+    await db.delete(verification).where(like(verification.identifier, '%@test.ai'))
   })
 
   it('should return null when no magic link has been sent', async () => {
@@ -18,7 +23,7 @@ describe('GET /test/magic-link/last', () => {
   })
 
   it('should return token after magic link is sent', async () => {
-    const email = 'test@example.com'
+    const email = 'test@test.ai'
     const callbackUrl = 'https://example.com/callback'
 
     await fastify.inject({

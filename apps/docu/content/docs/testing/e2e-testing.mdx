@@ -1,0 +1,81 @@
+---
+title: "E2E Testing"
+description: "Playwright E2E tests for Next.js app against Fastify API."
+---
+
+End-to-end tests run full user flows using Playwright. Two suites: **Next E2E** (apps/next) tests the web app + auth; **Fastify E2E** (apps/fastify) tests Scalar UI login. Both use `test@test.ai` for magic-link when `ALLOW_TEST=true`.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm test:e2e` (root) | Run Fastify API E2E, then Next E2E (spawns local servers) |
+| `pnpm test:e2e` (in apps/next) | Run E2E; expects URLs via env or `--app`/`--api` params |
+| `pnpm test:e2e:local` (in apps/next) | Build, spawn Fastify + Next, poll until healthy, run tests, cleanup |
+| `pnpm test:e2e:ui` | Run with Playwright UI |
+| `pnpm test:e2e:debug` | Run in debug mode |
+
+## URL Configuration
+
+`test:e2e` accepts `--app` and `--api` URL params. Params override environment variables.
+
+```bash
+# Params (both formats supported)
+pnpm test:e2e --app=https://my-app.vercel.app --api=https://my-api.vercel.app
+pnpm test:e2e -- --app https://localhost:3000 --api https://localhost:3001
+
+# Environment (defaults when no params)
+PLAYWRIGHT_APP_URL=https://... PLAYWRIGHT_API_URL=https://... pnpm test:e2e
+```
+
+Defaults: `NEXT_PUBLIC_APP_URL` or `http://localhost:3000`; `NEXT_PUBLIC_API_URL` or `http://localhost:3001`.
+
+## Local Development
+
+1. **All-in-one** (recommended): `pnpm test:e2e:local` — builds, spawns both servers, runs tests, kills servers on exit.
+2. **Manual** (two terminals): Build first with `pnpm --filter @repo/next build:e2e`, then run `pnpm --filter @repo/next start:e2e:servers` in one terminal and `pnpm --filter @repo/next test:e2e` in another.
+3. **External URLs**: Use `--app` and `--api` to target already-running servers or Vercel previews.
+
+## Test Email (test@test.ai)
+
+Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is stored in the database (`verification.token_plain`) and read from `/test/magic-link/last`. No fake outbox; works with Vercel serverless (shared DB across instances).
+
+- **Local**: `test:e2e:local` and `start:ci` set `ALLOW_TEST=true`.
+- **Vercel previews**: Set `ALLOW_TEST=true` for the Preview environment in project env vars.
+
+## CI
+
+Next CI runs `pnpm --filter @repo/next test:e2e:local` — builds, spawns Fastify + Next with PGLite, runs Playwright, uploads report on failure.
+
+## Vercel Deployment Protection
+
+To run E2E against Vercel preview deployments with Deployment Protection enabled:
+
+1. **Protection Bypass for Automation**: In each project (Next, Fastify): Settings → Deployment Protection → Protection Bypass for Automation → enable → generate secret.
+2. Use the same bypass secret for both projects.
+3. Add `VERCEL_AUTOMATION_BYPASS_SECRET` to GitHub secrets.
+4. When running E2E, set `VERCEL_AUTOMATION_BYPASS_SECRET` in the env. Playwright adds `x-vercel-protection-bypass` and `x-vercel-set-bypass-cookie` headers automatically.
+5. **OPTIONS Allowlist** (for CORS): In Fastify project, Deployment Protection → OPTIONS Allowlist → add `/` or `/auth` so CORS preflight succeeds.
+
+See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation).
+
+## ALLOW_TEST
+
+`ALLOW_TEST=true` enables:
+
+- Fake email for `@test.ai` (no Resend)
+- DB-backed token storage for `/test/magic-link/last`
+- Production guard: server exits if `ALLOW_TEST` is true in production
+
+## Troubleshooting
+
+- **Tests fail with unreachable URLs**: Ensure both servers are running, or pass correct `--app` / `--api` URLs.
+- **Token extraction fails**: Verify `ALLOW_TEST=true` and email is `test@test.ai`.
+- **Vercel CORS errors**: Add `/` or `/auth` to OPTIONS Allowlist in Fastify Deployment Protection.
+- **Protection bypass not working**: Ensure `VERCEL_AUTOMATION_BYPASS_SECRET` matches the secret in both Vercel projects.
+
+## Related
+
+- [Frontend Testing](/docs/testing/frontend-testing) - Unit and integration patterns
+- [GitHub Actions](/docs/deployment/github-actions) - CI workflow
+- [Vercel Deployment](/docs/deployment/vercel) - Preview deployment and env vars

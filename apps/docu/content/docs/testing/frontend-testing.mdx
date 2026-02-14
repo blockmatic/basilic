@@ -155,16 +155,10 @@ describe('WalletIntegration', () => {
 - **Location**: `e2e/**/*.spec.ts`
 - **Pattern**: Test full user flows with real infrastructure
 - **Real APIs**: All tests use real APIs and infrastructure
-- **Tools**: Use Playwright or Cypress
-- **Server Setup**: Playwright automatically starts both Fastify API server and Next.js frontend server
+- **Tools**: Playwright
+- **Commands**: `pnpm test:e2e:local` (spawn servers) or `pnpm test:e2e` (URLs from env/params)
 
-**Server Configuration:**
-
-E2E tests use the real Fastify server (not mocks). Playwright's `webServer` configuration automatically starts both servers:
-
-- **Fastify API**: Runs on port 3001 (dev mode locally, start mode in CI)
-- **Next.js Frontend**: Runs on port 3000
-- Tests wait for both servers to be ready before running
+See [E2E Testing](/docs/testing/e2e-testing) for full documentation.
 
 **Example Structure:**
 ```typescript
@@ -176,11 +170,11 @@ test.describe('Magic Link Auth E2E', () => {
     await page.goto('http://localhost:3000')
     
     // Submit form (makes real API call to Fastify server)
-    await page.fill('input[type="email"]', 'test@example.com')
+    await page.fill('input[type="email"]', 'test@test.ai')
     await page.click('button[type="submit"]')
     
     // Extract token from real Fastify test endpoint
-    const response = await fetch('http://localhost:3001/api/test/last-magic-link')
+    const response = await fetch('http://localhost:3001/test/magic-link/last')
     const { token } = await response.json()
     
     // Verify magic link (uses Next.js BFF + Fastify)
@@ -355,7 +349,7 @@ fetchMock.mockResolvedValueOnce({
 
 ### When NOT to Mock
 
-- **E2E Tests**: Never mock — E2E tests use real Fastify and Next.js servers (started via `scripts/run-next-e2e.mjs` in CI or Playwright webServer locally)
+- **E2E Tests**: Never mock — E2E tests use real Fastify and Next.js servers (started via `pnpm test:e2e:local` in CI or manually)
 - **Integration Tests**: Never mock API calls - use real endpoints
 - **Component Tests with Real Data**: Prefer real APIs when testing data fetching and display
 - **TanStack Query**: Never mock TanStack Query hooks

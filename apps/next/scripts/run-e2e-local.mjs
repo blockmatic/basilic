@@ -1,17 +1,16 @@
 #!/usr/bin/env node
-import { spawn } from 'node:child_process'
 /**
- * Runs Next.js e2e tests with servers started separately.
- * Use when Playwright's webServer causes exit 137 (OOM kill) on constrained VMs.
- *
- * OPEN_ROUTER_API_KEY: loaded from apps/fastify/.env.test (local) or CI secrets.
+ * E2E local: build, spawn Fastify + Next, poll until healthy, run Playwright, cleanup on exit.
+ * No wait-on. Uses ALLOW_TEST, PGLITE, DB-backed token for @test.ai.
  */
+import { spawn } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
-const repoRoot = dirname(scriptDir)
+const nextDir = dirname(scriptDir)
+const repoRoot = dirname(dirname(nextDir))
 
 function loadEnvTest() {
   const path = join(repoRoot, 'apps/fastify/.env.test')
@@ -23,14 +22,15 @@ function loadEnvTest() {
     if (idx < 0 || line.startsWith('#')) continue
     const key = line.slice(0, idx).trim()
     let val = line.slice(idx + 1).trim()
-    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
       val = val.slice(1, -1)
+    }
     out[key] = val
   }
   return out
 }
 
-function waitForUrl(url, timeoutMs = 30000) {
+function waitForUrl(url, timeoutMs = 60_000) {
   const start = Date.now()
   return new Promise(resolve => {
     const check = async () => {
@@ -58,7 +58,7 @@ async function main() {
   const env = {
     ...process.env,
     ...loadEnvTest(),
-    USE_FAKE_EMAIL: 'true',
+    ALLOW_TEST: 'true',
     PGLITE: 'true',
     NODE_ENV: 'test',
     NEXT_PUBLIC_API_URL: 'http://localhost:3001',
@@ -66,11 +66,11 @@ async function main() {
 
   const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
     cwd: join(repoRoot, 'apps/fastify'),
-    env: { ...env },
+    env,
     stdio: 'ignore',
   })
   const next = spawn('npx', ['next', 'start'], {
-    cwd: join(repoRoot, 'apps/next'),
+    cwd: nextDir,
     env: { ...env, PORT: '3000' },
     stdio: 'ignore',
   })
@@ -87,39 +87,50 @@ async function main() {
       ]),
       new Promise(r => setTimeout(r, timeoutMs)),
     ])
+
+  const cleanup = () => {
+    killAll('SIGTERM')
+  }
   process.on('SIGINT', () => {
-    killAll()
+    cleanup()
     process.exit(130)
   })
   process.on('SIGTERM', () => {
-    killAll()
+    cleanup()
     process.exit(143)
   })
 
   if (!(await waitForUrl('http://localhost:3001/health'))) {
     killAll('SIGKILL')
+    process.stderr.write('E2E local: API unreachable at http://localhost:3001/health\n')
     process.exit(1)
   }
   if (!(await waitForUrl('http://localhost:3000'))) {
     killAll('SIGKILL')
+    process.stderr.write('E2E local: App unreachable at http://localhost:3000\n')
     process.exit(1)
   }
 
-  const pwArgs = ['-F', '@repo/next', 'exec', 'playwright', 'test', ...process.argv.slice(2)]
+  const pwArgs = ['exec', 'playwright', 'test', ...process.argv.slice(2)]
   const pw = spawn('pnpm', pwArgs, {
-    cwd: repoRoot,
-    env: { ...process.env, PLAYWRIGHT_REUSE_SERVER: 'true' },
+    cwd: nextDir,
+    env: process.env,
     stdio: 'inherit',
   })
-  const code = await new Promise(r => pw.on('exit', c => r(c ?? 1)))
-  killAll('SIGTERM')
+  let exitCode = 0
+  pw.on('exit', c => {
+    exitCode = c ?? 1
+  })
+
+  await new Promise(r => pw.on('exit', r))
+  cleanup()
   await waitForExits(5000)
   if (fastify.exitCode == null) fastify.kill('SIGKILL')
   if (next.exitCode == null) next.kill('SIGKILL')
-  process.exit(code)
+  process.exit(exitCode)
 }
 
 main().catch(err => {
-  console.error(err)
+  process.stderr.write(`${String(err)}\n`)
   process.exit(1)
 })

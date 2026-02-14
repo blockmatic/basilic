@@ -15,7 +15,7 @@ Unit and E2E tests for the Next.js app. Runs when `apps/next`, `scripts/`, or de
 
 - Build (`turbo build --filter=@repo/next...`)
 - Unit tests (`turbo test --filter=@repo/next`)
-- E2E tests (`node scripts/run-next-e2e.mjs`) — spawns Fastify and Next as peer processes, then runs Playwright with `PLAYWRIGHT_REUSE_SERVER=true` to avoid OOM (exit 137) on CI runners
+- E2E tests (`pnpm --filter @repo/next test:e2e:local`) — spawns Fastify and Next, polls until healthy, runs Playwright, cleanup on exit. See [E2E Testing](/docs/testing/e2e-testing).
 
 ### API CI (`api-ci.yml`)
 

@@ -31,7 +31,7 @@ export default defineConfig({
     stdout: 'pipe',
     stderr: 'pipe',
     env: {
-      USE_FAKE_EMAIL: 'true',
+      ALLOW_TEST: 'true',
       PGLITE: 'true',
     },
   },

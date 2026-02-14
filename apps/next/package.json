@@ -29,11 +29,11 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:cov": "vitest run --coverage",
-    "test:e2e": "node ../../scripts/run-next-e2e.mjs",
-    "test:e2e:reuse": "playwright test",
-    "start:e2e:servers": "node scripts/start-e2e-servers.mjs",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e": "node scripts/run-e2e.mjs",
+    "test:e2e:local": "node scripts/run-e2e-local.mjs",
+    "test:e2e:ui": "pnpm test:e2e -- --ui",
+    "test:e2e:debug": "pnpm test:e2e -- --debug",
+    "start:e2e:servers": "node scripts/start-e2e-servers.mjs"
   },
   "dependencies": {
     "@lukemorales/query-key-factory": "^1.3.4",

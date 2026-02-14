@@ -71,11 +71,13 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       const tokenHash = hashToken(token)
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
 
-      // Store verification record
+      const storePlain =
+        env.ALLOW_TEST === true && typeof email === 'string' && email.endsWith('@test.ai')
       await db.insert(verification).values({
         id: randomUUID(),
         identifier: email,
         value: tokenHash,
+        ...(storePlain && { tokenPlain: token }),
         expiresAt,
       })
 

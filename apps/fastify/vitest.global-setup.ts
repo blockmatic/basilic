@@ -11,8 +11,8 @@
 
 // Set NODE_ENV to 'test' to signal test context (env.ts uses this to detect test mode)
 process.env.NODE_ENV = 'test'
-// Force fake email provider for all tests (deterministic override)
-process.env.USE_FAKE_EMAIL = 'true'
+// Force ALLOW_TEST for unit tests (fake email + DB-backed token for @test.ai)
+process.env.ALLOW_TEST = 'true'
 
 import type { GlobalSetupContext } from 'vitest/node'
 
