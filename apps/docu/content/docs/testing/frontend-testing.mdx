@@ -192,6 +192,47 @@ test.describe('Magic Link Auth E2E', () => {
 })
 ```
 
+**E2E Authentication and Fixtures**
+
+- **workers: 1** — Required for PGlite (Fastify test DB) to avoid concurrent writer issues
+- **Test order** — Auth project first (magic-link-auth: error tests, login/logout; ends with logout). Chromium: unauth badge tests first, then first authed test triggers fixture and confirms session, then remaining authed tests run consecutively
+- **Session model** — One login per worker via `authenticatedStorageState` fixture; cookies/storage saved to `test-results/.auth/user.json` (gitignored); each authed test gets a new context created with that storageState. No per-test login
+- **Login/logout tests** — Import from `@playwright/test`, use `page`; need fresh contexts to verify the flow
+- **Authed feature tests** — Import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body. Each test gets a fresh context with saved storageState; navigate to target route (e.g. `goto('/')`) before asserting
+- **Chat E2E** — Disabled for now (`test.describe.skip`); to be tested in a later iteration
+
+Example for authed tests:
+
+```typescript
+import { expect, test } from './fixtures'
+
+test('should show dashboard when authenticated', async ({ authenticatedPage }) => {
+  await authenticatedPage.goto('/')  // fresh context with storageState; navigate before assert
+  await expect(authenticatedPage.locator('text=Signed In')).toBeVisible()
+})
+```
+
+Execution flow: Auth (error, login, logout) → Badge unauth (API OK login, Signed Out, both on login) → First authed test (triggers login, confirms Signed In) → Remaining authed tests (badges, chat, etc.)
+
+```mermaid
+flowchart TB
+  subgraph auth [Auth Project]
+    authErrors[Error tests]
+    authLoginLogout[Login and logout tests]
+  end
+  subgraph chromium [Chromium Project]
+    badgeUnauth[Badge unauth tests: API OK login, Signed Out, both on login]
+    badgeLogin[First authed test triggers fixture: login]
+    badgeSignIn[Signed In badge confirms shared session]
+    badgeOthers[API OK dashboard, both badges dashboard]
+    otherAuthed[Chat and future authed tests]
+  end
+  auth --> badgeUnauth
+  authLoginLogout -->|ends with logout| badgeUnauth
+  badgeUnauth --> badgeLogin
+  badgeLogin --> badgeSignIn --> badgeOthers --> otherAuthed
+```
+
 ## Test Coverage Requirements
 
 ### Required Coverage

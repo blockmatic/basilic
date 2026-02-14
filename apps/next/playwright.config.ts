@@ -8,7 +8,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
-  workers: isCi ? 1 : undefined,
+  workers: 1,
   reporter: isCi ? 'github' : 'list',
   globalSetup: './e2e/playwright-global-setup.ts',
   globalTeardown: './e2e/playwright-global-teardown.ts',
@@ -19,7 +19,14 @@ export default defineConfig({
   },
   projects: [
     {
+      name: 'auth',
+      testMatch: '**/magic-link-auth.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
       name: 'chromium',
+      testMatch: '**/*.spec.ts',
+      testIgnore: '**/magic-link-auth.spec.ts',
       use: { ...devices['Desktop Chrome'] },
     },
   ],

@@ -1,0 +1,23 @@
+---
+description: Playwright E2E patterns for Next.js
+glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts"
+---
+
+## Config
+- workers: 1 (PGlite does not support concurrent writers)
+- projects: auth first (`magic-link-auth.spec.ts`), chromium second (all other specs)
+
+## Session Model
+- Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
+- One login per worker, then navigate and assert. No per-test login for authed tests
+- Session reused via worker-scoped storageState (saved after login, new context per test)
+
+## Test Order
+- Auth project first: error tests, then login/logout tests (ends with logout)
+- Chromium project: unauth tests first (logged-out state), then first authed test triggers fixture (login) and confirms session, then all remaining authed tests run consecutively
+- Authed tests must run consecutively — no unauth test between them
+
+## Auth Fixtures
+- Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)
+- Authed feature tests: import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body
+- Each authed test must navigate to its target route (e.g. `authenticatedPage.goto('/')`) since the same page is reused
