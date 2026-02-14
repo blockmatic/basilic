@@ -49,14 +49,20 @@ function waitForUrl(url, timeoutMs = 60_000) {
 
 async function main() {
   const loaded = loadEnvTest()
+  const jwtSecret = loaded.JWT_SECRET ?? process.env.JWT_SECRET
+  if (!jwtSecret) {
+    process.stderr.write(
+      'E2E local: JWT_SECRET must be set in .env.test or process.env. Refusing to run without it.\n',
+    )
+    process.exit(1)
+  }
   const env = {
     ...process.env,
     ...loaded,
     ALLOW_TEST: 'true',
     PGLITE: 'true',
     NODE_ENV: 'test',
-    JWT_SECRET:
-      loaded.JWT_SECRET ?? process.env.JWT_SECRET ?? 'e2e-jwt-secret-min-32-chars-for-tests',
+    JWT_SECRET: jwtSecret,
   }
 
   const fastify = spawn('pnpm', ['start:ci'], {
@@ -84,7 +90,7 @@ async function main() {
   const pwArgs = ['exec', 'playwright', 'test', ...process.argv.slice(2)]
   const pw = spawn('pnpm', pwArgs, {
     cwd: fastifyDir,
-    env: process.env,
+    env,
     stdio: 'inherit',
   })
   let exitCode = 0

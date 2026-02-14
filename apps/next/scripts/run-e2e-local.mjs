@@ -117,7 +117,7 @@ async function main() {
   const pwArgs = ['exec', 'playwright', 'test', ...process.argv.slice(2)]
   const pw = spawn('pnpm', pwArgs, {
     cwd: nextDir,
-    env: process.env,
+    env,
     stdio: 'inherit',
   })
   let exitCode = 0
