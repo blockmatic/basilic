@@ -81,6 +81,20 @@ Configure deployment settings:
 - Uses production environment variables
 - Custom domain configuration
 
+## Path-Based Builds
+
+Each Vercel project uses `ignoreCommand` in `vercel.json` to skip builds when irrelevant files change:
+
+- **docu** — Builds when `apps/docu`, `packages/ui`, `package.json`, or `pnpm-lock.yaml` change
+- **next** — Builds when `apps/next`, `packages`, `package.json`, or `pnpm-lock.yaml` change
+- **fastify** — Builds when `apps/fastify`, `apps/next`, or their dependencies change (see Branch Preview Coupling below)
+
+## Branch Preview Coupling
+
+Next's `apps/next/next.config.mjs` computes `NEXT_PUBLIC_API_URL` for preview deployments as `basilic-fastify-git-{branch}-*.vercel.app`. A Next branch preview expects a matching Fastify branch deployment for that same branch. If Fastify skipped when only Next changes, the preview would point at a non-existent API URL.
+
+**Fastify must build every time Next changes** so branch instances can connect. The Fastify `ignoreCommand` includes `apps/next` in its diff paths for this reason.
+
 ## Monorepo Configuration
 
 For monorepo apps, Vercel needs to know the root directory:

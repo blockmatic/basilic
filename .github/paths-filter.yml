@@ -1,0 +1,33 @@
+next:
+  - 'apps/next/**'
+  - 'packages/core/**'
+  - 'packages/react/**'
+  - 'packages/ui/**'
+  - 'packages/utils/**'
+  - 'packages/eslint-config/**'
+  - 'packages/typescript-config/**'
+  - 'apps/fastify/openapi/**'
+  - 'pnpm-lock.yaml'
+  - 'package.json'
+  - 'turbo.json'
+
+api:
+  - 'apps/fastify/**'
+  - 'packages/email/**'
+  - 'packages/sentry/**'
+  - 'packages/utils/**'
+  - 'packages/ui/**'
+  - 'packages/eslint-config/**'
+  - 'packages/typescript-config/**'
+  - 'pnpm-lock.yaml'
+  - 'package.json'
+  - 'turbo.json'
+
+docu:
+  - 'apps/docu/**'
+  - 'packages/ui/**'
+  - 'packages/eslint-config/**'
+  - 'packages/typescript-config/**'
+  - 'pnpm-lock.yaml'
+  - 'package.json'
+  - 'turbo.json'

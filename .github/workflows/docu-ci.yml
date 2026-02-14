@@ -1,18 +1,10 @@
-name: Unit Tests
+name: Docu CI
 
 on:
   pull_request:
-    paths:
-      - 'apps/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
   push:
     branches:
       - main
-    paths:
-      - 'apps/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
   workflow_dispatch:
 
 concurrency:
@@ -20,14 +12,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit-tests:
-    name: Unit Tests
+  paths:
+    name: Paths
+    runs-on: ubuntu-latest
+    outputs:
+      docu: ${{ steps.filter.outputs.docu }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: .github/paths-filter.yml
+
+  docu-ci:
+    name: Docu Build
+    needs: paths
+    if: needs.paths.outputs.docu == 'true'
     runs-on: ubuntu-latest
     env:
-      NODE_ENV: test
       PGLITE: true
       DATABASE_URL: postgresql://localhost/test
-      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -59,7 +65,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm turbo run build
-
-      - name: Run unit tests
-        run: pnpm turbo run test
+        run: pnpm turbo run build --filter=@repo/docu...

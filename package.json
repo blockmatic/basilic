@@ -4,7 +4,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "qa": "pnpm i --no-frozen-lockfile && turbo run checktypes --concurrency=100% && pnpm lint:fix && pnpm build && turbo run test --concurrency=100%",
+    "qa": "pnpm i --no-frozen-lockfile && turbo run checktypes --concurrency=100% && pnpm lint:fix && pnpm build && turbo run test --concurrency=100% && pnpm test:e2e",
     "checktypes": "turbo checktypes",
     "format": "biome format . --write",
     "lint": "pnpm lint:biome && pnpm lint:eslint",
@@ -14,7 +14,7 @@
     "lint:eslint:fix": "turbo run lint:eslint:fix",
     "lint:fix": "pnpm lint:eslint:fix && pnpm lint:biome:fix",
     "test": "turbo run test",
-    "test:e2e": "pnpm -F @repo/fastify test:e2e && pnpm -F @repo/next test:e2e",
+    "test:e2e": "pnpm -F @repo/fastify test:e2e && node scripts/run-next-e2e.mjs",
     "hooks:pre-commit": "pnpm hooks:security && biome check --write --staged --no-errors-on-unmatched && git update-index --again",
     "hooks:security": "pnpm security:block-files && pnpm security:secrets && pnpm security:osv",
     "security:block-files": "node scripts/block-secret-files.mjs",

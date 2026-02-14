@@ -1,22 +1,10 @@
-name: E2E Tests
+name: API CI
 
 on:
   pull_request:
-    paths:
-      - 'apps/next/e2e/**'
-      - 'apps/next/**'
-      - 'apps/fastify/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
   push:
     branches:
       - main
-    paths:
-      - 'apps/next/e2e/**'
-      - 'apps/next/**'
-      - 'apps/fastify/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
   workflow_dispatch:
 
 concurrency:
@@ -24,19 +12,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e-tests:
-    name: E2E Tests (Next.js + Fastify)
+  paths:
+    name: Paths
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: .github/paths-filter.yml
+
+  api-ci:
+    name: API (Unit + E2E)
+    needs: paths
+    if: needs.paths.outputs.api == 'true'
     runs-on: ubuntu-latest
     env:
+      NODE_ENV: test
       CI: true
       PGLITE: true
       DATABASE_URL: postgresql://localhost/test
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
-      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-      NEXT_PUBLIC_API_URL: http://localhost:3001
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
       PLAYWRIGHT_HTML_REPORT_OPEN: never
     steps:
-      - name: Verify OPEN_ROUTER_API_KEY
+      - name: Verify OPEN_ROUTER_API_KEY for E2E
         env:
           OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
         run: |
@@ -44,6 +47,7 @@ jobs:
             echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
             exit 1
           fi
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -74,25 +78,18 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: |
-          pnpm --filter @repo/next exec playwright install chromium --with-deps
-          pnpm --filter @repo/fastify exec playwright install chromium --with-deps
+        run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
 
       - name: Build
-        run: pnpm turbo run build
+        run: pnpm turbo run build --filter=@repo/fastify...
 
-      - name: Run E2E tests (sequential, root script)
-        run: pnpm test:e2e
+      - name: Run unit tests
+        run: pnpm turbo run test --filter=@repo/fastify
 
-      - name: Upload Next.js Playwright report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report-nextjs
-          path: apps/next/playwright-report/
-          retention-days: 30
+      - name: Run E2E tests
+        run: pnpm --filter @repo/fastify test:e2e
 
-      - name: Upload Fastify Playwright report
+      - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:

@@ -1,0 +1,99 @@
+name: Next CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  paths:
+    name: Paths
+    runs-on: ubuntu-latest
+    outputs:
+      next: ${{ steps.filter.outputs.next }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: .github/paths-filter.yml
+
+  next-ci:
+    name: Next (Unit + E2E)
+    needs: paths
+    if: needs.paths.outputs.next == 'true'
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      CI: true
+      PGLITE: true
+      DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      PLAYWRIGHT_HTML_REPORT_OPEN: never
+    steps:
+      - name: Verify OPEN_ROUTER_API_KEY for E2E
+        env:
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+        run: |
+          if [ -z "$OPEN_ROUTER_API_KEY" ]; then
+            echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
+            exit 1
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @repo/next exec playwright install chromium --with-deps
+
+      - name: Build
+        run: pnpm turbo run build --filter=@repo/next...
+
+      - name: Run unit tests
+        run: pnpm turbo run test --filter=@repo/next
+
+      - name: Run E2E tests
+        run: pnpm --filter @repo/next test:e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-nextjs
+          path: apps/next/playwright-report/
+          retention-days: 30
