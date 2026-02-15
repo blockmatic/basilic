@@ -7,6 +7,7 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { useChainId } from 'wagmi'
+import { addressesMatch } from '@/components/wallet-adapters-injector'
 import { useVerifyLinkEmailToken } from '@/hooks/use-verify-link-email-token'
 import { updateAuthTokens } from '@/lib/auth-client'
 import { formatWalletShort } from '@/lib/format-wallet'
@@ -85,12 +86,15 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
   }
 
   const hasWalletConnected = !!evmAdapter?.address || !!solanaAdapter?.address
-  const connectedAddress = (evmAdapter ?? solanaAdapter)?.address?.toLowerCase()
+  const connectedAddress = activeAdapter?.address
+  const activeChain = activeAdapter?.chain ?? 'eip155'
   const canLinkWallet =
     hasWalletConnected &&
     !!connectedAddress &&
     !!signMessage &&
-    !linkedWallets.some(w => w.address.toLowerCase() === connectedAddress)
+    !linkedWallets.some(
+      w => w.chain === activeChain && addressesMatch(connectedAddress, w.address, activeChain),
+    )
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">

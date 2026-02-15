@@ -7,7 +7,7 @@ import bs58 from 'bs58'
 import { useEffect, useRef } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
 
-function addressesMatch(addr1: string | undefined, addr2: string, chain: string): boolean {
+export function addressesMatch(addr1: string | undefined, addr2: string, chain: string): boolean {
   if (!addr1) return false
   return chain === 'eip155' ? addr1.toLowerCase() === addr2.toLowerCase() : addr1 === addr2
 }
