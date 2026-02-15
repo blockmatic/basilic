@@ -3,21 +3,47 @@ import type { Page } from '@playwright/test'
 const TEST_EMAIL = 'test@test.ai'
 const API_URL =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
+const apiBase = API_URL.replace(/\/$/, '')
+
+async function sendMagicLinkOnce(page: Page) {
+  await page.goto('/login')
+  await page.getByRole('button', { name: /send magic link/i }).waitFor({ state: 'visible' })
+  await page.fill('input[type="email"]', TEST_EMAIL)
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      resp =>
+        resp.url().startsWith(`${apiBase}/auth/magiclink/request`) &&
+        resp.request().method() === 'POST',
+    ),
+    page.click('button[type="submit"]'),
+  ])
+  return response
+}
+
+async function enrichError(response: Awaited<ReturnType<typeof sendMagicLinkOnce>>) {
+  const status = response.status()
+  const url = response.url()
+  let body: string
+  try {
+    body = await response.text()
+  } catch {
+    body = '(unable to read body)'
+  }
+  throw new Error(
+    `Magic link request failed: status=${status} url=${url} body=${body.slice(0, 500)}`,
+  )
+}
 
 export const authHelpers = {
   TEST_EMAIL,
   API_URL,
 
   async sendMagicLink(page: Page) {
-    await page.goto('/login')
-    await page.fill('input[type="email"]', TEST_EMAIL)
-    const [response] = await Promise.all([
-      page.waitForResponse(
-        resp =>
-          resp.url().includes('/auth/magiclink/request') && resp.request().method() === 'POST',
-      ),
-      page.click('button[type="submit"]'),
-    ])
+    let response = await sendMagicLinkOnce(page)
+    if (!response.ok()) {
+      response = await sendMagicLinkOnce(page)
+      if (!response.ok()) await enrichError(response)
+    }
     return response
   },
 

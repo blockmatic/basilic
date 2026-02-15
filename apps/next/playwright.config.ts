@@ -7,7 +7,7 @@ const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
+  fullyParallel: false, // PGLite does not support concurrent writers; run tests in series
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
   workers: 1,
@@ -28,13 +28,23 @@ export default defineConfig({
   projects: [
     {
       name: 'auth',
-      testMatch: '**/magic-link-auth.spec.ts',
+      testMatch: [
+        '**/magic-link-auth.spec.ts',
+        '**/wallet-auth.spec.ts',
+        '**/link-email.spec.ts',
+        '**/link-wallet.spec.ts',
+      ],
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'chromium',
       testMatch: '**/*.spec.ts',
-      testIgnore: '**/magic-link-auth.spec.ts',
+      testIgnore: [
+        '**/magic-link-auth.spec.ts',
+        '**/wallet-auth.spec.ts',
+        '**/link-email.spec.ts',
+        '**/link-wallet.spec.ts',
+      ],
       use: { ...devices['Desktop Chrome'] },
     },
   ],

@@ -1,4 +1,4 @@
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 
 const POLL_TIMEOUT_MS = 60_000
 const POLL_INTERVAL_MS = 500

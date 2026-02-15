@@ -1,6 +1,6 @@
 // Error normalization: use @repo/utils/error only (no local duplication)
 import { toErrorWithMessage } from '@repo/utils/error'
-import { logger } from '@repo/utils/logger'
+import type { Logger } from '@repo/utils/logger/server'
 import type { CaptureErrorOptions } from '../types.js'
 
 // Module-scoped flag for warning suppression (shows once per app runtime)
@@ -27,7 +27,7 @@ interface SentryAdapter {
  *
  * @internal This is an internal implementation detail, not part of public API
  */
-export function createCaptureError(Sentry: SentryAdapter) {
+export function createCaptureError(Sentry: SentryAdapter, defaultLogger: Logger) {
   return function captureError(options: CaptureErrorOptions): void {
     const errorWithMessage = toErrorWithMessage(options.error)
 
@@ -42,7 +42,7 @@ export function createCaptureError(Sentry: SentryAdapter) {
 
         if (!sentryClient) {
           if (!sentryWarningShown) {
-            const log = options.logger ?? logger
+            const log = options.logger ?? defaultLogger
             log.warn('Sentry not initialized - error reporting disabled. Set SENTRY_DSN to enable.')
             sentryWarningShown = true
           }

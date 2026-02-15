@@ -2,7 +2,7 @@ import { exec } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 
 const scriptFile = fileURLToPath(import.meta.url)
 const scriptDir = dirname(scriptFile)

@@ -1,4 +1,4 @@
-Create comprehensive API documentation for current endpoints formatted as OpenAPI/Swagger specification or following project's documentation standards.
+Create comprehensive API documentation for current endpoints formatted as OpenAPI/Swagger specification or following project's documentation standards. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
 
 1. **API Overview**: Service description/purpose, base URL/versioning information, authentication/authorization requirements, rate limiting/usage policies
 2. **Endpoint Documentation**: HTTP method/URL path, request parameters (path/query/body), request/response schemas with data types, example requests/responses, possible error codes/messages

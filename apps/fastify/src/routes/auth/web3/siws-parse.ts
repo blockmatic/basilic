@@ -1,4 +1,4 @@
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 
 /**
  * Parse SIWS (Sign-In with Solana) EIP-4361-style message.

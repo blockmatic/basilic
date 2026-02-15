@@ -9,7 +9,7 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - Param format: `--app=URL` or `--app URL`, `--api=URL` or `--api URL`
 - CI: test:e2e:local (spawn local). Optional: Vercel previews with `VERCEL_AUTOMATION_BYPASS_SECRET`, `ALLOW_TEST=true` for preview
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
-- workers: Next 1 (PGlite). Fastify: 1 in CI, undefined locally
+- workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
 - projects: auth first (`magic-link-auth.spec.ts`), chromium second (all other specs including `wallet-auth.spec.ts`, `link-wallet.spec.ts`, `link-email.spec.ts`)
 
 ## Session Model

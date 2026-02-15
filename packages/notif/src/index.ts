@@ -1,4 +1,4 @@
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 import type {
   EmailInput,
   NotificationHandler,

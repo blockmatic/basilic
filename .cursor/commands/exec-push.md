@@ -1,4 +1,4 @@
-Execute plan or instructions, validate, commit, push, and create a PR. Use when implementing features, resolving feedback, or pre-push verification. Use global git user for commits—never cursor/system identity. Never use `--trailer` for Co-authored-by or similar.
+Execute plan or instructions, validate, commit, push, and create a PR. Use when implementing features, resolving feedback, or pre-push verification. Use global git user for commits—never cursor/system identity. Never use `--trailer` for Co-authored-by or similar. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
 
 1. **Branch**: If on `main`, run `git pull origin main`, then create a new branch (`git checkout -b <branch-name>`). Skip if already on a branch.
 2. **Execute**: Implement the plan/instructions—follow @.cursor/rules, general guidelines, indexed docs, and relevant skills

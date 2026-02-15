@@ -12,7 +12,13 @@ const { mockLoggerChild, mockLoggerWarn } = vi.hoisted(() => ({
   mockLoggerWarn: vi.fn(),
 }))
 
-vi.mock('@repo/utils/logger', () => ({
+vi.mock('@repo/utils/logger/server', () => ({
+  logger: {
+    child: mockLoggerChild,
+    warn: mockLoggerWarn,
+  },
+}))
+vi.mock('@repo/utils/logger/client', () => ({
   logger: {
     child: mockLoggerChild,
     warn: mockLoggerWarn,

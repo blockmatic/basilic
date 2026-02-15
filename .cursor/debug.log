@@ -1,6 +1,0 @@
-{"location":"fixtures.ts:after-login","message":"After login: cookie count","data":{"totalCookies":2,"authRelatedCount":2},"timestamp":1771044546790,"hypothesisId":"C"}
-{"location":"fixtures.ts:authenticatedPage-new","message":"New page created, context cookie count","data":{"cookieCount":2},"timestamp":1771044546900,"hypothesisId":"A"}
-{"location":"fixtures.ts:authenticatedPage-new","message":"New page created, context cookie count","data":{"cookieCount":0},"timestamp":1771044548232,"hypothesisId":"A"}
-{"location":"badges.spec.ts:SignedIn-test","message":"After userPromise: url, response status, badge state","data":{"url":"http://localhost:3000/login","responseStatus":401,"signedInVisible":false,"signedOutVisible":true},"timestamp":1771044548686,"hypothesisId":"E"}
-{"location":"fixtures.ts:after-login","message":"After login: cookie count","data":{"totalCookies":2,"authRelatedCount":2},"timestamp":1771044567878,"hypothesisId":"C"}
-{"location":"fixtures.ts:authenticatedPage-new","message":"New page created, context cookie count","data":{"cookieCount":0},"timestamp":1771044568005,"hypothesisId":"A"}

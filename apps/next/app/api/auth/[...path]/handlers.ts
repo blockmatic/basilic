@@ -1,4 +1,4 @@
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 import {
   clearServerAuthToken,
   clearServerRefreshToken,
@@ -11,6 +11,7 @@ import type { AuthProxyOptions } from './handlers/utils'
 import { buildFastifyUrl, getForwardedHeaders, getRequestBody } from './handlers/utils'
 
 export const proxyRequest = async ({ pathSegments, request }: AuthProxyOptions) => {
+  const rawPath = pathSegments.join('/')
   const { path, targetUrl } = buildFastifyUrl({ pathSegments, request })
 
   if (path === 'callback') {
@@ -68,10 +69,19 @@ export const proxyRequest = async ({ pathSegments, request }: AuthProxyOptions) 
   }
 
   const { token } = await getServerAuthToken()
-  const isSignOut = path === 'sign-out'
+  const isSignOut = rawPath === 'sign-out'
   if (isSignOut) {
     await clearServerAuthToken()
     await clearServerRefreshToken()
+    if (request.method === 'GET') {
+      const redirectUrl = new URL('/', request.url)
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
+        },
+      })
+    }
   }
 
   const { headers } = getForwardedHeaders({ request, token })
@@ -90,17 +100,6 @@ export const proxyRequest = async ({ pathSegments, request }: AuthProxyOptions) 
         responseHeaders.set(key, value)
       }
     })
-
-    const prefersHtml = request.headers.get('accept')?.includes('text/html')
-    if (isSignOut && request.method === 'GET' && prefersHtml) {
-      const redirectUrl = new URL('/', request.url)
-      return new Response(null, {
-        status: 302,
-        headers: {
-          Location: redirectUrl.toString(),
-        },
-      })
-    }
 
     const responseBody = await response.text()
     return new Response(responseBody, {

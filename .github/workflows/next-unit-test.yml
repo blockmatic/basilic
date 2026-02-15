@@ -12,23 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  paths:
-    name: Paths
-    runs-on: ubuntu-latest
-    outputs:
-      next: ${{ steps.filter.outputs.next }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: .github/paths-filter.yml
-
   build-unit:
     name: Next (Build + Unit)
-    needs: paths
-    if: needs.paths.outputs.next == 'true'
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
@@ -38,25 +23,36 @@ jobs:
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: .github/paths-filter.yml
+
+      - name: Skip when no Next changes
+        if: steps.filter.outputs.next != 'true'
+        run: echo "No Next changes, skipping"
 
       - name: Setup Node.js
+        if: steps.filter.outputs.next == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Setup pnpm
+        if: steps.filter.outputs.next == 'true'
         uses: pnpm/action-setup@v4
         with:
           version: 10.29.3
 
       - name: Get pnpm store directory
+        if: steps.filter.outputs.next == 'true'
         shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Setup pnpm cache
+        if: steps.filter.outputs.next == 'true'
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
@@ -65,10 +61,13 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
+        if: steps.filter.outputs.next == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Build
+        if: steps.filter.outputs.next == 'true'
         run: pnpm turbo run build --filter=@repo/next...
 
       - name: Run unit tests
+        if: steps.filter.outputs.next == 'true'
         run: pnpm turbo run test --filter=@repo/next

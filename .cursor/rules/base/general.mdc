@@ -6,6 +6,8 @@ alwaysApply: true
 
 ## Agent Behavior (CRITICAL)
 - Read readme, docs, skills, rules before planning and coding
+- Planning: Follow architecture, strategies, and decisions in `@apps/docu/`
+- Execution: Follow architecture, strategies, and decisions in `@apps/docu/`; after implementation (new features and fixes), update docs, readme, and cursor rules if required to keep them aligned
 - When creating plans add a ## References section listing cursor rules files and cursor skills you are using
 - Summarize assumptions in 3–5 bullets
 - Respect Ask mode restrictions (read-only)
@@ -23,7 +25,7 @@ alwaysApply: true
 - ALWAYS follow linting rules: eslint, biome 
 - Search for existing functionality before creating new
 - Always use existing packages in codebase before writing custom code
-- Never use console, use `@repo/utils/logger`
+- Never use console, use `@repo/utils/logger/server` or `@repo/utils/logger/client`
 - Use `@repo/error` for error handling
 - Use `t3-oss` packages for environment variable validation
 - Use `lodash-es` (per-function imports)

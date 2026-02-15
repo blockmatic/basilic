@@ -1,9 +1,9 @@
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/client'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { initSentry } from '../browser/sentry.js'
 
 // Mock logger
-vi.mock('@repo/utils/logger', () => ({
+vi.mock('@repo/utils/logger/client', () => ({
   logger: {
     warn: vi.fn(),
   },

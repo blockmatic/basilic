@@ -1,30 +1,32 @@
 ---
 title: "Logging"
-description: "Unified logging API for server and client using build-time conditional exports."
+description: "Explicit logger imports for server (Pino) and client (console wrapper)."
 ---
 
-Complete guide for using the unified logging system across the monorepo.
+Complete guide for using the logging system across the monorepo.
 
 ## Overview
 
-The monorepo uses a unified logging API (`@repo/utils/logger`) that works consistently across:
-- **Server-side**: Fastify API and Next.js server runtime (uses Pino for structured JSON logging)
-- **Client-side**: Next.js client components (uses console wrapper with environment-controlled levels)
+The monorepo uses explicit subpath imports:
+- **Server-side** (`@repo/utils/logger/server`): Fastify API and Next.js server runtime — Pino for structured JSON logging
+- **Client-side** (`@repo/utils/logger/client`): Next.js client components — console wrapper with environment-controlled levels
 
 **Key principles:**
-- Single import everywhere: `import { logger } from '@repo/utils/logger'`
+- Server: `import { logger } from '@repo/utils/logger/server'`
+- Client: `import { logger } from '@repo/utils/logger/client'`
 - Never use `console.*` directly in app code (enforced by linting)
-- Build-time conditional exports select the correct implementation (no runtime detection)
 - Structured logging with support for bindings (requestId, userId, etc.)
 - Environment-based configuration (enabled/disabled, log levels)
 - Automatic secret redaction on server-side
 
 ## Quick Start
 
-Single import everywhere:
-
 ```ts
-import { logger } from '@repo/utils/logger'
+// Server (Fastify, Next API routes, Node scripts)
+import { logger } from '@repo/utils/logger/server'
+
+// Client ('use client' components, browser)
+import { logger } from '@repo/utils/logger/client'
 
 logger.info({ userId: '123' }, 'User logged in')
 logger.error({ error }, 'Request failed')
@@ -61,7 +63,7 @@ export async function userRoutes(fastify: FastifyInstance) {
 
 ```ts
 // app/api/users/route.ts
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
@@ -89,7 +91,7 @@ Client logs are **disabled by default in production**.
 // components/user-profile.tsx
 'use client'
 
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/client'
 import { useEffect } from 'react'
 
 export function UserProfile({ userId }: { userId: string }) {
@@ -144,35 +146,14 @@ When running in CI (`CI=true`), or when `NODE_ENV=test` or `VITEST` is set (e.g.
 
 ## Architecture
 
-### Build-Time Conditional Exports
+### Explicit Subpath Imports
 
-The logger uses **build-time conditional exports** via `package.json` exports field. This means:
+The logger uses **explicit subpath imports** — no conditional routing. Each entrypoint exports `logger`, `Logger`, and `LogLevel`:
 
-- **No runtime detection**: No `typeof window`, no `process` checks, no dynamic imports
-- **Bundler handles selection**: Next.js, Turbopack, and other bundlers automatically select the correct implementation
-- **TypeScript sees unified API**: The `types` field ensures TypeScript always sees one `Logger` interface
+- `@repo/utils/logger/server` — Pino-based, for Node/Fastify/Next.js server
+- `@repo/utils/logger/client` — console-based, for browser/client components
 
-**How it works:**
-
-```json
-{
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "browser": "./dist/client.js",
-      "node": "./dist/server.js",
-      "import": "./dist/server.js",
-      "default": "./dist/server.js"
-    }
-  }
-}
-```
-
-- `browser` condition → routes to `client.js` (Next.js client bundles)
-- `node` / `import` / `default` → routes to `server.js` (Node/Fastify/Next.js server)
-- `types` → provides unified TypeScript definitions
-
-**Important**: `index.ts` is types-only and never imported at runtime. `server.ts` and `client.ts` are the actual runtime entrypoints that export `logger`.
+Consumers import the appropriate subpath based on their runtime environment.
 
 ### Why No Runtime Detection?
 
@@ -183,7 +164,7 @@ Runtime detection (`typeof window`, `process` checks) has several problems:
 3. **Edge runtime issues**: Edge runtimes may not have expected globals
 4. **Type safety**: TypeScript can't properly narrow types
 
-Build-time conditional exports solve all these issues by letting the bundler choose the correct implementation before bundling.
+Explicit imports avoid these issues: each file imports the logger that matches its runtime.
 
 ## Log Levels
 
@@ -260,12 +241,11 @@ fastify.setErrorHandler((error, request, reply) => {
 - Remember: client logs disabled in production by default
 
 **Console usage linting errors:**
-- Ensure importing from `@repo/utils/logger` (not `console.*`)
-- Only `packages/utils/logger/src/client.ts` can use `console.*`
+- Ensure importing from `@repo/utils/logger/server` or `@repo/utils/logger/client` (not `console.*`)
+- Only `packages/utils/logger/client.ts` can use `console.*`
 
 **Pino in client bundles:**
-- Verify `package.json` exports include `browser` condition
-- Check `client.ts` never imports `pino`
+- Use `@repo/utils/logger/client` in client code; never import `@repo/utils/logger/server` in browser bundles
 - Inspect bundle analysis with `next build`
 
 ## Related Documentation

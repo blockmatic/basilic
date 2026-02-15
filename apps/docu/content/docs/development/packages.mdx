@@ -119,12 +119,12 @@ Prefer subpath imports:
 - `@repo/utils/async` — async helpers (`delay`, `fetchWithTimeout`, …)
 - `@repo/utils/error` — error normalization (`getErrorMessage`, `tryCatch`, …)
 - `@repo/utils/web3` — chain metadata + helpers
-- `@repo/utils/logger` — logger with conditional exports (browser vs node)
+- `@repo/utils/logger/server`, `@repo/utils/logger/client` — Pino (server) and console (client)
 - `@repo/utils/debug` — client-only debug hooks (`useDevtools`, `useNuqsDebug`, `useVconsole`)
 
 ```ts
 import { delay } from '@repo/utils/async'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 
 await delay(250)
 logger.info('delayed')

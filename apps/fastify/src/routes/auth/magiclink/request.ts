@@ -41,7 +41,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { email, callbackUrl } = request.body
 
-      // Validate callback URL
+      // Validate callback URL (http/https only, no relative URLs)
       if (!validateCallbackUrl(callbackUrl)) {
         return reply.status(400).send({
           code: 'INVALID_INPUT',
@@ -85,7 +85,6 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         expiresAt,
       })
 
-      // Build magic link URL with token and callbackUrl
       const magicLinkUrl = new URL(callbackUrl)
       magicLinkUrl.searchParams.set('token', token)
 

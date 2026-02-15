@@ -1,4 +1,4 @@
-Execute full test suite and systematically fix any failures, ensuring code quality and functionality.
+Execute full test suite and systematically fix any failures, ensuring code quality and functionality. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
 
 1. **Run test suite**: Execute all tests in project, capture output/identify failures, check both unit and integration tests
 2. **Analyze failures**: Categorize by type (flaky, broken, new failures), prioritize fixes based on impact, check if failures related to recent changes

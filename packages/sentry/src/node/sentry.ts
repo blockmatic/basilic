@@ -1,4 +1,4 @@
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 import type { ErrorEvent, EventHint } from '@sentry/node'
 import * as Sentry from '@sentry/node'
 

@@ -1,6 +1,6 @@
-# Logger (`@repo/utils/logger`)
+# Logger
 
-Unified logger: browser builds get a console-based logger, Node gets Pino. Resolved via package `exports` (browser vs node). Never use `console.*` directly; use this logger.
+Explicit subpath imports: `@repo/utils/logger/server` (Pino, Node) and `@repo/utils/logger/client` (console, browser). Never use `console.*` directly.
 
 **Peer dependencies:** `pino` (server only). None for client.
 
@@ -11,7 +11,11 @@ Unified logger: browser builds get a console-based logger, Node gets Pino. Resol
 - **LogLevel** — `'debug' | 'info' | 'warn' | 'error' | 'silent'`.
 
 ```ts
-import { logger } from '@repo/utils/logger'
+// Server
+import { logger } from '@repo/utils/logger/server'
+
+// Client
+import { logger } from '@repo/utils/logger/client'
 
 logger.info({ userId: '123' }, 'User logged in')
 logger.error({ err }, 'Request failed')

@@ -1,13 +1,13 @@
 # Error Handling
 
-Handle errors in Next.js with **Sentry reporting** (`@repo/sentry/*`) and **structured logging** (`@repo/utils/logger`).
+Handle errors in Next.js with **Sentry reporting** (`@repo/sentry/*`) and **structured logging** (`@repo/utils/logger/server` or `@repo/utils/logger/client`).
 
 Reference: https://nextjs.org/docs/app/getting-started/error-handling
 
 ## Observability (Required)
 
 - Report unexpected errors with `captureError` from `@repo/sentry/nextjs`
-- Log operational context with `logger` from `@repo/utils/logger` (never `console.*`)
+- Log operational context with `logger` from `@repo/utils/logger/server` or `@repo/utils/logger/client` (never `console.*`)
 
 ## Error Boundaries
 
@@ -19,7 +19,7 @@ Catches errors in a route segment and its children:
 'use client'
 
 import { captureError } from '@repo/sentry/nextjs'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/client'
 import { useEffect } from 'react'
 
 export default function Error({
@@ -59,7 +59,7 @@ Catches errors in the root layout. Same capture pattern as `error.tsx`, but it *
 'use client'
 
 import { captureError } from '@repo/sentry/nextjs'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/client'
 import { useEffect } from 'react'
 
 export default function GlobalError({
@@ -98,7 +98,7 @@ Reference: https://nextjs.org/docs/app/api-reference/functions/redirect#behavior
 
 import { redirect, unstable_rethrow } from 'next/navigation'
 import { captureError } from '@repo/sentry/nextjs'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 
 export async function action() {
   try {
@@ -120,7 +120,7 @@ Capture, log, then return a safe result. If navigation APIs may be involved, cal
 ```tsx
 import { unstable_rethrow } from 'next/navigation'
 import { captureError } from '@repo/sentry/nextjs'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 
 async function action() {
   try {

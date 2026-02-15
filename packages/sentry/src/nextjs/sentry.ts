@@ -1,4 +1,4 @@
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/client'
 import type { ErrorEvent, EventHint } from '@sentry/nextjs'
 import * as Sentry from '@sentry/nextjs'
 

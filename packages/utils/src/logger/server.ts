@@ -69,7 +69,7 @@ const wrap = (x: pino.Logger): Logger => ({
  *
  * @example
  * ```ts
- * import { logger } from '@repo/utils/logger'
+ * import { logger } from '@repo/utils/logger/server'
  *
  * logger.info({ userId: '123', action: 'login' }, 'User logged in')
  * logger.error({ err: error, requestId: 'abc' }, 'Request failed')
@@ -79,3 +79,4 @@ const wrap = (x: pino.Logger): Logger => ({
  * ```
  */
 export const logger: Logger = wrap(root)
+export type { Logger, LogLevel } from './types.js'

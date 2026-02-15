@@ -1,4 +1,4 @@
-Optimize information architecture following best practices to reduce cognitive load and improve discoverability. Restructure file names, directory hierarchies, content organization, and documentation for clarity and flow while preserving all information.
+Optimize information architecture following best practices to reduce cognitive load and improve discoverability. Restructure file names, directory hierarchies, content organization, and documentation for clarity and flow while preserving all information. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation, update docs, readme, and cursor rules if required to keep them aligned.
 
 1. **Analyze Current Structure**: Map existing file/directory organization, identify naming inconsistencies/conflicts, find duplicated/fragmented information, assess navigation paths/discoverability
 2. **Design Improved Architecture**: Group related content logically by feature/domain, apply consistent naming conventions (lowercase-with-dashes), create clear hierarchies (max 3-4 levels deep), reduce redundancy through consolidation/references

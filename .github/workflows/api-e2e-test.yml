@@ -1,32 +1,23 @@
-# E2E for basilic-fastify: runs after Vercel repository_dispatch.
-# Only Vercel publishes these events. Success → run tests. Error/failed → fail (PR red). Skipped/ignored/canceled → skip.
+# E2E for basilic-fastify: triggers on pull_request, polls Vercel API for deployment, runs Playwright.
+# Always visible in PR checks. When build is ignored (turbo-ignore), workflow skips gracefully.
 name: API e2e test
 
 on:
-  repository_dispatch:
-    types:
-      - 'vercel.deployment.success'
-      - 'vercel.deployment.error'
-      - 'vercel.deployment.failed'
-      - 'vercel.deployment.skipped'
-      - 'vercel.deployment.ignored'
-      - 'vercel.deployment.canceled'
+  pull_request:
+  push:
+    branches:
+      - main
 
-run-name: E2E – ${{ github.event.client_payload.project.name || 'unknown' }}
+run-name: E2E – API (${{ github.event.pull_request.head.ref || github.ref_name }})
 
 concurrency:
-  group: e2e-api-${{ github.event.client_payload.project.name }}-${{ github.event.client_payload.git.sha }}
-  cancel-in-progress: false
+  group: e2e-api-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   e2e:
     name: API (E2E)
     runs-on: ubuntu-latest
-    if: >-
-      contains(github.event.client_payload.project.name, 'basilic-fastify')
-      && (github.event.action == 'vercel.deployment.success'
-          || github.event.action == 'vercel.deployment.error'
-          || github.event.action == 'vercel.deployment.failed')
     env:
       NODE_ENV: test
       CI: true
@@ -34,49 +25,54 @@ jobs:
       DATABASE_URL: postgresql://localhost/test
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+      GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
-      - name: Debug repository_dispatch payload
-        run: |
-          echo "::group::Vercel repository_dispatch payload"
-          echo "event.action=${{ github.event.action }}"
-          echo "project.name=${{ github.event.client_payload.project.name }}"
-          echo "project.id=${{ github.event.client_payload.project.id }}"
-          echo "environment=${{ github.event.client_payload.environment }}"
-          echo "url=${{ github.event.client_payload.url }}"
-          echo "git.sha=${{ github.event.client_payload.git.sha }}"
-          echo "git.ref=${{ github.event.client_payload.git.ref }}"
-          echo "deployment.id=${{ github.event.client_payload.id }}"
-          echo "::endgroup::"
+      - uses: actions/checkout@v4
 
-      - name: Abort on deployment failure
-        if: >-
-          github.event.action == 'vercel.deployment.error'
-          || github.event.action == 'vercel.deployment.failed'
-        run: |
-          echo "::error::Vercel deployment failed (action=${{ github.event.action }}), aborting E2E"
-          exit 1
-
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
         with:
-          ref: ${{ github.event.client_payload.git.sha }}
+          filters: .github/paths-filter.yml
+
+      - name: Skip when no API changes
+        if: steps.filter.outputs.api != 'true'
+        run: echo "No API-relevant changes, skipping E2E" && exit 0
+
+      - name: Wait for Vercel deployment
+        id: wait
+        if: steps.filter.outputs.api == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_SLUG: ${{ secrets.VERCEL_TEAM_SLUG }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+          GITHUB_SHA: ${{ env.GITHUB_SHA }}
+        run: |
+          chmod +x .github/scripts/wait-vercel-deployment.sh
+          .github/scripts/wait-vercel-deployment.sh basilic-fastify 18
+
+      - name: Skip when no deployment URL
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url == ''
+        run: echo "No deployment (build may be ignored). Skipping E2E." && exit 0
 
       - name: Setup Node.js
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Setup pnpm
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         uses: pnpm/action-setup@v4
         with:
           version: 10.29.3
 
       - name: Get pnpm store directory
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Setup pnpm cache
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
@@ -85,12 +81,15 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
 
       - name: Verify OPEN_ROUTER_API_KEY for E2E
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         env:
           OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
         run: |
@@ -100,9 +99,10 @@ jobs:
           fi
 
       - name: Run E2E tests
+        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         id: e2e
         env:
-          PLAYWRIGHT_API_URL: ${{ github.event.client_payload.url }}
+          PLAYWRIGHT_API_URL: ${{ steps.wait.outputs.deployment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
         run: pnpm --filter @repo/fastify test:e2e
 

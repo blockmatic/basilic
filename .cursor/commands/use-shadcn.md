@@ -1,4 +1,4 @@
-Build shadcn/ui components following monorepo structure and coding standards.
+Build shadcn/ui components following monorepo structure and coding standards. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation, update docs, readme, and cursor rules if required to keep them aligned.
 
 1. **Use MCP servers**: Use `shadcnui-official` for single components/variants/canonical patterns, use `shadcnui-jpisnice-react` for full blocks/demos/page templates, only call MCP when unsure about implementation or encountering errors
 2. **Install in `@repo/ui`**: Install components in `packages/ui/src/components/`, ensure `components.json` points to `@repo/ui/lib/utils` and `@repo/ui/components`, follow existing component organization patterns

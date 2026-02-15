@@ -18,7 +18,7 @@ Build and unit tests for the Next.js app. Runs when `apps/next`, `scripts/`, or 
 
 ### Next E2E Test (`next-e2e-test.yml`)
 
-E2E tests for the Next.js app. Runs after Vercel deployment via `repository_dispatch` (success/error/failed only). See [E2E Testing](/docs/testing/e2e-testing).
+E2E tests for the Next.js app. Triggers on `pull_request` and `push` to main, polls the Vercel API for basilic-next and basilic-fastify deployment URLs, then runs Playwright. Always visible in PR checks. When builds are ignored (turbo-ignore), skips gracefully. See [E2E Testing](/docs/testing/e2e-testing).
 
 ### API Unit Test (`api-unit-test.yml`)
 
@@ -29,7 +29,7 @@ Build and unit tests for the Fastify API. Runs when `apps/fastify` or its depend
 
 ### API E2E Test (`api-e2e-test.yml`)
 
-E2E tests for the Fastify API. Runs after Vercel deployment via `repository_dispatch` (success/error/failed only). See [E2E Testing](/docs/testing/e2e-testing).
+E2E tests for the Fastify API. Triggers on `pull_request` and `push` to main, polls the Vercel API for basilic-fastify deployment URL, then runs Playwright. Always visible in PR checks. When builds are ignored (turbo-ignore), skips gracefully. See [E2E Testing](/docs/testing/e2e-testing).
 
 ### Docu CI (`docu-ci.yml`)
 
@@ -95,10 +95,10 @@ Pre-commit hooks check:
 ## Workflow Files
 
 All workflows are in `.github/workflows/`:
-- `next-unit-test.yml` - Next.js build + unit (path-filtered)
-- `next-e2e-test.yml` - Next.js E2E (repository_dispatch)
-- `api-unit-test.yml` - Fastify API build + unit (path-filtered)
-- `api-e2e-test.yml` - Fastify API E2E (repository_dispatch)
+- `next-unit-test.yml` - Next.js build + unit (path-filtered, inline)
+- `next-e2e-test.yml` - Next.js E2E (pull_request, polls Vercel API)
+- `api-unit-test.yml` - Fastify API build + unit (path-filtered, inline)
+- `api-e2e-test.yml` - Fastify API E2E (pull_request, polls Vercel API)
 - `docu-ci.yml` - Docs build validation (path-filtered)
 - `lint.yml` - Linting checks
 - `security.yml` - Security scans
