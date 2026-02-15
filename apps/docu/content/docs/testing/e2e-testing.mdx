@@ -93,9 +93,11 @@ Wallet-related specs run in the **chromium** project (after the auth project). T
 
 | Spec | Coverage |
 |------|----------|
-| `wallet-auth.spec.ts` | Login page wallet sign-in buttons; dashboard after magic-link auth; sign-out from dashboard redirects to login |
-| `link-wallet.spec.ts` | Dashboard shows connect wallet options when authenticated; Wallet & Email link navigates to dashboard from root |
-| `link-email.spec.ts` | Dashboard shows link email section when authenticated; "already linked" when user has email (magic link) |
+| `wallet-auth.spec.ts` | Login page "Wallet login" button; wallet options after click; root (/) after magic-link auth; sign-out from root redirects to login |
+| `link-wallet.spec.ts` | Root shows connect wallet options when authenticated; Root shows Link wallet and Link email sections |
+| `link-email.spec.ts` | Root shows link email section when authenticated; "already linked" when user has email (magic link) |
+| `wallet-metamask-auth.spec.ts` | Full MetaMask login flow (Synpress): connect, sign SIWE, redirect to / |
+| `wallet-solana-auth.spec.ts` | Full Solana/Phantom login flow (Synpress): connect, sign SIWS, redirect to / |
 
 ### Project order and setup
 
@@ -129,14 +131,14 @@ flowchart TB
 ```mermaid
 flowchart TB
   subgraph WalletAuthSpec [wallet-auth.spec.ts]
-    WA1[Login page wallet sign-in buttons]
-    WA2[Dashboard after magic-link auth]
-    WA3[Sign-out from dashboard to login]
+    WA1[Wallet login button; wallet options after click]
+    WA2[Root (/) after magic-link auth]
+    WA3[Sign-out from root to login]
   end
 
   subgraph LinkWalletSpec [link-wallet.spec.ts]
     LW1[Connect wallet options when authenticated]
-    LW2[Wallet and Email link nav to dashboard]
+    LW2[Root shows Link wallet and Link email sections]
   end
 
   subgraph LinkEmailSpec [link-email.spec.ts]
@@ -145,9 +147,17 @@ flowchart TB
   end
 ```
 
-### Full wallet flows (with extensions)
+### Full wallet flows (Synpress)
 
-Sign-in with MetaMask/Phantom or link wallet via extension requires Playwright with extension loading: install MetaMask or Phantom as a test fixture, seed a test account, and configure the browser context. See [Playwright browser contexts](https://playwright.dev/docs/browser-contexts) for extension setup. Test account seeding typically uses a known mnemonic or imported key for deterministic addresses.
+`wallet-metamask-auth.spec.ts` and `wallet-solana-auth.spec.ts` use **Synpress** to inject real MetaMask and Phantom extensions. No mocks; tests perform actual connect + sign flows.
+
+**Setup:**
+1. Build wallet cache before running: `pnpm synpress:build` (or `pnpm synpress:metamask` and `pnpm synpress:phantom` separately)
+2. Cache stored in `.cache-synpress` (gitignored)
+3. `test:e2e:local` runs `synpress:build` automatically before Playwright
+4. Wallet setup files: `e2e/wallet-setup/metamask.setup.ts`, `e2e/wallet-setup/phantom.setup.ts` (seed: standard test phrase)
+
+**Projects:** `wallet-metamask` and `wallet-solana` run in separate Playwright projects. Synpress fixtures (`metaMaskFixtures`, `phantomFixtures`) provide extension-injected context.
 
 ## Troubleshooting
 

@@ -7,10 +7,13 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { useChainId } from 'wagmi'
+import { ApiHealthBadge } from '@/components/api-health-badge'
+import { AuthBadge } from '@/components/auth-badge'
 import { addressesMatch } from '@/components/wallet-adapters-injector'
 import { useVerifyLinkEmailToken } from '@/hooks/use-verify-link-email-token'
 import { updateAuthTokens } from '@/lib/auth-client'
 import { formatWalletShort } from '@/lib/format-wallet'
+import { ChatAssistant } from './chat-assistant'
 import { SignOutButton } from './sign-out-button'
 
 function DashboardSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -74,7 +77,7 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
   } = useLinkEmail({
     onVerifySuccess: async ({ token, refreshToken }) => {
       await updateAuthTokens({ token, refreshToken })
-      router.replace('/dashboard')
+      router.replace('/')
     },
   })
 
@@ -82,7 +85,7 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
 
   const handleRequestLinkEmail = () => {
     const origin = typeof window !== 'undefined' ? window.location.origin : ''
-    requestLink({ email, callbackUrl: `${origin}/dashboard` })
+    requestLink({ email, callbackUrl: `${origin}/` })
   }
 
   const hasWalletConnected = !!evmAdapter?.address || !!solanaAdapter?.address
@@ -98,82 +101,97 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-4xl space-y-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <SignOutButton />
-        </div>
-
-        <DashboardSection title="Account">
-          <div className="space-y-2 text-sm">
-            <p>
-              <span className="text-muted-foreground">Email:</span> {user.email ?? 'Not linked'}
+          <div>
+            <h1 className="text-3xl font-bold">Dashboard</h1>
+            <p className="text-muted-foreground mt-2">
+              Welcome back, {user.email ?? user.name ?? 'User'}!
             </p>
-            {sessionWallet && (
-              <p>
-                <span className="text-muted-foreground">Session wallet:</span>{' '}
-                {formatWalletShort(sessionWallet)}
-              </p>
-            )}
-            {linkedWallets.length > 0 && (
-              <p>
-                <span className="text-muted-foreground">Linked wallets:</span>{' '}
-                {linkedWallets.map(formatWalletShort).join(', ')}
-              </p>
-            )}
           </div>
-        </DashboardSection>
-
-        <DashboardSection title="Link wallet">
-          {!hasWalletConnected ? (
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setSolanaModalVisible(true)}>
-                Connect Solana wallet
-              </Button>
-              <p className="text-muted-foreground text-sm self-center">
-                or connect MetaMask for EVM
+          <div className="flex gap-2">
+            <ApiHealthBadge />
+            <AuthBadge />
+            <SignOutButton />
+          </div>
+        </div>
+        <div className="space-y-6 max-w-2xl">
+          <DashboardSection title="Account">
+            <div className="space-y-2 text-sm">
+              <p>
+                <span className="text-muted-foreground">Email:</span> {user.email ?? 'Not linked'}
               </p>
-            </div>
-          ) : canLinkWallet ? (
-            <div className="flex flex-col gap-2">
-              <Button variant="outline" disabled={isLinkWalletPending} onClick={() => linkWallet()}>
-                {isLinkWalletPending ? 'Linking…' : 'Link this wallet'}
-              </Button>
-              {linkWalletError && (
-                <p className="text-destructive text-xs">{linkWalletError.message}</p>
+              {sessionWallet && (
+                <p>
+                  <span className="text-muted-foreground">Session wallet:</span>{' '}
+                  {formatWalletShort(sessionWallet)}
+                </p>
+              )}
+              {linkedWallets.length > 0 && (
+                <p>
+                  <span className="text-muted-foreground">Linked wallets:</span>{' '}
+                  {linkedWallets.map(formatWalletShort).join(', ')}
+                </p>
               )}
             </div>
-          ) : (
-            <p className="text-muted-foreground text-sm">This wallet is already linked</p>
-          )}
-        </DashboardSection>
+          </DashboardSection>
 
-        <DashboardSection title="Link email">
-          {!user.email ? (
-            <div className="flex flex-col gap-2">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-              />
-              <Button
-                variant="outline"
-                disabled={!isReady || isRequestPending}
-                onClick={handleRequestLinkEmail}
-              >
-                {isRequestPending ? 'Sending…' : 'Request link email'}
-              </Button>
-              {isVerifyPending && <p className="text-muted-foreground text-sm">Verifying…</p>}
-              {linkEmailError && (
-                <p className="text-destructive text-xs">{linkEmailError.message}</p>
-              )}
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-sm">Email already linked: {user.email}</p>
-          )}
-        </DashboardSection>
+          <DashboardSection title="Link wallet">
+            {!hasWalletConnected ? (
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setSolanaModalVisible(true)}>
+                  Connect Solana wallet
+                </Button>
+                <p className="text-muted-foreground text-sm self-center">
+                  or connect MetaMask for EVM
+                </p>
+              </div>
+            ) : canLinkWallet ? (
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  disabled={isLinkWalletPending}
+                  onClick={() => linkWallet()}
+                >
+                  {isLinkWalletPending ? 'Linking…' : 'Link this wallet'}
+                </Button>
+                {linkWalletError && (
+                  <p className="text-destructive text-xs">{linkWalletError.message}</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">This wallet is already linked</p>
+            )}
+          </DashboardSection>
+
+          <DashboardSection title="Link email">
+            {!user.email ? (
+              <div className="flex flex-col gap-2">
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                />
+                <Button
+                  variant="outline"
+                  disabled={!isReady || isRequestPending}
+                  onClick={handleRequestLinkEmail}
+                >
+                  {isRequestPending ? 'Sending…' : 'Request link email'}
+                </Button>
+                {isVerifyPending && <p className="text-muted-foreground text-sm">Verifying…</p>}
+                {linkEmailError && (
+                  <p className="text-destructive text-xs">{linkEmailError.message}</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">Email already linked: {user.email}</p>
+            )}
+          </DashboardSection>
+        </div>
       </div>
+      <ChatAssistant />
     </div>
   )
 }

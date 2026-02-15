@@ -23,6 +23,11 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - Chromium project: unauth tests first (logged-out state), then first authed test triggers fixture (login) and confirms session, then all remaining authed tests run consecutively
 - Authed tests must run consecutively — no unauth test between them
 
+## Wallet Extension Specs
+- `wallet-metamask-auth.spec.ts`, `wallet-solana-auth.spec.ts`: use `testWithSynpress(metaMaskFixtures|phantomFixtures(setup))` instead of `@playwright/test`; real wallet connect + sign, no mocks
+- Before running wallet extension specs: run `pnpm synpress:metamask` and `pnpm synpress:phantom` (or `pnpm synpress:build`). Cache in `.cache-synpress`; add to `.gitignore`
+- CI and `test:e2e:local` must build Synpress cache when wallet specs are in scope
+
 ## Auth Fixtures
 - Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)
 - Authed feature tests: import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body

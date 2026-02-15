@@ -178,7 +178,7 @@ test.describe('Magic Link Auth E2E', () => {
     const { token } = await response.json()
     
     // Verify magic link (uses Next.js BFF + Fastify)
-    await page.goto(`/api/auth/magic-link/verify?token=${token}&callbackURL=/dashboard`)
+    await page.goto(`/api/auth/magic-link/verify?token=${token}&callbackURL=/`)
     
     // Verify authenticated state (HttpOnly JWT cookie)
     await expect(page.locator('text=Dashboard')).toBeVisible()

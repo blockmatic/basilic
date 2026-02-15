@@ -125,7 +125,23 @@ async function main() {
     process.exit(1)
   }
 
-  const pwArgs = ['exec', 'playwright', 'test', ...process.argv.slice(2)]
+  const userArgs = process.argv.slice(2).filter(a => a !== '--')
+  const pwArgs = ['exec', 'playwright', 'test', ...userArgs]
+  const runWalletSpecs =
+    !pwArgs.some(a => a.startsWith('--project=')) ||
+    pwArgs.some(a => a.includes('wallet-metamask') || a.includes('wallet-solana'))
+  if (runWalletSpecs) {
+    const synpressBuild = spawnSync('pnpm', ['synpress:build'], {
+      cwd: nextDir,
+      env: { ...env, HEADLESS: 'true' },
+      stdio: 'inherit',
+    })
+    if (synpressBuild.status !== 0) {
+      process.stderr.write('E2E local: Synpress cache build failed\n')
+      process.exit(synpressBuild.status ?? 1)
+    }
+  }
+
   const pw = spawn('pnpm', pwArgs, {
     cwd: nextDir,
     env,

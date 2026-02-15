@@ -55,7 +55,7 @@ export function Providers({ children }: { children: ReactNode }) {
                 client={coreClient}
                 baseUrl={env.NEXT_PUBLIC_API_URL}
                 getAuthToken={getAuthToken}
-                authCallbackUrl="/api/auth/callback?callbackURL=/dashboard"
+                authCallbackUrl="/api/auth/callback?callbackURL=/"
               >
                 <WalletAdaptersInjector>
                   <NuqsAdapter>

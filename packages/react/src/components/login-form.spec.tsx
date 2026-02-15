@@ -174,7 +174,7 @@ describe('LoginForm', () => {
       if (capturedOnError) {
         capturedOnError(
           validationError,
-          { email: 'test@example.com', callbackUrl: '/dashboard' },
+          { email: 'test@example.com', callbackUrl: '/' },
           undefined,
           undefined,
         )
@@ -217,7 +217,7 @@ describe('LoginForm', () => {
       if (capturedOnSuccess) {
         capturedOnSuccess(
           { ok: true },
-          { email: 'test@example.com', callbackUrl: '/dashboard' },
+          { email: 'test@example.com', callbackUrl: '/' },
           undefined,
           undefined,
         )
@@ -265,7 +265,7 @@ describe('LoginForm', () => {
         failureCount: 0,
         failureReason: null,
         submittedAt: Date.now(),
-        variables: { email: 'test@example.com', callbackUrl: '/dashboard' },
+        variables: { email: 'test@example.com', callbackUrl: '/' },
         context: undefined,
         isPaused: false,
         isIdle: false,

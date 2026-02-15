@@ -57,6 +57,9 @@ const nextConfig = {
   ...(apiUrl !== undefined && {
     env: { NEXT_PUBLIC_API_URL: apiUrl },
   }),
+  async redirects() {
+    return [{ source: '/dashboard', destination: '/', permanent: true }]
+  },
   transpilePackages: [
     '@repo/ui',
     '@repo/core',

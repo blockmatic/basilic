@@ -22,7 +22,7 @@ import { useReactApiConfig } from '../context'
  *   return (
  *     <form onSubmit={(e) => {
  *       e.preventDefault()
- *       mutate({ email: e.currentTarget.email.value, callbackUrl: window.location.origin + '/dashboard' })
+ *       mutate({ email: e.currentTarget.email.value, callbackUrl: window.location.origin + '/' })
  *     }}>
  *       <input name="email" type="email" />
  *       <button type="submit" disabled={isPending}>
