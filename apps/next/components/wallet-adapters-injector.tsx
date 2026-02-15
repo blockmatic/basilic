@@ -7,43 +7,47 @@ import bs58 from 'bs58'
 import { useEffect, useRef } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
 
+function addressesMatch(addr1: string | undefined, addr2: string, chain: string): boolean {
+  if (!addr1) return false
+  return chain === 'eip155' ? addr1.toLowerCase() === addr2.toLowerCase() : addr1 === addr2
+}
+
 function useWalletDisconnectLogout() {
   const { data: userData } = useUser()
   const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
   const solanaWallet = useWallet()
-  const prevEvm = useRef(isEvmConnected)
-  const prevEvmAddress = useRef(evmAddress)
-  const prevSolana = useRef(solanaWallet.connected)
-  const prevSolanaAddress = useRef(solanaWallet.publicKey?.toBase58())
+  const prev = useRef({
+    evm: isEvmConnected,
+    evmAddr: evmAddress,
+    solana: solanaWallet.connected,
+    solanaAddr: solanaWallet.publicKey?.toBase58(),
+  })
 
   useEffect(() => {
-    const sessionWallet = userData?.user?.wallet
-    const wasEvmConnected = prevEvm.current
-    const wasEvmAddr = prevEvmAddress.current
-    const wasSolanaConnected = prevSolana.current
-    const wasSolanaAddr = prevSolanaAddress.current
+    const session = userData?.user?.wallet
+    const p = prev.current
 
-    prevEvm.current = isEvmConnected
-    prevEvmAddress.current = evmAddress
-    prevSolana.current = solanaWallet.connected
-    prevSolanaAddress.current = solanaWallet.publicKey?.toBase58()
+    prev.current = {
+      evm: isEvmConnected,
+      evmAddr: evmAddress,
+      solana: solanaWallet.connected,
+      solanaAddr: solanaWallet.publicKey?.toBase58(),
+    }
 
-    if (!sessionWallet?.chain || !sessionWallet?.address) return
+    if (!session?.chain || !session.address) return
 
-    const evmDisconnectMatch =
-      sessionWallet.chain === 'eip155' &&
-      wasEvmConnected &&
+    const evmDisconnected =
+      session.chain === 'eip155' &&
+      p.evm &&
       !isEvmConnected &&
-      wasEvmAddr != null &&
-      wasEvmAddr.toLowerCase() === sessionWallet.address.toLowerCase()
-    const solanaDisconnectMatch =
-      sessionWallet.chain === 'solana' &&
-      wasSolanaConnected &&
+      addressesMatch(p.evmAddr, session.address, 'eip155')
+    const solanaDisconnected =
+      session.chain === 'solana' &&
+      p.solana &&
       !solanaWallet.connected &&
-      wasSolanaAddr != null &&
-      wasSolanaAddr === sessionWallet.address
+      addressesMatch(p.solanaAddr, session.address, 'solana')
 
-    if (evmDisconnectMatch || solanaDisconnectMatch) {
+    if (evmDisconnected || solanaDisconnected) {
       window.location.href = '/api/auth/sign-out'
     }
   }, [
@@ -55,51 +59,43 @@ function useWalletDisconnectLogout() {
   ])
 }
 
-function WalletAdaptersInner({ children }: { children: React.ReactNode }) {
-  useWalletDisconnectLogout()
-
+function useWalletAdapters(): { eip155?: WalletAdapter; solana?: WalletAdapter } {
   const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const solanaWallet = useWallet()
 
-  const eip155Adapter: WalletAdapter | undefined =
+  const eip155 =
     isEvmConnected && evmAddress
       ? {
-          chain: 'eip155',
+          chain: 'eip155' as const,
           address: evmAddress,
-          signMessage: async msg =>
+          signMessage: (msg: string | Uint8Array) =>
             signMessageAsync({
               message: typeof msg === 'string' ? msg : new TextDecoder().decode(msg),
             }).then(sig => ({ signature: sig })),
         }
       : undefined
 
-  const solanaAdapter: WalletAdapter | undefined =
-    solanaWallet.connected && solanaWallet.publicKey && solanaWallet.signMessage
+  const solanaSign = solanaWallet.signMessage
+  const solana =
+    solanaWallet.connected && solanaWallet.publicKey && solanaSign
       ? {
-          chain: 'solana',
+          chain: 'solana' as const,
           address: solanaWallet.publicKey.toBase58(),
-          signMessage: async msg => {
+          signMessage: async (msg: string | Uint8Array) => {
             const encoded = typeof msg === 'string' ? new TextEncoder().encode(msg) : msg
-            if (!solanaWallet.signMessage) throw new Error('Wallet does not support signing')
-            const sig = await solanaWallet.signMessage(encoded)
+            const sig = await solanaSign(encoded)
             return { signature: bs58.encode(sig) }
           },
         }
       : undefined
 
-  return (
-    <WalletProvider
-      adapters={{
-        eip155: eip155Adapter,
-        solana: solanaAdapter,
-      }}
-    >
-      {children}
-    </WalletProvider>
-  )
+  return { eip155, solana }
 }
 
 export function WalletAdaptersInjector({ children }: { children: React.ReactNode }) {
-  return <WalletAdaptersInner>{children}</WalletAdaptersInner>
+  useWalletDisconnectLogout()
+  const adapters = useWalletAdapters()
+
+  return <WalletProvider adapters={adapters}>{children}</WalletProvider>
 }

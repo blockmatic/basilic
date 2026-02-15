@@ -5,9 +5,21 @@ import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useChainId } from 'wagmi'
+import { useVerifyLinkEmailToken } from '@/hooks/use-verify-link-email-token'
+import { updateAuthTokens } from '@/lib/auth-client'
+import { formatWalletShort } from '@/lib/format-wallet'
 import { SignOutButton } from './sign-out-button'
+
+function DashboardSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-lg border bg-card p-6">
+      <h2 className="text-lg font-semibold mb-4">{title}</h2>
+      {children}
+    </section>
+  )
+}
 
 type User = {
   email?: string | null
@@ -55,25 +67,12 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
     isReady,
   } = useLinkEmail({
     onVerifySuccess: async ({ token, refreshToken }) => {
-      await fetch('/api/auth/update-tokens', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, refreshToken }),
-        credentials: 'include',
-      })
+      await updateAuthTokens({ token, refreshToken })
       router.replace('/dashboard')
     },
   })
 
-  const verifiedToken = useRef<string | null>(null)
-  useEffect(() => {
-    if (tokenParam && isReady && verifiedToken.current !== tokenParam) {
-      verifiedToken.current = tokenParam
-      verifyFromToken({ token: tokenParam }).catch(() => {
-        verifiedToken.current = null
-      })
-    }
-  }, [tokenParam, isReady, verifyFromToken])
+  useVerifyLinkEmailToken(tokenParam, isReady, verifyFromToken)
 
   const handleRequestLinkEmail = () => {
     const origin = typeof window !== 'undefined' ? window.location.origin : ''
@@ -95,29 +94,27 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
           <SignOutButton />
         </div>
 
-        <section className="rounded-lg border bg-card p-6">
-          <h2 className="text-lg font-semibold mb-4">Account</h2>
+        <DashboardSection title="Account">
           <div className="space-y-2 text-sm">
             <p>
               <span className="text-muted-foreground">Email:</span> {user.email ?? 'Not linked'}
             </p>
             {sessionWallet && (
               <p>
-                <span className="text-muted-foreground">Session wallet:</span> {sessionWallet.chain}
-                :{sessionWallet.address.slice(0, 8)}…
+                <span className="text-muted-foreground">Session wallet:</span>{' '}
+                {formatWalletShort(sessionWallet)}
               </p>
             )}
             {linkedWallets.length > 0 && (
               <p>
                 <span className="text-muted-foreground">Linked wallets:</span>{' '}
-                {linkedWallets.map(w => `${w.chain}:${w.address.slice(0, 8)}…`).join(', ')}
+                {linkedWallets.map(formatWalletShort).join(', ')}
               </p>
             )}
           </div>
-        </section>
+        </DashboardSection>
 
-        <section className="rounded-lg border bg-card p-6">
-          <h2 className="text-lg font-semibold mb-4">Link wallet</h2>
+        <DashboardSection title="Link wallet">
           {!hasWalletConnected ? (
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setSolanaModalVisible(true)}>
@@ -139,10 +136,9 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
           ) : (
             <p className="text-muted-foreground text-sm">This wallet is already linked</p>
           )}
-        </section>
+        </DashboardSection>
 
-        <section className="rounded-lg border bg-card p-6">
-          <h2 className="text-lg font-semibold mb-4">Link email</h2>
+        <DashboardSection title="Link email">
           {!user.email ? (
             <div className="flex flex-col gap-2">
               <Input
@@ -166,7 +162,7 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
           ) : (
             <p className="text-muted-foreground text-sm">Email already linked: {user.email}</p>
           )}
-        </section>
+        </DashboardSection>
       </div>
     </div>
   )
