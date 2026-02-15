@@ -48,7 +48,9 @@ Web3 sign-in follows a **nonce → sign → verify** flow and returns access + r
 
 **TransferParams:** `useWalletSendTransaction` accepts `EvmTxParams` or `SolanaTxParams`; adapters resolve to chain-specific formats.
 
-**Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error.
+**Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error. Account link: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EXPIRED_TOKEN`.
+
+**JWT cookie refresh:** After link email or profile edit, call `POST /api/auth/update-tokens` with `{ token, refreshToken }` to refresh HttpOnly cookies.
 
 **Data model:** Nonces are stored in `web3_nonce` (5-min TTL); identities in `wallet_identities`.
 

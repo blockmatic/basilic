@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { ApiHealthBadge } from '@/components/api-health-badge'
 import { AuthBadge } from '@/components/auth-badge'
 import { ChatAssistant } from './chat-assistant'
@@ -53,6 +54,12 @@ export function DashboardContent({ user }: DashboardContentProps) {
         <div className="rounded-lg border bg-card p-6">
           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
           <div className="flex flex-wrap gap-4">
+            <Link
+              href="/dashboard"
+              className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 text-sm font-medium transition-colors"
+            >
+              Wallet & Email
+            </Link>
             <SignOutButton />
           </div>
         </div>

@@ -1,25 +1,16 @@
 'use client'
 
-import { useWalletAuth } from '@repo/react'
+import { useWallet, useWalletAuth } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
-import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
-import bs58 from 'bs58'
-import { useAccount, useSignMessage } from 'wagmi'
+import { useChainId } from 'wagmi'
 
 function SignInWithEthereumButton() {
-  const { address, isConnected } = useAccount()
-  const { signMessageAsync } = useSignMessage()
-  const { signIn, isPending, error } = useWalletAuth({
-    chain: 'eip155',
-    address: isConnected ? address : undefined,
-    signMessage: async message => {
-      const sig = await signMessageAsync({ message: message as string })
-      return { signature: sig }
-    },
-  })
+  const adapter = useWallet('eip155')
+  const chainId = useChainId()
+  const { signIn, isPending, error } = useWalletAuth({ adapter, chainId })
 
-  if (!isConnected || !address) return null
+  if (!adapter?.address) return null
 
   return (
     <div className="flex flex-col gap-1">
@@ -32,20 +23,11 @@ function SignInWithEthereumButton() {
 }
 
 function SignInWithSolanaButton() {
-  const { publicKey, signMessage, connected } = useWallet()
+  const adapter = useWallet('solana')
   const { setVisible } = useWalletModal()
-  const { signIn, isPending, error } = useWalletAuth({
-    chain: 'solana',
-    address: publicKey?.toBase58(),
-    signMessage: async message => {
-      if (!signMessage) throw new Error('Wallet does not support signing')
-      const encoded = typeof message === 'string' ? new TextEncoder().encode(message) : message
-      const sig = await signMessage(encoded)
-      return { signature: bs58.encode(sig) }
-    },
-  })
+  const { signIn, isPending, error } = useWalletAuth({ adapter })
 
-  if (!connected || !publicKey) {
+  if (!adapter?.address) {
     return (
       <Button variant="outline" type="button" onClick={() => setVisible(true)}>
         Connect Solana wallet
