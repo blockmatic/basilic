@@ -55,8 +55,10 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-- **Next CI**: Waits for Vercel Fastify and Next deployments via Vercel API (deployment URL from integration result), runs `pnpm --filter @repo/next test:e2e` against deployed URLs. Requires `VERCEL_TOKEN`, `VERCEL_TEAM_SLUG` (for team projects), and `VERCEL_AUTOMATION_BYPASS_SECRET`.
-- **API CI**: Waits for Vercel Fastify deployment (same, via API), runs `pnpm --filter @repo/fastify test:e2e` against the deployed API.
+- **Next CI**: Triggers on `pull_request` and `push` to main. Polls Vercel API for basilic-next and basilic-fastify deployment URLs (every 45s, up to 18 min). When both are ready, runs `pnpm --filter @repo/next test:e2e` with `PLAYWRIGHT_APP_URL` and `PLAYWRIGHT_API_URL`. When builds are ignored (turbo-ignore), workflow skips with success so PRs are not blocked.
+- **API CI**: Same trigger. Polls for basilic-fastify deployment, runs `pnpm --filter @repo/fastify test:e2e`.
+
+Both workflows require `VERCEL_TOKEN`, `VERCEL_TEAM_SLUG` (or `VERCEL_TEAM_ID`), and `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass.
 
 ## Vercel Deployment Protection
 
@@ -73,7 +75,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 ## Environment Variables
 
 - **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server.
-- **API CI and Next CI (Vercel E2E)**: Require `VERCEL_TOKEN` (from [vercel.com/account/tokens](https://vercel.com/account/tokens)), `VERCEL_TEAM_SLUG` (team slug, e.g. "gaboesquivel", for team projects; leave empty for personal), and `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass. Deployment URLs come from the Vercel API (actual deployment from GitHub integration).
+- **API CI and Next CI (Vercel E2E)**: Require `VERCEL_TOKEN` (from [vercel.com/account/tokens](https://vercel.com/account/tokens)), `VERCEL_TEAM_SLUG` (team slug, e.g. "gaboesquivel", for team projects; or `VERCEL_TEAM_ID`), and `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass. Workflows poll the Vercel API for deployment URLs by commit SHA.
 
 ## ALLOW_TEST
 
