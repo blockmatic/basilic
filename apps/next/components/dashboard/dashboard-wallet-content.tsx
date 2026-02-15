@@ -47,6 +47,7 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
   const { setVisible: setSolanaModalVisible } = useWalletModal()
 
   const activeAdapter = evmAdapter ?? solanaAdapter
+  const signMessage = activeAdapter?.signMessage
   const {
     linkWallet,
     isPending: isLinkWalletPending,
@@ -54,7 +55,11 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
   } = useLinkWallet({
     chain: activeAdapter?.chain ?? 'eip155',
     address: activeAdapter?.address,
-    signMessage: activeAdapter?.signMessage ?? (async () => ({ signature: '' })),
+    signMessage:
+      signMessage ??
+      (async () => {
+        throw new Error('signMessage not available')
+      }),
     chainId,
   })
 
@@ -84,6 +89,7 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
   const canLinkWallet =
     hasWalletConnected &&
     !!connectedAddress &&
+    !!signMessage &&
     !linkedWallets.some(w => w.address.toLowerCase() === connectedAddress)
 
   return (
