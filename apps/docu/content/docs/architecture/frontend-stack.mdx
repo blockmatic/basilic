@@ -1,0 +1,110 @@
+---
+title: "Frontend Stack"
+description: "Core libraries, patterns, and Web3 wallet integration for Next.js apps."
+---
+
+Core technology choices and patterns for frontend apps. See [Frontend Architecture](/docs/architecture/frontend) for overview and ownership.
+
+## Data fetching & async state
+
+- **`@tanstack/react-query`**: default choice for async data and server state (caching, dedupe, retries)
+- **`@repo/react`**: generated React Query hooks and integration for the OpenAPI client surface
+- **`@repo/core`**: generated, runtime-agnostic API client and types
+- **`@lukemorales/query-key-factory`**: centralized query key factories (for hand-written queries)
+
+## URL and local state
+
+- **`nuqs`**: URL-based state for shareable UI state (filters, search, tabs, pagination)
+- **`ahooks`**: `useSetState` for grouped ephemeral state, `useLocalStorageState` for persistence
+
+## Validation, errors, utilities
+
+- **`zod`**: schema validation at boundaries (prefer `z.infer<typeof schema>`)
+- **`react-error-boundary`**: component subtree failure isolation (see [Error Handling](/docs/architecture/error-handling))
+- **`@repo/utils`**: shared utilities (prefer subpath imports)
+- **`lodash-es`**: per-function imports for common operations
+- **`nanoid`**: unique IDs when needed
+
+## Web3 & wallet auth
+
+When building wallet-connected features (login, link wallet, sign, send transactions), use the unified API from `@repo/react`:
+
+- **`useWallet`**: returns adapter for a chain from WalletProvider context
+- **`useWalletAuth`**: wallet sign-in via SIWE/SIWS
+- **`useLinkWallet`**: link connected wallet to account (Bearerl required)
+- **`useLinkEmail`**: request link email + verify from token
+- **`useWalletSign`**: sign arbitrary messages
+- **`useWalletSendTransaction`**: send on-chain transactions
+
+**WalletProvider** and adapters: Apps supply wagmi and Solana adapters via `WalletProvider`. In `apps/next`, `WalletAdaptersInjector` bridges wagmi + Solana into adapters, enforces single-wallet mode, and triggers sign-out on wallet disconnect when session was created by wallet.
+
+See [Authentication](/docs/architecture/authentication) for auth flows, SIWE/SIWS, and account linking.
+
+### Web3 stack hierarchy
+
+```mermaid
+flowchart TB
+  subgraph AppLayer [App layer]
+    Dashboard[Dashboard]
+    Login[Login page]
+  end
+
+  subgraph RepoReact [@repo/react]
+    useWalletAuth[useWalletAuth]
+    useLinkWallet[useLinkWallet]
+    useLinkEmail[useLinkEmail]
+    useWalletSign[useWalletSign]
+    useWalletSendTransaction[useWalletSendTransaction]
+    useWallet[useWallet]
+  end
+
+  subgraph AdapterLayer [Adapter layer]
+    WalletProvider[WalletProvider]
+    WalletAdaptersInjector[WalletAdaptersInjector]
+  end
+
+  subgraph ChainLibs [Chain libraries]
+    Wagmi[wagmi]
+    SolanaAdapter[Solana wallet-adapter]
+  end
+
+  Dashboard --> useLinkWallet
+  Dashboard --> useLinkEmail
+  Login --> useWalletAuth
+  useWalletAuth --> useWallet
+  useLinkWallet --> useWallet
+  useWallet --> WalletProvider
+  WalletProvider --> WalletAdaptersInjector
+  WalletAdaptersInjector --> Wagmi
+  WalletAdaptersInjector --> SolanaAdapter
+```
+
+### Chain libraries
+
+- **`viem`**: low-level Ethereum interactions (address validation, transactions)
+- **`wagmi`**: React hooks for Ethereum (built on viem + TanStack Query)
+- **`@solana/wallet-adapter-react`**: Solana wallet connection
+
+## Query key factory (example)
+
+```tsx
+import { createQueryKeys } from "@lukemorales/query-key-factory"
+
+export const users = createQueryKeys("users", {
+  detail: (id: string) => ({
+    queryKey: [id],
+    queryFn: () => fetchUser(id),
+  }),
+})
+```
+
+## nuqs URL state (example)
+
+```tsx
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs"
+
+const [filters, setFilters] = useQueryStates({
+  search: parseAsString.withDefault(""),
+  page: parseAsInteger.withDefault(1),
+})
+```

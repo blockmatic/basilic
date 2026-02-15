@@ -55,6 +55,7 @@ Coordination rule for multichain address validation. Delegates to chain-specific
 Rules reference actual monorepo packages:
 
 - `@repo/utils/web3` - Chain type utilities (`ChainType`, `getChainType`, `getChainMetadata`)
+- `@repo/react` - Wallet hooks for login, link, sign, and send; apps provide adapters via `WalletProvider`
 
 ## Cross-References
 
