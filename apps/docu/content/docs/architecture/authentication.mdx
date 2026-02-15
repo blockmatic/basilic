@@ -209,8 +209,9 @@ sequenceDiagram
   Browser->>NextBFF: GET /api/auth/sign-out
   Note over NextBFF: Maps path sign-out to session/logout
   NextBFF->>FastifyAPI: POST /auth/session/logout
-  FastifyAPI->>FastifyAPI: Revoke session, clear cookies
+  FastifyAPI->>FastifyAPI: Revoke session
   FastifyAPI-->>NextBFF: 204
+  NextBFF->>NextBFF: Clear cookies / remove session cookie
   NextBFF-->>Browser: Redirect to login
 ```
 
