@@ -91,22 +91,22 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      await db.delete(verification).where(eq(verification.id, verificationRecord.id))
-
-      await db
-        .update(users)
-        .set({ email, emailVerified: true, updatedAt: new Date() })
-        .where(eq(users.id, userId))
-
       const sessionId = request.session.session.id
       const refreshJti = generateJti()
       const refreshJtiHash = hashToken(refreshJti)
       const sessionExpiresAt = new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000)
 
-      await db
-        .update(sessions)
-        .set({ token: refreshJtiHash, expiresAt: sessionExpiresAt })
-        .where(eq(sessions.id, sessionId))
+      await db.transaction(async tx => {
+        await tx.delete(verification).where(eq(verification.id, verificationRecord.id))
+        await tx
+          .update(users)
+          .set({ email, emailVerified: true, updatedAt: new Date() })
+          .where(eq(users.id, userId))
+        await tx
+          .update(sessions)
+          .set({ token: refreshJtiHash, expiresAt: sessionExpiresAt })
+          .where(eq(sessions.id, sessionId))
+      })
 
       const accessPayload = createAccessTokenPayload({
         userId,

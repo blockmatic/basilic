@@ -3,10 +3,13 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getAddress } from 'viem'
 import { getDb } from '../../../../db/index.js'
 import { walletIdentities, web3Nonce } from '../../../../db/schema/index.js'
-import { parseSignInMessage, verifyWalletSignature } from '../../../../lib/web3-verify.js'
+import {
+  getCanonicalAddress,
+  parseSignInMessage,
+  verifyWalletSignature,
+} from '../../../../lib/web3-verify.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const VALID_CHAINS = ['eip155', 'solana'] as const
@@ -68,16 +71,7 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const lookupAddr =
-        chain === 'eip155'
-          ? (() => {
-              try {
-                return getAddress(parsed.address).toLowerCase()
-              } catch {
-                return null
-              }
-            })()
-          : parsed.address
+      const lookupAddr = getCanonicalAddress({ chain, address: parsed.address })
       if (!lookupAddr) {
         return reply.code(400).send({
           code: 'INVALID_ADDRESS',
@@ -128,32 +122,59 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const [existing] = await db
-        .select()
-        .from(walletIdentities)
-        .where(
-          and(eq(walletIdentities.chain, chain), eq(walletIdentities.address, normalizedAddress)),
-        )
+      const userId = request.session.user.id
+      let walletAlreadyLinked = false
 
-      if (existing) {
-        if (existing.userId !== request.session.user.id) {
+      try {
+        await db.transaction(async tx => {
+          const [existing] = await tx
+            .select()
+            .from(walletIdentities)
+            .where(
+              and(
+                eq(walletIdentities.chain, chain),
+                eq(walletIdentities.address, normalizedAddress),
+              ),
+            )
+
+          if (existing) {
+            if (existing.userId !== userId) {
+              walletAlreadyLinked = true
+              await tx.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
+              return
+            }
+            await tx.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
+            return
+          }
+
+          await tx.insert(walletIdentities).values({
+            id: randomUUID(),
+            userId,
+            chain,
+            address: normalizedAddress,
+          })
+          await tx.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
+        })
+      } catch (err) {
+        const code =
+          (err as { cause?: { code?: string }; code?: string }).cause?.code ??
+          (err as { code?: string }).code
+        if (code === '23505') {
+          await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
           return reply.code(409).send({
             code: 'WALLET_ALREADY_LINKED',
             message: 'This wallet is already linked to another account',
           })
         }
-        await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
-        return reply.code(200).send({ ok: true })
+        throw err
       }
 
-      await db.insert(walletIdentities).values({
-        id: randomUUID(),
-        userId: request.session.user.id,
-        chain,
-        address: normalizedAddress,
-      })
-
-      await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
+      if (walletAlreadyLinked) {
+        return reply.code(409).send({
+          code: 'WALLET_ALREADY_LINKED',
+          message: 'This wallet is already linked to another account',
+        })
+      }
 
       return reply.code(200).send({ ok: true })
     },

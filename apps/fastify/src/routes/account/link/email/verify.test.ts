@@ -73,16 +73,32 @@ describe('POST /account/link/email/verify', () => {
 
   it('should return EXPIRED_TOKEN for expired token', async () => {
     const jwt = await getSessionToken()
+    const db = await (await import('../../../../db/index.js')).getDb()
+    const { verification } = await import('../../../../db/schema/index.js')
+    const { hashToken } = await import('../../../../lib/jwt.js')
+    const { randomUUID } = await import('node:crypto')
+
+    const expiredToken = `expired-test-token-${randomUUID().slice(0, 8)}`
+    const tokenHash = hashToken(expiredToken)
+    const userId = JSON.parse(Buffer.from(jwt.split('.')[1] ?? '', 'base64url').toString())
+      .sub as string
+
+    await db.insert(verification).values({
+      id: randomUUID(),
+      type: 'link_email',
+      identifier: `${userId}:expired@test.ai`,
+      value: tokenHash,
+      expiresAt: new Date(Date.now() - 60 * 1000),
+    })
+
     const response = await fastify.inject({
       method: 'POST',
       url: '/account/link/email/verify',
       headers: { Authorization: `Bearer ${jwt}` },
-      payload: { token: 'expired-token-xxxx' },
+      payload: { token: expiredToken },
     })
-    expect([401, 404]).toContain(response.statusCode)
-    if (response.statusCode === 401) {
-      const body = JSON.parse(response.body)
-      expect(['INVALID_TOKEN', 'EXPIRED_TOKEN']).toContain(body.code)
-    }
+    expect(response.statusCode).toBe(401)
+    const body = JSON.parse(response.body)
+    expect(body.code).toBe('EXPIRED_TOKEN')
   })
 })

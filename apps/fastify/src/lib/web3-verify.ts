@@ -62,6 +62,16 @@ export function parseSignInMessage(message: string): { address: string; nonce: s
   return { address: addrMatch[1].trim(), nonce: nonceMatch[1].trim() }
 }
 
+export function getCanonicalAddress({
+  chain,
+  address,
+}: {
+  chain: Web3Chain
+  address: string
+}): string | null {
+  return normalizeAddress({ chain, address })
+}
+
 function normalizeAddress({
   chain,
   address,
@@ -71,7 +81,7 @@ function normalizeAddress({
 }): string | null {
   if (chain === EIP155_CHAIN) {
     try {
-      return getAddress(address)
+      return getAddress(address).toLowerCase()
     } catch {
       return null
     }

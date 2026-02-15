@@ -70,6 +70,7 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
       const token = generateToken()
       const tokenHash = hashToken(token)
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+      const verificationId = randomUUID()
 
       const storePlain =
         env.NODE_ENV !== 'production' &&
@@ -78,7 +79,7 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
         email.endsWith('@test.ai')
 
       await db.insert(verification).values({
-        id: randomUUID(),
+        id: verificationId,
         type: 'link_email',
         identifier: `${request.session.user.id}:${email}`,
         value: tokenHash,
@@ -92,17 +93,23 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
       const html = await render(
         LinkEmailEmail({ linkUrl: linkUrl.toString(), expirationMinutes: 15 }),
       )
-      const emailResponse = await fastify.emailProvider.emails.send({
-        from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-        to: email,
-        subject: 'Link your email',
-        html,
-      })
 
-      if ('error' in emailResponse && emailResponse.error) {
-        throw new Error(
-          `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
-        )
+      try {
+        const emailResponse = await fastify.emailProvider.emails.send({
+          from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
+          to: email,
+          subject: 'Link your email',
+          html,
+        })
+
+        if ('error' in emailResponse && emailResponse.error) {
+          throw new Error(
+            `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
+          )
+        }
+      } catch (err) {
+        await db.delete(verification).where(eq(verification.id, verificationId))
+        throw err
       }
 
       return reply.code(200).send({ ok: true })
