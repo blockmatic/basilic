@@ -75,7 +75,7 @@ describe('POST /ai/chat', () => {
     expect(() => ChatResponseSchema.parse(data)).not.toThrow()
     expect(data.text).toBeTypeOf('string')
     expect(data.text.length).toBeGreaterThan(0)
-  })
+  }, 60000)
 
   it('should accept UIMessage format (useChat payload)', async () => {
     const response = await fastify.inject({

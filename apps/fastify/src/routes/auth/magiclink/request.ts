@@ -80,6 +80,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         id: randomUUID(),
         identifier: email,
         value: tokenHash,
+        type: 'magic_link',
         ...(storePlain && { tokenPlain: token }),
         expiresAt,
       })

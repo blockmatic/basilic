@@ -17,6 +17,16 @@ auth: {
     refresh: gen.refresh,
     user: gen.getUser,
   },
+  web3: {
+    eip155: {
+      nonce: gen.web3Eip155Nonce,
+      verify: gen.web3Eip155Verify,
+    },
+    solana: {
+      nonce: gen.web3SolanaNonce,
+      verify: gen.web3SolanaVerify,
+    },
+  },
 },
 test: {
   authed: gen.testAuthed,

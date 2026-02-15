@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { ApiHealthBadge } from '@/components/api-health-badge'
 import { AuthBadge } from '@/components/auth-badge'
+import { WalletSignInButtons } from '@/components/wallet-sign-in-buttons-client'
 import { getAuthStatus } from '@/lib/auth-utils'
 
 type LoginPageProps = {
@@ -51,7 +52,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm initialError={errorMessage} />
+            <LoginForm initialError={errorMessage} extraActions={<WalletSignInButtons />} />
           </div>
         </div>
       </div>

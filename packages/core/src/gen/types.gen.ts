@@ -242,6 +242,13 @@ export type GetUserErrors = {
         code: string;
         message: string;
     };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
 };
 
 export type GetUserError = GetUserErrors[keyof GetUserErrors];
@@ -256,11 +263,195 @@ export type GetUserResponses = {
             email: string | unknown;
             name: string | unknown;
             emailVerified: boolean | unknown;
+            wallet?: {
+                chain: string;
+                address: string;
+            };
+            linkedWallets: Array<{
+                chain: string;
+                address: string;
+            }>;
         };
     };
 };
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
+
+export type Web3Eip155NonceData = {
+    body?: never;
+    path?: never;
+    query: {
+        address: string;
+    };
+    url: '/auth/web3/eip155/nonce';
+};
+
+export type Web3Eip155NonceErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type Web3Eip155NonceError = Web3Eip155NonceErrors[keyof Web3Eip155NonceErrors];
+
+export type Web3Eip155NonceResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        nonce: string;
+    };
+};
+
+export type Web3Eip155NonceResponse = Web3Eip155NonceResponses[keyof Web3Eip155NonceResponses];
+
+export type Web3Eip155VerifyData = {
+    body: {
+        message: string;
+        signature: string;
+        domain?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/web3/eip155/verify';
+};
+
+export type Web3Eip155VerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type Web3Eip155VerifyError = Web3Eip155VerifyErrors[keyof Web3Eip155VerifyErrors];
+
+export type Web3Eip155VerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type Web3Eip155VerifyResponse = Web3Eip155VerifyResponses[keyof Web3Eip155VerifyResponses];
+
+export type Web3SolanaNonceData = {
+    body?: never;
+    path?: never;
+    query: {
+        address: string;
+    };
+    url: '/auth/web3/solana/nonce';
+};
+
+export type Web3SolanaNonceErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type Web3SolanaNonceError = Web3SolanaNonceErrors[keyof Web3SolanaNonceErrors];
+
+export type Web3SolanaNonceResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        nonce: string;
+    };
+};
+
+export type Web3SolanaNonceResponse = Web3SolanaNonceResponses[keyof Web3SolanaNonceResponses];
+
+export type Web3SolanaVerifyData = {
+    body: {
+        message: string;
+        signature: string;
+        domain?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/web3/solana/verify';
+};
+
+export type Web3SolanaVerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type Web3SolanaVerifyError = Web3SolanaVerifyErrors[keyof Web3SolanaVerifyErrors];
+
+export type Web3SolanaVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type Web3SolanaVerifyResponse = Web3SolanaVerifyResponses[keyof Web3SolanaVerifyResponses];
 
 export type TestAuthedData = {
     body?: never;

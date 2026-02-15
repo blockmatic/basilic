@@ -1,0 +1,4 @@
+# Ignore elliptic 6.6.1 - no fix available (Fixed Version: --)
+[[IgnoredVulns]]
+id = "GHSA-848j-6mx2-7j84"
+reason = "Transitive dep, no fix available in ecosystem"

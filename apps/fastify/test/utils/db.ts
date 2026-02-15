@@ -81,7 +81,14 @@ export async function getTestDatabase() {
 }
 
 /** Tables to truncate (order respects FK: users referenced by others) */
-const TABLES = ['account', 'sessions', 'wallet_identities', 'users', 'verification'] as const
+const TABLES = [
+  'account',
+  'sessions',
+  'wallet_identities',
+  'web3_nonce',
+  'users',
+  'verification',
+] as const
 
 /**
  * Truncate all tables. Keeps PGLite instance alive (creating a new one after close causes Aborted).

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { sessions, users, verification } from '../../../db/schema/index.js'
@@ -47,11 +47,11 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
 
       const db = await getDb()
 
-      // Find verification record
+      // Find verification record (magic_link only - link_email uses separate flow)
       const [verificationRecord] = await db
         .select()
         .from(verification)
-        .where(eq(verification.value, tokenHash))
+        .where(and(eq(verification.value, tokenHash), eq(verification.type, 'magic_link')))
 
       if (!verificationRecord) {
         return reply.code(401).send({

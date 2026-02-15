@@ -4,6 +4,7 @@ import {
   clearServerRefreshToken,
   getServerAuthToken,
 } from '@/lib/auth-server'
+import { handleWeb3Callback } from './handlers/callback'
 import { handleMagicLinkVerify } from './handlers/magic-link'
 import { handleGetSession, handleUpdateTokens } from './handlers/session'
 import type { AuthProxyOptions } from './handlers/utils'
@@ -11,6 +12,10 @@ import { buildFastifyUrl, getForwardedHeaders, getRequestBody } from './handlers
 
 export const proxyRequest = async ({ pathSegments, request }: AuthProxyOptions) => {
   const { path, targetUrl } = buildFastifyUrl({ pathSegments, request })
+
+  if (path === 'callback') {
+    return handleWeb3Callback({ request })
+  }
 
   if (path === 'magiclink/verify') {
     return handleMagicLinkVerify({ request })

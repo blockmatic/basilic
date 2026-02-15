@@ -11,6 +11,7 @@ declare module 'fastify' {
       user: {
         id: string
         email?: string | null
+        wallet?: { chain: string; address: string }
       }
       session: {
         id: string
@@ -63,10 +64,16 @@ const authPlugin: FastifyPluginAsync = async fastify => {
         return
       }
 
+      const wallet =
+        session.walletChain && session.walletAddress
+          ? { chain: session.walletChain, address: session.walletAddress }
+          : undefined
+
       request.session = {
         user: {
           id: user.id,
           email: user.email ?? null,
+          ...(wallet && { wallet }),
         },
         session: {
           id: session.id,

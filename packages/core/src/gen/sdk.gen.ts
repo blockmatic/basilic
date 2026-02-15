@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses } from './types.gen';
+import type { ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -102,6 +102,48 @@ export const getUser = <ThrowOnError extends boolean = false>(options?: Options<
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/auth/session/user',
     ...options
+});
+
+/**
+ * Get EIP-155 nonce
+ *
+ * Get nonce for SIWE (Sign-In with Ethereum)
+ */
+export const web3Eip155Nonce = <ThrowOnError extends boolean = false>(options: Options<Web3Eip155NonceData, ThrowOnError>) => (options.client ?? client).get<Web3Eip155NonceResponses, Web3Eip155NonceErrors, ThrowOnError>({ url: '/auth/web3/eip155/nonce', ...options });
+
+/**
+ * Verify EIP-155 signature
+ *
+ * Verify SIWE signature and return JWTs
+ */
+export const web3Eip155Verify = <ThrowOnError extends boolean = false>(options: Options<Web3Eip155VerifyData, ThrowOnError>) => (options.client ?? client).post<Web3Eip155VerifyResponses, Web3Eip155VerifyErrors, ThrowOnError>({
+    url: '/auth/web3/eip155/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get Solana nonce
+ *
+ * Get nonce for SIWS (Sign-In with Solana)
+ */
+export const web3SolanaNonce = <ThrowOnError extends boolean = false>(options: Options<Web3SolanaNonceData, ThrowOnError>) => (options.client ?? client).get<Web3SolanaNonceResponses, Web3SolanaNonceErrors, ThrowOnError>({ url: '/auth/web3/solana/nonce', ...options });
+
+/**
+ * Verify Solana signature
+ *
+ * Verify SIWS signature and return JWTs
+ */
+export const web3SolanaVerify = <ThrowOnError extends boolean = false>(options: Options<Web3SolanaVerifyData, ThrowOnError>) => (options.client ?? client).post<Web3SolanaVerifyResponses, Web3SolanaVerifyErrors, ThrowOnError>({
+    url: '/auth/web3/solana/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

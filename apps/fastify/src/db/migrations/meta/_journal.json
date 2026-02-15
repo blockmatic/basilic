@@ -15,6 +15,20 @@
       "when": 1771054704924,
       "tag": "0001_petite_cardiac",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771098243089,
+      "tag": "0002_aspiring_ravenous",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771111491251,
+      "tag": "0003_careless_cannonball",
+      "breakpoints": true
     }
   ]
 }
