@@ -4,7 +4,7 @@ description: Create short, focused commit message and commit staged changes
 category: git
 ---
 
-Create short, focused commit message and commit staged changes. Never use `--no-verify`. Fix all automated review errors and warnings before committing.
+Create short, focused commit message and commit staged changes. Never use `--no-verify`. Fix all automated review errors and warnings before committing. Use the default global git user (`git config --global user.name`, `git config --global user.email`) for all commits—never cursor/system identity.
 
 1. **Review changes**: Check diff `git diff --cached` (staged) or `git diff` (unstaged), understand what changed and why
 2. **Fix errors and warnings**: Resolve all lint, type-check, and test failures
