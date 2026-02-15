@@ -68,7 +68,7 @@ const makeChild = (bindings: Record<string, unknown>): Logger => {
  *
  * @example
  * ```ts
- * import { logger } from '@repo/utils/logger'
+ * import { logger } from '@repo/utils/logger/client'
  *
  * logger.info({ userId: '123' }, 'User logged in')
  * logger.error({ err: error }, 'Request failed')
@@ -78,3 +78,4 @@ const makeChild = (bindings: Record<string, unknown>): Logger => {
  * ```
  */
 export const logger: Logger = makeChild({})
+export type { Logger, LogLevel } from './types.js'

@@ -1,5 +1,5 @@
 import { ApiError, createClient } from '@repo/core'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth-server'
 import { env } from '@/lib/env'

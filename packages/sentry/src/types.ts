@@ -1,4 +1,4 @@
-import type { Logger } from '@repo/utils/logger'
+import type { Logger } from '@repo/utils/logger/server'
 
 /**
  * Options for capturing an error to Sentry.

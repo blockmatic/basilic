@@ -1,6 +1,6 @@
 'use client'
 
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/client'
 import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary'
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {

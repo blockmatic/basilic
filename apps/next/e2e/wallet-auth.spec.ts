@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import { authHelpers } from './auth-helpers'
 
 test.describe('Wallet Authentication UI', () => {
+  test.describe.configure({ mode: 'serial' })
   test('login page shows wallet sign-in buttons', async ({ page }) => {
     await page.goto('/login')
     await expect(page.getByRole('button', { name: /connect solana wallet/i })).toBeVisible()

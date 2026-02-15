@@ -1,4 +1,4 @@
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/client'
 import type { ErrorEvent, EventHint } from '@sentry/browser'
 import * as Sentry from '@sentry/browser'
 

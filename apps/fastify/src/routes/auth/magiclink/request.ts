@@ -14,7 +14,7 @@ import { validateCallbackUrl } from '../utils.js'
 
 const RequestSchema = Type.Object({
   email: Type.String({ format: 'email' }),
-  callbackUrl: Type.String({ format: 'uri' }),
+  callbackUrl: Type.String(), // Accept any string, no domain/format checks
 })
 
 const RequestResponseSchema = Type.Object({
@@ -41,7 +41,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { email, callbackUrl } = request.body
 
-      // Validate callback URL
+      // Validate callback URL (accept any non-empty string, no domain checks)
       if (!validateCallbackUrl(callbackUrl)) {
         return reply.status(400).send({
           code: 'INVALID_INPUT',
@@ -85,8 +85,11 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         expiresAt,
       })
 
-      // Build magic link URL with token and callbackUrl
-      const magicLinkUrl = new URL(callbackUrl)
+      // Build magic link URL with token and callbackUrl (accept full URL or relative path)
+      const magicLinkUrl =
+        callbackUrl.startsWith('http://') || callbackUrl.startsWith('https://')
+          ? new URL(callbackUrl)
+          : new URL(callbackUrl, 'http://localhost')
       magicLinkUrl.searchParams.set('token', token)
 
       // Send email

@@ -152,7 +152,7 @@ export const config = [
             {
               name: '@repo/utils',
               message:
-                'Use subpath imports: @repo/utils/logger, @repo/utils/async, @repo/utils/web3, etc.',
+                'Use subpath imports: @repo/utils/logger/server, @repo/utils/logger/client, @repo/utils/async, @repo/utils/web3, etc.',
             },
             // Note: @repo/core doesn't have subpath exports yet - restriction will be added when subpaths are implemented
             {

@@ -27,13 +27,19 @@
       "node": "./dist/web3/index.js",
       "default": "./dist/web3/index.js"
     },
-    "./logger": {
-      "types": "./src/logger/index.ts",
-      "source": "./src/logger/index.ts",
-      "browser": "./dist/logger/client.js",
-      "node": "./dist/logger/server.js",
+    "./logger/server": {
+      "types": "./src/logger/server.ts",
+      "source": "./src/logger/server.ts",
       "import": "./dist/logger/server.js",
+      "node": "./dist/logger/server.js",
       "default": "./dist/logger/server.js"
+    },
+    "./logger/client": {
+      "types": "./src/logger/client.ts",
+      "source": "./src/logger/client.ts",
+      "import": "./dist/logger/client.js",
+      "node": "./dist/logger/client.js",
+      "default": "./dist/logger/client.js"
     },
     "./debug": {
       "types": "./src/debug/index.ts",

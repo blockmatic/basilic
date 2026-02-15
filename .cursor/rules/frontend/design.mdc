@@ -1,0 +1,33 @@
+---
+glob: "**/*.{tsx,css}"
+alwaysApply: true
+---
+
+## Animation Stack (Priority Order)
+
+1. **CSS + data attributes**: Prefer `tw-animate-css` (already in @packages/ui) with `data-[state=*]` selectors. Use `animate-in`, `animate-out`, `fade-in-0`, `zoom-in-95`, `slide-in-from-*`, `slide-out-to-*` as in shadcn components.
+2. **Shadcn built-in**: Use existing component animations (Dialog, Popover, Sheet, Dropdown, etc.)—they already use `data-[state=open]:animate-in data-[state=closed]:animate-out`.
+3. **Custom data-driven CSS**: Add `data-*` attributes for state and drive animations via `data-[state=x]:*` or `group-data-[state=x]:*` in Tailwind. Keep it in CSS.
+4. **Motion (motion.dev)**: Use only when CSS cannot achieve the effect—drag, scroll-linked animations, layout transitions, gesture-based interactions, shared element transitions. See @.cursor/skills/motion.
+
+**Rule of thumb**: If you can do it with `transition-*` or `animate-*` + data attributes, do not use Motion.
+
+## Design Principles
+
+- **Typography**: Distinctive fonts, avoid generic (Inter, Arial). Pair display + body. See @.cursor/skills/frontend-design
+- **Color & theme**: Semantic tokens from @theme. Dominant colors + sharp accents. Use `bg-primary`, `text-muted-foreground` etc. from design system.
+- **Motion**: Purposeful—feedback, orientation, focus. Never decorate. Timing: 100–150ms micro, 200–300ms transitions, 500ms drawers. See @.cursor/skills/emilkowal-animations
+- **Easing**: `ease-out` default, `cubic-bezier(0.32, 0.72, 0, 1)` for drawers, springs for natural feel.
+- **Properties**: Animate only `transform` and `opacity` for performance. Never `scale(0)`—use min 0.95.
+
+## Accessibility
+
+- Always respect `prefers-reduced-motion`. Use opacity fallback, not full removal. Motion: wrap in `MotionConfig reducedMotion="user"`.
+
+## Skills Reference
+
+- @.cursor/skills/frontend-design — Distinctive interfaces, typography, color, composition
+- @.cursor/skills/emilkowal-animations — Easing, timing, transforms, accessibility
+- @.cursor/skills/interaction-design — Microinteractions, loading states, feedback patterns
+- @.cursor/skills/motion — When/how to use Motion library
+- @.cursor/skills/tailwind-design-system — Tokens, CVA, responsive patterns

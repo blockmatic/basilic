@@ -1,5 +1,5 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/server'
 import * as Sentry from '@sentry/node'
 import Fastify from 'fastify'
 import app from './src/app.js'

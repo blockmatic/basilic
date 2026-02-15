@@ -2,7 +2,7 @@
 
 import { createClient } from '@repo/core'
 import { ReactApiProvider } from '@repo/react'
-import { logger } from '@repo/utils/logger'
+import { logger } from '@repo/utils/logger/client'
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'

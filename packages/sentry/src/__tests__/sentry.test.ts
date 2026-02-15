@@ -8,7 +8,12 @@ const { mockLoggerWarn } = vi.hoisted(() => ({
   mockLoggerWarn: vi.fn(),
 }))
 
-vi.mock('@repo/utils/logger', () => ({
+vi.mock('@repo/utils/logger/server', () => ({
+  logger: {
+    warn: mockLoggerWarn,
+  },
+}))
+vi.mock('@repo/utils/logger/client', () => ({
   logger: {
     warn: mockLoggerWarn,
   },

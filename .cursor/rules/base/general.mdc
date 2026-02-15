@@ -23,7 +23,7 @@ alwaysApply: true
 - ALWAYS follow linting rules: eslint, biome 
 - Search for existing functionality before creating new
 - Always use existing packages in codebase before writing custom code
-- Never use console, use `@repo/utils/logger`
+- Never use console, use `@repo/utils/logger/server` or `@repo/utils/logger/client`
 - Use `@repo/error` for error handling
 - Use `t3-oss` packages for environment variable validation
 - Use `lodash-es` (per-function imports)

@@ -856,7 +856,6 @@
                     "type": "string"
                   },
                   "callbackUrl": {
-                    "format": "uri",
                     "type": "string"
                   }
                 }
