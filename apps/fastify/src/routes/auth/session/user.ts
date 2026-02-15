@@ -6,7 +6,8 @@ import { getDb } from '../../../db/index.js'
 import { walletIdentities } from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
-const WalletSchema = Type.Object({
+const LinkedWalletSchema = Type.Object({
+  id: Type.String(),
   chain: Type.String(),
   address: Type.String(),
 })
@@ -17,8 +18,8 @@ const UserResponseSchema = Type.Object({
     email: Type.Union([Type.String(), Type.Null()]),
     name: Type.Union([Type.String(), Type.Null()]),
     emailVerified: Type.Union([Type.Boolean(), Type.Null()]),
-    wallet: Type.Optional(WalletSchema),
-    linkedWallets: Type.Array(WalletSchema),
+    wallet: Type.Optional(Type.Object({ chain: Type.String(), address: Type.String() })),
+    linkedWallets: Type.Array(LinkedWalletSchema),
   }),
 })
 
@@ -47,11 +48,15 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      let linkedWallets: { chain: string; address: string }[]
+      let linkedWallets: { id: string; chain: string; address: string }[]
       try {
         const db = await getDb()
         linkedWallets = await db
-          .select({ chain: walletIdentities.chain, address: walletIdentities.address })
+          .select({
+            id: walletIdentities.id,
+            chain: walletIdentities.chain,
+            address: walletIdentities.address,
+          })
           .from(walletIdentities)
           .where(eq(walletIdentities.userId, request.session.user.id))
       } catch (err) {

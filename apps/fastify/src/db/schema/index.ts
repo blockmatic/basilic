@@ -1,4 +1,5 @@
 export * from './tables/account.js'
+export * from './tables/api-keys.js'
 export * from './tables/sessions.js'
 export * from './tables/users.js'
 export * from './tables/verification.js'

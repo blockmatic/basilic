@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
-import { createAuthenticatedUser } from '../../../test/utils/auth-helper.js'
+import { createAuthenticatedUser, getApiKeyToken } from '../../../test/utils/auth-helper.js'
 import { fastify } from './ai.spec.js'
 
 vi.setConfig({
@@ -75,6 +75,24 @@ describe('POST /ai/chat', () => {
     expect(() => ChatResponseSchema.parse(data)).not.toThrow()
     expect(data.text).toBeTypeOf('string')
     expect(data.text.length).toBeGreaterThan(0)
+  }, 60000)
+
+  it('should return 200 when authenticated via API key', async () => {
+    const apiKey = await getApiKeyToken(fastify, 'ai-chat-apikey@test.ai')
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/ai/chat',
+      headers: { Authorization: `Bearer ${apiKey}` },
+      payload: {
+        messages: [{ role: 'user', content: 'Hello, say hi' }],
+      },
+    })
+
+    expect(response.statusCode).toBe(200)
+    const data = JSON.parse(response.body)
+    expect(() => ChatResponseSchema.parse(data)).not.toThrow()
+    expect(data.text).toBeTypeOf('string')
   }, 60000)
 
   it('should accept UIMessage format (useChat payload)', async () => {

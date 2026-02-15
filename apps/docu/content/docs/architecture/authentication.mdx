@@ -1,6 +1,6 @@
 ---
 title: Authentication
-description: JWT-based auth with access + refresh tokens. Supports magic links, OAuth providers, and Web3 wallet sign-in.
+description: JWT-based auth with access + refresh tokens. Supports magic links, OAuth providers, Web3 wallet sign-in, and API keys for programmatic access.
 ---
 
 ## Overview
@@ -14,16 +14,26 @@ It supports:
 - **Magic link**: passwordless email sign-in
 - **OAuth**: sign in with providers
 - **Web3**: sign in with wallets
+- **API keys**: programmatic auth for servers, CLIs, and scripts (alternate Bearer format)
 
 ## Principles
 
 - **Backend-controlled**: authentication is verified server-side
-- **JWT Bearer**: the API accepts `Authorization: Bearer <accessToken>`
+- **JWT Bearer**: the API accepts `Authorization: Bearer <accessToken>` (JWT) or `Authorization: Bearer bask_<prefix>_<secret>` (API key)
 - **Access + refresh tokens**: short-lived access JWTs, rotated refresh JWTs
 - **DB-backed sessions**: tokens reference a session id that can be revoked
 - **BFF for browsers**: Next.js stores tokens in HttpOnly cookies and proxies auth requests
 
 ## Authentication methods
+
+### API keys (implemented)
+
+API keys enable programmatic auth for servers, CLIs, and scripts. Users create keys from the dashboard (or via JWT-authenticated endpoints); the full key is shown once at creation and cannot be retrieved later.
+
+- **Format**: `bask_<prefix>_<secret>` (stored as prefix + SHA256 hash of secret)
+- **Usage**: `X-API-Key: bask_<prefix>_<secret>` or `Authorization: Bearer bask_<prefix>_<secret>` — same header as JWT; Fastify distinguishes by prefix
+- **Endpoints** (Bearer required — JWT or API key): `POST /account/apikeys` (create), `GET /account/apikeys` (list), `DELETE /account/apikeys/:id` (revoke)
+- **Security**: timing-safe hash comparison; secrets hashed at rest; `lastUsedAt` nullable (null = never used)
 
 ### Magic link (implemented)
 
@@ -120,11 +130,13 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-  subgraph LinkWalletFlow [Link wallet]
+  subgraph LinkWalletFlow [Link / unlink wallet]
     Connect[Connect wallet]
     Sign[Sign message]
     Verify[POST account/link/wallet/verify]
+    Unlink[DELETE account/link/wallet/:id]
     Connect --> Sign --> Verify
+    Verify -.-> Unlink
   end
 
   subgraph LinkEmailFlow [Link email]
@@ -177,15 +189,21 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `GET /auth/web3/nonce` → `{ nonce }` (query: `chain`, `address`)
   - `POST /auth/web3/:chain/verify` → `{ token, refreshToken }`
   - `:chain` is `eip155` or `solana`
-- **Account linking** (Bearer required)
+- **Account linking** (Bearer required — JWT or API key)
   - `POST /account/link/wallet/verify` → `{ ok }` (body: `chain`, `message`, `signature`)
+  - `DELETE /account/link/wallet/:id` → `204` (unlink wallet by id from `linkedWallets`)
   - `POST /account/link/email/request` → `{ ok }` (body: `email`, `callbackUrl`)
   - `POST /account/link/email/verify` → `{ token, refreshToken }` (body: `token`)
 
 **Account link error codes**: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`
 
+- **API keys** (Bearer required — JWT or API key)
+  - `POST /account/apikeys` → `{ id, name, key, prefix, createdAt }` (key shown once)
+  - `GET /account/apikeys` → `{ keys: [{ id, name, prefix, lastUsedAt, expiresAt, createdAt }] }`
+  - `DELETE /account/apikeys/:id` → `204`
+
 - **Session**
-  - `GET /auth/session/user` (Bearer) → `{ user }` (includes optional `wallet`, always `linkedWallets`)
+  - `GET /auth/session/user` (Bearer) → `{ user }` (includes optional `wallet`, `linkedWallets` with `{ id, chain, address }` for unlink)
   - `POST /auth/session/logout` (Bearer) → `204`
   - `POST /auth/session/refresh` → `{ token, refreshToken }`
 
@@ -256,11 +274,13 @@ The auth system relies on these tables:
 - **`sessions`**: server-side session state (stores hashed refresh `jti`, expiry, optional `wallet_chain`/`wallet_address` for wallet sessions)
 - **`account`**: OAuth provider accounts (provider id + encrypted tokens at rest)
 - **`wallet_identities`**: Web3 identities (`eip155`/`solana` + normalized address)
+- **`api_keys`**: user-scoped API keys (prefix, hashed secret, optional `lastUsedAt`, `expiresAt`)
 
 ## Security notes
 
 - **Refresh token rotation**: refresh `jti` is rotated on every refresh; reuse revokes the session
-- **Hashed secrets at rest**: magic link tokens and refresh `jti` are stored hashed
+- **Hashed secrets at rest**: magic link tokens, refresh `jti`, and API key secrets are stored hashed
+- **API key security**: timing-safe hash comparison, optional expiry, atomic revoke with ownership check
 - **Callback URL safety**: `callbackUrl` is validated and can be restricted via `MAGIC_LINK_CALLBACK_HOST_ALLOWLIST`
 - **OAuth tokens encrypted at rest**: provider access/refresh tokens are stored encrypted (AES-256-GCM)
 - **Nonce-based Web3 verification**: nonces are short-lived and prevent replay attacks

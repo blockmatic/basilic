@@ -115,6 +115,7 @@ export default defineConfig({
     // PGLite/WASM is unstable with parallel workers - use single worker, sequential files
     fileParallelism: false,
     maxWorkers: 1,
+    sequence: { concurrent: false },
   },
   resolve: {
     // Order matters: try .ts first, then .js

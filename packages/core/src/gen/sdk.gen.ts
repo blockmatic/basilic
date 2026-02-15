@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
+import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -24,6 +24,43 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Health check endpoint
  */
 export const healthCheck = <ThrowOnError extends boolean = false>(options?: Options<HealthCheckData, ThrowOnError>) => (options?.client ?? client).get<HealthCheckResponses, unknown, ThrowOnError>({ url: '/health', ...options });
+
+/**
+ * List API keys
+ *
+ * List API keys for authenticated user
+ */
+export const accountApikeysList = <ThrowOnError extends boolean = false>(options?: Options<AccountApikeysListData, ThrowOnError>) => (options?.client ?? client).get<AccountApikeysListResponses, AccountApikeysListErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/apikeys/',
+    ...options
+});
+
+/**
+ * Create API key
+ *
+ * Create API key (shown once)
+ */
+export const accountApikeysCreate = <ThrowOnError extends boolean = false>(options: Options<AccountApikeysCreateData, ThrowOnError>) => (options.client ?? client).post<AccountApikeysCreateResponses, AccountApikeysCreateErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/apikeys/',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Revoke API key
+ *
+ * Revoke API key
+ */
+export const accountApikeysRevoke = <ThrowOnError extends boolean = false>(options: Options<AccountApikeysRevokeData, ThrowOnError>) => (options.client ?? client).delete<AccountApikeysRevokeResponses, AccountApikeysRevokeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/apikeys/{id}',
+    ...options
+});
 
 /**
  * Link email request
@@ -53,6 +90,17 @@ export const accountLinkEmailVerify = <ThrowOnError extends boolean = false>(opt
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Unlink wallet
+ *
+ * Unlink wallet from authenticated user
+ */
+export const accountLinkWalletUnlink = <ThrowOnError extends boolean = false>(options: Options<AccountLinkWalletUnlinkData, ThrowOnError>) => (options.client ?? client).delete<AccountLinkWalletUnlinkResponses, AccountLinkWalletUnlinkErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/link/wallet/{id}',
+    ...options
 });
 
 /**
@@ -204,7 +252,7 @@ export const web3SolanaVerify = <ThrowOnError extends boolean = false>(options: 
  * Dummy authenticated endpoint for testing (requires Bearer token)
  */
 export const testAuthed = <ThrowOnError extends boolean = false>(options?: Options<TestAuthedData, ThrowOnError>) => (options?.client ?? client).get<TestAuthedResponses, TestAuthedErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{ scheme: 'bearer', type: 'http' }, { name: 'X-API-Key', type: 'apiKey' }],
     url: '/test/authed/',
     ...options
 });

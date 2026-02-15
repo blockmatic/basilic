@@ -23,6 +23,116 @@ export type HealthCheckResponses = {
 
 export type HealthCheckResponse = HealthCheckResponses[keyof HealthCheckResponses];
 
+export type AccountApikeysListData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/apikeys/';
+};
+
+export type AccountApikeysListErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountApikeysListError = AccountApikeysListErrors[keyof AccountApikeysListErrors];
+
+export type AccountApikeysListResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        keys: Array<{
+            id: string;
+            name: string;
+            prefix: string;
+            lastUsedAt: string | unknown;
+            expiresAt: string | unknown;
+            createdAt: string;
+        }>;
+    };
+};
+
+export type AccountApikeysListResponse = AccountApikeysListResponses[keyof AccountApikeysListResponses];
+
+export type AccountApikeysCreateData = {
+    body: {
+        name: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/apikeys/';
+};
+
+export type AccountApikeysCreateErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountApikeysCreateError = AccountApikeysCreateErrors[keyof AccountApikeysCreateErrors];
+
+export type AccountApikeysCreateResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        name: string;
+        key: string;
+        prefix: string;
+        createdAt: string;
+    };
+};
+
+export type AccountApikeysCreateResponse = AccountApikeysCreateResponses[keyof AccountApikeysCreateResponses];
+
+export type AccountApikeysRevokeData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/account/apikeys/{id}';
+};
+
+export type AccountApikeysRevokeErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountApikeysRevokeError = AccountApikeysRevokeErrors[keyof AccountApikeysRevokeErrors];
+
+export type AccountApikeysRevokeResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type AccountApikeysRevokeResponse = AccountApikeysRevokeResponses[keyof AccountApikeysRevokeResponses];
+
 export type AccountLinkEmailRequestData = {
     body: {
         email: string;
@@ -109,6 +219,43 @@ export type AccountLinkEmailVerifyResponses = {
 };
 
 export type AccountLinkEmailVerifyResponse = AccountLinkEmailVerifyResponses[keyof AccountLinkEmailVerifyResponses];
+
+export type AccountLinkWalletUnlinkData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/account/link/wallet/{id}';
+};
+
+export type AccountLinkWalletUnlinkErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkWalletUnlinkError = AccountLinkWalletUnlinkErrors[keyof AccountLinkWalletUnlinkErrors];
+
+export type AccountLinkWalletUnlinkResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type AccountLinkWalletUnlinkResponse = AccountLinkWalletUnlinkResponses[keyof AccountLinkWalletUnlinkResponses];
 
 export type AccountLinkWalletVerifyData = {
     body: {
@@ -403,6 +550,7 @@ export type GetUserResponses = {
                 address: string;
             };
             linkedWallets: Array<{
+                id: string;
                 chain: string;
                 address: string;
             }>;

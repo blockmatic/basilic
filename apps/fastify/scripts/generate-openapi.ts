@@ -131,9 +131,14 @@ async function generateOpenAPI() {
               type: 'http',
               scheme: 'bearer',
             },
+            apiKeyAuth: {
+              type: 'apiKey',
+              in: 'header',
+              name: 'X-API-Key',
+            },
           },
         },
-        security: [{ bearerAuth: [] }],
+        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
     })
 

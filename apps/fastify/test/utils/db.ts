@@ -82,6 +82,7 @@ export async function getTestDatabase() {
 
 /** Tables to truncate (order respects FK: users referenced by others) */
 const TABLES = [
+  'api_keys',
   'account',
   'sessions',
   'wallet_identities',

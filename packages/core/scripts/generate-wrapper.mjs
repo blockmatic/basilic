@@ -8,30 +8,46 @@ const scriptDir = dirname(scriptFile)
 const openapiPath = join(scriptDir, '../../../apps/fastify/openapi/openapi.json')
 const outputPath = join(scriptDir, '../src/api-wrapper.gen.ts')
 
-// Convert string to camelCase
+// Convert string to camelCase; strip {...} from path params for valid keys
 function toCamelCase(str) {
-  return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
+  const cleaned = str.replace(/^\{|\}$/g, '')
+  return cleaned.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
 }
 
-// Build nested object structure from path segments
+// Extract action key from operationId (e.g. accountApikeysCreate -> create)
+function toActionKey(operationId) {
+  const match = operationId.match(/[A-Z][a-z]+$/)
+  return match ? match[0].toLowerCase() : operationId
+}
+
+// Build nested object structure from path segments.
+// When a leaf (operationId string) would get children, promote to nested object. When multiple ops share a path, use action keys.
 function buildNestedObject(obj, segments, operationId) {
-  if (segments.length === 0) {
-    return operationId
-  }
+  if (segments.length === 0) return operationId
 
   const [first, ...rest] = segments
   const key = toCamelCase(first)
 
-  if (!obj[key]) {
+  if (rest.length === 0) {
+    const existing = obj[key]
+    if (typeof existing === 'string') {
+      obj[key] = { [toActionKey(existing)]: existing, [toActionKey(operationId)]: operationId }
+    } else if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+      obj[key][toActionKey(operationId)] = operationId
+    } else {
+      obj[key] = operationId
+    }
+    return obj
+  }
+
+  const existing = obj[key]
+  if (typeof existing === 'string') {
+    obj[key] = { [toActionKey(existing)]: existing }
+  }
+  if (!obj[key] || typeof obj[key] === 'string') {
     obj[key] = {}
   }
-
-  if (rest.length === 0) {
-    obj[key] = operationId
-  } else {
-    obj[key] = buildNestedObject(obj[key], rest, operationId)
-  }
-
+  buildNestedObject(obj[key], rest, operationId)
   return obj
 }
 

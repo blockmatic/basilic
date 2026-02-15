@@ -43,6 +43,7 @@ describe('GET /users/:id', () => {
 - Test contracts, not implementation
 - Use test database (PGLite for embedded Postgres)
 - Clean up after tests
+- **PGLite linear execution**: Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false` to avoid PGLite/WASM instability with parallel workers
 
 ## Frontend Testing
 

@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { getApiKeyToken } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
-async function getSessionToken(email = 'user@test.ai'): Promise<string> {
+async function getSessionTokenLocal(email = 'user@test.ai'): Promise<string> {
   fastify.fakeEmail?.clear()
   await fastify.inject({
     method: 'POST',
@@ -34,7 +35,7 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should verify link token and return new JWTs', async () => {
-    const jwt = await getSessionToken()
+    const jwt = await getSessionTokenLocal()
     fastify.fakeEmail?.clear()
 
     await fastify.inject({
@@ -72,7 +73,7 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should return EXPIRED_TOKEN for expired token', async () => {
-    const jwt = await getSessionToken()
+    const jwt = await getSessionTokenLocal()
     const db = await (await import('../../../../db/index.js')).getDb()
     const { verification } = await import('../../../../db/schema/index.js')
     const { hashToken } = await import('../../../../lib/jwt.js')
@@ -100,5 +101,36 @@ describe('POST /account/link/email/verify', () => {
     expect(response.statusCode).toBe(401)
     const body = JSON.parse(response.body)
     expect(body.code).toBe('EXPIRED_TOKEN')
+  })
+
+  it('should verify link when authenticated via API key', async () => {
+    const jwt = await getSessionTokenLocal('verify-apikey@test.ai')
+    fastify.fakeEmail?.clear()
+
+    await fastify.inject({
+      method: 'POST',
+      url: '/account/link/email/request',
+      headers: { Authorization: `Bearer ${jwt}` },
+      payload: {
+        email: 'linked-apikey@example.com',
+        callbackUrl: 'https://example.com/callback',
+      },
+    })
+
+    const linkToken = fastify.fakeEmail?.extractToken()
+    if (!linkToken) throw new Error('No link token')
+
+    const apiKey = await getApiKeyToken(fastify, 'verify-apikey@test.ai')
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/account/link/email/verify',
+      headers: { Authorization: `Bearer ${apiKey}` },
+      payload: { token: linkToken },
+    })
+    expect(response.statusCode).toBe(200)
+    const body = JSON.parse(response.body)
+    expect(body).toHaveProperty('token')
+    expect(body).toHaveProperty('refreshToken')
   })
 })

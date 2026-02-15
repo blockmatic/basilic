@@ -7,7 +7,7 @@ Full-stack monorepo starter for Web3 and AI apps. Built for teams shipping produ
 ## Features
 
 - 🤖 **AI-first dev workflow** — Agent rules, skills, MCP integrations, and automated CodeRabbit reviews
-- 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT auth for all clients
+- 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
 - 🧩 **Web3 & AI starters** — Ready-to-use templates for Next.js, React, Expo, Fastify, and Ponder
 - 🔓 **Zero vendor lock-in** — Run on VPS, AWS, Vercel, or local

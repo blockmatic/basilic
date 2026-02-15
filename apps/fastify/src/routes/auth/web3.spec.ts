@@ -17,6 +17,7 @@ afterAll(async () => {
 
 export { fastify }
 
+import './web3/nonce.test'
 import './web3/eip155/nonce.test'
 import './web3/eip155/verify.test'
 import './web3/solana/nonce.test'

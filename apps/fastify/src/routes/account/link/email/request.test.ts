@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { getApiKeyToken } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 async function getSessionToken(): Promise<string> {
@@ -95,5 +96,24 @@ describe('POST /account/link/email/request', () => {
     expect(response.statusCode).toBe(409)
     const body = JSON.parse(response.body)
     expect(body.code).toBe('EMAIL_ALREADY_IN_USE')
+  })
+
+  it('should send link email when authenticated via API key', async () => {
+    const apiKey = await getApiKeyToken(fastify, 'link-email-apikey@test.ai')
+    fastify.fakeEmail?.clear()
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/account/link/email/request',
+      headers: { Authorization: `Bearer ${apiKey}` },
+      payload: {
+        email: 'link-apikey@example.com',
+        callbackUrl: 'https://example.com/link-callback',
+      },
+    })
+    expect(response.statusCode).toBe(200)
+    expect(JSON.parse(response.body)).toEqual({ ok: true })
+    const sentEmail = fastify.fakeEmail?.last()
+    expect(sentEmail?.to).toBe('link-apikey@example.com')
   })
 })

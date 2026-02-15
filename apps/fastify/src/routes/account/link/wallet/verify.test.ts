@@ -1,6 +1,7 @@
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { getApiKeyToken } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 const TEST_PRIVATE_KEY =
@@ -122,6 +123,59 @@ describe('POST /account/link/wallet/verify', () => {
     expect(row).toBeDefined()
     expect(row?.chain).toBe('eip155')
     expect(row?.address?.toLowerCase()).toBe(TEST_ACCOUNT.address.toLowerCase())
+  })
+
+  it('should link wallet when authenticated via API key', async () => {
+    fastify.fakeEmail?.clear()
+    const apiKey = await getApiKeyToken(fastify, 'wallet-verify-apikey@test.ai')
+    const userRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { Authorization: `Bearer ${apiKey}` },
+    })
+    if (userRes.statusCode !== 200) {
+      throw new Error(`session/user failed: ${userRes.statusCode} ${userRes.body}`)
+    }
+    const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
+
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: `/auth/web3/nonce?chain=eip155&address=${TEST_ACCOUNT.address}`,
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const messageToSign = createSiweMessage({
+      address: TEST_ACCOUNT.address,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+    const signature = await TEST_ACCOUNT.signMessage({ message: messageToSign })
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/account/link/wallet/verify',
+      headers: { Authorization: `Bearer ${apiKey}` },
+      payload: {
+        chain: 'eip155',
+        message: messageToSign,
+        signature,
+      },
+    })
+    expect(response.statusCode).toBe(200)
+    expect(JSON.parse(response.body)).toEqual({ ok: true })
+
+    const db = await (await import('../../../../db/index.js')).getDb()
+    const { walletIdentities } = await import('../../../../db/schema/index.js')
+    const { eq } = await import('drizzle-orm')
+    const [row] = await db
+      .select()
+      .from(walletIdentities)
+      .where(eq(walletIdentities.userId, userId))
+    expect(row).toBeDefined()
+    expect(row?.chain).toBe('eip155')
   })
 
   it('should return WALLET_ALREADY_LINKED when wallet belongs to another user', async () => {
