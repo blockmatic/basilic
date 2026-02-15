@@ -40,7 +40,9 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
         body: VerifySchema,
         response: {
           200: VerifyResponseSchema,
+          400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },

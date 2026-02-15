@@ -294,6 +294,13 @@ export type Web3Eip155NonceErrors = {
         code: string;
         message: string;
     };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
 };
 
 export type Web3Eip155NonceError = Web3Eip155NonceErrors[keyof Web3Eip155NonceErrors];
@@ -324,7 +331,21 @@ export type Web3Eip155VerifyErrors = {
     /**
      * Default Response
      */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
         code: string;
         message: string;
     };
@@ -361,6 +382,13 @@ export type Web3SolanaNonceErrors = {
         code: string;
         message: string;
     };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
 };
 
 export type Web3SolanaNonceError = Web3SolanaNonceErrors[keyof Web3SolanaNonceErrors];
@@ -391,7 +419,21 @@ export type Web3SolanaVerifyErrors = {
     /**
      * Default Response
      */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
         code: string;
         message: string;
     };

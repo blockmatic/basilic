@@ -30,6 +30,7 @@ const solanaNonceRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: NonceResponseSchema,
           400: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
