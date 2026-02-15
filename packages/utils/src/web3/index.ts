@@ -19,6 +19,16 @@ export type { ChainType }
 export * from './alchemy.js'
 export { chainTypeSchema } from './chain-type.js'
 
+/** SIWE/SIWS chain identifier: eip155 for EVM, solana for Solana */
+export type Web3Chain = 'eip155' | 'solana'
+
+/** Maps ChainType to Web3Chain for SIWE/SIWS auth. evm → eip155, solana → solana */
+export function getWeb3Chain(chainType: ChainType): Web3Chain | undefined {
+  if (chainType === 'evm') return 'eip155'
+  if (chainType === 'solana') return 'solana'
+  return undefined
+}
+
 /**
  * Metadata for a blockchain network.
  *

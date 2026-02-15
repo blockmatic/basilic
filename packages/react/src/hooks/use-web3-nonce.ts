@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
+import type { Web3Chain } from '../wallet/types'
 
-export type Web3Chain = 'eip155' | 'solana'
+export type { Web3Chain }
 
 export type Web3NonceResponse = { nonce: string }
 

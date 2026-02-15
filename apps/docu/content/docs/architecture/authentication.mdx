@@ -42,7 +42,11 @@ Web3 sign-in follows a **nonce → sign → verify** flow and returns access + r
 
 **Flow:** Client fetches nonce → builds message (domain, address, nonce) → signs with wallet → POSTs verify to Fastify → receives `{ token, refreshToken }` → if `authCallbackUrl` is set (Next.js), POSTs tokens to callback to set HttpOnly cookies and redirect.
 
-**Framework support:** React (`useWalletAuth`, `useWeb3Nonce`), vanilla (fetch), Vue (composable or fetch).
+**Framework support:** React hooks from `@repo/react` provide wallet-agnostic API. Apps supply wagmi and/or Solana adapters via `WalletProvider`. Hooks: `useWallet`, `useWalletAuth`, `useLinkWallet`, `useLinkEmail`, `useWalletSign`, `useWalletSendTransaction`, `useWeb3Nonce`. Vanilla (fetch) and Vue (composable) also supported.
+
+**Session wallet enforcement:** When the JWT was created by wallet sign-in, signing and sending transactions require that exact wallet connected. `useWalletSign` and `useWalletSendTransaction` expose `isReady` (adapter exists and matches session wallet) and `isWalletRejection` for UX.
+
+**TransferParams:** `useWalletSendTransaction` accepts `EvmTxParams` or `SolanaTxParams`; adapters resolve to chain-specific formats.
 
 **Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error.
 
