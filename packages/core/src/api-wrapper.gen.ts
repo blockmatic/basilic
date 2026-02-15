@@ -29,6 +29,7 @@ auth: {
     user: gen.getUser,
   },
   web3: {
+    nonce: gen.web3Nonce,
     eip155: {
       nonce: gen.web3Eip155Nonce,
       verify: gen.web3Eip155Verify,
@@ -37,7 +38,6 @@ auth: {
       nonce: gen.web3SolanaNonce,
       verify: gen.web3SolanaVerify,
     },
-    nonce: gen.web3Nonce,
   },
 },
 test: {

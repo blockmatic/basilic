@@ -940,6 +940,79 @@
         }
       }
     },
+    "/auth/web3/nonce": {
+      "get": {
+        "operationId": "web3Nonce",
+        "summary": "Get nonce",
+        "tags": ["auth"],
+        "description": "Get nonce for wallet sign-in or account linking",
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": ["eip155"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["solana"]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "chain",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "address",
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["nonce"],
+                  "properties": {
+                    "nonce": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/web3/eip155/nonce": {
       "get": {
         "operationId": "web3Eip155Nonce",
@@ -1289,79 +1362,6 @@
             }
           },
           "500": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["code", "message"],
-                  "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth/web3/nonce": {
-      "get": {
-        "operationId": "web3Nonce",
-        "summary": "Get nonce",
-        "tags": ["auth"],
-        "description": "Get nonce for wallet sign-in or account linking",
-        "parameters": [
-          {
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "enum": ["eip155"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["solana"]
-                }
-              ]
-            },
-            "in": "query",
-            "name": "chain",
-            "required": true
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "address",
-            "required": true
-          }
-        ],
-        "security": [],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["nonce"],
-                  "properties": {
-                    "nonce": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
             "description": "Default Response",
             "content": {
               "application/json": {

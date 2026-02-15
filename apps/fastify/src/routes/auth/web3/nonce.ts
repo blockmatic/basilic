@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
+import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getAddress } from 'viem'
 import { generateSiweNonce } from 'viem/siwe'
 import { getDb } from '../../../db/index.js'
-import { and, eq } from 'drizzle-orm'
 import { web3Nonce } from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 

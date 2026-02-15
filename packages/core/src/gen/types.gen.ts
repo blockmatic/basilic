@@ -412,6 +412,39 @@ export type GetUserResponses = {
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
 
+export type Web3NonceData = {
+    body?: never;
+    path?: never;
+    query: {
+        chain: 'eip155' | 'solana';
+        address: string;
+    };
+    url: '/auth/web3/nonce';
+};
+
+export type Web3NonceErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+};
+
+export type Web3NonceError = Web3NonceErrors[keyof Web3NonceErrors];
+
+export type Web3NonceResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        nonce: string;
+    };
+};
+
+export type Web3NonceResponse = Web3NonceResponses[keyof Web3NonceResponses];
+
 export type Web3Eip155NonceData = {
     body?: never;
     path?: never;
@@ -450,39 +483,6 @@ export type Web3Eip155NonceResponses = {
 };
 
 export type Web3Eip155NonceResponse = Web3Eip155NonceResponses[keyof Web3Eip155NonceResponses];
-
-export type Web3NonceData = {
-    body?: never;
-    path?: never;
-    query: {
-        chain: 'eip155' | 'solana';
-        address: string;
-    };
-    url: '/auth/web3/nonce';
-};
-
-export type Web3NonceErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        code: string;
-        message: string;
-    };
-};
-
-export type Web3NonceError = Web3NonceErrors[keyof Web3NonceErrors];
-
-export type Web3NonceResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        nonce: string;
-    };
-};
-
-export type Web3NonceResponse = Web3NonceResponses[keyof Web3NonceResponses];
 
 export type Web3Eip155VerifyData = {
     body: {

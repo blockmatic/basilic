@@ -81,7 +81,6 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         type: 'magic_link',
         identifier: email,
         value: tokenHash,
-        type: 'magic_link',
         ...(storePlain && { tokenPlain: token }),
         expiresAt,
       })

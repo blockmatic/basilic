@@ -150,6 +150,13 @@ export const getUser = <ThrowOnError extends boolean = false>(options?: Options<
 });
 
 /**
+ * Get nonce
+ *
+ * Get nonce for wallet sign-in or account linking
+ */
+export const web3Nonce = <ThrowOnError extends boolean = false>(options: Options<Web3NonceData, ThrowOnError>) => (options.client ?? client).get<Web3NonceResponses, Web3NonceErrors, ThrowOnError>({ url: '/auth/web3/nonce', ...options });
+
+/**
  * Get EIP-155 nonce
  *
  * Get nonce for SIWE (Sign-In with Ethereum)
@@ -190,13 +197,6 @@ export const web3SolanaVerify = <ThrowOnError extends boolean = false>(options: 
         ...options.headers
     }
 });
-
-/**
- * Get nonce
- *
- * Get nonce for wallet sign-in or account linking
- */
-export const web3Nonce = <ThrowOnError extends boolean = false>(options: Options<Web3NonceData, ThrowOnError>) => (options.client ?? client).get<Web3NonceResponses, Web3NonceErrors, ThrowOnError>({ url: '/auth/web3/nonce', ...options });
 
 /**
  * Test authenticated endpoint
