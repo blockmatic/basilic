@@ -64,10 +64,6 @@ export const env = createEnv({
       .string()
       .default('api.yourapp.com')
       .transform(val => val.split(',').map(aud => aud.trim())),
-    MAGIC_LINK_CALLBACK_HOST_ALLOWLIST: z
-      .string()
-      .optional()
-      .transform(val => (val ? val.split(',').map(host => host.trim()) : undefined)),
     RESEND_API_KEY: z.string().min(1).default('re_placeholder'),
     EMAIL_FROM: z.string().email().default('noreply@localhost'),
     EMAIL_FROM_NAME: z.string().default('App'),

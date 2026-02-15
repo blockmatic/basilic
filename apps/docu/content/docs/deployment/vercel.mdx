@@ -33,6 +33,10 @@ Set environment variables in Vercel project settings:
 **For API (`apps/fastify`):**
 ```bash
 DATABASE_URL=postgresql://user:pass@host:5432/dbname
+ENCRYPTION_KEY=<64-char-hex>
+JWT_SECRET=<min-32-chars-not-dev-default>
+OPEN_ROUTER_API_KEY=sk-...
+RESEND_API_KEY=re_...
 PORT=3001
 NODE_ENV=production
 SENTRY_DSN=https://...
@@ -57,17 +61,19 @@ Push to `main` branch to deploy to production. Pull requests automatically creat
 
 ### `vercel.json` (Optional)
 
-Configure deployment settings:
+Monorepo apps use custom configs. Example for `apps/next`:
 
 ```json
 {
-  "buildCommand": "pnpm build",
-  "installCommand": "pnpm install",
-  "framework": "nextjs"
+  "ignoreCommand": "npx turbo-ignore @repo/next --fallback=HEAD~10",
+  "buildCommand": "cd ../.. && pnpm turbo build --filter=@repo/next",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next"
 }
 ```
 
-**Note**: Vercel auto-detects configuration for Next.js apps, so this is usually not needed.
+Root Directory must be set in Vercel project settings (e.g. `apps/next`).
 
 ## Environment-Specific Configuration
 
@@ -87,15 +93,15 @@ Each Vercel project uses `ignoreCommand` in `vercel.json` to skip builds when ir
 
 - **docu** — Uses `turbo-ignore @repo/docu` (Turbo dependency graph). Skips when only other apps change.
 - **next** — Uses `turbo-ignore @repo/next` (Turbo dependency graph). Skips when only other apps change.
-- **fastify** — Uses `scripts/vercel-ignore.sh` with custom paths including `apps/next` (see Branch Preview Coupling below)
+- **fastify** — Uses `turbo-ignore @repo/fastify` (Turbo dependency graph). Skips when only other apps change.
 
-`turbo-ignore` and the fastify script use `--fallback=HEAD~10` / `HEAD~10` when `VERCEL_GIT_PREVIOUS_SHA` is empty (first deploy, PR preview), avoiding unnecessary builds.
+All use `--fallback=HEAD~10` when `VERCEL_GIT_PREVIOUS_SHA` is empty (first deploy, PR preview), avoiding unnecessary builds.
 
 ## Branch Preview Coupling
 
-Next's `apps/next/next.config.mjs` computes `NEXT_PUBLIC_API_URL` for preview deployments as `basilic-fastify-git-{branch}-*.vercel.app`. A Next branch preview expects a matching Fastify branch deployment for that same branch. If Fastify skipped when only Next changes, the preview would point at a non-existent API URL.
+Next's `apps/next/next.config.mjs` computes `NEXT_PUBLIC_API_URL` for preview deployments as `basilic-fastify-git-{branch}-*.vercel.app`. A Next branch preview expects a matching Fastify branch deployment for that same branch.
 
-**Fastify must build every time Next changes** so branch instances can connect. The Fastify `ignoreCommand` includes `apps/next` in its diff paths for this reason.
+Fastify builds when `@repo/fastify` or its dependencies change. `@repo/next` is not a Fastify dependency, so Fastify will skip when only Next changes. To ensure a matching Fastify deployment for a branch preview, use `[vercel deploy]` or `[vercel only@repo/fastify]` in the commit message when needed.
 
 ## Monorepo Configuration
 
@@ -104,6 +110,8 @@ For monorepo apps, Vercel needs to know the root directory:
 1. Go to Vercel project settings
 2. Set "Root Directory" to `apps/next` (or `apps/docu`, `apps/fastify`)
 3. Vercel automatically detects package dependencies
+
+**Fork or different project names**: Next's `next.config.mjs` uses `API_PROJECT_NAME` and `TEAM_SLUG` to compute preview API URLs. Update these constants to match your Fastify Vercel project name and team slug.
 
 ## Custom Domains
 

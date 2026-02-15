@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
-// Must match basilic-fastify Vercel deployment URL pattern:
+// Must match basilic-fastify Vercel deployment URL pattern. Fork/deploy: change API_PROJECT_NAME
+// and TEAM_SLUG to your Fastify project and Vercel team slug.
 // - Production: basilic-fastify.vercel.app (or basilic-fastify-gaboesquivel.vercel.app)
 // - Preview (commit): basilic-fastify-{hash}-gaboesquivel.vercel.app
 // - Preview (branch): basilic-fastify-git-{branch}-gaboesquivel.vercel.app
