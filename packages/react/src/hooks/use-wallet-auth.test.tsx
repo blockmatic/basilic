@@ -124,7 +124,9 @@ describe('useWalletAuth', () => {
       await result.current.signIn()
     })
 
-    expect(result.current.error?.message).toContain('No wallet address')
+    await waitFor(() => {
+      expect(result.current.error?.message).toContain('No wallet address')
+    })
     expect(signMessage).not.toHaveBeenCalled()
     expect(client.auth.web3.eip155.verify).not.toHaveBeenCalled()
   })
@@ -147,6 +149,8 @@ describe('useWalletAuth', () => {
       await result.current.signIn()
     })
 
-    expect(result.current.error?.message).toBe('User rejected signing')
+    await waitFor(() => {
+      expect(result.current.error?.message).toBe('User rejected signing')
+    })
   })
 })

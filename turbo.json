@@ -88,9 +88,7 @@
         "EMAIL_ASSETS_URL"
       ]
     },
-    "checktypes": {
-      "env": ["NODE_ENV"]
-    },
+    "checktypes": { "env": ["NODE_ENV"] },
     "test": {
       "env": [
         "NODE_ENV",

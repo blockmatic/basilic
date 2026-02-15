@@ -71,11 +71,18 @@ const nextConfig = {
   webpack: config => {
     // Resolve "source" condition from internal packages for direct TS imports (after defaults so node_modules use dist)
     config.resolve.conditionNames = [...(config.resolve.conditionNames ?? []), 'source']
-    // Stub optional wagmi connectors we don't use (porto) to avoid build resolution errors
+    // Stub optional wagmi connectors we don't use to avoid build resolution errors
     config.resolve.fallback = {
       ...config.resolve.fallback,
       porto: false,
       'porto/internal': false,
+      '@base-org/account': false,
+      '@coinbase/wallet-sdk': false,
+      '@gemini-wallet/core': false,
+      '@metamask/sdk': false,
+      '@safe-global/safe-apps-sdk': false,
+      '@safe-global/safe-apps-provider': false,
+      '@walletconnect/ethereum-provider': false,
     }
     // Resolve .js imports to .ts files for transpiled packages
     // Merge with existing extensionAlias if present to preserve Next.js defaults

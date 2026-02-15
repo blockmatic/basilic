@@ -1,10 +1,10 @@
 'use client'
 
 import type { Web3Eip155VerifyResponse, Web3SolanaVerifyResponse } from '@repo/core'
-import { useCallback, useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createSiweMessage } from 'viem/siwe'
 import { useReactApiConfig } from '../context'
-import type { Web3Chain } from './use-web3-nonce'
+import type { WalletAdapter, Web3Chain } from '../wallet/types'
 import { useWeb3Nonce } from './use-web3-nonce'
 
 const REJECTION_PATTERNS = [/denied/i, /rejected/i, /cancel/i, /user denied/i, /user rejected/i]
@@ -33,11 +33,18 @@ function buildSiwsMessage({
 }
 
 export type UseWalletAuthParams = {
-  chain: Web3Chain
-  address: string | undefined
-  signMessage: (message: string | Uint8Array) => Promise<{ signature: string }>
+  /** Adapter from useWallet; when set, chain/address/signMessage are derived */
+  adapter?: WalletAdapter
+  /** Chain when not using adapter */
+  chain?: Web3Chain
+  /** Address when not using adapter */
+  address?: string | undefined
+  /** Sign function when not using adapter */
+  signMessage?: (message: string | Uint8Array) => Promise<{ signature: string }>
   domain?: string
   statement?: string
+  /** EVM chainId for SIWE (e.g. from useChainId). Required when chain is eip155. */
+  chainId?: number
   /** Solana network for SIWS Chain ID (e.g. mainnet-beta, devnet, testnet). Default mainnet-beta. */
   network?: string
 }
@@ -50,46 +57,45 @@ export type UseWalletAuthResult = {
 
 /**
  * Primary hook for Web3 sign-in (SIWE or SIWS).
- * Composes useWeb3Nonce; builds message, signs, verifies, optionally posts to authCallbackUrl.
+ * Uses useMutation; supports adapter or explicit chain/address/signMessage.
+ * SIWE uses dynamic chainId from wagmi when chain is eip155.
  */
 export function useWalletAuth({
-  chain,
-  address,
-  signMessage,
+  adapter,
+  chain: explicitChain,
+  address: explicitAddress,
+  signMessage: explicitSignMessage,
   domain = typeof window !== 'undefined' ? window.location.host : '',
   statement = 'Sign in to the application',
+  chainId = 1,
   network = 'mainnet-beta',
 }: UseWalletAuthParams): UseWalletAuthResult {
   const { client, authCallbackUrl } = useReactApiConfig()
+  const queryClient = useQueryClient()
+
+  const chain = adapter?.chain ?? explicitChain
+  const address = adapter?.address ?? explicitAddress
+  const signMessage = adapter?.signMessage ?? explicitSignMessage
+
   const { data: nonceData, refetch: refetchNonce } = useWeb3Nonce({
-    chain,
+    chain: (chain ?? 'eip155') as Web3Chain,
     address,
-    enabled: !!address,
+    enabled: !!chain && !!address,
   })
 
-  const [isPending, setIsPending] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
-
-  const signIn = useCallback(async () => {
-    if (!address) {
-      setError(new Error('No wallet address'))
-      return
-    }
-
-    let nonce = nonceData?.nonce
-    if (!nonce) {
-      const { data } = await refetchNonce()
-      nonce = data?.nonce
-      if (!nonce) {
-        setError(new Error('Failed to get nonce'))
-        return
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!address || !signMessage || !chain) {
+        throw new Error('No wallet address')
       }
-    }
 
-    setError(null)
-    setIsPending(true)
+      let nonce = nonceData?.nonce
+      if (!nonce) {
+        const { data } = await refetchNonce()
+        nonce = data?.nonce
+        if (!nonce) throw new Error('Failed to get nonce')
+      }
 
-    try {
       const uri = typeof window !== 'undefined' ? window.location.origin : 'https://localhost'
       let message: string
       let signature: string
@@ -97,7 +103,7 @@ export function useWalletAuth({
       if (chain === 'eip155') {
         message = createSiweMessage({
           address: address as `0x${string}`,
-          chainId: 1,
+          chainId,
           domain,
           nonce,
           uri,
@@ -150,27 +156,26 @@ export function useWalletAuth({
           return
         }
       }
-    } catch (err) {
-      if (isWalletRejection(err)) {
-        setError(new Error('User rejected signing'))
-      } else {
-        setError(err instanceof Error ? err : new Error(String(err)))
-      }
-    } finally {
-      setIsPending(false)
-    }
-  }, [
-    address,
-    nonceData?.nonce,
-    refetchNonce,
-    chain,
-    signMessage,
-    domain,
-    statement,
-    network,
-    client,
-    authCallbackUrl,
-  ])
 
-  return { signIn, isPending, error }
+      return verifyResult
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
+    },
+  })
+
+  const signIn = async () => {
+    try {
+      await mutation.mutateAsync()
+    } catch {
+      /* Error stored in mutation.error, surfaced via result.error */
+    }
+  }
+
+  const error =
+    mutation.error && isWalletRejection(mutation.error)
+      ? new Error('User rejected signing')
+      : (mutation.error as Error | null)
+
+  return { signIn, isPending: mutation.isPending, error: error ?? null }
 }
