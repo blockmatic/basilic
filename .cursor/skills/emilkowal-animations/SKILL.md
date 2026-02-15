@@ -112,8 +112,9 @@ Reference these guidelines when:
 
 ## Reference Files
 
-| File | Description |
-|------|-------------|
-| [references/_sections.md](references/_sections.md) | Category definitions and ordering |
-| [assets/templates/_template.md](assets/templates/_template.md) | Template for new rules |
-| [metadata.json](metadata.json) | Version and reference information |
+| Category | Example References |
+|----------|-------------------|
+| Easing | [ease-context-matters](references/ease-context-matters.md), [ease-ios-drawer](references/ease-ios-drawer.md) |
+| Timing | [timing-300ms-max](references/timing-300ms-max.md), [timing-drawer-500ms](references/timing-drawer-500ms.md) |
+| Props & Transform | [props-transform-opacity](references/props-transform-opacity.md), [transform-scale-097](references/transform-scale-097.md) |
+| Interaction & Polish | [interact-interruptible](references/interact-interruptible.md), [polish-reduced-motion](references/polish-reduced-motion.md) |

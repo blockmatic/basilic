@@ -17,5 +17,6 @@ afterAll(async () => {
 
 export { fastify }
 
+import './utils.test'
 import './magiclink/request.test'
 import './magiclink/verify.test'
