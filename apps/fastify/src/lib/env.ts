@@ -72,7 +72,6 @@ export const env = createEnv({
     EMAIL_FROM: z.string().email().default('noreply@localhost'),
     EMAIL_FROM_NAME: z.string().default('App'),
     ALLOW_TEST: z.coerce.boolean().default(false),
-    SIWE_DOMAIN: z.string().min(1).optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

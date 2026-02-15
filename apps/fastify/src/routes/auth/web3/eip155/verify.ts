@@ -19,6 +19,7 @@ import { validateEip155Address } from '../validate-address.js'
 const VerifySchema = Type.Object({
   message: Type.String(),
   signature: Type.String(),
+  domain: Type.Optional(Type.String()),
 })
 
 const VerifyResponseSchema = Type.Object({
@@ -44,7 +45,7 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      const { message, signature } = request.body
+      const { message, signature, domain: expectedDomain } = request.body
 
       let siweMessage: SiweMessage
       try {
@@ -56,7 +57,7 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      if (env.SIWE_DOMAIN && siweMessage.domain !== env.SIWE_DOMAIN) {
+      if (expectedDomain && siweMessage.domain !== expectedDomain) {
         return reply.code(401).send({
           code: 'INVALID_DOMAIN',
           message: 'Domain mismatch',
@@ -75,9 +76,8 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
       }
 
       const db = await getDb()
-      const [nonceRecord] = await db
-        .select()
-        .from(web3Nonce)
+      const [deletedNonce] = await db
+        .delete(web3Nonce)
         .where(
           and(
             eq(web3Nonce.chain, 'eip155'),
@@ -85,16 +85,16 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
             eq(web3Nonce.nonce, siweMessage.nonce),
           ),
         )
+        .returning()
 
-      if (!nonceRecord) {
+      if (!deletedNonce) {
         return reply.code(401).send({
           code: 'INVALID_NONCE',
           message: 'Invalid or unknown nonce',
         })
       }
 
-      if (nonceRecord.expiresAt < new Date()) {
-        await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRecord.id))
+      if (deletedNonce.expiresAt < new Date()) {
         return reply.code(401).send({
           code: 'EXPIRED_NONCE',
           message: 'Nonce has expired',
@@ -108,8 +108,6 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
           message: result.error?.type ?? 'Invalid signature',
         })
       }
-
-      await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRecord.id))
 
       const [wallet] = await db
         .select()
@@ -126,17 +124,19 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (!user) {
         const userId = randomUUID()
-        await db.insert(users).values({
-          id: userId,
-          email: null,
-          emailVerified: false,
-        })
-        await db.insert(walletIdentities).values({
-          id: randomUUID(),
-          userId,
-          chain: 'eip155',
-          address: validatedAddress,
-          walletProvider: null,
+        await db.transaction(async tx => {
+          await tx.insert(users).values({
+            id: userId,
+            email: null,
+            emailVerified: false,
+          })
+          await tx.insert(walletIdentities).values({
+            id: randomUUID(),
+            userId,
+            chain: 'eip155',
+            address: validatedAddress,
+            walletProvider: null,
+          })
         })
         const [created] = await db.select().from(users).where(eq(users.id, userId))
         if (!created) throw new Error('Failed to create user')

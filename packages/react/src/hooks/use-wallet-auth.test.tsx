@@ -63,16 +63,17 @@ describe('useWalletAuth', () => {
     expect(msg).toContain('0x1234567890123456789012345678901234567890')
     expect(msg).toContain('Sign in')
     expect(client.auth.web3.eip155.verify).toHaveBeenCalledWith({
-      body: { message: msg, signature: '0xsig' },
+      body: { message: msg, signature: '0xsig', domain: 'localhost' },
+      throwOnError: true,
     })
   })
 
   it('POSTs tokens to authCallbackUrl when set', async () => {
     const client = createMockClient()
     const signMessage = vi.fn().mockResolvedValue({ signature: '0xsig' })
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(null, { status: 200 }),
-    )
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response(null, { status: 200 }))
 
     const { result } = renderHook(
       () =>

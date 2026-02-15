@@ -256,6 +256,14 @@ export type GetUserResponses = {
             email: string | unknown;
             name: string | unknown;
             emailVerified: boolean | unknown;
+            wallet?: {
+                chain: string;
+                address: string;
+            };
+            linkedWallets: Array<{
+                chain: string;
+                address: string;
+            }>;
         };
     };
 };
@@ -298,6 +306,7 @@ export type Web3Eip155VerifyData = {
     body: {
         message: string;
         signature: string;
+        domain?: string;
     };
     path?: never;
     query?: never;
@@ -364,6 +373,7 @@ export type Web3SolanaVerifyData = {
     body: {
         message: string;
         signature: string;
+        domain?: string;
     };
     path?: never;
     query?: never;

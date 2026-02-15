@@ -21,6 +21,7 @@ import { validateSolanaAddress } from '../validate-address.js'
 const VerifySchema = Type.Object({
   message: Type.String(),
   signature: Type.String(),
+  domain: Type.Optional(Type.String()),
 })
 
 const VerifyResponseSchema = Type.Object({
@@ -46,7 +47,7 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      const { message, signature } = request.body
+      const { message, signature, domain: expectedDomain } = request.body
 
       const parsed = parseSiwsMessage(message)
       if (!parsed) {
@@ -56,7 +57,7 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      if (env.SIWE_DOMAIN && parsed.domain !== env.SIWE_DOMAIN) {
+      if (expectedDomain && parsed.domain !== expectedDomain) {
         return reply.code(401).send({
           code: 'INVALID_DOMAIN',
           message: 'Domain mismatch',
@@ -74,9 +75,8 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
       }
 
       const db = await getDb()
-      const [nonceRecord] = await db
-        .select()
-        .from(web3Nonce)
+      const [deletedNonce] = await db
+        .delete(web3Nonce)
         .where(
           and(
             eq(web3Nonce.chain, 'solana'),
@@ -84,16 +84,16 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
             eq(web3Nonce.nonce, parsed.nonce),
           ),
         )
+        .returning()
 
-      if (!nonceRecord) {
+      if (!deletedNonce) {
         return reply.code(401).send({
           code: 'INVALID_NONCE',
           message: 'Invalid or unknown nonce',
         })
       }
 
-      if (nonceRecord.expiresAt < new Date()) {
-        await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRecord.id))
+      if (deletedNonce.expiresAt < new Date()) {
         return reply.code(401).send({
           code: 'EXPIRED_NONCE',
           message: 'Nonce has expired',
@@ -131,8 +131,6 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRecord.id))
-
       const [wallet] = await db
         .select()
         .from(walletIdentities)
@@ -148,17 +146,19 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (!user) {
         const userId = randomUUID()
-        await db.insert(users).values({
-          id: userId,
-          email: null,
-          emailVerified: false,
-        })
-        await db.insert(walletIdentities).values({
-          id: randomUUID(),
-          userId,
-          chain: 'solana',
-          address: validatedAddress,
-          walletProvider: null,
+        await db.transaction(async tx => {
+          await tx.insert(users).values({
+            id: userId,
+            email: null,
+            emailVerified: false,
+          })
+          await tx.insert(walletIdentities).values({
+            id: randomUUID(),
+            userId,
+            chain: 'solana',
+            address: validatedAddress,
+            walletProvider: null,
+          })
         })
         const [created] = await db.select().from(users).where(eq(users.id, userId))
         if (!created) throw new Error('Failed to create user')

@@ -116,10 +116,12 @@ export function useWalletAuth({
       const verifyResult =
         chain === 'eip155'
           ? ((await client.auth.web3.eip155.verify({
-              body: { message, signature },
+              body: { message, signature, domain },
+              throwOnError: true,
             })) as unknown as Web3Eip155VerifyResponse)
           : ((await client.auth.web3.solana.verify({
-              body: { message, signature },
+              body: { message, signature, domain },
+              throwOnError: true,
             })) as unknown as Web3SolanaVerifyResponse)
 
       if (authCallbackUrl) {
