@@ -34,7 +34,7 @@ const ApiKeyItemSchema = Type.Object({
 })
 
 const ListResponseSchema = Type.Object({
-  keys: Type.Array(ApiKeyItemSchema),
+  keys: Type.Array(ApiKeyItemSchema, { maxItems: 50 }),
 })
 
 const apikeysListRoute: FastifyPluginAsync = async fastify => {

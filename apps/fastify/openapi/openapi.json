@@ -150,6 +150,7 @@
                   "required": ["keys"],
                   "properties": {
                     "keys": {
+                      "maxItems": 50,
                       "type": "array",
                       "items": {
                         "type": "object",
