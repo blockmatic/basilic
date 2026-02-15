@@ -58,7 +58,8 @@
         "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
-        "EMAIL_ASSETS_URL"
+        "EMAIL_ASSETS_URL",
+        "SKIP_KILL_PORTS"
       ]
     },
     "lint:eslint:fix": {
@@ -85,7 +86,8 @@
         "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
-        "EMAIL_ASSETS_URL"
+        "EMAIL_ASSETS_URL",
+        "SKIP_KILL_PORTS"
       ]
     },
     "checktypes": {

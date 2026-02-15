@@ -3,7 +3,7 @@
  * E2E local: build, spawn Fastify + Next, poll until healthy, run Playwright, cleanup on exit.
  * No wait-on. Uses ALLOW_TEST, PGLITE, DB-backed token for @test.ai.
  */
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -48,6 +48,16 @@ function waitForUrl(url, timeoutMs = 60_000) {
 }
 
 async function main() {
+  if (!process.env.SKIP_KILL_PORTS) {
+    try {
+      spawnSync('bash', [join(repoRoot, 'scripts/kill-test-servers.sh')], {
+        cwd: repoRoot,
+        stdio: 'pipe',
+      })
+    } catch {
+      /* ignore - ports may not be in use or bash unavailable */
+    }
+  }
   const build = spawn('pnpm', ['-F', '@repo/next', 'run', 'build:e2e'], {
     cwd: repoRoot,
     stdio: 'inherit',
