@@ -26,7 +26,9 @@ async function readMigrationFiles(): Promise<string[]> {
 }
 
 try {
-  const shouldUsePGLite = env.PGLITE === true || env.NODE_ENV === 'test'
+  // Allow explicit override: RUN_PG_MIGRATE=true forces PostgreSQL path (e.g. after db:reset)
+  const forcePg = process.env.RUN_PG_MIGRATE === 'true'
+  const shouldUsePGLite = !forcePg && (env.PGLITE === true || env.NODE_ENV === 'test')
 
   if (shouldUsePGLite) {
     // PGLite: Skip migrations at build time (they run at runtime)

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
+import type { AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -24,6 +24,51 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Health check endpoint
  */
 export const healthCheck = <ThrowOnError extends boolean = false>(options?: Options<HealthCheckData, ThrowOnError>) => (options?.client ?? client).get<HealthCheckResponses, unknown, ThrowOnError>({ url: '/health', ...options });
+
+/**
+ * Link email request
+ *
+ * Request email to link to authenticated user
+ */
+export const accountLinkEmailRequest = <ThrowOnError extends boolean = false>(options: Options<AccountLinkEmailRequestData, ThrowOnError>) => (options.client ?? client).post<AccountLinkEmailRequestResponses, AccountLinkEmailRequestErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/link/email/request',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Link email verify
+ *
+ * Verify link email token and update user email
+ */
+export const accountLinkEmailVerify = <ThrowOnError extends boolean = false>(options: Options<AccountLinkEmailVerifyData, ThrowOnError>) => (options.client ?? client).post<AccountLinkEmailVerifyResponses, AccountLinkEmailVerifyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/link/email/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Link wallet
+ *
+ * Link wallet to authenticated user
+ */
+export const accountLinkWalletVerify = <ThrowOnError extends boolean = false>(options: Options<AccountLinkWalletVerifyData, ThrowOnError>) => (options.client ?? client).post<AccountLinkWalletVerifyResponses, AccountLinkWalletVerifyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/link/wallet/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
 
 /**
  * Generate AI chat response
@@ -103,6 +148,13 @@ export const getUser = <ThrowOnError extends boolean = false>(options?: Options<
     url: '/auth/session/user',
     ...options
 });
+
+/**
+ * Get nonce
+ *
+ * Get nonce for wallet sign-in or account linking
+ */
+export const web3Nonce = <ThrowOnError extends boolean = false>(options: Options<Web3NonceData, ThrowOnError>) => (options.client ?? client).get<Web3NonceResponses, Web3NonceErrors, ThrowOnError>({ url: '/auth/web3/nonce', ...options });
 
 /**
  * Get EIP-155 nonce

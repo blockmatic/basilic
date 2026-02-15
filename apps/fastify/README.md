@@ -31,7 +31,9 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 - `pnpm checktypes` — Type-check
 - `pnpm db:start` — Start Supabase (local)
 - `pnpm db:stop` — Stop Supabase
-- `pnpm db:migrate` — Run migrations
+- `pnpm db:reset` — Reset Supabase database (recreates from scratch)
+- `pnpm db:reset-and-migrate` — Reset DB then run Drizzle migrations
+- `pnpm db:migrate` — Run migrations (skips when PGLITE=true; use `RUN_PG_MIGRATE=true` to force PostgreSQL)
 - `pnpm db:generate` — Generate migrations from schema
 - `pnpm db:push` — Push schema (dev only)
 - `pnpm generate:openapi` — Regenerate OpenAPI spec

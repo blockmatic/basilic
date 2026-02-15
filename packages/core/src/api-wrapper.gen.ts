@@ -4,6 +4,17 @@ import * as gen from './gen/index'
 
 export const api = {
 healthCheck: gen.healthCheck,
+account: {
+  link: {
+    email: {
+      request: gen.accountLinkEmailRequest,
+      verify: gen.accountLinkEmailVerify,
+    },
+    wallet: {
+      verify: gen.accountLinkWalletVerify,
+    },
+  },
+},
 ai: {
   chat: gen.chat,
 },
@@ -18,6 +29,7 @@ auth: {
     user: gen.getUser,
   },
   web3: {
+    nonce: gen.web3Nonce,
     eip155: {
       nonce: gen.web3Eip155Nonce,
       verify: gen.web3Eip155Verify,

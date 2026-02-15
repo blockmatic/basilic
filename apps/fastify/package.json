@@ -36,6 +36,7 @@
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
+    "db:reset-and-migrate": "pnpm db:reset && RUN_PG_MIGRATE=true DATABASE_URL=\"postgresql://postgres:postgres@127.0.0.1:54322/postgres\" pnpm db:migrate",
     "db:status": "supabase status",
     "db:migrate": "node --import tsx scripts/migrate.ts",
     "db:generate": "NODE_OPTIONS='--import tsx' drizzle-kit generate",

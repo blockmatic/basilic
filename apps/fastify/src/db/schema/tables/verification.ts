@@ -1,15 +1,16 @@
 import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
+export const verificationTypes = ['magic_link', 'link_email'] as const
+export type VerificationType = (typeof verificationTypes)[number]
+
 export const verification = pgTable(
   'verification',
   {
     id: text('id').primaryKey(),
-    identifier: text('identifier').notNull(), // Email for magic links
-    value: text('value').notNull(), // Token hash
+    type: text('type', { enum: verificationTypes }).default('magic_link').notNull(),
+    identifier: text('identifier').notNull(), // Email for magic_link/link_email; chain:address for wallet nonce
+    value: text('value').notNull(), // Token hash or nonce
     tokenPlain: text('token_plain'), // Plain token for @test.ai when ALLOW_TEST (DB-backed, no fake outbox)
-    type: text('type', { enum: ['magic_link', 'link_email'] })
-      .default('magic_link')
-      .notNull(),
     expiresAt: timestamp('expires_at').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

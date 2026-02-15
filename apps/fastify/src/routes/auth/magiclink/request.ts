@@ -78,9 +78,9 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         email.endsWith('@test.ai')
       await db.insert(verification).values({
         id: randomUUID(),
+        type: 'magic_link',
         identifier: email,
         value: tokenHash,
-        type: 'magic_link',
         ...(storePlain && { tokenPlain: token }),
         expiresAt,
       })
