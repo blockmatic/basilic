@@ -144,9 +144,7 @@ describe('useWalletAuth', () => {
     )
 
     await act(async () => {
-      await result.current.signIn().catch(() => {
-        /* expected - signIn rethrows */
-      })
+      await result.current.signIn()
     })
 
     expect(result.current.error?.message).toBe('User rejected signing')

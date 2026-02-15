@@ -20,14 +20,16 @@ function buildSiwsMessage({
   nonce,
   statement = 'Sign in to the application',
   uri = 'https://localhost',
+  chainId = 'mainnet-beta',
 }: {
   domain: string
   address: string
   nonce: string
   statement?: string
   uri?: string
+  chainId?: string
 }) {
-  return `${domain} wants you to sign in with your Solana account:\n${address}\n\n${statement}\n\nURI: ${uri}\nVersion: 1\nChain ID: mainnet-beta\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}`
+  return `${domain} wants you to sign in with your Solana account:\n${address}\n\n${statement}\n\nURI: ${uri}\nVersion: 1\nChain ID: ${chainId}\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}`
 }
 
 export type UseWalletAuthParams = {
@@ -36,6 +38,8 @@ export type UseWalletAuthParams = {
   signMessage: (message: string | Uint8Array) => Promise<{ signature: string }>
   domain?: string
   statement?: string
+  /** Solana network for SIWS Chain ID (e.g. mainnet-beta, devnet, testnet). Default mainnet-beta. */
+  network?: string
 }
 
 export type UseWalletAuthResult = {
@@ -54,6 +58,7 @@ export function useWalletAuth({
   signMessage,
   domain = typeof window !== 'undefined' ? window.location.host : '',
   statement = 'Sign in to the application',
+  network = 'mainnet-beta',
 }: UseWalletAuthParams): UseWalletAuthResult {
   const { client, authCallbackUrl } = useReactApiConfig()
   const { data: nonceData, refetch: refetchNonce } = useWeb3Nonce({
@@ -108,6 +113,7 @@ export function useWalletAuth({
           nonce,
           statement,
           uri,
+          chainId: network,
         })
         const result = await signMessage(message)
         signature = result.signature
@@ -150,7 +156,6 @@ export function useWalletAuth({
       } else {
         setError(err instanceof Error ? err : new Error(String(err)))
       }
-      throw err
     } finally {
       setIsPending(false)
     }
@@ -162,6 +167,7 @@ export function useWalletAuth({
     signMessage,
     domain,
     statement,
+    network,
     client,
     authCallbackUrl,
   ])

@@ -1,3 +1,9 @@
+---
+title: Git Commit
+description: Create short, focused commit message and commit staged changes
+category: git
+---
+
 Create short, focused commit message and commit staged changes. Never use `--no-verify`. Fix all automated review errors and warnings before committing.
 
 1. **Review changes**: Check diff `git diff --cached` (staged) or `git diff` (unstaged), understand what changed and why
