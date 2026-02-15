@@ -1,4 +1,4 @@
-Systematically set up new feature from planning through implementation structure. Follow @.cursor/rules/base/general.mdc for planning discipline.
+Systematically set up new feature from planning through implementation structure. Follow architecture, strategies, and decisions in `@apps/docu/`. Follow @.cursor/rules/base/general.mdc for planning discipline.
 
 1. **Gather context**: Read readme, docs, skills, rules before planning and coding
 2. **Define requirements**: Clarify scope/goals, identify user stories/acceptance criteria, plan technical approach

@@ -1,4 +1,4 @@
-Perform comprehensive accessibility audit of current UI code to ensure compliance with WCAG guidelines and provide inclusive user experience.
+Perform comprehensive accessibility audit of current UI code to ensure compliance with WCAG guidelines and provide inclusive user experience. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
 
 1. **WCAG Compliance**: Check conformance to WCAG 2.1 guidelines (A, AA, AAA levels), verify proper semantic HTML structure, ensure keyboard navigation support, review color contrast/visual accessibility
 2. **Screen Reader Support**: Validate ARIA labels/descriptions, check heading hierarchy/structure, ensure form labels/error messages accessible, review dynamic content announcements

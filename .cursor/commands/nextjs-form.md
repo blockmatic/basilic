@@ -1,4 +1,4 @@
-Build production-ready Next.js 15 forms with Server Actions, progressive enhancement, comprehensive validation, and accessibility.
+Build production-ready Next.js 15 forms with Server Actions, progressive enhancement, comprehensive validation, and accessibility. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation, update docs, readme, and cursor rules if required to keep them aligned.
 
 1. **Create shared Zod schema**: Define Zod schema for form validation, use schema for both client-side (UX) and server-side (security) validation, colocate schema with form component or in feature-specific schema file, infer TypeScript types from schema using `z.infer<typeof schema>`
 2. **Implement Server Action**: Create Server Action with `"use server"` directive, extract/validate FormData using shared Zod schema, return proper result objects with success/error states (never throw directly), use `revalidatePath`/`revalidateTag` for cache invalidation, support redirect after successful submission, ensure Server Action works with progressive enhancement

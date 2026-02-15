@@ -1,4 +1,4 @@
-Generate two Mermaid diagrams to overview the product. Track progress with todos.
+Generate two Mermaid diagrams to overview the product. Track progress with todos. Follow architecture, strategies, and decisions in `@apps/docu/`.
 
 1. **Scan and explore**: Scan and explore codebase structure, entry points, components
 2. **Create user journey diagram**: Create high-level user journey diagram (5-7 nodes max, action verbs, `flowchart LR` with subgraphs, warm neutrals #F7F7F4, accent orange #F34F1D for key outcomes)

@@ -1,4 +1,4 @@
-Based on the given area of interest, dig around the codebase to gather information, spawn multiple task agents for deeper exploration with variance, then use the collected information to accomplish what the user wants.
+Based on the given area of interest, dig around the codebase to gather information, spawn multiple task agents for deeper exploration with variance, then use the collected information to accomplish what the user wants. Follow architecture, strategies, and decisions in `@apps/docu/`.
 
 1. **Gather information**: Dig around the codebase in terms of given area of interest, gather general information such as keywords and architecture overview
 2. **Spawn task agents**: Spawn off n=10 (unless specified otherwise) task agents to dig deeper into the codebase, some should be out of the box for variance

@@ -1,4 +1,4 @@
-Analyze codebase and generate visual roadmap of potential features and improvements. Track progress with todos.
+Analyze codebase and generate visual roadmap of potential features and improvements. Track progress with todos. Follow architecture, strategies, and decisions in `@apps/docu/`.
 
 1. **Scan codebase**: Scan codebase architecture, patterns, conventions, look for opportunities (missing common patterns, performance optimization opportunities, developer experience improvements, user-facing feature enhancements, code quality/refactoring candidates)
 2. **Identify opportunities**: Identify feature gaps and improvement opportunities
