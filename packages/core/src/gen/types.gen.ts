@@ -23,6 +23,141 @@ export type HealthCheckResponses = {
 
 export type HealthCheckResponse = HealthCheckResponses[keyof HealthCheckResponses];
 
+export type AccountLinkEmailRequestData = {
+    body: {
+        email: string;
+        callbackUrl: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/link/email/request';
+};
+
+export type AccountLinkEmailRequestErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkEmailRequestError = AccountLinkEmailRequestErrors[keyof AccountLinkEmailRequestErrors];
+
+export type AccountLinkEmailRequestResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: boolean;
+    };
+};
+
+export type AccountLinkEmailRequestResponse = AccountLinkEmailRequestResponses[keyof AccountLinkEmailRequestResponses];
+
+export type AccountLinkEmailVerifyData = {
+    body: {
+        token: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/link/email/verify';
+};
+
+export type AccountLinkEmailVerifyErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkEmailVerifyError = AccountLinkEmailVerifyErrors[keyof AccountLinkEmailVerifyErrors];
+
+export type AccountLinkEmailVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type AccountLinkEmailVerifyResponse = AccountLinkEmailVerifyResponses[keyof AccountLinkEmailVerifyResponses];
+
+export type AccountLinkWalletVerifyData = {
+    body: {
+        chain: 'eip155' | 'solana';
+        message: string;
+        signature: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/link/wallet/verify';
+};
+
+export type AccountLinkWalletVerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkWalletVerifyError = AccountLinkWalletVerifyErrors[keyof AccountLinkWalletVerifyErrors];
+
+export type AccountLinkWalletVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: boolean;
+    };
+};
+
+export type AccountLinkWalletVerifyResponse = AccountLinkWalletVerifyResponses[keyof AccountLinkWalletVerifyResponses];
+
 export type ChatData = {
     body: {
         messages: Array<{
@@ -315,6 +450,39 @@ export type Web3Eip155NonceResponses = {
 };
 
 export type Web3Eip155NonceResponse = Web3Eip155NonceResponses[keyof Web3Eip155NonceResponses];
+
+export type Web3NonceData = {
+    body?: never;
+    path?: never;
+    query: {
+        chain: 'eip155' | 'solana';
+        address: string;
+    };
+    url: '/auth/web3/nonce';
+};
+
+export type Web3NonceErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+};
+
+export type Web3NonceError = Web3NonceErrors[keyof Web3NonceErrors];
+
+export type Web3NonceResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        nonce: string;
+    };
+};
+
+export type Web3NonceResponse = Web3NonceResponses[keyof Web3NonceResponses];
 
 export type Web3Eip155VerifyData = {
     body: {

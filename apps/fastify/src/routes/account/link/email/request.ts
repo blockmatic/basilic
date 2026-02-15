@@ -1,16 +1,16 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import MagicLinkLoginEmail from '@repo/email/emails/magic-link-login'
+import LinkEmailEmail from '@repo/email/emails/link-email'
 import { render } from '@repo/email/render'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import { users, verification } from '../../../db/schema/index.js'
-import { env } from '../../../lib/env.js'
-import { generateToken, hashToken } from '../../../lib/jwt.js'
-import { ErrorResponseSchema } from '../../schemas.js'
-import { validateCallbackUrl } from '../utils.js'
+import { getDb } from '../../../../db/index.js'
+import { users, verification } from '../../../../db/schema/index.js'
+import { env } from '../../../../lib/env.js'
+import { generateToken, hashToken } from '../../../../lib/jwt.js'
+import { validateCallbackUrl } from '../../../auth/utils.js'
+import { ErrorResponseSchema } from '../../../schemas.js'
 
 const RequestSchema = Type.Object({
   email: Type.String({ format: 'email' }),
@@ -21,29 +21,37 @@ const RequestResponseSchema = Type.Object({
   ok: Type.Boolean(),
 })
 
-const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
+const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/request',
     {
       schema: {
-        operationId: 'magiclinkRequest',
-        description: 'Request magic link for authentication',
-        summary: 'Request magic link',
-        tags: ['auth'],
-        security: [],
+        operationId: 'accountLinkEmailRequest',
+        description: 'Request email to link to authenticated user',
+        summary: 'Link email request',
+        tags: ['account'],
+        security: [{ bearerAuth: [] }],
         body: RequestSchema,
         response: {
           200: RequestResponseSchema,
           400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          409: ErrorResponseSchema,
         },
       },
     },
     async (request, reply) => {
+      if (!request.session) {
+        return reply.code(401).send({
+          code: 'UNAUTHORIZED',
+          message: 'Authentication required',
+        })
+      }
+
       const { email, callbackUrl } = request.body
 
-      // Validate callback URL
       if (!validateCallbackUrl(callbackUrl)) {
-        return reply.status(400).send({
+        return reply.code(400).send({
           code: 'INVALID_INPUT',
           message: 'Invalid or unsafe callback URL',
         })
@@ -51,53 +59,43 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
 
       const db = await getDb()
 
-      // Find or create user
-      let [user] = await db.select().from(users).where(eq(users.email, email))
-      if (!user) {
-        const userId = randomUUID()
-        await db.insert(users).values({
-          id: userId,
-          email,
-          emailVerified: false,
+      const [existingUser] = await db.select().from(users).where(eq(users.email, email))
+      if (existingUser && existingUser.id !== request.session.user.id) {
+        return reply.code(409).send({
+          code: 'EMAIL_ALREADY_IN_USE',
+          message: 'This email is already used by another account',
         })
-        ;[user] = await db.select().from(users).where(eq(users.id, userId))
-        if (!user) {
-          throw new Error('Failed to create user')
-        }
       }
 
-      // Generate verification token
       const token = generateToken()
       const tokenHash = hashToken(token)
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
 
       const storePlain =
         env.NODE_ENV !== 'production' &&
         env.ALLOW_TEST === true &&
         typeof email === 'string' &&
         email.endsWith('@test.ai')
+
       await db.insert(verification).values({
         id: randomUUID(),
-        type: 'magic_link',
-        identifier: email,
+        type: 'link_email',
+        identifier: `${request.session.user.id}:${email}`,
         value: tokenHash,
-        type: 'magic_link',
         ...(storePlain && { tokenPlain: token }),
         expiresAt,
       })
 
-      // Build magic link URL with token and callbackUrl
-      const magicLinkUrl = new URL(callbackUrl)
-      magicLinkUrl.searchParams.set('token', token)
+      const linkUrl = new URL(callbackUrl)
+      linkUrl.searchParams.set('token', token)
 
-      // Send email
       const html = await render(
-        MagicLinkLoginEmail({ magicLink: magicLinkUrl.toString(), expirationMinutes: 15 }),
+        LinkEmailEmail({ linkUrl: linkUrl.toString(), expirationMinutes: 15 }),
       )
       const emailResponse = await fastify.emailProvider.emails.send({
         from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
         to: email,
-        subject: 'Sign in to your account',
+        subject: 'Link your email',
         html,
       })
 
@@ -112,5 +110,5 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
   )
 }
 
-export default magicLinkRequestRoute
-export const prefixOverride = '/auth/magiclink'
+export default linkEmailRequestRoute
+export const prefixOverride = '/account/link/email'
