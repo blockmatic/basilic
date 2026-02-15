@@ -281,7 +281,7 @@ The auth system relies on these tables:
 - **Refresh token rotation**: refresh `jti` is rotated on every refresh; reuse revokes the session
 - **Hashed secrets at rest**: magic link tokens, refresh `jti`, and API key secrets are stored hashed
 - **API key security**: timing-safe hash comparison, optional expiry, atomic revoke with ownership check
-- **Callback URL safety**: `callbackUrl` is validated and can be restricted via `MAGIC_LINK_CALLBACK_HOST_ALLOWLIST`
+- **Callback URL safety**: `callbackUrl` accepts any `http`/`https` URL; invalid schemes (e.g. `javascript:`) are rejected
 - **OAuth tokens encrypted at rest**: provider access/refresh tokens are stored encrypted (AES-256-GCM)
 - **Nonce-based Web3 verification**: nonces are short-lived and prevent replay attacks
 - **Environment validation**: auth/security env vars are validated via Zod (`@t3-oss/env-core`)

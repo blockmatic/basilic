@@ -1,29 +1,25 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "fastify",
-  "ignoreCommand": "bash scripts/vercel-ignore.sh",
-  "buildCommand": "cd ../.. && pnpm install && pnpm turbo build --filter=@repo/fastify",
+  "ignoreCommand": "npx turbo-ignore @repo/fastify --fallback=HEAD~10",
+  "buildCommand": "cd ../.. && pnpm turbo build --filter=@repo/fastify",
   "installCommand": "cd ../.. && pnpm install",
+  "devCommand": "cd ../.. && pnpm dev --filter=@repo/fastify",
+  "git": { "deploymentEnabled": { "main": true, "develop": true } },
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
         {
           "key": "Access-Control-Allow-Methods",
           "value": "GET, POST, PUT, DELETE, PATCH, OPTIONS"
         },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization, X-Requested-With, Accept, Accept-Language"
+          "value": "Content-Type, Authorization, X-API-Key, X-Requested-With, Accept, Accept-Language"
         },
-        {
-          "key": "Access-Control-Max-Age",
-          "value": "86400"
-        }
+        { "key": "Access-Control-Max-Age", "value": "86400" }
       ]
     }
   ]
