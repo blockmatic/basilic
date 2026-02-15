@@ -14,7 +14,7 @@
     "lint:eslint:fix": "turbo run lint:eslint:fix",
     "lint:fix": "pnpm lint:eslint:fix && pnpm lint:biome:fix",
     "test": "turbo run test",
-    "test:e2e": "SKIP_KILL_PORTS=1 node scripts/run-e2e.mjs",
+    "test:e2e": "node scripts/run-e2e.mjs",
     "hooks:pre-commit": "pnpm hooks:security && biome check --write --staged --no-errors-on-unmatched && git update-index --again",
     "hooks:security": "pnpm security:block-files && pnpm security:secrets && pnpm security:osv",
     "security:block-files": "node scripts/block-secret-files.mjs",

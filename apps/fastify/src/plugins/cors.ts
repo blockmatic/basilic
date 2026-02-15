@@ -11,6 +11,7 @@ const corsPlugin: FastifyPluginAsync<CorsPluginOptions> = async fastify => {
     allowedHeaders: [
       'Content-Type',
       'Authorization',
+      'X-API-Key',
       'X-Requested-With',
       'Accept',
       'Accept-Language',

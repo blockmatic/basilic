@@ -28,7 +28,7 @@ export async function authenticateWithApiKey(token: string, db: Db): Promise<Api
     return null
   }
 
-  void db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, apiKey.id))
+  await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, apiKey.id))
 
   const [user] = await db.select().from(users).where(eq(users.id, apiKey.userId))
   if (!user) return null

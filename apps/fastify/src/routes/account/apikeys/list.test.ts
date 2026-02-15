@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getSessionToken } from '../../../../test/utils/auth-helper.js'
+import { getApiKeyToken, getSessionToken } from '../../../../test/utils/auth-helper.js'
 import { fastify } from '../account.spec.js'
 
 describe('GET /account/apikeys', () => {
@@ -55,5 +55,21 @@ describe('GET /account/apikeys', () => {
     })
     expect(body.keys[0]).not.toHaveProperty('key')
     expect(body.keys[0]).not.toHaveProperty('hash')
+  })
+
+  it('should list keys when authenticated via API key', async () => {
+    fastify.fakeEmail?.clear()
+    const apiKey = await getApiKeyToken(fastify, 'apikeys-list-apikey@test.ai')
+
+    const listRes = await fastify.inject({
+      method: 'GET',
+      url: '/account/apikeys',
+      headers: { Authorization: `Bearer ${apiKey}` },
+    })
+    expect(listRes.statusCode).toBe(200)
+    const body = JSON.parse(listRes.body)
+    expect(body.keys).toHaveLength(1)
+    expect(body.keys[0].name).toBe('Test Key')
+    expect(body.keys[0]).not.toHaveProperty('key')
   })
 })

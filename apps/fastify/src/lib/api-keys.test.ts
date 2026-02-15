@@ -30,18 +30,18 @@ describe('api-keys', () => {
     })
 
     it('parses valid key', () => {
-      const parsed = parseApiKey('bask_abc123_secret_part')
+      const parsed = parseApiKey('bask_12345678_secret_part')
       expect(parsed).not.toBeNull()
       if (!parsed) return
-      expect(parsed.prefix).toBe('abc123')
+      expect(parsed.prefix).toBe('12345678')
       expect(parsed.secret).toBe('secret_part')
     })
 
     it('handles secret with underscores', () => {
-      const parsed = parseApiKey('bask_pref_aa_bb_cc')
+      const parsed = parseApiKey('bask_abcdefgh_aa_bb_cc')
       expect(parsed).not.toBeNull()
       if (!parsed) return
-      expect(parsed.prefix).toBe('pref')
+      expect(parsed.prefix).toBe('abcdefgh')
       expect(parsed.secret).toBe('aa_bb_cc')
     })
   })

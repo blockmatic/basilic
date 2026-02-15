@@ -8,7 +8,7 @@ import { generateApiKey } from '../../../lib/api-keys.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const CreateSchema = Type.Object({
-  name: Type.String({ minLength: 1 }),
+  name: Type.String({ minLength: 1, maxLength: 64 }),
 })
 
 const CreateResponseSchema = Type.Object({

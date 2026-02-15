@@ -24,23 +24,35 @@ declare module 'fastify' {
 }
 
 const authPlugin: FastifyPluginAsync = async fastify => {
-  // Session validation hook - JWT-only Bearer token support
+  // Session validation hook - JWT Bearer or API key (Bearer bask_... or X-API-Key)
   fastify.addHook('onRequest', async request => {
     try {
+      const apiKeyHeader = request.headers['x-api-key']
       const authHeader = request.headers.authorization
+
+      // X-API-Key header takes precedence for explicit API key usage
+      const apiKeyToken =
+        typeof apiKeyHeader === 'string'
+          ? apiKeyHeader.trim()
+          : authHeader?.startsWith('Bearer ')
+            ? authHeader.substring(7).trim().startsWith('bask_')
+              ? authHeader.substring(7).trim()
+              : null
+            : null
+
+      if (apiKeyToken) {
+        const db = await getDb()
+        const session = await authenticateWithApiKey(apiKeyToken, db)
+        request.session = session
+        return
+      }
+
       if (!authHeader?.startsWith('Bearer ')) {
         request.session = null
         return
       }
 
       const token = authHeader.substring(7).trim()
-
-      if (token.startsWith('bask_')) {
-        const db = await getDb()
-        const session = await authenticateWithApiKey(token, db)
-        request.session = session
-        return
-      }
 
       // Verify JWT
       const decoded = fastify.jwt.verify<{

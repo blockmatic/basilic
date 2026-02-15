@@ -5,7 +5,7 @@ description: "Playwright E2E tests for Next.js app and Fastify API (Scalar login
 
 End-to-end tests run full user flows using Playwright. Two suites: **Next E2E** (apps/next) tests the web app + auth; **Fastify E2E** (apps/fastify) tests Scalar UI login. Both use `test@test.ai` for magic-link when `ALLOW_TEST=true`.
 
-**Root QA**: `pnpm qa` runs the full pipeline (install → checktypes → lint → build → test) and ends with `pnpm test:e2e`, which runs Fastify E2E then Next E2E via `scripts/run-e2e.mjs` (both use `test:e2e:local` to spawn servers).
+**Root QA**: `pnpm qa` runs the full pipeline (install → checktypes → lint → build → test) and ends with `pnpm test:e2e`, which runs Fastify E2E then Next E2E via `scripts/run-e2e.mjs` (both use `test:e2e:local` to spawn servers). The E2E script kills any processes on ports 3000 and 3001 before starting (unless `SKIP_KILL_PORTS=1`).
 
 ## Commands
 
@@ -149,6 +149,7 @@ Sign-in with MetaMask/Phantom or link wallet via extension requires Playwright w
 
 ## Troubleshooting
 
+- **Port in use**: `scripts/run-e2e.mjs` kills processes on 3000/3001 before E2E. If ports remain in use, run `bash scripts/kill-test-servers.sh` manually.
 - **Tests fail with unreachable URLs**: Ensure both servers are running, or pass correct `--app` / `--api` URLs.
 - **Token extraction fails**: Verify `ALLOW_TEST=true` and email is `test@test.ai`.
 - **Vercel CORS errors**: Add `/` or `/auth` to OPTIONS Allowlist in Fastify Deployment Protection.

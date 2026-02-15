@@ -2,12 +2,26 @@
 /**
  * Run E2E tests locally: Fastify API E2E, then Next app E2E.
  * Spawns servers locally (no external URLs). Used by pnpm qa.
+ * Kills processes on ports 3000/3001 before starting (unless SKIP_KILL_PORTS=1).
  */
-import { spawn } from 'node:child_process'
-import { dirname } from 'node:path'
+import { spawn, spawnSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)))
+const scriptFile = fileURLToPath(import.meta.url)
+const repoRoot = dirname(dirname(scriptFile))
+
+if (!process.env.SKIP_KILL_PORTS) {
+  const killScript = join(repoRoot, 'scripts', 'kill-test-servers.sh')
+  if (existsSync(killScript)) {
+    try {
+      spawnSync('bash', [killScript], { cwd: repoRoot, stdio: 'pipe' })
+    } catch {
+      /* ignore - ports may not be in use or bash unavailable */
+    }
+  }
+}
 
 function run(cmd, args, opts = {}) {
   return new Promise((resolve, reject) => {

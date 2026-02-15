@@ -18,6 +18,7 @@ afterAll(async () => {
 export { fastify }
 
 import './link/wallet/verify.test'
+import './link/wallet/unlink.test'
 import './link/email/request.test'
 import './link/email/verify.test'
 import './apikeys/create.test'

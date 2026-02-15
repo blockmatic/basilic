@@ -5,12 +5,18 @@ import * as gen from './gen/index'
 export const api = {
 healthCheck: gen.healthCheck,
 account: {
+  apikeys: {
+    create: gen.accountApikeysCreate,
+    list: gen.accountApikeysList,
+    id: gen.accountApikeysRevoke,
+  },
   link: {
     email: {
       request: gen.accountLinkEmailRequest,
       verify: gen.accountLinkEmailVerify,
     },
     wallet: {
+      id: gen.accountLinkWalletUnlink,
       verify: gen.accountLinkWalletVerify,
     },
   },

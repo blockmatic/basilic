@@ -364,6 +364,10 @@ TRUST_PROXY=true  # Trust proxy headers (required for Vercel/Cloudflare)
 BODY_LIMIT=1048576  # Maximum request body size in bytes (default: 1MB)
 ```
 
+### API Keys
+
+API keys are stored hashed (SHA-256) and never in plaintext. Use timing-safe comparison for validation. Rotate keys via revoke + create when compromised or for routine rotation.
+
 ### API Security Best Practices
 
 1. **Always use HTTPS** - Enforced by HSTS header in production

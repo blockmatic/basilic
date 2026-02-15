@@ -10,6 +10,11 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
       }
     },
     "schemas": {}
@@ -61,6 +66,7 @@
                 "properties": {
                   "name": {
                     "minLength": 1,
+                    "maxLength": 64,
                     "type": "string"
                   }
                 }
@@ -166,8 +172,15 @@
                             "type": "string"
                           },
                           "lastUsedAt": {
-                            "format": "date-time",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "expiresAt": {
                             "anyOf": [
@@ -457,6 +470,73 @@
             }
           },
           "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/link/wallet/{id}": {
+      "delete": {
+        "operationId": "accountLinkWalletUnlink",
+        "summary": "Unlink wallet",
+        "tags": ["account"],
+        "description": "Unlink wallet from authenticated user",
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
             "description": "Default Response",
             "content": {
               "application/json": {
@@ -1117,8 +1197,11 @@
                           "type": "array",
                           "items": {
                             "type": "object",
-                            "required": ["chain", "address"],
+                            "required": ["id", "chain", "address"],
                             "properties": {
+                              "id": {
+                                "type": "string"
+                              },
                               "chain": {
                                 "type": "string"
                               },
@@ -1718,6 +1801,9 @@
   "security": [
     {
       "bearerAuth": []
+    },
+    {
+      "apiKeyAuth": []
     }
   ]
 }
