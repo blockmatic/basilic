@@ -7,6 +7,9 @@ alwaysApply: false
 ## Core Principles
 Wagmi v3.x (latest v3.3.2), handle wallet connection states, see @.cursor/rules/web3/viem.mdc for address validation
 
+## Wallet auth, link, sign, send
+For wallet auth, link, sign, and send flows, use `@repo/react` hooks (`useWalletAuth`, `useLinkWallet`, `useWalletSign`, `useWalletSendTransaction`) via `WalletProvider`. Apps supply adapters via `WalletAdaptersInjector` (wagmi + Solana). Do not call auth/link APIs directly from app code.
+
 ## Custom Hooks
 Create specialized hooks for contract interactions. Use `useAccount`, `useWriteContract`, extract ABI types with `AbiParametersToPrimitiveTypes` and `ExtractAbiFunction`, check account connection, let wagmi infer chain
 

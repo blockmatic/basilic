@@ -1,4 +1,4 @@
-Create well-structured pull request with proper description, labels, and reviewers. Use global git user for any commits—never cursor/system identity.
+Create well-structured pull request with proper description, labels, and reviewers. Use global git user for any commits—never cursor/system identity. Never use `--trailer` for Co-authored-by or similar.
 
 1. **Prepare branch**: Ensure all changes committed, push branch to remote, verify branch up to date with main
 2. **Write PR description**: Summarize changes clearly, include context/motivation, list breaking changes, add screenshots if UI changes

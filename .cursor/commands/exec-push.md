@@ -1,4 +1,4 @@
-Execute plan or instructions, validate, commit, push, and create a PR. Use when implementing features, resolving feedback, or pre-push verification. Use global git user for commits—never cursor/system identity.
+Execute plan or instructions, validate, commit, push, and create a PR. Use when implementing features, resolving feedback, or pre-push verification. Use global git user for commits—never cursor/system identity. Never use `--trailer` for Co-authored-by or similar.
 
 1. **Branch**: If on `main`, run `git pull origin main`, then create a new branch (`git checkout -b <branch-name>`). Skip if already on a branch.
 2. **Execute**: Implement the plan/instructions—follow @.cursor/rules, general guidelines, indexed docs, and relevant skills

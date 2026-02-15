@@ -12,6 +12,8 @@ import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { type ReactNode, useMemo } from 'react'
 import { WagmiProvider } from 'wagmi'
+import { WalletAdaptersInjector } from '@/components/wallet-adapters-injector'
+import { updateAuthTokens } from '@/lib/auth-client'
 import { env } from '@/lib/env'
 import { wagmiConfig } from '@/lib/wagmi-config'
 import '@solana/wallet-adapter-react-ui/styles.css'
@@ -37,16 +39,7 @@ const coreClient = createClient({
     const data = await response.json()
     return data.refreshToken ?? null
   },
-  onTokensRefreshed: async ({ token, refreshToken }) => {
-    await fetch('/api/auth/update-tokens', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ token, refreshToken }),
-      credentials: 'include',
-    })
-  },
+  onTokensRefreshed: updateAuthTokens,
 })
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -62,19 +55,21 @@ export function Providers({ children }: { children: ReactNode }) {
                 client={coreClient}
                 baseUrl={env.NEXT_PUBLIC_API_URL}
                 getAuthToken={getAuthToken}
-                authCallbackUrl="/api/auth/callback"
+                authCallbackUrl="/api/auth/callback?callbackURL=/dashboard"
               >
-                <NuqsAdapter>
-                  <NextThemesProvider
-                    attribute="class"
-                    defaultTheme="dark"
-                    enableSystem
-                    disableTransitionOnChange
-                    enableColorScheme
-                  >
-                    {children}
-                  </NextThemesProvider>
-                </NuqsAdapter>
+                <WalletAdaptersInjector>
+                  <NuqsAdapter>
+                    <NextThemesProvider
+                      attribute="class"
+                      defaultTheme="dark"
+                      enableSystem
+                      disableTransitionOnChange
+                      enableColorScheme
+                    >
+                      {children}
+                    </NextThemesProvider>
+                  </NuqsAdapter>
+                </WalletAdaptersInjector>
               </ReactApiProvider>
             </QueryClientProvider>
           </WalletModalProvider>

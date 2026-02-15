@@ -10,12 +10,13 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - CI: test:e2e:local (spawn local). Optional: Vercel previews with `VERCEL_AUTOMATION_BYPASS_SECRET`, `ALLOW_TEST=true` for preview
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: Next 1 (PGlite). Fastify: 1 in CI, undefined locally
-- projects: auth first (`magic-link-auth.spec.ts`), chromium second (all other specs)
+- projects: auth first (`magic-link-auth.spec.ts`), chromium second (all other specs including `wallet-auth.spec.ts`, `link-wallet.spec.ts`, `link-email.spec.ts`)
 
 ## Session Model
 - Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
 - One login per worker, then navigate and assert. No per-test login for authed tests
 - Session reused via worker-scoped storageState (saved after login, new context per test)
+- **Exception — wallet specs**: `wallet-auth.spec.ts`, `link-wallet.spec.ts`, `link-email.spec.ts` intentionally perform `authHelpers.sendMagicLink` + `verifyMagicLink` per test (do not use `authenticatedPage`); this diverges from the worker-scoped session pattern
 
 ## Test Order
 - Auth project first: error tests, then login/logout tests (ends with logout)
@@ -25,6 +26,7 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 ## Auth Fixtures
 - Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)
 - Authed feature tests: import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body
+- Wallet specs: use `authHelpers.sendMagicLink` + `verifyMagicLink` per test (exception to Session Model); do not use `authenticatedPage` fixture
 - Each authed test must navigate to its target route (e.g. `authenticatedPage.goto('/')`) since the same page is reused
 
 ## Test Email

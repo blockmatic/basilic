@@ -8,8 +8,9 @@ export type AuthProxyOptions = {
 export const buildFastifyUrl = ({ pathSegments, request }: AuthProxyOptions) => {
   let path = pathSegments.join('/')
   // Map Next.js API path format to Fastify route format
-  // magic-link -> magiclink
+  // magic-link -> magiclink, sign-out -> session/logout
   path = path.replace(/magic-link/g, 'magiclink')
+  if (path === 'sign-out') path = 'session/logout'
   const requestUrl = new URL(request.url)
   return {
     path,

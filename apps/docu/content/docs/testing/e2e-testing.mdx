@@ -83,6 +83,70 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 - DB-backed token storage for `/test/magic-link/last`
 - Production guard: server exits if `ALLOW_TEST` is true in production
 
+## Wallet E2E (wallet-auth, link-wallet, link-email)
+
+Wallet-related specs run in the **chromium** project (after the auth project). They use `authHelpers.sendMagicLink` and `authHelpers.verifyMagicLink` for per-test setup and do **not** use the `authenticatedPage` fixture. No browser extensions required.
+
+### Specs
+
+| Spec | Coverage |
+|------|----------|
+| `wallet-auth.spec.ts` | Login page wallet sign-in buttons; dashboard after magic-link auth; sign-out from dashboard redirects to login |
+| `link-wallet.spec.ts` | Dashboard shows connect wallet options when authenticated; Wallet & Email link navigates to dashboard from root |
+| `link-email.spec.ts` | Dashboard shows link email section when authenticated; "already linked" when user has email (magic link) |
+
+### Project order and setup
+
+```mermaid
+flowchart TB
+  subgraph AuthProj [Auth project]
+    MagicLinkAuth[magic-link-auth.spec.ts]
+  end
+
+  subgraph ChromiumProj [Chromium project]
+    WalletAuth[wallet-auth.spec.ts]
+    LinkWallet[link-wallet.spec.ts]
+    LinkEmail[link-email.spec.ts]
+  end
+
+  MagicLinkAuth -->|runs first| ChromiumProj
+
+  subgraph Setup [Per-test setup]
+    SendLink[authHelpers.sendMagicLink]
+    VerifyLink[authHelpers.verifyMagicLink]
+    SendLink --> VerifyLink
+  end
+
+  WalletAuth -.->|uses| SendLink
+  LinkWallet -.->|uses| SendLink
+  LinkEmail -.->|uses| SendLink
+```
+
+### Spec coverage
+
+```mermaid
+flowchart TB
+  subgraph WalletAuthSpec [wallet-auth.spec.ts]
+    WA1[Login page wallet sign-in buttons]
+    WA2[Dashboard after magic-link auth]
+    WA3[Sign-out from dashboard to login]
+  end
+
+  subgraph LinkWalletSpec [link-wallet.spec.ts]
+    LW1[Connect wallet options when authenticated]
+    LW2[Wallet and Email link nav to dashboard]
+  end
+
+  subgraph LinkEmailSpec [link-email.spec.ts]
+    LE1[Link email section visible]
+    LE2[Already linked when user has email]
+  end
+```
+
+### Full wallet flows (with extensions)
+
+Sign-in with MetaMask/Phantom or link wallet via extension requires Playwright with extension loading: install MetaMask or Phantom as a test fixture, seed a test account, and configure the browser context. See [Playwright browser contexts](https://playwright.dev/docs/browser-contexts) for extension setup. Test account seeding typically uses a known mnemonic or imported key for deterministic addresses.
+
 ## Troubleshooting
 
 - **Tests fail with unreachable URLs**: Ensure both servers are running, or pass correct `--app` / `--api` URLs.

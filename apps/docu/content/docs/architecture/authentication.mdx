@@ -44,11 +44,15 @@ Web3 sign-in follows a **nonce → sign → verify** flow and returns access + r
 
 **Framework support:** React hooks from `@repo/react` provide wallet-agnostic API. Apps supply wagmi and/or Solana adapters via `WalletProvider`. Hooks: `useWallet`, `useWalletAuth`, `useLinkWallet`, `useLinkEmail`, `useWalletSign`, `useWalletSendTransaction`, `useWeb3Nonce`. Vanilla (fetch) and Vue (composable) also supported.
 
+**WalletAdaptersInjector:** In `apps/next`, mount `WalletAdaptersInjector` (from `components/wallet-adapters-injector.tsx`) inside providers. It bridges wagmi + Solana into adapters, enforces single-wallet mode, and triggers sign-out on wallet disconnect when the session was created by wallet sign-in (redirects to `/api/auth/sign-out`).
+
 **Session wallet enforcement:** When the JWT was created by wallet sign-in, signing and sending transactions require that exact wallet connected. `useWalletSign` and `useWalletSendTransaction` expose `isReady` (adapter exists and matches session wallet) and `isWalletRejection` for UX.
 
 **TransferParams:** `useWalletSendTransaction` accepts `EvmTxParams` or `SolanaTxParams`; adapters resolve to chain-specific formats.
 
-**Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error.
+**Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error. Account link: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EXPIRED_TOKEN`.
+
+**JWT cookie refresh:** After link email or profile edit, the client receives `{ token, refreshToken }` from the verify endpoint. Call `POST /api/auth/update-tokens` with those values to refresh HttpOnly cookies. In `apps/next`, use `updateAuthTokens` from `@/lib/auth-client`.
 
 **Data model:** Nonces are stored in `web3_nonce` (5-min TTL); identities in `wallet_identities`.
 
@@ -76,6 +80,63 @@ sequenceDiagram
     NextBFF->>NextBFF: set HttpOnly cookies
     NextBFF-->>Client: redirect
   end
+```
+
+### Provider / adapter architecture
+
+```mermaid
+flowchart TB
+  subgraph App [apps/next]
+    WAI[WalletAdaptersInjector]
+    Providers[providers.tsx]
+  end
+
+  subgraph Wagmi [wagmi]
+    useAccount
+    useSignMessage
+  end
+
+  subgraph Solana [Solana wallet-adapter]
+    useWallet
+  end
+
+  subgraph RepoReact [@repo/react]
+    WalletProvider
+    useWalletAuth
+    useLinkWallet
+    useLinkEmail
+  end
+
+  Providers --> WAI
+  WAI -->|bridges| Wagmi
+  WAI -->|bridges| Solana
+  WAI --> WalletProvider
+  WalletProvider --> useWalletAuth
+  WalletProvider --> useLinkWallet
+  WalletProvider --> useLinkEmail
+```
+
+### Dashboard link flows
+
+```mermaid
+flowchart LR
+  subgraph LinkWalletFlow [Link wallet]
+    Connect[Connect wallet]
+    Sign[Sign message]
+    Verify[POST account/link/wallet/verify]
+    Connect --> Sign --> Verify
+  end
+
+  subgraph LinkEmailFlow [Link email]
+    Request[POST account/link/email/request]
+    Email[User clicks email link]
+    VerifyEmail[POST account/link/email/verify]
+    UpdateTokens[POST api/auth/update-tokens]
+    Request --> Email --> VerifyEmail --> UpdateTokens
+  end
+
+  Dashboard[Dashboard page] --> LinkWalletFlow
+  Dashboard --> LinkEmailFlow
 ```
 
 ## Tokens & sessions
@@ -134,8 +195,25 @@ For browser clients, `apps/next` acts as a **BFF (Backend-for-Frontend)**: a sma
 
 - **Storage**: sets HttpOnly cookies `better-auth.jwt_token` (access) and `better-auth.refresh_token` (refresh)
 - **Proxying**: `GET/POST /api/auth/*` is translated to Fastify `/auth/*` (for example `magic-link` → `magiclink`)
+- **Sign-out path mapping**: when path is `sign-out`, the BFF maps it to `session/logout` so `GET /api/auth/sign-out` targets Fastify `POST /auth/session/logout`
+- **update-tokens**: `POST /api/auth/update-tokens` accepts `{ token, refreshToken }` and refreshes HttpOnly cookies (used after link email or profile edit)
 - **SSR**: Server Components and server-side calls can read cookies and inject `Authorization: Bearer`
 - **Refresh**: middleware renews expired access tokens via `POST /auth/session/refresh`
+
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant NextBFF as Next.js BFF
+  participant FastifyAPI as Fastify API
+
+  Browser->>NextBFF: GET /api/auth/sign-out
+  Note over NextBFF: Maps path sign-out to session/logout
+  NextBFF->>FastifyAPI: POST /auth/session/logout
+  FastifyAPI->>FastifyAPI: Revoke session
+  FastifyAPI-->>NextBFF: 204
+  NextBFF->>NextBFF: Clear cookies / remove session cookie
+  NextBFF-->>Browser: Redirect to login
+```
 
 ## Magic link flow (web)
 
