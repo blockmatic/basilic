@@ -19,7 +19,7 @@ export function validateEip155Address(address: string): string {
 export function validateSolanaAddress(address: string): string {
   try {
     const publicKey = new PublicKey(address)
-    if (!PublicKey.isOnCurve(publicKey)) throw new Error('Invalid Solana address')
+    if (!PublicKey.isOnCurve(publicKey.toBytes())) throw new Error('Invalid Solana address')
     return publicKey.toBase58()
   } catch {
     throw new Error('Invalid Solana address')

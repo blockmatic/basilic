@@ -1,3 +1,4 @@
+import { logger } from '@repo/utils/logger'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
@@ -34,6 +35,7 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: UserResponseSchema,
           401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -45,11 +47,20 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const db = await getDb()
-      const linkedWallets = await db
-        .select({ chain: walletIdentities.chain, address: walletIdentities.address })
-        .from(walletIdentities)
-        .where(eq(walletIdentities.userId, request.session.user.id))
+      let linkedWallets: { chain: string; address: string }[]
+      try {
+        const db = await getDb()
+        linkedWallets = await db
+          .select({ chain: walletIdentities.chain, address: walletIdentities.address })
+          .from(walletIdentities)
+          .where(eq(walletIdentities.userId, request.session.user.id))
+      } catch (err) {
+        logger.error({ err }, 'Failed to fetch linked wallets')
+        return reply.code(500).send({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch user data',
+        })
+      }
 
       return reply.code(200).send({
         user: {

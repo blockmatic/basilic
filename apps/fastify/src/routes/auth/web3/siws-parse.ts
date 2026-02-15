@@ -1,3 +1,5 @@
+import { logger } from '@repo/utils/logger'
+
 /**
  * Parse SIWS (Sign-In with Solana) EIP-4361-style message.
  * Format matches SIWE but with "Solana account" instead of "Ethereum account".
@@ -27,8 +29,14 @@ export function parseSiwsMessage(message: string): {
   }
   if (!nonce || nonce.length < 8) return null
 
+  const domain = domainMatch[1]?.trim()
+  if (!domain) {
+    logger.warn({ message: firstLine }, 'SIWS parse: domain match missing or empty')
+    return null
+  }
+
   return {
-    domain: domainMatch[1] ?? '',
+    domain,
     address,
     nonce,
   }

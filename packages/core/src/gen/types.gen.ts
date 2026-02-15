@@ -242,6 +242,13 @@ export type GetUserErrors = {
         code: string;
         message: string;
     };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
 };
 
 export type GetUserError = GetUserErrors[keyof GetUserErrors];

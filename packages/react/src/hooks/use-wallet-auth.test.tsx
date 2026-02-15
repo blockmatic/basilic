@@ -121,7 +121,7 @@ describe('useWalletAuth', () => {
     )
 
     await act(async () => {
-      result.current.signIn()
+      await result.current.signIn()
     })
 
     expect(result.current.error?.message).toContain('No wallet address')
