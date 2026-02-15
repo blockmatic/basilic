@@ -35,4 +35,27 @@ describe('GET /test/authed', () => {
     expect(body.user.id).toBeTruthy()
     expect(body.user.email).toBe(email)
   })
+
+  it('should return user info when authenticated via API key', async () => {
+    const { token: jwt } = await createAuthenticatedUser(fastify)
+
+    const createRes = await fastify.inject({
+      method: 'POST',
+      url: '/account/apikeys',
+      headers: { Authorization: `Bearer ${jwt}` },
+      payload: { name: 'Test Key' },
+    })
+    expect(createRes.statusCode).toBe(200)
+    const { key } = JSON.parse(createRes.body)
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test/authed',
+      headers: { Authorization: `Bearer ${key}` },
+    })
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.user).toBeDefined()
+    expect(body.user.id).toBeTruthy()
+  })
 })

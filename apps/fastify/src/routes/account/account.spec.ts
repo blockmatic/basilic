@@ -20,3 +20,6 @@ export { fastify }
 import './link/wallet/verify.test'
 import './link/email/request.test'
 import './link/email/verify.test'
+import './apikeys/create.test'
+import './apikeys/list.test'
+import './apikeys/revoke.test'

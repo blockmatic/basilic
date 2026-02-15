@@ -4,6 +4,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import { getDb } from '../db/index.js'
 import { sessions, users } from '../db/schema/index.js'
+import { authenticateWithApiKey } from '../lib/api-key-auth.js'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -33,6 +34,13 @@ const authPlugin: FastifyPluginAsync = async fastify => {
       }
 
       const token = authHeader.substring(7).trim()
+
+      if (token.startsWith('bask_')) {
+        const db = await getDb()
+        const session = await authenticateWithApiKey(token, db)
+        request.session = session
+        return
+      }
 
       // Verify JWT
       const decoded = fastify.jwt.verify<{
