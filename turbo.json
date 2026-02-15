@@ -58,8 +58,7 @@
         "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
-        "EMAIL_ASSETS_URL",
-        "SKIP_KILL_PORTS"
+        "EMAIL_ASSETS_URL"
       ]
     },
     "lint:eslint:fix": {
@@ -86,13 +85,10 @@
         "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
-        "EMAIL_ASSETS_URL",
-        "SKIP_KILL_PORTS"
+        "EMAIL_ASSETS_URL"
       ]
     },
-    "checktypes": {
-      "env": ["NODE_ENV"]
-    },
+    "checktypes": { "env": ["NODE_ENV"] },
     "test": {
       "env": [
         "NODE_ENV",
