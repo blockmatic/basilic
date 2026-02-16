@@ -40,11 +40,13 @@ export default defineConfig({
       name: 'wallet-metamask',
       testMatch: ['**/wallet-metamask-auth.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
+      timeout: 180_000, // Synpress extension + context setup can exceed 90s under xvfb
     },
     {
       name: 'wallet-solana',
       testMatch: ['**/wallet-solana-auth.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
+      timeout: 180_000, // Synpress extension setup can be slow
     },
     {
       name: 'chromium',

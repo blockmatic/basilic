@@ -154,8 +154,11 @@ flowchart TB
 **Setup:**
 1. Build wallet cache before running: `pnpm synpress:build` (or `pnpm synpress:metamask` and `pnpm synpress:phantom` separately)
 2. Cache stored in `.cache-synpress` (gitignored)
-3. `test:e2e:local` runs `synpress:build` automatically before Playwright
-4. Wallet setup files: `e2e/wallet-setup/metamask.setup.ts`, `e2e/wallet-setup/phantom.setup.ts` (seed: standard test phrase)
+3. `test:e2e:local` runs Synpress cache build automatically before Playwright
+4. On Linux CI (no DISPLAY): Synpress cache build and Playwright run use `xvfb-run`; MetaMask has known headless compatibility issues
+5. Phantom cache build may fail when `crx-backup.phantom.dev` is unreachable; CI soft-fails and skips only wallet-solana tests
+6. Root `pnpm test:e2e` skips wallet specs (`SKIP_WALLET_E2E=1`); run `pnpm -F @repo/next test:e2e:local` to include them
+7. Wallet setup files: `e2e/wallet-setup/metamask.setup.ts`, `e2e/wallet-setup/phantom.setup.ts` (seed: standard test phrase)
 
 **Projects:** `wallet-metamask` and `wallet-solana` run in separate Playwright projects. Synpress fixtures (`metaMaskFixtures`, `phantomFixtures`) provide extension-injected context.
 

@@ -24,7 +24,9 @@ test.describe('Badges', () => {
       const healthPromise = waitForHealthResponse(page)
       await page.goto('/login')
       await healthPromise
-      await expect(page.locator('text=API OK')).toBeVisible({ timeout: 5000 })
+      const badge = page.getByTestId('api-health-badge')
+      await expect(badge).not.toContainText('Checking...', { timeout: 15000 })
+      await expect(badge).toContainText('API OK')
     })
 
     test('should show Signed Out on login page when unauthenticated', async ({ page }) => {
@@ -38,8 +40,10 @@ test.describe('Badges', () => {
       const [healthPromise, userPromise] = [waitForHealthResponse(page), waitForUserResponse(page)]
       await page.goto('/login')
       await Promise.all([healthPromise, userPromise])
-      await expect(page.locator('text=API OK')).toBeVisible({ timeout: 5000 })
-      await expect(page.locator('text=Signed Out')).toBeVisible({ timeout: 5000 })
+      const apiBadge = page.getByTestId('api-health-badge')
+      await expect(apiBadge).not.toContainText('Checking...', { timeout: 15000 })
+      await expect(apiBadge).toContainText('API OK')
+      await expect(page.getByText('Signed Out')).toBeVisible({ timeout: 5000 })
     })
   })
 
@@ -53,7 +57,9 @@ test.describe('Badges', () => {
       const healthPromise = waitForHealthResponse(authenticatedPage)
       await authenticatedPage.goto('/')
       await healthPromise
-      await expect(authenticatedPage.locator('text=API OK')).toBeVisible({ timeout: 5000 })
+      const badge = authenticatedPage.getByTestId('api-health-badge')
+      await expect(badge).not.toContainText('Checking...', { timeout: 15000 })
+      await expect(badge).toContainText('API OK')
     })
 
     test('should show both badges side by side on dashboard when authenticated', async ({
@@ -65,7 +71,9 @@ test.describe('Badges', () => {
       ]
       await authenticatedPage.goto('/')
       await Promise.all([healthPromise, userPromise])
-      await expect(authenticatedPage.locator('text=API OK')).toBeVisible({ timeout: 15000 })
+      const apiBadge = authenticatedPage.getByTestId('api-health-badge')
+      await expect(apiBadge).not.toContainText('Checking...', { timeout: 15000 })
+      await expect(apiBadge).toContainText('API OK')
       await expect(authenticatedPage.locator('text=Signed In')).toBeVisible({ timeout: 15000 })
     })
   })
