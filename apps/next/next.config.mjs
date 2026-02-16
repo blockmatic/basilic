@@ -68,6 +68,11 @@ const nextConfig = {
     '@repo/utils',
     'ai',
     'eventsource-parser',
+    // ESM-only unist/mdast deps for react-markdown - webpack needs to transpile for proper named-export resolution
+    'mdast-util-from-markdown',
+    'unist-util-is',
+    'unist-util-stringify-position',
+    'unist-util-visit-parents',
   ],
   serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
   // @/ alias is automatically resolved from tsconfig.json paths

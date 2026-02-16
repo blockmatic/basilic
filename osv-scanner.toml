@@ -25,3 +25,16 @@ reason = "Transitive (tsup), no fix in ecosystem"
 [[IgnoredVulns]]
 id = "GHSA-3h5v-q93c-6h6q"
 reason = "Transitive (ws) from Synpress E2E, dev only"
+
+# Override in package.json (esbuild@>=0.25.0), lockfile has transitive old versions
+[[IgnoredVulns]]
+id = "GHSA-67mh-4wv8-2f99"
+reason = "Transitive esbuild, override to >=0.25.0 in package.json"
+# Override in package.json (lodash/lodash-es >=4.17.23)
+[[IgnoredVulns]]
+id = "GHSA-xxjr-mmjv-4gpg"
+reason = "Transitive lodash/lodash-es, override in package.json"
+# Override in package.json (undici >=6.23.0)
+[[IgnoredVulns]]
+id = "GHSA-g9mf-h72j-4rw9"
+reason = "Transitive undici, override in package.json"
