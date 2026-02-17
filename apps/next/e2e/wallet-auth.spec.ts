@@ -12,7 +12,7 @@ test.describe('Wallet Authentication UI', () => {
     await expect(page.locator('input[type="email"]')).toBeVisible()
 
     await page.getByRole('button', { name: /wallet login/i }).click()
-    await expect(page.getByRole('button', { name: /connect metamask/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /connect evm wallet/i })).toBeVisible()
   })
 
   test('root shows dashboard content after magic link auth', async ({ page }) => {

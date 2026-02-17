@@ -1,6 +1,6 @@
 import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
-export const verificationTypes = ['magic_link', 'link_email'] as const
+export const verificationTypes = ['magic_link', 'link_email', 'oauth_state'] as const
 export type VerificationType = (typeof verificationTypes)[number]
 
 export const verification = pgTable(

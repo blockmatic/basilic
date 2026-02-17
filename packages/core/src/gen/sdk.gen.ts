@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
+import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -154,6 +154,34 @@ export const magiclinkRequest = <ThrowOnError extends boolean = false>(options: 
  */
 export const magiclinkVerify = <ThrowOnError extends boolean = false>(options: Options<MagiclinkVerifyData, ThrowOnError>) => (options.client ?? client).post<MagiclinkVerifyResponses, MagiclinkVerifyErrors, ThrowOnError>({
     url: '/auth/magiclink/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * GitHub OAuth authorize URL
+ *
+ * Return GitHub OAuth authorization URL for client-side redirect
+ */
+export const oauthGithubAuthorizeUrl = <ThrowOnError extends boolean = false>(options?: Options<OauthGithubAuthorizeUrlData, ThrowOnError>) => (options?.client ?? client).get<OauthGithubAuthorizeUrlResponses, OauthGithubAuthorizeUrlErrors, ThrowOnError>({ url: '/auth/oauth/github/authorize-url', ...options });
+
+/**
+ * GitHub OAuth authorize
+ *
+ * Redirect to GitHub OAuth authorization
+ */
+export const oauthGithubAuthorize = <ThrowOnError extends boolean = false>(options?: Options<OauthGithubAuthorizeData, ThrowOnError>) => (options?.client ?? client).get<unknown, OauthGithubAuthorizeErrors, ThrowOnError>({ url: '/auth/oauth/github/authorize', ...options });
+
+/**
+ * GitHub OAuth exchange
+ *
+ * Exchange GitHub OAuth code for JWTs
+ */
+export const oauthGithubExchange = <ThrowOnError extends boolean = false>(options: Options<OauthGithubExchangeData, ThrowOnError>) => (options.client ?? client).post<OauthGithubExchangeResponses, OauthGithubExchangeErrors, ThrowOnError>({
+    url: '/auth/oauth/github/exchange',
     ...options,
     headers: {
         'Content-Type': 'application/json',

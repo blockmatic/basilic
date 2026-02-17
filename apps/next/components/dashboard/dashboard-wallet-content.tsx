@@ -140,11 +140,9 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
             {!hasWalletConnected ? (
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setSolanaModalVisible(true)}>
-                  Connect Solana wallet
+                  Connect Solana
                 </Button>
-                <p className="text-muted-foreground text-sm self-center">
-                  or connect MetaMask for EVM
-                </p>
+                <p className="text-muted-foreground text-sm self-center">or connect EVM wallet</p>
               </div>
             ) : canLinkWallet ? (
               <div className="flex flex-col gap-2">

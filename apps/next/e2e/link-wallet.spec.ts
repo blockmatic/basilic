@@ -12,7 +12,7 @@ test.describe('Link Wallet UI', () => {
 
     await page.goto('/')
     await expect(page.getByRole('heading', { name: /link wallet/i })).toBeVisible()
-    await expect(page.getByRole('button', { name: /connect solana wallet/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /connect solana/i })).toBeVisible()
   })
 
   test('root shows Link wallet and Link email sections when authenticated', async ({ page }) => {

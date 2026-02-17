@@ -1,6 +1,6 @@
 'use client'
 
-import { LoginForm } from '@repo/react'
+import { LoginForm, useOAuthLogin } from '@repo/react'
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
@@ -33,6 +33,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
 export function LoginActions({ initialError }: LoginActionsProps) {
   const [showWalletOptions, setShowWalletOptions] = useState(false)
   const [errorDismissed, setErrorDismissed] = useState(false)
+  const { mutate: startOAuthLogin, isPending: isOAuthPending } = useOAuthLogin()
 
   return (
     <div data-view={showWalletOptions ? 'wallet' : 'initial'} className="group/view relative">
@@ -49,8 +50,13 @@ export function LoginActions({ initialError }: LoginActionsProps) {
         <LoginForm
           extraActions={
             <>
-              <Button variant="outline" disabled>
-                Continue with GitHub
+              <Button
+                variant="outline"
+                type="button"
+                disabled={isOAuthPending}
+                onClick={() => startOAuthLogin()}
+              >
+                {isOAuthPending ? 'Redirecting...' : 'Continue with GitHub'}
               </Button>
               <Button variant="outline" type="button" onClick={() => setShowWalletOptions(true)}>
                 Wallet login

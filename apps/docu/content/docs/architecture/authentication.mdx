@@ -22,7 +22,7 @@ It supports:
 - **JWT Bearer**: the API accepts `Authorization: Bearer <accessToken>` (JWT) or `Authorization: Bearer bask_<prefix>_<secret>` (API key)
 - **Access + refresh tokens**: short-lived access JWTs, rotated refresh JWTs
 - **DB-backed sessions**: tokens reference a session id that can be revoked
-- **BFF for browsers**: Next.js stores tokens in HttpOnly cookies and proxies auth requests
+- **BFF for browsers**: Next.js stores tokens in HttpOnly cookies; only callbacks (OAuth, magic link verify, Web3 token exchange) go through the BFF—login requests go directly to the API
 
 ## Authentication methods
 
@@ -39,9 +39,20 @@ API keys enable programmatic auth for servers, CLIs, and scripts. Users create k
 
 Magic link sign-in issues a **single-use token** over email, then exchanges it for JWTs.
 
-### OAuth
+### OAuth (GitHub)
 
 OAuth sign-in uses provider authorization + callback flows and issues access + refresh JWTs. Provider accounts are stored in `account` (provider id, account id, and encrypted tokens at rest).
+
+**GitHub OAuth flow:**
+
+1. User clicks "Continue with GitHub" → client calls `useOAuthLogin` → `GET /auth/oauth/github/authorize-url` (direct to Fastify) → receives `{ redirectUrl }` → redirects to GitHub
+2. User authorizes on GitHub → GitHub redirects to `OAUTH_GITHUB_CALLBACK_URL` (Next.js BFF) with `?code=&state=`
+3. BFF calls `POST /auth/oauth/github/exchange` with `{ code, state }` → Fastify exchanges code, creates/upserts user + account, returns `{ token, refreshToken }`
+4. BFF sets HttpOnly cookies and redirects to `/`
+
+Login requests go directly to the API; only the callback (token exchange + cookie setting) goes through the Next.js BFF.
+
+**Setup:** Create a [GitHub OAuth App](https://github.com/settings/applications/new). Set callback URL to `http://localhost:3000/api/auth/oauth/github/callback` (dev) or your production URL. Add `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `OAUTH_GITHUB_CALLBACK_URL` to Fastify env.
 
 ### Web3 (SIWE / SIWS)
 
@@ -182,9 +193,10 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 - **Magic link**
   - `POST /auth/magiclink/request` → `{ ok }`
   - `POST /auth/magiclink/verify` → `{ token, refreshToken }`
-- **OAuth**
-  - `GET /auth/oauth/:provider/authorize`
-  - `GET /auth/oauth/:provider/callback` → `{ token, refreshToken }`
+- **OAuth (GitHub)**
+  - `GET /auth/oauth/github/authorize-url` → `{ redirectUrl }` (for client-side redirect; preferred)
+  - `GET /auth/oauth/github/authorize` → 302 redirect to GitHub (legacy)
+  - `POST /auth/oauth/github/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
 - **Web3**
   - `GET /auth/web3/nonce` → `{ nonce }` (query: `chain`, `address`)
   - `POST /auth/web3/:chain/verify` → `{ token, refreshToken }`
@@ -212,7 +224,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 For browser clients, `apps/next` acts as a **BFF (Backend-for-Frontend)**: a small backend layer tailored to the web app that proxies requests to the API and manages browser-specific concerns (like secure cookie storage).
 
 - **Storage**: sets HttpOnly cookies `better-auth.jwt_token` (access) and `better-auth.refresh_token` (refresh)
-- **Proxying**: `GET/POST /api/auth/*` is translated to Fastify `/auth/*` (for example `magic-link` → `magiclink`)
+- **Proxying**: Selected paths (`magic-link` → `magiclink`, `session/user`, etc.) are proxied to Fastify. OAuth authorize is not proxied—clients use `useOAuthLogin` to call `/auth/oauth/github/authorize-url` directly.
 - **Sign-out path mapping**: when path is `sign-out`, the BFF maps it to `session/logout` so `GET /api/auth/sign-out` targets Fastify `POST /auth/session/logout`
 - **update-tokens**: `POST /api/auth/update-tokens` accepts `{ token, refreshToken }` and refreshes HttpOnly cookies (used after link email or profile edit)
 - **SSR**: Server Components and server-side calls can read cookies and inject `Authorization: Bearer`

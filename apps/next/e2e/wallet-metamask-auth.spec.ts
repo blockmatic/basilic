@@ -6,7 +6,7 @@ test('MetaMask wallet login flow', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /connect wallet/i })).toBeVisible({
     timeout: 5000,
   })
-  const connectBtn = page.getByRole('button', { name: /connect metamask/i })
+  const connectBtn = page.getByRole('button', { name: /connect evm wallet/i })
   await expect(connectBtn).toBeVisible({ timeout: 15_000 })
   await expect(connectBtn).toBeEnabled({ timeout: 15_000 })
   await connectBtn.evaluate((el: HTMLElement) => el.click())
