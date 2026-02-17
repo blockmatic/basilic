@@ -30,8 +30,8 @@ jobs:
         id: apps
         run: |
           APPS='[]'
-          [[ "${{ steps.filter.outputs.next }}" == 'true' ]] && APPS=$(echo "$APPS" | jq '. + ["next"]')
-          [[ "${{ steps.filter.outputs.api }}" == 'true' ]] && APPS=$(echo "$APPS" | jq '. + ["fastify"]')
+          [[ "${{ steps.filter.outputs.next }}" == 'true' ]] && APPS=$(echo "$APPS" | jq -c '. + ["next"]')
+          [[ "${{ steps.filter.outputs.api }}" == 'true' ]] && APPS=$(echo "$APPS" | jq -c '. + ["fastify"]')
           echo "apps=$APPS" >> "$GITHUB_OUTPUT"
 
   e2e:
