@@ -16,6 +16,9 @@ on:
         description: 'Git ref/branch (for API URL derivation)'
         required: false
         default: 'main'
+      vercel_team_slug:
+        description: 'Vercel team/user slug (for API URL, overrides repo var)'
+        required: false
 
 run-name: Next E2E (${{ github.event.client_payload.git.ref || 'manual' }})
 
@@ -25,8 +28,8 @@ concurrency:
 
 jobs:
   e2e:
-    # Only run for PR preview deployments (target == null), not production. workflow_dispatch for manual runs.
-    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.target == null && (github.event.client_payload.projectId == 'prj_0' || github.event.client_payload.project.id == 'prj_0' || github.event.client_payload.project.name == 'basilic-next'))
+    # Only run for PR preview deployments (target == null), not production. Skip main/develop. workflow_dispatch for manual runs.
+    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.target == null && github.event.client_payload.project.name == 'basilic-next' && github.event.client_payload.git.ref != 'refs/heads/main' && github.event.client_payload.git.ref != 'refs/heads/develop')
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
@@ -37,7 +40,14 @@ jobs:
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
     steps:
       - name: Checkout (deployment ref)
+        if: github.event_name == 'repository_dispatch'
         uses: vercel/repository-dispatch/actions/checkout@v1
+
+      - name: Checkout (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -70,12 +80,13 @@ jobs:
       # CI uses Vercel preview URLs from webhook; never test:e2e:local
       - name: Derive API URL and run E2E
         env:
-          PLAYWRIGHT_APP_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url || 'https://localhost:3000' }}
+          PLAYWRIGHT_APP_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url || 'http://localhost:3000' }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
+          VERCEL_TEAM_SLUG: ${{ github.event.inputs.vercel_team_slug || vars.VERCEL_TEAM_SLUG || 'gaboesquivel' }}
         run: |
           REF="${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || 'main' }}"
           SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//' | cut -c1-63)
-          export PLAYWRIGHT_API_URL="https://basilic-fastify-git-${SLUG}-gaboesquivel.vercel.app"
+          export PLAYWRIGHT_API_URL="https://basilic-fastify-git-${SLUG}-${VERCEL_TEAM_SLUG}.vercel.app"
           pnpm --filter @repo/next test:e2e
         shell: bash
 

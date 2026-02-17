@@ -12,6 +12,9 @@ on:
       deployment_url:
         description: 'Deployment URL (for manual run)'
         required: false
+      git_ref:
+        description: 'Git ref/branch (for checkout)'
+        required: false
 
 run-name: API E2E (${{ github.event.client_payload.git.ref || 'manual' }})
 
@@ -21,8 +24,8 @@ concurrency:
 
 jobs:
   e2e:
-    # Only run for PR preview deployments (target == null), not production. workflow_dispatch for manual runs.
-    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.target == null && (github.event.client_payload.projectId == 'prj_0' || github.event.client_payload.project.id == 'prj_0' || github.event.client_payload.project.name == 'basilic-fastify'))
+    # Only run for PR preview deployments (target == null), not production. Skip main/develop. workflow_dispatch for manual runs.
+    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.target == null && github.event.client_payload.project.name == 'basilic-fastify' && github.event.client_payload.git.ref != 'refs/heads/main' && github.event.client_payload.git.ref != 'refs/heads/develop')
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
@@ -32,7 +35,14 @@ jobs:
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
     steps:
       - name: Checkout (deployment ref)
+        if: github.event_name == 'repository_dispatch'
         uses: vercel/repository-dispatch/actions/checkout@v1
+
+      - name: Checkout (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.git_ref || github.ref || 'main' }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
