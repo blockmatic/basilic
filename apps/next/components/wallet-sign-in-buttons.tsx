@@ -63,14 +63,14 @@ export function WalletSignInButtons() {
         label="Sign in with Ethereum"
         adapter={evmAdapter}
         chainId={chainId}
-        connectLabel="Connect MetaMask"
+        connectLabel="Connect EVM wallet"
         connectDisabled={!injected}
         onConnect={() => (injected ? connect({ connector: injected }) : undefined)}
       />
       <WalletSignInRow
         label="Sign in with Solana"
         adapter={solanaAdapter}
-        connectLabel="Connect Solana wallet"
+        connectLabel="Connect Solana"
         onConnect={() => setSolanaModalVisible(true)}
       />
     </div>

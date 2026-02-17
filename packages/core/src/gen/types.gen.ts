@@ -435,6 +435,103 @@ export type MagiclinkVerifyResponses = {
 
 export type MagiclinkVerifyResponse = MagiclinkVerifyResponses[keyof MagiclinkVerifyResponses];
 
+export type OauthGithubAuthorizeUrlData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/github/authorize-url';
+};
+
+export type OauthGithubAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthGithubAuthorizeUrlError = OauthGithubAuthorizeUrlErrors[keyof OauthGithubAuthorizeUrlErrors];
+
+export type OauthGithubAuthorizeUrlResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    };
+};
+
+export type OauthGithubAuthorizeUrlResponse = OauthGithubAuthorizeUrlResponses[keyof OauthGithubAuthorizeUrlResponses];
+
+export type OauthGithubAuthorizeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/github/authorize';
+};
+
+export type OauthGithubAuthorizeErrors = {
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthGithubAuthorizeError = OauthGithubAuthorizeErrors[keyof OauthGithubAuthorizeErrors];
+
+export type OauthGithubExchangeData = {
+    body: {
+        code: string;
+        state: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/github/exchange';
+};
+
+export type OauthGithubExchangeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthGithubExchangeError = OauthGithubExchangeErrors[keyof OauthGithubExchangeErrors];
+
+export type OauthGithubExchangeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof OauthGithubExchangeResponses];
+
 export type LogoutData = {
     body?: never;
     path?: never;

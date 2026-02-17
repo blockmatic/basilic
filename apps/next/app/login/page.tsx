@@ -28,9 +28,20 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     INVALID_TOKEN: 'Invalid or expired magic link',
     EXPIRED_TOKEN: 'Magic link has expired',
     TOKEN_NOT_FOUND: 'Magic link not found',
+    missing_params: 'Invalid sign-in link - missing parameters',
+    INVALID_STATE: 'Invalid or expired sign-in session. Please try again.',
+    EXPIRED_STATE: 'Sign-in session expired. Please try again.',
+    TOKEN_EXCHANGE_FAILED: 'GitHub sign-in failed. Please try again.',
+    FETCH_USER_FAILED: 'Could not load your GitHub profile. Please try again.',
+    EMAIL_REQUIRED: 'No verified email found. Please add a verified email to your GitHub account.',
+    OAUTH_NOT_CONFIGURED: 'Sign-in is temporarily unavailable.',
+    oauth_failed: 'GitHub sign-in failed. Please try again.',
+    unexpected_error: 'Something went wrong. Please try again.',
   }
 
-  const errorMessage = errorParam ? errorMessages[errorParam] || errorParam : undefined
+  const errorMessage = errorParam
+    ? (errorMessages[errorParam] ?? 'Something went wrong. Please try again.')
+    : undefined
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">

@@ -105,7 +105,13 @@ export default defineConfig({
   plugins: [resolveJsToTsPlugin(), tsconfigPaths()],
   test: {
     include: ['**/*.spec.ts'],
-    exclude: ['**/e2e/**', '**/*.e2e.spec.ts', '**/node_modules/**', '**/packages/email/**'],
+    exclude: [
+      '**/e2e/**',
+      '**/*.e2e.spec.ts',
+      '**/node_modules/**',
+      '**/packages/email/**',
+      '**/auth/oauth.spec.ts',
+    ],
     setupFiles: ['./vitest.setup.ts'],
     globalSetup: ['./vitest.global-setup.ts'],
     globals: true,

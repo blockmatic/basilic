@@ -6,6 +6,7 @@ import {
 } from '@/lib/auth-server'
 import { handleWeb3Callback } from './handlers/callback'
 import { handleMagicLinkVerify } from './handlers/magic-link'
+import { handleOAuthCallback } from './handlers/oauth-callback'
 import { handleGetSession, handleUpdateTokens } from './handlers/session'
 import type { AuthProxyOptions } from './handlers/utils'
 import { buildFastifyUrl, getForwardedHeaders, getRequestBody } from './handlers/utils'
@@ -20,6 +21,23 @@ export const proxyRequest = async ({ pathSegments, request }: AuthProxyOptions) 
 
   if (path === 'magiclink/verify') {
     return handleMagicLinkVerify({ request })
+  }
+
+  if (path === 'oauth/github/callback') {
+    return handleOAuthCallback({ request })
+  }
+
+  if (path === 'oauth/github/authorize') {
+    return new Response(
+      JSON.stringify({
+        code: 'USE_DIRECT_API',
+        message: 'OAuth authorize must be requested via the API directly',
+      }),
+      {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    )
   }
 
   if (path === 'get-session') {

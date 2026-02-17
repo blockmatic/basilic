@@ -6,7 +6,7 @@ test('Solana wallet login flow', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /connect wallet/i })).toBeVisible({
     timeout: 5000,
   })
-  const connectBtn = page.getByRole('button', { name: /connect solana wallet/i })
+  const connectBtn = page.getByRole('button', { name: /connect solana/i })
   await expect(connectBtn).toBeEnabled({ timeout: 15_000 })
   await connectBtn.click()
   const phantomOption = page.getByRole('dialog').getByText(/phantom/i)

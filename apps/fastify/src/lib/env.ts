@@ -68,6 +68,10 @@ export const env = createEnv({
     EMAIL_FROM: z.string().email().default('noreply@localhost'),
     EMAIL_FROM_NAME: z.string().default('App'),
     ALLOW_TEST: z.coerce.boolean().default(false),
+    // GitHub OAuth (optional - OAuth routes return 503 when unset)
+    GITHUB_CLIENT_ID: z.string().min(1).optional(),
+    GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
+    OAUTH_GITHUB_CALLBACK_URL: z.string().url().optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

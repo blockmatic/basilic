@@ -29,6 +29,13 @@ auth: {
     request: gen.magiclinkRequest,
     verify: gen.magiclinkVerify,
   },
+  oauth: {
+    github: {
+      authorizeUrl: gen.oauthGithubAuthorizeUrl,
+      authorize: gen.oauthGithubAuthorize,
+      exchange: gen.oauthGithubExchange,
+    },
+  },
   session: {
     logout: gen.logout,
     refresh: gen.refresh,
