@@ -33,12 +33,13 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
 export function LoginActions({ initialError }: LoginActionsProps) {
   const [showWalletOptions, setShowWalletOptions] = useState(false)
   const [errorDismissed, setErrorDismissed] = useState(false)
-  const { mutate: startOAuthLogin, isPending: isOAuthPending } = useOAuthLogin()
+  const { mutate: startOAuthLogin, error: oauthError, isPending: isOAuthPending } = useOAuthLogin()
+  const displayError = oauthError?.message ?? initialError
 
   return (
     <div data-view={showWalletOptions ? 'wallet' : 'initial'} className="group/view relative">
-      {initialError && !errorDismissed && (
-        <ErrorBanner message={initialError} onDismiss={() => setErrorDismissed(true)} />
+      {displayError && !errorDismissed && (
+        <ErrorBanner message={displayError} onDismiss={() => setErrorDismissed(true)} />
       )}
       <div
         data-view-panel="initial"

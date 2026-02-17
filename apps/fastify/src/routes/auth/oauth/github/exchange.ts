@@ -153,7 +153,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       } else if (emailsRes.ok) {
         const emails = (await emailsRes.json()) as GitHubEmail[]
         const primary = emails.find(e => e.primary && e.verified)
-        email = primary?.email ?? emails[0]?.email ?? ''
+        email = primary?.email ?? emails.find(e => e.verified)?.email ?? ''
       } else {
         email = ''
       }
@@ -191,7 +191,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         accessToken,
         refreshToken: null as string | null,
         idToken: null as string | null,
-        accessTokenExpiresAt: new Date(Date.now() + 8 * 60 * 60),
+        accessTokenExpiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000),
         refreshTokenExpiresAt: null as Date | null,
         scope: 'user:email',
       }

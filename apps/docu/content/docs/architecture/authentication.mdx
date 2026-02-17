@@ -282,7 +282,7 @@ sequenceDiagram
 The auth system relies on these tables:
 
 - **`users`**: user identity (email-based for magic link)
-- **`verification`**: single-use tokens (stored hashed, with TTL); `type` = `magic_link` | `link_email` (link_email reserved for Phase 1b)
+- **`verification`**: single-use tokens (stored hashed, with TTL); `type` = `magic_link` | `link_email` | `oauth_state` (link_email reserved for Phase 1b)
 - **`sessions`**: server-side session state (stores hashed refresh `jti`, expiry, optional `wallet_chain`/`wallet_address` for wallet sessions)
 - **`account`**: OAuth provider accounts (provider id + encrypted tokens at rest)
 - **`wallet_identities`**: Web3 identities (`eip155`/`solana` + normalized address)
