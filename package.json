@@ -21,7 +21,7 @@
     "security:secrets": "node scripts/scan-secrets-staged.mjs",
     "security:secrets:full": "gitleaks detect --redact --verbose --config .gitleaks.toml",
     "security:osv": "node scripts/scan-osv.mjs",
-    "security:audit": "pnpm audit --audit-level=moderate",
+    "security:audit": "pnpm audit --audit-level=high",
     "security:check": "node scripts/security-check.mjs",
     "postinstall": "npx simple-git-hooks",
     "setup": "pnpm i && npx simple-git-hooks && pnpm setup:gitleaks && pnpm setup:osv && pnpm setup:database",
@@ -70,7 +70,6 @@
     "@isaacs/brace-expansion@5.0.0": "5.0.1",
     "esbuild@<0.25.0": ">=0.25.0",
     "path-to-regexp@<6.3.0": ">=6.3.0",
-    "undici@<6.23.0": ">=6.23.0",
     "next@<16.1.5": ">=16.1.5",
     "lodash@<4.17.23": ">=4.17.23",
     "lodash-es@<4.17.23": ">=4.17.23"

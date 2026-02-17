@@ -34,7 +34,17 @@ reason = "Transitive esbuild, override to >=0.25.0 in package.json"
 [[IgnoredVulns]]
 id = "GHSA-xxjr-mmjv-4gpg"
 reason = "Transitive lodash/lodash-es, override in package.json"
-# Override in package.json (undici >=6.23.0)
+# Undici: can't override to 6.23 (breaks jsdom), 5.28.5 breaks jsdom wrap-handler. Tracked for vercel/node upstream.
 [[IgnoredVulns]]
 id = "GHSA-g9mf-h72j-4rw9"
-reason = "Transitive undici, override in package.json"
+reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
+[[IgnoredVulns]]
+id = "GHSA-c76h-2ccp-4975"
+reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
+[[IgnoredVulns]]
+id = "GHSA-cxrh-j4jr-qwg3"
+reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
+# path-to-regexp: override in pnpm-workspace
+[[IgnoredVulns]]
+id = "GHSA-9wv6-86v2-598j"
+reason = "Transitive path-to-regexp, override in pnpm-workspace.yaml"
