@@ -1,12 +1,12 @@
-# E2E for Fastify API: triggers on Vercel deployment (repository_dispatch), runs Playwright Scalar login tests.
-# Filter by project.id - get from Vercel Project Settings → General.
+# E2E for Fastify API: triggers on Vercel PR preview deployment (repository_dispatch).
+# Workflow lives on main; runs only for previews (target == null), not production.
+# Filter: projectId or project.name. Replace prj_0 with your Vercel project ID.
 name: API E2E tests
 
 on:
   repository_dispatch:
     types:
       - vercel.deployment.success
-      - vercel.deployment.ready
   workflow_dispatch:
     inputs:
       deployment_url:
@@ -21,8 +21,8 @@ concurrency:
 
 jobs:
   e2e:
-    # Filter: project.id (replace prj_0) or project.name == 'basilic-fastify'
-    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.project != null && (github.event.client_payload.project.id == 'prj_0' || github.event.client_payload.project.name == 'basilic-fastify'))
+    # Only run for PR preview deployments (target == null), not production. workflow_dispatch for manual runs.
+    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.target == null && (github.event.client_payload.projectId == 'prj_0' || github.event.client_payload.project.id == 'prj_0' || github.event.client_payload.project.name == 'basilic-fastify'))
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
@@ -62,6 +62,7 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
 
+      # CI uses Vercel preview URLs from webhook; never test:e2e:local
       - name: Run E2E tests
         env:
           PLAYWRIGHT_API_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url || 'http://localhost:3001' }}

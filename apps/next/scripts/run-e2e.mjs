@@ -2,12 +2,14 @@
 /**
  * E2E wrapper: parses --app/--api URL params, sets env, forwards to Playwright.
  * Param formats: --app=URL, --app URL, --api=URL, --api URL
- * Defaults: NEXT_PUBLIC_APP_URL or http://localhost:3000; NEXT_PUBLIC_API_URL or http://localhost:3001
+ * Precedence: PLAYWRIGHT_* > NEXT_PUBLIC_* > localhost
  */
 const args = process.argv.slice(2)
 const rest = []
-let appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+let appUrl =
+  process.env.PLAYWRIGHT_APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+let apiUrl =
+  process.env.PLAYWRIGHT_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
 for (let i = 0; i < args.length; i++) {
   const arg = args[i]

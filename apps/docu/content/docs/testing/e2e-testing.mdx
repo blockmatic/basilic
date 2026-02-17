@@ -55,14 +55,14 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-Two workflows trigger on Vercel `repository_dispatch` events (`vercel.deployment.success`, `vercel.deployment.ready`):
+Two workflows trigger on Vercel `repository_dispatch` when a PR preview deployment succeeds:
 
-- **next-e2e-test.yml** — Runs when `basilic-next` deploys. Uses deployment URL from webhook payload; derives API URL from `git.ref` (`https://basilic-fastify-git-{branch}-gaboesquivel.vercel.app`). Runs `pnpm --filter @repo/next test:e2e`.
-- **api-e2e-test.yml** — Runs when `basilic-fastify` deploys. Uses deployment URL from payload. Runs `pnpm --filter @repo/fastify test:e2e`.
+- **next-e2e-test.yml** — Runs when `basilic-next` PR preview deploys. Uses deployment URL from webhook; derives API URL from `git.ref` (`https://basilic-fastify-git-{branch}-gaboesquivel.vercel.app`). Runs `pnpm --filter @repo/next test:e2e`.
+- **api-e2e-test.yml** — Runs when `basilic-fastify` PR preview deploys. Uses deployment URL from payload. Runs `pnpm --filter @repo/fastify test:e2e`.
 
-Each workflow filters by `project.id` (replace `prj_0` with your Vercel project ID from Project Settings → General). Uses `vercel/repository-dispatch/actions/checkout` to checkout the deployment commit before running tests.
+Workflow files must exist on `main`. The `target == null` condition ensures tests run only for PR preview deployments, not production. Filter by `projectId` or `project.name` (replace `prj_0` with your Vercel project ID from Project Settings → General). Uses `vercel/repository-dispatch/actions/checkout` to checkout the deployment commit.
 
-Requires `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass. `VERCEL_TOKEN` and `VERCEL_TEAM_ID` are no longer needed.
+Requires `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass.
 
 ## Vercel Deployment Protection
 

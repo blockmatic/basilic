@@ -38,18 +38,21 @@ export default defineConfig({
     },
     {
       name: 'wallet-metamask',
+      dependencies: ['auth'],
       testMatch: ['**/wallet-metamask-auth.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
       timeout: 60_000,
     },
     {
       name: 'wallet-solana',
+      dependencies: ['auth'],
       testMatch: ['**/wallet-solana-auth.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
       timeout: 60_000,
     },
     {
       name: 'chromium',
+      dependencies: ['wallet-metamask', 'wallet-solana'],
       testMatch: '**/*.spec.ts',
       testIgnore: [
         '**/magic-link-auth.spec.ts',
