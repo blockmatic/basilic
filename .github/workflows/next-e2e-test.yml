@@ -61,9 +61,7 @@ jobs:
           VERCEL_TEAM_SLUG: ${{ vars.VERCEL_TEAM_SLUG || secrets.VERCEL_TEAM_SLUG }}
           VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID || secrets.VERCEL_TEAM_ID }}
           GITHUB_BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-        run: |
-          chmod +x .github/scripts/wait-vercel-deployment.sh
-          .github/scripts/wait-vercel-deployment.sh basilic-next app
+        run: bash .github/scripts/wait-vercel-deployment.sh basilic-next app
 
       - name: Wait for Vercel Fastify deployment
         id: wait-api
@@ -72,7 +70,7 @@ jobs:
           VERCEL_TEAM_SLUG: ${{ vars.VERCEL_TEAM_SLUG || secrets.VERCEL_TEAM_SLUG }}
           VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID || secrets.VERCEL_TEAM_ID }}
           GITHUB_BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-        run: .github/scripts/wait-vercel-deployment.sh basilic-fastify ${{ matrix.app == 'next' && 'api' || '' }}
+        run: bash .github/scripts/wait-vercel-deployment.sh basilic-fastify ${{ matrix.app == 'next' && 'api' || '' }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
