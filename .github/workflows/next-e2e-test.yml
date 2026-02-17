@@ -1,28 +1,22 @@
-# E2E for basilic-next: triggers on pull_request, polls Vercel API for deployment, runs Playwright.
-# Always visible in PR checks. When build is ignored (turbo-ignore), workflow skips gracefully.
-name: Next e2e test
+# E2E for Next + Fastify: triggers on pull_request, polls Vercel API for deployments, runs Playwright.
+# Matrix strategy runs Next and Fastify E2E in parallel when path filter matches.
+name: E2E tests
 
 on:
   pull_request:
 
-run-name: E2E – Next (${{ github.event.pull_request.head.ref || github.ref_name }})
+run-name: E2E (${{ github.event.pull_request.head.ref || github.ref_name }})
 
 concurrency:
-  group: e2e-next-${{ github.ref }}
+  group: e2e-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  e2e:
-    name: Next (E2E)
+  filter:
     runs-on: ubuntu-latest
-    env:
-      NODE_ENV: test
-      CI: true
-      PGLITE: true
-      DATABASE_URL: postgresql://localhost/test
-      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
-      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
-      GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    outputs:
+      next: ${{ steps.filter.outputs.next }}
+      api: ${{ steps.filter.outputs.api }}
     steps:
       - uses: actions/checkout@v4
 
@@ -31,55 +25,62 @@ jobs:
         with:
           filters: .github/paths-filter.yml
 
-      - name: Skip when no Next changes
-        if: steps.filter.outputs.next != 'true'
-        run: echo "No Next-relevant changes, skipping E2E" && exit 0
+  e2e:
+    needs: filter
+    if: (matrix.app == 'next' && needs.filter.outputs.next == 'true') || (matrix.app == 'fastify' && needs.filter.outputs.api == 'true')
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [next, fastify]
+    runs-on: ubuntu-latest
+    name: ${{ matrix.app }} (E2E)
+    env:
+      NODE_ENV: test
+      CI: true
+      PGLITE: true
+      DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Wait for Vercel Next deployment
         id: wait-app
-        if: steps.filter.outputs.next == 'true'
+        if: matrix.app == 'next'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_TEAM_SLUG: ${{ secrets.VERCEL_TEAM_SLUG }}
-          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
-          GITHUB_SHA: ${{ env.GITHUB_SHA }}
+          VERCEL_TEAM_SLUG: ${{ vars.VERCEL_TEAM_SLUG || secrets.VERCEL_TEAM_SLUG }}
+          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID || secrets.VERCEL_TEAM_ID }}
+          GITHUB_BRANCH_REF: ${{ github.head_ref || github.ref_name }}
         run: |
           chmod +x .github/scripts/wait-vercel-deployment.sh
-          .github/scripts/wait-vercel-deployment.sh basilic-next 18 app
+          .github/scripts/wait-vercel-deployment.sh basilic-next app
 
       - name: Wait for Vercel Fastify deployment
         id: wait-api
-        if: steps.filter.outputs.next == 'true'
+        if: matrix.app == 'next' || matrix.app == 'fastify'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_TEAM_SLUG: ${{ secrets.VERCEL_TEAM_SLUG }}
-          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
-          GITHUB_SHA: ${{ env.GITHUB_SHA }}
-        run: .github/scripts/wait-vercel-deployment.sh basilic-fastify 18 api
-
-      - name: Skip when no deployment URLs
-        if: steps.filter.outputs.next == 'true' && (steps.wait-app.outputs.deployment_url_app == '' || steps.wait-api.outputs.deployment_url_api == '')
-        run: echo "No deployment (build may be ignored). Skipping E2E." && exit 0
+          VERCEL_TEAM_SLUG: ${{ vars.VERCEL_TEAM_SLUG || secrets.VERCEL_TEAM_SLUG }}
+          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID || secrets.VERCEL_TEAM_ID }}
+          GITHUB_BRANCH_REF: ${{ github.head_ref || github.ref_name }}
+        run: .github/scripts/wait-vercel-deployment.sh basilic-fastify ${{ matrix.app == 'next' && 'api' || '' }}
 
       - name: Setup Node.js
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Setup pnpm
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         uses: pnpm/action-setup@v4
         with:
           version: 10.29.3
 
       - name: Get pnpm store directory
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         shell: bash
         run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Setup pnpm cache
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
@@ -88,15 +89,12 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
-        run: pnpm --filter @repo/next exec playwright install chromium --with-deps
+        run: pnpm --filter @repo/${{ matrix.app }} exec playwright install chromium --with-deps
 
       - name: Verify OPEN_ROUTER_API_KEY for E2E
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         env:
           OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
         run: |
@@ -106,18 +104,17 @@ jobs:
           fi
 
       - name: Run E2E tests
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         id: e2e
         env:
-          PLAYWRIGHT_APP_URL: ${{ steps.wait-app.outputs.deployment_url_app }}
-          PLAYWRIGHT_API_URL: ${{ steps.wait-api.outputs.deployment_url_api }}
+          PLAYWRIGHT_APP_URL: ${{ matrix.app == 'next' && steps.wait-app.outputs.deployment_url_app || '' }}
+          PLAYWRIGHT_API_URL: ${{ matrix.app == 'next' && steps.wait-api.outputs.deployment_url_api || steps.wait-api.outputs.deployment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
-        run: pnpm --filter @repo/next test:e2e
+        run: pnpm --filter @repo/${{ matrix.app }} test:e2e
 
       - name: Upload Playwright report
         if: failure() && steps.e2e.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-nextjs
-          path: apps/next/playwright-report/
+          name: playwright-report-${{ matrix.app }}
+          path: apps/${{ matrix.app }}/playwright-report/
           retention-days: 30
