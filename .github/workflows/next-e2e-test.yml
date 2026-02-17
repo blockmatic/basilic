@@ -17,6 +17,7 @@ jobs:
     outputs:
       next: ${{ steps.filter.outputs.next }}
       api: ${{ steps.filter.outputs.api }}
+      apps: ${{ steps.apps.outputs.apps }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,13 +26,21 @@ jobs:
         with:
           filters: .github/paths-filter.yml
 
+      - name: Set apps matrix
+        id: apps
+        run: |
+          APPS='[]'
+          [[ "${{ steps.filter.outputs.next }}" == 'true' ]] && APPS=$(echo "$APPS" | jq '. + ["next"]')
+          [[ "${{ steps.filter.outputs.api }}" == 'true' ]] && APPS=$(echo "$APPS" | jq '. + ["fastify"]')
+          echo "apps=$APPS" >> "$GITHUB_OUTPUT"
+
   e2e:
     needs: filter
-    if: (matrix.app == 'next' && needs.filter.outputs.next == 'true') || (matrix.app == 'fastify' && needs.filter.outputs.api == 'true')
+    if: needs.filter.outputs.apps != '[]'
     strategy:
       fail-fast: false
       matrix:
-        app: [next, fastify]
+        app: ${{ fromJson(needs.filter.outputs.apps) }}
     runs-on: ubuntu-latest
     name: ${{ matrix.app }} (E2E)
     env:
@@ -58,7 +67,6 @@ jobs:
 
       - name: Wait for Vercel Fastify deployment
         id: wait-api
-        if: matrix.app == 'next' || matrix.app == 'fastify'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_TEAM_SLUG: ${{ vars.VERCEL_TEAM_SLUG || secrets.VERCEL_TEAM_SLUG }}

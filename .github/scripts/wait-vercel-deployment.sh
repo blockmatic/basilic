@@ -21,12 +21,18 @@ die() {
 [[ -n "${VERCEL_TOKEN:-}" ]] || die "VERCEL_TOKEN is required"
 [[ -n "${GITHUB_BRANCH_REF:-}" ]] || die "GITHUB_BRANCH_REF is required"
 
-# Resolve team: use slug for projects API, teamId for deployments API
+# Resolve team: use slug for projects API, teamId for deployments API. Page through teams until found.
 TEAM_ID="${VERCEL_TEAM_ID:-}"
 if [[ -z "$TEAM_ID" && -n "${VERCEL_TEAM_SLUG:-}" ]]; then
-  TEAM_RESP=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" \
-    "https://api.vercel.com/v2/teams" 2>/dev/null || true)
-  TEAM_ID=$(echo "$TEAM_RESP" | jq -r --arg slug "${VERCEL_TEAM_SLUG}" '.teams[]? | select(.slug == $slug) | .id' | head -1)
+  TEAM_URL="https://api.vercel.com/v2/teams"
+  while true; do
+    TEAM_RESP=$(curl -sf -H "Authorization: Bearer ${VERCEL_TOKEN}" "${TEAM_URL}" 2>/dev/null || true)
+    TEAM_ID=$(echo "$TEAM_RESP" | jq -r --arg slug "${VERCEL_TEAM_SLUG}" '[.teams[]? | select(.slug == $slug) | .id][0] // empty')
+    [[ -n "$TEAM_ID" ]] && break
+    NEXT=$(echo "$TEAM_RESP" | jq -r '.pagination.next // empty')
+    [[ -z "$NEXT" ]] && break
+    TEAM_URL="https://api.vercel.com/v2/teams?since=${NEXT}"
+  done
 fi
 
 [[ -n "${TEAM_ID:-}" || -n "${VERCEL_TEAM_SLUG:-}" ]] || die "VERCEL_TEAM_ID or VERCEL_TEAM_SLUG is required"
@@ -62,11 +68,11 @@ for i in $(seq 1 "$RETRIES"); do
 
   if [[ -n "$RESP" ]]; then
     URL=$(echo "$RESP" | jq -r --arg ref "$GITHUB_BRANCH_REF" '
-      .deployments[]? |
-      select(.readyState == "READY") |
-      select(.meta.githubCommitRef == $ref) |
-      .url // empty
-    ' | head -1)
+      [.deployments[]? |
+        select(.readyState == "READY") |
+        select(.meta.githubCommitRef == $ref) |
+        .url // empty][0] // empty
+    ')
 
     if [[ -n "$URL" ]]; then
       [[ "$URL" != https* ]] && URL="https://${URL}"
