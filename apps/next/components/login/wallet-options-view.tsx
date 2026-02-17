@@ -33,7 +33,8 @@ export function WalletOptionsView({ onBack }: { onBack: () => void }) {
           adapter={evmAdapter}
           chainId={chainId}
           connectLabel="Connect MetaMask"
-          onConnect={() => injected && connect({ connector: injected })}
+          connectDisabled={!injected}
+          onConnect={() => (injected ? connect({ connector: injected }) : undefined)}
         />
         <WalletSignInRow
           label="Sign in with Solana"

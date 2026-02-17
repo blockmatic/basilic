@@ -32,9 +32,7 @@ function run(cmd, args, opts = {}) {
 
 async function main() {
   await run('pnpm', ['-F', '@repo/fastify', 'test:e2e:local'])
-  await run('pnpm', ['-F', '@repo/next', 'test:e2e:local'], {
-    env: { ...process.env, SKIP_WALLET_E2E: '1' },
-  })
+  await run('pnpm', ['-F', '@repo/next', 'test:e2e:local'])
 }
 
 main().catch(err => {

@@ -72,6 +72,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@johanneskares/wallet-mock": "^1.4.1",
     "@playwright/test": "^1.58.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
@@ -91,6 +92,7 @@
     "eslint": "^9.0.0",
     "jsdom": "^28.0.0",
     "postcss": "^8.5.6",
+    "tweetnacl": "^1.0.3",
     "vitest": "^4.0.18"
   }
 }

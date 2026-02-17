@@ -129,66 +129,17 @@ async function main() {
   const hasWorkers = userArgs.some(a => a.startsWith('--workers='))
   const pwArgs = ['exec', 'playwright', 'test', ...(hasWorkers ? [] : ['--workers=1']), ...userArgs]
   const hasProjectArg = pwArgs.some(a => a.startsWith('--project='))
-  const explicitWalletProject = userArgs.some(
-    a => a.includes('wallet-metamask') || a.includes('wallet-solana'),
-  )
-  // eslint-disable-next-line turbo/no-undeclared-env-vars -- set by root test:e2e
-  const skipWalletE2E = process.env.SKIP_WALLET_E2E === '1'
-  const runWalletSpecs = (!hasProjectArg && !skipWalletE2E) || explicitWalletProject
-  if (!hasProjectArg && skipWalletE2E) pwArgs.push('--project=auth', '--project=chromium')
-  let skipWalletSolana = false
-  const synpressNeedsXvfb = process.platform === 'linux' && !env.DISPLAY
-  if (runWalletSpecs) {
-    const metamaskCmd = synpressNeedsXvfb ? 'xvfb-run' : 'pnpm'
-    const metamaskArgs = synpressNeedsXvfb
-      ? ['--auto-servernum', '--', 'pnpm', 'synpress:metamask']
-      : ['synpress:metamask']
-    const metamaskBuild = spawnSync(metamaskCmd, metamaskArgs, {
-      cwd: nextDir,
-      env,
-      stdio: 'inherit',
-    })
-    if (metamaskBuild.status !== 0) {
-      process.stderr.write('E2E local: Synpress MetaMask cache build failed\n')
-      process.exit(metamaskBuild.status ?? 1)
-    }
-    const phantomCmd = synpressNeedsXvfb ? 'xvfb-run' : 'pnpm'
-    const phantomArgs = synpressNeedsXvfb
-      ? ['--auto-servernum', '--', 'pnpm', 'synpress:phantom']
-      : ['synpress:phantom']
-    const phantomBuild = spawnSync(phantomCmd, phantomArgs, {
-      cwd: nextDir,
-      env,
-      stdio: 'inherit',
-    })
-    if (phantomBuild.status !== 0) {
-      process.stderr.write(
-        'E2E local: Phantom cache build failed (crx-backup.phantom.dev may be unreachable), skipping wallet-solana tests\n',
-      )
-      skipWalletSolana = true
-    }
-  }
+  const finalPwArgs = !hasProjectArg
+    ? [
+        ...pwArgs,
+        '--project=auth',
+        '--project=wallet-metamask',
+        '--project=wallet-solana',
+        '--project=chromium',
+      ]
+    : pwArgs
 
-  const finalPwArgs =
-    skipWalletSolana &&
-    !pwArgs.some(a => a.startsWith('--project=')) &&
-    !pwArgs.some(a => a.includes('wallet-solana'))
-      ? [...pwArgs, '--project=auth', '--project=wallet-metamask', '--project=chromium']
-      : pwArgs
-
-  // Synpress wallet specs need a display; use xvfb on Linux when no DISPLAY
-  /* eslint-disable turbo/no-undeclared-env-vars -- DISPLAY is runtime check for virtual display */
-  const needsXvfb =
-    process.platform === 'linux' &&
-    !process.env.DISPLAY &&
-    (runWalletSpecs ||
-      finalPwArgs.some(a => a.includes('wallet-metamask') || a.includes('wallet-solana')))
-  /* eslint-enable turbo/no-undeclared-env-vars */
-  const [pwCmd, pwArgsFinal] = needsXvfb
-    ? ['xvfb-run', ['--auto-servernum', '--', 'pnpm', ...finalPwArgs]]
-    : ['pnpm', finalPwArgs]
-
-  const pw = spawn(pwCmd, pwArgsFinal, {
+  const pw = spawn('pnpm', finalPwArgs, {
     cwd: nextDir,
     env,
     stdio: 'inherit',

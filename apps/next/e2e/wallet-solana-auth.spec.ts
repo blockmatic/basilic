@@ -1,18 +1,19 @@
-import { testWithSynpress } from '@synthetixio/synpress'
-import { Phantom, phantomFixtures } from '@synthetixio/synpress/playwright'
-import phantomSetup from './wallet-setup/phantom.setup'
+import { expect, test } from './fixtures-solana-mock'
 
-const test = testWithSynpress(phantomFixtures(phantomSetup))
-const { expect } = test
-
-test('Solana wallet login flow', async ({ page, context, phantomPage, extensionId }) => {
-  const phantom = new Phantom(context, phantomPage, phantomSetup.walletPassword, extensionId)
-
+test('Solana wallet login flow', async ({ page }) => {
   await page.goto('/login')
   await page.getByRole('button', { name: /wallet login/i }).click()
-  await page.getByRole('button', { name: /connect solana wallet/i }).click()
-  await phantom.connectToDapp()
-  await page.getByRole('button', { name: /sign in with solana/i }).click()
-  await phantom.confirmSignature()
-  await expect(page).toHaveURL(/\/(\?.*)?$/)
+  await expect(page.getByRole('heading', { name: /connect wallet/i })).toBeVisible({
+    timeout: 5000,
+  })
+  const connectBtn = page.getByRole('button', { name: /connect solana wallet/i })
+  await expect(connectBtn).toBeEnabled({ timeout: 15_000 })
+  await connectBtn.click()
+  const phantomOption = page.getByRole('dialog').getByText(/phantom/i)
+  await expect(phantomOption).toBeVisible({ timeout: 10_000 })
+  await phantomOption.click()
+  const signInBtn = page.getByRole('button', { name: /sign in with solana/i })
+  await expect(signInBtn).toBeVisible({ timeout: 15_000 })
+  await signInBtn.click()
+  await expect(page).toHaveURL(/\/(\?.*)?$/, { timeout: 20_000 })
 })

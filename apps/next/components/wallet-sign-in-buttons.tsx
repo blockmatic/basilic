@@ -11,12 +11,14 @@ export function WalletSignInRow({
   adapter,
   chainId,
   connectLabel,
+  connectDisabled,
   onConnect,
 }: {
   label: string
   adapter: WalletAdapter | undefined
   chainId?: number
   connectLabel?: string
+  connectDisabled?: boolean
   onConnect?: () => void
 }) {
   const { signIn, isPending, error } = useWalletAuth({ adapter, chainId })
@@ -24,7 +26,12 @@ export function WalletSignInRow({
   if (!adapter?.address) {
     if (connectLabel && onConnect) {
       return (
-        <Button variant="outline" type="button" onClick={onConnect}>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={connectDisabled}
+          onClick={() => onConnect()}
+        >
           {connectLabel}
         </Button>
       )
@@ -57,7 +64,8 @@ export function WalletSignInButtons() {
         adapter={evmAdapter}
         chainId={chainId}
         connectLabel="Connect MetaMask"
-        onConnect={() => injected && connect({ connector: injected })}
+        connectDisabled={!injected}
+        onConnect={() => (injected ? connect({ connector: injected }) : undefined)}
       />
       <WalletSignInRow
         label="Sign in with Solana"

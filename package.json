@@ -43,6 +43,7 @@
     "simple-git-hooks": "2.13.1",
     "tsup": "^8.5.1",
     "turbo": "^2.8.9",
+    "vercel": "latest",
     "vitest": "^4.0.18"
   },
   "engines": {
@@ -53,25 +54,30 @@
     "pre-commit": "pnpm hooks:pre-commit"
   },
   "pnpm": {
-    "overrides": {
-      "eslint": "^9.0.0",
-      "@eslint/js": "^9.39.0",
-      "tmp@<=0.2.3": ">=0.2.4",
-      "js-yaml@<4.1.1": ">=4.1.1",
-      "diff@<8.0.3": ">=8.0.3",
-      "bigint-buffer": "npm:bigint-buffer-fixed@1.1.6",
-      "tar@<7.5.7": ">=7.5.7",
-      "@isaacs/brace-expansion@5.0.0": "5.0.1",
-      "esbuild@<0.25.0": ">=0.25.0",
-      "path-to-regexp@<6.3.0": ">=6.3.0",
-      "undici@<6.23.0": ">=6.23.0",
-      "next@<16.1.5": ">=16.1.5",
-      "lodash@<4.17.23": ">=4.17.23",
-      "lodash-es@<4.17.23": ">=4.17.23"
-    },
     "onlyBuiltDependencies": [
       "@sentry/cli",
       "esbuild"
     ]
-  }
+  },
+  "overrides": {
+    "eslint": "^9.0.0",
+    "@eslint/js": "^9.39.0",
+    "tmp@<=0.2.3": ">=0.2.4",
+    "js-yaml@<4.1.1": ">=4.1.1",
+    "diff@<8.0.3": ">=8.0.3",
+    "bigint-buffer": "npm:bigint-buffer-fixed@1.1.6",
+    "tar@<7.5.7": ">=7.5.7",
+    "@isaacs/brace-expansion@5.0.0": "5.0.1",
+    "esbuild@<0.25.0": ">=0.25.0",
+    "path-to-regexp@<6.3.0": ">=6.3.0",
+    "undici@<6.23.0": ">=6.23.0",
+    "next@<16.1.5": ">=16.1.5",
+    "lodash@<4.17.23": ">=4.17.23",
+    "lodash-es@<4.17.23": ">=4.17.23"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tools/*"
+  ]
 }

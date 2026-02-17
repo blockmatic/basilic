@@ -98,25 +98,6 @@ jobs:
         if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         run: pnpm --filter @repo/next exec playwright install chromium --with-deps
 
-      - name: Install xvfb
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
-        run: sudo apt-get install -y xvfb
-
-      - name: Cache Synpress wallet
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
-        uses: actions/cache@v4
-        with:
-          path: apps/next/.cache-synpress
-          key: synpress-${{ runner.os }}-${{ hashFiles('apps/next/e2e/wallet-setup/**') }}
-          restore-keys: |
-            synpress-${{ runner.os }}-
-
-      - name: Build Synpress wallet cache
-        if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
-        run: |
-          xvfb-run --auto-servernum pnpm --filter @repo/next synpress:metamask
-          xvfb-run --auto-servernum pnpm --filter @repo/next synpress:phantom || true
-
       - name: Verify OPEN_ROUTER_API_KEY for E2E
         if: steps.filter.outputs.next == 'true' && steps.wait-app.outputs.deployment_url_app != '' && steps.wait-api.outputs.deployment_url_api != ''
         env:

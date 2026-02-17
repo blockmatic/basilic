@@ -10,7 +10,7 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - CI: test:e2e:local (spawn local). Optional: Vercel previews with `VERCEL_AUTOMATION_BYPASS_SECRET`, `ALLOW_TEST=true` for preview
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
-- projects: auth first (`magic-link-auth.spec.ts`), chromium second (all other specs including `wallet-auth.spec.ts`, `link-wallet.spec.ts`, `link-email.spec.ts`)
+- projects: auth first, then wallet-metamask, wallet-solana, chromium last (all other specs including `wallet-auth.spec.ts`, `link-wallet.spec.ts`, `link-email.spec.ts`)
 
 ## Session Model
 - Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
@@ -23,12 +23,9 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - Chromium project: unauth tests first (logged-out state), then first authed test triggers fixture (login) and confirms session, then all remaining authed tests run consecutively
 - Authed tests must run consecutively — no unauth test between them
 
-## Wallet Extension Specs
-- `wallet-metamask-auth.spec.ts`, `wallet-solana-auth.spec.ts`: use `testWithSynpress(metaMaskFixtures|phantomFixtures(setup))` instead of `@playwright/test`; real wallet connect + sign, no mocks
-- Before running wallet extension specs: run `pnpm synpress:metamask` and `pnpm synpress:phantom` (or `pnpm synpress:build`). Cache in `.cache-synpress`; add to `.gitignore`
-- CI and `test:e2e:local` must build Synpress cache when wallet specs are in scope
-- Synpress cache build uses `xvfb-run` (headful) on Linux when no DISPLAY; MetaMask has known headless compatibility issues
-- Root `pnpm test:e2e` sets `SKIP_WALLET_E2E=1` for qa; run `pnpm -F @repo/next test:e2e:local` to include wallet specs
+## Wallet Specs
+- `wallet-metamask-auth.spec.ts`: uses `@johanneskares/wallet-mock` (fixtures-wallet-mock.ts). No extensions; injected EIP-6963 provider, headless. wagmi `injected()` discovers mock. Included in default runs.
+- `wallet-solana-auth.spec.ts`: uses fixtures-solana-mock.ts. Injected Phantom mock via `window.solana`/`window.phantom.solana`; no Synpress/extensions. Included in default runs.
 
 ## Auth Fixtures
 - Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)

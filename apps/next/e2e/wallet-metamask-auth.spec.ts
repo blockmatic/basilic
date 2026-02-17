@@ -1,18 +1,17 @@
-import { testWithSynpress } from '@synthetixio/synpress'
-import { MetaMask, metaMaskFixtures } from '@synthetixio/synpress/playwright'
-import metamaskSetup from './wallet-setup/metamask.setup'
+import { expect, test } from './fixtures-wallet-mock'
 
-const test = testWithSynpress(metaMaskFixtures(metamaskSetup))
-const { expect } = test
-
-test('MetaMask wallet login flow', async ({ page, context, metamaskPage, extensionId }) => {
-  const metamask = new MetaMask(context, metamaskPage, metamaskSetup.walletPassword, extensionId)
-
-  await page.goto('/login')
+test('MetaMask wallet login flow', async ({ page }) => {
+  await page.goto('/login', { waitUntil: 'domcontentloaded' })
   await page.getByRole('button', { name: /wallet login/i }).click()
-  await page.getByRole('button', { name: /connect metamask/i }).click()
-  await metamask.connectToDapp()
-  await page.getByRole('button', { name: /sign in with ethereum/i }).click()
-  await metamask.confirmSignature()
-  await expect(page).toHaveURL(/\/(\?.*)?$/)
+  await expect(page.getByRole('heading', { name: /connect wallet/i })).toBeVisible({
+    timeout: 5000,
+  })
+  const connectBtn = page.getByRole('button', { name: /connect metamask/i })
+  await expect(connectBtn).toBeVisible({ timeout: 15_000 })
+  await expect(connectBtn).toBeEnabled({ timeout: 15_000 })
+  await connectBtn.evaluate((el: HTMLElement) => el.click())
+  const signInBtn = page.getByRole('button', { name: /sign in with ethereum/i })
+  await expect(signInBtn).toBeVisible({ timeout: 15_000 })
+  await signInBtn.evaluate((el: HTMLElement) => el.click())
+  await expect(page).toHaveURL(/\/(\?.*)?$/, { timeout: 20_000 })
 })

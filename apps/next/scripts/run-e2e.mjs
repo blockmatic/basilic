@@ -38,22 +38,15 @@ import { fileURLToPath } from 'node:url'
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const nextDir = dirname(scriptDir)
 
-// Synpress wallet specs need a display; use xvfb on Linux CI when no DISPLAY
-const runWalletSpecs =
-  !rest.some(a => a.startsWith('--project=')) || rest.some(a => a.includes('wallet'))
-/* eslint-disable turbo/no-undeclared-env-vars -- DISPLAY is runtime check for virtual display */
-const needsXvfb =
-  process.platform === 'linux' &&
-  !process.env.DISPLAY &&
-  (process.env.CI === 'true' || runWalletSpecs)
-/* eslint-enable turbo/no-undeclared-env-vars */
 const hasWorkers = rest.some(a => a.startsWith('--workers='))
-const pwTestArgs = [...(hasWorkers ? [] : ['--workers=1']), ...rest]
-const [pwCmd, pwArgs] = needsXvfb
-  ? ['xvfb-run', ['--auto-servernum', '--', 'pnpm', 'exec', 'playwright', 'test', ...pwTestArgs]]
-  : ['pnpm', ['exec', 'playwright', 'test', ...pwTestArgs]]
+const hasProjectArg = rest.some(a => a.startsWith('--project='))
+const projectArgs = !hasProjectArg
+  ? ['--project=auth', '--project=wallet-metamask', '--project=wallet-solana', '--project=chromium']
+  : []
+const pwTestArgs = [...(hasWorkers ? [] : ['--workers=1']), ...projectArgs, ...rest]
+const pwArgs = ['exec', 'playwright', 'test', ...pwTestArgs]
 
-const pw = spawn(pwCmd, pwArgs, {
+const pw = spawn('pnpm', pwArgs, {
   cwd: nextDir,
   stdio: 'inherit',
   env: process.env,
