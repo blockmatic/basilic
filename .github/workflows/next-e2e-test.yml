@@ -4,9 +4,6 @@ name: Next e2e test
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
 
 run-name: E2E – Next (${{ github.event.pull_request.head.ref || github.ref_name }})
 
