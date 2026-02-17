@@ -44,20 +44,16 @@ test.describe('Magic Link Authentication', () => {
       page,
     }) => {
       await page.goto('/api/auth/magic-link/verify?token=invalid-token-12345')
-      await page.waitForURL(/\/login\?.*message=/, { timeout: 5000 })
+      await page.waitForURL(/\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
       await expect(emailInput).toBeVisible()
 
-      const fieldError = page.locator('[data-slot="field-error"]')
-      await expect(fieldError.first()).toBeVisible()
-      await expect(fieldError.first()).toContainText(
+      const errorAlert = page.locator('[data-slot="alert"]')
+      await expect(errorAlert).toBeVisible()
+      await expect(errorAlert).toContainText(
         /(Invalid or expired magic link|Failed to verify magic link)/i,
       )
-
-      const fieldContainer = page.locator('[data-slot="field"]:has(input[type="email"])')
-      const errorInField = fieldContainer.locator('[data-slot="field-error"]')
-      await expect(errorInField).toBeVisible()
 
       const cookies = await page.context().cookies()
       const jwtCookie = cookies.find(cookie => cookie.name === 'better-auth.jwt_token')
@@ -68,14 +64,14 @@ test.describe('Magic Link Authentication', () => {
       page,
     }) => {
       await page.goto('/api/auth/magic-link/verify')
-      await page.waitForURL(/\/login\?.*message=/, { timeout: 5000 })
+      await page.waitForURL(/\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
       await expect(emailInput).toBeVisible()
 
-      const fieldError = page.locator('[data-slot="field-error"]')
-      await expect(fieldError.first()).toBeVisible()
-      await expect(fieldError.first()).toContainText(
+      const errorAlert = page.locator('[data-slot="alert"]')
+      await expect(errorAlert).toBeVisible()
+      await expect(errorAlert).toContainText(
         /(Invalid or expired magic link|Failed to verify magic link)/i,
       )
     })
@@ -84,14 +80,14 @@ test.describe('Magic Link Authentication', () => {
       page,
     }) => {
       await page.goto('/api/auth/magic-link/verify?token=expired-token-abc123')
-      await page.waitForURL(/\/login\?.*message=/, { timeout: 5000 })
+      await page.waitForURL(/\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
       await expect(emailInput).toBeVisible()
 
-      const fieldError = page.locator('[data-slot="field-error"]')
-      await expect(fieldError.first()).toBeVisible()
-      await expect(fieldError.first()).toContainText(
+      const errorAlert = page.locator('[data-slot="alert"]')
+      await expect(errorAlert).toBeVisible()
+      await expect(errorAlert).toContainText(
         /(Invalid or expired magic link|Failed to verify magic link)/i,
       )
     })

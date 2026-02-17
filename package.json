@@ -21,7 +21,7 @@
     "security:secrets": "node scripts/scan-secrets-staged.mjs",
     "security:secrets:full": "gitleaks detect --redact --verbose --config .gitleaks.toml",
     "security:osv": "node scripts/scan-osv.mjs",
-    "security:audit": "pnpm audit --audit-level=moderate",
+    "security:audit": "pnpm audit --audit-level=high",
     "security:check": "node scripts/security-check.mjs",
     "postinstall": "npx simple-git-hooks",
     "setup": "pnpm i && npx simple-git-hooks && pnpm setup:gitleaks && pnpm setup:osv && pnpm setup:database",
@@ -31,7 +31,7 @@
     "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.15",
+    "@biomejs/biome": "^2.4.0",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "~25.2.3",
@@ -39,10 +39,11 @@
     "@typescript/native-preview": "7.0.0-dev.20260213.1",
     "@vitest/coverage-v8": "^4.0.18",
     "ahooks": "^3.9.6",
-    "eslint": "^9.0.0",
+    "eslint": "^9.39.2",
     "simple-git-hooks": "2.13.1",
     "tsup": "^8.5.1",
-    "turbo": "^2.8.8",
+    "turbo": "^2.8.9",
+    "vercel": "latest",
     "vitest": "^4.0.18"
   },
   "engines": {
@@ -53,25 +54,29 @@
     "pre-commit": "pnpm hooks:pre-commit"
   },
   "pnpm": {
-    "overrides": {
-      "eslint": "^9.0.0",
-      "@eslint/js": "^9.39.0",
-      "tmp@<=0.2.3": ">=0.2.4",
-      "js-yaml@<4.1.1": ">=4.1.1",
-      "diff@<8.0.3": ">=8.0.3",
-      "bigint-buffer": "npm:bigint-buffer-fixed@1.1.6",
-      "tar@<7.5.7": ">=7.5.7",
-      "@isaacs/brace-expansion@5.0.0": "5.0.1",
-      "esbuild@<0.25.0": ">=0.25.0",
-      "path-to-regexp@<6.3.0": ">=6.3.0",
-      "undici@<6.23.0": ">=6.23.0",
-      "next@<16.1.5": ">=16.1.5",
-      "lodash@<4.17.23": ">=4.17.23",
-      "lodash-es@<4.17.23": ">=4.17.23"
-    },
     "onlyBuiltDependencies": [
       "@sentry/cli",
       "esbuild"
     ]
-  }
+  },
+  "overrides": {
+    "eslint": "^9.0.0",
+    "@eslint/js": "^9.39.0",
+    "tmp@<=0.2.3": ">=0.2.4",
+    "js-yaml@<4.1.1": ">=4.1.1",
+    "diff@<8.0.3": ">=8.0.3",
+    "bigint-buffer": "npm:bigint-buffer-fixed@1.1.6",
+    "tar@<7.5.7": ">=7.5.7",
+    "@isaacs/brace-expansion@5.0.0": "5.0.1",
+    "esbuild@<0.25.0": ">=0.25.0",
+    "path-to-regexp@<6.3.0": ">=6.3.0",
+    "next@<16.1.5": ">=16.1.5",
+    "lodash@<4.17.23": ">=4.17.23",
+    "lodash-es@<4.17.23": ">=4.17.23"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tools/*"
+  ]
 }

@@ -2,3 +2,13 @@ packages:
   - 'apps/*'
   - 'packages/*'
   - 'tools/*'
+
+overrides:
+  axios: '1.13.5'
+  glob: '10.5.0'
+  ws: '8.17.1'
+  esbuild: '0.25.10'
+  lodash: '4.17.23'
+  lodash-es: '4.17.23'
+  vercel>@vercel/blob: '2.2.0'
+  path-to-regexp: '6.3.0'

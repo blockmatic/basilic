@@ -165,7 +165,7 @@ Comprehensive security check script that runs all security scans.
 1. Blocked secret files (via `block-secret-files.mjs`)
 2. Secrets in repository (via gitleaks)
 3. Dependency vulnerabilities (via osv-scanner)
-4. pnpm audit for moderate+ severity vulnerabilities
+4. pnpm audit for high+ severity vulnerabilities
 
 **Usage**: Run manually to perform all security checks:
 ```bash

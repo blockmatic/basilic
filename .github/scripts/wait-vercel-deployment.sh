@@ -51,6 +51,8 @@ DEPLOY_PARAMS="projectId=${PROJECT_ID}"
 [[ -n "$TEAM_ID" ]] && DEPLOY_PARAMS="${DEPLOY_PARAMS}&teamId=${TEAM_ID}"
 
 echo "::group::Waiting for Vercel deployment (${PROJECT_NAME} @ ${GITHUB_SHA})"
+echo "Waiting 5min for Vercel to start build..."
+sleep 300
 START=$(date +%s)
 TIMEOUT_SEC=$((TIMEOUT_MIN * 60))
 

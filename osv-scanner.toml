@@ -2,3 +2,49 @@
 [[IgnoredVulns]]
 id = "GHSA-848j-6mx2-7j84"
 reason = "Transitive dep, no fix available in ecosystem"
+
+# Transitive from Synpress/E2E tooling - dev deps only, tracked for future update
+[[IgnoredVulns]]
+id = "GHSA-43fc-jf86-j433"
+reason = "Transitive (axios) from Synpress E2E, dev only"
+[[IgnoredVulns]]
+id = "GHSA-4hjh-wcwx-xvwj"
+reason = "Transitive (axios) from Synpress E2E, dev only"
+[[IgnoredVulns]]
+id = "GHSA-8hc4-vh64-cxmj"
+reason = "Transitive (axios) from Synpress E2E, dev only"
+[[IgnoredVulns]]
+id = "GHSA-jr5f-v2jv-69x6"
+reason = "Transitive (axios) from Synpress E2E, dev only"
+[[IgnoredVulns]]
+id = "GHSA-5j98-mcp5-4vw2"
+reason = "Transitive (glob) from Synpress E2E, dev only"
+[[IgnoredVulns]]
+id = "GHSA-3mv9-4h5g-vhg3"
+reason = "Transitive (tsup), no fix in ecosystem"
+[[IgnoredVulns]]
+id = "GHSA-3h5v-q93c-6h6q"
+reason = "Transitive (ws) from Synpress E2E, dev only"
+
+# Override in package.json (esbuild@>=0.25.0), lockfile has transitive old versions
+[[IgnoredVulns]]
+id = "GHSA-67mh-4wv8-2f99"
+reason = "Transitive esbuild, override to >=0.25.0 in package.json"
+# Override in package.json (lodash/lodash-es >=4.17.23)
+[[IgnoredVulns]]
+id = "GHSA-xxjr-mmjv-4gpg"
+reason = "Transitive lodash/lodash-es, override in package.json"
+# Undici: can't override to 6.23 (breaks jsdom), 5.28.5 breaks jsdom wrap-handler. Tracked for vercel/node upstream.
+[[IgnoredVulns]]
+id = "GHSA-g9mf-h72j-4rw9"
+reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
+[[IgnoredVulns]]
+id = "GHSA-c76h-2ccp-4975"
+reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
+[[IgnoredVulns]]
+id = "GHSA-cxrh-j4jr-qwg3"
+reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
+# path-to-regexp: override in pnpm-workspace
+[[IgnoredVulns]]
+id = "GHSA-9wv6-86v2-598j"
+reason = "Transitive path-to-regexp, override in pnpm-workspace.yaml"

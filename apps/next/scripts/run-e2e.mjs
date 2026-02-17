@@ -38,7 +38,15 @@ import { fileURLToPath } from 'node:url'
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const nextDir = dirname(scriptDir)
 
-const pw = spawn('pnpm', ['exec', 'playwright', 'test', ...rest], {
+const hasWorkers = rest.some(a => a.startsWith('--workers='))
+const hasProjectArg = rest.some(a => a.startsWith('--project='))
+const projectArgs = !hasProjectArg
+  ? ['--project=auth', '--project=wallet-metamask', '--project=wallet-solana', '--project=chromium']
+  : []
+const pwTestArgs = [...(hasWorkers ? [] : ['--workers=1']), ...projectArgs, ...rest]
+const pwArgs = ['exec', 'playwright', 'test', ...pwTestArgs]
+
+const pw = spawn('pnpm', pwArgs, {
   cwd: nextDir,
   stdio: 'inherit',
   env: process.env,

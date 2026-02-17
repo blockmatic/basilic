@@ -38,6 +38,8 @@ When building wallet-connected features (login, link wallet, sign, send transact
 
 **WalletProvider** and adapters: Apps supply wagmi and Solana adapters via `WalletProvider`. In `apps/next`, `WalletAdaptersInjector` bridges wagmi + Solana into adapters, enforces single-wallet mode, and triggers sign-out on wallet disconnect when session was created by wallet.
 
+**Post-login home:** After auth (magic link or wallet), users are redirected to `/`. The home page renders merged dashboard content including Link wallet, Link email (formerly on `/dashboard`).
+
 See [Authentication](/docs/architecture/authentication) for auth flows, SIWE/SIWS, and account linking.
 
 ### Web3 stack hierarchy

@@ -10,7 +10,7 @@ test.describe('Link Email UI', () => {
     if (!token) throw new Error('Failed to extract magic link token')
     await authHelpers.verifyMagicLink(page, token)
 
-    await page.goto('/dashboard')
+    await page.goto('/')
     await expect(page.getByRole('heading', { name: /link email/i })).toBeVisible()
   })
 
@@ -22,7 +22,7 @@ test.describe('Link Email UI', () => {
     if (!token) throw new Error('Failed to extract magic link token')
     await authHelpers.verifyMagicLink(page, token)
 
-    await page.goto('/dashboard')
+    await page.goto('/')
     await expect(page.getByText(/already linked/i)).toBeVisible({ timeout: 5000 })
   })
 })

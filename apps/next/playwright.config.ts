@@ -37,6 +37,18 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      name: 'wallet-metamask',
+      testMatch: ['**/wallet-metamask-auth.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+      timeout: 60_000,
+    },
+    {
+      name: 'wallet-solana',
+      testMatch: ['**/wallet-solana-auth.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+      timeout: 60_000,
+    },
+    {
       name: 'chromium',
       testMatch: '**/*.spec.ts',
       testIgnore: [
@@ -44,6 +56,8 @@ export default defineConfig({
         '**/wallet-auth.spec.ts',
         '**/link-email.spec.ts',
         '**/link-wallet.spec.ts',
+        '**/wallet-metamask-auth.spec.ts',
+        '**/wallet-solana-auth.spec.ts',
       ],
       use: { ...devices['Desktop Chrome'] },
     },

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { DashboardContent } from '@/components/dashboard/dashboard-content'
+import { DashboardWalletContent } from '@/components/dashboard/dashboard-wallet-content'
 import { getAuthStatus, getUserInfo } from '@/lib/auth-utils'
 
 export default async function Home() {
@@ -10,5 +10,5 @@ export default async function Home() {
   }
 
   const user = await getUserInfo()
-  return <DashboardContent user={user ?? {}} />
+  return <DashboardWalletContent user={user ?? {}} />
 }

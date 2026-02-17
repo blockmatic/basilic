@@ -258,7 +258,7 @@ sequenceDiagram
   NextBFF->>NextBFF: store tokens in HttpOnly cookies
   NextBFF-->>Browser: redirect to callbackURL
 
-  Browser->>NextBFF: GET /dashboard (SSR)
+  Browser->>NextBFF: GET / (SSR)
   NextBFF->>FastifyAPI: GET /auth/session/user<br/>Authorization: Bearer <access jwt>
   FastifyAPI->>DB: validate session + load user
   FastifyAPI-->>NextBFF: { user }

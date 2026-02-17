@@ -83,7 +83,7 @@ async function main() {
     env,
     stdio: 'ignore',
   })
-  const next = spawn('npx', ['next', 'start'], {
+  const next = spawn('pnpm', ['exec', 'next', 'start'], {
     cwd: nextDir,
     env: { ...env, PORT: '3000' },
     stdio: 'ignore',
@@ -125,8 +125,21 @@ async function main() {
     process.exit(1)
   }
 
-  const pwArgs = ['exec', 'playwright', 'test', ...process.argv.slice(2)]
-  const pw = spawn('pnpm', pwArgs, {
+  const userArgs = process.argv.slice(2).filter(a => a !== '--')
+  const hasWorkers = userArgs.some(a => a.startsWith('--workers='))
+  const pwArgs = ['exec', 'playwright', 'test', ...(hasWorkers ? [] : ['--workers=1']), ...userArgs]
+  const hasProjectArg = pwArgs.some(a => a.startsWith('--project='))
+  const finalPwArgs = !hasProjectArg
+    ? [
+        ...pwArgs,
+        '--project=auth',
+        '--project=wallet-metamask',
+        '--project=wallet-solana',
+        '--project=chromium',
+      ]
+    : pwArgs
+
+  const pw = spawn('pnpm', finalPwArgs, {
     cwd: nextDir,
     env,
     stdio: 'inherit',

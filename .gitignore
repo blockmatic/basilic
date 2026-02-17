@@ -21,6 +21,10 @@ test-results/
 playwright-report/
 playwright/.cache/
 playwright/.auth/
+.cache-synpress/
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
 
 # Turbo
 .turbo

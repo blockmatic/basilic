@@ -6,6 +6,7 @@ import { logger } from '@repo/utils/logger/client'
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets'
 import { clusterApiUrl } from '@solana/web3.js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
@@ -44,18 +45,19 @@ const coreClient = createClient({
 
 export function Providers({ children }: { children: ReactNode }) {
   const solanaEndpoint = useMemo(() => clusterApiUrl(WalletAdapterNetwork.Mainnet), [])
+  const solanaWallets = useMemo(() => [new PhantomWalletAdapter()], [])
 
   return (
     <WagmiProvider config={wagmiConfig}>
       <ConnectionProvider endpoint={solanaEndpoint}>
-        <WalletProvider wallets={[]} autoConnect>
+        <WalletProvider wallets={solanaWallets} autoConnect>
           <WalletModalProvider>
             <QueryClientProvider client={queryClient}>
               <ReactApiProvider
                 client={coreClient}
                 baseUrl={env.NEXT_PUBLIC_API_URL}
                 getAuthToken={getAuthToken}
-                authCallbackUrl="/api/auth/callback?callbackURL=/dashboard"
+                authCallbackUrl="/api/auth/callback?callbackURL=/"
               >
                 <WalletAdaptersInjector>
                   <NuqsAdapter>

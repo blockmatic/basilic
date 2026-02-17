@@ -4,19 +4,21 @@ import type { WalletAdapter } from '@repo/react'
 import { useWallet, useWalletAuth } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
-import { useChainId } from 'wagmi'
+import { useChainId, useConnect } from 'wagmi'
 
-function WalletSignInRow({
+export function WalletSignInRow({
   label,
   adapter,
   chainId,
   connectLabel,
+  connectDisabled,
   onConnect,
 }: {
   label: string
   adapter: WalletAdapter | undefined
   chainId?: number
   connectLabel?: string
+  connectDisabled?: boolean
   onConnect?: () => void
 }) {
   const { signIn, isPending, error } = useWalletAuth({ adapter, chainId })
@@ -24,7 +26,12 @@ function WalletSignInRow({
   if (!adapter?.address) {
     if (connectLabel && onConnect) {
       return (
-        <Button variant="outline" type="button" onClick={onConnect}>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={connectDisabled}
+          onClick={() => onConnect()}
+        >
           {connectLabel}
         </Button>
       )
@@ -46,11 +53,20 @@ export function WalletSignInButtons() {
   const evmAdapter = useWallet('eip155')
   const solanaAdapter = useWallet('solana')
   const chainId = useChainId()
+  const { connect, connectors } = useConnect()
   const { setVisible: setSolanaModalVisible } = useWalletModal()
+  const injected = connectors.find(c => c.type === 'injected' || c.id?.includes('injected'))
 
   return (
     <div className="flex flex-col gap-2">
-      <WalletSignInRow label="Sign in with Ethereum" adapter={evmAdapter} chainId={chainId} />
+      <WalletSignInRow
+        label="Sign in with Ethereum"
+        adapter={evmAdapter}
+        chainId={chainId}
+        connectLabel="Connect MetaMask"
+        connectDisabled={!injected}
+        onConnect={() => (injected ? connect({ connector: injected }) : undefined)}
+      />
       <WalletSignInRow
         label="Sign in with Solana"
         adapter={solanaAdapter}

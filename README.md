@@ -70,7 +70,7 @@ Run with `pnpm <script>`.
   - `security:secrets` — Scan staged files for secrets
   - `security:secrets:full` — Full Gitleaks scan
   - `security:osv` — OSV vulnerability scan
-  - `security:audit` — pnpm audit (moderate+)
+  - `security:audit` — pnpm audit (high+)
   - `security:check` — Run security check script
 **Hooks**
   - `hooks:pre-commit` — Pre-commit: security + Biome staged
