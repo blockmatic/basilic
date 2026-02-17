@@ -55,9 +55,14 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-Single **E2E workflow** (`next-e2e-test.yml`) triggers on `pull_request`. Uses a matrix strategy to run Next and Fastify E2E in parallel when path filters match. Resolves project IDs from project names (`basilic-next`, `basilic-fastify`) via the Vercel API. Matches deployments by `meta.githubCommitRef` (PR branch). Waits 5 min for Vercel to start builds, then polls up to 30 times (15s apart). Fails with a descriptive error if no deployment is found. Runs `pnpm --filter @repo/next test:e2e` with `PLAYWRIGHT_APP_URL` and `PLAYWRIGHT_API_URL`, or `pnpm --filter @repo/fastify test:e2e` with `PLAYWRIGHT_API_URL`.
+Two workflows trigger on Vercel `repository_dispatch` events (`vercel.deployment.success`, `vercel.deployment.ready`):
 
-Requires `VERCEL_TOKEN`, `VERCEL_TEAM_ID` (repository variable), and `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass.
+- **next-e2e-test.yml** — Runs when `basilic-next` deploys. Uses deployment URL from webhook payload; derives API URL from `git.ref` (`https://basilic-fastify-git-{branch}-gaboesquivel.vercel.app`). Runs `pnpm --filter @repo/next test:e2e`.
+- **api-e2e-test.yml** — Runs when `basilic-fastify` deploys. Uses deployment URL from payload. Runs `pnpm --filter @repo/fastify test:e2e`.
+
+Each workflow filters by `project.id` (replace `prj_0` with your Vercel project ID from Project Settings → General). Uses `vercel/repository-dispatch/actions/checkout` to checkout the deployment commit before running tests.
+
+Requires `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass. `VERCEL_TOKEN` and `VERCEL_TEAM_ID` are no longer needed.
 
 ## Vercel Deployment Protection
 
@@ -74,7 +79,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 ## Environment Variables
 
 - **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server.
-- **E2E CI (Vercel previews)**: Require `VERCEL_TOKEN` (from [vercel.com/account/tokens](https://vercel.com/account/tokens)), `VERCEL_TEAM_ID` (repository variable), and `VERCEL_AUTOMATION_BYPASS_SECRET`. Workflow polls the Vercel API for deployment URLs matching the PR branch (`meta.githubCommitRef`).
+- **E2E CI (Vercel previews)**: Require `VERCEL_AUTOMATION_BYPASS_SECRET`. URLs come from the `repository_dispatch` webhook payload.
 
 ## ALLOW_TEST
 

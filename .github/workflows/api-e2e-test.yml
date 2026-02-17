@@ -1,0 +1,77 @@
+# E2E for Fastify API: triggers on Vercel deployment (repository_dispatch), runs Playwright Scalar login tests.
+# Filter by project.id - get from Vercel Project Settings → General.
+name: API E2E tests
+
+on:
+  repository_dispatch:
+    types:
+      - vercel.deployment.success
+      - vercel.deployment.ready
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: 'Deployment URL (for manual run)'
+        required: false
+
+run-name: API E2E (${{ github.event.client_payload.git.ref || 'manual' }})
+
+concurrency:
+  group: e2e-api-${{ github.event.client_payload.git.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    # Filter: project.id (replace prj_0) or project.name == 'basilic-fastify'
+    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.project != null && (github.event.client_payload.project.id == 'prj_0' || github.event.client_payload.project.name == 'basilic-fastify'))
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      CI: true
+      PGLITE: true
+      DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+    steps:
+      - name: Checkout (deployment ref)
+        uses: vercel/repository-dispatch/actions/checkout@v1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
+
+      - name: Run E2E tests
+        env:
+          PLAYWRIGHT_API_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url || 'http://localhost:3001' }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
+        run: pnpm --filter @repo/fastify test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-fastify
+          path: apps/fastify/playwright-report/
+          retention-days: 30

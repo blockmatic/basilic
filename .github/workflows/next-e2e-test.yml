@@ -1,48 +1,33 @@
-# E2E for Next + Fastify: triggers on pull_request, polls Vercel API for deployments, runs Playwright.
-# Matrix strategy runs Next and Fastify E2E in parallel when path filter matches.
-name: E2E tests
+# E2E for Next: triggers on Vercel deployment (repository_dispatch), runs Playwright against deployed URL.
+# Filter by project.id - get from Vercel Project Settings → General. Or use project.name == 'basilic-next'.
+name: Next E2E tests
 
 on:
-  pull_request:
+  repository_dispatch:
+    types:
+      - vercel.deployment.success
+      - vercel.deployment.ready
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: 'Deployment URL (for manual run)'
+        required: false
+      git_ref:
+        description: 'Git ref/branch (for API URL derivation)'
+        required: false
+        default: 'main'
 
-run-name: E2E (${{ github.event.pull_request.head.ref || github.ref_name }})
+run-name: Next E2E (${{ github.event.client_payload.git.ref || 'manual' }})
 
 concurrency:
-  group: e2e-${{ github.ref }}
+  group: e2e-next-${{ github.event.client_payload.git.ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  filter:
-    runs-on: ubuntu-latest
-    outputs:
-      next: ${{ steps.filter.outputs.next }}
-      api: ${{ steps.filter.outputs.api }}
-      apps: ${{ steps.apps.outputs.apps }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: .github/paths-filter.yml
-
-      - name: Set apps matrix
-        id: apps
-        run: |
-          APPS='[]'
-          [[ "${{ steps.filter.outputs.next }}" == 'true' ]] && APPS=$(echo "$APPS" | jq -c '. + ["next"]')
-          [[ "${{ steps.filter.outputs.api }}" == 'true' ]] && APPS=$(echo "$APPS" | jq -c '. + ["fastify"]')
-          echo "apps=$APPS" >> "$GITHUB_OUTPUT"
-
   e2e:
-    needs: filter
-    if: needs.filter.outputs.apps != '[]'
-    strategy:
-      fail-fast: false
-      matrix:
-        app: ${{ fromJson(needs.filter.outputs.apps) }}
+    # Filter: project.id (replace prj_0) or project.name == 'basilic-next'
+    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.project != null && (github.event.client_payload.project.id == 'prj_0' || github.event.client_payload.project.name == 'basilic-next'))
     runs-on: ubuntu-latest
-    name: ${{ matrix.app }} (E2E)
     env:
       NODE_ENV: test
       CI: true
@@ -51,26 +36,8 @@ jobs:
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Wait for Vercel Next deployment
-        id: wait-app
-        if: matrix.app == 'next'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_TEAM_SLUG: ${{ vars.VERCEL_TEAM_SLUG || secrets.VERCEL_TEAM_SLUG }}
-          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID || secrets.VERCEL_TEAM_ID }}
-          GITHUB_BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-        run: bash .github/scripts/wait-vercel-deployment.sh basilic-next app
-
-      - name: Wait for Vercel Fastify deployment
-        id: wait-api
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_TEAM_SLUG: ${{ vars.VERCEL_TEAM_SLUG || secrets.VERCEL_TEAM_SLUG }}
-          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID || secrets.VERCEL_TEAM_ID }}
-          GITHUB_BRANCH_REF: ${{ github.head_ref || github.ref_name }}
-        run: bash .github/scripts/wait-vercel-deployment.sh basilic-fastify ${{ matrix.app == 'next' && 'api' || '' }}
+      - name: Checkout (deployment ref)
+        uses: vercel/repository-dispatch/actions/checkout@v1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -98,29 +65,23 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: pnpm --filter @repo/${{ matrix.app }} exec playwright install chromium --with-deps
+        run: pnpm --filter @repo/next exec playwright install chromium --with-deps
 
-      - name: Verify OPEN_ROUTER_API_KEY for E2E
+      - name: Derive API URL and run E2E
         env:
-          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-        run: |
-          if [ -z "$OPEN_ROUTER_API_KEY" ]; then
-            echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
-            exit 1
-          fi
-
-      - name: Run E2E tests
-        id: e2e
-        env:
-          PLAYWRIGHT_APP_URL: ${{ matrix.app == 'next' && steps.wait-app.outputs.deployment_url_app || '' }}
-          PLAYWRIGHT_API_URL: ${{ matrix.app == 'next' && steps.wait-api.outputs.deployment_url_api || steps.wait-api.outputs.deployment_url }}
+          PLAYWRIGHT_APP_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url || 'https://localhost:3000' }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
-        run: pnpm --filter @repo/${{ matrix.app }} test:e2e
+        run: |
+          REF="${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || 'main' }}"
+          SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//' | cut -c1-63)
+          export PLAYWRIGHT_API_URL="https://basilic-fastify-git-${SLUG}-gaboesquivel.vercel.app"
+          pnpm --filter @repo/next test:e2e
+        shell: bash
 
       - name: Upload Playwright report
-        if: failure() && steps.e2e.outcome == 'failure'
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.app }}
-          path: apps/${{ matrix.app }}/playwright-report/
+          name: playwright-report-next
+          path: apps/next/playwright-report/
           retention-days: 30
