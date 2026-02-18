@@ -119,6 +119,21 @@ describe('POST /ai/chat', () => {
     expect(data.text).toBeTypeOf('string')
   })
 
+  it('should return 200 when user asks who am I (getAccountInfo tool)', async () => {
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/ai/chat',
+      headers: { Authorization: `Bearer ${testToken}` },
+      payload: {
+        messages: [{ role: 'user', content: 'Who am I?' }],
+      },
+    })
+    expect(response.statusCode).toBe(200)
+    const data = JSON.parse(response.body)
+    expect(() => ChatResponseSchema.parse(data)).not.toThrow()
+    expect(data.text).toBeTypeOf('string')
+  }, 60000)
+
   describe('error cases', () => {
     it('should return 401 when unauthenticated', async () => {
       const response = await fastify.inject({

@@ -1,5 +1,6 @@
 'use client'
 
+import { Renderer, type Spec, StateProvider, VisibilityProvider } from '@json-render/react'
 import { useChatFromConfig } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
 import {
@@ -22,8 +23,23 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
 } from '@/components/ai-elements/prompt-input'
+import { userInfoRegistry } from '@/components/ai-elements/user-info-catalog'
 
 const SUGGESTIONS = ['Who am I?', 'What can you help with?', 'Tell me a joke']
+
+function isUserInfoSpecOutput(
+  output: unknown,
+): output is { __render: 'user-info'; spec: { root: string; elements: Record<string, unknown> } } {
+  return (
+    typeof output === 'object' &&
+    output !== null &&
+    '__render' in output &&
+    (output as { __render?: unknown }).__render === 'user-info' &&
+    'spec' in output &&
+    typeof (output as { spec?: unknown }).spec === 'object' &&
+    (output as { spec?: object }).spec !== null
+  )
+}
 
 export function ChatAssistant() {
   const [input, setInput] = useState('')
@@ -118,11 +134,27 @@ export function ChatAssistant() {
                       (p as { output?: unknown }).output != null
                     ) {
                       const output = (p as { output?: unknown }).output
-                      const str = typeof output === 'string' ? output : JSON.stringify(output)
-                      if (str.length > 0) hasContent = true
-                      elements.push(
-                        <MessageResponse key={`${message.id}-tool-${i}`}>{str}</MessageResponse>,
-                      )
+                      const toolName = p.type.replace(/^tool-/, '')
+                      if (
+                        toolName === 'getAccountInfo' &&
+                        isUserInfoSpecOutput(output) &&
+                        output.spec
+                      ) {
+                        hasContent = true
+                        elements.push(
+                          <StateProvider key={`${message.id}-tool-${i}`} initialState={{}}>
+                            <VisibilityProvider>
+                              <Renderer spec={output.spec as Spec} registry={userInfoRegistry} />
+                            </VisibilityProvider>
+                          </StateProvider>,
+                        )
+                      } else {
+                        const str = typeof output === 'string' ? output : JSON.stringify(output)
+                        if (str.length > 0) hasContent = true
+                        elements.push(
+                          <MessageResponse key={`${message.id}-tool-${i}`}>{str}</MessageResponse>,
+                        )
+                      }
                     }
                   })
                   const showThinking = isStreamingAssistant && !hasContent

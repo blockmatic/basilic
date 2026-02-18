@@ -104,6 +104,36 @@ async function resolveMessages(rawMessages: unknown[], tools: ToolSet): Promise<
   )
 }
 
+const USER_INFO_SPEC_ROOT = 'user-info-1'
+
+function buildUserInfoSpec(user: {
+  name: string | null
+  email: string | null
+  image: string | null
+  createdAt: Date
+}) {
+  const joinedAt = new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(user.createdAt)
+  return {
+    root: USER_INFO_SPEC_ROOT,
+    elements: {
+      [USER_INFO_SPEC_ROOT]: {
+        type: 'UserInfo',
+        props: {
+          name: user.name ?? null,
+          email: user.email ?? null,
+          image: user.image ?? null,
+          joinedAt,
+        },
+        children: [],
+      },
+    },
+  } as const
+}
+
 function createAccountInfoTool(userId: string) {
   return tool({
     description:
@@ -113,15 +143,15 @@ function createAccountInfoTool(userId: string) {
       const db = await getDb()
       const [user] = await db.select().from(users).where(eq(users.id, userId))
       if (!user) return 'Account not found.'
-      const joined = new Intl.DateTimeFormat('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      }).format(user.createdAt)
-      const parts = [`You joined in ${joined}`]
-      if (user.email) parts.push(`Email: ${user.email}`)
-      if (user.name) parts.push(`Name: ${user.name}`)
-      return parts.join('. ')
+      const spec = buildUserInfoSpec(user)
+      const summaryParts = [`You joined in ${spec.elements[USER_INFO_SPEC_ROOT].props.joinedAt}`]
+      if (user.email) summaryParts.push(`Email: ${user.email}`)
+      if (user.name) summaryParts.push(`Name: ${user.name}`)
+      return {
+        __render: 'user-info',
+        spec,
+        summary: summaryParts.join('. '),
+      }
     },
   })
 }
