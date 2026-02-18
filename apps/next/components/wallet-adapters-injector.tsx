@@ -1,11 +1,12 @@
 'use client'
 
-import type { WalletAdapter } from '@repo/react'
-import { useUser, WalletProvider } from '@repo/react'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useUser } from '@repo/react'
+import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react'
 import bs58 from 'bs58'
 import { useEffect, useRef } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
+import { WalletProvider } from '@/wallet/context'
+import type { WalletAdapter } from '@/wallet/types'
 
 export function addressesMatch(addr1: string | undefined, addr2: string, chain: string): boolean {
   if (!addr1) return false
@@ -15,7 +16,7 @@ export function addressesMatch(addr1: string | undefined, addr2: string, chain: 
 function useWalletDisconnectLogout() {
   const { data: userData } = useUser()
   const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
-  const solanaWallet = useWallet()
+  const solanaWallet = useSolanaWallet()
   const prev = useRef({
     evm: isEvmConnected,
     evmAddr: evmAddress,
@@ -62,7 +63,7 @@ function useWalletDisconnectLogout() {
 function useWalletAdapters(): { eip155?: WalletAdapter; solana?: WalletAdapter } {
   const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
-  const solanaWallet = useWallet()
+  const solanaWallet = useSolanaWallet()
 
   const eip155 =
     isEvmConnected && evmAddress

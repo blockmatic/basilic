@@ -63,13 +63,9 @@ Web3 sign-in follows a **nonce → sign → verify** flow and returns access + r
 
 **Flow:** Client fetches nonce → builds message (domain, address, nonce) → signs with wallet → POSTs verify to Fastify → receives `{ token, refreshToken }` → if `authCallbackUrl` is set (Next.js), POSTs tokens to callback to set HttpOnly cookies and redirect.
 
-**Framework support:** React hooks from `@repo/react` provide wallet-agnostic API. Apps supply wagmi and/or Solana adapters via `WalletProvider`. Hooks: `useWallet`, `useWalletAuth`, `useLinkWallet`, `useLinkEmail`, `useWalletSign`, `useWalletSendTransaction`, `useWeb3Nonce`. Vanilla (fetch) and Vue (composable) also supported.
+**Framework support:** Wallet integration lives in `apps/next` (`@/hooks/`, `@/wallet/`). `@repo/react` exposes only verify hooks: `useVerifyWeb3Auth`, `useVerifyLinkWallet`. App-local hooks: `useWallet`, `useWalletAuth`, `useLinkWallet`, `useWeb3Nonce`. `useLinkEmail` remains in `@repo/react`. Vanilla (fetch) and Vue (composable) also supported.
 
 **WalletAdaptersInjector:** In `apps/next`, mount `WalletAdaptersInjector` (from `components/wallet-adapters-injector.tsx`) inside providers. It bridges wagmi + Solana into adapters, enforces single-wallet mode, and triggers sign-out on wallet disconnect when the session was created by wallet sign-in (redirects to `/api/auth/sign-out`).
-
-**Session wallet enforcement:** When the JWT was created by wallet sign-in, signing and sending transactions require that exact wallet connected. `useWalletSign` and `useWalletSendTransaction` expose `isReady` (adapter exists and matches session wallet) and `isWalletRejection` for UX.
-
-**TransferParams:** `useWalletSendTransaction` accepts `EvmTxParams` or `SolanaTxParams`; adapters resolve to chain-specific formats.
 
 **Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error. Account link: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EXPIRED_TOKEN`.
 
@@ -121,10 +117,15 @@ flowchart TB
     useWallet
   end
 
-  subgraph RepoReact [@repo/react]
+  subgraph AppHooks [apps/next @/hooks @/wallet]
     WalletProvider
     useWalletAuth
     useLinkWallet
+  end
+
+  subgraph RepoReact [@repo/react]
+    useVerifyWeb3Auth
+    useVerifyLinkWallet
     useLinkEmail
   end
 
@@ -134,7 +135,8 @@ flowchart TB
   WAI --> WalletProvider
   WalletProvider --> useWalletAuth
   WalletProvider --> useLinkWallet
-  WalletProvider --> useLinkEmail
+  useWalletAuth --> useVerifyWeb3Auth
+  useLinkWallet --> useVerifyLinkWallet
 ```
 
 ### Dashboard link flows

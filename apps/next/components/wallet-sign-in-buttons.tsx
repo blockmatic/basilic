@@ -1,10 +1,11 @@
 'use client'
 
-import type { WalletAdapter } from '@repo/react'
-import { useWallet, useWalletAuth } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useChainId, useConnect } from 'wagmi'
+import { useWallet } from '@/hooks/use-wallet'
+import { useWalletAuth } from '@/hooks/use-wallet-auth'
+import type { WalletAdapter } from '@/wallet/types'
 
 export function WalletSignInRow({
   label,

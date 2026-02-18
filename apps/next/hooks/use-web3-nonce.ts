@@ -1,18 +1,14 @@
-import { useQuery } from '@tanstack/react-query'
-import { useReactApiConfig } from '../context'
-import type { Web3Chain } from '../wallet/types'
+'use client'
 
-export type { Web3Chain }
+import { useReactApiConfig } from '@repo/react'
+import { useQuery } from '@tanstack/react-query'
+import type { Web3Chain } from '@/wallet/types'
 
 export type Web3NonceResponse = { nonce: string }
 
 /**
  * Fetches nonce for Web3 sign-in (SIWE or SIWS).
  * Uses TanStack Query; enables prefetch when wallet connects.
- *
- * @param chain - 'eip155' for SIWE, 'solana' for SIWS
- * @param address - Wallet address (validated by API)
- * @param options - Query options (enabled, etc.)
  */
 export function useWeb3Nonce({
   chain,

@@ -1,25 +1,16 @@
+import { ReactApiProvider } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { ReactApiProvider } from '../provider'
 import { useLinkWallet } from './use-link-wallet'
 
 function createMockClient() {
-  const verify = vi.fn().mockResolvedValue({ ok: true })
+  const verify = vi.fn().mockResolvedValue(undefined)
   const nonce = vi.fn().mockResolvedValue({ data: { nonce: 'linknonce123' } })
   return {
-    account: {
-      link: {
-        wallet: { verify },
-      },
-    },
-    auth: {
-      web3: {
-        eip155: { nonce },
-        solana: { nonce },
-      },
-    },
+    account: { link: { wallet: { verify } } },
+    auth: { web3: { eip155: { nonce }, solana: { nonce } } },
   } as unknown as ReturnType<typeof import('@repo/core').createClient>
 }
 
