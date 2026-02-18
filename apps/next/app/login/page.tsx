@@ -39,9 +39,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     unexpected_error: 'Something went wrong. Please try again.',
   }
 
-  const errorMessage = errorParam
-    ? (errorMessages[errorParam] ?? 'Something went wrong. Please try again.')
-    : undefined
+  const errorMessage = errorParam ? (errorMessages[errorParam] ?? 'An error occurred') : undefined
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">

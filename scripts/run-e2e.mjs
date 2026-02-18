@@ -12,14 +12,14 @@ import { fileURLToPath } from 'node:url'
 const scriptFile = fileURLToPath(import.meta.url)
 const repoRoot = dirname(dirname(scriptFile))
 
-if (!process.env.SKIP_KILL_PORTS) {
+function killPorts() {
+  if (process.env.SKIP_KILL_PORTS) return
   const killScript = join(repoRoot, 'scripts', 'kill-test-servers.sh')
-  if (existsSync(killScript)) {
-    try {
-      spawnSync('bash', [killScript], { cwd: repoRoot, stdio: 'pipe' })
-    } catch {
-      /* ignore - ports may not be in use or bash unavailable */
-    }
+  if (!existsSync(killScript)) return
+  try {
+    spawnSync('bash', [killScript], { cwd: repoRoot, stdio: 'pipe' })
+  } catch {
+    /* ignore - ports may not be in use or bash unavailable */
   }
 }
 
@@ -31,7 +31,9 @@ function run(cmd, args, opts = {}) {
 }
 
 async function main() {
+  killPorts()
   await run('pnpm', ['-F', '@repo/fastify', 'test:e2e:local'])
+  killPorts()
   await run('pnpm', ['-F', '@repo/next', 'test:e2e:local'])
 }
 

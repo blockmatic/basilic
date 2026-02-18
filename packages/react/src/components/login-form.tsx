@@ -158,7 +158,7 @@ export function LoginForm({
           </FieldDescription>
         )}
         <Field>
-          <Button type="submit" disabled={isPending || isSuccess}>
+          <Button type="submit" disabled={isPending || isSuccess} data-testid="send-magic-link">
             {isPending ? 'Sending...' : 'Send magic link'}
           </Button>
         </Field>

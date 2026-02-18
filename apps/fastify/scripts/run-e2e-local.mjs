@@ -3,7 +3,7 @@
  * E2E local: spawn Fastify API, poll until healthy, run Playwright, cleanup on exit.
  * No wait-on. Uses ALLOW_TEST, PGLITE, NODE_ENV=test.
  */
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -48,6 +48,17 @@ function waitForUrl(url, timeoutMs = 60_000) {
 }
 
 async function main() {
+  // eslint-disable-next-line turbo/no-undeclared-env-vars -- set by root test:e2e or user
+  if (!process.env.SKIP_KILL_PORTS) {
+    try {
+      spawnSync('bash', [join(repoRoot, 'scripts/kill-test-servers.sh')], {
+        cwd: repoRoot,
+        stdio: 'pipe',
+      })
+    } catch {
+      /* ignore */
+    }
+  }
   const loaded = loadEnvTest()
   const jwtSecret = loaded.JWT_SECRET ?? process.env.JWT_SECRET
   if (!jwtSecret) {
@@ -87,7 +98,9 @@ async function main() {
     process.exit(1)
   }
 
-  const pwArgs = ['exec', 'playwright', 'test', ...process.argv.slice(2)]
+  const userArgs = process.argv.slice(2)
+  const hasWorkers = userArgs.some(a => a.startsWith('--workers='))
+  const pwArgs = ['exec', 'playwright', 'test', ...(hasWorkers ? [] : ['--workers=1']), ...userArgs]
   const pw = spawn('pnpm', pwArgs, {
     cwd: fastifyDir,
     env,

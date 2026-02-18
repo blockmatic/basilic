@@ -1,19 +1,35 @@
-# E2E for basilic-fastify: triggers on pull_request, polls Vercel API for deployment, runs Playwright.
-# Always visible in PR checks. When build is ignored (turbo-ignore), workflow skips gracefully.
-name: API e2e test
+# E2E for Fastify API: triggers on Vercel PR preview deployment (repository_dispatch).
+# Workflow lives on main; runs only for previews (target == null), not production.
+# Filter: project.name == 'basilic-fastify'.
+name: API E2E tests
 
 on:
-  pull_request:
+  repository_dispatch:
+    types:
+      - vercel.deployment.success
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: 'Deployment URL (optional; derived from ref if omitted)'
+        required: false
+      git_ref:
+        description: 'Git ref/branch (for checkout and URL derivation)'
+        required: false
+        default: 'main'
+      vercel_team_slug:
+        description: 'Vercel team slug (for URL derivation when deployment_url omitted)'
+        required: false
 
-run-name: E2E – API (${{ github.event.pull_request.head.ref || github.ref_name }})
+run-name: API E2E (${{ github.event.client_payload.git.ref || 'manual' }})
 
 concurrency:
-  group: e2e-api-${{ github.ref }}
+  group: e2e-api-${{ github.event.client_payload.git.ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   e2e:
-    name: API (E2E)
+    # Only run for PR preview deployments (target == null), not production. Skip main/develop. workflow_dispatch for manual runs.
+    if: github.event_name == 'workflow_dispatch' || (github.event.client_payload.target == null && github.event.client_payload.project.name == 'basilic-fastify' && github.event.client_payload.git.ref != 'refs/heads/main' && github.event.client_payload.git.ref != 'refs/heads/develop')
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
@@ -21,55 +37,32 @@ jobs:
       PGLITE: true
       DATABASE_URL: postgresql://localhost/test
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
-      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
-      GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout (deployment ref)
+        if: github.event_name == 'repository_dispatch'
+        uses: vercel/repository-dispatch/actions/checkout@v1
 
-      - uses: dorny/paths-filter@v3
-        id: filter
+      - name: Checkout (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
         with:
-          filters: .github/paths-filter.yml
-
-      - name: Skip when no API changes
-        if: steps.filter.outputs.api != 'true'
-        run: echo "No API-relevant changes, skipping E2E" && exit 0
-
-      - name: Wait for Vercel deployment
-        id: wait
-        if: steps.filter.outputs.api == 'true'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_TEAM_SLUG: ${{ secrets.VERCEL_TEAM_SLUG }}
-          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
-          GITHUB_SHA: ${{ env.GITHUB_SHA }}
-        run: |
-          chmod +x .github/scripts/wait-vercel-deployment.sh
-          .github/scripts/wait-vercel-deployment.sh basilic-fastify 18
-
-      - name: Skip when no deployment URL
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url == ''
-        run: echo "No deployment (build may be ignored). Skipping E2E." && exit 0
+          ref: ${{ github.event.inputs.git_ref || github.ref || 'main' }}
 
       - name: Setup Node.js
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Setup pnpm
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         uses: pnpm/action-setup@v4
         with:
           version: 10.29.3
 
       - name: Get pnpm store directory
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         shell: bash
         run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Setup pnpm cache
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
@@ -78,33 +71,32 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
         run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
 
-      - name: Verify OPEN_ROUTER_API_KEY for E2E
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
-        env:
-          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-        run: |
-          if [ -z "$OPEN_ROUTER_API_KEY" ]; then
-            echo "::error::OPEN_ROUTER_API_KEY secret is required for E2E tests. Add it in repository secrets."
-            exit 1
-          fi
-
+      # API URL: from Vercel webhook (client_payload.url) or deployment_url input, or derived. Pattern: {project}-git-{branch-slug}-{team}.vercel.app
       - name: Run E2E tests
-        if: steps.filter.outputs.api == 'true' && steps.wait.outputs.deployment_url != ''
-        id: e2e
         env:
-          PLAYWRIGHT_API_URL: ${{ steps.wait.outputs.deployment_url }}
+          PLAYWRIGHT_API_URL_INPUT: ${{ github.event.inputs.deployment_url || github.event.client_payload.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
-        run: pnpm --filter @repo/fastify test:e2e
+          VERCEL_TEAM_SLUG: ${{ github.event.inputs.vercel_team_slug || vars.VERCEL_TEAM_SLUG || 'gaboesquivel' }}
+        run: |
+          if [ -n "$PLAYWRIGHT_API_URL_INPUT" ]; then
+            export PLAYWRIGHT_API_URL="$PLAYWRIGHT_API_URL_INPUT"
+          else
+            REF="${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || 'main' }}"
+            REF="${REF#refs/heads/}"
+            REF="${REF#refs/tags/}"
+            SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//' | cut -c1-63)
+            export PLAYWRIGHT_API_URL="https://basilic-fastify-git-${SLUG}-${VERCEL_TEAM_SLUG}.vercel.app"
+          fi
+          pnpm --filter @repo/fastify test:e2e
+        shell: bash
 
       - name: Upload Playwright report
-        if: failure() && steps.e2e.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-fastify

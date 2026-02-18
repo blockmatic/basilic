@@ -59,7 +59,12 @@ export function LoginActions({ initialError }: LoginActionsProps) {
               >
                 {isOAuthPending ? 'Redirecting...' : 'Continue with GitHub'}
               </Button>
-              <Button variant="outline" type="button" onClick={() => setShowWalletOptions(true)}>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => setShowWalletOptions(true)}
+                data-testid="wallet-login"
+              >
                 Wallet login
               </Button>
             </>

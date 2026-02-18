@@ -48,3 +48,8 @@ reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undi
 [[IgnoredVulns]]
 id = "GHSA-9wv6-86v2-598j"
 reason = "Transitive path-to-regexp, override in pnpm-workspace.yaml"
+
+# ajv: transitive deps, fix requires package upgrades
+[[IgnoredVulns]]
+id = "GHSA-2g4f-4pwh-qvx6"
+reason = "Transitive ajv (6.12.6, 8.6.3), fix in 8.18.0"

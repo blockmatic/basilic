@@ -16,9 +16,9 @@ Build and unit tests for the Next.js app. Runs when `apps/next`, `scripts/`, or 
 - Build (`turbo build --filter=@repo/next...`)
 - Unit tests (`turbo test --filter=@repo/next`)
 
-### Next E2E Test (`next-e2e-test.yml`)
+### E2E Tests (`next-e2e-test.yml`)
 
-E2E tests for the Next.js app. Triggers on `pull_request` and `push` to main, polls the Vercel API for basilic-next and basilic-fastify deployment URLs, then runs Playwright. Always visible in PR checks. When builds are ignored (turbo-ignore), skips gracefully. See [E2E Testing](/docs/testing/e2e-testing).
+E2E tests for Next.js and Fastify. Triggers on `pull_request`. Uses a matrix strategy to run both apps' tests in parallel when path filters match. Polls the Vercel API for preview deployment URLs (matching PR branch), then runs Playwright. Fails if no deployment is found in time. See [E2E Testing](/docs/testing/e2e-testing).
 
 ### API Unit Test (`api-unit-test.yml`)
 
@@ -26,10 +26,6 @@ Build and unit tests for the Fastify API. Runs when `apps/fastify` or its depend
 
 - Build (`turbo build --filter=@repo/fastify...`)
 - Unit tests (`turbo test --filter=@repo/fastify`)
-
-### API E2E Test (`api-e2e-test.yml`)
-
-E2E tests for the Fastify API. Triggers on `pull_request` and `push` to main, polls the Vercel API for basilic-fastify deployment URL, then runs Playwright. Always visible in PR checks. When builds are ignored (turbo-ignore), skips gracefully. See [E2E Testing](/docs/testing/e2e-testing).
 
 ### Docu CI (`docu-ci.yml`)
 
@@ -96,9 +92,8 @@ Pre-commit hooks check:
 
 All workflows are in `.github/workflows/`:
 - `next-unit-test.yml` - Next.js build + unit (path-filtered, inline)
-- `next-e2e-test.yml` - Next.js E2E (pull_request, polls Vercel API)
+- `next-e2e-test.yml` - E2E for Next + Fastify (pull_request, matrix, polls Vercel API)
 - `api-unit-test.yml` - Fastify API build + unit (path-filtered, inline)
-- `api-e2e-test.yml` - Fastify API E2E (pull_request, polls Vercel API)
 - `docu-ci.yml` - Docs build validation (path-filtered)
 - `lint.yml` - Linting checks
 - `security.yml` - Security scans

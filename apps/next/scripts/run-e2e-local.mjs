@@ -124,6 +124,7 @@ async function main() {
     process.stderr.write('E2E local: App unreachable at http://localhost:3000\n')
     process.exit(1)
   }
+  await new Promise(r => setTimeout(r, 2000))
 
   const userArgs = process.argv.slice(2).filter(a => a !== '--')
   const hasWorkers = userArgs.some(a => a.startsWith('--workers='))

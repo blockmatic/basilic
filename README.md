@@ -83,7 +83,7 @@ Run with `pnpm <script>`.
 
 E2E tests run after Vercel deployments via `repository_dispatch` events (Vercel-only). One workflow per project: `api-e2e-test.yml`, `next-e2e-test.yml`. Success → run tests; deployment failure/error → abort (PR check red); skipped/ignored/canceled → skip.
 
-**Finding the project filter**: Check the PR’s **Actions** → workflow run → **Event** payload → `client_payload.project.name`. Adjust the `contains(...)` condition in each workflow if your Vercel project names differ.
+**Project ID filter**: Replace `prj_0` in each workflow's `if` condition with your Vercel project ID from Project Settings → General.
 
 ## Documentation
 
