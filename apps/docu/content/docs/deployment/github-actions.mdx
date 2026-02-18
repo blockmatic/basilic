@@ -3,33 +3,33 @@ title: "GitHub Actions"
 description: "Continuous integration workflows for automated testing, linting, and security checks."
 ---
 
-GitHub Actions workflows automate quality checks on every pull request and push to main.
+GitHub Actions workflows automate quality checks on pull requests (opened and updated).
 
 ## Workflows
 
-CI uses [dorny/paths-filter](https://github.com/dorny/paths-filter) so tests run only when relevant code changes. Path filters are defined in `.github/paths-filter.yml`.
+CI uses path filters in each workflow so tests and deploys run only when relevant code changes. Path patterns align with `.github/paths-filter.yml`.
 
-### Next Unit Test (`next-unit-test.yml`)
+### Next (`next-deploy-e2e.yml`)
 
-Build and unit tests for the Next.js app. Runs when `apps/next`, `scripts/`, or dependencies (core, react, ui, utils) change.
+Unit → deploy → E2E. Triggers on pull request (open and sync) when `apps/next/**`, shared packages, or openapi change.
 
-- Build (`turbo build --filter=@repo/next...`)
-- Unit tests (`turbo test --filter=@repo/next`)
+- **Unit**: Build and test Next.js.
+- **Deploy**: Deploys Fastify (for E2E API URL) then Next.
+- **E2E**: Uses deployed URLs.
 
-### E2E Tests (`next-e2e-test.yml`)
+### API (`api-deploy-e2e.yml`)
 
-E2E tests for Next.js and Fastify. Triggers on `pull_request`. Uses a matrix strategy to run both apps' tests in parallel when path filters match. Polls the Vercel API for preview deployment URLs (matching PR branch), then runs Playwright. Fails if no deployment is found in time. See [E2E Testing](/docs/testing/e2e-testing).
+Unit → deploy → E2E. Triggers on pull request (open and sync) when `apps/fastify/**` or shared packages change.
 
-### API Unit Test (`api-unit-test.yml`)
+- **Unit**: Build and test Fastify.
+- **Deploy**: Deploys Fastify.
+- **E2E**: Uses deployed URLs.
 
-Build and unit tests for the Fastify API. Runs when `apps/fastify` or its dependencies (email, sentry, utils) change.
+### Docu (`docu-deploy.yml`)
 
-- Build (`turbo build --filter=@repo/fastify...`)
-- Unit tests (`turbo test --filter=@repo/fastify`)
+Deploy only (no unit or E2E). Triggers on pull request (open and sync) when `apps/docu/**` or shared packages change.
 
-### Docu CI (`docu-ci.yml`)
-
-Build validation for the docs site. Runs when `apps/docu` or `packages/ui` change. No unit or E2E tests.
+See [E2E Testing](/docs/testing/e2e-testing) for details.
 
 ### Lint (`lint.yml`)
 
@@ -91,10 +91,9 @@ Pre-commit hooks check:
 ## Workflow Files
 
 All workflows are in `.github/workflows/`:
-- `next-unit-test.yml` - Next.js build + unit (path-filtered, inline)
-- `next-e2e-test.yml` - E2E for Next + Fastify (pull_request, matrix, polls Vercel API)
-- `api-unit-test.yml` - Fastify API build + unit (path-filtered, inline)
-- `docu-ci.yml` - Docs build validation (path-filtered)
+- `next-deploy-e2e.yml` - Next: unit → deploy (Fastify + Next) → E2E (PR only)
+- `api-deploy-e2e.yml` - API: unit → deploy → E2E (PR only)
+- `docu-deploy.yml` - Docu: deploy only
 - `lint.yml` - Linting checks
 - `security.yml` - Security scans
 

@@ -10,27 +10,25 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - CI: test:e2e:local (spawn local). Optional: Vercel previews with `VERCEL_AUTOMATION_BYPASS_SECRET`, `ALLOW_TEST=true` for preview
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
-- projects: auth first, then wallet-metamask, wallet-solana, chromium last (all other specs including `wallet-auth.spec.ts`, `link-wallet.spec.ts`, `link-email.spec.ts`)
+- projects: auth first (magic-link-auth only), then chromium (chat-assistant); wallet and link-email specs disabled
 
 ## Session Model
 - Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
 - One login per worker, then navigate and assert. No per-test login for authed tests
 - Session reused via worker-scoped storageState (saved after login, new context per test)
-- **Exception — wallet specs**: `wallet-auth.spec.ts`, `link-wallet.spec.ts`, `link-email.spec.ts` intentionally perform `authHelpers.sendMagicLink` + `verifyMagicLink` per test (do not use `authenticatedPage`); this diverges from the worker-scoped session pattern
+- **Disabled specs**: wallet-auth, link-wallet, link-email, wallet-metamask-auth, wallet-solana-auth are excluded from runs (testIgnore)
 
 ## Test Order
-- Auth project first: error tests, then login/logout tests (ends with logout)
-- Chromium project: unauth tests first (logged-out state), then first authed test triggers fixture (login) and confirms session, then all remaining authed tests run consecutively
-- Authed tests must run consecutively — no unauth test between them
+- Auth project first: magic-link-auth (error tests, login/logout, protected route, JWT)
+- Chromium project: chat-assistant (uses authenticatedPage; fixture triggers magic link login)
 
-## Wallet Specs
-- `wallet-metamask-auth.spec.ts`: uses `@johanneskares/wallet-mock` (fixtures-wallet-mock.ts). No extensions; injected EIP-6963 provider, headless. wagmi `injected()` discovers mock. Included in default runs.
-- `wallet-solana-auth.spec.ts`: uses fixtures-solana-mock.ts. Injected Phantom mock via `window.solana`/`window.phantom.solana`; no Synpress/extensions. Included in default runs.
+## Disabled Specs (wallet, link-email)
+- wallet-metamask-auth, wallet-solana-auth, wallet-auth, link-wallet, link-email excluded via testIgnore
 
 ## Auth Fixtures
 - Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)
 - Authed feature tests: import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body
-- Wallet specs: use `authHelpers.sendMagicLink` + `verifyMagicLink` per test (exception to Session Model); do not use `authenticatedPage` fixture
+- Disabled wallet/link-email specs: excluded from runs; when re-enabled, follow Session Model with authenticatedPage
 - Each authed test must navigate to its target route (e.g. `authenticatedPage.goto('/')`) since the same page is reused
 
 ## Test Email

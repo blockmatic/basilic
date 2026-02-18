@@ -6,12 +6,15 @@ test('MetaMask wallet login flow', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /connect wallet/i })).toBeVisible({
     timeout: 5000,
   })
+  // Wallet mock may show "Connect EVM wallet" (not connected) or "Sign in with Ethereum" (auto-connected)
   const connectBtn = page.getByRole('button', { name: /connect evm wallet/i })
-  await expect(connectBtn).toBeVisible({ timeout: 15_000 })
-  await expect(connectBtn).toBeEnabled({ timeout: 15_000 })
-  await connectBtn.evaluate((el: HTMLElement) => el.click())
   const signInBtn = page.getByRole('button', { name: /sign in with ethereum/i })
+  await expect(connectBtn.or(signInBtn)).toBeVisible({ timeout: 15_000 })
+  if (await connectBtn.isVisible().catch(() => false)) {
+    await connectBtn.click()
+  }
   await expect(signInBtn).toBeVisible({ timeout: 15_000 })
-  await signInBtn.evaluate((el: HTMLElement) => el.click())
+  await expect(signInBtn).toBeEnabled({ timeout: 5_000 })
+  await signInBtn.click()
   await expect(page).toHaveURL(/\/(\?.*)?$/, { timeout: 20_000 })
 })

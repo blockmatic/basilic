@@ -8,7 +8,6 @@ export default [
       '.next/**',
       'node_modules/**',
       'next-env.d.ts',
-      '.cache-synpress/**',
       '.turbo/**',
       '.vercel/**',
       'out/**',
@@ -20,9 +19,5 @@ export default [
       'playwright/.cache/**',
       'playwright/.auth/**',
     ],
-  },
-  {
-    files: ['e2e/wallet-setup/*.ts'],
-    rules: { 'import/no-default-export': 'off' },
   },
 ]

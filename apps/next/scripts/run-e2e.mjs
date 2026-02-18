@@ -42,9 +42,7 @@ const nextDir = dirname(scriptDir)
 
 const hasWorkers = rest.some(a => a.startsWith('--workers='))
 const hasProjectArg = rest.some(a => a.startsWith('--project='))
-const projectArgs = !hasProjectArg
-  ? ['--project=auth', '--project=wallet-metamask', '--project=wallet-solana', '--project=chromium']
-  : []
+const projectArgs = !hasProjectArg ? ['--project=auth', '--project=chromium'] : []
 const pwTestArgs = [...(hasWorkers ? [] : ['--workers=1']), ...projectArgs, ...rest]
 const pwArgs = ['exec', 'playwright', 'test', ...pwTestArgs]
 

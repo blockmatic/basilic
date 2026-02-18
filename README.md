@@ -81,9 +81,7 @@ Run with `pnpm <script>`.
 
 ## E2E and Vercel deployments
 
-E2E tests run after Vercel deployments via `repository_dispatch` events (Vercel-only). One workflow per project: `api-e2e-test.yml`, `next-e2e-test.yml`. Success → run tests; deployment failure/error → abort (PR check red); skipped/ignored/canceled → skip.
-
-**Project ID filter**: Replace `prj_0` in each workflow's `if` condition with your Vercel project ID from Project Settings → General.
+Per-app workflows (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`) run on pull requests (open and sync): unit tests where applicable, deploy to Vercel, E2E for next and api. Vercel handles production deploys from main/develop. Requires **both** `VERCEL_TOKEN` and `VERCEL_ORG_ID` in GitHub secrets (Settings → Secrets → Actions). If you see "forgot to specify VERCEL_ORG_ID", add your Team ID from [Vercel Account Settings](https://vercel.com/account). `VERCEL_AUTOMATION_BYPASS_SECRET` is optional (deployment protection bypass). Projects: basilic-next, basilic-fastify, basilic-docs.
 
 ## Documentation
 
