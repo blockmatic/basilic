@@ -3,13 +3,13 @@ title: "Vercel Deployment"
 description: "Deploy Next.js apps to Vercel for rapid iteration with preview environments."
 ---
 
-Vercel is recommended for development and staging environments, with built-in preview deployments for every PR.
+Vercel is recommended for development and staging environments. Deployments are triggered by CI (GitHub Actions), not automatic Git integration.
 
 ## Overview
 
 Vercel provides:
-- ✅ Automatic deployments on push
-- ✅ Preview environments for every PR
+- ✅ CI-triggered deployments (unit tests → deploy → E2E)
+- ✅ Preview deployments for PRs and branches
 - ✅ Zero-config Next.js support
 - ✅ Edge network (CDN)
 - ✅ Serverless functions
@@ -55,7 +55,7 @@ NEXT_PUBLIC_SITE_URL=https://docs.yourdomain.com
 
 ### 3. Deploy
 
-Push to `main` branch to deploy to production. Pull requests automatically create preview deployments.
+Automatic Git deployments are disabled (`git.deploymentEnabled: false`). The `deploy-and-e2e.yml` workflow deploys after unit tests pass on every push and pull request. Main/develop use production env; other branches use preview.
 
 ## Deployment Configuration
 
@@ -87,21 +87,13 @@ Root Directory must be set in Vercel project settings (e.g. `apps/next`).
 - Uses production environment variables
 - Custom domain configuration
 
-## Path-Based Builds
+## Path-Based Deploys
 
-Each Vercel project uses `ignoreCommand` in `vercel.json` to skip builds when irrelevant files change:
-
-- **docu** — Uses `turbo-ignore @repo/docu` (Turbo dependency graph). Skips when only other apps change.
-- **next** — Uses `turbo-ignore @repo/next` (Turbo dependency graph). Skips when only other apps change.
-- **fastify** — Uses `turbo-ignore @repo/fastify` (Turbo dependency graph). Skips when only other apps change.
-
-All use `--fallback=HEAD~10` when `VERCEL_GIT_PREVIOUS_SHA` is empty (first deploy, PR preview), avoiding unnecessary builds.
+The deploy workflow uses [dorny/paths-filter](https://github.com/dorny/paths-filter) so only changed apps deploy. Each app uses `ignoreCommand` in `vercel.json` (e.g. `turbo-ignore @repo/next`) for local/CLI builds.
 
 ## Branch Preview Coupling
 
-Next's `apps/next/next.config.mjs` computes `NEXT_PUBLIC_API_URL` for preview deployments as `basilic-fastify-git-{branch}-*.vercel.app`. A Next branch preview expects a matching Fastify branch deployment for that same branch.
-
-Fastify builds when `@repo/fastify` or its dependencies change. `@repo/next` is not a Fastify dependency, so Fastify will skip when only Next changes. To ensure a matching Fastify deployment for a branch preview, use `[vercel deploy]` or `[vercel only@repo/fastify]` in the commit message when needed.
+Next's `apps/next/next.config.mjs` derives `NEXT_PUBLIC_API_URL` for preview branches as `basilic-fastify-git-{branch}-*.vercel.app`. The deploy workflow deploys Fastify when either `api` or `next` scope changes, so Next E2E always has a matching Fastify deployment.
 
 ## Monorepo Configuration
 
@@ -122,7 +114,7 @@ For monorepo apps, Vercel needs to know the root directory:
 
 ## E2E Against Preview Deployments
 
-To run E2E against Vercel preview deployments: enable **Protection Bypass for Automation** in both projects, add `VERCEL_AUTOMATION_BYPASS_SECRET` to GitHub, set `ALLOW_TEST=true` for Preview env, optionally add OPTIONS Allowlist for CORS. See [E2E Testing](/docs/testing/e2e-testing).
+To run E2E against Vercel preview deployments: set `ALLOW_TEST=true` for Preview env. When Deployment Protection is enabled, add `VERCEL_AUTOMATION_BYPASS_SECRET` to GitHub and enable Protection Bypass for Automation in both projects; optionally add OPTIONS Allowlist for CORS. See [E2E Testing](/docs/testing/e2e-testing).
 
 ## Best Practices
 
@@ -148,10 +140,10 @@ See [Portability Strategy](/docs/architecture/portability) for detailed migratio
 - Verify environment variables are set
 - Ensure all dependencies are installed
 
-### Preview Deployment Not Created
-- Verify GitHub integration is active
-- Check project settings for branch configuration
-- Ensure PR is not from a fork (security limitation)
+### Deployment Not Created
+- Check `deploy-and-e2e.yml` workflow logs
+- Verify `VERCEL_TOKEN` and `VERCEL_ORG_ID` are set in GitHub secrets (projects use names: basilic-next, basilic-fastify, basilic-docs)
+- Ensure path filters match your changes (`.github/paths-filter.yml`)
 
 ### Environment Variables Not Applied
 - Redeploy after changing environment variables

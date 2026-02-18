@@ -55,23 +55,24 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-Two workflows trigger on Vercel `repository_dispatch` when a PR preview deployment succeeds:
+The `deploy-and-e2e.yml` workflow runs E2E **only on pull requests**, after the deploy phase completes:
 
-- **next-e2e-test.yml** — Runs when `basilic-next` PR preview deploys. Uses deployment URL from webhook; derives API URL from `git.ref` (`https://basilic-fastify-git-{branch}-gaboesquivel.vercel.app`). Runs `pnpm --filter @repo/next test:e2e`.
-- **api-e2e-test.yml** — Runs when `basilic-fastify` PR preview deploys. Uses deployment URL from payload. Runs `pnpm --filter @repo/fastify test:e2e`.
+- **API E2E** — Runs when `api` scope changes. Uses `PLAYWRIGHT_API_URL` from deploy job output.
+- **Next E2E** — Runs when `next` scope changes. Uses `PLAYWRIGHT_APP_URL` and `PLAYWRIGHT_API_URL` from deploy job outputs.
 
-Workflow files must exist on `main`. The `target == null` condition ensures tests run only for PR preview deployments, not production. Filter by `projectId` or `project.name` (replace `prj_0` with your Vercel project ID from Project Settings → General). Uses `vercel/repository-dispatch/actions/checkout` to checkout the deployment commit.
+The deploy job builds and deploys to Vercel via CLI; URLs are parsed and passed to E2E. Direct pushes to branches deploy but skip E2E.
 
-Requires `VERCEL_AUTOMATION_BYPASS_SECRET` for deployment protection bypass.
+`VERCEL_AUTOMATION_BYPASS_SECRET` is optional; add when Vercel Deployment Protection is enabled.
 
 ## Vercel Deployment Protection
 
 To run E2E against Vercel preview deployments with Deployment Protection enabled:
 
+When Deployment Protection is enabled:
 1. **Protection Bypass for Automation**: In each project (Next, Fastify): Settings → Deployment Protection → Protection Bypass for Automation → enable → generate secret.
 2. Use the same bypass secret for both projects.
 3. Add `VERCEL_AUTOMATION_BYPASS_SECRET` to GitHub secrets.
-4. When running E2E, set `VERCEL_AUTOMATION_BYPASS_SECRET` in the env. Playwright adds `x-vercel-protection-bypass` and `x-vercel-set-bypass-cookie` headers automatically.
+4. Playwright adds `x-vercel-protection-bypass` and `x-vercel-set-bypass-cookie` headers automatically when the env var is set.
 5. **OPTIONS Allowlist** (for CORS): In Fastify project, Deployment Protection → OPTIONS Allowlist → add `/` or `/auth` so CORS preflight succeeds.
 
 See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation).
@@ -79,7 +80,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 ## Environment Variables
 
 - **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server.
-- **E2E CI (Vercel previews)**: Require `VERCEL_AUTOMATION_BYPASS_SECRET`. URLs come from the `repository_dispatch` webhook payload.
+- **E2E CI (Vercel previews)**: URLs come from deploy job outputs. `VERCEL_AUTOMATION_BYPASS_SECRET` optional (when Deployment Protection enabled).
 
 ## ALLOW_TEST
 

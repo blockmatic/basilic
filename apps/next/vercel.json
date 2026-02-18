@@ -5,13 +5,6 @@
   "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",
   "outputDirectory": ".next",
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "git": {
-    "deploymentEnabled": {
-      "main": true,
-      "develop": true
-    }
-  }
+  "env": { "NODE_ENV": "production" },
+  "git": { "deploymentEnabled": false }
 }
