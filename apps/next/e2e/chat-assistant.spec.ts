@@ -18,16 +18,11 @@ test.describe
 
       await expect(
         sheet.locator('[data-role="user"]').filter({ hasText: 'Who am I?' }),
-      ).toBeVisible({
-        timeout: 10000,
+      ).toBeVisible({ timeout: 10000 })
+      await expect(sheet.getByTestId('chat-error')).not.toBeVisible()
+      await expect(sheet.locator('[data-role="assistant"]')).toBeVisible({
+        timeout: 60000,
       })
-      const errorEl = sheet.getByTestId('chat-error')
-      if (await errorEl.isVisible()) {
-        throw new Error(`Chat API error: ${await errorEl.textContent()}`)
-      }
-
-      const assistantEl = sheet.locator('[data-role="assistant"]')
-      await expect(assistantEl).toBeVisible({ timeout: 60000 })
-      await expect(assistantEl).not.toBeEmpty()
+      await expect(sheet.getByTestId('user-info-card')).toBeVisible({ timeout: 60000 })
     })
   })
