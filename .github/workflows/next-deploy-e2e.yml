@@ -91,6 +91,17 @@ jobs:
             echo "::error::VERCEL_ORG_ID and VERCEL_TOKEN must be set in GitHub secrets. Add both at Settings → Secrets and variables → Actions."
             exit 1
           fi
+      - name: Set Vercel root directory
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          for project in basilic-fastify basilic-next; do
+            curl -sS -X PATCH "https://api.vercel.com/v9/projects/${project}?teamId=${VERCEL_ORG_ID}" \
+              -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d '{"rootDirectory": null}' || true
+          done
       - name: Deploy Fastify (for Next E2E)
         id: deploy-fastify
         env:
