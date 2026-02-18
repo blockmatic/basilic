@@ -81,7 +81,7 @@ Run with `pnpm <script>`.
 
 ## E2E and Vercel deployments
 
-Per-app workflows (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`) run on pull requests (open and sync): unit tests where applicable, deploy to Vercel, E2E for next and api. Vercel handles production deploys from main/develop. Requires `VERCEL_TOKEN` and `VERCEL_ORG_ID` in GitHub secrets. `VERCEL_AUTOMATION_BYPASS_SECRET` is optional (deployment protection bypass). Projects: basilic-next, basilic-fastify, basilic-docs.
+Per-app workflows (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`) run on pull requests (open and sync): unit tests where applicable, deploy to Vercel, E2E for next and api. Vercel handles production deploys from main/develop. Requires **both** `VERCEL_TOKEN` and `VERCEL_ORG_ID` in GitHub secrets (Settings → Secrets → Actions). If you see "forgot to specify VERCEL_ORG_ID", add your Team ID from [Vercel Account Settings](https://vercel.com/account). `VERCEL_AUTOMATION_BYPASS_SECRET` is optional (deployment protection bypass). Projects: basilic-next, basilic-fastify, basilic-docs.
 
 ## Documentation
 

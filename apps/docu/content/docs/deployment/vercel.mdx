@@ -142,7 +142,7 @@ See [Portability Strategy](/docs/architecture/portability) for detailed migratio
 
 ### Deployment Not Created
 - Check per-app workflow logs (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`)
-- Verify `VERCEL_TOKEN` and `VERCEL_ORG_ID` are set in GitHub secrets. Workflows set `VERCEL_PROJECT_ID` to project slugs: `basilic-docs`, `basilic-fastify`, `basilic-next`.
+- **Both** `VERCEL_ORG_ID` and `VERCEL_TOKEN` are required in GitHub secrets (Settings → Secrets and variables → Actions). Workflows set `VERCEL_PROJECT_ID` to project slugs: `basilic-docs`, `basilic-fastify`, `basilic-next`. If you see "forgot to specify VERCEL_ORG_ID", add your Team/User ID from [Vercel Account Settings](https://vercel.com/account).
 - Ensure path filters match your changes (`.github/paths-filter.yml`)
 
 ### Environment Variables Not Applied
