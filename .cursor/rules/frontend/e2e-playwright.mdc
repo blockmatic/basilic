@@ -10,20 +10,18 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - CI: test:e2e:local only (spawn local servers; no Vercel URLs)
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
-- projects: auth first (magic-link, wallet-auth, link-wallet, wallet-metamask-auth, wallet-solana-auth), then chromium (chat-assistant); link-email disabled
+- projects: auth first (magic-link, wallet-auth, link-wallet, wallet-metamask-auth, wallet-solana-auth, link-email), then chromium (chat-assistant)
 
 ## Session Model
 - Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
 - One login per worker, then navigate and assert. No per-test login for authed tests
 - Session reused via worker-scoped storageState (saved after login, new context per test)
-- **Disabled specs**: link-email excluded via testIgnore
-
 ## Test Order
-- Auth project first: magic-link-auth, wallet-auth, link-wallet, wallet-metamask-auth, wallet-solana-auth (wallet specs use auth-helpers or fixtures-wallet-mock/fixtures-solana-mock)
+- Auth project first: magic-link-auth, wallet-auth, link-wallet, wallet-metamask-auth, wallet-solana-auth, link-email (wallet specs use auth-helpers or fixtures-wallet-mock/fixtures-solana-mock; link-email first test uses wallet login, second uses magic link)
 - Chromium project: chat-assistant (uses authenticatedPage; fixture triggers magic link login)
 
 ## Disabled Specs
-- link-email excluded via testIgnore; chat-assistant skipped (test.describe.skip) until getAuthToken fixed for chat transport
+- chat-assistant skipped (test.describe.skip) until getAuthToken fixed for chat transport
 
 ## Auth Fixtures
 - Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)

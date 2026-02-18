@@ -5,7 +5,6 @@ import { authHelpers } from './auth-helpers'
 
 const baseURL =
   process.env.PLAYWRIGHT_APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-// test-results is gitignored and in gitleaks exclude; contains JWT tokens
 const authFile = join(process.cwd(), 'test-results', '.auth', 'user.json')
 
 export const test = base.extend<
@@ -27,10 +26,10 @@ export const test = base.extend<
     },
     { scope: 'worker' },
   ],
-  authenticatedPage: async ({ authenticatedStorageState, browser }, runWith) => {
+  authenticatedPage: async ({ authenticatedStorageState, browser }, use) => {
     const context = await browser.newContext({ baseURL, storageState: authenticatedStorageState })
     const page = await context.newPage()
-    await runWith(page)
+    await use(page)
     await context.close()
   },
 })

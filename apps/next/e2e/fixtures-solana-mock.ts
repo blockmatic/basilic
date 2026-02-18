@@ -60,9 +60,9 @@ async function installSolanaMock(page: import('@playwright/test').Page) {
 }
 
 export const test = base.extend({
-  page: async ({ page }, runWith) => {
+  page: async ({ page }, use) => {
     await installSolanaMock(page)
-    await runWith(page)
+    await use(page)
   },
 })
 

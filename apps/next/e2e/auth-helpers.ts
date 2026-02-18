@@ -92,6 +92,33 @@ export const authHelpers = {
     )
   },
 
+  /**
+   * Login via EVM wallet (EIP-6963 mock). Page must have installMockWallet applied.
+   */
+  async loginWithEVMWallet(page: Page) {
+    await page.goto('/login', { waitUntil: 'domcontentloaded' })
+    await page.getByRole('button', { name: /wallet login/i }).click()
+    await page
+      .getByRole('heading', { name: /connect wallet/i })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    const connectBtn = page.getByRole('button', { name: /connect evm wallet/i })
+    const signInBtn = page.getByRole('button', { name: /sign in with ethereum/i })
+    await page.waitForTimeout(2000)
+    if (await connectBtn.isVisible().catch(() => false)) {
+      await connectBtn.click()
+      await page.waitForTimeout(3000)
+    }
+    await signInBtn.waitFor({ state: 'visible', timeout: 20_000 })
+    await signInBtn.click()
+    await page.waitForURL(
+      url => {
+        const { pathname } = new URL(url)
+        return pathname === '/' || pathname === ''
+      },
+      { timeout: 20_000 },
+    )
+  },
+
   async loginAsTestUser(page: Page) {
     const response = await this.sendMagicLink(page)
     if (response.status() !== 200) throw new Error('Magic link request failed')

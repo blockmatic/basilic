@@ -93,8 +93,9 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 | `magic-link-auth.spec.ts` | Magic link login, invalid/expired token errors, email validation, protected route, JWT session |
 | `wallet-auth.spec.ts` | Wallet login UI, magic link flow to dashboard, sign-out redirect |
 | `link-wallet.spec.ts` | Link wallet section visibility when authenticated |
-| `wallet-metamask-auth.spec.ts` | EVM wallet sign-in via mock; skipped (mock connect flow incomplete) |
-| `wallet-solana-auth.spec.ts` | Solana wallet sign-in via mock; skipped (sign-in does not redirect) |
+| `wallet-metamask-auth.spec.ts` | EVM wallet sign-in via mock |
+| `wallet-solana-auth.spec.ts` | Solana wallet sign-in via mock |
+| `link-email.spec.ts` | Link email section after wallet login; "already linked" when user has email (magic link) |
 | `chat-assistant.spec.ts` | Chat UI with authenticatedPage; Who am I? prompt (skipped until getAuthToken fixed) |
 
 ### Project order
@@ -107,18 +108,19 @@ flowchart TB
     LinkWallet[link-wallet.spec.ts]
     WalletMetaMask[wallet-metamask-auth.spec.ts]
     WalletSolana[wallet-solana-auth.spec.ts]
+    LinkEmail[link-email.spec.ts]
   end
 
   subgraph ChromiumProj [Chromium project]
     ChatAssistant[chat-assistant.spec.ts]
   end
 
-  MagicLinkAuth --> WalletAuth --> LinkWallet --> WalletMetaMask --> WalletSolana --> ChromiumProj
+  MagicLinkAuth --> WalletAuth --> LinkWallet --> WalletMetaMask --> WalletSolana --> LinkEmail --> ChromiumProj
 ```
 
 ### Disabled / skipped specs
 
-link-email excluded via testIgnore. chat-assistant, wallet-metamask-auth, wallet-solana-auth use test.describe.skip (chat: getAuthToken; wallet mocks: connect/sign-in flow incomplete).
+chat-assistant skipped (test.describe.skip) until getAuthToken fixed for chat transport.
 
 ## Troubleshooting
 
