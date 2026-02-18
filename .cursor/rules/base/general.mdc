@@ -20,9 +20,19 @@ alwaysApply: true
 - Use references strategically
 - Maximize parallel calls (batch file reads/searches)
 
+## Workflow
+- Enter plan mode for non-trivial tasks (3+ steps, architectural decisions); re-plan if stuck
+- Use TodoWrite for multi-step work; keep items focused
+- On user correction: acknowledge mistake, adjust approach (avoid repeating)
+- Don't mark complete without proving it works (run tests, check logs, diff behavior)
+- For non-trivial changes: pause for simpler approach; avoid hacky fixes
+- Bug reports: fix autonomously—use logs, errors, failing tests; fix CI without being told
+
 ## Code Quality
+- Simplicity first, minimal impact—change only what's necessary
+- Find root cause; no temporary fixes
 - Collocate related functionality
-- ALWAYS follow linting rules: eslint, biome 
+- ALWAYS follow linting rules: eslint, biome
 - Search for existing functionality before creating new
 - Always use existing packages in codebase before writing custom code
 - Never use console, use `@repo/utils/logger/server` or `@repo/utils/logger/client`
