@@ -1,6 +1,6 @@
 # E2E for Fastify API: triggers on Vercel PR preview deployment (repository_dispatch).
 # Workflow lives on main; runs only for previews (target == null), not production.
-# Filter: projectId or project.name. Replace prj_0 with your Vercel project ID.
+# Filter: project.name == 'basilic-fastify'.
 name: API E2E tests
 
 on:
@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
     inputs:
       deployment_url:
-        description: 'Deployment URL (for manual run)'
-        required: false
+        description: 'Deployment URL'
+        required: true
       git_ref:
         description: 'Git ref/branch (for checkout)'
         required: false
@@ -75,12 +75,12 @@ jobs:
       # CI uses Vercel preview URLs from webhook; never test:e2e:local
       - name: Run E2E tests
         env:
-          PLAYWRIGHT_API_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url || 'http://localhost:3001' }}
+          PLAYWRIGHT_API_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
         run: pnpm --filter @repo/fastify test:e2e
 
       - name: Upload Playwright report
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-fastify

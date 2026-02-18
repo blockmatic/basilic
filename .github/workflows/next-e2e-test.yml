@@ -1,6 +1,6 @@
 # E2E for Next: triggers on Vercel PR preview deployment (repository_dispatch).
 # Workflow lives on main; runs only for previews (target == null), not production.
-# Filter: projectId or project.name. Replace prj_0 with your Vercel project ID.
+# Filter: project.name == 'basilic-next'.
 name: Next E2E tests
 
 on:
@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
     inputs:
       deployment_url:
-        description: 'Deployment URL (for manual run)'
-        required: false
+        description: 'Deployment URL'
+        required: true
       git_ref:
         description: 'Git ref/branch (for API URL derivation)'
         required: false
@@ -47,7 +47,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || github.ref }}
+          ref: ${{ github.event.inputs.git_ref || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -77,11 +77,11 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm --filter @repo/next exec playwright install chromium --with-deps
 
-      # CI uses Vercel preview URLs from webhook; never test:e2e:local
-      # Assumes Fastify preview deploys to basilic-fastify-git-{branch}-{team}.vercel.app. E2E global setup polls /health and exits non-zero if unreachable.
+      # CI uses Vercel deployment URL from webhook (client_payload.url); manual runs require deployment_url input.
+      # API URL: constructed from ref; assumes Fastify preview at basilic-fastify-git-{branch}-{team}.vercel.app. E2E global setup polls /health.
       - name: Derive API URL and run E2E
         env:
-          PLAYWRIGHT_APP_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url || 'http://localhost:3000' }}
+          PLAYWRIGHT_APP_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
           VERCEL_TEAM_SLUG: ${{ github.event.inputs.vercel_team_slug || vars.VERCEL_TEAM_SLUG || 'gaboesquivel' }}
         run: |
@@ -94,7 +94,7 @@ jobs:
         shell: bash
 
       - name: Upload Playwright report
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-next
