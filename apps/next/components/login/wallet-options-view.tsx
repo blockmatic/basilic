@@ -1,11 +1,11 @@
 'use client'
 
-import { useWallet } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { ArrowLeft } from 'lucide-react'
 import { useChainId, useConnect } from 'wagmi'
 import { WalletSignInRow } from '@/components/wallet-sign-in-buttons'
+import { useWallet } from '@/hooks/use-wallet'
 
 export function WalletOptionsView({ onBack }: { onBack: () => void }) {
   const evmAdapter = useWallet('eip155')

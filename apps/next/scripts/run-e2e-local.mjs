@@ -2,6 +2,7 @@
 /**
  * E2E local: build, spawn Fastify + Next, poll until healthy, run Playwright, cleanup on exit.
  * No wait-on. Uses ALLOW_TEST, PGLITE, DB-backed token for @test.ai.
+ * When SKIP_BUILD=1, skip build step (assumes .next exists with NEXT_PUBLIC_API_URL=http://localhost:3001).
  */
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -59,12 +60,15 @@ async function main() {
       /* ignore - ports may not be in use or bash unavailable */
     }
   }
-  const build = spawn('pnpm', ['-F', '@repo/next', 'run', 'build:e2e'], {
-    cwd: repoRoot,
-    stdio: 'inherit',
-  })
-  const buildCode = await new Promise(r => build.on('exit', c => r(c ?? 1)))
-  if (buildCode !== 0) process.exit(buildCode)
+  // eslint-disable-next-line turbo/no-undeclared-env-vars -- set by root test:e2e or user
+  if (!process.env.SKIP_BUILD) {
+    const build = spawn('pnpm', ['-F', '@repo/next', 'run', 'build:e2e'], {
+      cwd: repoRoot,
+      stdio: 'inherit',
+    })
+    const buildCode = await new Promise(r => build.on('exit', c => r(c ?? 1)))
+    if (buildCode !== 0) process.exit(buildCode)
+  }
 
   const loaded = loadEnvTest()
   const env = {

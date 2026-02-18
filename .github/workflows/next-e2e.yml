@@ -1,0 +1,70 @@
+name: Next (E2E)
+
+on:
+  pull_request:
+    paths:
+      - 'apps/next/**'
+      - 'scripts/**'
+      - 'packages/core/**'
+      - 'packages/react/**'
+      - 'packages/ui/**'
+      - 'packages/utils/**'
+      - 'packages/eslint-config/**'
+      - 'packages/typescript-config/**'
+      - 'apps/fastify/openapi/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+
+concurrency:
+  group: next-e2e-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_ENV: test
+  CI: true
+  PGLITE: true
+  DATABASE_URL: postgresql://localhost/test
+  JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+  NEXT_PUBLIC_API_URL: http://localhost:3001
+  OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm turbo run build --filter=@repo/next...
+      - name: Unit tests
+        run: pnpm turbo run test --filter=@repo/next
+      - name: Install Playwright
+        run: pnpm --filter @repo/next exec playwright install chromium --with-deps
+      - name: E2E tests (local)
+        env:
+          SKIP_BUILD: '1'
+        run: pnpm --filter @repo/next test:e2e:local
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-next
+          path: apps/next/playwright-report/
+          retention-days: 30

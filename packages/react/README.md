@@ -11,6 +11,8 @@ This package provides React Query hooks that wrap `@repo/core` API client method
 - `ReactApiProvider` - Provider component that makes API client available to hooks
 - `useReactApiConfig` - Hook to access API client and query defaults from context
 - `useHealthCheck` - React Query hook for health check endpoint
+- `useVerifyWeb3Auth` - Mutation hook: given `{ chain, message, signature, domain }`, calls auth verify endpoint (SIWE/SIWS)
+- `useVerifyLinkWallet` - Mutation hook: given `{ chain, message, signature }`, calls link wallet verify endpoint
 - `useMagicLink` - React Query mutation hook for magic link request endpoint
 - `LoginForm` - Framework-agnostic login form component
 - `createReactApiConfig` - Utility function to normalize API configuration

@@ -1,10 +1,9 @@
 'use client'
 
-import type { Web3Eip155VerifyResponse, Web3SolanaVerifyResponse } from '@repo/core'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useVerifyWeb3Auth } from '@repo/react'
+import { useMutation } from '@tanstack/react-query'
 import { createSiweMessage } from 'viem/siwe'
-import { useReactApiConfig } from '../context'
-import type { WalletAdapter, Web3Chain } from '../wallet/types'
+import type { WalletAdapter, Web3Chain } from '@/wallet/types'
 import { useWeb3Nonce } from './use-web3-nonce'
 
 const REJECTION_PATTERNS = [/denied/i, /rejected/i, /cancel/i, /user denied/i, /user rejected/i]
@@ -33,19 +32,13 @@ function buildSiwsMessage({
 }
 
 export type UseWalletAuthParams = {
-  /** Adapter from useWallet; when set, chain/address/signMessage are derived */
   adapter?: WalletAdapter
-  /** Chain when not using adapter */
   chain?: Web3Chain
-  /** Address when not using adapter */
   address?: string | undefined
-  /** Sign function when not using adapter */
   signMessage?: (message: string | Uint8Array) => Promise<{ signature: string }>
   domain?: string
   statement?: string
-  /** EVM chainId for SIWE (e.g. from useChainId). Required when chain is eip155. */
   chainId?: number
-  /** Solana network for SIWS Chain ID (e.g. mainnet-beta, devnet, testnet). Default mainnet-beta. */
   network?: string
 }
 
@@ -57,8 +50,7 @@ export type UseWalletAuthResult = {
 
 /**
  * Primary hook for Web3 sign-in (SIWE or SIWS).
- * Uses useMutation; supports adapter or explicit chain/address/signMessage.
- * SIWE uses dynamic chainId from wagmi when chain is eip155.
+ * Builds message → signs via adapter → calls useVerifyWeb3Auth.
  */
 export function useWalletAuth({
   adapter,
@@ -70,8 +62,7 @@ export function useWalletAuth({
   chainId = 1,
   network = 'mainnet-beta',
 }: UseWalletAuthParams): UseWalletAuthResult {
-  const { client, authCallbackUrl } = useReactApiConfig()
-  const queryClient = useQueryClient()
+  const { mutateAsync } = useVerifyWeb3Auth()
 
   const chain = adapter?.chain ?? explicitChain
   const address = adapter?.address ?? explicitAddress
@@ -85,9 +76,9 @@ export function useWalletAuth({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!address || !signMessage || !chain) {
-        throw new Error('No wallet address')
-      }
+      if (!address) throw new Error('No wallet address')
+      if (!signMessage) throw new Error('No signMessage function')
+      if (!chain) throw new Error('No chain configured')
 
       let nonce = nonceData?.nonce
       if (!nonce) {
@@ -125,42 +116,7 @@ export function useWalletAuth({
         signature = result.signature
       }
 
-      const verifyResult =
-        chain === 'eip155'
-          ? ((await client.auth.web3.eip155.verify({
-              body: { message, signature, domain },
-              throwOnError: true,
-            })) as unknown as Web3Eip155VerifyResponse)
-          : ((await client.auth.web3.solana.verify({
-              body: { message, signature, domain },
-              throwOnError: true,
-            })) as unknown as Web3SolanaVerifyResponse)
-
-      if (authCallbackUrl) {
-        const res = await fetch(authCallbackUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            token: verifyResult.token,
-            refreshToken: verifyResult.refreshToken,
-          }),
-          credentials: 'include',
-          redirect: 'follow',
-        })
-        if (!res.ok) {
-          const text = await res.text()
-          throw new Error(text || `Callback failed: ${res.status}`)
-        }
-        if (res.redirected) {
-          window.location.href = res.url
-          return
-        }
-      }
-
-      return verifyResult
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
+      await mutateAsync({ chain, message, signature, domain })
     },
   })
 
@@ -168,7 +124,7 @@ export function useWalletAuth({
     try {
       await mutation.mutateAsync()
     } catch {
-      /* Error stored in mutation.error, surfaced via result.error */
+      /* Error stored in mutation.error */
     }
   }
 

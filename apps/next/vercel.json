@@ -6,5 +6,5 @@
   "framework": "nextjs",
   "outputDirectory": ".next",
   "env": { "NODE_ENV": "production" },
-  "git": { "deploymentEnabled": false }
+  "git": { "deploymentEnabled": { "main": true, "develop": true } }
 }

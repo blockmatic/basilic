@@ -1,22 +1,15 @@
+import { ReactApiProvider } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { ReactApiProvider } from '../provider'
 import { useWeb3Nonce } from './use-web3-nonce'
 
-function createMockClient(nonceResponse: { nonce: string }) {
+function createMockClient() {
+  const nonceEip155 = vi.fn().mockResolvedValue({ data: { nonce: 'eip155nonce' } })
+  const nonceSolana = vi.fn().mockResolvedValue({ data: { nonce: 'solananonce' } })
   return {
-    auth: {
-      web3: {
-        eip155: {
-          nonce: vi.fn().mockResolvedValue({ data: nonceResponse }),
-        },
-        solana: {
-          nonce: vi.fn().mockResolvedValue({ data: nonceResponse }),
-        },
-      },
-    },
+    auth: { web3: { eip155: { nonce: nonceEip155 }, solana: { nonce: nonceSolana } } },
   } as unknown as ReturnType<typeof import('@repo/core').createClient>
 }
 
@@ -32,58 +25,50 @@ function createWrapper(client: ReturnType<typeof createMockClient>) {
 }
 
 describe('useWeb3Nonce', () => {
-  it('fetches nonce for eip155 when enabled and address provided', async () => {
-    const nonce = 'abc123'
-    const client = createMockClient({ nonce })
+  it('fetches nonce for eip155', async () => {
+    const client = createMockClient()
     const { result } = renderHook(() => useWeb3Nonce({ chain: 'eip155', address: '0x1234' }), {
       wrapper: createWrapper(client),
     })
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data?.nonce).toBe(nonce)
+    await waitFor(() => expect(result.current.data).toBeDefined())
+    expect(result.current.data?.nonce).toBe('eip155nonce')
     expect(client.auth.web3.eip155.nonce).toHaveBeenCalledWith({ query: { address: '0x1234' } })
     expect(client.auth.web3.solana.nonce).not.toHaveBeenCalled()
   })
 
-  it('fetches nonce for solana when enabled and address provided', async () => {
-    const nonce = 'xyz789'
-    const client = createMockClient({ nonce })
-    const { result } = renderHook(
-      () =>
-        useWeb3Nonce({
-          chain: 'solana',
-          address: 'So11111111111111111111111111111111111111112',
-        }),
-      { wrapper: createWrapper(client) },
-    )
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data?.nonce).toBe(nonce)
-    expect(client.auth.web3.solana.nonce).toHaveBeenCalledWith({
-      query: { address: 'So11111111111111111111111111111111111111112' },
+  it('fetches nonce for solana with evm-style address', async () => {
+    const client = createMockClient()
+    const { result } = renderHook(() => useWeb3Nonce({ chain: 'solana', address: '0x1234' }), {
+      wrapper: createWrapper(client),
     })
+
+    await waitFor(() => expect(result.current.data).toBeDefined())
+    expect(result.current.data?.nonce).toBe('solananonce')
+    expect(client.auth.web3.solana.nonce).toHaveBeenCalledWith({ query: { address: '0x1234' } })
     expect(client.auth.web3.eip155.nonce).not.toHaveBeenCalled()
   })
 
   it('does not fetch when address is undefined', async () => {
-    const client = createMockClient({ nonce: 'nope' })
+    const client = createMockClient()
     const { result } = renderHook(() => useWeb3Nonce({ chain: 'eip155', address: undefined }), {
       wrapper: createWrapper(client),
     })
 
-    expect(result.current.isFetching).toBe(false)
-    expect(result.current.data).toBeUndefined()
+    await waitFor(() => expect(result.current.fetchStatus).toBeDefined())
     expect(client.auth.web3.eip155.nonce).not.toHaveBeenCalled()
+    expect(result.current.data).toBeUndefined()
   })
 
   it('does not fetch when enabled is false', async () => {
-    const client = createMockClient({ nonce: 'nope' })
+    const client = createMockClient()
     const { result } = renderHook(
       () => useWeb3Nonce({ chain: 'eip155', address: '0x1234', enabled: false }),
       { wrapper: createWrapper(client) },
     )
 
-    expect(result.current.isFetching).toBe(false)
+    await waitFor(() => expect(result.current.fetchStatus).toBeDefined())
     expect(client.auth.web3.eip155.nonce).not.toHaveBeenCalled()
+    expect(result.current.data).toBeUndefined()
   })
 })

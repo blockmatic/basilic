@@ -1,25 +1,16 @@
+import { ReactApiProvider } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { ReactApiProvider } from '../provider'
 import { useLinkWallet } from './use-link-wallet'
 
 function createMockClient() {
-  const verify = vi.fn().mockResolvedValue({ ok: true })
+  const verify = vi.fn().mockResolvedValue(undefined)
   const nonce = vi.fn().mockResolvedValue({ data: { nonce: 'linknonce123' } })
   return {
-    account: {
-      link: {
-        wallet: { verify },
-      },
-    },
-    auth: {
-      web3: {
-        eip155: { nonce },
-        solana: { nonce },
-      },
-    },
+    account: { link: { wallet: { verify } } },
+    auth: { web3: { eip155: { nonce }, solana: { nonce } } },
   } as unknown as ReturnType<typeof import('@repo/core').createClient>
 }
 
@@ -65,5 +56,37 @@ describe('useLinkWallet', () => {
         throwOnError: true,
       }),
     )
+  })
+
+  it('calls verify with solana chain and SIWS message', async () => {
+    const client = createMockClient()
+    const signMessage = vi.fn().mockResolvedValue({ signature: 'solsig123' })
+    const { result } = renderHook(
+      () =>
+        useLinkWallet({
+          chain: 'solana',
+          address: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+          signMessage,
+          domain: 'localhost',
+          network: 'mainnet-beta',
+        }),
+      { wrapper: createWrapper(client) },
+    )
+
+    await waitFor(() => expect(result.current).toBeDefined())
+    await act(async () => {
+      await result.current.linkWallet()
+    })
+
+    expect(signMessage).toHaveBeenCalled()
+    const verifyMock = client.account.link.wallet.verify as ReturnType<typeof vi.fn>
+    const verifyCall = verifyMock.mock.calls[0]?.[0] as {
+      body: { chain: string; message: string; signature: string }
+      throwOnError: boolean
+    }
+    expect(verifyCall).toBeDefined()
+    expect(verifyCall?.body).toMatchObject({ chain: 'solana', signature: 'solsig123' })
+    expect(verifyCall?.body?.message).toContain('sign in with your Solana account')
+    expect(verifyCall?.throwOnError).toBe(true)
   })
 })

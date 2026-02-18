@@ -29,7 +29,6 @@
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "ai": "^6.0.86",
-    "viem": "^2.45.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
