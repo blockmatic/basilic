@@ -27,11 +27,7 @@ export function useWeb3Nonce({
       chain === 'eip155'
         ? await client.auth.web3.eip155.nonce({ query: { address } })
         : await client.auth.web3.solana.nonce({ query: { address } })
-    const data =
-      res && typeof res === 'object' && 'data' in res
-        ? (res as { data: Web3NonceResponse }).data
-        : res
-    return data as Web3NonceResponse
+    return res as unknown as Web3NonceResponse
   }
 
   return useQuery({

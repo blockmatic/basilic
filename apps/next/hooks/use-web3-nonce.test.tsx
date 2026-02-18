@@ -6,8 +6,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { useWeb3Nonce } from './use-web3-nonce'
 
 function createMockClient() {
-  const nonceEip155 = vi.fn().mockResolvedValue({ data: { nonce: 'eip155nonce' } })
-  const nonceSolana = vi.fn().mockResolvedValue({ data: { nonce: 'solananonce' } })
+  const nonceEip155 = vi.fn().mockResolvedValue({ nonce: 'eip155nonce' })
+  const nonceSolana = vi.fn().mockResolvedValue({ nonce: 'solananonce' })
   return {
     auth: { web3: { eip155: { nonce: nonceEip155 }, solana: { nonce: nonceSolana } } },
   } as unknown as ReturnType<typeof import('@repo/core').createClient>

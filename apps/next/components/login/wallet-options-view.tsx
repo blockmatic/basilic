@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useChainId, useConnect } from 'wagmi'
 import { WalletSignInRow } from '@/components/wallet-sign-in-buttons'
 import { useWallet } from '@/hooks/use-wallet'
+import { WALLET_ROW_CONFIG } from '@/lib/wallet-row-config'
 
 export function WalletOptionsView({ onBack }: { onBack: () => void }) {
   const evmAdapter = useWallet('eip155')
@@ -14,6 +15,7 @@ export function WalletOptionsView({ onBack }: { onBack: () => void }) {
   const { connect, connectors } = useConnect()
   const { setVisible: setSolanaModalVisible } = useWalletModal()
   const injected = connectors.find(c => c.type === 'injected' || c.id?.includes('injected'))
+  const adapters = { eip155: evmAdapter, solana: solanaAdapter }
 
   return (
     <div className="flex flex-col gap-4">
@@ -28,20 +30,21 @@ export function WalletOptionsView({ onBack }: { onBack: () => void }) {
       </Button>
       <h2 className="text-lg font-semibold">Connect wallet</h2>
       <div className="flex flex-col gap-2">
-        <WalletSignInRow
-          label="Sign in with Ethereum"
-          adapter={evmAdapter}
-          chainId={chainId}
-          connectLabel="Connect EVM wallet"
-          connectDisabled={!injected}
-          onConnect={() => (injected ? connect({ connector: injected }) : undefined)}
-        />
-        <WalletSignInRow
-          label="Sign in with Solana"
-          adapter={solanaAdapter}
-          connectLabel="Connect Solana"
-          onConnect={() => setSolanaModalVisible(true)}
-        />
+        {WALLET_ROW_CONFIG.map(({ chain, label, connectLabel }) => (
+          <WalletSignInRow
+            key={chain}
+            label={label}
+            adapter={adapters[chain]}
+            chainId={chain === 'eip155' ? chainId : undefined}
+            connectLabel={connectLabel}
+            connectDisabled={chain === 'eip155' ? !injected : undefined}
+            onConnect={
+              chain === 'eip155'
+                ? () => (injected ? connect({ connector: injected }) : undefined)
+                : () => setSolanaModalVisible(true)
+            }
+          />
+        ))}
       </div>
     </div>
   )

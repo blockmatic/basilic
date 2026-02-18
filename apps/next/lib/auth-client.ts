@@ -20,19 +20,15 @@ export async function updateAuthTokens({
   }
 
   if (!response.ok) {
-    let bodyText = ''
-    try {
-      bodyText = await response.text()
-    } catch {
-      bodyText = '(unable to read response body)'
-    }
-    let errorDetail: string
-    try {
-      const parsed = JSON.parse(bodyText) as { message?: string }
-      errorDetail = parsed?.message ?? (bodyText || `HTTP ${response.status}`)
-    } catch {
-      errorDetail = bodyText || `HTTP ${response.status}`
-    }
+    const bodyText = await response.text()
+    const errorDetail =
+      (() => {
+        try {
+          return (JSON.parse(bodyText) as { message?: string })?.message ?? bodyText
+        } catch {
+          return bodyText
+        }
+      })() || `HTTP ${response.status}`
     throw new Error(`Token refresh failed (${response.status}): ${errorDetail}`)
   }
 }

@@ -28,13 +28,7 @@ function extractModuleFromRoute(routePath: string): string | null {
   return `${singular}-service`
 }
 
-/**
- * Fastify error handler plugin
- * Registers global error handler that captures errors to Sentry and returns safe catalog errors
- */
-/**
- * Redacts sensitive data from headers
- */
+/** Redacts sensitive data from headers */
 function redactHeaders(headers: Record<string, unknown>): Record<string, unknown> {
   const redacted = { ...headers }
   const sensitiveKeys = ['authorization', 'cookie', 'x-api-key', 'x-auth-token']
@@ -47,9 +41,7 @@ function redactHeaders(headers: Record<string, unknown>): Record<string, unknown
   return redacted
 }
 
-/**
- * Redacts sensitive data from request body
- */
+/** Redacts sensitive data from request body */
 function redactBody(body: unknown): unknown {
   if (!body || typeof body !== 'object') return body
 

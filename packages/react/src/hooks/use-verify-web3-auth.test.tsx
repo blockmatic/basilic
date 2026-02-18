@@ -7,7 +7,8 @@ import { useVerifyWeb3Auth } from './use-verify-web3-auth'
 
 function createMockClient() {
   const verify = vi.fn().mockResolvedValue({
-    data: { token: 'access-token', refreshToken: 'refresh-token' },
+    token: 'access-token',
+    refreshToken: 'refresh-token',
   })
   return {
     auth: { web3: { eip155: { verify }, solana: { verify } } },

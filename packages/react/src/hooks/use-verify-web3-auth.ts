@@ -30,7 +30,7 @@ export function useVerifyWeb3Auth() {
       signature,
       domain,
     }: UseVerifyWeb3AuthParams): Promise<Web3Eip155VerifyResponse | Web3SolanaVerifyResponse> => {
-      const verifyResponse =
+      const verifyResult =
         chain === 'eip155'
           ? await client.auth.web3.eip155.verify({
               body: { message, signature, domain },
@@ -40,17 +40,15 @@ export function useVerifyWeb3Auth() {
               body: { message, signature, domain },
               throwOnError: true,
             })
-      const verifyResult = (
-        verifyResponse as { data: Web3Eip155VerifyResponse | Web3SolanaVerifyResponse }
-      ).data
+      const result = verifyResult as unknown as Web3Eip155VerifyResponse | Web3SolanaVerifyResponse
 
       if (authCallbackUrl) {
         const res = await fetch(authCallbackUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            token: verifyResult.token,
-            refreshToken: verifyResult.refreshToken,
+            token: result.token,
+            refreshToken: result.refreshToken,
           }),
           credentials: 'include',
           redirect: 'follow',
@@ -61,11 +59,11 @@ export function useVerifyWeb3Auth() {
         }
         if (res.redirected) {
           window.location.href = res.url
-          return verifyResult
+          return result
         }
       }
 
-      return verifyResult
+      return result
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })

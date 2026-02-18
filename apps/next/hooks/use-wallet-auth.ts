@@ -2,34 +2,10 @@
 
 import { useVerifyWeb3Auth } from '@repo/react'
 import { useMutation } from '@tanstack/react-query'
-import { createSiweMessage } from 'viem/siwe'
+import { buildAndSignMessage } from '@/lib/web3-sign-flow'
+import { isWalletRejection } from '@/lib/web3-sign-utils'
 import type { WalletAdapter, Web3Chain } from '@/wallet/types'
 import { useWeb3Nonce } from './use-web3-nonce'
-
-const REJECTION_PATTERNS = [/denied/i, /rejected/i, /cancel/i, /user denied/i, /user rejected/i]
-
-function isWalletRejection(error: unknown): boolean {
-  const msg = error instanceof Error ? error.message : String(error)
-  return REJECTION_PATTERNS.some(p => p.test(msg))
-}
-
-function buildSiwsMessage({
-  domain,
-  address,
-  nonce,
-  statement = 'Sign in to the application',
-  uri = 'https://localhost',
-  chainId = 'mainnet-beta',
-}: {
-  domain: string
-  address: string
-  nonce: string
-  statement?: string
-  uri?: string
-  chainId?: string
-}) {
-  return `${domain} wants you to sign in with your Solana account:\n${address}\n\n${statement}\n\nURI: ${uri}\nVersion: 1\nChain ID: ${chainId}\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}`
-}
 
 export type UseWalletAuthParams = {
   adapter?: WalletAdapter
@@ -88,34 +64,17 @@ export function useWalletAuth({
       }
 
       const uri = typeof window !== 'undefined' ? window.location.origin : 'https://localhost'
-      let message: string
-      let signature: string
-
-      if (chain === 'eip155') {
-        message = createSiweMessage({
-          address: address as `0x${string}`,
-          chainId,
-          domain,
-          nonce,
-          uri,
-          version: '1',
-          statement,
-        })
-        const result = await signMessage(message)
-        signature = result.signature
-      } else {
-        message = buildSiwsMessage({
-          domain,
-          address,
-          nonce,
-          statement,
-          uri,
-          chainId: network,
-        })
-        const result = await signMessage(message)
-        signature = result.signature
-      }
-
+      const { message, signature } = await buildAndSignMessage({
+        chain,
+        address,
+        signMessage,
+        nonce,
+        domain,
+        statement,
+        uri,
+        chainId,
+        network,
+      })
       await mutateAsync({ chain, message, signature, domain })
     },
   })
