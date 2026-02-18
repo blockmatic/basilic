@@ -17,7 +17,7 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
 
   if (!token) {
     const loginUrl = new URL('/login', new URL(request.url).origin)
-    loginUrl.searchParams.set('message', 'Invalid or expired magic link')
+    loginUrl.searchParams.set('message', 'INVALID_TOKEN')
     return new Response(null, {
       status: 302,
       headers: {
@@ -81,14 +81,12 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
     )
 
     if (error instanceof ApiError) {
-      const errorMessage =
-        error.status === 401 || error.status === 404
-          ? 'Invalid or expired magic link'
-          : error.message || 'Failed to verify magic link'
+      const errorCode =
+        error.status === 401 || error.status === 404 ? 'INVALID_TOKEN' : 'FAILED_VERIFY'
       logger.error(
         {
           status: error.status,
-          errorMessage,
+          errorCode,
           errorBody: error.body,
           apiUrl: env.NEXT_PUBLIC_API_URL,
           targetEndpoint: `${env.NEXT_PUBLIC_API_URL}/api/auth/magiclink/verify`,
@@ -96,7 +94,7 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
         'handleMagicLinkVerify: Fastify API error response',
       )
       const loginUrl = new URL('/login', new URL(request.url).origin)
-      loginUrl.searchParams.set('message', errorMessage)
+      loginUrl.searchParams.set('message', errorCode)
       return new Response(null, {
         status: 302,
         headers: {
@@ -115,7 +113,7 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
       'handleMagicLinkVerify: unexpected error (non-ApiError)',
     )
     const loginUrl = new URL('/login', new URL(request.url).origin)
-    loginUrl.searchParams.set('message', 'Failed to verify magic link')
+    loginUrl.searchParams.set('message', 'FAILED_VERIFY')
     return new Response(null, {
       status: 302,
       headers: {

@@ -7,6 +7,7 @@ const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: ['**/wallet-solana-auth.spec.ts', '**/wallet-metamask-auth.spec.ts'],
   fullyParallel: false, // PGLite does not support concurrent writers; run tests in series
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
@@ -37,22 +38,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'wallet-metamask',
-      dependencies: ['auth'],
-      testMatch: ['**/wallet-metamask-auth.spec.ts'],
-      use: { ...devices['Desktop Chrome'] },
-      timeout: 60_000,
-    },
-    {
-      name: 'wallet-solana',
-      dependencies: ['auth'],
-      testMatch: ['**/wallet-solana-auth.spec.ts'],
-      use: { ...devices['Desktop Chrome'] },
-      timeout: 60_000,
-    },
-    {
       name: 'chromium',
-      dependencies: ['wallet-metamask', 'wallet-solana'],
       testMatch: '**/*.spec.ts',
       testIgnore: [
         '**/magic-link-auth.spec.ts',

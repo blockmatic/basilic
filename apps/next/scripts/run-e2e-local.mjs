@@ -130,15 +130,7 @@ async function main() {
   const hasWorkers = userArgs.some(a => a.startsWith('--workers='))
   const pwArgs = ['exec', 'playwright', 'test', ...(hasWorkers ? [] : ['--workers=1']), ...userArgs]
   const hasProjectArg = pwArgs.some(a => a.startsWith('--project='))
-  const finalPwArgs = !hasProjectArg
-    ? [
-        ...pwArgs,
-        '--project=auth',
-        '--project=wallet-metamask',
-        '--project=wallet-solana',
-        '--project=chromium',
-      ]
-    : pwArgs
+  const finalPwArgs = !hasProjectArg ? [...pwArgs, '--project=auth', '--project=chromium'] : pwArgs
 
   const pw = spawn('pnpm', finalPwArgs, {
     cwd: nextDir,

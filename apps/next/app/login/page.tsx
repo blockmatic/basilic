@@ -27,6 +27,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const errorMessages: Record<string, string> = {
     INVALID_TOKEN: 'Invalid or expired magic link',
     EXPIRED_TOKEN: 'Magic link has expired',
+    FAILED_VERIFY: 'Failed to verify magic link',
     TOKEN_NOT_FOUND: 'Magic link not found',
     missing_params: 'Invalid sign-in link - missing parameters',
     INVALID_STATE: 'Invalid or expired sign-in session. Please try again.',
