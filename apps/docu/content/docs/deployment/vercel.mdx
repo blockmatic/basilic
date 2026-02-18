@@ -3,12 +3,12 @@ title: "Vercel Deployment"
 description: "Deploy Next.js apps to Vercel for rapid iteration with preview environments."
 ---
 
-Vercel is recommended for development and staging environments. Deployments are triggered by CI (GitHub Actions), not automatic Git integration.
+Vercel is recommended for development and staging environments. Deployments use Vercel's native Git integration (automatic on push).
 
 ## Overview
 
 Vercel provides:
-- ✅ CI-triggered deployments (unit tests → deploy → E2E)
+- ✅ Automatic Git deployments (preview on PRs, production on main/develop)
 - ✅ Preview deployments for PRs and branches
 - ✅ Zero-config Next.js support
 - ✅ Edge network (CDN)
@@ -55,7 +55,7 @@ NEXT_PUBLIC_SITE_URL=https://docs.yourdomain.com
 
 ### 3. Deploy
 
-Automatic Git deployments are disabled (`git.deploymentEnabled: false`). Per-app workflows deploy on pull requests (open and sync) after unit tests pass (or directly for docu). Vercel handles production deploys from main/develop via project config. Preview env for PR branches; production for main/develop.
+Git deployments are enabled. Vercel automatically builds and deploys on push: preview environments for PRs and branches, production for main/develop. CI workflows (next-e2e, api-e2e, docu-build) run tests and build validation locally; they do not trigger deploys.
 
 ## Deployment Configuration
 
@@ -89,11 +89,11 @@ Root Directory must be set in Vercel project settings (e.g. `apps/next`).
 
 ## Path-Based Deploys
 
-The deploy workflow uses [dorny/paths-filter](https://github.com/dorny/paths-filter) so only changed apps deploy. Each app uses `ignoreCommand` in `vercel.json` (e.g. `turbo-ignore @repo/next`) for local/CLI builds.
+Each app uses `ignoreCommand` in `vercel.json` (e.g. `turbo-ignore @repo/next`) so Vercel skips deploys when only unrelated paths change. Vercel builds only when relevant code changes.
 
 ## Branch Preview Coupling
 
-Next's `apps/next/next.config.mjs` derives `NEXT_PUBLIC_API_URL` for preview branches as `basilic-fastify-git-{branch}-*.vercel.app`. The deploy workflow deploys Fastify when either `api` or `next` scope changes, so Next E2E always has a matching Fastify deployment.
+Next's `apps/next/next.config.mjs` derives `NEXT_PUBLIC_API_URL` for preview branches as `basilic-fastify-git-{branch}-*.vercel.app`. Ensure Fastify and Next projects are connected to the same Git repo so both get preview deploys on PR branches.
 
 ## Monorepo Configuration
 
@@ -112,9 +112,9 @@ For monorepo apps, Vercel needs to know the root directory:
 3. Configure DNS records (Vercel provides instructions)
 4. Vercel handles SSL certificates automatically
 
-## E2E Against Preview Deployments
+## E2E Testing
 
-To run E2E against Vercel preview deployments: set `ALLOW_TEST=true` for Preview env. When Deployment Protection is enabled, add `VERCEL_AUTOMATION_BYPASS_SECRET` to GitHub and enable Protection Bypass for Automation in both projects; optionally add OPTIONS Allowlist for CORS. See [E2E Testing](/docs/testing/e2e-testing).
+CI runs E2E against local servers only (no Vercel URLs). For manual E2E against preview deployments: set `ALLOW_TEST=true` for Preview env. When Deployment Protection is enabled, use `VERCEL_AUTOMATION_BYPASS_SECRET` and Protection Bypass for Automation. See [E2E Testing](/docs/testing/e2e-testing).
 
 ## Best Practices
 
@@ -141,9 +141,8 @@ See [Portability Strategy](/docs/architecture/portability) for detailed migratio
 - Ensure all dependencies are installed
 
 ### Deployment Not Created
-- Check per-app workflow logs (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`)
-- **Both** `VERCEL_ORG_ID` and `VERCEL_TOKEN` are required in GitHub secrets (Settings → Secrets and variables → Actions). Workflows set `VERCEL_PROJECT_ID` to project slugs: `basilic-docs`, `basilic-fastify`, `basilic-next`. If you see "forgot to specify VERCEL_ORG_ID", add your Team/User ID from [Vercel Account Settings](https://vercel.com/account).
-- Ensure path filters match your changes (`.github/paths-filter.yml`)
+- Vercel auto-deploys from Git integration. Ensure projects are connected in Vercel dashboard.
+- Check that relevant paths changed; `ignoreCommand` in `vercel.json` may skip deploys for unrelated changes.
 
 ### Environment Variables Not Applied
 - Redeploy after changing environment variables
@@ -152,7 +151,7 @@ See [Portability Strategy](/docs/architecture/portability) for detailed migratio
 
 ### "spawn pnpm ENOENT" or path ".../apps/docu/apps/docu" does not exist
 - **pnpm ENOENT**: The workflow uses `npx pnpm` in `vercel.json` install/build commands so Vercel's build subprocess can find pnpm. Ensure `corepack enable` runs before deploy (already in workflows).
-- **Path duplication**: The workflow automatically sets `rootDirectory` to `null` via the Vercel API before each deploy. If you still see path duplication, ensure Vercel project settings → General → Root Directory is `.` or blank.
+- **Path duplication**: Ensure Vercel project settings → General → Root Directory is `.` or blank for monorepo apps.
 
 ## Related Documentation
 

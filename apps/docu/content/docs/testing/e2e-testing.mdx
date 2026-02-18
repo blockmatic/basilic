@@ -13,7 +13,7 @@ End-to-end tests run full user flows using Playwright. Two suites: **Next E2E** 
 |---------|-------------|
 | `pnpm test:e2e` (root) | Run Fastify API E2E, then Next E2E (spawns local servers) |
 | `pnpm test:e2e` (in apps/next) | Run E2E; expects URLs via env or `--app`/`--api` params |
-| `pnpm test:e2e:local` (in apps/next) | Build, spawn Fastify + Next, poll until healthy, run tests, cleanup |
+| `pnpm test:e2e:local` (in apps/next) | Build (unless `SKIP_BUILD=1`), spawn Fastify + Next, poll until healthy, run tests, cleanup |
 | `pnpm test:e2e` (in apps/fastify) | Run E2E; expects API URL via env or `--api` param |
 | `pnpm test:e2e:local` (in apps/fastify) | Spawn API, poll until healthy, run tests, cleanup |
 | `pnpm test:e2e:ui` (in apps/next or apps/fastify) | Run with Playwright UI |
@@ -55,18 +55,14 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-The `next-deploy-e2e.yml` and `api-deploy-e2e.yml` workflows run on pull requests (open and sync). After deploy completes:
+The `next-e2e.yml` and `api-e2e.yml` workflows run on pull requests (open and sync). Both use `test:e2e:local`—no Vercel deploys. Build once, then unit tests, then E2E against local servers.
 
-- **API E2E** — Runs when `api` scope changes. Uses `PLAYWRIGHT_API_URL` from deploy job output.
-- **Next E2E** — Runs when `next` scope changes. Uses `PLAYWRIGHT_APP_URL` and `PLAYWRIGHT_API_URL` from deploy job outputs.
+- **API E2E** — Runs when `api` scope changes. Spawns Fastify locally, runs Playwright.
+- **Next E2E** — Runs when `next` scope changes. Spawns Fastify + Next locally, runs Playwright.
 
-The deploy job builds and deploys to Vercel via CLI; URLs are parsed and passed to E2E.
+## Vercel Deployment Protection (Manual Testing)
 
-`VERCEL_AUTOMATION_BYPASS_SECRET` is optional; add when Vercel Deployment Protection is enabled.
-
-## Vercel Deployment Protection
-
-To run E2E against Vercel preview deployments with Deployment Protection enabled:
+To run E2E manually against Vercel preview deployments with Deployment Protection enabled:
 
 When Deployment Protection is enabled:
 1. **Protection Bypass for Automation**: In each project (Next, Fastify): Settings → Deployment Protection → Protection Bypass for Automation → enable → generate secret.
@@ -80,7 +76,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 ## Environment Variables
 
 - **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server.
-- **E2E CI (Vercel previews)**: URLs come from deploy job outputs. `VERCEL_AUTOMATION_BYPASS_SECRET` optional (when Deployment Protection enabled).
+- **E2E CI**: Uses local servers only; no Vercel URLs. For manual testing against previews, pass `--app`/`--api` URLs.
 
 ## ALLOW_TEST
 

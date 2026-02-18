@@ -1,0 +1,45 @@
+name: Docu (build)
+
+on:
+  pull_request:
+    paths:
+      - 'apps/docu/**'
+      - 'packages/ui/**'
+      - 'packages/eslint-config/**'
+      - 'packages/typescript-config/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+
+concurrency:
+  group: docu-build-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_ENV: test
+  CI: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm turbo run build --filter=@repo/docu
