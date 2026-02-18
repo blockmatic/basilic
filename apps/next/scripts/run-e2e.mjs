@@ -2,7 +2,7 @@
 /**
  * E2E wrapper: parses --app/--api URL params, sets env, forwards to Playwright.
  * Param formats: --app=URL, --app URL, --api=URL, --api URL
- * Precedence: PLAYWRIGHT_* > NEXT_PUBLIC_* > localhost
+ * Precedence: CLI args (--app/--api) > PLAYWRIGHT_* > NEXT_PUBLIC_* > localhost
  */
 const args = process.argv.slice(2)
 const rest = []

@@ -78,6 +78,7 @@ jobs:
         run: pnpm --filter @repo/next exec playwright install chromium --with-deps
 
       # CI uses Vercel preview URLs from webhook; never test:e2e:local
+      # Assumes Fastify preview deploys to basilic-fastify-git-{branch}-{team}.vercel.app. E2E global setup polls /health and exits non-zero if unreachable.
       - name: Derive API URL and run E2E
         env:
           PLAYWRIGHT_APP_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url || 'http://localhost:3000' }}
@@ -85,6 +86,8 @@ jobs:
           VERCEL_TEAM_SLUG: ${{ github.event.inputs.vercel_team_slug || vars.VERCEL_TEAM_SLUG || 'gaboesquivel' }}
         run: |
           REF="${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || 'main' }}"
+          REF="${REF#refs/heads/}"
+          REF="${REF#refs/tags/}"
           SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//' | cut -c1-63)
           export PLAYWRIGHT_API_URL="https://basilic-fastify-git-${SLUG}-${VERCEL_TEAM_SLUG}.vercel.app"
           pnpm --filter @repo/next test:e2e
