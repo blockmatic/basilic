@@ -78,7 +78,8 @@ jobs:
         run: pnpm --filter @repo/next exec playwright install chromium --with-deps
 
       # CI uses Vercel deployment URL from webhook (client_payload.url); manual runs require deployment_url input.
-      # API URL: constructed from ref; assumes Fastify preview at basilic-fastify-git-{branch}-{team}.vercel.app. E2E global setup polls /health.
+      # API URL: constructed from ref (refs/heads/ and refs/tags/ stripped); assumes Fastify preview deployed at basilic-fastify-git-{branch}-{team}.vercel.app.
+      # DEPENDENCY: Fastify preview must exist before tests run. E2E global setup polls /health with retry; if unreachable, tests fail with clear error.
       - name: Derive API URL and run E2E
         env:
           PLAYWRIGHT_APP_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url }}
