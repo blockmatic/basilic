@@ -21,7 +21,23 @@ export async function createApiKey(
   return key
 }
 
-export async function getSessionToken(app: TestApp, email: string): Promise<string> {
+export async function getMagicLinkTokenRaw(app: TestApp, email = 'test@test.ai'): Promise<string> {
+  await app.inject({
+    method: 'POST',
+    url: '/auth/magiclink/request',
+    payload: { email, callbackUrl: 'https://example.com/callback' },
+  })
+  const token = app.fakeEmail?.extractToken()
+  if (!token) throw new Error('No token in fake email')
+  return token
+}
+
+export async function getSessionToken(
+  app: TestApp,
+  email: string,
+  options?: { clearBefore?: boolean },
+): Promise<string> {
+  if (options?.clearBefore) app.fakeEmail?.clear()
   const requestRes = await app.inject({
     method: 'POST',
     url: '/auth/magiclink/request',
