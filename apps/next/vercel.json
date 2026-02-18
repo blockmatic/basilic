@@ -1,8 +1,8 @@
 {
   "ignoreCommand": "npx turbo-ignore @repo/next --fallback=HEAD~10",
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/next",
-  "devCommand": "cd ../.. && pnpm dev --filter=@repo/next",
-  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && npx pnpm turbo run build --filter=@repo/next",
+  "devCommand": "cd ../.. && npx pnpm dev --filter=@repo/next",
+  "installCommand": "cd ../.. && npx pnpm install",
   "framework": "nextjs",
   "outputDirectory": ".next",
   "env": { "NODE_ENV": "production" },

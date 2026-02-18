@@ -150,6 +150,10 @@ See [Portability Strategy](/docs/architecture/portability) for detailed migratio
 - Check variable names match exactly (case-sensitive)
 - Verify variables are set for the correct environment (production/preview)
 
+### "spawn pnpm ENOENT" or path ".../apps/fastify/apps/fastify" does not exist
+- **pnpm ENOENT**: The workflow uses `npx pnpm` in `vercel.json` install/build commands so Vercel's build subprocess can find pnpm. Ensure `corepack enable` runs before deploy (already in workflows).
+- **Path duplication**: When using CLI deploy with `--cwd apps/fastify`, Vercel must not double-apply Root Directory. In [Vercel project settings](https://vercel.com/gaboesquivel/basilic-fastify/settings) → General → Root Directory, set to `.` (not `apps/fastify`) for `basilic-fastify`, `basilic-next`, and `basilic-docs` when deploying via GitHub Actions.
+
 ## Related Documentation
 
 - [Deployment Overview](/docs/deployment) - GitHub Flow and CI/CD pipelines

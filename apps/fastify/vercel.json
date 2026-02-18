@@ -2,9 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "fastify",
   "ignoreCommand": "npx turbo-ignore @repo/fastify --fallback=HEAD~10",
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=@repo/fastify",
-  "installCommand": "cd ../.. && pnpm install",
-  "devCommand": "cd ../.. && pnpm dev --filter=@repo/fastify",
+  "buildCommand": "cd ../.. && npx pnpm turbo build --filter=@repo/fastify",
+  "installCommand": "cd ../.. && npx pnpm install",
+  "devCommand": "cd ../.. && npx pnpm dev --filter=@repo/fastify",
   "git": { "deploymentEnabled": false },
   "headers": [
     {

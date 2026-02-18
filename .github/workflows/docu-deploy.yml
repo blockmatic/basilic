@@ -53,7 +53,6 @@ jobs:
             exit 1
           fi
       - name: Deploy Docu
-        working-directory: apps/docu
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -66,11 +65,11 @@ jobs:
           echo "VERCEL_TOKEN: ${VERCEL_TOKEN:+set}"
           echo "::endgroup::"
 
-          pnpm exec vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
-          pnpm exec vercel build --token=$VERCEL_TOKEN
+          pnpm exec vercel pull --yes --environment=preview --token=$VERCEL_TOKEN --cwd apps/docu
+          pnpm exec vercel build --token=$VERCEL_TOKEN --cwd apps/docu
 
           set +e
-          DEPLOY_OUTPUT=$(pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN 2>&1)
+          DEPLOY_OUTPUT=$(pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --cwd apps/docu 2>&1)
           DEPLOY_EXIT=$?
           echo "$DEPLOY_OUTPUT"
           if [ $DEPLOY_EXIT -ne 0 ]; then
