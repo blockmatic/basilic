@@ -36,7 +36,10 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     options: opts,
     forceESM: true,
     ignorePattern: /\.(spec|test)\.(ts|js)$/,
-    ignoreFilter: path => !(opts?.allowTest ?? env.ALLOW_TEST) && /\/test\//.test(path),
+    ignoreFilter: path => {
+      const allowTest = opts?.allowTest ?? env.ALLOW_TEST
+      return allowTest !== true && allowTest !== 'true' && /\/test\//.test(path)
+    },
   })
 }
 
