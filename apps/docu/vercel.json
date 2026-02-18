@@ -4,6 +4,7 @@
   "buildCommand": "cd ../.. && npx pnpm turbo build --filter=@repo/docu...",
   "installCommand": "cd ../.. && npx pnpm install",
   "devCommand": "cd ../.. && npx pnpm dev --filter=@repo/docu",
+  "git": { "deploymentEnabled": { "main": true, "develop": true } },
   "outputDirectory": ".next",
   "framework": "nextjs"
 }

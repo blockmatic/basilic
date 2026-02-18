@@ -5,6 +5,7 @@
   "buildCommand": "cd ../.. && npx pnpm turbo build --filter=@repo/fastify",
   "installCommand": "cd ../.. && npx pnpm install",
   "devCommand": "cd ../.. && npx pnpm dev --filter=@repo/fastify",
+  "git": { "deploymentEnabled": { "main": true, "develop": true } },
   "headers": [
     {
       "source": "/(.*)",
