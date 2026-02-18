@@ -47,6 +47,21 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
+          echo "::group::Vercel deploy context"
+          echo "Project: basilic-docs"
+          pnpm exec vercel --version
+          echo "VERCEL_ORG_ID: ${VERCEL_ORG_ID:+set}"
+          echo "VERCEL_TOKEN: ${VERCEL_TOKEN:+set}"
+          echo "::endgroup::"
+
           pnpm exec vercel pull --yes --environment=preview --token=$VERCEL_TOKEN --project basilic-docs
-          pnpm exec vercel build --token=$VERCEL_TOKEN
-          pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --project basilic-docs
+          pnpm exec vercel build --token=$VERCEL_TOKEN --project basilic-docs
+
+          set +e
+          DEPLOY_OUTPUT=$(pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --project basilic-docs 2>&1)
+          DEPLOY_EXIT=$?
+          echo "$DEPLOY_OUTPUT"
+          if [ $DEPLOY_EXIT -ne 0 ]; then
+            echo "::error::Vercel deploy failed (exit $DEPLOY_EXIT)"
+            exit $DEPLOY_EXIT
+          fi

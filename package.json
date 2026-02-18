@@ -57,7 +57,10 @@
     "onlyBuiltDependencies": [
       "@sentry/cli",
       "esbuild"
-    ]
+    ],
+    "overrides": {
+      "tar@<7.5.8": "7.5.8"
+    }
   },
   "overrides": {
     "eslint": "^9.0.0",

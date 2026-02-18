@@ -33,10 +33,7 @@
     "test:e2e:local": "node scripts/run-e2e-local.mjs",
     "test:e2e:ui": "pnpm test:e2e -- --ui",
     "test:e2e:debug": "pnpm test:e2e -- --debug",
-    "start:e2e:servers": "node scripts/start-e2e-servers.mjs",
-    "synpress:metamask": "synpress e2e/wallet-setup",
-    "synpress:phantom": "synpress e2e/wallet-setup --phantom",
-    "synpress:build": "pnpm synpress:metamask && pnpm synpress:phantom"
+    "start:e2e:servers": "node scripts/start-e2e-servers.mjs"
   },
   "dependencies": {
     "@json-render/core": "^0.7.0",
@@ -78,7 +75,6 @@
     "@playwright/test": "^1.58.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@synthetixio/synpress": "^4.1.2",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
