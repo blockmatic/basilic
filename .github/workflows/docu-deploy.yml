@@ -41,6 +41,8 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Enable Corepack
+        run: corepack enable
       - name: Validate Vercel secrets
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
