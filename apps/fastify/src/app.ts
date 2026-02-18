@@ -3,11 +3,14 @@ import { fileURLToPath } from 'node:url'
 import AutoLoad, { type AutoloadPluginOptions } from '@fastify/autoload'
 import type { FastifyPluginAsync } from 'fastify'
 
+import { env } from './lib/env.js'
+
 const appFile = fileURLToPath(import.meta.url)
 const appDir = path.dirname(appFile)
 
 export type AppOptions = {
-  // Place your custom options for app below here.
+  /** Override env.ALLOW_TEST (e.g. for OpenAPI generation to exclude test routes) */
+  allowTest?: boolean
 } & Partial<AutoloadPluginOptions>
 
 // Pass --options via CLI arguments in command to enable these options.
@@ -33,6 +36,10 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     options: opts,
     forceESM: true,
     ignorePattern: /\.(spec|test)\.(ts|js)$/,
+    ignoreFilter: path => {
+      const allowTest = opts?.allowTest ?? env.ALLOW_TEST
+      return allowTest !== true && allowTest !== 'true' && /\/test\//.test(path)
+    },
   })
 }
 

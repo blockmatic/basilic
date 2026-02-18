@@ -144,7 +144,7 @@ async function generateOpenAPI() {
 
     // Register app (which autoloads plugins + routes)
     // Swagger will automatically scan route schemas as they're registered
-    await fastify.register(app)
+    await fastify.register(app, { allowTest: false })
 
     // Wait for Fastify to be ready before generating OpenAPI
     await fastify.ready()
