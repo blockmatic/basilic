@@ -78,11 +78,6 @@ Run with `pnpm <script>`.
 **Misc**
   - `update-deps` — Update pnpm and all dependencies
 
-
-## E2E and Vercel deployments
-
-Per-app workflows (`next-e2e.yml`, `api-e2e.yml`, `docu-build.yml`) run on pull requests: unit tests and E2E against local servers. Vercel auto-deploys from Git integration. Projects: basilic-next, basilic-fastify, basilic-docs.
-
 ## Documentation
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)

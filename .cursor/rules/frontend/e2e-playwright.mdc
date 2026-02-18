@@ -10,25 +10,25 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - CI: test:e2e:local only (spawn local servers; no Vercel URLs)
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
-- projects: auth first (magic-link-auth only), then chromium (chat-assistant); wallet and link-email specs disabled
+- projects: auth first (magic-link, wallet-auth, link-wallet, wallet-metamask-auth, wallet-solana-auth), then chromium (chat-assistant); link-email disabled
 
 ## Session Model
 - Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
 - One login per worker, then navigate and assert. No per-test login for authed tests
 - Session reused via worker-scoped storageState (saved after login, new context per test)
-- **Disabled specs**: wallet-auth, link-wallet, link-email, wallet-metamask-auth, wallet-solana-auth are excluded from runs (testIgnore)
+- **Disabled specs**: link-email excluded via testIgnore
 
 ## Test Order
-- Auth project first: magic-link-auth (error tests, login/logout, protected route, JWT)
+- Auth project first: magic-link-auth, wallet-auth, link-wallet, wallet-metamask-auth, wallet-solana-auth (wallet specs use auth-helpers or fixtures-wallet-mock/fixtures-solana-mock)
 - Chromium project: chat-assistant (uses authenticatedPage; fixture triggers magic link login)
 
-## Disabled Specs (wallet, link-email)
-- wallet-metamask-auth, wallet-solana-auth, wallet-auth, link-wallet, link-email excluded via testIgnore
+## Disabled Specs
+- link-email excluded via testIgnore; chat-assistant skipped (test.describe.skip) until getAuthToken fixed for chat transport
 
 ## Auth Fixtures
 - Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)
 - Authed feature tests: import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body
-- Disabled wallet/link-email specs: excluded from runs; when re-enabled, follow Session Model with authenticatedPage
+- Wallet specs: wallet-auth, link-wallet use auth-helpers; wallet-metamask-auth, wallet-solana-auth use mock fixtures
 - Each authed test must navigate to its target route (e.g. `authenticatedPage.goto('/')`) since the same page is reused
 
 ## Test Email
