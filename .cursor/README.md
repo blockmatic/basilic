@@ -92,6 +92,7 @@ Model Context Protocol (MCP) servers extend Cursor with specialized capabilities
 - `shadcnui-jpisnice-react` - shadcn/ui v4 blocks, demos, and page templates for React (requires `GITHUB_TOKEN`)
 - `github` - Repository operations, issue management, and GitHub Actions logs (requires `GITHUB_TOKEN`)
 - `coderabbit` - CodeRabbit AI code review comments and PR insights (requires `GITHUB_TOKEN`)
+- `next-devtools` - Next.js runtime diagnostics (errors, routes, logs) and migration tools (no auth required)
 - `basilic-docs` - Basilic project documentation context (no auth required)
 - `basilic-api` - Basilic API package context (no auth required)
 

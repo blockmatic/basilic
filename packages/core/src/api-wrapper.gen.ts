@@ -53,10 +53,4 @@ auth: {
     },
   },
 },
-test: {
-  authed: gen.testAuthed,
-  magicLink: {
-    last: gen.getLastMagicLinkToken,
-  },
-},
 }
