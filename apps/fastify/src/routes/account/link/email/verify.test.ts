@@ -1,24 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken } from '../../../../../test/utils/auth-helper.js'
+import { getApiKeyToken, getSessionToken } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
-
-async function getSessionTokenLocal(email = 'user@test.ai'): Promise<string> {
-  fastify.fakeEmail?.clear()
-  await fastify.inject({
-    method: 'POST',
-    url: '/auth/magiclink/request',
-    payload: { email, callbackUrl: 'https://example.com/callback' },
-  })
-  const token = fastify.fakeEmail?.extractToken()
-  if (!token) throw new Error('No token in fake email')
-  const verifyRes = await fastify.inject({
-    method: 'POST',
-    url: '/auth/magiclink/verify',
-    payload: { token },
-  })
-  const { token: jwt } = JSON.parse(verifyRes.body)
-  return jwt
-}
 
 describe('POST /account/link/email/verify', () => {
   beforeEach(() => {
@@ -35,7 +17,7 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should verify link token and return new JWTs', async () => {
-    const jwt = await getSessionTokenLocal()
+    const jwt = await getSessionToken(fastify, 'user@test.ai', { clearBefore: true })
     fastify.fakeEmail?.clear()
 
     await fastify.inject({
@@ -73,7 +55,7 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should return EXPIRED_TOKEN for expired token', async () => {
-    const jwt = await getSessionTokenLocal()
+    const jwt = await getSessionToken(fastify, 'user@test.ai', { clearBefore: true })
     const db = await (await import('../../../../db/index.js')).getDb()
     const { verification } = await import('../../../../db/schema/index.js')
     const { hashToken } = await import('../../../../lib/jwt.js')
@@ -104,7 +86,9 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should verify link when authenticated via API key', async () => {
-    const jwt = await getSessionTokenLocal('verify-apikey@test.ai')
+    const jwt = await getSessionToken(fastify, 'verify-apikey@test.ai', {
+      clearBefore: true,
+    })
     fastify.fakeEmail?.clear()
 
     await fastify.inject({

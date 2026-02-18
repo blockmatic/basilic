@@ -1,26 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken } from '../../../../../test/utils/auth-helper.js'
+import { getApiKeyToken, getSessionToken } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
-
-async function getSessionToken(): Promise<string> {
-  await fastify.inject({
-    method: 'POST',
-    url: '/auth/magiclink/request',
-    payload: {
-      email: 'user@test.ai',
-      callbackUrl: 'https://example.com/callback',
-    },
-  })
-  const token = fastify.fakeEmail?.extractToken()
-  if (!token) throw new Error('No token in fake email')
-  const verifyRes = await fastify.inject({
-    method: 'POST',
-    url: '/auth/magiclink/verify',
-    payload: { token },
-  })
-  const { token: jwt } = JSON.parse(verifyRes.body)
-  return jwt
-}
 
 describe('POST /account/link/email/request', () => {
   beforeEach(() => {
@@ -40,7 +20,7 @@ describe('POST /account/link/email/request', () => {
   })
 
   it('should send link email and return 200', async () => {
-    const jwt = await getSessionToken()
+    const jwt = await getSessionToken(fastify, 'user@test.ai')
     fastify.fakeEmail?.clear()
 
     const response = await fastify.inject({
@@ -82,7 +62,7 @@ describe('POST /account/link/email/request', () => {
       payload: { token: otherToken },
     })
 
-    const jwt = await getSessionToken()
+    const jwt = await getSessionToken(fastify, 'user@test.ai')
 
     const response = await fastify.inject({
       method: 'POST',

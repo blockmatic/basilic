@@ -1,7 +1,7 @@
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken } from '../../../../../test/utils/auth-helper.js'
+import { getApiKeyToken, getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 const TEST_PRIVATE_KEY =
@@ -33,7 +33,7 @@ describe('POST /account/link/wallet/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: { token: await getMagicLinkToken() },
+      payload: { token: await getMagicLinkTokenRaw(fastify) },
     })
     const { token } = JSON.parse(verifyRes.body)
 
@@ -71,7 +71,7 @@ describe('POST /account/link/wallet/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: { token: await getMagicLinkToken() },
+      payload: { token: await getMagicLinkTokenRaw(fastify) },
     })
     const { token } = JSON.parse(verifyRes.body)
     const userId = JSON.parse(
@@ -179,7 +179,7 @@ describe('POST /account/link/wallet/verify', () => {
   })
 
   it('should return WALLET_ALREADY_LINKED when wallet belongs to another user', async () => {
-    const token1 = await getMagicLinkToken()
+    const token1 = await getMagicLinkTokenRaw(fastify)
     const verifyRes1 = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
@@ -210,7 +210,7 @@ describe('POST /account/link/wallet/verify', () => {
       payload: { chain: 'eip155', message: messageToSign, signature },
     })
 
-    const token2 = await getMagicLinkToken('other@test.ai')
+    const token2 = await getMagicLinkTokenRaw(fastify, 'other@test.ai')
     const verifyRes2 = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
@@ -245,17 +245,3 @@ describe('POST /account/link/wallet/verify', () => {
     expect(body.code).toBe('WALLET_ALREADY_LINKED')
   })
 })
-
-async function getMagicLinkToken(email = 'test@test.ai'): Promise<string> {
-  await fastify.inject({
-    method: 'POST',
-    url: '/auth/magiclink/request',
-    payload: {
-      email,
-      callbackUrl: 'https://example.com/callback',
-    },
-  })
-  const token = fastify.fakeEmail?.extractToken()
-  if (!token) throw new Error('No token in fake email')
-  return token
-}

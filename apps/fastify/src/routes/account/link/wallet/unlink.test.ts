@@ -1,23 +1,12 @@
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken } from '../../../../../test/utils/auth-helper.js'
+import { getApiKeyToken, getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 const TEST_PRIVATE_KEY =
   '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as const
 const TEST_ACCOUNT = privateKeyToAccount(TEST_PRIVATE_KEY as `0x${string}`)
-
-async function getMagicLinkToken(email = 'test@test.ai'): Promise<string> {
-  await fastify.inject({
-    method: 'POST',
-    url: '/auth/magiclink/request',
-    payload: { email, callbackUrl: 'https://example.com/callback' },
-  })
-  const token = fastify.fakeEmail?.extractToken()
-  if (!token) throw new Error('No token in fake email')
-  return token
-}
 
 async function linkWallet(jwt: string): Promise<string> {
   const nonceRes = await fastify.inject({
@@ -72,7 +61,7 @@ describe('DELETE /account/link/wallet/:id', () => {
 
   it('should return 404 for non-existent wallet', async () => {
     const jwt = await (async () => {
-      const token = await getMagicLinkToken()
+      const token = await getMagicLinkTokenRaw(fastify)
       const verifyRes = await fastify.inject({
         method: 'POST',
         url: '/auth/magiclink/verify',
@@ -92,7 +81,7 @@ describe('DELETE /account/link/wallet/:id', () => {
   })
 
   it('should return 204 when unlink succeeds with JWT', async () => {
-    const token = await getMagicLinkToken()
+    const token = await getMagicLinkTokenRaw(fastify)
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
@@ -113,7 +102,7 @@ describe('DELETE /account/link/wallet/:id', () => {
   it('should return 204 when unlink succeeds with API key', async () => {
     const apiKey = await getApiKeyToken(fastify, 'unlink-apikey@test.ai')
     const jwt = await (async () => {
-      const token = await getMagicLinkToken('unlink-apikey@test.ai')
+      const token = await getMagicLinkTokenRaw(fastify, 'unlink-apikey@test.ai')
       const verifyRes = await fastify.inject({
         method: 'POST',
         url: '/auth/magiclink/verify',
