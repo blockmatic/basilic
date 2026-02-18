@@ -3,7 +3,7 @@ title: "GitHub Actions"
 description: "Continuous integration workflows for automated testing, linting, and security checks."
 ---
 
-GitHub Actions workflows automate quality checks on every pull request and push.
+GitHub Actions workflows automate quality checks on pull requests (opened and updated).
 
 ## Workflows
 
@@ -11,23 +11,23 @@ CI uses path filters in each workflow so tests and deploys run only when relevan
 
 ### Next (`next-deploy-e2e.yml`)
 
-Unit → deploy → E2E. Triggers when `apps/next/**`, shared packages, or openapi change.
+Unit → deploy → E2E. Triggers on pull request (open and sync) when `apps/next/**`, shared packages, or openapi change.
 
 - **Unit**: Build and test Next.js.
 - **Deploy**: Deploys Fastify (for E2E API URL) then Next.
-- **E2E**: Only on pull requests. Uses deployed URLs.
+- **E2E**: Uses deployed URLs.
 
 ### API (`api-deploy-e2e.yml`)
 
-Unit → deploy → E2E. Triggers when `apps/fastify/**` or shared packages change.
+Unit → deploy → E2E. Triggers on pull request (open and sync) when `apps/fastify/**` or shared packages change.
 
 - **Unit**: Build and test Fastify.
 - **Deploy**: Deploys Fastify.
-- **E2E**: Only on pull requests.
+- **E2E**: Uses deployed URLs.
 
 ### Docu (`docu-deploy.yml`)
 
-Deploy only (no unit or E2E). Triggers when `apps/docu/**` or shared packages change.
+Deploy only (no unit or E2E). Triggers on pull request (open and sync) when `apps/docu/**` or shared packages change.
 
 See [E2E Testing](/docs/testing/e2e-testing) for details.
 

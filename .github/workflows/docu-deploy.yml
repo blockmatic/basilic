@@ -1,15 +1,6 @@
 name: Docu (deploy)
 
 on:
-  push:
-    paths:
-      - 'apps/docu/**'
-      - 'packages/ui/**'
-      - 'packages/eslint-config/**'
-      - 'packages/typescript-config/**'
-      - 'pnpm-lock.yaml'
-      - 'package.json'
-      - 'turbo.json'
   pull_request:
     paths:
       - 'apps/docu/**'

@@ -1,20 +1,6 @@
 name: Next (deploy + E2E)
 
 on:
-  push:
-    paths:
-      - 'apps/next/**'
-      - 'scripts/**'
-      - 'packages/core/**'
-      - 'packages/react/**'
-      - 'packages/ui/**'
-      - 'packages/utils/**'
-      - 'packages/eslint-config/**'
-      - 'packages/typescript-config/**'
-      - 'apps/fastify/openapi/**'
-      - 'pnpm-lock.yaml'
-      - 'package.json'
-      - 'turbo.json'
   pull_request:
     paths:
       - 'apps/next/**'

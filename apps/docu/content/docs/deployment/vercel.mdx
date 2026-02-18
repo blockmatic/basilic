@@ -55,7 +55,7 @@ NEXT_PUBLIC_SITE_URL=https://docs.yourdomain.com
 
 ### 3. Deploy
 
-Automatic Git deployments are disabled (`git.deploymentEnabled: false`). Per-app workflows (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`) deploy after unit tests pass (or directly for docu) on every push and pull request. Main/develop use production env; other branches use preview.
+Automatic Git deployments are disabled (`git.deploymentEnabled: false`). Per-app workflows deploy on pull requests (open and sync) after unit tests pass (or directly for docu). Vercel handles production deploys from main/develop via project config. Preview env for PR branches; production for main/develop.
 
 ## Deployment Configuration
 

@@ -55,12 +55,12 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-The `next-deploy-e2e.yml` and `api-deploy-e2e.yml` workflows run E2E **only on pull requests**, after the deploy phase completes:
+The `next-deploy-e2e.yml` and `api-deploy-e2e.yml` workflows run on pull requests (open and sync). After deploy completes:
 
 - **API E2E** — Runs when `api` scope changes. Uses `PLAYWRIGHT_API_URL` from deploy job output.
 - **Next E2E** — Runs when `next` scope changes. Uses `PLAYWRIGHT_APP_URL` and `PLAYWRIGHT_API_URL` from deploy job outputs.
 
-The deploy job builds and deploys to Vercel via CLI; URLs are parsed and passed to E2E. Direct pushes to branches deploy but skip E2E.
+The deploy job builds and deploys to Vercel via CLI; URLs are parsed and passed to E2E.
 
 `VERCEL_AUTOMATION_BYPASS_SECRET` is optional; add when Vercel Deployment Protection is enabled.
 
