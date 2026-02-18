@@ -7,7 +7,7 @@ import { useWalletAuth } from './use-wallet-auth'
 
 function createMockClient() {
   const verify = vi.fn().mockResolvedValue({ token: 't', refreshToken: 'rt' })
-  const nonce = vi.fn().mockResolvedValue({ data: { nonce: 'testnonce12345' } })
+  const nonce = vi.fn().mockResolvedValue({ nonce: 'testnonce12345' })
   return {
     auth: { web3: { eip155: { nonce, verify }, solana: { nonce, verify } } },
   } as unknown as ReturnType<typeof import('@repo/core').createClient>

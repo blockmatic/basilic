@@ -7,7 +7,7 @@ import { useLinkWallet } from './use-link-wallet'
 
 function createMockClient() {
   const verify = vi.fn().mockResolvedValue(undefined)
-  const nonce = vi.fn().mockResolvedValue({ data: { nonce: 'linknonce123' } })
+  const nonce = vi.fn().mockResolvedValue({ nonce: 'linknonce123' })
   return {
     account: { link: { wallet: { verify } } },
     auth: { web3: { eip155: { nonce }, solana: { nonce } } },
