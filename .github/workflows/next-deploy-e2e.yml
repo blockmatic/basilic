@@ -86,6 +86,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: basilic-fastify
         run: |
           echo "::group::Vercel deploy context"
           echo "Project: basilic-fastify"
@@ -94,9 +95,9 @@ jobs:
           echo "VERCEL_TOKEN: ${VERCEL_TOKEN:+set}"
           echo "::endgroup::"
 
-          pnpm exec vercel pull --yes --environment=preview --token=$VERCEL_TOKEN --project basilic-fastify
+          pnpm exec vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
 
-          if pnpm exec vercel build --token=$VERCEL_TOKEN --project basilic-fastify; then
+          if pnpm exec vercel build --token=$VERCEL_TOKEN; then
             DEPLOY_CMD="deploy --prebuilt"
           else
             echo "::notice::vercel build failed, falling back to full deploy"
@@ -104,7 +105,7 @@ jobs:
           fi
 
           set +e
-          DEPLOY_OUTPUT=$(pnpm exec vercel $DEPLOY_CMD --token=$VERCEL_TOKEN --project basilic-fastify 2>&1)
+          DEPLOY_OUTPUT=$(pnpm exec vercel $DEPLOY_CMD --token=$VERCEL_TOKEN 2>&1)
           DEPLOY_EXIT=$?
           echo "$DEPLOY_OUTPUT"
           if [ $DEPLOY_EXIT -ne 0 ]; then
@@ -120,6 +121,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: basilic-next
           VERCEL: '1'
           VERCEL_ENV: preview
           VERCEL_GIT_COMMIT_REF: ${{ github.head_ref }}
@@ -131,11 +133,11 @@ jobs:
           echo "VERCEL_TOKEN: ${VERCEL_TOKEN:+set}"
           echo "::endgroup::"
 
-          pnpm exec vercel pull --yes --environment=preview --token=$VERCEL_TOKEN --project basilic-next
-          pnpm exec vercel build --token=$VERCEL_TOKEN --project basilic-next
+          pnpm exec vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+          pnpm exec vercel build --token=$VERCEL_TOKEN
 
           set +e
-          DEPLOY_OUTPUT=$(pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --project basilic-next 2>&1)
+          DEPLOY_OUTPUT=$(pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN 2>&1)
           DEPLOY_EXIT=$?
           echo "$DEPLOY_OUTPUT"
           if [ $DEPLOY_EXIT -ne 0 ]; then

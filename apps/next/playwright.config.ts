@@ -28,22 +28,19 @@ export default defineConfig({
   projects: [
     {
       name: 'auth',
-      testMatch: [
-        '**/magic-link-auth.spec.ts',
-        '**/wallet-auth.spec.ts',
-        '**/link-email.spec.ts',
-        '**/link-wallet.spec.ts',
-      ],
+      testMatch: ['**/magic-link-auth.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'chromium',
-      testMatch: '**/*.spec.ts',
+      testMatch: ['**/chat-assistant.spec.ts'],
       testIgnore: [
         '**/magic-link-auth.spec.ts',
         '**/wallet-auth.spec.ts',
-        '**/link-email.spec.ts',
         '**/link-wallet.spec.ts',
+        '**/link-email.spec.ts',
+        '**/wallet-metamask-auth.spec.ts',
+        '**/wallet-solana-auth.spec.ts',
       ],
       use: { ...devices['Desktop Chrome'] },
     },

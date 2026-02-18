@@ -1,6 +1,6 @@
 import { expect, test } from './fixtures'
 
-// TODO: Re-enable when UNAUTHORIZED is fixed — getAuthToken/Bearer propagation to Fastify /ai/chat fails in E2E despite authenticatedPage
+// TODO: UNAUTHORIZED — getAuthToken/Bearer propagation to Fastify /ai/chat fails in E2E despite authenticatedPage
 test.describe
   .skip('Chat Assistant', () => {
     test('should send message via Who am I? and show assistant response', async ({
@@ -18,7 +18,9 @@ test.describe
 
       await expect(
         sheet.locator('[data-role="user"]').filter({ hasText: 'Who am I?' }),
-      ).toBeVisible({ timeout: 10000 })
+      ).toBeVisible({
+        timeout: 10000,
+      })
       await expect(sheet.getByTestId('chat-error')).not.toBeVisible()
       await expect(sheet.locator('[data-role="assistant"]')).toBeVisible({
         timeout: 60000,
