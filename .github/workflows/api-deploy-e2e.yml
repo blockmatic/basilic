@@ -81,9 +81,15 @@ jobs:
         working-directory: apps/fastify
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: basilic-fastify
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           REF: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
         run: |
+          echo "::group::Deploy debug (fastify)"
+          echo "REF=$REF"
+          echo "VERCEL_ORG_ID set: $([ -n \"$VERCEL_ORG_ID\" ] && echo yes || echo no)"
+          echo "VERCEL_PROJECT_ID=$VERCEL_PROJECT_ID"
+          pnpm exec vercel --version
           if [ "$REF" = "main" ] || [ "$REF" = "develop" ]; then
             ENV=production
             PROD_FLAG="--prod"
@@ -91,11 +97,13 @@ jobs:
             ENV=preview
             PROD_FLAG=""
           fi
-          pnpm exec vercel pull --yes --environment=$ENV --project=basilic-fastify --token=$VERCEL_TOKEN
+          echo "ENV=$ENV PROD_FLAG=$PROD_FLAG"
+          echo "::endgroup::"
+          pnpm exec vercel pull --yes --environment=$ENV --token=$VERCEL_TOKEN
           if pnpm exec vercel build --token=$VERCEL_TOKEN 2>/dev/null; then
-            pnpm exec vercel deploy --prebuilt $PROD_FLAG --project=basilic-fastify --token=$VERCEL_TOKEN 2>&1 | tee deploy.log
+            pnpm exec vercel deploy --prebuilt $PROD_FLAG --token=$VERCEL_TOKEN 2>&1 | tee deploy.log
           else
-            pnpm exec vercel deploy $PROD_FLAG --project=basilic-fastify --token=$VERCEL_TOKEN 2>&1 | tee deploy.log
+            pnpm exec vercel deploy $PROD_FLAG --token=$VERCEL_TOKEN 2>&1 | tee deploy.log
           fi
           URL=$(grep -oE 'https://[^[:space:]]+\.vercel\.app' deploy.log | head -1 || echo "")
           echo "url=$URL" >> $GITHUB_OUTPUT

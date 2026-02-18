@@ -45,9 +45,16 @@ jobs:
         working-directory: apps/docu
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: basilic-docs
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           REF: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
         run: |
+          echo "::group::Deploy debug (docu)"
+          echo "REF=$REF"
+          echo "VERCEL_ORG_ID set: $([ -n \"$VERCEL_ORG_ID\" ] && echo yes || echo no)"
+          echo "VERCEL_PROJECT_ID=$VERCEL_PROJECT_ID"
+          echo "VERCEL_TOKEN set: $([ -n \"$VERCEL_TOKEN\" ] && echo yes || echo no)"
+          pnpm exec vercel --version
           if [ "$REF" = "main" ] || [ "$REF" = "develop" ]; then
             ENV=production
             PROD_FLAG="--prod"
@@ -55,6 +62,8 @@ jobs:
             ENV=preview
             PROD_FLAG=""
           fi
-          pnpm exec vercel pull --yes --environment=$ENV --project=basilic-docs --token=$VERCEL_TOKEN
+          echo "ENV=$ENV PROD_FLAG=$PROD_FLAG"
+          echo "::endgroup::"
+          pnpm exec vercel pull --yes --environment=$ENV --token=$VERCEL_TOKEN
           pnpm exec vercel build --token=$VERCEL_TOKEN
-          pnpm exec vercel deploy --prebuilt $PROD_FLAG --project=basilic-docs --token=$VERCEL_TOKEN
+          pnpm exec vercel deploy --prebuilt $PROD_FLAG --token=$VERCEL_TOKEN
