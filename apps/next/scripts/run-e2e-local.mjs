@@ -60,6 +60,7 @@ async function main() {
       /* ignore - ports may not be in use or bash unavailable */
     }
   }
+  // eslint-disable-next-line turbo/no-undeclared-env-vars -- set by root test:e2e or user
   if (!process.env.SKIP_BUILD) {
     const build = spawn('pnpm', ['-F', '@repo/next', 'run', 'build:e2e'], {
       cwd: repoRoot,

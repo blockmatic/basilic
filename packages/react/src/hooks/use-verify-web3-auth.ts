@@ -3,8 +3,9 @@
 import type { Web3Eip155VerifyResponse, Web3SolanaVerifyResponse } from '@repo/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
+import type { Web3Chain } from '../types'
 
-export type Web3Chain = 'eip155' | 'solana'
+export type { Web3Chain }
 
 export type UseVerifyWeb3AuthParams = {
   chain: Web3Chain
@@ -29,16 +30,19 @@ export function useVerifyWeb3Auth() {
       signature,
       domain,
     }: UseVerifyWeb3AuthParams): Promise<Web3Eip155VerifyResponse | Web3SolanaVerifyResponse> => {
-      const verifyResult =
+      const verifyResponse =
         chain === 'eip155'
-          ? ((await client.auth.web3.eip155.verify({
+          ? await client.auth.web3.eip155.verify({
               body: { message, signature, domain },
               throwOnError: true,
-            })) as unknown as Web3Eip155VerifyResponse)
-          : ((await client.auth.web3.solana.verify({
+            })
+          : await client.auth.web3.solana.verify({
               body: { message, signature, domain },
               throwOnError: true,
-            })) as unknown as Web3SolanaVerifyResponse)
+            })
+      const verifyResult = (
+        verifyResponse as { data: Web3Eip155VerifyResponse | Web3SolanaVerifyResponse }
+      ).data
 
       if (authCallbackUrl) {
         const res = await fetch(authCallbackUrl, {

@@ -67,4 +67,11 @@ describe('useWallet', () => {
     })
     expect(result.current).toEqual(mockEvmAdapter)
   })
+
+  it('returns undefined when requested chain is not registered', () => {
+    const { result } = renderHook(() => useWallet('solana'), {
+      wrapper: createWrapper({ eip155: mockEvmAdapter }),
+    })
+    expect(result.current).toBeUndefined()
+  })
 })

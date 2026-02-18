@@ -1,5 +1,6 @@
-/** SIWE/SIWS chain identifier */
-export type Web3Chain = 'eip155' | 'solana'
+import type { Web3Chain } from '@repo/react'
+
+export type { Web3Chain }
 
 /** Wallet adapter – supplied via WalletProvider (wagmi/Solana adapters) */
 export interface WalletAdapter {

@@ -12,6 +12,6 @@ export function useWallet(chain?: Web3Chain): WalletAdapter | undefined {
   const ctx = useWalletContext()
   if (!ctx) return undefined
 
-  if (chain) return ctx.adapters[chain === 'eip155' ? 'eip155' : 'solana']
+  if (chain) return ctx.adapters[chain]
   return ctx.adapters.eip155 ?? ctx.adapters.solana
 }

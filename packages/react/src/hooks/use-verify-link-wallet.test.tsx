@@ -31,7 +31,7 @@ describe('useVerifyLinkWallet', () => {
     })
 
     await act(async () => {
-      result.current.mutateAsync({
+      await result.current.mutateAsync({
         chain: 'eip155',
         message: 'test message',
         signature: '0xsig',
@@ -51,7 +51,7 @@ describe('useVerifyLinkWallet', () => {
     })
 
     await act(async () => {
-      result.current.mutateAsync({
+      await result.current.mutateAsync({
         chain: 'solana',
         message: 'solana msg',
         signature: 'sig',

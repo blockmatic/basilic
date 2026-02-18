@@ -76,9 +76,9 @@ export function useWalletAuth({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!address || !signMessage || !chain) {
-        throw new Error('No wallet address')
-      }
+      if (!address) throw new Error('No wallet address')
+      if (!signMessage) throw new Error('No signMessage function')
+      if (!chain) throw new Error('No chain configured')
 
       let nonce = nonceData?.nonce
       if (!nonce) {

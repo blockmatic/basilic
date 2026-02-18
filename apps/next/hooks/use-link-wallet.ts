@@ -71,9 +71,8 @@ export function useLinkWallet({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!address || !signMessage) {
-        throw new Error('No wallet address')
-      }
+      if (!address) throw new Error('No wallet address')
+      if (!signMessage) throw new Error('No signMessage function')
 
       let nonce = nonceData?.nonce
       if (!nonce) {

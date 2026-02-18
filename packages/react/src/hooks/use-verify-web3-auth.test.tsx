@@ -7,8 +7,7 @@ import { useVerifyWeb3Auth } from './use-verify-web3-auth'
 
 function createMockClient() {
   const verify = vi.fn().mockResolvedValue({
-    token: 'access-token',
-    refreshToken: 'refresh-token',
+    data: { token: 'access-token', refreshToken: 'refresh-token' },
   })
   return {
     auth: { web3: { eip155: { verify }, solana: { verify } } },
@@ -36,7 +35,7 @@ describe('useVerifyWeb3Auth', () => {
     })
 
     await act(async () => {
-      result.current.mutateAsync({
+      await result.current.mutateAsync({
         chain: 'eip155',
         message: 'test message',
         signature: '0xsig',
@@ -57,7 +56,7 @@ describe('useVerifyWeb3Auth', () => {
     })
 
     await act(async () => {
-      result.current.mutateAsync({
+      await result.current.mutateAsync({
         chain: 'solana',
         message: 'test message',
         signature: 'sig',
@@ -82,7 +81,7 @@ describe('useVerifyWeb3Auth', () => {
     })
 
     await act(async () => {
-      result.current.mutateAsync({
+      await result.current.mutateAsync({
         chain: 'eip155',
         message: 'm',
         signature: 's',

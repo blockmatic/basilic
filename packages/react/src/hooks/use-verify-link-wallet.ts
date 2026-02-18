@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
-import type { Web3Chain } from './use-verify-web3-auth'
+import type { Web3Chain } from '../types'
 
 export type UseVerifyLinkWalletParams = {
   chain: Web3Chain
