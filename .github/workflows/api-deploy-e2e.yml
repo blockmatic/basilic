@@ -1,0 +1,150 @@
+name: API (deploy + E2E)
+
+on:
+  push:
+    paths:
+      - 'apps/fastify/**'
+      - 'packages/email/**'
+      - 'packages/sentry/**'
+      - 'packages/utils/**'
+      - 'packages/eslint-config/**'
+      - 'packages/typescript-config/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+  pull_request:
+    paths:
+      - 'apps/fastify/**'
+      - 'packages/email/**'
+      - 'packages/sentry/**'
+      - 'packages/utils/**'
+      - 'packages/eslint-config/**'
+      - 'packages/typescript-config/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+
+concurrency:
+  group: api-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_ENV: test
+  CI: true
+  PGLITE: true
+  DATABASE_URL: postgresql://localhost/test
+  JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+  OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build and test
+        run: |
+          pnpm turbo run build --filter=@repo/fastify...
+          pnpm turbo run test --filter=@repo/fastify
+
+  deploy:
+    needs: [unit]
+    runs-on: ubuntu-latest
+    outputs:
+      fastify_url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Deploy Fastify
+        id: deploy
+        working-directory: apps/fastify
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          REF: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+        run: |
+          if [ "$REF" = "main" ] || [ "$REF" = "develop" ]; then
+            ENV=production
+            PROD_FLAG="--prod"
+          else
+            ENV=preview
+            PROD_FLAG=""
+          fi
+          pnpm exec vercel pull --yes --environment=$ENV --project=basilic-fastify --token=$VERCEL_TOKEN
+          if pnpm exec vercel build --token=$VERCEL_TOKEN 2>/dev/null; then
+            pnpm exec vercel deploy --prebuilt $PROD_FLAG --project=basilic-fastify --token=$VERCEL_TOKEN 2>&1 | tee deploy.log
+          else
+            pnpm exec vercel deploy $PROD_FLAG --project=basilic-fastify --token=$VERCEL_TOKEN 2>&1 | tee deploy.log
+          fi
+          URL=$(grep -oE 'https://[^[:space:]]+\.vercel\.app' deploy.log | head -1 || echo "")
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+  e2e:
+    needs: [deploy]
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright
+        run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
+      - name: Run E2E tests
+        env:
+          PLAYWRIGHT_API_URL: ${{ needs.deploy.outputs.fastify_url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || '' }}
+        run: pnpm --filter @repo/fastify test:e2e
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-fastify
+          path: apps/fastify/playwright-report/
+          retention-days: 30

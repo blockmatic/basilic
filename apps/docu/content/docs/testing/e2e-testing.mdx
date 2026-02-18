@@ -55,7 +55,7 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-The `deploy-and-e2e.yml` workflow runs E2E **only on pull requests**, after the deploy phase completes:
+The `next-deploy-e2e.yml` and `api-deploy-e2e.yml` workflows run E2E **only on pull requests**, after the deploy phase completes:
 
 - **API E2E** — Runs when `api` scope changes. Uses `PLAYWRIGHT_API_URL` from deploy job output.
 - **Next E2E** — Runs when `next` scope changes. Uses `PLAYWRIGHT_APP_URL` and `PLAYWRIGHT_API_URL` from deploy job outputs.

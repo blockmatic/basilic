@@ -7,15 +7,27 @@ GitHub Actions workflows automate quality checks on every pull request and push.
 
 ## Workflows
 
-CI uses [dorny/paths-filter](https://github.com/dorny/paths-filter) so tests and deploys run only when relevant code changes. Path filters are defined in `.github/paths-filter.yml`.
+CI uses path filters in each workflow so tests and deploys run only when relevant code changes. Path patterns align with `.github/paths-filter.yml`.
 
-### Deploy and E2E (`deploy-and-e2e.yml`)
+### Next (`next-deploy-e2e.yml`)
 
-Unified pipeline: **unit tests → deploy → E2E tests**. Triggers on `push` and `pull_request` for all branches.
+Unit → deploy → E2E. Triggers when `apps/next/**`, shared packages, or openapi change.
 
-- **Unit phase**: Build and test Next.js when `next` scope changes; build and test Fastify API when `api` scope changes. No unit tests for docu.
-- **Deploy phase**: Deploys changed apps to Vercel (next, fastify, docu) after unit tests pass. Uses Vercel CLI with production env for main/develop, preview for other branches.
-- **E2E phase**: Runs only on pull requests. API E2E when `api` changes; Next E2E when `next` changes. URLs come from deploy job outputs.
+- **Unit**: Build and test Next.js.
+- **Deploy**: Deploys Fastify (for E2E API URL) then Next.
+- **E2E**: Only on pull requests. Uses deployed URLs.
+
+### API (`api-deploy-e2e.yml`)
+
+Unit → deploy → E2E. Triggers when `apps/fastify/**` or shared packages change.
+
+- **Unit**: Build and test Fastify.
+- **Deploy**: Deploys Fastify.
+- **E2E**: Only on pull requests.
+
+### Docu (`docu-deploy.yml`)
+
+Deploy only (no unit or E2E). Triggers when `apps/docu/**` or shared packages change.
 
 See [E2E Testing](/docs/testing/e2e-testing) for details.
 
@@ -79,7 +91,9 @@ Pre-commit hooks check:
 ## Workflow Files
 
 All workflows are in `.github/workflows/`:
-- `deploy-and-e2e.yml` - Unit tests, Vercel deploy, E2E (path-filtered; E2E on PR only)
+- `next-deploy-e2e.yml` - Next: unit → deploy (Fastify + Next) → E2E (PR only)
+- `api-deploy-e2e.yml` - API: unit → deploy → E2E (PR only)
+- `docu-deploy.yml` - Docu: deploy only
 - `lint.yml` - Linting checks
 - `security.yml` - Security scans
 

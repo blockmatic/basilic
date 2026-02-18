@@ -1,0 +1,69 @@
+name: Docu (deploy)
+
+on:
+  push:
+    paths:
+      - 'apps/docu/**'
+      - 'packages/ui/**'
+      - 'packages/eslint-config/**'
+      - 'packages/typescript-config/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+  pull_request:
+    paths:
+      - 'apps/docu/**'
+      - 'packages/ui/**'
+      - 'packages/eslint-config/**'
+      - 'packages/typescript-config/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+
+concurrency:
+  group: docu-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_ENV: test
+  CI: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Deploy Docu
+        working-directory: apps/docu
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          REF: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+        run: |
+          if [ "$REF" = "main" ] || [ "$REF" = "develop" ]; then
+            ENV=production
+            PROD_FLAG="--prod"
+          else
+            ENV=preview
+            PROD_FLAG=""
+          fi
+          pnpm exec vercel pull --yes --environment=$ENV --project=basilic-docs --token=$VERCEL_TOKEN
+          pnpm exec vercel build --token=$VERCEL_TOKEN
+          pnpm exec vercel deploy --prebuilt $PROD_FLAG --project=basilic-docs --token=$VERCEL_TOKEN

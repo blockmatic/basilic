@@ -55,7 +55,7 @@ NEXT_PUBLIC_SITE_URL=https://docs.yourdomain.com
 
 ### 3. Deploy
 
-Automatic Git deployments are disabled (`git.deploymentEnabled: false`). The `deploy-and-e2e.yml` workflow deploys after unit tests pass on every push and pull request. Main/develop use production env; other branches use preview.
+Automatic Git deployments are disabled (`git.deploymentEnabled: false`). Per-app workflows (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`) deploy after unit tests pass (or directly for docu) on every push and pull request. Main/develop use production env; other branches use preview.
 
 ## Deployment Configuration
 
@@ -141,7 +141,7 @@ See [Portability Strategy](/docs/architecture/portability) for detailed migratio
 - Ensure all dependencies are installed
 
 ### Deployment Not Created
-- Check `deploy-and-e2e.yml` workflow logs
+- Check per-app workflow logs (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`)
 - Verify `VERCEL_TOKEN` and `VERCEL_ORG_ID` are set in GitHub secrets (projects use names: basilic-next, basilic-fastify, basilic-docs)
 - Ensure path filters match your changes (`.github/paths-filter.yml`)
 

@@ -1,11 +1,37 @@
-name: Deploy and E2E
+name: Next (deploy + E2E)
 
 on:
   push:
+    paths:
+      - 'apps/next/**'
+      - 'scripts/**'
+      - 'packages/core/**'
+      - 'packages/react/**'
+      - 'packages/ui/**'
+      - 'packages/utils/**'
+      - 'packages/eslint-config/**'
+      - 'packages/typescript-config/**'
+      - 'apps/fastify/openapi/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
   pull_request:
+    paths:
+      - 'apps/next/**'
+      - 'scripts/**'
+      - 'packages/core/**'
+      - 'packages/react/**'
+      - 'packages/ui/**'
+      - 'packages/utils/**'
+      - 'packages/eslint-config/**'
+      - 'packages/typescript-config/**'
+      - 'apps/fastify/openapi/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
 
 concurrency:
-  group: deploy-and-e2e-${{ github.ref }}
+  group: next-deploy-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -17,21 +43,7 @@ env:
   OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
 
 jobs:
-  filter:
-    runs-on: ubuntu-latest
-    outputs:
-      next: ${{ steps.filter.outputs.next }}
-      api: ${{ steps.filter.outputs.api }}
-      docu: ${{ steps.filter.outputs.docu }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: .github/paths-filter.yml
-
   unit:
-    needs: [filter]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,25 +64,13 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build and test Next
-        if: needs.filter.outputs.next == 'true'
+      - name: Build and test
         run: |
           pnpm turbo run build --filter=@repo/next...
           pnpm turbo run test --filter=@repo/next
-      - name: Build and test API
-        if: needs.filter.outputs.api == 'true'
-        run: |
-          pnpm turbo run build --filter=@repo/fastify...
-          pnpm turbo run test --filter=@repo/fastify
-      - name: No unit tests for docu
-        if: needs.filter.outputs.docu == 'true' && needs.filter.outputs.next != 'true' && needs.filter.outputs.api != 'true'
-        run: echo "No unit tests for docu"
-      - name: No relevant changes
-        if: needs.filter.outputs.next != 'true' && needs.filter.outputs.api != 'true' && needs.filter.outputs.docu != 'true'
-        run: echo "No relevant changes, skipping"
 
   deploy:
-    needs: [filter, unit]
+    needs: [unit]
     runs-on: ubuntu-latest
     outputs:
       fastify_url: ${{ steps.deploy-fastify.outputs.url }}
@@ -94,9 +94,8 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Deploy Fastify
+      - name: Deploy Fastify (for Next E2E)
         id: deploy-fastify
-        if: needs.filter.outputs.api == 'true' || needs.filter.outputs.next == 'true'
         working-directory: apps/fastify
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -120,7 +119,6 @@ jobs:
           echo "url=$URL" >> $GITHUB_OUTPUT
       - name: Deploy Next
         id: deploy-next
-        if: needs.filter.outputs.next == 'true'
         working-directory: apps/next
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -143,32 +141,10 @@ jobs:
           pnpm exec vercel deploy --prebuilt $PROD_FLAG --project=basilic-next --token=$VERCEL_TOKEN 2>&1 | tee deploy.log
           URL=$(grep -oE 'https://[^[:space:]]+\.vercel\.app' deploy.log | head -1)
           echo "url=$URL" >> $GITHUB_OUTPUT
-      - name: Deploy Docu
-        id: deploy-docu
-        if: needs.filter.outputs.docu == 'true'
-        working-directory: apps/docu
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          REF: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-        run: |
-          if [ "$REF" = "main" ] || [ "$REF" = "develop" ]; then
-            ENV=production
-            PROD_FLAG="--prod"
-          else
-            ENV=preview
-            PROD_FLAG=""
-          fi
-          pnpm exec vercel pull --yes --environment=$ENV --project=basilic-docs --token=$VERCEL_TOKEN
-          pnpm exec vercel build --token=$VERCEL_TOKEN
-          pnpm exec vercel deploy --prebuilt $PROD_FLAG --project=basilic-docs --token=$VERCEL_TOKEN 2>&1 | tee deploy.log || true
-      - name: No apps to deploy
-        if: needs.filter.outputs.next != 'true' && needs.filter.outputs.api != 'true' && needs.filter.outputs.docu != 'true'
-        run: echo "No apps to deploy"
 
   e2e:
-    needs: [filter, deploy]
-    if: github.event_name == 'pull_request' && (needs.filter.outputs.next == 'true' || needs.filter.outputs.api == 'true')
+    needs: [deploy]
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -189,34 +165,16 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Install Playwright for API
-        if: needs.filter.outputs.api == 'true'
-        run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
-      - name: Run API E2E tests
-        if: needs.filter.outputs.api == 'true'
-        env:
-          PLAYWRIGHT_API_URL: ${{ needs.deploy.outputs.fastify_url }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || '' }}
-        run: pnpm --filter @repo/fastify test:e2e
-      - name: Install Playwright for Next
-        if: needs.filter.outputs.next == 'true'
+      - name: Install Playwright
         run: pnpm --filter @repo/next exec playwright install chromium --with-deps
-      - name: Run Next E2E tests
-        if: needs.filter.outputs.next == 'true'
+      - name: Run E2E tests
         env:
           PLAYWRIGHT_APP_URL: ${{ needs.deploy.outputs.next_url }}
           PLAYWRIGHT_API_URL: ${{ needs.deploy.outputs.fastify_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || '' }}
         run: pnpm --filter @repo/next test:e2e
-      - name: Upload Playwright report (API)
-        if: always() && needs.filter.outputs.api == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report-fastify
-          path: apps/fastify/playwright-report/
-          retention-days: 30
-      - name: Upload Playwright report (Next)
-        if: always() && needs.filter.outputs.next == 'true'
+      - name: Upload Playwright report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-next

@@ -81,7 +81,7 @@ Run with `pnpm <script>`.
 
 ## E2E and Vercel deployments
 
-The `deploy-and-e2e.yml` workflow runs unit tests, deploys to Vercel (next, fastify, docu), then runs E2E on pull requests only. Automatic Git deployments are disabled; all deploys go through CI. E2E receives deployment URLs from the deploy job. Requires `VERCEL_TOKEN` and `VERCEL_ORG_ID` in GitHub secrets. `VERCEL_AUTOMATION_BYPASS_SECRET` is optional (for deployment protection bypass; add when enabled). Projects are identified by name (basilic-next, basilic-fastify, basilic-docs).
+Per-app workflows (`next-deploy-e2e.yml`, `api-deploy-e2e.yml`, `docu-deploy.yml`) run unit tests where applicable, deploy to Vercel, and run E2E on pull requests only (next and api). Automatic Git deployments are disabled; all deploys go through CI. E2E receives deployment URLs from the deploy job. Requires `VERCEL_TOKEN` and `VERCEL_ORG_ID` in GitHub secrets. `VERCEL_AUTOMATION_BYPASS_SECRET` is optional (for deployment protection bypass; add when enabled). Projects are identified by name (basilic-next, basilic-fastify, basilic-docs).
 
 ## Documentation
 
