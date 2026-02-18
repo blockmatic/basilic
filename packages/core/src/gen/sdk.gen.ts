@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetLastMagicLinkTokenData, GetLastMagicLinkTokenResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, TestAuthedData, TestAuthedErrors, TestAuthedResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
+import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -273,21 +273,3 @@ export const web3SolanaVerify = <ThrowOnError extends boolean = false>(options: 
         ...options.headers
     }
 });
-
-/**
- * Test authenticated endpoint
- *
- * Dummy authenticated endpoint for testing (requires Bearer token)
- */
-export const testAuthed = <ThrowOnError extends boolean = false>(options?: Options<TestAuthedData, ThrowOnError>) => (options?.client ?? client).get<TestAuthedResponses, TestAuthedErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, { name: 'X-API-Key', type: 'apiKey' }],
-    url: '/test/authed/',
-    ...options
-});
-
-/**
- * Get last magic link token
- *
- * Get last magic link token from DB (test only, @test.ai)
- */
-export const getLastMagicLinkToken = <ThrowOnError extends boolean = false>(options?: Options<GetLastMagicLinkTokenData, ThrowOnError>) => (options?.client ?? client).get<GetLastMagicLinkTokenResponses, unknown, ThrowOnError>({ url: '/test/magic-link/last', ...options });

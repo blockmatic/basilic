@@ -41,6 +41,11 @@
       },
       "description": "Expose CodeRabbit PR review comments via MCP"
     },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"],
+      "description": "Next.js runtime diagnostics (errors, routes, logs) and migration tools for coding agents"
+    },
     "docu": {
       "url": "https://mcp.vercel.com/gaboesquivel/basilic-docu",
       "description": "Vercel project documentation context"
