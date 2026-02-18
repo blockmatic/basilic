@@ -1,12 +1,12 @@
 import { expect, test } from './fixtures'
 
-// TODO: UNAUTHORIZED — getAuthToken/Bearer propagation to Fastify /ai/chat fails in E2E despite authenticatedPage
+// Skip: Chat receives UNAUTHORIZED from /ai/chat despite Signed In (getAuthToken returns null for chat transport).
 test.describe
   .skip('Chat Assistant', () => {
     test('should send message via Who am I? and show assistant response', async ({
       authenticatedPage,
     }) => {
-      test.setTimeout(90000)
+      test.setTimeout(120000)
       await authenticatedPage.goto('/')
       await expect(authenticatedPage.locator('text=Signed In')).toBeVisible({ timeout: 15000 })
       await expect(authenticatedPage.locator('text=API OK')).toBeVisible({ timeout: 15000 })
@@ -14,6 +14,7 @@ test.describe
       await authenticatedPage.getByRole('button', { name: 'Open assistant' }).click()
       const sheet = authenticatedPage.getByRole('dialog')
       await expect(sheet).toBeVisible({ timeout: 5000 })
+      await expect(sheet.getByPlaceholder('Type a message...')).toBeVisible({ timeout: 5000 })
       await sheet.getByRole('button', { name: 'Who am I?' }).click()
 
       await expect(

@@ -75,7 +75,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 
 ## Environment Variables
 
-- **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server.
+- **Chat E2E** (chat-assistant.spec.ts): Requires `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: set in GitHub secrets; `test:e2e:local` passes `process.env` and `.env.test` to the Fastify server. Currently skipped: `getAuthToken` returns null for the chat transport in E2E. `loginAsTestUserWithTokenInjection` and `/api/auth/test-set-session` (ALLOW_TEST only) exist for session injection when cookie propagation from magic-link verify fails.
 - **E2E CI**: Uses local servers only; no Vercel URLs. For manual testing against previews, pass `--app`/`--api` URLs.
 
 ## ALLOW_TEST
