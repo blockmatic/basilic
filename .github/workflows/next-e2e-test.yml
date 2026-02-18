@@ -10,14 +10,17 @@ on:
   workflow_dispatch:
     inputs:
       deployment_url:
-        description: 'Deployment URL'
+        description: 'Next app deployment URL'
         required: true
+      deployment_api_url:
+        description: 'Fastify API deployment URL (optional; derived from ref if omitted)'
+        required: false
       git_ref:
-        description: 'Git ref/branch (for API URL derivation)'
+        description: 'Git ref/branch (for API URL derivation when deployment_api_url omitted)'
         required: false
         default: 'main'
       vercel_team_slug:
-        description: 'Vercel team/user slug (for API URL, overrides repo var)'
+        description: 'Vercel team/user slug (for API URL derivation, overrides repo var)'
         required: false
 
 run-name: Next E2E (${{ github.event.client_payload.git.ref || 'manual' }})
@@ -77,20 +80,25 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm --filter @repo/next exec playwright install chromium --with-deps
 
-      # CI uses Vercel deployment URL from webhook (client_payload.url); manual runs require deployment_url input.
-      # API URL: constructed from ref (refs/heads/ and refs/tags/ stripped); assumes Fastify preview deployed at basilic-fastify-git-{branch}-{team}.vercel.app.
+      # App URL: from Vercel webhook (client_payload.url) or deployment_url input. API URL: from deployment_api_url input or derived from ref.
+      # Derivation pattern: {project}-git-{branch-slug}-{team}.vercel.app (e.g. basilic-fastify-git-e2e-fix-workflows-gaboesquivel.vercel.app).
       # DEPENDENCY: Fastify preview must exist before tests run. E2E global setup polls /health with retry; if unreachable, tests fail with clear error.
       - name: Derive API URL and run E2E
         env:
           PLAYWRIGHT_APP_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url }}
+          PLAYWRIGHT_API_URL_INPUT: ${{ github.event.inputs.deployment_api_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
           VERCEL_TEAM_SLUG: ${{ github.event.inputs.vercel_team_slug || vars.VERCEL_TEAM_SLUG || 'gaboesquivel' }}
         run: |
-          REF="${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || 'main' }}"
-          REF="${REF#refs/heads/}"
-          REF="${REF#refs/tags/}"
-          SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//' | cut -c1-63)
-          export PLAYWRIGHT_API_URL="https://basilic-fastify-git-${SLUG}-${VERCEL_TEAM_SLUG}.vercel.app"
+          if [ -n "$PLAYWRIGHT_API_URL_INPUT" ]; then
+            export PLAYWRIGHT_API_URL="$PLAYWRIGHT_API_URL_INPUT"
+          else
+            REF="${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || 'main' }}"
+            REF="${REF#refs/heads/}"
+            REF="${REF#refs/tags/}"
+            SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//' | cut -c1-63)
+            export PLAYWRIGHT_API_URL="https://basilic-fastify-git-${SLUG}-${VERCEL_TEAM_SLUG}.vercel.app"
+          fi
           pnpm --filter @repo/next test:e2e
         shell: bash
 

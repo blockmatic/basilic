@@ -10,10 +10,14 @@ on:
   workflow_dispatch:
     inputs:
       deployment_url:
-        description: 'Deployment URL'
-        required: true
+        description: 'Deployment URL (optional; derived from ref if omitted)'
+        required: false
       git_ref:
-        description: 'Git ref/branch (for checkout)'
+        description: 'Git ref/branch (for checkout and URL derivation)'
+        required: false
+        default: 'main'
+      vercel_team_slug:
+        description: 'Vercel team slug (for URL derivation when deployment_url omitted)'
         required: false
 
 run-name: API E2E (${{ github.event.client_payload.git.ref || 'manual' }})
@@ -72,12 +76,24 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
 
-      # CI uses Vercel preview URLs from webhook; never test:e2e:local
+      # API URL: from Vercel webhook (client_payload.url) or deployment_url input, or derived. Pattern: {project}-git-{branch-slug}-{team}.vercel.app
       - name: Run E2E tests
         env:
-          PLAYWRIGHT_API_URL: ${{ github.event.inputs.deployment_url || github.event.client_payload.url }}
+          PLAYWRIGHT_API_URL_INPUT: ${{ github.event.inputs.deployment_url || github.event.client_payload.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET || 'ci-dummy' }}
-        run: pnpm --filter @repo/fastify test:e2e
+          VERCEL_TEAM_SLUG: ${{ github.event.inputs.vercel_team_slug || vars.VERCEL_TEAM_SLUG || 'gaboesquivel' }}
+        run: |
+          if [ -n "$PLAYWRIGHT_API_URL_INPUT" ]; then
+            export PLAYWRIGHT_API_URL="$PLAYWRIGHT_API_URL_INPUT"
+          else
+            REF="${{ github.event.inputs.git_ref || github.event.client_payload.git.ref || 'main' }}"
+            REF="${REF#refs/heads/}"
+            REF="${REF#refs/tags/}"
+            SLUG=$(echo "$REF" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//' | cut -c1-63)
+            export PLAYWRIGHT_API_URL="https://basilic-fastify-git-${SLUG}-${VERCEL_TEAM_SLUG}.vercel.app"
+          fi
+          pnpm --filter @repo/fastify test:e2e
+        shell: bash
 
       - name: Upload Playwright report
         if: always()
