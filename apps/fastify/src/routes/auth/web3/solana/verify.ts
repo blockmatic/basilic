@@ -9,7 +9,7 @@ import { web3Callback } from '../../../../db/schema/index.js'
 import { verifyWeb3Auth } from '../../../../lib/auth-web3.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
-import { isAllowedUrl } from '../../../../lib/url.js'
+import { appendCodeToCallbackUrl, isAllowedUrl } from '../../../../lib/url.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { parseSiwsMessage } from '../siws-parse.js'
 import { validateSolanaAddress } from '../validate-address.js'
@@ -108,9 +108,7 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
           refreshToken,
           expiresAt,
         })
-        const separator = callbackUrl.includes('?') ? '&' : '?'
-        const encodedCode = encodeURIComponent(code)
-        return reply.redirect(`${callbackUrl}${separator}code=${encodedCode}`, 302)
+        return reply.redirect(appendCodeToCallbackUrl(callbackUrl, code), 302)
       }
 
       return reply.code(200).send({ token: accessToken, refreshToken })

@@ -41,3 +41,19 @@ export function isAllowedUrl(url: string): boolean {
   }
   return ok
 }
+
+/**
+ * Appends an authorization code to a callback URL, placing it in the query string
+ * before any existing fragment. When callbackUrl has a fragment (e.g. #section),
+ * the code must be in the query so the server receives it; fragments are not
+ * sent in HTTP requests.
+ */
+export function appendCodeToCallbackUrl(callbackUrl: string, code: string): string {
+  const hashIndex = callbackUrl.indexOf('#')
+  const base = hashIndex >= 0 ? callbackUrl.slice(0, hashIndex) : callbackUrl
+  const fragment = hashIndex >= 0 ? callbackUrl.slice(hashIndex + 1) : ''
+  const separator = base.includes('?') ? '&' : '?'
+  const encodedCode = encodeURIComponent(code)
+  const withCode = `${base}${separator}code=${encodedCode}`
+  return fragment ? `${withCode}#${fragment}` : withCode
+}

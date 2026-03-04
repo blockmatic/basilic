@@ -1,5 +1,38 @@
 import { describe, expect, it } from 'vitest'
-import { isAllowedUrl } from './url.js'
+import { appendCodeToCallbackUrl, isAllowedUrl } from './url.js'
+
+describe('appendCodeToCallbackUrl', () => {
+  it('appends code as query param when URL has no query or fragment', () => {
+    const result = appendCodeToCallbackUrl('https://example.com/auth/callback', 'abc123')
+    expect(result).toBe('https://example.com/auth/callback?code=abc123')
+  })
+
+  it('appends code with & when URL has existing query', () => {
+    const result = appendCodeToCallbackUrl('https://example.com/auth/callback?foo=bar', 'abc123')
+    expect(result).toBe('https://example.com/auth/callback?foo=bar&code=abc123')
+  })
+
+  it('places code in query and reattaches fragment', () => {
+    const result = appendCodeToCallbackUrl('https://example.com/auth/callback#section', 'abc123')
+    expect(result).toBe('https://example.com/auth/callback?code=abc123#section')
+    const parsed = new URL(result)
+    expect(parsed.searchParams.get('code')).toBe('abc123')
+    expect(parsed.hash).toBe('#section')
+  })
+
+  it('preserves fragment when URL has both query and fragment', () => {
+    const result = appendCodeToCallbackUrl(
+      'https://example.com/auth/callback?x=1#section',
+      'abc123',
+    )
+    expect(result).toBe('https://example.com/auth/callback?x=1&code=abc123#section')
+  })
+
+  it('encodes code for URL safety', () => {
+    const result = appendCodeToCallbackUrl('https://example.com/auth/callback', 'a+b=c&d')
+    expect(result).toBe('https://example.com/auth/callback?code=a%2Bb%3Dc%26d')
+  })
+})
 
 describe('isAllowedUrl', () => {
   it('accepts valid https URL when allowlist has *', () => {
