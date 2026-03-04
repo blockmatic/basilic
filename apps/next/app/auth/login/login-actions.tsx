@@ -29,14 +29,15 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
 }
 
 export function LoginActions({ initialError }: LoginActionsProps) {
-  const [errorDismissed, setErrorDismissed] = useState(false)
+  const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const { mutate: startOAuthLogin, error: oauthError, isPending: isOAuthPending } = useOAuthLogin()
   const displayError = oauthError?.message ?? initialError
+  const showBanner = displayError && displayError !== dismissedForError
 
   return (
     <div>
-      {displayError && !errorDismissed && (
-        <ErrorBanner message={displayError} onDismiss={() => setErrorDismissed(true)} />
+      {showBanner && (
+        <ErrorBanner message={displayError} onDismiss={() => setDismissedForError(displayError)} />
       )}
       <LoginForm
         extraActions={

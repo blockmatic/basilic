@@ -11,7 +11,7 @@ Frontend apps (for example `apps/next`) use **Playwright E2E tests only**. We do
 
 - E2E tests cover core user journeys end-to-end
 - Tests run against real endpoints and infrastructure (Next.js + Fastify)
-- All API calls use actual credentials from environment variables
+- Tests use test-scoped credentials supplied via `TEST_*` environment variables, not production keys. Ensure CI and local setups supply only test secrets; never commit production secrets
 - No Vitest/Testing Library suites for frontend apps
 
 We intentionally invest in a smaller number of high-signal E2E tests instead of broad unit coverage on the frontend.

@@ -32,9 +32,15 @@ export async function updateAuthTokens({
   }
 }
 
-export async function getAuthToken() {
-  const response = await fetch('/api/auth/get-session', { credentials: 'include' })
-  if (!response.ok) return null
-  const data = await response.json()
-  return data.token ?? null
+export async function getAuthToken(): Promise<string | null> {
+  try {
+    const response = await fetch('/api/auth/get-session', { credentials: 'include' })
+    if (!response.ok) return null
+    const data = (await response.json()) as unknown
+    if (data === null || typeof data !== 'object' || !('token' in data)) return null
+    const token = (data as { token?: unknown }).token
+    return typeof token === 'string' ? token : null
+  } catch {
+    return null
+  }
 }

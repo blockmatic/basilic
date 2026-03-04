@@ -28,17 +28,12 @@ export default defineConfig({
   projects: [
     {
       name: 'auth',
-      testMatch: [
-        '**/magic-link-auth.spec.ts',
-        '**/link-email.spec.ts',
-        '**/chat-assistant.spec.ts',
-      ],
+      testMatch: ['**/magic-link-auth.spec.ts', '**/link-email.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'chromium',
       testMatch: ['**/chat-assistant.spec.ts'],
-      testIgnore: ['**/magic-link-auth.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
   ],

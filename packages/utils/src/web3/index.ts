@@ -245,7 +245,10 @@ export function isSupportedChain(chainId: number | string): boolean {
   return getChainMetadata(chainId) !== undefined
 }
 
-/** Short display format for wallet address (chain:first8chars…) */
+const SLICE_LEN = 8
+
+/** Short display format for wallet address (chain:address or chain:first8chars… when long) */
 export function formatWalletShort({ chain, address }: { chain: string; address: string }): string {
-  return `${chain}:${address.slice(0, 8)}…`
+  const suffix = address.length > SLICE_LEN ? `${address.slice(0, SLICE_LEN)}…` : address
+  return `${chain}:${suffix}`
 }
