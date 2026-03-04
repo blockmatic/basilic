@@ -1,10 +1,14 @@
 import { decodeJwt } from 'jose'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { env } from '@/lib/env'
+import {
+  authCookieName,
+  authRefreshCookieName,
+  refreshTokensWithRefreshToken,
+  setAuthCookiesOnResponse,
+} from '@/lib/auth/auth-server'
 
-const authCookieName = 'better-auth.jwt_token'
-const refreshCookieName = 'better-auth.refresh_token'
+const refreshCookieName = authRefreshCookieName
 
 type AuthStatus = 'authenticated' | 'unauthenticated' | 'refreshed'
 
@@ -40,41 +44,14 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
     }
 
     try {
-      const refreshResponse = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/session/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refreshToken }),
-      })
+      const tokens = await refreshTokensWithRefreshToken({ refreshToken })
 
-      if (!refreshResponse.ok) {
-        return { status: 'unauthenticated', shouldClearCookies: true }
-      }
-
-      const refreshData = (await refreshResponse.json()) as {
-        token?: string
-        refreshToken?: string
-      }
-
-      if (!refreshData.token || !refreshData.refreshToken) {
+      if (!tokens) {
         return { status: 'unauthenticated', shouldClearCookies: true }
       }
 
       const response = NextResponse.next()
-      response.cookies.set(authCookieName, refreshData.token, {
-        httpOnly: true,
-        path: '/',
-        sameSite: 'lax',
-        secure: env.NODE_ENV === 'production',
-      })
-      response.cookies.set(refreshCookieName, refreshData.refreshToken, {
-        httpOnly: true,
-        path: '/',
-        sameSite: 'lax',
-        secure: env.NODE_ENV === 'production',
-      })
-
+      setAuthCookiesOnResponse(response, tokens)
       return { status: 'refreshed', response, shouldClearCookies: false }
     } catch {
       return { status: 'unauthenticated', shouldClearCookies: true }

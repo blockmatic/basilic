@@ -7,7 +7,7 @@ import {
 import { handleWeb3Callback } from './handlers/callback'
 import { handleMagicLinkVerify } from './handlers/magic-link'
 import { handleOAuthCallback } from './handlers/oauth-callback'
-import { handleGetSession, handleUpdateTokens } from './handlers/session'
+import { handleUpdateTokens } from './handlers/session'
 import { handleTestSetSession } from './handlers/test-set-session'
 import type { AuthProxyOptions } from './handlers/utils'
 import { buildFastifyUrl, getForwardedHeaders, getRequestBody } from './handlers/utils'
@@ -39,10 +39,6 @@ export const proxyRequest = async ({ pathSegments, request }: AuthProxyOptions) 
         headers: { 'Content-Type': 'application/json' },
       },
     )
-  }
-
-  if (path === 'get-session') {
-    return handleGetSession()
   }
 
   if (path === 'test-set-session') {
