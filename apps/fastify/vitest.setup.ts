@@ -12,4 +12,5 @@
  * ## AI Tests
  *
  * Chat tests call real Open Router API. Requires OPEN_ROUTER_API_KEY in .env.test.
+ * When OpenRouter returns 402 (insufficient credits), tests warn and pass without full validation.
  */
