@@ -42,6 +42,7 @@ auth: {
     user: gen.getUser,
   },
   web3: {
+    exchange: gen.web3Exchange,
     nonce: gen.web3Nonce,
     eip155: {
       nonce: gen.web3Eip155Nonce,

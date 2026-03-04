@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
+import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3ExchangeData, Web3ExchangeErrors, Web3ExchangeResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -121,7 +121,7 @@ export const accountLinkWalletVerify = <ThrowOnError extends boolean = false>(op
 /**
  * Generate AI chat response
  *
- * Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: Llama 3.3 70B). Supports streaming and tools.
+ * Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: openrouter/free). Supports streaming and tools.
  */
 export const chat = <ThrowOnError extends boolean = false>(options: Options<ChatData, ThrowOnError>) => (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -223,6 +223,20 @@ export const getUser = <ThrowOnError extends boolean = false>(options?: Options<
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/auth/session/user',
     ...options
+});
+
+/**
+ * Exchange code for tokens
+ *
+ * Exchange one-time code for tokens (redirect flow)
+ */
+export const web3Exchange = <ThrowOnError extends boolean = false>(options: Options<Web3ExchangeData, ThrowOnError>) => (options.client ?? client).post<Web3ExchangeResponses, Web3ExchangeErrors, ThrowOnError>({
+    url: '/auth/web3/exchange',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

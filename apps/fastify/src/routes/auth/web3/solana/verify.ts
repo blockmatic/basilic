@@ -1,19 +1,25 @@
+import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import bs58 from 'bs58'
 import type { FastifyPluginAsync } from 'fastify'
 import nacl from 'tweetnacl'
 import { getDb } from '../../../../db/index.js'
+import { web3Callback } from '../../../../db/schema/index.js'
 import { verifyWeb3Auth } from '../../../../lib/auth-web3.js'
+import { generateToken, hashToken } from '../../../../lib/jwt.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { parseSiwsMessage } from '../siws-parse.js'
 import { validateSolanaAddress } from '../validate-address.js'
 
+const CALLBACK_CODE_EXPIRY_MINUTES = 5
+
 const VerifySchema = Type.Object({
   message: Type.String(),
   signature: Type.String(),
   domain: Type.Optional(Type.String()),
+  callbackUrl: Type.Optional(Type.String()),
 })
 
 const VerifyResponseSchema = Type.Object({
@@ -34,6 +40,7 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
         body: VerifySchema,
         response: {
           200: VerifyResponseSchema,
+          302: Type.Object({ description: Type.Optional(Type.String()) }),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           500: ErrorResponseSchema,
@@ -41,7 +48,7 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      const { message, signature, domain: expectedDomain } = request.body
+      const { message, signature, domain: expectedDomain, callbackUrl } = request.body
 
       const result = await verifyWeb3Auth({
         chain: 'solana',
@@ -81,6 +88,23 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
         userId: result.userId,
         wallet: walletInfo,
       })
+
+      if (callbackUrl) {
+        const code = generateToken()
+        const codeHash = hashToken(code)
+        const expiresAt = new Date(Date.now() + CALLBACK_CODE_EXPIRY_MINUTES * 60 * 1000)
+        await db.insert(web3Callback).values({
+          id: randomUUID(),
+          codeHash,
+          accessToken,
+          refreshToken,
+          expiresAt,
+        })
+        return reply.redirect(
+          `${callbackUrl}${callbackUrl.includes('?') ? '&' : '?'}code=${code}`,
+          302,
+        )
+      }
 
       return reply.code(200).send({ token: accessToken, refreshToken })
     },

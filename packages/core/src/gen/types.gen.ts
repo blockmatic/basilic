@@ -657,6 +657,46 @@ export type GetUserResponses = {
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
 
+export type Web3ExchangeData = {
+    body: {
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/web3/exchange';
+};
+
+export type Web3ExchangeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type Web3ExchangeError = Web3ExchangeErrors[keyof Web3ExchangeErrors];
+
+export type Web3ExchangeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type Web3ExchangeResponse = Web3ExchangeResponses[keyof Web3ExchangeResponses];
+
 export type Web3NonceData = {
     body?: never;
     path?: never;
@@ -734,6 +774,7 @@ export type Web3Eip155VerifyData = {
         message: string;
         signature: string;
         domain?: string;
+        callbackUrl?: string;
     };
     path?: never;
     query?: never;
@@ -822,6 +863,7 @@ export type Web3SolanaVerifyData = {
         message: string;
         signature: string;
         domain?: string;
+        callbackUrl?: string;
     };
     path?: never;
     query?: never;
