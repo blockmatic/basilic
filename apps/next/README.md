@@ -118,7 +118,7 @@ apps/next/
 The app uses the following providers:
 
 - **QueryClientProvider** - TanStack Query for data fetching and caching
-- **ReactApiProvider** - API client context from `@repo/react` with auth token injection
+- **ApiProvider** - API client context from `@repo/react` with auth token injection
 - **NuqsAdapter** - URL state management for query parameters
 - **NextThemesProvider** - Theme management (light/dark mode)
 
@@ -126,20 +126,7 @@ See `components/providers.tsx` for the provider setup.
 
 ## Authentication
 
-This app implements a Backend-for-Frontend (BFF) pattern for authentication:
-
-**BFF Auth Proxy** (`app/api/auth/[...path]/route.ts`):
-- Proxies authentication requests to Fastify API
-- Stores JWT tokens in HttpOnly cookies (secure, XSS-protected)
-- Automatically injects `Authorization: Bearer` headers in API requests
-- Handles magic link verification and token storage
-
-**Authentication Flow:**
-1. User clicks magic link from email
-2. Next.js BFF fetches JWT from Fastify (`format=jwt`)
-3. BFF stores JWT in HttpOnly cookie
-4. Server Components and API routes read cookie and inject bearer header
-5. Fastify validates bearer token and resolves to session
+Auth callback pages (`/auth/callback/*`) exchange credentials with Fastify and set cookies. The cookies are readable on the frontend (`httpOnly: false`) for SSR convenience—the JWT can be read and decoded from `document.cookie`. Clients call Fastify directly (`NEXT_PUBLIC_API_URL`); Next.js API routes exist only for cookie updates (`refresh`, `update-tokens`).
 
 See [Authentication Architecture](@apps/docu/content/docs/architecture/authentication.mdx) for complete details.
 

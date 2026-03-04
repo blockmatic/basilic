@@ -45,10 +45,10 @@ test.describe('Magic Link Auth E2E', () => {
     const response = await fetch('http://localhost:3001/test/magic-link/last')
     const { token } = await response.json()
     
-    // Verify magic link (uses Next.js BFF + Fastify)
-    await page.goto(`/api/auth/magic-link/verify?token=${token}&callbackURL=/`)
+    // Verify magic link (callback page sets cookies)
+    await page.goto(`/auth/callback/magiclink?token=${token}&callbackURL=/`)
     
-    // Verify authenticated state (HttpOnly JWT cookie)
+    // Verify authenticated state (JWT cookie readable on client for SSR convenience)
     await expect(page.locator('text=Dashboard')).toBeVisible()
   })
 })
