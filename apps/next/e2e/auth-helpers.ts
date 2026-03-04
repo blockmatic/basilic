@@ -81,7 +81,7 @@ export const authHelpers = {
   },
 
   async verifyMagicLink(page: Page, token: string) {
-    const verifyUrl = `/api/auth/magic-link/verify?token=${encodeURIComponent(token)}&callbackURL=/`
+    const verifyUrl = `/auth/callback/magiclink?token=${encodeURIComponent(token)}&callbackURL=/`
     await page.goto(verifyUrl)
     await page.waitForURL(
       url => {

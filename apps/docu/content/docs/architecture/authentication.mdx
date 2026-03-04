@@ -3,6 +3,13 @@ title: Authentication
 description: JWT-based auth with access + refresh tokens. Supports magic links, OAuth providers, Web3 wallet sign-in, and API keys for programmatic access.
 ---
 
+## Goals
+
+- **Framework-agnostic @repo/react**: Token from cookie, no Next.js-specific APIs. Works with Vue, Svelte, or vanilla browser.
+- **Standardized auth flow**: All methods (magic link, OAuth, Web3) follow the same login pattern and share one token refresh path.
+- **No Fastify proxy**: Clients call Fastify directly (`NEXT_PUBLIC_API_URL`). Next.js API exists only for cookie updates (refresh, update-tokens).
+- **Minimize Next.js API**: Prefer auth pages (callbacks, logout) over API routes.
+
 ## Overview
 
 Authentication is implemented in `apps/fastify` as a **JWT Bearer** system backed by **Drizzle + PostgreSQL/PGLite** session state.
@@ -22,7 +29,7 @@ It supports:
 - **JWT Bearer**: the API accepts `Authorization: Bearer <accessToken>` (JWT) or `Authorization: Bearer bask_<prefix>_<secret>` (API key)
 - **Access + refresh tokens**: short-lived access JWTs, rotated refresh JWTs
 - **DB-backed sessions**: tokens reference a session id that can be revoked
-- **BFF for browsers**: Next.js stores tokens in HttpOnly cookies; only callbacks (OAuth, magic link verify, Web3 token exchange) go through the BFF—login requests go directly to the API
+- **Callback pages**: Next.js auth pages (`/auth/callback/*`, `/auth/logout`) set cookies; clients call Fastify directly for user data
 
 ## Authentication methods
 
@@ -46,13 +53,11 @@ OAuth sign-in uses provider authorization + callback flows and issues access + r
 **GitHub OAuth flow:**
 
 1. User clicks "Continue with GitHub" → client calls `useOAuthLogin` → `GET /auth/oauth/github/authorize-url` (direct to Fastify) → receives `{ redirectUrl }` → redirects to GitHub
-2. User authorizes on GitHub → GitHub redirects to `OAUTH_GITHUB_CALLBACK_URL` (Next.js BFF) with `?code=&state=`
-3. BFF calls `POST /auth/oauth/github/exchange` with `{ code, state }` → Fastify exchanges code, creates/upserts user + account, returns `{ token, refreshToken }`
-4. BFF sets HttpOnly cookies and redirects to `/`
+2. User authorizes on GitHub → GitHub redirects to `OAUTH_GITHUB_CALLBACK_URL` with `?code=&state=`
+3. Callback page (`/auth/callback/oauth/github`) calls `POST /auth/oauth/github/exchange` with `{ code, state }` → Fastify returns `{ token, refreshToken }`
+4. Callback page sets cookies and redirects to `/`
 
-Login requests go directly to the API; only the callback (token exchange + cookie setting) goes through the Next.js BFF.
-
-**Setup:** Create a [GitHub OAuth App](https://github.com/settings/applications/new). Set callback URL to `http://localhost:3000/api/auth/oauth/github/callback` (dev) or your production URL. Add `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `OAUTH_GITHUB_CALLBACK_URL` to Fastify env.
+**Setup:** Create a [GitHub OAuth App](https://github.com/settings/applications/new). Set callback URL to `http://localhost:3000/auth/callback/oauth/github` (dev) or your production URL. Add `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `OAUTH_GITHUB_CALLBACK_URL` to Fastify env.
 
 ### Web3 (SIWE / SIWS)
 
@@ -61,11 +66,11 @@ Web3 sign-in follows a **nonce → sign → verify** flow and returns access + r
 - **EIP-155 (SIWE)**: Sign-In with Ethereum using EIP-4361
 - **Solana (SIWS)**: Sign-In with Solana using an EIP-4361-style message format
 
-**Flow:** Client fetches nonce → builds message (domain, address, nonce) → signs with wallet → POSTs verify to Fastify → receives `{ token, refreshToken }` → if `authCallbackUrl` is set (Next.js), POSTs tokens to callback to set HttpOnly cookies and redirect.
+**Flow:** Client fetches nonce → builds message → signs with wallet → POSTs verify to Fastify with optional `callbackUrl`. When `callbackUrl` is set: Fastify returns 302 to callback with one-time `code` → callback page exchanges code via `POST /auth/web3/exchange` → sets cookies and redirects. When absent: Fastify returns JSON `{ token, refreshToken }` (mobile/CLI).
 
-**Framework support:** Wallet integration lives in `apps/next` (`@/hooks/`, `@/wallet/`). `@repo/react` exposes only verify hooks: `useVerifyWeb3Auth`, `useVerifyLinkWallet`. App-local hooks: `useWallet`, `useWalletAuth`, `useLinkWallet`, `useWeb3Nonce`. `useLinkEmail` remains in `@repo/react`. Vanilla (fetch) and Vue (composable) also supported.
+**Framework support:** Wallet integration lives in `apps/next` (`@/hooks/`, `@/wallet/`). `@repo/react` exposes verify hooks: `useVerifyWeb3Auth`, `useVerifyLinkWallet`. Pass `callbackUrl` to `useVerifyWeb3Auth().mutate()` for redirect flow.
 
-**WalletAdaptersInjector:** In `apps/next`, mount `WalletAdaptersInjector` (from `components/wallet-adapters-injector.tsx`) inside providers. It bridges wagmi + Solana into adapters, enforces single-wallet mode, and triggers sign-out on wallet disconnect when the session was created by wallet sign-in (redirects to `/api/auth/sign-out`).
+**WalletAdaptersInjector:** In `apps/next`, mount `WalletAdaptersInjector` inside providers. Triggers sign-out on wallet disconnect (redirects to `/auth/logout`).
 
 **Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error. Account link: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EXPIRED_TOKEN`.
 
@@ -78,7 +83,7 @@ sequenceDiagram
   participant Client
   participant FastifyAPI
   participant Wallet
-  participant NextBFF as Next.js BFF (optional)
+  participant CallbackPage as /auth/callback/web3
 
   Client->>FastifyAPI: GET /auth/web3/:chain/nonce?address=...
   FastifyAPI->>FastifyAPI: validate address, upsert nonce (web3_nonce)
@@ -88,14 +93,17 @@ sequenceDiagram
   Client->>Wallet: request signature
   Wallet-->>Client: signature
 
-  Client->>FastifyAPI: POST /auth/web3/:chain/verify { message, signature }
+  Client->>FastifyAPI: POST /auth/web3/:chain/verify { message, signature, callbackUrl? }
   FastifyAPI->>FastifyAPI: verify nonce + signature, create/link user
-  FastifyAPI-->>Client: { token, refreshToken }
 
-  opt When authCallbackUrl set (Next.js)
-    Client->>NextBFF: POST /api/auth/callback { token, refreshToken }
-    NextBFF->>NextBFF: set HttpOnly cookies
-    NextBFF-->>Client: redirect
+  alt callbackUrl provided
+    FastifyAPI-->>Client: 302 redirect to callback?code=...
+    Client->>CallbackPage: GET /auth/callback/web3?code=...
+    CallbackPage->>FastifyAPI: POST /auth/web3/exchange { code }
+    FastifyAPI-->>CallbackPage: { token, refreshToken }
+    CallbackPage->>CallbackPage: set cookies, redirect
+  else no callbackUrl (mobile/CLI)
+    FastifyAPI-->>Client: { token, refreshToken }
   end
 ```
 
@@ -221,63 +229,50 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `POST /auth/session/logout` (Bearer) → `204`
   - `POST /auth/session/refresh` → `{ token, refreshToken }`
 
-## Next.js BFF (web)
+## Next.js Auth (web)
 
-For browser clients, `apps/next` acts as a **BFF (Backend-for-Frontend)**: a small backend layer tailored to the web app that proxies requests to the API and manages browser-specific concerns (like secure cookie storage).
+**Callback pages** (`/auth/callback/magiclink`, `/auth/callback/oauth/github`, `/auth/callback/web3`) exchange credentials with Fastify, set cookies, and redirect. **Logout** (`/auth/logout`) calls Fastify to revoke the session and clears cookies.
 
-- **Storage**: sets HttpOnly cookies `better-auth.jwt_token` (access) and `better-auth.refresh_token` (refresh)
-- **Proxying**: Selected paths (`magic-link` → `magiclink`, `session/user`, etc.) are proxied to Fastify. OAuth authorize is not proxied—clients use `useOAuthLogin` to call `/auth/oauth/github/authorize-url` directly.
-- **Sign-out path mapping**: when path is `sign-out`, the BFF maps it to `session/logout` so `GET /api/auth/sign-out` targets Fastify `POST /auth/session/logout`
-- **update-tokens**: `POST /api/auth/update-tokens` accepts `{ token, refreshToken }` and refreshes HttpOnly cookies (used after link email or profile edit)
-- **SSR**: Server Components and server-side calls can read cookies and inject `Authorization: Bearer`
-- **Refresh**: middleware renews expired access tokens via `POST /auth/session/refresh`
+**API routes** (cookie updates only):
+- `POST /api/auth/refresh`: reads refresh token from cookie, calls Fastify refresh, sets new cookies. Used by core client on 401.
+- `POST /api/auth/update-tokens`: accepts `{ token, refreshToken }`, sets cookies. Used after link email or profile edit.
+- `POST /api/auth/test-set-session`: E2E-only (ALLOW_TEST), injects session from query params.
 
-```mermaid
-sequenceDiagram
-  participant Browser
-  participant NextBFF as Next.js BFF
-  participant FastifyAPI as Fastify API
+**Proxy vs coreClient refresh**: The proxy (middleware) runs on navigation before React mounts—it refreshes expired tokens so the user isn’t redirected to login. The core client runs on client-side 401 (e.g. `useUser`)—it calls `POST /api/auth/refresh` to refresh cookies, then retries. Both are needed.
 
-  Browser->>NextBFF: GET /api/auth/sign-out
-  Note over NextBFF: Maps path sign-out to session/logout
-  NextBFF->>FastifyAPI: POST /auth/session/logout
-  FastifyAPI->>FastifyAPI: Revoke session
-  FastifyAPI-->>NextBFF: 204
-  NextBFF->>NextBFF: Clear cookies / remove session cookie
-  NextBFF-->>Browser: Redirect to login
-```
+**Cookies**: `better-auth.jwt_token` and `better-auth.refresh_token` are readable on the client (`httpOnly: false`) so `getAuthToken` can read from `document.cookie`. Cookie `maxAge` is derived from JWT `exp`.
 
 ## Magic link flow (web)
 
-The email link typically points to the Next.js BFF, which exchanges the token for JWTs and stores them in HttpOnly cookies.
+The email link points to the callback page, which exchanges the token for JWTs and sets cookies.
 
 ```mermaid
 sequenceDiagram
   participant Browser
-  participant NextBFF as Next.js BFF
+  participant CallbackPage as /auth/callback/magiclink
   participant FastifyAPI as Fastify API
   participant DB as PostgreSQL
   participant Email as Email provider
 
-  Browser->>NextBFF: POST /api/auth/magic-link/request (email, callbackUrl)
-  NextBFF->>FastifyAPI: POST /auth/magiclink/request
-  FastifyAPI->>DB: upsert user + store verification token (hashed, TTL)
+  Browser->>FastifyAPI: POST /auth/magiclink/request (email, callbackUrl)
+  FastifyAPI->>DB: upsert user + store verification token
   FastifyAPI->>Email: send email with callbackUrl?token=...
   Email-->>Browser: magic link
 
-  Browser->>NextBFF: GET /api/auth/magic-link/verify?token=...&callbackURL=...
-  NextBFF->>FastifyAPI: POST /auth/magiclink/verify (token)
-  FastifyAPI->>DB: consume token, create session, store refresh jti hash
-  FastifyAPI-->>NextBFF: { token, refreshToken }
-  NextBFF->>NextBFF: store tokens in HttpOnly cookies
-  NextBFF-->>Browser: redirect to callbackURL
+  Browser->>CallbackPage: GET /auth/callback/magiclink?token=...&callbackURL=...
+  CallbackPage->>FastifyAPI: POST /auth/magiclink/verify (token)
+  FastifyAPI->>DB: consume token, create session
+  FastifyAPI-->>CallbackPage: { token, refreshToken }
+  CallbackPage->>CallbackPage: set cookies, redirect to callbackURL
 
-  Browser->>NextBFF: GET / (SSR)
-  NextBFF->>FastifyAPI: GET /auth/session/user<br/>Authorization: Bearer <access jwt>
-  FastifyAPI->>DB: validate session + load user
-  FastifyAPI-->>NextBFF: { user }
-  NextBFF-->>Browser: render page
+  Browser->>FastifyAPI: GET /auth/session/user (Bearer from cookie)
+  FastifyAPI-->>Browser: { user }
 ```
+
+## Session vs user data
+
+- **useSession** (`@repo/react`): Returns decoded JWT claims (`sub`, `sid`, `exp`, `wal`). No API call—reads token from cookie, decodes client-side. Use for auth gates and identity checks.
+- **useUser** (`@repo/react`): Calls Fastify `GET /auth/session/user` directly with Bearer from cookie. Use for email, display name, `linkedWallets`.
 
 ## Data model (Drizzle)
 
