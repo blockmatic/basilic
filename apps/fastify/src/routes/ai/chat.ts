@@ -32,7 +32,9 @@ const ChatMessageItemSchema = Type.Union([
 const ChatRequestSchema = Type.Object({
   messages: Type.Array(ChatMessageItemSchema, { minItems: 1, maxItems: 50 }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(Type.String({ default: 'openrouter/aurora-alpha' })),
+  model: Type.Optional(
+    Type.String({ default: env.AI_DEFAULT_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free' }),
+  ),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
   tools: Type.Optional(Type.Any()),
 })
@@ -41,7 +43,7 @@ const ChatResponseSchema = Type.Object({
   text: Type.String(),
 })
 
-const DEFAULT_MODEL = 'openrouter/aurora-alpha'
+const DEFAULT_MODEL = env.AI_DEFAULT_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free'
 
 const MODEL_ALIASES: Record<string, string> = {
   'aurora-alpha': DEFAULT_MODEL,
@@ -163,7 +165,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'chat',
         description:
-          'Chat with AI via Open Router. Default model: Aurora Alpha. Supports streaming and tools.',
+          'Chat with AI via Open Router. Default model: Llama 3.3 70B. Supports streaming and tools.',
         summary: 'Generate AI chat response',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],

@@ -776,7 +776,7 @@
         "tags": [
           "ai"
         ],
-        "description": "Chat with AI via Open Router. Default model: Aurora Alpha. Supports streaming and tools.",
+        "description": "Chat with AI via Open Router. Default model: Llama 3.3 70B. Supports streaming and tools.",
         "requestBody": {
           "required": true,
           "content": {
@@ -834,7 +834,7 @@
                     "type": "boolean"
                   },
                   "model": {
-                    "default": "openrouter/aurora-alpha",
+                    "default": "meta-llama/llama-3.3-70b-instruct:free",
                     "type": "string"
                   },
                   "temperature": {

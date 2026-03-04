@@ -55,6 +55,7 @@ export const env = createEnv({
     SENTRY_DSN: z.string().min(1).optional(),
     SENTRY_ENVIRONMENT: z.string().min(1).optional(),
     OPEN_ROUTER_API_KEY: z.string().min(1),
+    AI_DEFAULT_MODEL: z.string().min(1).optional(),
     ENCRYPTION_KEY: encryptionKeySchema,
     JWT_SECRET: jwtSecretSchema,
     ACCESS_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(900),
