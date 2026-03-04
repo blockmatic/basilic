@@ -24,6 +24,7 @@ env:
   DATABASE_URL: postgresql://localhost/test
   JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
   OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+  AI_DEFAULT_MODEL: meta-llama/llama-3.3-70b-instruct:free
 
 jobs:
   build-and-test:
