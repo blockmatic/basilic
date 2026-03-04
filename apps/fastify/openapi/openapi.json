@@ -776,7 +776,7 @@
         "tags": [
           "ai"
         ],
-        "description": "Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: Llama 3.3 70B). Supports streaming and tools.",
+        "description": "Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: openrouter/free). Supports streaming and tools.",
         "requestBody": {
           "required": true,
           "content": {
@@ -834,7 +834,7 @@
                     "type": "boolean"
                   },
                   "model": {
-                    "default": "meta-llama/llama-3.3-70b-instruct:free",
+                    "default": "openrouter/free",
                     "type": "string"
                   },
                   "temperature": {
