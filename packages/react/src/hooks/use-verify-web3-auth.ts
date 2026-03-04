@@ -67,6 +67,7 @@ export function useVerifyWeb3Auth() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
+      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
     },
   })
 }
