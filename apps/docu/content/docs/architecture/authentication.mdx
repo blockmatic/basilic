@@ -74,7 +74,7 @@ Web3 sign-in follows a **nonce → sign → verify** flow and returns access + r
 
 **Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error. Account link: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EXPIRED_TOKEN`.
 
-**JWT cookie refresh:** After link email or profile edit, the client receives `{ token, refreshToken }` from the verify endpoint. Call `POST /api/auth/update-tokens` with those values to refresh HttpOnly cookies. In `apps/next`, use `updateAuthTokens` from `@/lib/auth-client`.
+**JWT cookie refresh:** After link email or profile edit, the client receives `{ token, refreshToken }` from the verify endpoint. Call `POST /api/auth/update-tokens` with those values to update cookies. In `apps/next`, use `updateAuthTokens` from `@/lib/auth-client`.
 
 **Data model:** Nonces are stored in `web3_nonce` (5-min TTL); identities in `wallet_identities`.
 
@@ -238,7 +238,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 - `POST /api/auth/update-tokens`: accepts `{ token, refreshToken }`, sets cookies. Used after link email or profile edit.
 - `POST /api/auth/test-set-session`: E2E-only (ALLOW_TEST), injects session from query params.
 
-**Proxy vs coreClient refresh**: The proxy (middleware) runs on navigation before React mounts—it refreshes expired tokens so the user isn’t redirected to login. The core client runs on client-side 401 (e.g. `useUser`)—it calls `POST /api/auth/refresh` to refresh cookies, then retries. Both are needed.
+**Proxy vs coreClient refresh**: The proxy (`proxy.ts`) runs on navigation before React mounts—it refreshes expired tokens so the user isn’t redirected to login. The core client runs on client-side 401 (e.g. `useUser`)—it calls `POST /api/auth/refresh` to refresh cookies, then retries. Both are needed.
 
 **Cookies**: `better-auth.jwt_token` and `better-auth.refresh_token` are readable on the client (`httpOnly: false`) so `getAuthToken` can read from `document.cookie`. Cookie `maxAge` is derived from JWT `exp`.
 
@@ -290,7 +290,7 @@ The auth system relies on these tables:
 - **Refresh token rotation**: refresh `jti` is rotated on every refresh; reuse revokes the session
 - **Hashed secrets at rest**: magic link tokens, refresh `jti`, and API key secrets are stored hashed
 - **API key security**: timing-safe hash comparison, optional expiry, atomic revoke with ownership check
-- **Callback URL safety**: `callbackUrl` accepts any `http`/`https` URL; invalid schemes (e.g. `javascript:`) are rejected
+- **Callback URL safety**: `callbackUrl` is validated with `isAllowedUrl` against `ALLOWED_ORIGINS` (default `*`). Absolute `http`/`https` only; invalid schemes (e.g. `javascript:`), relative URLs, and disallowed origins are rejected
 - **OAuth tokens encrypted at rest**: provider access/refresh tokens are stored encrypted (AES-256-GCM)
 - **Nonce-based Web3 verification**: nonces are short-lived and prevent replay attacks
 - **Environment validation**: auth/security env vars are validated via Zod (`@t3-oss/env-core`)

@@ -8,6 +8,7 @@ import { web3Callback } from '../../../../db/schema/index.js'
 import { verifyWeb3Auth } from '../../../../lib/auth-web3.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
+import { isAllowedUrl } from '../../../../lib/url.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { validateEip155Address } from '../validate-address.js'
 
@@ -47,6 +48,13 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
     },
     async (request, reply) => {
       const { message, signature, domain: expectedDomain, callbackUrl } = request.body
+
+      if (callbackUrl && !isAllowedUrl(callbackUrl)) {
+        return reply.code(400).send({
+          code: 'INVALID_CALLBACK_URL',
+          message: 'Callback URL origin is not allowed',
+        })
+      }
 
       const result = await verifyWeb3Auth({
         chain: 'eip155',
@@ -91,10 +99,9 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
           refreshToken,
           expiresAt,
         })
-        return reply.redirect(
-          `${callbackUrl}${callbackUrl.includes('?') ? '&' : '?'}code=${code}`,
-          302,
-        )
+        const separator = callbackUrl.includes('?') ? '&' : '?'
+        const encodedCode = encodeURIComponent(code)
+        return reply.redirect(`${callbackUrl}${separator}code=${encodedCode}`, 302)
       }
 
       return reply.code(200).send({ token: accessToken, refreshToken })

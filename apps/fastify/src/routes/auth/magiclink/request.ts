@@ -9,8 +9,8 @@ import { getDb } from '../../../db/index.js'
 import { users, verification } from '../../../db/schema/index.js'
 import { env } from '../../../lib/env.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
+import { isAllowedUrl } from '../../../lib/url.js'
 import { ErrorResponseSchema } from '../../schemas.js'
-import { validateCallbackUrl } from '../utils.js'
 
 const RequestSchema = Type.Object({
   email: Type.String({ format: 'email' }),
@@ -41,8 +41,8 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { email, callbackUrl } = request.body
 
-      // Validate callback URL (http/https only, no relative URLs)
-      if (!validateCallbackUrl(callbackUrl)) {
+      // Validate callback URL (origin allowlist, http/https only, no relative URLs)
+      if (!isAllowedUrl(callbackUrl)) {
         return reply.status(400).send({
           code: 'INVALID_INPUT',
           message: 'Invalid or unsafe callback URL',

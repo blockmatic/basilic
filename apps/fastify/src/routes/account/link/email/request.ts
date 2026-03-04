@@ -9,7 +9,7 @@ import { getDb } from '../../../../db/index.js'
 import { users, verification } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
-import { validateCallbackUrl } from '../../../auth/utils.js'
+import { isAllowedUrl } from '../../../../lib/url.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const RequestSchema = Type.Object({
@@ -50,7 +50,7 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
 
       const { email, callbackUrl } = request.body
 
-      if (!validateCallbackUrl(callbackUrl)) {
+      if (!isAllowedUrl(callbackUrl)) {
         return reply.code(400).send({
           code: 'INVALID_INPUT',
           message: 'Invalid or unsafe callback URL',

@@ -48,12 +48,10 @@ const web3ExchangeRoute: FastifyPluginAsync = async fastify => {
       const db = await getDb()
       const now = new Date()
 
-      const row = await db
-        .select()
-        .from(web3Callback)
+      const [row] = await db
+        .delete(web3Callback)
         .where(and(eq(web3Callback.codeHash, codeHash), gt(web3Callback.expiresAt, now)))
-        .limit(1)
-        .then(rows => rows[0] ?? null)
+        .returning()
 
       if (!row) {
         return reply.code(401).send({
@@ -61,8 +59,6 @@ const web3ExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Invalid or expired code',
         })
       }
-
-      await db.delete(web3Callback).where(eq(web3Callback.id, row.id))
 
       return reply.code(200).send({
         token: row.accessToken,

@@ -94,6 +94,74 @@ describe('POST /auth/web3/eip155/verify', () => {
     expect(body.code).toBe('INVALID_SIGNATURE')
   })
 
+  it('should return 400 for invalid callbackUrl', async () => {
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/eip155/nonce',
+      query: { address: TEST_ADDRESS },
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const message = createSiweMessage({
+      address: TEST_ADDRESS,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+
+    const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+    const signature = await account.signMessage({ message })
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/eip155/verify',
+      payload: { message, signature, callbackUrl: 'javascript:alert(1)' },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.json()).toMatchObject({
+      code: 'INVALID_CALLBACK_URL',
+      message: 'Callback URL origin is not allowed',
+    })
+  })
+
+  it('should return 302 with encoded code when callbackUrl provided', async () => {
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/eip155/nonce',
+      query: { address: TEST_ADDRESS },
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const message = createSiweMessage({
+      address: TEST_ADDRESS,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+
+    const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+    const signature = await account.signMessage({ message })
+    const callbackUrl = 'https://example.com/auth/callback'
+
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/eip155/verify',
+      payload: { message, signature, callbackUrl },
+    })
+
+    expect(verifyRes.statusCode).toBe(302)
+    const location = verifyRes.headers.location
+    expect(location).toBeDefined()
+    expect(location).toMatch(/^https:\/\/example\.com\/auth\/callback[?&]code=/)
+    const codeMatch = location?.match(/[?&]code=([^&]+)/)
+    expect(codeMatch?.[1]).toBeTruthy()
+  })
+
   it('should access protected route after SIWE authentication', async () => {
     const nonceRes = await fastify.inject({
       method: 'GET',

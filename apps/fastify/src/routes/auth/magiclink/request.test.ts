@@ -50,6 +50,23 @@ describe('POST /auth/magiclink/request', () => {
 
       expect(response.statusCode).toBe(400)
     })
+
+    it('should return 400 for invalid callbackUrl (non-http scheme)', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/auth/magiclink/request',
+        payload: {
+          email: 'test@example.com',
+          callbackUrl: 'javascript:alert(1)',
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      expect(JSON.parse(response.body)).toMatchObject({
+        code: 'INVALID_INPUT',
+        message: 'Invalid or unsafe callback URL',
+      })
+    })
   })
 
   describe('Send Magic Link', () => {
