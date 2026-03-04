@@ -26,10 +26,10 @@ export const test = base.extend<
     },
     { scope: 'worker' },
   ],
-  authenticatedPage: async ({ authenticatedStorageState, browser }, use) => {
+  authenticatedPage: async ({ authenticatedStorageState, browser }, runWithPage) => {
     const context = await browser.newContext({ baseURL, storageState: authenticatedStorageState })
     const page = await context.newPage()
-    await use(page)
+    await runWithPage(page)
     await context.close()
   },
 })

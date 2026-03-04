@@ -1,8 +1,8 @@
 'use client'
 
 import { useReactApiConfig } from '@repo/react'
+import type { Web3Chain } from '@repo/utils/web3'
 import { useQuery } from '@tanstack/react-query'
-import type { Web3Chain } from '@/wallet/types'
 
 export type Web3NonceResponse = { nonce: string }
 

@@ -30,11 +30,8 @@ export default defineConfig({
       name: 'auth',
       testMatch: [
         '**/magic-link-auth.spec.ts',
-        '**/wallet-auth.spec.ts',
-        '**/link-wallet.spec.ts',
-        '**/wallet-metamask-auth.spec.ts',
-        '**/wallet-solana-auth.spec.ts',
         '**/link-email.spec.ts',
+        '**/chat-assistant.spec.ts',
       ],
       use: { ...devices['Desktop Chrome'] },
     },

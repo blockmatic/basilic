@@ -20,7 +20,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "../../tools/typescript/reset.d.ts"
+    "../../tools/typescript/reset.d.ts",
+    "../../packages/react/src/hooks/use-web3-nonce.ts"
   ],
   "exclude": ["node_modules"]
 }

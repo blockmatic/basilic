@@ -8,7 +8,7 @@ const APP_URL =
 const apiBase = API_URL.replace(/\/$/, '')
 
 async function sendMagicLinkOnce(page: Page) {
-  await page.goto('/login')
+  await page.goto('/auth/login')
   await page.getByRole('button', { name: /send magic link/i }).waitFor({ state: 'visible' })
   await page.fill('input[type="email"]', TEST_EMAIL)
   const [response] = await Promise.all([
@@ -89,33 +89,6 @@ export const authHelpers = {
         return path === '/' || path === ''
       },
       { timeout: 10000 },
-    )
-  },
-
-  /**
-   * Login via EVM wallet (EIP-6963 mock). Page must have installMockWallet applied.
-   */
-  async loginWithEVMWallet(page: Page) {
-    await page.goto('/login', { waitUntil: 'domcontentloaded' })
-    await page.getByRole('button', { name: /wallet login/i }).click()
-    await page
-      .getByRole('heading', { name: /connect wallet/i })
-      .waitFor({ state: 'visible', timeout: 5000 })
-    const connectBtn = page.getByRole('button', { name: /connect evm wallet/i })
-    const signInBtn = page.getByRole('button', { name: /sign in with ethereum/i })
-    await page.waitForTimeout(2000)
-    if (await connectBtn.isVisible().catch(() => false)) {
-      await connectBtn.click()
-      await page.waitForTimeout(3000)
-    }
-    await signInBtn.waitFor({ state: 'visible', timeout: 20_000 })
-    await signInBtn.click()
-    await page.waitForURL(
-      url => {
-        const { pathname } = new URL(url)
-        return pathname === '/' || pathname === ''
-      },
-      { timeout: 20_000 },
     )
   },
 

@@ -44,7 +44,7 @@ test.describe('Magic Link Authentication', () => {
       page,
     }) => {
       await page.goto('/api/auth/magic-link/verify?token=invalid-token-12345')
-      await page.waitForURL(/\/login\?.*(message|error)=/, { timeout: 5000 })
+      await page.waitForURL(/\/auth\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
       await expect(emailInput).toBeVisible()
@@ -64,7 +64,7 @@ test.describe('Magic Link Authentication', () => {
       page,
     }) => {
       await page.goto('/api/auth/magic-link/verify')
-      await page.waitForURL(/\/login\?.*(message|error)=/, { timeout: 5000 })
+      await page.waitForURL(/\/auth\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
       await expect(emailInput).toBeVisible()
@@ -80,7 +80,7 @@ test.describe('Magic Link Authentication', () => {
       page,
     }) => {
       await page.goto('/api/auth/magic-link/verify?token=expired-token-abc123')
-      await page.waitForURL(/\/login\?.*(message|error)=/, { timeout: 5000 })
+      await page.waitForURL(/\/auth\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
       await expect(emailInput).toBeVisible()
@@ -95,7 +95,7 @@ test.describe('Magic Link Authentication', () => {
 
   test.describe('Email Validation', () => {
     test('should display email validation error below input field', async ({ page }) => {
-      await page.goto('/login')
+      await page.goto('/auth/login')
 
       const emailInput = page.locator('input[type="email"]')
       await emailInput.fill('invalid-email')
@@ -122,7 +122,7 @@ test.describe('Magic Link Authentication', () => {
     test('should redirect to login when accessing root without auth', async ({ page }) => {
       await page.context().clearCookies()
       await page.goto('/')
-      await page.waitForURL(/\/login/, { timeout: 5000 })
+      await page.waitForURL(/\/auth\/login/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
       await expect(emailInput).toBeVisible()

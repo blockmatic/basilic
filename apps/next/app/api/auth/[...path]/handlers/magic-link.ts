@@ -1,7 +1,7 @@
 import { ApiError, createClient } from '@repo/core'
 import { logger } from '@repo/utils/logger/server'
 import { NextResponse } from 'next/server'
-import { setAuthCookiesOnResponse } from '@/lib/auth-server'
+import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { env } from '@/lib/env'
 import type { AuthProxyOptions } from './utils'
 import { getRedirectUrl } from './utils'
@@ -16,7 +16,7 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
   const token = requestUrl.searchParams.get('token')
 
   if (!token) {
-    const loginUrl = new URL('/login', new URL(request.url).origin)
+    const loginUrl = new URL('/auth/login', new URL(request.url).origin)
     loginUrl.searchParams.set('message', 'INVALID_TOKEN')
     return new Response(null, {
       status: 302,
@@ -93,7 +93,7 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
         },
         'handleMagicLinkVerify: Fastify API error response',
       )
-      const loginUrl = new URL('/login', new URL(request.url).origin)
+      const loginUrl = new URL('/auth/login', new URL(request.url).origin)
       loginUrl.searchParams.set('message', errorCode)
       return new Response(null, {
         status: 302,
@@ -112,7 +112,7 @@ export const handleMagicLinkVerify = async ({ request }: Pick<AuthProxyOptions, 
       },
       'handleMagicLinkVerify: unexpected error (non-ApiError)',
     )
-    const loginUrl = new URL('/login', new URL(request.url).origin)
+    const loginUrl = new URL('/auth/login', new URL(request.url).origin)
     loginUrl.searchParams.set('message', 'FAILED_VERIFY')
     return new Response(null, {
       status: 302,

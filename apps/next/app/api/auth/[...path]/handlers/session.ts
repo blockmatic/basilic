@@ -4,7 +4,7 @@ import {
   getServerRefreshToken,
   setServerAuthToken,
   setServerRefreshToken,
-} from '@/lib/auth-server'
+} from '@/lib/auth/auth-server'
 import type { AuthProxyOptions } from './utils'
 
 export const handleGetSession = async () => {

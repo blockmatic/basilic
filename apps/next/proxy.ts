@@ -90,8 +90,8 @@ export async function proxy(request: NextRequest) {
   const authCheck = await checkAuthStatus(request)
   const { status: authStatus, response: refreshResponse, shouldClearCookies } = authCheck
 
-  // Allow /login to be accessed without auth
-  if (pathname === '/login') {
+  // Allow /auth/login to be accessed without auth
+  if (pathname === '/auth/login') {
     if (authStatus === 'authenticated' || authStatus === 'refreshed') {
       // Redirect authenticated users away from login
       const url = request.nextUrl.clone()
@@ -110,7 +110,7 @@ export async function proxy(request: NextRequest) {
   if (authStatus === 'unauthenticated') {
     // Redirect unauthenticated users to login
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/auth/login'
     const redirectResponse = NextResponse.redirect(url)
     if (shouldClearCookies) {
       redirectResponse.cookies.delete(authCookieName)

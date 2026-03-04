@@ -1,8 +1,8 @@
 import { Geist, Geist_Mono } from 'next/font/google'
 
 import '@repo/ui/styles/globals.css'
-import { ErrorBoundary } from '@/components/error-boundary'
-import { Providers } from '@/components/providers'
+import { Providers } from '@/app/providers'
+import { ErrorBoundary } from '@/components/shared/error-boundary'
 
 const fontSans = Geist({
   subsets: ['latin'],

@@ -13,6 +13,9 @@ import { createReactApiConfig } from './setup'
  *
  * @param props - Configuration options and children
  * @param props.client - API client instance from `@repo/core`
+ * @param props.baseUrl - Optional. Derived from client when created with createClient.
+ * @param props.getAuthToken - Optional. Derived from client when created with createClient.
+ * @param props.authCallbackUrl - Optional. Next.js cookie exchange URL after Web3 verify.
  * @param props.queryClient - Optional TanStack Query client instance
  * @param props.queryClientDefaults - Default query options applied to all hooks
  * @param props.children - React children components
@@ -24,15 +27,15 @@ import { createReactApiConfig } from './setup'
  * import { createClient } from '@repo/core'
  *
  * const queryClient = new QueryClient()
- * const apiClient = createClient({ baseUrl: 'https://api.example.com' })
+ * const apiClient = createClient({
+ *   baseUrl: 'https://api.example.com',
+ *   getAuthToken: async () => localStorage.getItem('accessToken'),
+ * })
  *
  * function App() {
  *   return (
  *     <QueryClientProvider client={queryClient}>
- *       <ReactApiProvider
- *         client={apiClient}
- *         queryClientDefaults={{ retry: 3, staleTime: 5 * 60 * 1000 }}
- *       >
+ *       <ReactApiProvider client={apiClient}>
  *         <MyComponent />
  *       </ReactApiProvider>
  *     </QueryClientProvider>

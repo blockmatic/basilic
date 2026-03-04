@@ -1,11 +1,10 @@
-/** Client-side helper to refresh JWT cookies after link-email or profile update */
 export async function updateAuthTokens({
   token,
   refreshToken,
 }: {
   token: string
   refreshToken: string
-}): Promise<void> {
+}) {
   let response: Response
   try {
     response = await fetch('/api/auth/update-tokens', {
@@ -31,4 +30,11 @@ export async function updateAuthTokens({
       })() || `HTTP ${response.status}`
     throw new Error(`Token refresh failed (${response.status}): ${errorDetail}`)
   }
+}
+
+export async function getAuthToken() {
+  const response = await fetch('/api/auth/get-session', { credentials: 'include' })
+  if (!response.ok) return null
+  const data = await response.json()
+  return data.token ?? null
 }

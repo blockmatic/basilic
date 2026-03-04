@@ -3,7 +3,7 @@ import {
   clearServerAuthToken,
   clearServerRefreshToken,
   getServerAuthToken,
-} from '@/lib/auth-server'
+} from '@/lib/auth/auth-server'
 import { handleWeb3Callback } from './handlers/callback'
 import { handleMagicLinkVerify } from './handlers/magic-link'
 import { handleOAuthCallback } from './handlers/oauth-callback'

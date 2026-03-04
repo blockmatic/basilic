@@ -1,11 +1,11 @@
+import { ApiHealthBadge } from 'components/shared/api-health-badge'
+import { AuthBadge } from 'components/shared/auth-badge'
+import { getAuthErrorMessage } from 'lib/auth/auth-error-messages'
+import { getAuthStatus } from 'lib/auth/auth-utils'
 import { GalleryVerticalEnd } from 'lucide-react'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
-import { ApiHealthBadge } from '@/components/api-health-badge'
-import { AuthBadge } from '@/components/auth-badge'
-import { LoginActionsClient } from '@/components/login/login-actions-client'
-import { getAuthErrorMessage } from '@/lib/auth-error-messages'
-import { getAuthStatus } from '@/lib/auth-utils'
+import { LoginActions } from './login-actions'
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -44,7 +44,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginActionsClient initialError={errorMessage} />
+            <LoginActions initialError={errorMessage} />
           </div>
         </div>
       </div>

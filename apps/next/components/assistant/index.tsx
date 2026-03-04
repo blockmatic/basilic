@@ -10,20 +10,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@repo/ui/components/sheet'
-import { MessageCircleIcon } from 'lucide-react'
-import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 import {
   Conversation,
   ConversationContent,
   ConversationEmptyState,
-} from '@/components/ai-elements/conversation'
-import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message'
-import {
-  Input,
-  PromptInputSubmit,
-  PromptInputTextarea,
-} from '@/components/ai-elements/prompt-input'
-import { userInfoRegistry } from '@/components/ai-elements/user-info-catalog'
+} from 'components/assistant/conversation'
+import { Message, MessageContent, MessageResponse } from 'components/assistant/message'
+import { Input, PromptInputSubmit, PromptInputTextarea } from 'components/assistant/prompt-input'
+import { userInfoRegistry } from 'components/assistant/user-info-catalog'
+import { MessageCircleIcon } from 'lucide-react'
+import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 
 const SUGGESTIONS = ['Who am I?', 'What can you help with?', 'Tell me a joke']
 

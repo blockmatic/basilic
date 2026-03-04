@@ -1,12 +1,12 @@
+import { DashboardWalletContent } from 'app/(dashboard)/dashboard'
+import { getAuthStatus, getUserInfo } from 'lib/auth/auth-utils'
 import { redirect } from 'next/navigation'
-import { DashboardWalletContent } from '@/components/dashboard/dashboard-wallet-content'
-import { getAuthStatus, getUserInfo } from '@/lib/auth-utils'
 
 export default async function Home() {
   const { authenticated } = await getAuthStatus()
 
   if (!authenticated) {
-    redirect('/login')
+    redirect('/auth/login')
   }
 
   const user = await getUserInfo()

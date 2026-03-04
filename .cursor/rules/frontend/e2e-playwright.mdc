@@ -4,20 +4,21 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 ---
 
 ## Config
+- Frontend apps (`apps/next`) use **Playwright E2E only** — no Vitest/Testing Library unit or integration tests
 - No webServer; URLs from `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL` (env or `--app` / `--api` params)
 - Fastify: only `--api` param; `test:e2e` = URL-based, `test:e2e:local` = spawn API, poll, run, cleanup
 - Param format: `--app=URL` or `--app URL`, `--api=URL` or `--api URL`
 - CI: test:e2e:local only (spawn local servers; no Vercel URLs)
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
-- projects: auth first (magic-link, wallet-auth, link-wallet, wallet-metamask-auth, wallet-solana-auth, link-email), then chromium (chat-assistant)
+- projects: auth first (magic-link-auth, link-email), then chromium (chat-assistant)
 
 ## Session Model
 - Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
 - One login per worker, then navigate and assert. No per-test login for authed tests
 - Session reused via worker-scoped storageState (saved after login, new context per test)
 ## Test Order
-- Auth project first: magic-link-auth, wallet-auth, link-wallet, wallet-metamask-auth, wallet-solana-auth, link-email (wallet specs use auth-helpers or fixtures-wallet-mock/fixtures-solana-mock; link-email first test uses wallet login, second uses magic link)
+- Auth project first: magic-link-auth, link-email (both use auth-helpers magic link flow). Use `/auth/login` for login page
 - Chromium project: chat-assistant (uses authenticatedPage; fixture triggers magic link login)
 
 ## Disabled Specs
@@ -26,8 +27,7 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 ## Auth Fixtures
 - Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)
 - Authed feature tests: import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body
-- Wallet specs: wallet-auth, link-wallet use auth-helpers; wallet-metamask-auth, wallet-solana-auth use mock fixtures
 - Each authed test must navigate to its target route (e.g. `authenticatedPage.goto('/')`) since the same page is reused
 
 ## Test Email
-- Use `test@test.ai` when `ALLOW_TEST` enabled; token from DB (`/test/magic-link/last`), no fake outbox. Unit tests with `setTestEmailProvider` can use any email; only E2E magic-link flow requires `@test.ai`.
+- Use `test@test.ai` when `ALLOW_TEST` enabled; token from DB (`/test/magic-link/last`), no fake outbox. Only E2E magic-link flow requires `@test.ai`.

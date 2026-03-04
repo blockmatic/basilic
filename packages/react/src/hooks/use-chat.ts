@@ -8,7 +8,10 @@ import { useReactApiConfig } from '../context'
  * useChat wrapper that uses ReactApiProvider config (baseUrl, getAuthToken).
  * Sends requests directly to Fastify /ai/chat with Bearer auth.
  *
- * @throws Error if baseUrl or getAuthToken is not configured in ReactApiProvider
+ * baseUrl and getAuthToken can come from ReactApiProvider props or from the client
+ * when created with createClient from @repo/core.
+ *
+ * @throws Error if baseUrl or getAuthToken is not available in ReactApiProvider or on the client
  */
 export function useChatFromConfig(
   options?: Parameters<typeof useChat>[0],
@@ -17,8 +20,8 @@ export function useChatFromConfig(
 
   if (!config.baseUrl || !config.getAuthToken) {
     throw new Error(
-      'useChatFromConfig requires baseUrl and getAuthToken in ReactApiProvider. ' +
-        'Pass baseUrl={env.NEXT_PUBLIC_API_URL} and getAuthToken={...} to ReactApiProvider.',
+      'useChatFromConfig requires baseUrl and getAuthToken in ReactApiProvider or on the client (createClient from @repo/core). ' +
+        'Pass baseUrl and getAuthToken to createClient, or to ReactApiProvider.',
     )
   }
 

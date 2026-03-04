@@ -1,5 +1,5 @@
+import { setAuthCookiesOnResponse } from 'lib/auth/auth-server'
 import { NextResponse } from 'next/server'
-import { setAuthCookiesOnResponse } from '@/lib/auth-server'
 import { env } from '@/lib/env'
 
 /**

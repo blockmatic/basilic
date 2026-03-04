@@ -62,6 +62,7 @@ const queryClient = new QueryClient()
 
 const coreClient = createClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL,
+  getAuthToken: async () => localStorage.getItem('accessToken'),
 })
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -74,6 +75,8 @@ export function Providers({ children }: { children: ReactNode }) {
   )
 }
 ```
+
+`ReactApiProvider` derives `baseUrl` and `getAuthToken` from the client when it was created with `createClient` from `@repo/core`, so you only pass `client` (and optional `authCallbackUrl`).
 
 Wrap your app in `app/layout.tsx`:
 
