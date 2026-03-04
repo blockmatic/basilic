@@ -12,15 +12,18 @@ export type UseVerifyWeb3AuthParams = {
   message: string
   signature: string
   domain: string
+  /** When set, Fastify returns 302 to callback; browser redirects to complete flow */
+  callbackUrl?: string
 }
 
 /**
  * Minimal hook: given signed SIWE/SIWS payload, calls the verify endpoint.
  * No wallet adapters, no viem, no message building.
- * If authCallbackUrl is set, POSTs tokens and follows redirect.
+ * When callbackUrl provided: Fastify returns 302, browser follows redirect to callback page.
+ * When absent: returns JSON tokens (mobile/CLI).
  */
 export function useVerifyWeb3Auth() {
-  const { client, authCallbackUrl } = useReactApiConfig()
+  const { client, baseUrl } = useReactApiConfig()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -29,7 +32,33 @@ export function useVerifyWeb3Auth() {
       message,
       signature,
       domain,
+      callbackUrl,
     }: UseVerifyWeb3AuthParams): Promise<Web3Eip155VerifyResponse | Web3SolanaVerifyResponse> => {
+      if (callbackUrl) {
+        const { getClientConfig } = await import('@repo/core')
+        const url = baseUrl || getClientConfig(client)?.baseUrl || ''
+        if (!url?.trim()) {
+          throw new Error('baseUrl is required for web3 verification')
+        }
+        const verifyUrl =
+          chain === 'eip155' ? `${url}/auth/web3/eip155/verify` : `${url}/auth/web3/solana/verify`
+        const res = await fetch(verifyUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, signature, domain, callbackUrl }),
+          redirect: 'manual',
+        })
+        if (res.status === 302) {
+          const location = res.headers.get('Location')
+          if (location) {
+            window.location.href = location
+            return {} as Web3Eip155VerifyResponse
+          }
+        }
+        const text = await res.text()
+        throw new Error(text || `Verify failed: ${res.status}`)
+      }
+
       const verifyResult =
         chain === 'eip155'
           ? await client.auth.web3.eip155.verify({
@@ -40,33 +69,11 @@ export function useVerifyWeb3Auth() {
               body: { message, signature, domain },
               throwOnError: true,
             })
-      const result = verifyResult as unknown as Web3Eip155VerifyResponse | Web3SolanaVerifyResponse
-
-      if (authCallbackUrl) {
-        const res = await fetch(authCallbackUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            token: result.token,
-            refreshToken: result.refreshToken,
-          }),
-          credentials: 'include',
-          redirect: 'follow',
-        })
-        if (!res.ok) {
-          const text = await res.text()
-          throw new Error(text || `Callback failed: ${res.status}`)
-        }
-        if (res.redirected) {
-          window.location.href = res.url
-          return result
-        }
-      }
-
-      return result
+      return verifyResult as unknown as Web3Eip155VerifyResponse | Web3SolanaVerifyResponse
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
+      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
     },
   })
 }

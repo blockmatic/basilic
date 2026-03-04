@@ -1660,6 +1660,103 @@
         }
       }
     },
+    "/auth/web3/exchange": {
+      "post": {
+        "operationId": "web3Exchange",
+        "summary": "Exchange code for tokens",
+        "tags": [
+          "auth"
+        ],
+        "description": "Exchange one-time code for tokens (redirect flow)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "code"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "refreshToken"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/web3/nonce": {
       "get": {
         "operationId": "web3Nonce",
@@ -1857,6 +1954,9 @@
                   },
                   "domain": {
                     "type": "string"
+                  },
+                  "callbackUrl": {
+                    "type": "string"
                   }
                 }
               }
@@ -1880,6 +1980,21 @@
                       "type": "string"
                     },
                     "refreshToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "302": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "description": {
                       "type": "string"
                     }
                   }
@@ -2069,6 +2184,9 @@
                   },
                   "domain": {
                     "type": "string"
+                  },
+                  "callbackUrl": {
+                    "type": "string"
                   }
                 }
               }
@@ -2092,6 +2210,21 @@
                       "type": "string"
                     },
                     "refreshToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "302": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "description": {
                       "type": "string"
                     }
                   }

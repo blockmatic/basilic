@@ -27,13 +27,18 @@ export type CoreClientOptions = {
 
   /**
    * Callback to get the refresh token.
-   * Required for automatic token refresh on 401 errors.
-   * If not provided, 401 errors fail normally (user must re-login).
+   * Used when refreshUrl is not set. Required for automatic token refresh on 401.
    */
   getRefreshToken?: () => string | null | Promise<string | null>
 
   /**
-   * Callback invoked when tokens are refreshed.
+   * BFF refresh URL (e.g. /api/auth/refresh). When set, 401 triggers POST to this URL
+   * with credentials; response sets cookies. Simpler than getRefreshToken+onTokensRefreshed.
+   */
+  refreshUrl?: string
+
+  /**
+   * Callback invoked when tokens are refreshed (direct Fastify refresh).
    * Required for automatic token refresh on 401 errors.
    * Should update token storage with the new tokens.
    */

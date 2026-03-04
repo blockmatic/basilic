@@ -1,7 +1,7 @@
 'use client'
 
 import { createClient } from '@repo/core'
-import { ReactApiProvider } from '@repo/react'
+import { ApiProvider } from '@repo/react'
 import { logger } from '@repo/utils/logger/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { getAuthToken, updateAuthTokens } from 'lib/auth/auth-client'
@@ -16,15 +16,15 @@ const queryClient = new QueryClient()
 
 export const coreClient = createClient({
   baseUrl: env.NEXT_PUBLIC_API_URL,
-  getAuthToken: getAuthToken,
-  getRefreshToken: getAuthToken,
+  getAuthToken,
   onTokensRefreshed: updateAuthTokens,
+  refreshUrl: '/api/auth/refresh',
 })
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactApiProvider client={coreClient} authCallbackUrl="/api/auth/callback?callbackURL=/">
+      <ApiProvider client={coreClient}>
         <NuqsAdapter>
           <NextThemesProvider
             attribute="class"
@@ -36,7 +36,7 @@ export function Providers({ children }: { children: ReactNode }) {
             {children}
           </NextThemesProvider>
         </NuqsAdapter>
-      </ReactApiProvider>
+      </ApiProvider>
     </QueryClientProvider>
   )
 }

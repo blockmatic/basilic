@@ -1,54 +1,26 @@
 import { logger } from '@repo/utils/logger/server'
-import {
-  getServerAuthToken,
-  getServerRefreshToken,
-  setServerAuthToken,
-  setServerRefreshToken,
-} from '@/lib/auth/auth-server'
+import { NextResponse } from 'next/server'
+import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import type { AuthProxyOptions } from './utils'
-
-export const handleGetSession = async () => {
-  const { token } = await getServerAuthToken()
-  const { refreshToken } = await getServerRefreshToken()
-
-  return new Response(
-    JSON.stringify({
-      token: token ?? null,
-      refreshToken: refreshToken ?? null,
-    }),
-    {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  )
-}
 
 export const handleUpdateTokens = async ({ request }: Pick<AuthProxyOptions, 'request'>) => {
   try {
     const body = await request.json()
     const { token, refreshToken } = body as { token?: string; refreshToken?: string }
 
-    if (token && typeof token === 'string') {
-      await setServerAuthToken({ token })
+    if (typeof token !== 'string' || typeof refreshToken !== 'string') {
+      return new Response(JSON.stringify({ message: 'token and refreshToken required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
-    if (refreshToken && typeof refreshToken === 'string') {
-      await setServerRefreshToken({ refreshToken })
-    }
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    )
+    const response = new NextResponse(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+    setAuthCookiesOnResponse(response, { token, refreshToken })
+    return response
   } catch (error) {
     logger.error({ error }, 'API auth route: update tokens failed')
     return new Response(

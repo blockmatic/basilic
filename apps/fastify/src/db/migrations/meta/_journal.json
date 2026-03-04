@@ -43,6 +43,13 @@
       "when": 1771138393214,
       "tag": "0005_medical_sway",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772660859214,
+      "tag": "0006_fantastic_tyger_tiger",
+      "breakpoints": true
     }
   ]
 }

@@ -32,12 +32,6 @@ export type ReactApiConfig = {
    */
   getAuthToken?: () => Promise<string | null>
 
-  /**
-   * When set (e.g. Next.js `/api/auth/callback`), after Web3 verify success the client POSTs
-   * `{ token, refreshToken }` here to set HttpOnly cookies. Omit for vanilla/Vue/SPA.
-   */
-  authCallbackUrl?: string
-
   /** Optional TanStack Query client instance */
   queryClient?: QueryClient
 
@@ -64,9 +58,6 @@ export type ReactApiConfigValue = {
 
   /** Callback to get Bearer token for chat requests */
   getAuthToken?: () => Promise<string | null>
-
-  /** When set, POST Web3 tokens here after verify (Next.js cookie exchange) */
-  authCallbackUrl?: string
 
   /** Optional TanStack Query client instance */
   queryClient?: QueryClient
@@ -100,7 +91,6 @@ export function createReactApiConfig(options: ReactApiConfig): ReactApiConfigVal
     client: options.client,
     baseUrl: options.baseUrl ?? clientConfig?.baseUrl,
     getAuthToken,
-    authCallbackUrl: options.authCallbackUrl,
     queryClient: options.queryClient,
     queryClientDefaults: options.queryClientDefaults ?? {},
   }

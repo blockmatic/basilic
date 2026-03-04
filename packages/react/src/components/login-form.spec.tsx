@@ -6,7 +6,7 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as useMagicLinkModule from '../hooks/use-magic-link'
-import { ReactApiProvider } from '../provider'
+import { ApiProvider } from '../provider'
 import { LoginForm } from './login-form'
 
 // Mock the useMagicLink hook
@@ -88,9 +88,9 @@ describe('LoginForm', () => {
   function renderLoginForm(initialError?: string, callbackUrl?: string) {
     return render(
       <QueryClientProvider client={queryClient}>
-        <ReactApiProvider client={mockClient}>
+        <ApiProvider client={mockClient}>
           <LoginForm initialError={initialError} callbackUrl={callbackUrl} />
-        </ReactApiProvider>
+        </ApiProvider>
       </QueryClientProvider>,
     )
   }

@@ -75,8 +75,10 @@ await client.auth.magiclink.request({
 React-only helpers built on top of `@repo/core`.
 
 **Exports** (public):
-- `ReactApiProvider`
+- `ApiProvider`
 - `useReactApiConfig`
+- `useSession`
+- `useUser`
 - `useHealthCheck`
 - `useMagicLink`
 - `LoginForm`
@@ -88,7 +90,7 @@ React-only helpers built on top of `@repo/core`.
 'use client'
 
 import { createClient } from '@repo/core'
-import { ReactApiProvider, useHealthCheck } from '@repo/react'
+import { ApiProvider, useHealthCheck } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const queryClient = new QueryClient()
@@ -97,7 +99,7 @@ const coreClient = createClient({ baseUrl: 'http://localhost:3001' })
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactApiProvider client={coreClient}>{children}</ReactApiProvider>
+      <ApiProvider client={coreClient}>{children}</ApiProvider>
     </QueryClientProvider>
   )
 }

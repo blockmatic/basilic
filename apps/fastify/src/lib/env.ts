@@ -73,6 +73,16 @@ export const env = createEnv({
     GITHUB_CLIENT_ID: z.string().min(1).optional(),
     GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
     OAUTH_GITHUB_CALLBACK_URL: z.string().url().optional(),
+    ALLOWED_ORIGINS: z
+      .string()
+      .default('*')
+      .transform(val => {
+        const parts = val
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean)
+        return parts.length > 0 ? parts : ['*']
+      }),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

@@ -40,6 +40,7 @@ export function useLinkEmail(config?: UseLinkEmailConfig): UseLinkEmailResult {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
+      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
     },
   })
 
@@ -54,6 +55,7 @@ export function useLinkEmail(config?: UseLinkEmailConfig): UseLinkEmailResult {
     onSuccess: data => {
       config?.onVerifySuccess?.(data)
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
+      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
     },
   })
 

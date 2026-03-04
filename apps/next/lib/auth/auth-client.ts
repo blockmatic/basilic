@@ -1,3 +1,27 @@
+const authCookieName = 'better-auth.jwt_token'
+const refreshCookieName = 'better-auth.refresh_token'
+
+function parseCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+  const match = document.cookie.match(
+    new RegExp(`(?:^|; )${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=([^;]*)`),
+  )
+  const value = match?.[1]
+  return value ? decodeURIComponent(value) : null
+}
+
+export function getAuthTokenFromCookie(): string | null {
+  return parseCookie(authCookieName)
+}
+
+export function getRefreshTokenFromCookie(): string | null {
+  return parseCookie(refreshCookieName)
+}
+
+export async function getAuthToken(): Promise<string | null> {
+  return getAuthTokenFromCookie()
+}
+
 export async function updateAuthTokens({
   token,
   refreshToken,
@@ -29,18 +53,5 @@ export async function updateAuthTokens({
         }
       })() || `HTTP ${response.status}`
     throw new Error(`Token refresh failed (${response.status}): ${errorDetail}`)
-  }
-}
-
-export async function getAuthToken(): Promise<string | null> {
-  try {
-    const response = await fetch('/api/auth/get-session', { credentials: 'include' })
-    if (!response.ok) return null
-    const data = (await response.json()) as unknown
-    if (data === null || typeof data !== 'object' || !('token' in data)) return null
-    const token = (data as { token?: unknown }).token
-    return typeof token === 'string' ? token : null
-  } catch {
-    return null
   }
 }

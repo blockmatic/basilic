@@ -8,7 +8,7 @@ This package provides React Query hooks that wrap `@repo/core` API client method
 
 ## Exports
 
-- `ReactApiProvider` - Provider component that makes API client available to hooks
+- `ApiProvider` - Provider component that makes API client available to hooks
 - `useReactApiConfig` - Hook to access API client and query defaults from context
 - `useHealthCheck` - React Query hook for health check endpoint
 - `useVerifyWeb3Auth` - Mutation hook: given `{ chain, message, signature, domain }`, calls auth verify endpoint (SIWE/SIWS)
@@ -53,7 +53,7 @@ Create a client component provider (e.g., `app/components/providers.tsx`):
 'use client'
 
 import { createClient } from '@repo/core'
-import { ReactApiProvider } from '@repo/react'
+import { ApiProvider } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 
@@ -68,15 +68,15 @@ const coreClient = createClient({
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactApiProvider client={coreClient}>
+      <ApiProvider client={coreClient}>
         {children}
-      </ReactApiProvider>
+      </ApiProvider>
     </QueryClientProvider>
   )
 }
 ```
 
-`ReactApiProvider` derives `baseUrl` and `getAuthToken` from the client when it was created with `createClient` from `@repo/core`, so you only pass `client` (and optional `authCallbackUrl`).
+`ApiProvider` derives `baseUrl` and `getAuthToken` from the client when it was created with `createClient` from `@repo/core`, so you only pass `client`.
 
 Wrap your app in `app/layout.tsx`:
 
@@ -131,10 +131,10 @@ export function HealthStatus() {
 
 ### General Setup
 
-Wrap your app with `QueryClientProvider` and `ReactApiProvider`:
+Wrap your app with `QueryClientProvider` and `ApiProvider`:
 
 ```tsx
-import { ReactApiProvider } from '@repo/react'
+import { ApiProvider } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createClient } from '@repo/core'
 
@@ -162,7 +162,7 @@ const coreClient = createClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactApiProvider
+      <ApiProvider
         client={coreClient}
         queryClientDefaults={{
           retry: 3,
@@ -170,7 +170,7 @@ function App() {
         }}
       >
         <MyComponent />
-      </ReactApiProvider>
+      </ApiProvider>
     </QueryClientProvider>
   )
 }
@@ -261,7 +261,7 @@ function CustomHook() {
 Configure default query options that apply to all hooks:
 
 ```tsx
-<ReactApiProvider
+<ApiProvider
   client={coreClient}
   queryClientDefaults={{
     retry: 3, // Retry failed requests 3 times
@@ -269,7 +269,7 @@ Configure default query options that apply to all hooks:
   }}
 >
   <App />
-</ReactApiProvider>
+</ApiProvider>
 ```
 
 Individual hooks can override these defaults:

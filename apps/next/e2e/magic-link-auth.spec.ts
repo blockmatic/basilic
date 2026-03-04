@@ -43,7 +43,7 @@ test.describe('Magic Link Authentication', () => {
     test('should redirect to login with error message for invalid token displayed below input', async ({
       page,
     }) => {
-      await page.goto('/api/auth/magic-link/verify?token=invalid-token-12345')
+      await page.goto('/auth/callback/magiclink?token=invalid-token-12345')
       await page.waitForURL(/\/auth\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
@@ -63,7 +63,7 @@ test.describe('Magic Link Authentication', () => {
     test('should redirect to login with error message for missing token displayed below input', async ({
       page,
     }) => {
-      await page.goto('/api/auth/magic-link/verify')
+      await page.goto('/auth/callback/magiclink')
       await page.waitForURL(/\/auth\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
@@ -79,7 +79,7 @@ test.describe('Magic Link Authentication', () => {
     test('should redirect to login with error message for expired token displayed below input', async ({
       page,
     }) => {
-      await page.goto('/api/auth/magic-link/verify?token=expired-token-abc123')
+      await page.goto('/auth/callback/magiclink?token=expired-token-abc123')
       await page.waitForURL(/\/auth\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
@@ -158,13 +158,15 @@ test.describe('Magic Link Authentication', () => {
       const jwtCookie = cookies.find(cookie => cookie.name === 'better-auth.jwt_token')
       expect(jwtCookie).toBeDefined()
 
-      const response = await page.request.get('/api/auth/session/user')
+      const response = await page.request.get(`${authHelpers.API_URL}/auth/session/user`, {
+        headers: { Authorization: `Bearer ${jwtCookie?.value ?? ''}` },
+      })
       expect(response.ok()).toBeTruthy()
 
-      const sessionData = await response.json()
+      const sessionData = (await response.json()) as { user?: { email?: string } }
       expect(sessionData).toHaveProperty('user')
       expect(sessionData.user).not.toBeNull()
-      expect(sessionData.user.email).toBe(TEST_EMAIL)
+      expect(sessionData.user?.email).toBe(TEST_EMAIL)
     })
   })
 })

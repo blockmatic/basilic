@@ -101,6 +101,100 @@ describe('POST /auth/web3/solana/verify', () => {
     expect(body.code).toBe('INVALID_SIGNATURE')
   })
 
+  it('should return 400 for invalid callbackUrl', async () => {
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/solana/nonce',
+      query: { address },
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const message = buildSiwsMessage({
+      domain: 'localhost',
+      address,
+      nonce,
+    })
+    const messageBytes = new TextEncoder().encode(message)
+    const signature = nacl.sign.detached(messageBytes, keypair.secretKey)
+    const signatureB58 = bs58.encode(signature)
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/solana/verify',
+      payload: { message, signature: signatureB58, callbackUrl: 'javascript:alert(1)' },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.json()).toMatchObject({
+      code: 'INVALID_CALLBACK_URL',
+      message: 'Callback URL origin is not allowed',
+    })
+  })
+
+  it('should return 302 with encoded code when callbackUrl provided', async () => {
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/solana/nonce',
+      query: { address },
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const message = buildSiwsMessage({
+      domain: 'localhost',
+      address,
+      nonce,
+    })
+    const messageBytes = new TextEncoder().encode(message)
+    const signature = nacl.sign.detached(messageBytes, keypair.secretKey)
+    const signatureB58 = bs58.encode(signature)
+    const callbackUrl = 'https://example.com/auth/callback'
+
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/solana/verify',
+      payload: { message, signature: signatureB58, callbackUrl },
+    })
+
+    expect(verifyRes.statusCode).toBe(302)
+    const location = verifyRes.headers.location
+    expect(location).toBeDefined()
+    expect(location).toMatch(/^https:\/\/example\.com\/auth\/callback[?&]code=/)
+    const codeMatch = location?.match(/[?&]code=([^&]+)/)
+    expect(codeMatch?.[1]).toBeTruthy()
+  })
+
+  it('should place code in query string when callbackUrl has fragment', async () => {
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/solana/nonce',
+      query: { address },
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const message = buildSiwsMessage({
+      domain: 'localhost',
+      address,
+      nonce,
+    })
+    const messageBytes = new TextEncoder().encode(message)
+    const signature = nacl.sign.detached(messageBytes, keypair.secretKey)
+    const signatureB58 = bs58.encode(signature)
+    const callbackUrl = 'https://example.com/auth/callback#section'
+
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/solana/verify',
+      payload: { message, signature: signatureB58, callbackUrl },
+    })
+
+    expect(verifyRes.statusCode).toBe(302)
+    const location = verifyRes.headers.location
+    expect(location).toBeDefined()
+    const parsed = new URL(location ?? '')
+    expect(parsed.searchParams.get('code')).toBeTruthy()
+    expect(parsed.hash).toBe('#section')
+  })
+
   it('should access protected route after SIWS authentication', async () => {
     const nonceRes = await fastify.inject({
       method: 'GET',

@@ -27,6 +27,7 @@ export function useVerifyLinkWallet() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
+      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
     },
   })
 }
