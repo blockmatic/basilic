@@ -29,12 +29,13 @@ const ChatMessageItemSchema = Type.Union([
     parts: Type.Array(Type.Any()),
   }),
 ])
+/** Fixed default for OpenAPI/schema; runtime override via AI_DEFAULT_MODEL env. */
+const DEFAULT_AI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free'
+
 const ChatRequestSchema = Type.Object({
   messages: Type.Array(ChatMessageItemSchema, { minItems: 1, maxItems: 50 }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(
-    Type.String({ default: env.AI_DEFAULT_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free' }),
-  ),
+  model: Type.Optional(Type.String({ default: DEFAULT_AI_MODEL })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
   tools: Type.Optional(Type.Any()),
 })
@@ -43,10 +44,8 @@ const ChatResponseSchema = Type.Object({
   text: Type.String(),
 })
 
-const DEFAULT_MODEL = env.AI_DEFAULT_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free'
-
 const MODEL_ALIASES: Record<string, string> = {
-  'aurora-alpha': DEFAULT_MODEL,
+  'aurora-alpha': DEFAULT_AI_MODEL,
   grok: 'x-ai/grok-3-mini',
   'grok-3-mini': 'x-ai/grok-3-mini',
   sonnet: 'anthropic/claude-3-5-sonnet',
@@ -58,7 +57,10 @@ function getOpenRouter() {
 }
 
 function resolveModel(model?: string) {
-  const m = model ?? DEFAULT_MODEL
+  const defaultModel = env.AI_DEFAULT_MODEL ?? DEFAULT_AI_MODEL
+  const useRuntimeDefault =
+    model === undefined || model === DEFAULT_AI_MODEL || model === 'aurora-alpha'
+  const m = useRuntimeDefault ? defaultModel : model
   const modelId = MODEL_ALIASES[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
   return getOpenRouter().chat(modelId)
 }
@@ -165,7 +167,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'chat',
         description:
-          'Chat with AI via Open Router. Default model: Llama 3.3 70B. Supports streaming and tools.',
+          'Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: Llama 3.3 70B). Supports streaming and tools.',
         summary: 'Generate AI chat response',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],
