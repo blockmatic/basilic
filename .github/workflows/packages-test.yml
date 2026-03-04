@@ -1,0 +1,50 @@
+name: Packages (Unit Tests)
+
+on:
+  pull_request:
+    paths:
+      - 'packages/**'
+      - 'tools/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+
+concurrency:
+  group: packages-test-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_ENV: test
+  CI: true
+  PGLITE: true
+  DATABASE_URL: postgresql://localhost/test
+  OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.3
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate OpenAPI (for @repo/core)
+        run: pnpm turbo run generate:openapi --filter=@repo/fastify
+      - name: Build packages
+        run: pnpm turbo run build --filter='!@repo/next' --filter='!@repo/fastify' --filter='!@repo/docu'
+      - name: Unit tests (packages only)
+        run: pnpm turbo run test --filter='!@repo/next' --filter='!@repo/fastify' --filter='!@repo/docu'

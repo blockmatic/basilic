@@ -1,6 +1,7 @@
 {
-  "ignoreCommand": "npx turbo-ignore @repo/next --fallback=HEAD~10",
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/next",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "npx turbo-ignore @repo/next --fallback=HEAD^1",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/next...",
   "devCommand": "cd ../.. && pnpm dev --filter=@repo/next",
   "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",

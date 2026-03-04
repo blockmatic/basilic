@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "ignoreCommand": "npx turbo-ignore @repo/docu --fallback=HEAD~10",
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=@repo/docu...",
+  "ignoreCommand": "npx turbo-ignore @repo/docu --fallback=HEAD^1",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/docu...",
   "installCommand": "cd ../.. && pnpm install",
   "devCommand": "cd ../.. && pnpm dev --filter=@repo/docu",
   "git": { "deploymentEnabled": { "main": true, "develop": true } },

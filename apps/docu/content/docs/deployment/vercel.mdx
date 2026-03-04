@@ -55,7 +55,7 @@ NEXT_PUBLIC_SITE_URL=https://docs.yourdomain.com
 
 ### 3. Deploy
 
-Git deployments are enabled. Vercel automatically builds and deploys on push: preview environments for PRs and branches, production for main/develop. CI workflows (next-e2e, api-e2e, docu-build) run tests and build validation locally; they do not trigger deploys.
+Git deployments are enabled. Vercel automatically builds and deploys on push: preview environments for PRs and branches, production for main/develop. CI workflows (next-e2e, api-e2e, packages-test) run tests locally; they do not trigger deploys.
 
 ## Deployment Configuration
 
@@ -65,8 +65,9 @@ Monorepo apps use custom configs. Example for `apps/next`:
 
 ```json
 {
-  "ignoreCommand": "npx turbo-ignore @repo/next --fallback=HEAD~10",
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=@repo/next",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "npx turbo-ignore @repo/next --fallback=HEAD^1",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/next...",
   "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",
   "outputDirectory": ".next"
@@ -89,7 +90,7 @@ Root Directory must be set in Vercel project settings (e.g. `apps/next`).
 
 ## Path-Based Deploys
 
-Each app uses `ignoreCommand` in `vercel.json` (e.g. `turbo-ignore @repo/next`) so Vercel skips deploys when only unrelated paths change. Vercel builds only when relevant code changes.
+Each app uses `ignoreCommand` in `vercel.json` (e.g. `turbo-ignore @repo/next --fallback=HEAD^1`) so Vercel skips builds when the app and its dependencies are unchanged. The build command uses `--filter=@repo/<app>...` to include dependencies. Vercel also has built-in [skipping unaffected projects](https://vercel.com/docs/monorepos#skipping-unaffected-projects) for monorepos; turbo-ignore provides explicit control when Vercel cannot compare against a previous deployment (e.g. new branches).
 
 ## Branch Preview Coupling
 

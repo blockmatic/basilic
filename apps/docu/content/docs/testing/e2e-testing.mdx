@@ -55,10 +55,13 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-The `next-e2e.yml` and `api-e2e.yml` workflows run on pull requests (open and sync). Both use `test:e2e:local`—no Vercel deploys. Build once, then E2E against local servers.
+Test workflows run on pull requests (path-filtered):
 
-- **API E2E** — Runs when `api` scope changes. Spawns Fastify locally, runs Playwright.
-- **Next E2E** — Runs when `next` scope changes. Spawns Fastify + Next locally, runs Playwright.
+- **API E2E** (`api-e2e.yml`) — Runs when `apps/fastify` or its deps change. Spawns Fastify locally, runs Playwright.
+- **Next E2E** (`next-e2e.yml`) — Runs when `apps/next` or its deps change. Spawns Fastify + Next locally, runs Playwright.
+- **Packages** (`packages-test.yml`) — Runs when `packages` or `tools` change. Unit tests only; excludes app E2E.
+
+Lint and security run on every PR. See [GitHub Actions](/docs/deployment/github-actions).
 
 ## Vercel Deployment Protection (Manual Testing)
 
