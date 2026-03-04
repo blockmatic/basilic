@@ -38,3 +38,8 @@ reason = "Transitive ajv (6.12.6, 8.6.3), fix in 8.18.0"
 [[IgnoredVulns]]
 id = "GHSA-83g3-92jg-28cx"
 reason = "Override tar@>=7.5.8 in package.json, @vercel/fun transitive"
+
+# dompurify 3.3.1: transitive, no fix in ecosystem
+[[IgnoredVulns]]
+id = "GHSA-v2wj-7wpq-c8vv"
+reason = "Transitive dompurify, no fix available in ecosystem"

@@ -40,7 +40,7 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
     }
 
     try {
-      const refreshResponse = await fetch(`${env.NEXT_PUBLIC_API_URL}/api/auth/session/refresh`, {
+      const refreshResponse = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/session/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,6 +86,11 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Allow callbacks and logout without auth
+  if (pathname.startsWith('/auth/callback') || pathname === '/auth/logout') {
+    return NextResponse.next()
+  }
 
   const authCheck = await checkAuthStatus(request)
   const { status: authStatus, response: refreshResponse, shouldClearCookies } = authCheck
