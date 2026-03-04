@@ -4,7 +4,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "qa": "pnpm i --no-frozen-lockfile && turbo run checktypes --concurrency=100% && pnpm lint:fix && pnpm build && turbo run test --concurrency=100% && pnpm test:e2e",
+    "qa": "node scripts/run-qa.mjs",
     "checktypes": "turbo checktypes",
     "format": "biome format . --write",
     "lint": "pnpm lint:biome && pnpm lint:eslint && pnpm react-doctor",

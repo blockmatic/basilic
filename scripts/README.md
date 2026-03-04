@@ -2,6 +2,19 @@
 
 Utility scripts for this monorepo.
 
+## QA Pipeline
+
+### `run-qa.mjs`
+
+Runs the full QA pipeline sequentially: install, checktypes, lint:fix, build, test, test:e2e. Stops immediately on the first failure and prints a clear error banner.
+
+**Usage**: Via pnpm at repository root:
+```bash
+pnpm qa
+# or
+node scripts/run-qa.mjs
+```
+
 ## Documentation
 
 For comprehensive guides, see:
