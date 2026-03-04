@@ -121,7 +121,7 @@ export const accountLinkWalletVerify = <ThrowOnError extends boolean = false>(op
 /**
  * Generate AI chat response
  *
- * Chat with AI via Open Router. Default model: Aurora Alpha. Supports streaming and tools.
+ * Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: Llama 3.3 70B). Supports streaming and tools.
  */
 export const chat = <ThrowOnError extends boolean = false>(options: Options<ChatData, ThrowOnError>) => (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
