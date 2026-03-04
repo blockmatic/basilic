@@ -169,7 +169,8 @@ This app includes a `vercel.json` configuration file. If deploying to Vercel:
 
 ## CI & Builds
 
-- **E2E tests** — Run on PR when `apps/next` or its dependencies change. Spawns Fastify + Next locally via `test:e2e:local`
+- **E2E tests** (`next-e2e.yml`) — Run on PR when `apps/next` or its dependencies change. Spawns Fastify + Next locally via `test:e2e:local`
+- **Package tests** (`packages-test.yml`) — Run on PR when `packages` or `tools` change
 
 ## Related Documentation
 

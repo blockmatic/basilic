@@ -7,7 +7,7 @@ GitHub Actions workflows automate quality checks on pull requests (opened and up
 
 ## Workflows
 
-CI uses path filters in each workflow so tests and deploys run only when relevant code changes. Path patterns align with `.github/paths-filter.yml`.
+Path filters are used only for test workflows (app E2E and package unit tests) so they run when relevant code changes. Lint and security run on every PR. Path patterns are defined in each workflow file.
 
 ### Next (`next-e2e.yml`)
 
@@ -17,6 +17,10 @@ Build → Unit → E2E. Triggers on pull request when `apps/next/**`, shared pac
 
 Build → Unit → E2E. Triggers on pull request when `apps/fastify/**` or shared packages change. Single job: build, unit tests, E2E via `test:e2e:local` (spawns API locally, runs Scalar login E2E).
 
+### Packages (`packages-test.yml`)
+
+Unit tests for shared packages (core, react, sentry, etc.). Triggers on pull request when `packages/**` or `tools/**` change. Excludes app tests (handled by api-e2e, next-e2e).
+
 ### Docu (Vercel)
 
 No dedicated CI workflow. Docu deploys via Vercel from Git with `turbo-ignore`; builds run only when `apps/docu/**` or shared packages change.
@@ -25,11 +29,11 @@ See [E2E Testing](/docs/testing/e2e-testing) for details.
 
 ### Lint (`lint.yml`)
 
-Linting and type checking. Triggers on pull request when `apps/**`, `packages/**`, `tools/**`, `scripts/**`, or config files change. Supports `workflow_dispatch` for manual full-repo checks.
+Linting and type checking on every PR. Supports `workflow_dispatch` for manual runs.
 
 ### Security (`security.yml`)
 
-Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit). Triggers on pull request when source files, lockfile, `package.json`, or security config change; always runs on push to main.
+Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main.
 
 ## CodeRabbit Integration
 
@@ -83,10 +87,11 @@ Pre-commit hooks check:
 ## Workflow Files
 
 All workflows are in `.github/workflows/`:
-- `next-e2e.yml` - Next: unit → E2E (local servers)
-- `api-e2e.yml` - API: unit → E2E (local servers)
-- `lint.yml` - Linting checks (path-filtered)
-- `security.yml` - Security scans (path-filtered on PRs)
+- `next-e2e.yml` - Next: unit → E2E (local servers, path-filtered)
+- `api-e2e.yml` - API: unit → E2E (local servers, path-filtered)
+- `packages-test.yml` - Packages: unit tests (path-filtered)
+- `lint.yml` - Linting checks (every PR)
+- `security.yml` - Security scans (every PR and push to main)
 
 ## Related Documentation
 
