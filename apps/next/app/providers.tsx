@@ -16,9 +16,9 @@ const queryClient = new QueryClient()
 
 export const coreClient = createClient({
   baseUrl: env.NEXT_PUBLIC_API_URL,
-  getAuthToken: getAuthToken,
-  getRefreshToken: getAuthToken,
+  getAuthToken,
   onTokensRefreshed: updateAuthTokens,
+  refreshUrl: '/api/auth/refresh',
 })
 
 export function Providers({ children }: { children: ReactNode }) {

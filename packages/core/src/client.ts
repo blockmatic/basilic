@@ -43,35 +43,33 @@ function wrapApiWithClient<T>(
           : (response.response?.status ?? 500)
       const errorMessage = (response.error as { message?: string })?.message ?? 'Unknown error'
 
-      // Handle 401 with refresh token
-      // Skip refresh for refresh endpoint itself to avoid circular refresh
-      const isRefreshEndpoint = response.request?.url?.includes('/auth/session/refresh') ?? false
+      // Handle 401 with refresh
+      const isRefreshEndpoint =
+        (response.request?.url?.includes('/auth/session/refresh') ?? false) ||
+        !!(options.refreshUrl && response.request?.url?.includes(options.refreshUrl))
 
-      if (
+      const canRefreshViaBff = errorStatus === 401 && options.refreshUrl && !isRefreshEndpoint
+      const canRefreshViaToken =
         errorStatus === 401 &&
-        response.error &&
         options.getRefreshToken &&
         options.onTokensRefreshed &&
         !isRefreshEndpoint
-      ) {
+
+      if (response.error && (canRefreshViaBff || canRefreshViaToken)) {
         try {
-          // Use lock to prevent multiple concurrent refresh calls
           if (!refreshLock) {
             refreshLock = (async () => {
+              if (options.refreshUrl) {
+                const res = await fetch(options.refreshUrl, {
+                  method: 'POST',
+                  credentials: 'include',
+                })
+                return res.ok ? { token: '', refreshToken: '' } : null
+              }
               const refreshToken = await options.getRefreshToken?.()
-              if (!refreshToken) {
-                return null
-              }
-
-              const refreshResponse = await gen.refresh({
-                client,
-                body: { refreshToken },
-              })
-
-              if (refreshResponse.error || !refreshResponse.data) {
-                return null
-              }
-
+              if (!refreshToken) return null
+              const refreshResponse = await gen.refresh({ client, body: { refreshToken } })
+              if (refreshResponse.error || !refreshResponse.data) return null
               await options.onTokensRefreshed?.(refreshResponse.data)
               return refreshResponse.data
             })()
