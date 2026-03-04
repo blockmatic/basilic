@@ -24,11 +24,7 @@
     "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
     "format": "biome format . --write",
     "checktypes": "tsgo --noEmit",
-    "test": "pnpm test:unit",
-    "test:unit": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "test:cov": "vitest run --coverage",
+    "test": "echo 'E2E only'",
     "test:e2e": "node scripts/run-e2e.mjs",
     "test:e2e:local": "node scripts/run-e2e-local.mjs",
     "test:e2e:ui": "pnpm test:e2e -- --ui",
@@ -71,26 +67,17 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@johanneskares/wallet-mock": "^1.4.1",
     "@playwright/test": "^1.58.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^25.2.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@typescript/native-preview": "7.0.0-dev.20260213.1",
-    "@vitest/coverage-v8": "^4.0.18",
-    "@vitest/ui": "^4.0.18",
     "browserslist": "^4.28.1",
     "eslint": "^9.0.0",
-    "jsdom": "^28.0.0",
     "postcss": "^8.5.6",
-    "tweetnacl": "^1.0.3",
-    "vitest": "^4.0.18"
+    "tweetnacl": "^1.0.3"
   }
 }

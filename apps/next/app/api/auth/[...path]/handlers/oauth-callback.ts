@@ -1,6 +1,6 @@
 import { logger } from '@repo/utils/logger/server'
+import { setAuthCookiesOnResponse } from 'lib/auth/auth-server'
 import { NextResponse } from 'next/server'
-import { setAuthCookiesOnResponse } from '@/lib/auth-server'
 import { env } from '@/lib/env'
 import type { AuthProxyOptions } from './utils'
 import { getRedirectUrl } from './utils'
@@ -26,7 +26,7 @@ export const handleOAuthCallback = async ({ request }: Pick<AuthProxyOptions, 'r
   const state = requestUrl.searchParams.get('state')
 
   if (!code || !state) {
-    const loginUrl = new URL('/login', new URL(request.url).origin)
+    const loginUrl = new URL('/auth/login', new URL(request.url).origin)
     loginUrl.searchParams.set('error', 'missing_params')
     return new Response(null, {
       status: 302,
@@ -62,7 +62,7 @@ export const handleOAuthCallback = async ({ request }: Pick<AuthProxyOptions, 'r
         },
         'handleOAuthCallback: exchange failed',
       )
-      const loginUrl = new URL('/login', new URL(request.url).origin)
+      const loginUrl = new URL('/auth/login', new URL(request.url).origin)
       loginUrl.searchParams.set('error', errorCode)
       return new Response(null, {
         status: 302,
@@ -80,7 +80,7 @@ export const handleOAuthCallback = async ({ request }: Pick<AuthProxyOptions, 'r
         },
         'handleOAuthCallback: invalid response structure',
       )
-      const loginUrl = new URL('/login', new URL(request.url).origin)
+      const loginUrl = new URL('/auth/login', new URL(request.url).origin)
       loginUrl.searchParams.set('error', 'oauth_failed')
       return new Response(null, {
         status: 302,
@@ -105,7 +105,7 @@ export const handleOAuthCallback = async ({ request }: Pick<AuthProxyOptions, 'r
       },
       'handleOAuthCallback: unexpected error',
     )
-    const loginUrl = new URL('/login', new URL(request.url).origin)
+    const loginUrl = new URL('/auth/login', new URL(request.url).origin)
     loginUrl.searchParams.set('error', mapAuthError(rawMessage))
     return new Response(null, {
       status: 302,

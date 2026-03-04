@@ -1,18 +1,18 @@
-import { expect, test } from './fixtures'
+import { expect, test } from '@playwright/test'
+import { authHelpers } from './auth-helpers'
 
-// Skip: Chat receives UNAUTHORIZED from /ai/chat despite Signed In (getAuthToken returns null for chat transport).
+// Skip: getAuthToken returns null for chat transport despite Signed In (useUser works; chat gets UNAUTHORIZED)
 test.describe
   .skip('Chat Assistant', () => {
-    test('should send message via Who am I? and show assistant response', async ({
-      authenticatedPage,
-    }) => {
+    test('should send message via Who am I? and show assistant response', async ({ page }) => {
       test.setTimeout(120000)
-      await authenticatedPage.goto('/')
-      await expect(authenticatedPage.locator('text=Signed In')).toBeVisible({ timeout: 15000 })
-      await expect(authenticatedPage.locator('text=API OK')).toBeVisible({ timeout: 15000 })
+      await authHelpers.loginAsTestUser(page)
+      // Already on / after verify redirect; avoid redundant goto which may lose cookies
+      await expect(page.locator('text=Signed In')).toBeVisible({ timeout: 15000 })
+      await expect(page.locator('text=API OK')).toBeVisible({ timeout: 15000 })
 
-      await authenticatedPage.getByRole('button', { name: 'Open assistant' }).click()
-      const sheet = authenticatedPage.getByRole('dialog')
+      await page.getByRole('button', { name: 'Open assistant' }).click()
+      const sheet = page.getByRole('dialog')
       await expect(sheet).toBeVisible({ timeout: 5000 })
       await expect(sheet.getByPlaceholder('Type a message...')).toBeVisible({ timeout: 5000 })
       await sheet.getByRole('button', { name: 'Who am I?' }).click()

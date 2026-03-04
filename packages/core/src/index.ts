@@ -1,6 +1,7 @@
 export { createApi } from './api'
 export { api } from './api-wrapper.gen'
-export { createClient } from './client'
+export type { ClientConfig } from './client'
+export { createClient, getClientConfig } from './client'
 export type { CoreClientOptions } from './config'
 export { ApiError } from './errors'
 export type * from './gen/types.gen'

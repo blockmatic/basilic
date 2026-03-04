@@ -84,8 +84,7 @@ pnpm build
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
-- `pnpm test` - Run component tests (Vitest)
-- `pnpm test:watch` - Run tests in watch mode
+- `pnpm test` - No-op (E2E only; apps/next has no unit tests)
 - `pnpm test:e2e` - Run E2E tests (Playwright; expects URLs via env or `--app`/`--api` params)
 - `pnpm test:e2e:local` - Build, spawn servers, run E2E, cleanup (recommended for local/CI)
 - `pnpm start:e2e:servers` - Start Fastify + Next for manual E2E; run `pnpm test:e2e` in another terminal (run `pnpm build:e2e` first)
@@ -146,10 +145,7 @@ See [Authentication Architecture](@apps/docu/content/docs/architecture/authentic
 
 ## Testing
 
-This app uses multiple testing approaches:
-
-- **Component Tests** (`**/*.spec.tsx`): Vitest with Testing Library - UI-focused tests that may use `fetchMock` for performance
-- **E2E Tests** (`e2e/**/*.spec.ts`): Playwright - Full integration tests using real Fastify server and Next.js server
+This app uses **Playwright E2E tests only** (`e2e/**/*.spec.ts`). No unit or component test suites.
 
 **E2E Test Setup:**
 
@@ -173,8 +169,7 @@ This app includes a `vercel.json` configuration file. If deploying to Vercel:
 
 ## CI & Builds
 
-- **Unit tests** — Run on PR when `apps/next` or its dependencies change (path-filtered)
-- **E2E tests** — Run after Vercel deployment succeeds (`repository_dispatch`). Project name must contain `basilic-next` for the workflow to match
+- **E2E tests** — Run on PR when `apps/next` or its dependencies change. Spawns Fastify + Next locally via `test:e2e:local`
 
 ## Related Documentation
 

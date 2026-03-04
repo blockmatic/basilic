@@ -8,7 +8,7 @@ const APP_URL =
 const apiBase = API_URL.replace(/\/$/, '')
 
 async function sendMagicLinkOnce(page: Page) {
-  await page.goto('/login')
+  await page.goto('/auth/login')
   await page.getByRole('button', { name: /send magic link/i }).waitFor({ state: 'visible' })
   await page.fill('input[type="email"]', TEST_EMAIL)
   const [response] = await Promise.all([

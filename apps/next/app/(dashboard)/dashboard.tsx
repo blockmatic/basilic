@@ -1,21 +1,15 @@
 'use client'
 
-import { useLinkEmail, useUser } from '@repo/react'
+import { useLinkEmail } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
+import { useVerifyLinkEmailToken } from 'app/(dashboard)/use-verify-link-email-token'
+import { ApiHealthBadge } from 'components/shared/api-health-badge'
+import { AuthBadge } from 'components/shared/auth-badge'
+import { updateAuthTokens } from 'lib/auth/auth-client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-import { useChainId } from 'wagmi'
-import { ApiHealthBadge } from '@/components/api-health-badge'
-import { AuthBadge } from '@/components/auth-badge'
-import { addressesMatch } from '@/components/wallet-adapters-injector'
-import { useLinkWallet } from '@/hooks/use-link-wallet'
-import { useVerifyLinkEmailToken } from '@/hooks/use-verify-link-email-token'
-import { useWallet } from '@/hooks/use-wallet'
-import { updateAuthTokens } from '@/lib/auth-client'
-import { formatWalletShort } from '@/lib/format-wallet'
-import { ChatAssistant } from './chat-assistant'
+import { ChatAssistant } from '../../components/assistant'
 import { SignOutButton } from './sign-out-button'
 
 function DashboardSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -43,32 +37,6 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
   const tokenParam = searchParams.get('token')
   const [email, setEmail] = useState('')
 
-  const { data: userData } = useUser()
-  const sessionWallet = userData?.user?.wallet
-  const linkedWallets = userData?.user?.linkedWallets ?? []
-
-  const evmAdapter = useWallet('eip155')
-  const solanaAdapter = useWallet('solana')
-  const chainId = useChainId()
-  const { setVisible: setSolanaModalVisible } = useWalletModal()
-
-  const activeAdapter = evmAdapter ?? solanaAdapter
-  const signMessage = activeAdapter?.signMessage
-  const {
-    linkWallet,
-    isPending: isLinkWalletPending,
-    error: linkWalletError,
-  } = useLinkWallet({
-    chain: activeAdapter?.chain ?? 'eip155',
-    address: activeAdapter?.address,
-    signMessage:
-      signMessage ??
-      (async () => {
-        throw new Error('signMessage not available')
-      }),
-    chainId,
-  })
-
   const {
     requestLink,
     verifyFromToken,
@@ -89,17 +57,6 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
     const origin = typeof window !== 'undefined' ? window.location.origin : ''
     requestLink({ email, callbackUrl: `${origin}/` })
   }
-
-  const hasWalletConnected = !!evmAdapter?.address || !!solanaAdapter?.address
-  const connectedAddress = activeAdapter?.address
-  const activeChain = activeAdapter?.chain ?? 'eip155'
-  const canLinkWallet =
-    hasWalletConnected &&
-    !!connectedAddress &&
-    !!signMessage &&
-    !linkedWallets.some(
-      w => w.chain === activeChain && addressesMatch(connectedAddress, w.address, activeChain),
-    )
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -123,45 +80,7 @@ export function DashboardWalletContent({ user }: DashboardWalletContentProps) {
               <p>
                 <span className="text-muted-foreground">Email:</span> {user.email ?? 'Not linked'}
               </p>
-              {sessionWallet && (
-                <p>
-                  <span className="text-muted-foreground">Session wallet:</span>{' '}
-                  {formatWalletShort(sessionWallet)}
-                </p>
-              )}
-              {linkedWallets.length > 0 && (
-                <p>
-                  <span className="text-muted-foreground">Linked wallets:</span>{' '}
-                  {linkedWallets.map(formatWalletShort).join(', ')}
-                </p>
-              )}
             </div>
-          </DashboardSection>
-
-          <DashboardSection title="Link wallet">
-            {!hasWalletConnected ? (
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setSolanaModalVisible(true)}>
-                  Connect Solana
-                </Button>
-                <p className="text-muted-foreground text-sm self-center">or connect EVM wallet</p>
-              </div>
-            ) : canLinkWallet ? (
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant="outline"
-                  disabled={isLinkWalletPending}
-                  onClick={() => linkWallet()}
-                >
-                  {isLinkWalletPending ? 'Linking…' : 'Link this wallet'}
-                </Button>
-                {linkWalletError && (
-                  <p className="text-destructive text-xs">{linkWalletError.message}</p>
-                )}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-sm">This wallet is already linked</p>
-            )}
           </DashboardSection>
 
           <DashboardSection title="Link email">

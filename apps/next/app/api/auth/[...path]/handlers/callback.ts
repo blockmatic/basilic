@@ -1,6 +1,6 @@
 import { logger } from '@repo/utils/logger/server'
 import { NextResponse } from 'next/server'
-import { setAuthCookiesOnResponse } from '@/lib/auth-server'
+import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import type { AuthProxyOptions } from './utils'
 import { getRedirectUrl } from './utils'
 
@@ -13,7 +13,7 @@ export const handleWeb3Callback = async ({ request }: Pick<AuthProxyOptions, 're
   try {
     body = await request.json()
   } catch {
-    const loginUrl = new URL('/login', new URL(request.url).origin)
+    const loginUrl = new URL('/auth/login', new URL(request.url).origin)
     loginUrl.searchParams.set('message', 'Invalid request')
     return new Response(null, {
       status: 302,
@@ -31,7 +31,7 @@ export const handleWeb3Callback = async ({ request }: Pick<AuthProxyOptions, 're
       : undefined
 
   if (typeof token !== 'string' || !token || typeof refreshToken !== 'string' || !refreshToken) {
-    const loginUrl = new URL('/login', new URL(request.url).origin)
+    const loginUrl = new URL('/auth/login', new URL(request.url).origin)
     loginUrl.searchParams.set('message', 'Invalid or missing tokens')
     return new Response(null, {
       status: 302,
@@ -48,7 +48,7 @@ export const handleWeb3Callback = async ({ request }: Pick<AuthProxyOptions, 're
     return redirectResponse
   } catch (error) {
     logger.error({ error, url: request.url }, 'handleWeb3Callback: error setting cookies')
-    const loginUrl = new URL('/login', new URL(request.url).origin)
+    const loginUrl = new URL('/auth/login', new URL(request.url).origin)
     loginUrl.searchParams.set('message', 'Failed to complete sign in')
     return new Response(null, {
       status: 302,

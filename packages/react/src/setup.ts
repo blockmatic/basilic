@@ -1,4 +1,4 @@
-import type { createClient } from '@repo/core'
+import { type createClient, getClientConfig } from '@repo/core'
 import type { QueryClient } from '@tanstack/react-query'
 
 /**
@@ -20,10 +20,16 @@ export type ReactApiConfig = {
   /** API client instance from `@repo/core` */
   client: ReturnType<typeof createClient>
 
-  /** Base URL for chat API (e.g. env.NEXT_PUBLIC_API_URL). Required for useChat. */
+  /**
+   * Base URL for chat API. Optional when client is from createClient with baseUrl.
+   * Required for useChatFromConfig unless derived from client.
+   */
   baseUrl?: string
 
-  /** Callback to get Bearer token for chat requests. Required for useChat. */
+  /**
+   * Callback to get Bearer token for chat requests. Optional when client is from
+   * createClient with getAuthToken. Required for useChatFromConfig unless derived from client.
+   */
   getAuthToken?: () => Promise<string | null>
 
   /**
@@ -78,16 +84,22 @@ export type ReactApiConfigValue = {
 /**
  * Creates normalized React API configuration value.
  *
- * Normalizes the configuration by ensuring `queryClientDefaults` is always an object.
+ * Derives baseUrl and getAuthToken from the client (via getClientConfig) when not
+ * provided, when the client was created with createClient from @repo/core.
  *
  * @param options - React API configuration options
  * @returns Normalized configuration value for React context
  */
 export function createReactApiConfig(options: ReactApiConfig): ReactApiConfigValue {
+  const clientConfig = getClientConfig(options.client)
+  const rawGetAuthToken = options.getAuthToken ?? clientConfig?.getAuthToken
+  const getAuthToken = rawGetAuthToken
+    ? async (): Promise<string | null> => (await rawGetAuthToken()) ?? null
+    : undefined
   return {
     client: options.client,
-    baseUrl: options.baseUrl,
-    getAuthToken: options.getAuthToken,
+    baseUrl: options.baseUrl ?? clientConfig?.baseUrl,
+    getAuthToken,
     authCallbackUrl: options.authCallbackUrl,
     queryClient: options.queryClient,
     queryClientDefaults: options.queryClientDefaults ?? {},

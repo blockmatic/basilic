@@ -1,19 +1,11 @@
-import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import bs58 from 'bs58'
-import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import nacl from 'tweetnacl'
 import { getDb } from '../../../../db/index.js'
-import { sessions, users, walletIdentities, web3Nonce } from '../../../../db/schema/index.js'
-import { env } from '../../../../lib/env.js'
-import {
-  createAccessTokenPayload,
-  createRefreshTokenPayload,
-  generateJti,
-  hashToken,
-} from '../../../../lib/jwt.js'
+import { verifyWeb3Auth } from '../../../../lib/auth-web3.js'
+import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { parseSiwsMessage } from '../siws-parse.js'
 import { validateSolanaAddress } from '../validate-address.js'
@@ -51,164 +43,46 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { message, signature, domain: expectedDomain } = request.body
 
-      const parsed = parseSiwsMessage(message)
-      if (!parsed) {
-        return reply.code(401).send({
-          code: 'INVALID_MESSAGE',
-          message: 'Invalid message format',
-        })
-      }
+      const result = await verifyWeb3Auth({
+        chain: 'solana',
+        message,
+        signature,
+        expectedDomain,
+        parseMessage: parseSiwsMessage,
+        validateAddress: validateSolanaAddress,
+        verifySignature: async ({ message: msg, signature: sig, validatedAddress }) => {
+          try {
+            const publicKeyBytes = bs58.decode(validatedAddress)
+            const signatureBytes = bs58.decode(sig)
+            if (
+              publicKeyBytes.length !== nacl.sign.publicKeyLength ||
+              signatureBytes.length !== nacl.sign.signatureLength
+            ) {
+              return false
+            }
+            return nacl.sign.detached.verify(
+              new TextEncoder().encode(msg),
+              signatureBytes,
+              publicKeyBytes,
+            )
+          } catch {
+            return false
+          }
+        },
+      })
 
-      if (expectedDomain && parsed.domain !== expectedDomain) {
-        return reply.code(401).send({
-          code: 'INVALID_DOMAIN',
-          message: 'Domain mismatch',
-        })
-      }
-
-      let validatedAddress: string
-      try {
-        validatedAddress = validateSolanaAddress(parsed.address)
-      } catch {
-        return reply.code(401).send({
-          code: 'INVALID_ADDRESS',
-          message: 'Invalid Solana address',
-        })
-      }
+      if (!result.ok) return reply.code(401).send({ code: result.code, message: result.message })
 
       const db = await getDb()
-      const [deletedNonce] = await db
-        .delete(web3Nonce)
-        .where(
-          and(
-            eq(web3Nonce.chain, 'solana'),
-            eq(web3Nonce.address, validatedAddress),
-            eq(web3Nonce.nonce, parsed.nonce),
-          ),
-        )
-        .returning()
-
-      if (!deletedNonce) {
-        return reply.code(401).send({
-          code: 'INVALID_NONCE',
-          message: 'Invalid or unknown nonce',
-        })
-      }
-
-      if (deletedNonce.expiresAt < new Date()) {
-        return reply.code(401).send({
-          code: 'EXPIRED_NONCE',
-          message: 'Nonce has expired',
-        })
-      }
-
-      let publicKeyBytes: Uint8Array
-      let signatureBytes: Uint8Array
-      try {
-        publicKeyBytes = bs58.decode(validatedAddress)
-        signatureBytes = bs58.decode(signature)
-      } catch {
-        return reply.code(401).send({
-          code: 'INVALID_SIGNATURE',
-          message: 'Invalid signature encoding',
-        })
-      }
-
-      if (
-        publicKeyBytes.length !== nacl.sign.publicKeyLength ||
-        signatureBytes.length !== nacl.sign.signatureLength
-      ) {
-        return reply.code(401).send({
-          code: 'INVALID_SIGNATURE',
-          message: 'Invalid signature length',
-        })
-      }
-
-      const messageBytes = new TextEncoder().encode(message)
-      const valid = nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes)
-      if (!valid) {
-        return reply.code(401).send({
-          code: 'INVALID_SIGNATURE',
-          message: 'Signature does not match',
-        })
-      }
-
-      const [wallet] = await db
-        .select()
-        .from(walletIdentities)
-        .where(
-          and(eq(walletIdentities.chain, 'solana'), eq(walletIdentities.address, validatedAddress)),
-        )
-
-      let user: typeof users.$inferSelect | undefined
-      if (wallet) {
-        const [u] = await db.select().from(users).where(eq(users.id, wallet.userId))
-        user = u
-      }
-
-      if (!user) {
-        const userId = randomUUID()
-        await db.transaction(async tx => {
-          await tx.insert(users).values({
-            id: userId,
-            email: null,
-            emailVerified: false,
-          })
-          await tx.insert(walletIdentities).values({
-            id: randomUUID(),
-            userId,
-            chain: 'solana',
-            address: validatedAddress,
-            walletProvider: null,
-          })
-        })
-        const [created] = await db.select().from(users).where(eq(users.id, userId))
-        if (!created) throw new Error('Failed to create user')
-        user = created
-      } else if (wallet) {
-        await db
-          .update(walletIdentities)
-          .set({ lastUsedAt: new Date() })
-          .where(eq(walletIdentities.id, wallet.id))
-      }
-
-      const sessionId = randomUUID()
-      const refreshJti = generateJti()
-      const refreshJtiHash = hashToken(refreshJti)
-      const sessionExpiresAt = new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000)
-
-      const walletInfo = { chain: 'solana' as const, address: validatedAddress }
-      await db.insert(sessions).values({
-        id: sessionId,
-        userId: user.id,
-        token: refreshJtiHash,
-        expiresAt: sessionExpiresAt,
-        walletChain: walletInfo.chain,
-        walletAddress: walletInfo.address,
-      })
-
-      const accessPayload = createAccessTokenPayload({
-        userId: user.id,
-        sessionId,
+      const walletInfo = { chain: 'solana' as const, address: result.validatedAddress }
+      const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+        fastify,
+        db,
+        userId: result.userId,
         wallet: walletInfo,
       })
-      const refreshPayload = createRefreshTokenPayload({
-        userId: user.id,
-        sessionId,
-        jti: refreshJti,
-      })
 
-      const accessToken = fastify.jwt.sign(accessPayload, {
-        expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
-      })
-      const refreshToken = fastify.jwt.sign(refreshPayload, {
-        expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
-      })
-
-      return reply.code(200).send({
-        token: accessToken,
-        refreshToken,
-      })
+      return reply.code(200).send({ token: accessToken, refreshToken })
     },
   )
 }

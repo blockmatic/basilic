@@ -55,7 +55,7 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 ## CI
 
-The `next-e2e.yml` and `api-e2e.yml` workflows run on pull requests (open and sync). Both use `test:e2e:local`—no Vercel deploys. Build once, then unit tests, then E2E against local servers.
+The `next-e2e.yml` and `api-e2e.yml` workflows run on pull requests (open and sync). Both use `test:e2e:local`—no Vercel deploys. Build once, then E2E against local servers.
 
 - **API E2E** — Runs when `api` scope changes. Spawns Fastify locally, runs Playwright.
 - **Next E2E** — Runs when `next` scope changes. Spawns Fastify + Next locally, runs Playwright.
@@ -91,10 +91,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 | Spec | Coverage |
 |------|----------|
 | `magic-link-auth.spec.ts` | Magic link login, invalid/expired token errors, email validation, protected route, JWT session |
-| `wallet-auth.spec.ts` | Wallet login UI, magic link flow to dashboard, sign-out redirect |
-| `link-wallet.spec.ts` | Link wallet section visibility when authenticated |
-| `wallet-metamask-auth.spec.ts` | EVM wallet sign-in via mock; skipped (mock connect flow incomplete) |
-| `wallet-solana-auth.spec.ts` | Solana wallet sign-in via mock; skipped (sign-in does not redirect) |
+| `link-email.spec.ts` | "Already linked" when user has email (magic link flow via `/auth/login`) |
 | `chat-assistant.spec.ts` | Chat UI with authenticatedPage; Who am I? prompt (skipped until getAuthToken fixed) |
 
 ### Project order
@@ -103,22 +100,19 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 flowchart TB
   subgraph AuthProj [Auth project]
     MagicLinkAuth[magic-link-auth.spec.ts]
-    WalletAuth[wallet-auth.spec.ts]
-    LinkWallet[link-wallet.spec.ts]
-    WalletMetaMask[wallet-metamask-auth.spec.ts]
-    WalletSolana[wallet-solana-auth.spec.ts]
+    LinkEmail[link-email.spec.ts]
   end
 
   subgraph ChromiumProj [Chromium project]
     ChatAssistant[chat-assistant.spec.ts]
   end
 
-  MagicLinkAuth --> WalletAuth --> LinkWallet --> WalletMetaMask --> WalletSolana --> ChromiumProj
+  MagicLinkAuth --> LinkEmail --> ChromiumProj
 ```
 
 ### Disabled / skipped specs
 
-link-email excluded via testIgnore. chat-assistant, wallet-metamask-auth, wallet-solana-auth use test.describe.skip (chat: getAuthToken; wallet mocks: connect/sign-in flow incomplete).
+chat-assistant skipped (test.describe.skip) until getAuthToken fixed for chat transport.
 
 ## Troubleshooting
 
@@ -130,6 +124,6 @@ link-email excluded via testIgnore. chat-assistant, wallet-metamask-auth, wallet
 
 ## Related
 
-- [Frontend Testing](/docs/testing/frontend-testing) - Unit and integration patterns
+- [Frontend Testing](/docs/testing/frontend-testing) - E2E-only frontend testing strategy
 - [GitHub Actions](/docs/deployment/github-actions) - CI workflow
 - [Vercel Deployment](/docs/deployment/vercel) - Preview deployment and env vars

@@ -22,7 +22,7 @@
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs",
     "generate": "openapi-ts && node --import tsx scripts/generate-wrapper.mjs",
-    "test": "echo \"no test\""
+    "test": "vitest run"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.92.4",
@@ -33,6 +33,7 @@
     "chokidar-cli": "^3.0.0",
     "eslint": "^9.0.0",
     "tsup": "^8.5.1",
-    "tsx": "^4.21.0"
+    "tsx": "^4.21.0",
+    "vitest": "^4.0.18"
   }
 }

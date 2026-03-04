@@ -7,6 +7,22 @@ import * as gen from './gen/index'
 // Lock to prevent multiple concurrent refresh attempts
 let refreshLock: Promise<{ token: string; refreshToken: string } | null> | null = null
 
+const clientConfigMap = new WeakMap<
+  object,
+  { baseUrl: string; getAuthToken?: CoreClientOptions['getAuthToken'] }
+>()
+
+/** Config subset exposed to consumers (e.g. ReactApiProvider) for auth/URL. */
+export type ClientConfig = {
+  baseUrl: string
+  getAuthToken?: () => string | null | Promise<string | null>
+}
+
+/** Returns auth/URL config for a client created with createClient, or undefined. */
+export function getClientConfig(client: unknown): ClientConfig | undefined {
+  return client && typeof client === 'object' ? clientConfigMap.get(client as object) : undefined
+}
+
 function wrapApiWithClient<T>(
   obj: T,
   client: ReturnType<typeof createHeyApiClient>,
@@ -168,5 +184,10 @@ export function createClient(options: CoreClientOptions) {
   })
 
   // Wrap api object to use client
-  return wrapApiWithClient(api, client, options)
+  const wrapped = wrapApiWithClient(api, client, options)
+  clientConfigMap.set(wrapped, {
+    baseUrl: options.baseUrl,
+    getAuthToken: options.getAuthToken,
+  })
+  return wrapped
 }
