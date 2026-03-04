@@ -159,7 +159,7 @@ test.describe('Magic Link Authentication', () => {
       expect(jwtCookie).toBeDefined()
 
       const response = await page.request.get(`${authHelpers.API_URL}/auth/session/user`, {
-        headers: { Authorization: `Bearer ${jwtCookie!.value}` },
+        headers: { Authorization: `Bearer ${jwtCookie?.value ?? ''}` },
       })
       expect(response.ok()).toBeTruthy()
 
