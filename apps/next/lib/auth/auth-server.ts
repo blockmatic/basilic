@@ -21,6 +21,21 @@ export type SetAuthCookiesInput = {
   refreshToken: string
 }
 
+/** Cookie store with set method (Route Handlers, Server Actions) */
+type WritableCookieStore = {
+  set: (name: string, value: string, opts?: object) => void
+}
+
+export function setAuthCookiesViaHeaders(
+  cookieStore: WritableCookieStore,
+  { token, refreshToken }: SetAuthCookiesInput,
+) {
+  const opts = getAuthCookieOptions({})
+  const cleanOpts = Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined))
+  cookieStore.set(authCookieName, token, cleanOpts)
+  cookieStore.set(authRefreshCookieName, refreshToken, cleanOpts)
+}
+
 export function setAuthCookiesOnResponse(
   response: { cookies: { set: (name: string, value: string, opts?: object) => void } },
   { token, refreshToken }: SetAuthCookiesInput,
@@ -29,6 +44,15 @@ export function setAuthCookiesOnResponse(
   const cleanOpts = Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined))
   response.cookies.set(authCookieName, token, cleanOpts as typeof opts)
   response.cookies.set(authRefreshCookieName, refreshToken, cleanOpts as typeof opts)
+}
+
+export function clearAuthCookiesOnResponse(response: {
+  cookies: { set: (name: string, value: string, opts?: object) => void }
+}) {
+  const opts = getAuthCookieOptions({ maxAge: 0 })
+  const cleanOpts = Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined))
+  response.cookies.set(authCookieName, '', cleanOpts as typeof opts)
+  response.cookies.set(authRefreshCookieName, '', cleanOpts as typeof opts)
 }
 
 export async function getServerAuthToken() {

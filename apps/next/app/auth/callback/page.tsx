@@ -12,20 +12,20 @@ type AuthCallbackPageProps = {
 
 export default async function AuthCallbackPage({ searchParams }: AuthCallbackPageProps) {
   const params = await searchParams
-  const token = params.token
   const error = params.error || params.message
 
   if (error) {
     redirect(`/auth/login?message=${encodeURIComponent(error)}`)
   }
 
+  const token = params.token
+  const callbackURL = params.callbackURL?.startsWith('/') ? params.callbackURL : '/'
+
   if (!token) {
     redirect('/auth/login?message=Invalid or expired magic link')
   }
 
-  const callbackURL = params.callbackURL?.startsWith('/') ? params.callbackURL : '/'
-  const verifyUrl = `/api/auth/magic-link/verify?token=${encodeURIComponent(token)}&format=jwt&callbackURL=${encodeURIComponent(
-    callbackURL,
-  )}`
-  redirect(verifyUrl)
+  redirect(
+    `/auth/callback/magiclink?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(callbackURL)}`,
+  )
 }
