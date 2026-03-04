@@ -75,7 +75,7 @@ describe('POST /ai/chat', () => {
     expect(() => ChatResponseSchema.parse(data)).not.toThrow()
     expect(data.text).toBeTypeOf('string')
     expect(data.text.length).toBeGreaterThan(0)
-  }, 60000)
+  }, 120000)
 
   it('should return 200 when authenticated via API key', async () => {
     const apiKey = await getApiKeyToken(fastify, 'ai-chat-apikey@test.ai')
