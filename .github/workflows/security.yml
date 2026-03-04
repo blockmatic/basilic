@@ -2,6 +2,17 @@ name: Security
 
 on:
   pull_request:
+    paths:
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/*.js'
+      - '**/*.mjs'
+      - '**/*.cjs'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - '**/package.json'
+      - '.gitleaks.toml'
+      - '.trufflehogignore'
   push:
     branches:
       - main

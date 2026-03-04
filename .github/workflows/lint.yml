@@ -2,6 +2,15 @@ name: Lint
 
 on:
   pull_request:
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'tools/**'
+      - 'scripts/**'
+      - '*.json'
+      - '.biome.json'
+      - '.eslintrc*'
+      - 'turbo.json'
   workflow_dispatch:
 
 concurrency:
