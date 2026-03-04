@@ -15,7 +15,6 @@ import { createReactApiConfig } from './setup'
  * @param props.client - API client instance from `@repo/core`
  * @param props.baseUrl - Optional. Derived from client when created with createClient.
  * @param props.getAuthToken - Optional. Derived from client when created with createClient.
- * @param props.authCallbackUrl - Optional. Next.js cookie exchange URL after Web3 verify.
  * @param props.queryClient - Optional TanStack Query client instance
  * @param props.queryClientDefaults - Default query options applied to all hooks
  * @param props.children - React children components
@@ -23,7 +22,7 @@ import { createReactApiConfig } from './setup'
  * @example
  * ```tsx
  * import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
- * import { ReactApiProvider } from '@repo/react'
+ * import { ApiProvider } from '@repo/react'
  * import { createClient } from '@repo/core'
  *
  * const queryClient = new QueryClient()
@@ -35,15 +34,15 @@ import { createReactApiConfig } from './setup'
  * function App() {
  *   return (
  *     <QueryClientProvider client={queryClient}>
- *       <ReactApiProvider client={apiClient}>
+ *       <ApiProvider client={apiClient}>
  *         <MyComponent />
- *       </ReactApiProvider>
+ *       </ApiProvider>
  *     </QueryClientProvider>
  *   )
  * }
  * ```
  */
-export function ReactApiProvider({
+export function ApiProvider({
   children,
   ...config
 }: ReactApiConfig & { children: ReactNode }): React.JSX.Element {

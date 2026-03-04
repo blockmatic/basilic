@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { ReactApiProvider } from '../provider'
+import { ApiProvider } from '../provider'
 import { useVerifyLinkWallet } from './use-verify-link-wallet'
 
 function createMockClient() {
@@ -17,7 +17,7 @@ function createWrapper(client: ReturnType<typeof createMockClient>) {
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <ReactApiProvider client={client}>{children}</ReactApiProvider>
+        <ApiProvider client={client}>{children}</ApiProvider>
       </QueryClientProvider>
     )
   }
