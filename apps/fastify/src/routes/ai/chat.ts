@@ -30,7 +30,7 @@ const ChatMessageItemSchema = Type.Union([
   }),
 ])
 /** Fixed default for OpenAPI/schema; runtime override via AI_DEFAULT_MODEL env. */
-const DEFAULT_AI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free'
+const DEFAULT_AI_MODEL = 'openrouter/free'
 
 const ChatRequestSchema = Type.Object({
   messages: Type.Array(ChatMessageItemSchema, { minItems: 1, maxItems: 50 }),
@@ -167,7 +167,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'chat',
         description:
-          'Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: Llama 3.3 70B). Supports streaming and tools.',
+          'Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: openrouter/free). Supports streaming and tools.',
         summary: 'Generate AI chat response',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],
