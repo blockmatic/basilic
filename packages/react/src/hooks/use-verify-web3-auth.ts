@@ -59,17 +59,15 @@ export function useVerifyWeb3Auth() {
         throw new Error(text || `Verify failed: ${res.status}`)
       }
 
-      const verifyResult =
-        chain === 'eip155'
-          ? await client.auth.web3.eip155.verify({
-              body: { message, signature, domain },
-              throwOnError: true,
-            })
-          : await client.auth.web3.solana.verify({
-              body: { message, signature, domain },
-              throwOnError: true,
-            })
-      return verifyResult as unknown as Web3Eip155VerifyResponse | Web3SolanaVerifyResponse
+      return chain === 'eip155'
+        ? client.auth.web3.eip155.verify({
+            body: { message, signature, domain },
+            throwOnError: true,
+          })
+        : client.auth.web3.solana.verify({
+            body: { message, signature, domain },
+            throwOnError: true,
+          })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })

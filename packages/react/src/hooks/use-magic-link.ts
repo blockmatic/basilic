@@ -42,14 +42,10 @@ export function useMagicLink(
   const { client, queryClientDefaults } = useReactApiConfig()
 
   return useMutation<MagiclinkRequestResponse, Error, MagiclinkRequestData['body']>({
-    mutationFn: async variables => {
-      // The wrapped client.auth.magiclink.request returns response.data directly at runtime,
-      // but TypeScript can't infer this due to wrapApiWithClient's type signature.
-      // We use a double assertion here since we know the runtime behavior.
-      return (await client.auth.magiclink.request({
+    mutationFn: async variables =>
+      client.auth.magiclink.request({
         body: variables,
-      })) as unknown as MagiclinkRequestResponse
-    },
+      }),
     ...queryClientDefaults,
     ...options,
   })

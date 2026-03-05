@@ -1,10 +1,9 @@
 'use client'
 
+import type { Web3Eip155NonceResponse, Web3SolanaNonceResponse } from '@repo/core'
 import { useReactApiConfig } from '@repo/react'
 import type { Web3Chain } from '@repo/utils/web3'
 import { useQuery } from '@tanstack/react-query'
-
-export type Web3NonceResponse = { nonce: string }
 
 /**
  * Fetches nonce for Web3 sign-in (SIWE or SIWS).
@@ -21,13 +20,11 @@ export function useWeb3Nonce({
 }) {
   const { client, queryClientDefaults } = useReactApiConfig()
 
-  const fetcher = async (): Promise<Web3NonceResponse> => {
+  const fetcher = async (): Promise<Web3Eip155NonceResponse | Web3SolanaNonceResponse> => {
     if (!address) throw new Error('Address required')
-    const res =
-      chain === 'eip155'
-        ? await client.auth.web3.eip155.nonce({ query: { address } })
-        : await client.auth.web3.solana.nonce({ query: { address } })
-    return res as unknown as Web3NonceResponse
+    return chain === 'eip155'
+      ? client.auth.web3.eip155.nonce({ query: { address } })
+      : client.auth.web3.solana.nonce({ query: { address } })
   }
 
   return useQuery({

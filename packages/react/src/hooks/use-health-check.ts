@@ -60,12 +60,7 @@ export function useHealthCheck(
 
   return useQuery<HealthCheckResponse, Error>({
     queryKey: ['healthCheck', params],
-    queryFn: async () => {
-      // The wrapped client.healthCheck returns response.data directly at runtime,
-      // but TypeScript can't infer this due to wrapApiWithClient's type signature.
-      // We use a double assertion here since we know the runtime behavior.
-      return (await client.healthCheck(params)) as unknown as HealthCheckResponse
-    },
+    queryFn: async () => client.healthCheck(params),
     ...queryClientDefaults,
     ...options,
   })

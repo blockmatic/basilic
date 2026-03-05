@@ -7,6 +7,7 @@ const scriptFile = fileURLToPath(import.meta.url)
 const scriptDir = dirname(scriptFile)
 const openapiPath = join(scriptDir, '../../../apps/fastify/openapi/openapi.json')
 const outputPath = join(scriptDir, '../src/api-wrapper.gen.ts')
+const apiClientOutputPath = join(scriptDir, '../src/api-client.gen.ts')
 
 // Convert string to camelCase; strip {...} from path params for valid keys
 function toCamelCase(str) {
@@ -18,6 +19,11 @@ function toCamelCase(str) {
 function toActionKey(operationId) {
   const match = operationId.match(/[A-Z][a-z]+$/)
   return match ? match[0].toLowerCase() : operationId
+}
+
+// operationId (camelCase) -> hey-api type prefix (PascalCase), e.g. getUser -> GetUser
+function toPascalCase(operationId) {
+  return operationId.charAt(0).toUpperCase() + operationId.slice(1)
 }
 
 // Build nested object structure from path segments.
@@ -69,10 +75,62 @@ function generateNestedObject(obj, indent = 0) {
   return lines
 }
 
+// Collect all operationIds from nested structure (for import list)
+function collectOperationIds(obj, acc = new Set()) {
+  for (const value of Object.values(obj)) {
+    if (typeof value === 'string') {
+      acc.add(value)
+    } else {
+      collectOperationIds(value, acc)
+    }
+  }
+  return acc
+}
+
+// opts optional for get/head/options, required for post/put/patch/delete
+function isOptsOptional(method) {
+  return ['get', 'head', 'options'].includes(method)
+}
+
+// operationIds that have no *Response type (hey-api uses unknown, e.g. redirect endpoints)
+const NO_RESPONSE_OPERATIONS = new Set(['oauthGithubAuthorize'])
+
+// Generate CoreApiClient type lines from nested structure
+function generateClientTypeLines(obj, indent = 0) {
+  const spaces = '  '.repeat(indent)
+  const lines = []
+  const entries = Object.entries(obj)
+
+  for (let i = 0; i < entries.length; i++) {
+    const [key, value] = entries[i]
+    const isLast = i === entries.length - 1
+    const sep = isLast ? '' : ';'
+
+    if (typeof value === 'string') {
+      const opId = value
+      const method = operationIdToMethod[opId] ?? 'get'
+      const optional = isOptsOptional(method)
+      const prefix = toPascalCase(opId)
+      const dataType = `${prefix}Data`
+      const responseType = NO_RESPONSE_OPERATIONS.has(opId) ? 'unknown' : `${prefix}Response`
+      const optsPart = optional ? `opts?: Options<${dataType}>` : `opts: Options<${dataType}>`
+      lines.push(`${spaces}${key}: (${optsPart}) => Promise<${responseType}>${sep}`)
+    } else {
+      lines.push(`${spaces}${key}: {`)
+      lines.push(...generateClientTypeLines(value, indent + 1))
+      lines.push(`${spaces}}${sep}`)
+    }
+  }
+
+  return lines
+}
+
 // Read OpenAPI spec
 const openapiSpec = JSON.parse(readFileSync(openapiPath, 'utf-8'))
 const paths = openapiSpec.paths || {}
 const nestedStructure = {}
+/** operationId -> HTTP method, for opts optional (get/head) vs required (post/put/delete) */
+const operationIdToMethod = {}
 
 // Process each path
 for (const [path, methods] of Object.entries(paths)) {
@@ -93,6 +151,8 @@ for (const [path, methods] of Object.entries(paths)) {
     if (!operationId) {
       operationId = method.toLowerCase()
     }
+
+    operationIdToMethod[operationId] = method
 
     // Parse path segments
     const pathSegments = path.split('/').filter(Boolean)
@@ -129,3 +189,29 @@ ${nestedObjectLines.join('\n')}
 // Write generated file
 writeFileSync(outputPath, output, 'utf-8')
 logger.info('✅ Generated api-wrapper.gen.ts')
+
+// Generate api-client.gen.ts with CoreApiClient type
+const operationIds = [...collectOperationIds(nestedStructure)].sort()
+const typeImports = operationIds.flatMap(opId => {
+  const prefix = toPascalCase(opId)
+  const types = [`${prefix}Data`]
+  if (!NO_RESPONSE_OPERATIONS.has(opId)) types.push(`${prefix}Response`)
+  return types
+})
+const uniqueTypeImports = [...new Set(typeImports)].sort()
+const clientTypeLines = generateClientTypeLines(nestedStructure, 1)
+
+const apiClientOutput = `// This file is auto-generated. Do not edit manually.
+
+import type { Options } from './gen/index'
+import type {
+  ${uniqueTypeImports.join(',\n  ')},
+} from './gen/types.gen'
+
+export type CoreApiClient = {
+${clientTypeLines.join('\n')}
+}
+`
+
+writeFileSync(apiClientOutputPath, apiClientOutput, 'utf-8')
+logger.info('✅ Generated api-client.gen.ts')

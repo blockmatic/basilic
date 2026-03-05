@@ -32,8 +32,7 @@ export function useOAuthLogin(
 
   return useMutation<OauthGithubAuthorizeUrlResponse, Error, void>({
     mutationFn: async () => {
-      const data =
-        (await client.auth.oauth.github.authorizeUrl()) as unknown as OauthGithubAuthorizeUrlResponse
+      const data = await client.auth.oauth.github.authorizeUrl()
       if (typeof data?.redirectUrl === 'string') {
         window.location.href = data.redirectUrl
       }
