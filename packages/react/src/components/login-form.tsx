@@ -6,10 +6,14 @@ import {
   FieldDescription,
   FieldError,
   FieldGroup,
-  FieldLabel,
   FieldSeparator,
 } from '@repo/ui/components/field'
-import { Input } from '@repo/ui/components/input'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from '@repo/ui/components/input-group'
 import { cn } from '@repo/ui/lib/utils'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
@@ -125,39 +129,69 @@ export function LoginForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
+          <h1 className="text-2xl font-bold">Welcome to Acme</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
+            Enter your email below to continue
           </p>
         </div>
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            required
-            value={email}
-            onChange={handleEmailChange}
-            disabled={isPending || isSuccess}
-          />
-          {emailValidationError && <FieldError>{emailValidationError}</FieldError>}
+          <InputGroup>
+            <InputGroupInput
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              aria-label="Email"
+              required
+              value={email}
+              onChange={handleEmailChange}
+              disabled={isPending || isSuccess}
+              aria-invalid={!!emailValidationError}
+            />
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                type="submit"
+                size="icon-sm"
+                className="cursor-pointer [&_svg]:pointer-events-auto [&_svg]:cursor-pointer [&_span]:cursor-pointer hover:bg-transparent dark:hover:bg-transparent"
+                disabled={isPending || isSuccess}
+                aria-label={isPending ? 'Sending magic link' : 'Send magic link'}
+                aria-busy={isPending}
+                data-testid="send-magic-link"
+              >
+                {isPending ? (
+                  <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="size-4"
+                    style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+                  >
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                )}
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+          {emailValidationError && (
+            <FieldError className="text-center">{emailValidationError}</FieldError>
+          )}
           {isSuccess && (
-            <FieldDescription className="text-green-600 dark:text-green-400">
+            <p className="text-center text-sm" style={{ color: '#4ade80' }}>
               Check your email for the magic link
-            </FieldDescription>
+            </p>
           )}
         </Field>
         {catalogError && (
-          <FieldDescription className="text-destructive text-center">
+          <FieldDescription className="text-center text-destructive">
             {catalogError}
           </FieldDescription>
         )}
-        <Field>
-          <Button type="submit" disabled={isPending || isSuccess} data-testid="send-magic-link">
-            {isPending ? 'Sending...' : 'Send magic link'}
-          </Button>
-        </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         {extraActions ?? (
           <Field>
