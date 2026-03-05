@@ -81,17 +81,30 @@ const client = createClient({
 
 ### Usage (Next.js)
 
+`createClient` supports three auth modes. See [Authentication](/docs/architecture/authentication) for full details.
+
 ```typescript
-import { createApi } from '@repo/core'
+import { createClient } from '@repo/core'
 import { useHealthCheck } from '@repo/react'
 
-const api = createApi({
+// No-auth: health check without Bearer
+const client = createClient({ baseUrl: process.env.NEXT_PUBLIC_API_URL! })
+
+// JWT mode: token from cookie or session
+const client = createClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL!,
   getAuthToken: async () => session?.token,
+  getRefreshToken: async () => session?.refreshToken,
+  onTokensRefreshed: async ({ token, refreshToken }) => { /* persist */ },
 })
 
-const health = await api.healthCheck()
+// API key mode: static Bearer for servers/CLIs
+const client = createClient({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL!,
+  apiKey: 'bask_xxx_secret',
+})
 
+const health = await client.healthCheck()
 const { data } = useHealthCheck()
 ```
 

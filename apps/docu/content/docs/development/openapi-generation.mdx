@@ -94,22 +94,24 @@ This generates:
 The generated clients provide full type safety:
 
 ```typescript
-import { createApi } from '@repo/core'
+import { createClient } from '@repo/core'
 import { useUser } from '@repo/react'
 
-// Runtime-agnostic client
-const api = createApi({
+// Runtime-agnostic client (JWT mode for authenticated calls)
+const client = createClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL!,
   getAuthToken: async () => session?.token,
+  getRefreshToken: async () => session?.refreshToken,
+  onTokensRefreshed: async ({ token, refreshToken }) => { /* persist */ },
 })
 
 // Fully typed API call
-const user = await api.getUser({ id: '123' })
+const user = await client.auth.session.user()
 // user is typed from OpenAPI spec
 
 // Or use generated React Query hooks
-const { data, isLoading, error } = useUser({ id: '123' })
-// data is typed as User | undefined
+const { data, isLoading, error } = useUser()
+// data is typed from OpenAPI spec
 ```
 
 ## Benefits

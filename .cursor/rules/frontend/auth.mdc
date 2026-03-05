@@ -1,0 +1,27 @@
+---
+description: Next.js auth patterns—single cookie, core client modes, refresh flow
+glob: "apps/next/**/*,packages/core/**/*,packages/react/**/*"
+alwaysApply: false
+---
+
+See @apps/docu/content/docs/architecture/authentication.mdx for full architecture.
+
+## Cookie Storage
+
+- Single cookie `api.session` (env: `AUTH_COOKIE_NAME` / `NEXT_PUBLIC_AUTH_COOKIE_NAME`) stores JSON `{ token, refreshToken }`
+- No legacy dual-cookie names (`better-auth.*`)
+- Config in `lib/env.ts` via createEnv
+
+## createClient Auth Modes
+
+| Mode | Config | Refresh on 401 |
+| --- | --- | --- |
+| **apiKey** | `apiKey: 'bask_xxx'` | Never |
+| **JWT** | `getAuthToken`, `getRefreshToken`, `onTokensRefreshed` (all three required) | Yes—calls Fastify `POST /auth/session/refresh` directly |
+| **no-auth** | `baseUrl` only | Never |
+
+## Refresh Flow
+
+- Core calls Fastify `POST /auth/session/refresh` directly on 401 (no BFF proxy)
+- `onTokensRefreshed` → `updateAuthTokens` → `POST /api/auth/update-tokens` persists new tokens in cookie
+- Proxy (`proxy.ts`) refreshes on navigation; core refreshes on client-side 401 (e.g. `useUser`)

@@ -196,6 +196,20 @@ Refresh token reuse is detected by hashing the `jti` and comparing it to the sto
 - **Refresh**: refresh rotates `jti` and extends session expiry
 - **Revoke**: logout deletes the session (and refresh reuse detection revokes)
 
+```mermaid
+stateDiagram-v2
+  [*] --> Unauthenticated: Initial load / Logout
+
+  Unauthenticated --> Authenticated: Login success (callback sets cookie)
+
+  Authenticated --> Authenticated: API calls (Bearer from cookie)
+  Authenticated --> Refreshing: 401 on API call OR navigate with expired token
+  Authenticated --> Unauthenticated: Logout / Session revoked
+
+  Refreshing --> Authenticated: Refresh success (onTokensRefreshed / proxy sets cookie)
+  Refreshing --> Unauthenticated: Refresh fail (clear cookie)
+```
+
 ## Endpoints
 
 All endpoints below are served by `apps/fastify`. The API does not set cookies; tokens are returned as JSON.
@@ -242,6 +256,63 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 **Cookies**: Single cookie `api.session` (configurable via `AUTH_COOKIE_NAME` / `NEXT_PUBLIC_AUTH_COOKIE_NAME`) stores JSON `{ token, refreshToken }`. Readable on the client (`httpOnly: false`) so `getAuthToken` can read from `document.cookie`. Cookie `maxAge` is derived from refresh JWT `exp`.
 
 **Core auth modes**: `createClient` supports three modes—(1) **apiKey**: static Bearer, no refresh; (2) **JWT**: `getAuthToken`, `getRefreshToken`, `onTokensRefreshed` required, refresh on 401; (3) **no-auth**: `baseUrl` only.
+
+### Cookie architecture
+
+```mermaid
+flowchart TB
+  subgraph Storage [Single Cookie]
+    Session["api.session"]
+  end
+
+  subgraph Parse [Parse JSON]
+    Session -->|"value"| Parse
+    Parse --> Access["token"]
+    Parse --> Refresh["refreshToken"]
+  end
+
+  Access --> getAuthToken["getAuthToken returns token"]
+  Refresh --> getRefreshToken["getRefreshToken returns refreshToken"]
+  getAuthToken --> Bearer["Authorization: Bearer"]
+```
+
+### Core auth mode decision flow
+
+```mermaid
+flowchart TD
+  Create[createClient]
+  Create --> HasApiKey{apiKey provided?}
+  HasApiKey -->|Yes| UseApiKey["Use apiKey for Bearer"]
+  HasApiKey -->|No| HasJwt{JWT callbacks?}
+  HasJwt -->|Yes| RequireJwt["Require getAuthToken, getRefreshToken, onTokensRefreshed"]
+  HasJwt -->|No| NoAuth[No auth - no Bearer header]
+  UseApiKey --> NoRefresh[Never attempt refresh]
+  RequireJwt --> RefreshOn401[401 triggers refresh via Fastify]
+  NoAuth --> NoRefresh
+```
+
+### JWT 401 refresh sequence
+
+Core calls Fastify directly for refresh; Next.js cookie updated via `onTokensRefreshed` → `update-tokens`.
+
+```mermaid
+sequenceDiagram
+  participant Core as core client
+  participant Cookie
+  participant Fastify
+  participant Callback as onTokensRefreshed (updateAuthTokens)
+  participant BFF as POST /api/auth/update-tokens
+
+  401->>Core: API call fails
+  Core->>Cookie: getRefreshToken (parse api.session)
+  Core->>Fastify: POST /auth/session/refresh (direct)
+  Fastify-->>Core: { token, refreshToken }
+  Core->>Callback: onTokensRefreshed(tokens)
+  Note over Callback,BFF: Cookie persisted on Next.js side
+  Callback->>BFF: POST /api/auth/update-tokens
+  BFF->>Cookie: Set api.session (single cookie)
+  Core->>Core: retry original request
+```
 
 ## Magic link flow (web)
 

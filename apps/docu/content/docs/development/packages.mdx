@@ -51,20 +51,40 @@ Examples:
 Generated client and types from `apps/fastify/openapi/openapi.json`.
 
 **Exports** (public):
-- `createClient()` — nested namespace API (recommended)
-- `createApi()` — simplified flat API
-- `api` — generated wrapper map (advanced usage)
+- `createClient()` — nested namespace API
 - `ApiError` — error class for API failures
 - `export type *` — all generated OpenAPI types
+
+**Auth modes** (see [Authentication](/docs/architecture/authentication)):
+
+| Mode | Config | Refresh on 401 |
+| --- | --- | --- |
+| **apiKey** | `apiKey: 'bask_xxx'` | Never |
+| **JWT** | `getAuthToken`, `getRefreshToken`, `onTokensRefreshed` | Yes (calls Fastify directly) |
+| **no-auth** | `baseUrl` only | Never |
 
 **Usage**:
 
 ```ts
 import { createClient } from '@repo/core'
 
-const client = createClient({ baseUrl: 'http://localhost:3001' }) // no-auth mode
+// No-auth (callbacks, health checks)
+const client = createClient({ baseUrl: 'http://localhost:3001' })
 
-// Nested namespace API
+// JWT mode (web app—use getAuthToken, getRefreshToken, updateAuthTokens from lib/auth/auth-client)
+const client = createClient({
+  baseUrl: 'http://localhost:3001',
+  getAuthToken,
+  getRefreshToken,
+  onTokensRefreshed: updateAuthTokens,
+})
+
+// API key mode (servers, CLIs)
+const client = createClient({
+  baseUrl: 'http://localhost:3001',
+  apiKey: 'bask_xxx_secret',
+})
+
 await client.auth.magiclink.request({
   body: { email: 'me@example.com', callbackUrl: 'http://localhost:3000' },
 })
