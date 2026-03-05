@@ -52,11 +52,9 @@ export function getAlchemyRpcUrl(chainId: number | string, apiKey: string): stri
 
   let slug: string | undefined
 
-  if (metadata.chainType === 'evm' && typeof chainId === 'number') {
-    slug = ALCHEMY_EVM_SLUGS[chainId]
-  } else if (metadata.chainType === 'solana' && typeof chainId === 'string') {
+  if (metadata.chainType === 'evm' && typeof chainId === 'number') slug = ALCHEMY_EVM_SLUGS[chainId]
+  else if (metadata.chainType === 'solana' && typeof chainId === 'string')
     slug = ALCHEMY_SOLANA_SLUGS[chainId]
-  }
 
   if (!slug) return undefined
 
@@ -94,9 +92,7 @@ export function getRpcEndpoint(chainId: number | string, alchemyApiKey?: string)
 
   // Fallback to default RPC from chain metadata
   const metadata = getChainMetadata(chainId)
-  if (metadata?.defaultRpcUrl) {
-    return metadata.defaultRpcUrl
-  }
+  if (metadata?.defaultRpcUrl) return metadata.defaultRpcUrl
 
   throw new Error(`No RPC endpoint available for chain ${chainId}`)
 }
@@ -118,13 +114,11 @@ export function isAlchemySupported(chainId: number | string): boolean {
   const metadata = getChainMetadata(chainId)
   if (!metadata) return false
 
-  if (metadata.chainType === 'evm' && typeof chainId === 'number') {
+  if (metadata.chainType === 'evm' && typeof chainId === 'number')
     return chainId in ALCHEMY_EVM_SLUGS
-  }
 
-  if (metadata.chainType === 'solana' && typeof chainId === 'string') {
+  if (metadata.chainType === 'solana' && typeof chainId === 'string')
     return chainId in ALCHEMY_SOLANA_SLUGS
-  }
 
   return false
 }

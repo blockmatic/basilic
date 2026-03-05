@@ -22,7 +22,7 @@ export async function verifyWalletSignature({
   const normalized = normalizeAddress({ chain, address })
   if (!normalized) return { valid: false, normalizedAddress: '' }
 
-  if (chain === EIP155_CHAIN) {
+  if (chain === EIP155_CHAIN)
     try {
       const valid = await verifyMessage({
         address: normalized as `0x${string}`,
@@ -33,9 +33,8 @@ export async function verifyWalletSignature({
     } catch {
       return { valid: false, normalizedAddress: '' }
     }
-  }
 
-  if (chain === SOLANA_CHAIN) {
+  if (chain === SOLANA_CHAIN)
     try {
       const msgBytes = new TextEncoder().encode(message)
       const sigBytes = bs58.decode(signature)
@@ -45,7 +44,6 @@ export async function verifyWalletSignature({
     } catch {
       return { valid: false, normalizedAddress: '' }
     }
-  }
 
   return { valid: false, normalizedAddress: '' }
 }
@@ -79,14 +77,14 @@ function normalizeAddress({
   chain: Web3Chain
   address: string
 }): string | null {
-  if (chain === EIP155_CHAIN) {
+  if (chain === EIP155_CHAIN)
     try {
       return getAddress(address).toLowerCase()
     } catch {
       return null
     }
-  }
-  if (chain === SOLANA_CHAIN) {
+
+  if (chain === SOLANA_CHAIN)
     try {
       const decoded = bs58.decode(address)
       if (decoded.length !== 32) return null
@@ -94,6 +92,6 @@ function normalizeAddress({
     } catch {
       return null
     }
-  }
+
   return null
 }

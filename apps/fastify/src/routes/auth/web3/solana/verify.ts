@@ -51,12 +51,11 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { message, signature, domain: expectedDomain, callbackUrl } = request.body
 
-      if (callbackUrl && !isAllowedUrl(callbackUrl)) {
+      if (callbackUrl && !isAllowedUrl(callbackUrl))
         return reply.code(400).send({
           code: 'INVALID_CALLBACK_URL',
           message: 'Callback URL origin is not allowed',
         })
-      }
 
       const result = await verifyWeb3Auth({
         chain: 'solana',
@@ -72,9 +71,9 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
             if (
               publicKeyBytes.length !== nacl.sign.publicKeyLength ||
               signatureBytes.length !== nacl.sign.signatureLength
-            ) {
+            )
               return false
-            }
+
             return nacl.sign.detached.verify(
               new TextEncoder().encode(msg),
               signatureBytes,

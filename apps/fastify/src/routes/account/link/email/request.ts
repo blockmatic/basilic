@@ -41,31 +41,28 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Authentication required',
         })
-      }
 
       const { email, callbackUrl } = request.body
 
-      if (!isAllowedUrl(callbackUrl)) {
+      if (!isAllowedUrl(callbackUrl))
         return reply.code(400).send({
           code: 'INVALID_INPUT',
           message: 'Invalid or unsafe callback URL',
         })
-      }
 
       const db = await getDb()
 
       const [existingUser] = await db.select().from(users).where(eq(users.email, email))
-      if (existingUser && existingUser.id !== request.session.user.id) {
+      if (existingUser && existingUser.id !== request.session.user.id)
         return reply.code(409).send({
           code: 'EMAIL_ALREADY_IN_USE',
           message: 'This email is already used by another account',
         })
-      }
 
       const token = generateToken()
       const tokenHash = hashToken(token)
@@ -102,11 +99,10 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
           html,
         })
 
-        if ('error' in emailResponse && emailResponse.error) {
+        if ('error' in emailResponse && emailResponse.error)
           throw new Error(
             `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
           )
-        }
       } catch (err) {
         await db.delete(verification).where(eq(verification.id, verificationId))
         throw err

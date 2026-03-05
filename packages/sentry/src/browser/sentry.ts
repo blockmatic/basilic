@@ -30,9 +30,7 @@ export function initSentry(options: InitSentryOptions): void {
   }
 
   // Check if Sentry is already initialized to prevent double initialization
-  if (Sentry.getClient()) {
-    return
-  }
+  if (Sentry.getClient()) return
 
   Sentry.init({
     dsn: options.dsn,

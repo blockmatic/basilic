@@ -9,7 +9,5 @@ declare global {
  * Used by the email plugin to provide a test email provider instead of Resend.
  */
 export function setTestEmailProvider(provider: EmailProvider | null) {
-  if (typeof globalThis !== 'undefined') {
-    globalThis.__testEmailProvider = provider
-  }
+  if (typeof globalThis !== 'undefined') globalThis.__testEmailProvider = provider
 }

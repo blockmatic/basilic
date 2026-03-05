@@ -88,9 +88,8 @@ async function resolveMessages(rawMessages: unknown[], tools: ToolSet): Promise<
   const first = rawMessages[0]
   if (isUIMessage(first)) {
     const allUIMessage = rawMessages.every(isUIMessage)
-    if (!allUIMessage) {
-      throw new Error('Invalid request: mixed UIMessage and CoreMessage formats')
-    }
+    if (!allUIMessage) throw new Error('Invalid request: mixed UIMessage and CoreMessage formats')
+
     return convertToModelMessages(rawMessages as Parameters<typeof convertToModelMessages>[0], {
       tools,
       ignoreIncompleteToolCalls: true,
@@ -98,9 +97,8 @@ async function resolveMessages(rawMessages: unknown[], tools: ToolSet): Promise<
   }
   if (isCoreMessage(first)) {
     const allCore = rawMessages.every(isCoreMessage)
-    if (!allCore) {
-      throw new Error('Invalid request: mixed UIMessage and CoreMessage formats')
-    }
+    if (!allCore) throw new Error('Invalid request: mixed UIMessage and CoreMessage formats')
+
     return rawMessages as ModelMessage[]
   }
   throw new Error(
@@ -184,19 +182,17 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Authentication required',
         })
-      }
 
-      if (!env.OPEN_ROUTER_API_KEY) {
+      if (!env.OPEN_ROUTER_API_KEY)
         return reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Server misconfiguration: OPEN_ROUTER_API_KEY is not set',
         })
-      }
 
       const { messages: rawMessages, stream, model, temperature } = request.body
       const resolvedModel = resolveModel(model)

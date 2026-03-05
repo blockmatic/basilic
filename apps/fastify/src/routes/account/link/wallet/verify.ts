@@ -48,36 +48,32 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Authentication required',
         })
-      }
 
       const { chain, message, signature } = request.body
-      if (!isValidChain(chain)) {
+      if (!isValidChain(chain))
         return reply.code(400).send({
           code: 'INVALID_CHAIN',
           message: 'Chain must be eip155 or solana',
         })
-      }
 
       const parsed = parseSignInMessage(message)
-      if (!parsed) {
+      if (!parsed)
         return reply.code(400).send({
           code: 'INVALID_MESSAGE',
           message: 'Invalid sign-in message format',
         })
-      }
 
       const lookupAddr = getCanonicalAddress({ chain, address: parsed.address })
-      if (!lookupAddr) {
+      if (!lookupAddr)
         return reply.code(400).send({
           code: 'INVALID_ADDRESS',
           message: 'Invalid wallet address in message',
         })
-      }
 
       const db = await getDb()
 
@@ -86,12 +82,11 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
         .from(web3Nonce)
         .where(and(eq(web3Nonce.chain, chain), eq(web3Nonce.address, lookupAddr)))
 
-      if (!nonceRow) {
+      if (!nonceRow)
         return reply.code(401).send({
           code: 'INVALID_NONCE',
           message: 'No nonce found for this wallet. Request one first.',
         })
-      }
 
       if (nonceRow.expiresAt < new Date()) {
         await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
@@ -101,12 +96,11 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      if (nonceRow.nonce !== parsed.nonce) {
+      if (nonceRow.nonce !== parsed.nonce)
         return reply.code(401).send({
           code: 'INVALID_NONCE',
           message: 'Nonce does not match',
         })
-      }
 
       const { valid, normalizedAddress } = await verifyWalletSignature({
         chain,
@@ -115,12 +109,11 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
         address: parsed.address,
       })
 
-      if (!valid || !normalizedAddress) {
+      if (!valid || !normalizedAddress)
         return reply.code(401).send({
           code: 'INVALID_SIGNATURE',
           message: 'Signature verification failed',
         })
-      }
 
       const userId = request.session.user.id
       let walletAlreadyLinked = false
@@ -169,12 +162,11 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
         throw err
       }
 
-      if (walletAlreadyLinked) {
+      if (walletAlreadyLinked)
         return reply.code(409).send({
           code: 'WALLET_ALREADY_LINKED',
           message: 'This wallet is already linked to another account',
         })
-      }
 
       return reply.code(200).send({ ok: true })
     },

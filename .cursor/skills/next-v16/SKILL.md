@@ -1,12 +1,24 @@
 ---
 name: next-best-practices
-description: Next.js best practices - file conventions, RSC boundaries, data patterns, async APIs, metadata, error handling, route handlers, image/font optimization, bundling
+description: Next.js v16 best practices - proxy.ts, file conventions, RSC boundaries, Cache Components, async APIs, route handlers, image/font optimization
 user-invocable: false
 ---
 
-# Next.js Best Practices
+# Next.js v16 Best Practices
 
-Apply these rules when writing or reviewing Next.js code.
+Apply these rules when writing or reviewing Next.js 16+ code.
+
+## Scope
+
+Target: Next.js 16+, App Router, Node.js 20.9+, TypeScript 5+.
+
+## Next.js 16 Patterns
+
+- **proxy.ts**: Replaces `middleware.ts`. Runs on Node.js runtime. Use `export function proxy(request: NextRequest)` and `export const config = { matcher }`. Same redirect/rewrite/headers/cookies APIs. Migration: `npx @next/codemod@canary middleware-to-proxy .`
+- **Turbopack**: Default bundler; opt out with `next build --webpack`, `next dev --webpack`
+- **Cache Components**: Opt-in via `cacheComponents: true` and `"use cache"` directive; PPR-ready
+- **Async APIs**: `params`, `searchParams`, `cookies()`, `headers()` are async; use `await`
+- **Caching**: `revalidateTag(tag, profile)` requires second arg; `updateTag()` in Server Actions for read-your-writes; `refresh()` for uncached data
 
 ## File Conventions
 
@@ -14,7 +26,7 @@ See [file-conventions.md](./file-conventions.md) for:
 - Project structure and special files
 - Route segments (dynamic, catch-all, groups)
 - Parallel and intercepting routes
-- Middleware rename in v16 (middleware → proxy)
+- proxy.ts (v16: replaces middleware.ts, Node.js runtime)
 
 ## RSC Boundaries
 

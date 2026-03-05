@@ -38,9 +38,8 @@ const emailPlugin: FastifyPluginAsync = async fastify => {
       send: async options => {
         if (globalTestProvider) return globalTestProvider.emails.send(options)
         const isTestAi = options.to.endsWith('@test.ai')
-        if (env.ALLOW_TEST && isTestAi && fakeForTestAi) {
-          return fakeForTestAi.emails.send(options)
-        }
+        if (env.ALLOW_TEST && isTestAi && fakeForTestAi) return fakeForTestAi.emails.send(options)
+
         return resend.emails.send(options)
       },
     },

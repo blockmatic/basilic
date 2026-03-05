@@ -69,9 +69,7 @@ export async function getTestDatabase() {
     await pgLiteInstance.waitReady
     dbUrl = TEST_DATABASE_URL
     // Expose for getDb() to use same instance (avoids dynamic import resolution issues in Vitest)
-    if (typeof globalThis !== 'undefined') {
-      globalThis.__testPgliteInstance = pgLiteInstance
-    }
+    if (typeof globalThis !== 'undefined') globalThis.__testPgliteInstance = pgLiteInstance
   }
   return {
     instance: pgLiteInstance,
@@ -114,9 +112,7 @@ export async function closeTestDatabase() {
     await pgLiteInstance.close()
     pgLiteInstance = null
     dbUrl = null
-    if (typeof globalThis !== 'undefined') {
-      globalThis.__testPgliteInstance = undefined
-    }
+    if (typeof globalThis !== 'undefined') globalThis.__testPgliteInstance = undefined
   }
 }
 

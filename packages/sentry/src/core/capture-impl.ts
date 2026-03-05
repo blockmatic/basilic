@@ -32,7 +32,7 @@ export function createCaptureError(Sentry: SentryAdapter, defaultLogger: Logger)
     const errorWithMessage = toErrorWithMessage(options.error)
 
     // Don't report if explicitly disabled
-    if (options.report !== false) {
+    if (options.report !== false)
       // Capture to Sentry asynchronously (non-blocking)
       // Note: Uses Promise.resolve().then() for runtime compatibility across Node.js, Edge, and browsers.
       // Limitation: In serverless environments, errors may be dropped if function terminates before promise executes.
@@ -73,6 +73,5 @@ export function createCaptureError(Sentry: SentryAdapter, defaultLogger: Logger)
           },
         )
       })
-    }
   }
 }

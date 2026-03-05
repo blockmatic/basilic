@@ -66,7 +66,7 @@ export async function setupGroupDatabase() {
   // will get the same instance. We track migrations to avoid running them multiple times.
   // Use a promise to handle concurrent calls - all will wait for the same migration to complete
   if (!migrationsRun) {
-    if (!migrationPromise) {
+    if (!migrationPromise)
       migrationPromise = (async () => {
         const migrationsDir = join(projectRoot, 'src', 'db', 'migrations')
 
@@ -86,15 +86,13 @@ export async function setupGroupDatabase() {
           } catch (error) {
             // Ignore "relation already exists" errors - migrations may have been run by another concurrent call
             const errorMessage = error instanceof Error ? error.message : String(error)
-            if (!errorMessage.includes('already exists')) {
-              throw error
-            }
+            if (!errorMessage.includes('already exists')) throw error
           }
         }
 
         migrationsRun = true
       })()
-    }
+
     await migrationPromise
   }
 

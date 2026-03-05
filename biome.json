@@ -71,11 +71,20 @@
       "correctness": {
         "useExhaustiveDependencies": "off"
       },
+      "complexity": {
+        "useOptionalChain": "error"
+      },
       "security": {
         "noDangerouslySetInnerHtml": "off"
       },
       "style": {
         "noEnum": "error",
+        "noUselessElse": "error",
+        "noParameterAssign": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useTemplate": "error",
+        "useNodejsImportProtocol": "error",
+        "useConsistentArrayType": { "options": { "syntax": "shorthand" } },
         "noRestrictedImports": {
           "options": {
             "paths": {

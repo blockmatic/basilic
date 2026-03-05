@@ -25,12 +25,11 @@ const unlinkRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Authentication required',
         })
-      }
 
       const { id } = request.params
       const db = await getDb()
@@ -42,12 +41,11 @@ const unlinkRoute: FastifyPluginAsync = async fastify => {
         )
         .returning()
 
-      if (deleted.length === 0) {
+      if (deleted.length === 0)
         return reply.code(404).send({
           code: 'NOT_FOUND',
           message: 'Wallet not found',
         })
-      }
 
       return reply.code(204).send(null)
     },

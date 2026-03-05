@@ -27,12 +27,11 @@ const WEAK_ENCRYPTION_KEY = '0'.repeat(64)
  */
 export function validateEncryptionKey(): void {
   const key = env.ENCRYPTION_KEY
-  if (!key || key.length !== 64 || !/^[0-9a-fA-F]+$/.test(key)) {
+  if (!key || key.length !== 64 || !/^[0-9a-fA-F]+$/.test(key))
     throw new Error('ENCRYPTION_KEY must be a 64-character hex string (32 bytes)')
-  }
-  if (env.NODE_ENV === 'production' && key === WEAK_ENCRYPTION_KEY) {
+
+  if (env.NODE_ENV === 'production' && key === WEAK_ENCRYPTION_KEY)
     throw new Error('ENCRYPTION_KEY must not be the all-zero default in production')
-  }
 }
 
 /**
@@ -81,9 +80,7 @@ export function decrypt(ciphertext: string): string | null {
     const payload = Buffer.from(ciphertext, 'base64')
 
     // Extract IV, AuthTag, and Ciphertext
-    if (payload.length < IV_LENGTH + AUTH_TAG_LENGTH) {
-      return null
-    }
+    if (payload.length < IV_LENGTH + AUTH_TAG_LENGTH) return null
 
     const iv = payload.subarray(0, IV_LENGTH)
     const authTag = payload.subarray(IV_LENGTH, IV_LENGTH + AUTH_TAG_LENGTH)

@@ -30,12 +30,11 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
     },
     async (_request, reply) => {
       const { GITHUB_CLIENT_ID, OAUTH_GITHUB_CALLBACK_URL } = env
-      if (!GITHUB_CLIENT_ID || !OAUTH_GITHUB_CALLBACK_URL) {
+      if (!GITHUB_CLIENT_ID || !OAUTH_GITHUB_CALLBACK_URL)
         return reply.status(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'GitHub OAuth is not configured',
         })
-      }
 
       const state = randomUUID() + randomUUID().replace(/-/g, '')
       const stateHash = hashToken(state)

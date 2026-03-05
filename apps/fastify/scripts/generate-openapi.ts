@@ -13,9 +13,7 @@ const scriptDir = dirname(scriptPath)
  * This fixes the issue where z.toJSONSchema() marks optional-with-default fields as required.
  */
 function removeDefaultsFromRequired(schema: unknown): unknown {
-  if (!schema || typeof schema !== 'object') {
-    return schema
-  }
+  if (!schema || typeof schema !== 'object') return schema
 
   const obj = schema as Record<string, unknown>
 
@@ -28,17 +26,15 @@ function removeDefaultsFromRequired(schema: unknown): unknown {
       // Remove any property from required if it has a default value
       const newRequired = required.filter(key => {
         const prop = properties[key]
-        if (prop && typeof prop === 'object' && 'default' in prop) {
-          return false
-        }
+        if (prop && typeof prop === 'object' && 'default' in prop) return false
+
         return true
       })
 
       // Recursively process properties
       const newProperties: Record<string, unknown> = {}
-      for (const [key, value] of Object.entries(properties)) {
+      for (const [key, value] of Object.entries(properties))
         newProperties[key] = removeDefaultsFromRequired(value)
-      }
 
       return {
         ...obj,
@@ -48,34 +44,34 @@ function removeDefaultsFromRequired(schema: unknown): unknown {
     }
   }
 
+  const processComponents = (components: Record<string, unknown>): Record<string, unknown> => {
+    const newComponents: Record<string, unknown> = {}
+    for (const [compKey, compValue] of Object.entries(components))
+      if (compKey === 'schemas' && typeof compValue === 'object' && compValue !== null) {
+        const schemas = compValue as Record<string, unknown>
+        const newSchemas: Record<string, unknown> = {}
+        for (const [schemaKey, schemaValue] of Object.entries(schemas))
+          newSchemas[schemaKey] = removeDefaultsFromRequired(schemaValue)
+        newComponents[compKey] = newSchemas
+      } else {
+        newComponents[compKey] = removeDefaultsFromRequired(compValue)
+      }
+    return newComponents
+  }
+
   // Recursively process nested objects
   const result: Record<string, unknown> = {}
-  for (const [key, value] of Object.entries(obj)) {
+  for (const [key, value] of Object.entries(obj))
     if (key === 'paths' && typeof value === 'object' && value !== null) {
       // Process paths object
       const paths = value as Record<string, unknown>
       const newPaths: Record<string, unknown> = {}
-      for (const [pathKey, pathValue] of Object.entries(paths)) {
+      for (const [pathKey, pathValue] of Object.entries(paths))
         newPaths[pathKey] = removeDefaultsFromRequired(pathValue)
-      }
+
       result[key] = newPaths
     } else if (key === 'components' && typeof value === 'object' && value !== null) {
-      // Process components object
-      const components = value as Record<string, unknown>
-      const newComponents: Record<string, unknown> = {}
-      for (const [compKey, compValue] of Object.entries(components)) {
-        if (compKey === 'schemas' && typeof compValue === 'object' && compValue !== null) {
-          const schemas = compValue as Record<string, unknown>
-          const newSchemas: Record<string, unknown> = {}
-          for (const [schemaKey, schemaValue] of Object.entries(schemas)) {
-            newSchemas[schemaKey] = removeDefaultsFromRequired(schemaValue)
-          }
-          newComponents[compKey] = newSchemas
-        } else {
-          newComponents[compKey] = removeDefaultsFromRequired(compValue)
-        }
-      }
-      result[key] = newComponents
+      result[key] = processComponents(value as Record<string, unknown>)
     } else if (
       (key === 'requestBody' || key === 'responses' || key === 'body' || key === 'schema') &&
       typeof value === 'object' &&
@@ -90,7 +86,6 @@ function removeDefaultsFromRequired(schema: unknown): unknown {
     } else {
       result[key] = value
     }
-  }
 
   return result
 }
@@ -103,9 +98,7 @@ async function generateOpenAPI() {
     ENCRYPTION_KEY: 'deadbeef'.repeat(8), // 64-char hex (valid, not weak)
     JWT_SECRET: 'openapi-gen-jwt-secret-placeholder-32ch',
   }
-  for (const [k, v] of Object.entries(stubs)) {
-    if (!process.env[k]) process.env[k] = v
-  }
+  for (const [k, v] of Object.entries(stubs)) if (!process.env[k]) process.env[k] = v
 
   const { default: app } = await import('../src/app.js')
 

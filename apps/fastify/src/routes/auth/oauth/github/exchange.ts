@@ -55,12 +55,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
     },
     async (request, reply) => {
       const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, OAUTH_GITHUB_CALLBACK_URL } = env
-      if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET || !OAUTH_GITHUB_CALLBACK_URL) {
+      if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET || !OAUTH_GITHUB_CALLBACK_URL)
         return reply.code(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'GitHub OAuth is not configured',
         })
-      }
 
       const { code, state } = request.body
       const stateHash = hashToken(state)
@@ -71,12 +70,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         .from(verification)
         .where(and(eq(verification.value, stateHash), eq(verification.type, 'oauth_state')))
 
-      if (!stateRecord) {
+      if (!stateRecord)
         return reply.code(401).send({
           code: 'INVALID_STATE',
           message: 'Invalid or expired state',
         })
-      }
 
       if (stateRecord.expiresAt < new Date()) {
         await db.delete(verification).where(eq(verification.id, stateRecord.id))
@@ -102,28 +100,25 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         }),
       })
 
-      if (!tokenRes.ok) {
+      if (!tokenRes.ok)
         return reply.code(400).send({
           code: 'TOKEN_EXCHANGE_FAILED',
           message: 'Failed to exchange code for token',
         })
-      }
 
       const tokenData = (await tokenRes.json()) as GitHubTokenResponse & { error?: string }
-      if (tokenData.error) {
+      if (tokenData.error)
         return reply.code(400).send({
           code: 'TOKEN_EXCHANGE_FAILED',
           message: tokenData.error,
         })
-      }
 
       const accessToken = tokenData.access_token
-      if (!accessToken) {
+      if (!accessToken)
         return reply.code(400).send({
           code: 'TOKEN_EXCHANGE_FAILED',
           message: 'No access token in response',
         })
-      }
 
       const [userRes, emailsRes] = await Promise.all([
         fetch('https://api.github.com/user', {
@@ -137,12 +132,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         }),
       ])
 
-      if (!userRes.ok) {
+      if (!userRes.ok)
         return reply.code(400).send({
           code: 'FETCH_USER_FAILED',
           message: 'Failed to fetch GitHub user',
         })
-      }
 
       const ghUser = (await userRes.json()) as GitHubUser
       const accountId = String(ghUser.id)
@@ -158,12 +152,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         email = ''
       }
 
-      if (!email) {
+      if (!email)
         return reply.code(400).send({
           code: 'EMAIL_REQUIRED',
           message: 'Could not retrieve email from GitHub',
         })
-      }
 
       let [user] = await db.select().from(users).where(eq(users.email, email))
       if (!user) {

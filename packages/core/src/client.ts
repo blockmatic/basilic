@@ -24,100 +24,116 @@ export function getClientConfig(client: unknown): ClientConfig | undefined {
   return client && typeof client === 'object' ? clientConfigMap.get(client as object) : undefined
 }
 
+function getErrorFromResponse(response: { error?: unknown; response?: { status?: number } }): {
+  status: number
+  message: string
+} {
+  const status =
+    response.error && typeof response.error === 'object' && 'status' in response.error
+      ? (response.error as { status: number }).status
+      : (response.response?.status ?? 500)
+  const message =
+    (response.error && typeof response.error === 'object' && 'message' in response.error
+      ? (response.error as { message?: string }).message
+      : undefined) ?? 'Unknown error'
+  return { status, message }
+}
+
+async function doRefresh(
+  options: CoreClientOptions,
+  client: ReturnType<typeof createHeyApiClient>,
+): Promise<{ token: string; refreshToken: string } | null> {
+  if (options.refreshUrl) {
+    const res = await fetch(options.refreshUrl, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    return res.ok ? { token: '', refreshToken: '' } : null
+  }
+  const refreshToken = await options.getRefreshToken?.()
+  if (!refreshToken) return null
+  const refreshResponse = await gen.refresh({ client, body: { refreshToken } })
+  if (refreshResponse.error || !refreshResponse.data) return null
+  await options.onTokensRefreshed?.(refreshResponse.data)
+  return refreshResponse.data
+}
+
+function canAttemptRefresh(
+  errorStatus: number,
+  options: CoreClientOptions,
+  isRefreshEndpoint: boolean,
+): boolean {
+  if (errorStatus !== 401 || isRefreshEndpoint) return false
+  if (options.refreshUrl) return true
+  return !!(options.getRefreshToken && options.onTokensRefreshed)
+}
+
+async function tryRefreshAndRetry<T extends { data?: unknown; error?: unknown }>({
+  obj,
+  callOptions,
+  client,
+  options,
+}: {
+  obj: (opts: Record<string, unknown>) => Promise<T>
+  callOptions: Record<string, unknown>
+  client: ReturnType<typeof createHeyApiClient>
+  options: CoreClientOptions
+}): Promise<T['data'] | undefined> {
+  try {
+    if (!refreshLock) refreshLock = doRefresh(options, client)
+    const newTokens = await refreshLock
+    refreshLock = null
+
+    if (!newTokens) return undefined
+    const retryResponse = await obj({ ...callOptions, client })
+    if (retryResponse.error) {
+      const { status: s, message: m } = getErrorFromResponse(retryResponse)
+      throw new ApiError(s, m, retryResponse.error)
+    }
+    return retryResponse.data
+  } catch {
+    refreshLock = null
+    return undefined
+  }
+}
+
 function wrapApiWithClient<T>(
   obj: T,
   client: ReturnType<typeof createHeyApiClient>,
   options: CoreClientOptions,
 ): T {
-  if (typeof obj === 'function') {
+  if (typeof obj === 'function')
     return (async (callOptions: Record<string, unknown> = {}) => {
-      // Call underlying function with client
-      const response = await obj({
-        ...callOptions,
-        client,
-      })
+      const response = await obj({ ...callOptions, client })
+      const { status: errorStatus, message: errorMessage } = getErrorFromResponse(response)
 
-      // Check for errors
-      const errorStatus =
-        response.error && 'status' in response.error
-          ? (response.error as { status: number }).status
-          : (response.response?.status ?? 500)
-      const errorMessage = (response.error as { message?: string })?.message ?? 'Unknown error'
-
-      // Handle 401 with refresh
       const isRefreshEndpoint =
         (response.request?.url?.includes('/auth/session/refresh') ?? false) ||
         !!(options.refreshUrl && response.request?.url?.includes(options.refreshUrl))
+      const shouldAttemptRefresh = canAttemptRefresh(errorStatus, options, isRefreshEndpoint)
 
-      const canRefreshViaBff = errorStatus === 401 && options.refreshUrl && !isRefreshEndpoint
-      const canRefreshViaToken =
-        errorStatus === 401 &&
-        options.getRefreshToken &&
-        options.onTokensRefreshed &&
-        !isRefreshEndpoint
-
-      if (response.error && (canRefreshViaBff || canRefreshViaToken)) {
-        try {
-          if (!refreshLock) {
-            refreshLock = (async () => {
-              if (options.refreshUrl) {
-                const res = await fetch(options.refreshUrl, {
-                  method: 'POST',
-                  credentials: 'include',
-                })
-                return res.ok ? { token: '', refreshToken: '' } : null
-              }
-              const refreshToken = await options.getRefreshToken?.()
-              if (!refreshToken) return null
-              const refreshResponse = await gen.refresh({ client, body: { refreshToken } })
-              if (refreshResponse.error || !refreshResponse.data) return null
-              await options.onTokensRefreshed?.(refreshResponse.data)
-              return refreshResponse.data
-            })()
-          }
-
-          const newTokens = await refreshLock
-          refreshLock = null
-
-          if (newTokens) {
-            // Retry original request with new token
-            const retryResponse = await obj({
-              ...callOptions,
-              client,
-            })
-
-            if (retryResponse.error) {
-              const retryErrorStatus =
-                retryResponse.error && 'status' in retryResponse.error
-                  ? (retryResponse.error as { status: number }).status
-                  : (retryResponse.response?.status ?? 500)
-              const retryErrorMessage =
-                (retryResponse.error as { message?: string })?.message ?? 'Unknown error'
-              throw new ApiError(retryErrorStatus, retryErrorMessage, retryResponse.error)
-            }
-
-            return retryResponse.data
-          }
-        } catch (_refreshError) {
-          refreshLock = null
-          // Refresh failed, throw original 401 error
-        }
+      if (response.error && shouldAttemptRefresh) {
+        const retryData = await tryRefreshAndRetry({
+          obj: obj as (opts: Record<string, unknown>) => Promise<{
+            data?: unknown
+            error?: unknown
+          }>,
+          callOptions,
+          client,
+          options,
+        })
+        if (retryData !== undefined) return retryData
       }
 
-      // Throw error if response has error
-      if (response.error) {
-        throw new ApiError(errorStatus, errorMessage, response.error)
-      }
-
+      if (response.error) throw new ApiError(errorStatus, errorMessage, response.error)
       return response.data
     }) as T
-  }
 
   if (obj && typeof obj === 'object') {
     const wrapped: Record<string, unknown> = {}
-    for (const [key, value] of Object.entries(obj)) {
+    for (const [key, value] of Object.entries(obj))
       wrapped[key] = wrapApiWithClient(value, client, options)
-    }
+
     return wrapped as T
   }
 
@@ -168,16 +184,14 @@ export function createClient(options: CoreClientOptions): CoreApiClient {
     ])
 
     // Set Authorization header if token exists
-    if (token && !request.headers.has('Authorization')) {
+    if (token && !request.headers.has('Authorization'))
       request.headers.set('Authorization', `Bearer ${token}`)
-    }
 
     // Merge custom headers
-    if (extraHeaders) {
+    if (extraHeaders)
       Object.entries(extraHeaders).forEach(([key, value]) => {
         request.headers.set(key, value)
       })
-    }
 
     return request
   })

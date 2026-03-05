@@ -2,14 +2,10 @@ import { render as reactEmailRender } from '@react-email/render'
 import React, { type ReactNode } from 'react'
 
 const ensureReactGlobal = () => {
-  if (typeof globalThis === 'undefined') {
-    return
-  }
+  if (typeof globalThis === 'undefined') return
 
   const globalScope = globalThis as typeof globalThis & { React?: typeof React }
-  if (!globalScope.React) {
-    globalScope.React = React
-  }
+  if (!globalScope.React) globalScope.React = React
 }
 
 // Ensure React is available globally at module load time

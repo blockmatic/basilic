@@ -43,11 +43,11 @@ export async function getSessionToken(
     url: '/auth/magiclink/request',
     payload: { email, callbackUrl: 'https://example.com/callback' },
   })
-  if (requestRes.statusCode < 200 || requestRes.statusCode >= 300) {
+  if (requestRes.statusCode < 200 || requestRes.statusCode >= 300)
     throw new Error(
       `auth/magiclink/request failed: url=/auth/magiclink/request status=${requestRes.statusCode} body=${requestRes.body}`,
     )
-  }
+
   const token = app.fakeEmail?.extractToken()
   if (!token) throw new Error('No token in fake email')
   const verifyRes = await app.inject({
@@ -55,11 +55,11 @@ export async function getSessionToken(
     url: '/auth/magiclink/verify',
     payload: { token },
   })
-  if (verifyRes.statusCode < 200 || verifyRes.statusCode >= 300) {
+  if (verifyRes.statusCode < 200 || verifyRes.statusCode >= 300)
     throw new Error(
       `auth/magiclink/verify failed: url=/auth/magiclink/verify status=${verifyRes.statusCode} body=${verifyRes.body}`,
     )
-  }
+
   const { token: jwt } = JSON.parse(verifyRes.body) as { token: string }
   return jwt
 }
@@ -72,9 +72,9 @@ export async function getApiKeyToken(app: TestApp, email: string): Promise<strin
     headers: { Authorization: `Bearer ${jwt}` },
     payload: { name: 'Test Key' },
   })
-  if (res.statusCode < 200 || res.statusCode >= 300) {
+  if (res.statusCode < 200 || res.statusCode >= 300)
     throw new Error(`create apikey failed: ${res.statusCode} ${res.body}`)
-  }
+
   const { key } = JSON.parse(res.body) as { key: string }
   return key
 }

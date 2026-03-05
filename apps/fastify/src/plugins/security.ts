@@ -7,31 +7,27 @@ type SecurityPluginOptions = Record<string, never>
 
 const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
   // Only add security headers if enabled
-  if (!env.SECURITY_HEADERS_ENABLED) {
-    return
-  }
+  if (!env.SECURITY_HEADERS_ENABLED) return
 
   // onRequest hook: security headers + suspicious activity detection
   fastify.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
     // Detect suspicious patterns
-    if (detectSuspiciousActivity(request)) {
+    if (detectSuspiciousActivity(request))
       logSecurityEvent(request, 'suspicious_activity_detected', {
         method: request.method,
         url: request.url,
         ip: request.ip,
         userAgent: request.headers['user-agent'],
       })
-      // Log but don't block - let rate limiting handle abuse
-      // In production, you might want to block or add to blocklist
-    }
+    // Log but don't block - let rate limiting handle abuse
+    // In production, you might want to block or add to blocklist
 
     // Log all requests in production for security monitoring
-    if (env.NODE_ENV === 'production') {
+    if (env.NODE_ENV === 'production')
       logSecurityEvent(request, 'request_received', {
         method: request.method,
         url: request.url,
       })
-    }
 
     // Prevent MIME type sniffing
     reply.header('X-Content-Type-Options', 'nosniff')
@@ -83,9 +79,8 @@ const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
     }
 
     // Strict Transport Security (HTTPS only in production)
-    if (env.NODE_ENV === 'production') {
+    if (env.NODE_ENV === 'production')
       reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
-    }
   })
 
   // onError hook: security event logging
@@ -97,13 +92,11 @@ const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
       error: Error & { statusCode?: number },
     ) => {
       // Log security-relevant errors
-      if (error.statusCode === 429) {
-        logSecurityEvent(request, 'rate_limit_exceeded')
-      } else if (error.statusCode === 401 || error.statusCode === 403) {
+      if (error.statusCode === 429) logSecurityEvent(request, 'rate_limit_exceeded')
+      else if (error.statusCode === 401 || error.statusCode === 403)
         logSecurityEvent(request, 'authentication_failure', {
           statusCode: error.statusCode,
         })
-      }
     },
   )
 }

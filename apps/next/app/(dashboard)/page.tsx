@@ -5,9 +5,7 @@ import { redirect } from 'next/navigation'
 export default async function Home() {
   const { authenticated } = await getAuthStatus()
 
-  if (!authenticated) {
-    redirect('/auth/login')
-  }
+  if (!authenticated) redirect('/auth/login')
 
   const user = await getUserInfo()
   return <DashboardProfileSecurityContent user={user ?? {}} />

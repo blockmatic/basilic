@@ -9,9 +9,8 @@ const API_URL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:3001'
 async function extractToken(page: ReturnType<typeof test>['page']): Promise<string | null> {
   try {
     const response = await page.request.get(`${API_URL}/test/magic-link/last`)
-    if (!response.ok()) {
-      return null
-    }
+    if (!response.ok()) return null
+
     const data = await response.json()
     return data.token || null
   } catch {
@@ -59,9 +58,7 @@ test.describe('Scalar UI Login Flow', () => {
     expect(token).toBeTruthy()
     expect(typeof token).toBe('string')
 
-    if (!token) {
-      throw new Error('Failed to extract magic link token')
-    }
+    if (!token) throw new Error('Failed to extract magic link token')
 
     // Step 9: Open callback URL in same window (for E2E testing)
     const callbackUrl = `${API_URL}/reference?token=${token}`
@@ -119,9 +116,7 @@ test.describe('Scalar UI Login Flow', () => {
     await expect(successMessage).toHaveText('Check your email for the magic link')
 
     const token = await extractToken(page)
-    if (!token) {
-      throw new Error('Failed to extract token')
-    }
+    if (!token) throw new Error('Failed to extract token')
 
     const callbackUrl = `${API_URL}/reference?token=${token}`
     await page.goto(callbackUrl)

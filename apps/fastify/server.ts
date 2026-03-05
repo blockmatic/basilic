@@ -14,14 +14,13 @@ if (env.NODE_ENV === 'production' && env.ALLOW_TEST) {
 }
 
 // Initialize Sentry before other app code (conventional Node setup)
-if (env.SENTRY_DSN) {
+if (env.SENTRY_DSN)
   Sentry.init({
     dsn: env.SENTRY_DSN,
     environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
     tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
     ignoreErrors: ['Non-Error promise rejection'],
   })
-}
 
 const isTestOrCi = env.NODE_ENV === 'test' || env.CI
 const fastify = Fastify({

@@ -30,32 +30,20 @@ const root = pino({
  */
 const wrap = (x: pino.Logger): Logger => ({
   debug: (data, msg) => {
-    if (data !== undefined) {
-      x.debug(data as object, msg)
-    } else {
-      x.debug(msg)
-    }
+    if (data !== undefined) x.debug(data as object, msg)
+    else x.debug(msg)
   },
   info: (data, msg) => {
-    if (data !== undefined) {
-      x.info(data as object, msg)
-    } else {
-      x.info(msg)
-    }
+    if (data !== undefined) x.info(data as object, msg)
+    else x.info(msg)
   },
   warn: (data, msg) => {
-    if (data !== undefined) {
-      x.warn(data as object, msg)
-    } else {
-      x.warn(msg)
-    }
+    if (data !== undefined) x.warn(data as object, msg)
+    else x.warn(msg)
   },
   error: (data, msg) => {
-    if (data !== undefined) {
-      x.error(data as object, msg)
-    } else {
-      x.error(msg)
-    }
+    if (data !== undefined) x.error(data as object, msg)
+    else x.error(msg)
   },
   child: bindings => wrap(x.child(bindings)),
 })

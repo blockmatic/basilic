@@ -123,7 +123,7 @@ export function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const proxyConfig = {
+export const config = {
   matcher: ['/dashboard/:path*', '/api/:path*'],
 };
 ```
@@ -131,9 +131,14 @@ export const proxyConfig = {
 | Version | File | Export | Config |
 |---------|------|--------|--------|
 | v14-15 | `middleware.ts` | `middleware()` | `config` |
-| v16+ | `proxy.ts` | `proxy()` | `proxyConfig` |
+| v16+ | `proxy.ts` | `proxy()` | `config` |
 
-**Migration**: Run `npx @next/codemod@latest upgrade` to auto-rename.
+**Key v16 differences**:
+- Proxy runs on **Node.js runtime** (no Edge; `runtime` config option not available)
+- Same `config.matcher` shape; redirect, rewrite, headers, cookies unchanged
+- `middleware.ts` is deprecated; use proxy.ts
+
+**Migration**: Run `npx @next/codemod@canary middleware-to-proxy .` to auto-rename file and export.
 
 ## File Conventions Reference
 

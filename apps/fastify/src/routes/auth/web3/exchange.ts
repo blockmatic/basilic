@@ -37,12 +37,11 @@ const web3ExchangeRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { code } = request.body
 
-      if (!code?.trim()) {
+      if (!code?.trim())
         return reply.code(400).send({
           code: 'MISSING_CODE',
           message: 'code is required',
         })
-      }
 
       const codeHash = hashToken(code.trim())
       const db = await getDb()
@@ -53,12 +52,11 @@ const web3ExchangeRoute: FastifyPluginAsync = async fastify => {
         .where(and(eq(web3Callback.codeHash, codeHash), gt(web3Callback.expiresAt, now)))
         .returning()
 
-      if (!row) {
+      if (!row)
         return reply.code(401).send({
           code: 'INVALID_OR_EXPIRED_CODE',
           message: 'Invalid or expired code',
         })
-      }
 
       return reply.code(200).send({
         token: row.accessToken,

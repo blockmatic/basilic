@@ -61,8 +61,18 @@ export const config = [
 
       // Logic rules - PRESERVE (DO NOT TOUCH)
       'turbo/no-undeclared-env-vars': 'warn',
-      // Enforce curly braces for multi-line blocks, allow single-line without braces
-      curly: ['error', 'multi-line', 'consistent'],
+      // Enforce braceless single-statement blocks, braces for multi-statement
+      curly: ['error', 'multi', 'consistent'],
+      // Fail-fast: disallow else after return
+      'no-else-return': 'error',
+      // Limit block nesting depth
+      'max-depth': ['error', 4],
+      // Throw Error instances only (@repo/error)
+      'no-throw-literal': 'error',
+      // RORO: max 4 params encourages options objects
+      'max-params': ['error', { max: 4 }],
+      // Limit cyclomatic complexity
+      complexity: ['warn', { max: 30 }],
       // Prefer interfaces over types for object definitions
       '@typescript-eslint/consistent-type-definitions': 'off',
       // Ban CommonJS globals (__dirname, __filename) - enforce ESM patterns

@@ -141,7 +141,7 @@ function PieChart({
   const radius = Math.min(width, height) / 2 - 20
 
   // Guard against total === 0 to prevent NaN in percentage calculations
-  if (total === 0) {
+  if (total === 0)
     return (
       <div className="flex flex-col items-center gap-4 md:flex-row">
         <svg width={width} height={height} className="overflow-visible" />
@@ -160,7 +160,6 @@ function PieChart({
         </div>
       </div>
     )
-  }
 
   const paths = data.reduce(
     ({ paths: accPaths, currentAngle }, point, index) => {

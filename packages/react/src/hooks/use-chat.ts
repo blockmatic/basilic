@@ -18,12 +18,11 @@ export function useChatFromConfig(
 ): ReturnType<typeof useChat> {
   const config = useReactApiConfig()
 
-  if (!config.baseUrl || !config.getAuthToken) {
+  if (!config.baseUrl || !config.getAuthToken)
     throw new Error(
       'useChatFromConfig requires baseUrl and getAuthToken in ReactApiProvider or on the client (createClient from @repo/core). ' +
         'Pass baseUrl and getAuthToken to createClient, or to ReactApiProvider.',
     )
-  }
 
   const api = `${config.baseUrl.replace(/\/$/, '')}/ai/chat`
   const getAuthToken = config.getAuthToken
@@ -34,15 +33,13 @@ export function useChatFromConfig(
     fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
       const token = await getAuthToken()
       const headers = new Headers(init?.headers)
-      if (token && !headers.has('Authorization')) {
-        headers.set('Authorization', `Bearer ${token}`)
-      }
+      if (token && !headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`)
+
       const initWithStream = init as RequestInit & { keepStream?: boolean }
       const wantsStreaming =
         stream || headers.get('X-Stream') === '1' || initWithStream?.keepStream === true
-      if (!headers.has('Accept') && wantsStreaming) {
-        headers.set('Accept', 'text/event-stream')
-      }
+      if (!headers.has('Accept') && wantsStreaming) headers.set('Accept', 'text/event-stream')
+
       return fetch(input, { ...init, headers })
     },
   })

@@ -25,12 +25,11 @@ const apikeysRevokeRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Authentication required',
         })
-      }
 
       const { id } = request.params
       const db = await getDb()
@@ -40,12 +39,11 @@ const apikeysRevokeRoute: FastifyPluginAsync = async fastify => {
         .where(and(eq(apiKeys.id, id), eq(apiKeys.userId, request.session.user.id)))
         .returning()
 
-      if (deleted.length === 0) {
+      if (deleted.length === 0)
         return reply.code(404).send({
           code: 'NOT_FOUND',
           message: 'API key not found',
         })
-      }
 
       return reply.code(204).send(null)
     },

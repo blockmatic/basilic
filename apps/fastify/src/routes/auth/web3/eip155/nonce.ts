@@ -38,9 +38,8 @@ const eip155NonceRoute: FastifyPluginAsync = async fastify => {
       const { address } = request.query as { address: string }
       const chain = 'eip155'
 
-      if (!isValidChain(chain)) {
+      if (!isValidChain(chain))
         return reply.code(400).send({ code: 'INVALID_CHAIN', message: 'Invalid chain' })
-      }
 
       let validatedAddress: string
       try {

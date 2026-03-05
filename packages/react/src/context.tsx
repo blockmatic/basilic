@@ -28,9 +28,8 @@ const ReactApiContext = createContext<ReactApiConfigValue | null>(null)
  */
 export function useReactApiConfig(): ReactApiConfigValue {
   const context = useContext(ReactApiContext)
-  if (!context) {
-    throw new Error('useReactApiConfig must be used within ApiProvider')
-  }
+  if (!context) throw new Error('useReactApiConfig must be used within ApiProvider')
+
   return context
 }
 

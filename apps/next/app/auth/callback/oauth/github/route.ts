@@ -25,9 +25,7 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   const state = searchParams.get('state')
 
-  if (!code || !state) {
-    redirect(`/auth/login?message=${encodeURIComponent('missing_params')}`)
-  }
+  if (!code || !state) redirect(`/auth/login?message=${encodeURIComponent('missing_params')}`)
 
   try {
     const response = await client.auth.oauth.github.exchange({ body: { code, state } })
@@ -40,9 +38,8 @@ export async function GET(request: Request) {
         ? (response as { refreshToken: string }).refreshToken
         : null
 
-    if (!accessToken || !refreshToken) {
+    if (!accessToken || !refreshToken)
       redirect(`/auth/login?message=${encodeURIComponent('oauth_failed')}`)
-    }
 
     const redirectResponse = NextResponse.redirect(new URL('/', request.url), 303)
     setAuthCookiesOnResponse(redirectResponse, { token: accessToken, refreshToken })

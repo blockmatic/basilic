@@ -215,15 +215,11 @@ export function getChainMetadata(chainId: number | string): ChainMetadata | unde
   }
 
   // Try as numeric chain ID (EVM)
-  if (isNumber(chainId)) {
-    return EVM_CHAINS[chainId]
-  }
+  if (isNumber(chainId)) return EVM_CHAINS[chainId]
 
   // Try parsing as number
   const numericId = Number(chainId)
-  if (!Number.isNaN(numericId)) {
-    return EVM_CHAINS[numericId]
-  }
+  if (!Number.isNaN(numericId)) return EVM_CHAINS[numericId]
 
   return undefined
 }

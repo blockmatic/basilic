@@ -46,10 +46,9 @@ export function LoginForm({
   // Update error when initialError prop changes - syncing prop to state
   // Only update if initialError is actually provided (not undefined)
   useEffect(() => {
-    if (initialError !== undefined) {
+    if (initialError !== undefined)
       // eslint-disable-next-line react-hooks/set-state-in-effect -- Syncing prop to state
       setEmailValidationError(initialError || null)
-    }
   }, [initialError])
 
   const defaultCallbackUrl =
@@ -90,21 +89,18 @@ export function LoginForm({
 
   const validateEmail = (emailValue: string): string | null => {
     const result = emailSchema.safeParse(emailValue)
-    if (!result.success) {
+    if (!result.success)
       return result.error.issues[0]?.message || 'Please enter a valid email address'
-    }
+
     return null
   }
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value)
     // Clear validation error and success state when user starts typing
-    if (emailValidationError) {
-      setEmailValidationError(null)
-    }
-    if (isSuccess) {
-      setIsSuccess(false)
-    }
+    if (emailValidationError) setEmailValidationError(null)
+
+    if (isSuccess) setIsSuccess(false)
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

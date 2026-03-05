@@ -38,9 +38,8 @@ const solanaNonceRoute: FastifyPluginAsync = async fastify => {
       const { address } = request.query as { address: string }
       const chain = 'solana'
 
-      if (!isValidChain(chain)) {
+      if (!isValidChain(chain))
         return reply.code(400).send({ code: 'INVALID_CHAIN', message: 'Invalid chain' })
-      }
 
       let validatedAddress: string
       try {

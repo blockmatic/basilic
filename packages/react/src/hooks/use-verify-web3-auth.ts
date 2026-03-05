@@ -37,9 +37,8 @@ export function useVerifyWeb3Auth() {
       if (callbackUrl) {
         const { getClientConfig } = await import('@repo/core')
         const url = baseUrl || getClientConfig(client)?.baseUrl || ''
-        if (!url?.trim()) {
-          throw new Error('baseUrl is required for web3 verification')
-        }
+        if (!url?.trim()) throw new Error('baseUrl is required for web3 verification')
+
         const verifyUrl =
           chain === 'eip155' ? `${url}/auth/web3/eip155/verify` : `${url}/auth/web3/solana/verify`
         const res = await fetch(verifyUrl, {

@@ -57,12 +57,11 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
 
   render(): ReactNode {
     if (this.state.hasError && this.state.error) {
-      if (this.props.fallback) {
+      if (this.props.fallback)
         return this.props.fallback({
           error: this.state.error,
           resetErrorBoundary: this.handleReset,
         })
-      }
 
       // Default fallback UI
       return (

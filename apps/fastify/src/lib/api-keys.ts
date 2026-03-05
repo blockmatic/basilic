@@ -14,9 +14,8 @@ export function generateApiKey(): { key: string; prefix: string; hash: string } 
 export function parseApiKey(token: string): { prefix: string; secret: string } | null {
   if (!token.startsWith('bask_')) return null
   const afterBask = token.slice(5)
-  if (afterBask.length <= PREFIX_LENGTH + 1 || afterBask[PREFIX_LENGTH] !== '_') {
-    return null
-  }
+  if (afterBask.length <= PREFIX_LENGTH + 1 || afterBask[PREFIX_LENGTH] !== '_') return null
+
   const prefix = afterBask.slice(0, PREFIX_LENGTH)
   const secret = afterBask.slice(PREFIX_LENGTH + 1)
   if (!secret) return null

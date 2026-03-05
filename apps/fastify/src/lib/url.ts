@@ -36,9 +36,8 @@ export function isAllowedUrl(url: string): boolean {
 
   const origin = parsed.origin
   const ok = allowed.includes(origin)
-  if (!ok) {
-    logger.warn({ url: trimmed, origin, allowed }, 'isAllowedUrl: origin not in allowlist')
-  }
+  if (!ok) logger.warn({ url: trimmed, origin, allowed }, 'isAllowedUrl: origin not in allowlist')
+
   return ok
 }
 

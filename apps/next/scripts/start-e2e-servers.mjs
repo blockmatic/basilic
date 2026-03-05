@@ -44,9 +44,8 @@ process.on('SIGTERM', () => {
   process.exit(0)
 })
 
-for (const proc of [fastify, next]) {
+for (const proc of [fastify, next])
   proc.on('exit', code => {
     killAll('SIGKILL')
     process.exit(code ?? 1)
   })
-}

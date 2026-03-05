@@ -22,33 +22,24 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
   const token = request.cookies.get(authCookieName)?.value
   const refreshToken = request.cookies.get(refreshCookieName)?.value
 
-  if (!token) {
-    return { status: 'unauthenticated', shouldClearCookies: false }
-  }
+  if (!token) return { status: 'unauthenticated', shouldClearCookies: false }
 
   try {
     const decoded = decodeJwt(token) as { typ?: string; exp?: number; sub?: string; sid?: string }
 
-    if (decoded.typ !== 'access' || !decoded.sub || !decoded.sid) {
+    if (decoded.typ !== 'access' || !decoded.sub || !decoded.sid)
       return { status: 'unauthenticated', shouldClearCookies: true }
-    }
 
     const isExpired = decoded.exp ? decoded.exp * 1000 < Date.now() : true
 
-    if (!isExpired) {
-      return { status: 'authenticated', shouldClearCookies: false }
-    }
+    if (!isExpired) return { status: 'authenticated', shouldClearCookies: false }
 
-    if (!refreshToken) {
-      return { status: 'unauthenticated', shouldClearCookies: true }
-    }
+    if (!refreshToken) return { status: 'unauthenticated', shouldClearCookies: true }
 
     try {
       const tokens = await refreshTokensWithRefreshToken({ refreshToken })
 
-      if (!tokens) {
-        return { status: 'unauthenticated', shouldClearCookies: true }
-      }
+      if (!tokens) return { status: 'unauthenticated', shouldClearCookies: true }
 
       const response = NextResponse.next()
       setAuthCookiesOnResponse(response, tokens)
@@ -68,9 +59,8 @@ export async function proxy(request: NextRequest) {
   const isAllowedImage = (allowedImagePaths as readonly string[]).includes(pathname)
 
   // Allow callbacks, logout, and explicitly listed image assets without auth
-  if (pathname.startsWith('/auth/callback') || pathname === '/auth/logout' || isAllowedImage) {
+  if (pathname.startsWith('/auth/callback') || pathname === '/auth/logout' || isAllowedImage)
     return NextResponse.next()
-  }
 
   const authCheck = await checkAuthStatus(request)
   const { status: authStatus, response: refreshResponse, shouldClearCookies } = authCheck
@@ -87,9 +77,8 @@ export async function proxy(request: NextRequest) {
       url.pathname = '/'
       const res = NextResponse.redirect(url)
       const setCookies = refreshResponse.headers.getSetCookie()
-      for (const header of setCookies) {
-        res.headers.append('Set-Cookie', header)
-      }
+      for (const header of setCookies) res.headers.append('Set-Cookie', header)
+
       return res
     }
     // Allow unauthenticated users to access login

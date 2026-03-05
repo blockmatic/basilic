@@ -33,9 +33,8 @@ export async function verifyWeb3Auth({
   const parsed = parseMessage(message)
   if (!parsed) return { ok: false, code: 'INVALID_MESSAGE', message: 'Invalid message format' }
 
-  if (expectedDomain && parsed.domain !== expectedDomain) {
+  if (expectedDomain && parsed.domain !== expectedDomain)
     return { ok: false, code: 'INVALID_DOMAIN', message: 'Domain mismatch' }
-  }
 
   let validatedAddress: string
   try {
@@ -60,18 +59,14 @@ export async function verifyWeb3Auth({
     )
     .returning()
 
-  if (!deletedNonce) {
+  if (!deletedNonce)
     return { ok: false, code: 'INVALID_NONCE', message: 'Invalid or unknown nonce' }
-  }
 
-  if (deletedNonce.expiresAt < new Date()) {
+  if (deletedNonce.expiresAt < new Date())
     return { ok: false, code: 'EXPIRED_NONCE', message: 'Nonce has expired' }
-  }
 
   const valid = await verifySignature({ message, signature, validatedAddress })
-  if (!valid) {
-    return { ok: false, code: 'INVALID_SIGNATURE', message: 'Invalid signature' }
-  }
+  if (!valid) return { ok: false, code: 'INVALID_SIGNATURE', message: 'Invalid signature' }
 
   const [wallet] = await db
     .select()

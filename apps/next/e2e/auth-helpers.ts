@@ -52,7 +52,7 @@ export const authHelpers = {
   async extractToken(page: Page): Promise<string | null> {
     const maxRetries = 5
     const delayMs = 500
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
+    for (let attempt = 0; attempt < maxRetries; attempt++)
       try {
         const response = await page.request.get(`${API_URL}/test/magic-link/last`)
         if (!response.ok()) {
@@ -76,7 +76,7 @@ export const authHelpers = {
         }
         return null
       }
-    }
+
     return null
   },
 

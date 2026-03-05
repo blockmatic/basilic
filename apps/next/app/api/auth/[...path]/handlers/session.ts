@@ -8,12 +8,11 @@ export const handleUpdateTokens = async ({ request }: Pick<AuthProxyOptions, 're
     const body = await request.json()
     const { token, refreshToken } = body as { token?: string; refreshToken?: string }
 
-    if (typeof token !== 'string' || typeof refreshToken !== 'string') {
+    if (typeof token !== 'string' || typeof refreshToken !== 'string')
       return new Response(JSON.stringify({ message: 'token and refreshToken required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
-    }
 
     const response = new NextResponse(JSON.stringify({ success: true }), {
       status: 200,

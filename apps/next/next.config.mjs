@@ -44,10 +44,10 @@ function getApiUrl() {
     throw new Error(msg)
   }
 
-  if (process.env.VERCEL) {
+  if (process.env.VERCEL)
     // biome-ignore lint/suspicious/noConsole: build-time debug for Vercel build logs
     console.log('[next.config] NEXT_PUBLIC_API_URL:', url)
-  }
+
   return url
 }
 

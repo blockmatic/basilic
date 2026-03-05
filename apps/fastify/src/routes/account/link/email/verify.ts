@@ -41,12 +41,11 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Session expired or not authenticated',
         })
-      }
 
       const { token } = request.body
       const tokenHash = hashToken(token)
@@ -58,12 +57,11 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
         .from(verification)
         .where(and(eq(verification.value, tokenHash), eq(verification.type, 'link_email')))
 
-      if (!verificationRecord) {
+      if (!verificationRecord)
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Invalid or expired token',
         })
-      }
 
       if (verificationRecord.expiresAt < new Date()) {
         await db.delete(verification).where(eq(verification.id, verificationRecord.id))
@@ -76,20 +74,18 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
       const parts = verificationRecord.identifier.split(':')
       const userId = parts[0]
       const email = parts.slice(1).join(':')
-      if (!userId || !email || userId !== request.session.user.id) {
+      if (!userId || !email || userId !== request.session.user.id)
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Token does not match current session',
         })
-      }
 
       const [existingByEmail] = await db.select().from(users).where(eq(users.email, email))
-      if (existingByEmail && existingByEmail.id !== userId) {
+      if (existingByEmail && existingByEmail.id !== userId)
         return reply.code(409).send({
           code: 'EMAIL_ALREADY_IN_USE',
           message: 'This email is already used by another account',
         })
-      }
 
       const sessionId = request.session.session.id
       const refreshJti = generateJti()

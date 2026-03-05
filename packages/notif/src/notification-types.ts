@@ -61,25 +61,21 @@ export function getNotificationTypesByCategory(): NotificationCategory[] {
     const category = notificationType.category ?? 'other'
     const order = notificationType.order ?? 999
 
-    if (!categoryMap.has(category)) {
+    if (!categoryMap.has(category))
       categoryMap.set(category, {
         category,
         order,
         types: [],
       })
-    }
 
     const categoryEntry = categoryMap.get(category)
-    if (categoryEntry) {
-      categoryEntry.types.push(notificationType)
-    }
+    if (categoryEntry) categoryEntry.types.push(notificationType)
   }
 
   // Sort categories by order, then by name
   return Array.from(categoryMap.values()).sort((a, b) => {
-    if (a.order !== b.order) {
-      return a.order - b.order
-    }
+    if (a.order !== b.order) return a.order - b.order
+
     return a.category < b.category ? -1 : a.category > b.category ? 1 : 0
   })
 }
