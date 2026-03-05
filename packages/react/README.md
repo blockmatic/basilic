@@ -84,7 +84,7 @@ See [Authentication](https://basilic-docs.vercel.app/docs/architecture/authentic
 Wrap your app in `app/layout.tsx`:
 
 ```tsx
-import { Providers } from './components/providers'
+import { Providers } from './providers'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
