@@ -7,6 +7,7 @@ import { X } from 'lucide-react'
 import { useState } from 'react'
 import { Ethereum } from '@/components/icons/ethereum'
 import { GitHub } from '@/components/icons/github'
+import { Passkey } from '@/components/icons/passkey'
 import { Solana } from '@/components/icons/solana'
 
 type LoginActionsProps = { initialError?: string }
@@ -53,6 +54,15 @@ export function LoginActions({ initialError }: LoginActionsProps) {
               className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg disabled:cursor-not-allowed"
             >
               <GitHub className="size-5 shrink-0 cursor-pointer" aria-hidden />
+            </button>
+            <button
+              type="button"
+              disabled
+              aria-label="Continue with Passkey (coming soon)"
+              title="Coming soon"
+              className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg disabled:cursor-not-allowed"
+            >
+              <Passkey className="size-5 shrink-0 cursor-pointer" aria-hidden />
             </button>
             <button
               type="button"

@@ -64,18 +64,18 @@ export function Ethereum(props: SVGProps<SVGSVGElement>) {
           style={{ mixBlendMode: 'soft-light' }}
           xlinkHref="#eth__eth-b"
         />
-        <circle cx="16" cy="15" r="14.5" stroke="#000" stroke-opacity=".097" />
+        <circle cx="16" cy="15" r="14.5" stroke="#000" strokeOpacity=".097" />
         <g fillRule="nonzero">
           <use fill="#000" filter="url(#eth__eth-d)" xlinkHref="#eth__eth-e" />
-          <use fill="#FFF" fill-opacity="0" fillRule="evenodd" xlinkHref="#eth__eth-e" />
+          <use fill="#FFF" fillOpacity="0" fillRule="evenodd" xlinkHref="#eth__eth-e" />
         </g>
         <g fill="#FFF" fillRule="nonzero" transform="translate(9 3)">
-          <polygon fill-opacity=".602" points="7.498 0 7.498 8.87 14.995 12.22" />
+          <polygon fillOpacity=".602" points="7.498 0 7.498 8.87 14.995 12.22" />
           <polygon points="7.498 0 0 12.22 7.498 8.87" />
-          <polygon fill-opacity=".602" points="7.498 17.968 7.498 23.995 15 13.616" />
+          <polygon fillOpacity=".602" points="7.498 17.968 7.498 23.995 15 13.616" />
           <polygon points="7.498 23.995 7.498 17.967 0 13.616" />
-          <polygon fill-opacity=".2" points="7.498 16.573 14.995 12.22 7.498 8.872" />
-          <polygon fill-opacity=".602" points="0 12.22 7.498 16.573 7.498 8.872" />
+          <polygon fillOpacity=".2" points="7.498 16.573 14.995 12.22 7.498 8.872" />
+          <polygon fillOpacity=".602" points="0 12.22 7.498 16.573 7.498 8.872" />
         </g>
       </g>
     </svg>
