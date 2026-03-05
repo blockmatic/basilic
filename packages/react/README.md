@@ -140,19 +140,12 @@ import { createClient } from '@repo/core'
 
 const queryClient = new QueryClient()
 
-// Create core client instance with authentication
+// Create core client instance with authentication (JWT mode)
 const coreClient = createClient({
   baseUrl: 'https://api.example.com',
-  getAuthToken: async () => {
-    // Get access token from storage
-    return localStorage.getItem('accessToken')
-  },
-  getRefreshToken: async () => {
-    // Get refresh token from storage
-    return localStorage.getItem('refreshToken')
-  },
+  getAuthToken: async () => localStorage.getItem('accessToken'),
+  getRefreshToken: async () => localStorage.getItem('refreshToken'),
   onTokensRefreshed: async ({ token, refreshToken }) => {
-    // Update tokens in storage
     localStorage.setItem('accessToken', token)
     localStorage.setItem('refreshToken', refreshToken)
   },

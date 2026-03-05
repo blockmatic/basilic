@@ -62,7 +62,7 @@ Generated client and types from `apps/fastify/openapi/openapi.json`.
 ```ts
 import { createClient } from '@repo/core'
 
-const client = createClient({ baseUrl: 'http://localhost:3001' })
+const client = createClient({ baseUrl: 'http://localhost:3001' }) // no-auth mode
 
 // Nested namespace API
 await client.auth.magiclink.request({

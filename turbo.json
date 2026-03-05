@@ -37,6 +37,7 @@
     "lint": {},
     "lint:eslint": {
       "env": [
+        "AUTH_COOKIE_NAME",
         "NODE_ENV",
         "CI",
         "DATABASE_URL",
@@ -50,6 +51,7 @@
         "VERCEL",
         "VERCEL_GIT_COMMIT_REF",
         "VERCEL_ENV",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
         "PLAYWRIGHT_API_URL",
@@ -64,6 +66,7 @@
     "lint:eslint:fix": {
       "cache": false,
       "env": [
+        "AUTH_COOKIE_NAME",
         "NODE_ENV",
         "CI",
         "DATABASE_URL",
@@ -77,6 +80,7 @@
         "VERCEL",
         "VERCEL_GIT_COMMIT_REF",
         "VERCEL_ENV",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
         "PLAYWRIGHT_API_URL",

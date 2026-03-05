@@ -18,23 +18,23 @@ Provides type-safe API clients for making API calls with automatic authenticatio
 
 ### createClient (Nested Namespace API)
 
-Recommended for most use cases. Provides a nested namespace API that matches your OpenAPI spec structure.
+Recommended for most use cases. Provides a nested namespace API that matches your OpenAPI spec structure. Three auth modes: **apiKey** (static Bearer), **JWT** (callbacks + refresh on 401), **no-auth** (`baseUrl` only).
 
 ```ts
 import { createClient } from '@repo/core'
 
+// API key mode — static Bearer, no refresh
 const client = createClient({
   baseUrl: 'https://api.example.com',
-  getAuthToken: async () => {
-    // Get access token from storage
-    return localStorage.getItem('accessToken')
-  },
-  getRefreshToken: async () => {
-    // Get refresh token from storage
-    return localStorage.getItem('refreshToken')
-  },
+  apiKey: 'bask_xxx_secret',
+})
+
+// JWT mode — automatic refresh on 401
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  getAuthToken: async () => localStorage.getItem('accessToken'),
+  getRefreshToken: async () => localStorage.getItem('refreshToken'),
   onTokensRefreshed: async ({ token, refreshToken }) => {
-    // Update tokens in storage
     localStorage.setItem('accessToken', token)
     localStorage.setItem('refreshToken', refreshToken)
   },
@@ -97,10 +97,11 @@ const response: HealthCheckResponse = await client.healthCheck()
 
 ## Authentication
 
+- **apiKey mode**: Pass `apiKey` for static Bearer auth. No refresh on 401.
+- **JWT mode**: Provide `getAuthToken`, `getRefreshToken`, and `onTokensRefreshed` (all three required) for automatic refresh on 401. Core calls Fastify `POST /auth/session/refresh` directly.
+- **No-auth mode**: `baseUrl` only — no Authorization header.
 - The `getAuthToken` callback should return the raw JWT token (without "Bearer " prefix)
 - The client automatically adds `Bearer ` prefix when sending requests
-- Refresh tokens are optional - provide `getRefreshToken` and `onTokensRefreshed` to enable automatic refresh on 401 errors
-- If refresh callbacks are not provided, 401 errors fail normally (user must re-login)
 - Automatic token refresh uses a lock to prevent concurrent refresh attempts
 
 ## Architecture

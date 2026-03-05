@@ -1,14 +1,10 @@
-import { decodeJwt } from 'jose'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import {
-  authCookieName,
-  authRefreshCookieName,
-  refreshTokensWithRefreshToken,
-  setAuthCookiesOnResponse,
-} from '@/lib/auth/auth-server'
+import { refreshTokensWithRefreshToken, setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
+import { isTokenExpired } from '@/lib/auth/jwt-utils'
+import { env } from '@/lib/env'
 
-const refreshCookieName = authRefreshCookieName
+const cookieName = env.NEXT_PUBLIC_AUTH_COOKIE_NAME
 
 type AuthStatus = 'authenticated' | 'unauthenticated' | 'refreshed'
 
@@ -18,21 +14,42 @@ type AuthCheckResult = {
   shouldClearCookies: boolean
 }
 
+function parseAuthCookie(value: string | undefined): {
+  token: string | null
+  refreshToken: string | null
+} {
+  if (!value) return { token: null, refreshToken: null }
+  try {
+    const parsed = JSON.parse(value) as unknown
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      typeof (parsed as { token?: unknown }).token === 'string' &&
+      typeof (parsed as { refreshToken?: unknown }).refreshToken === 'string'
+    )
+      return {
+        token: (parsed as { token: string }).token,
+        refreshToken: (parsed as { refreshToken: string }).refreshToken,
+      }
+  } catch {
+    // ignore
+  }
+  return { token: null, refreshToken: null }
+}
+
 async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
-  const token = request.cookies.get(authCookieName)?.value
-  const refreshToken = request.cookies.get(refreshCookieName)?.value
+  const raw = request.cookies.get(cookieName)?.value
+  const { token, refreshToken } = parseAuthCookie(raw)
 
   if (!token) return { status: 'unauthenticated', shouldClearCookies: false }
 
   try {
-    const decoded = decodeJwt(token) as { typ?: string; exp?: number; sub?: string; sid?: string }
-
-    if (decoded.typ !== 'access' || !decoded.sub || !decoded.sid)
+    const { decodeJwtToken } = await import('@/lib/auth/jwt-utils')
+    const jwtDecoded = decodeJwtToken({ token })
+    if (jwtDecoded?.typ !== 'access' || !jwtDecoded?.sub || !jwtDecoded?.sid)
       return { status: 'unauthenticated', shouldClearCookies: true }
 
-    const isExpired = decoded.exp ? decoded.exp * 1000 < Date.now() : true
-
-    if (!isExpired) return { status: 'authenticated', shouldClearCookies: false }
+    if (!isTokenExpired({ token })) return { status: 'authenticated', shouldClearCookies: false }
 
     if (!refreshToken) return { status: 'unauthenticated', shouldClearCookies: true }
 
@@ -83,10 +100,7 @@ export async function proxy(request: NextRequest) {
     }
     // Allow unauthenticated users to access login
     const response = NextResponse.next()
-    if (shouldClearCookies) {
-      response.cookies.delete(authCookieName)
-      response.cookies.delete(refreshCookieName)
-    }
+    if (shouldClearCookies) response.cookies.set(cookieName, '', { maxAge: 0, path: '/' })
     return response
   }
 
@@ -95,10 +109,7 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     const redirectResponse = NextResponse.redirect(url)
-    if (shouldClearCookies) {
-      redirectResponse.cookies.delete(authCookieName)
-      redirectResponse.cookies.delete(refreshCookieName)
-    }
+    if (shouldClearCookies) redirectResponse.cookies.set(cookieName, '', { maxAge: 0, path: '/' })
     return redirectResponse
   }
 

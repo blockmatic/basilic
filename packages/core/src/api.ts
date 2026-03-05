@@ -38,21 +38,32 @@ function createApiClient(options: CoreClientOptions) {
  * const health = await api.healthCheck()
  * ```
  */
+function isApiKeyMode(
+  options: CoreClientOptions,
+): options is Extract<CoreClientOptions, { apiKey: string }> {
+  return 'apiKey' in options && typeof options.apiKey === 'string'
+}
+
+function isJwtMode(
+  options: CoreClientOptions,
+): options is Extract<CoreClientOptions, { getAuthToken: () => unknown }> {
+  return 'getAuthToken' in options && typeof options.getAuthToken === 'function'
+}
+
 export function createApi(options: CoreClientOptions) {
   const client = createApiClient(options)
 
   return {
     async healthCheck() {
-      // Get auth headers
-      const [token, extraHeaders] = await Promise.all([
-        options.getAuthToken?.(),
-        options.getHeaders?.(),
-      ])
+      const token = isApiKeyMode(options)
+        ? options.apiKey
+        : isJwtMode(options)
+          ? await options.getAuthToken()
+          : undefined
+      const extraHeaders = await options.getHeaders?.()
 
-      // Build headers
       const headers: Record<string, string> = {}
       if (extraHeaders) Object.assign(headers, extraHeaders)
-
       if (token) headers.Authorization = `Bearer ${token}`
 
       const response = await gen.healthCheck({
