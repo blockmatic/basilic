@@ -31,12 +31,11 @@ Wallet hooks live in `apps/next` (`@/hooks/`, `@/wallet/`). `@repo/react` expose
 
 - **`useWallet`** (`@/hooks/use-wallet`): returns adapter for a chain from WalletProvider context
 - **`useWalletAuth`** (`@/hooks/use-wallet-auth`): wallet sign-in via SIWE/SIWS
-- **`useLinkWallet`** (`@/hooks/use-link-wallet`): link connected wallet to account (Bearer required)
-- **`useLinkEmail`** (`@repo/react`): request link email + verify from token
+- **`useLinkWallet`** (`@/hooks/use-link-wallet`): link connected wallet to account (Bearer required, verified email required)
 
 **WalletProvider** and adapters: In `apps/next`, `WalletAdaptersInjector` bridges wagmi + Solana into adapters, enforces single-wallet mode, and triggers sign-out on wallet disconnect when session was created by wallet.
 
-**Post-login home:** After auth (magic link or wallet), users are redirected to `/`. The home page renders merged dashboard content including Link wallet, Link email (formerly on `/dashboard`).
+**Post-login home:** After auth (magic link or wallet), users are redirected to `/`. The home page renders merged dashboard content including Link wallet.
 
 See [Authentication](/docs/architecture/authentication) for auth flows, SIWE/SIWS, and account linking.
 
@@ -60,7 +59,6 @@ flowchart TB
   subgraph RepoReact [@repo/react]
     useVerifyWeb3Auth[useVerifyWeb3Auth]
     useVerifyLinkWallet[useVerifyLinkWallet]
-    useLinkEmail[useLinkEmail]
   end
 
   subgraph ChainLibs [Chain libraries]
@@ -69,7 +67,6 @@ flowchart TB
   end
 
   Dashboard --> useLinkWallet
-  Dashboard --> useLinkEmail
   Login --> useWalletAuth
   useWalletAuth --> useWallet
   useLinkWallet --> useWallet

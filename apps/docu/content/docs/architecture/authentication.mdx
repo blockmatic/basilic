@@ -12,7 +12,7 @@ description: JWT-based auth with access + refresh tokens. Supports magic links, 
 
 ## Overview
 
-Authentication is implemented in `apps/fastify` as a **JWT Bearer** system backed by **Drizzle + PostgreSQL/PGLite** session state.
+Authentication is implemented in `apps/fastify` as a **JWT Bearer** system backed by **Drizzle + PostgreSQL/PGLite** session state. All auth methods require a **verified email**: magic link and OAuth set `emailVerified` on sign-in; Web3 is link-only (users must sign up via email or OAuth first, then link a wallet).
 
 We use JWTs to support **all client types** (web, mobile, desktop, servers, CLIs) with a single, standard `Authorization: Bearer` integration.
 
@@ -72,9 +72,11 @@ Web3 sign-in follows a **nonce → sign → verify** flow and returns access + r
 
 **WalletAdaptersInjector:** In `apps/next`, mount `WalletAdaptersInjector` inside providers. Triggers sign-out on wallet disconnect (redirects to `/auth/logout`).
 
-**Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error. Account link: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EXPIRED_TOKEN`.
+**Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error. Web3 verify: `SIGNUP_REQUIRED` (wallet not linked—sign up with email or OAuth first), `EMAIL_VERIFICATION_REQUIRED` (linked user not verified). Account link: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EXPIRED_TOKEN`.
 
-**JWT cookie refresh:** After link email or profile edit, the client receives `{ token, refreshToken }` from the verify endpoint. Call `POST /api/auth/update-tokens` with those values to update cookies. In `apps/next`, use `updateAuthTokens` from `@/lib/auth-client`.
+**Web3 link-only:** Users must sign up via email (magic link) or OAuth first. Web3 verify only logs in when the wallet is already linked to a verified user.
+
+**JWT cookie refresh:** After link wallet or profile edit, the client receives `{ token, refreshToken }` from the verify endpoint. Call `POST /api/auth/update-tokens` with those values to update cookies. In `apps/next`, use `updateAuthTokens` from `@/lib/auth-client`.
 
 **Data model:** Nonces are stored in `web3_nonce` (5-min TTL); identities in `wallet_identities`.
 
@@ -94,7 +96,7 @@ sequenceDiagram
   Wallet-->>Client: signature
 
   Client->>FastifyAPI: POST /auth/web3/:chain/verify { message, signature, callbackUrl? }
-  FastifyAPI->>FastifyAPI: verify nonce + signature, create/link user
+  FastifyAPI->>FastifyAPI: verify nonce + signature, require linked verified user
 
   alt callbackUrl provided
     FastifyAPI-->>Client: 302 redirect to callback?code=...
@@ -134,7 +136,6 @@ flowchart TB
   subgraph RepoReact [@repo/react]
     useVerifyWeb3Auth
     useVerifyLinkWallet
-    useLinkEmail
   end
 
   Providers --> WAI
@@ -160,16 +161,7 @@ flowchart LR
     Verify -.-> Unlink
   end
 
-  subgraph LinkEmailFlow [Link email]
-    Request[POST account/link/email/request]
-    Email[User clicks email link]
-    VerifyEmail[POST account/link/email/verify]
-    UpdateTokens[POST api/auth/update-tokens]
-    Request --> Email --> VerifyEmail --> UpdateTokens
-  end
-
   Dashboard[Dashboard page] --> LinkWalletFlow
-  Dashboard --> LinkEmailFlow
 ```
 
 ## Tokens & sessions
@@ -211,13 +203,11 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `GET /auth/web3/nonce` → `{ nonce }` (query: `chain`, `address`)
   - `POST /auth/web3/:chain/verify` → `{ token, refreshToken }`
   - `:chain` is `eip155` or `solana`
-- **Account linking** (Bearer required — JWT or API key)
+- **Account linking** (Bearer required — JWT or API key; verified email required)
   - `POST /account/link/wallet/verify` → `{ ok }` (body: `chain`, `message`, `signature`)
   - `DELETE /account/link/wallet/:id` → `204` (unlink wallet by id from `linkedWallets`)
-  - `POST /account/link/email/request` → `{ ok }` (body: `email`, `callbackUrl`)
-  - `POST /account/link/email/verify` → `{ token, refreshToken }` (body: `token`)
 
-**Account link error codes**: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`
+**Account link error codes**: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EMAIL_VERIFICATION_REQUIRED`
 
 - **API keys** (Bearer required — JWT or API key)
   - `POST /account/apikeys` → `{ id, name, key, prefix, createdAt }` (key shown once)
@@ -235,7 +225,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 
 **API routes** (cookie updates only):
 - `POST /api/auth/refresh`: reads refresh token from cookie, calls Fastify refresh, sets new cookies. Used by core client on 401.
-- `POST /api/auth/update-tokens`: accepts `{ token, refreshToken }`, sets cookies. Used after link email or profile edit.
+- `POST /api/auth/update-tokens`: accepts `{ token, refreshToken }`, sets cookies. Used after link wallet or profile edit.
 - `POST /api/auth/test-set-session`: E2E-only (ALLOW_TEST), injects session from query params.
 
 **Proxy vs coreClient refresh**: The proxy (`proxy.ts`) runs on navigation before React mounts—it refreshes expired tokens so the user isn’t redirected to login. The core client runs on client-side 401 (e.g. `useUser`)—it calls `POST /api/auth/refresh` to refresh cookies, then retries. Both are needed.
@@ -279,7 +269,7 @@ sequenceDiagram
 The auth system relies on these tables:
 
 - **`users`**: user identity (email-based for magic link)
-- **`verification`**: single-use tokens (stored hashed, with TTL); `type` = `magic_link` | `link_email` | `oauth_state` (link_email reserved for Phase 1b)
+- **`verification`**: single-use tokens (stored hashed, with TTL); `type` = `magic_link` | `oauth_state`
 - **`sessions`**: server-side session state (stores hashed refresh `jti`, expiry, optional `wallet_chain`/`wallet_address` for wallet sessions)
 - **`account`**: OAuth provider accounts (provider id + encrypted tokens at rest)
 - **`wallet_identities`**: Web3 identities (`eip155`/`solana` + normalized address)

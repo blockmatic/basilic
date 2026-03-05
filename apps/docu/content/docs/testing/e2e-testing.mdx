@@ -94,7 +94,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 | Spec | Coverage |
 |------|----------|
 | `magic-link-auth.spec.ts` | Magic link login, invalid/expired token errors, email validation, protected route, JWT session |
-| `link-email.spec.ts` | "Already linked" when user has email (magic link flow via `/auth/login`) |
+| `magic-link-verified.spec.ts` | Profile shows verified email state after magic link auth via `/auth/login` |
 | `chat-assistant.spec.ts` | Chat UI with authenticatedPage; Who am I? prompt (skipped until getAuthToken fixed) |
 
 ### Project order
@@ -103,14 +103,14 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 flowchart TB
   subgraph AuthProj [Auth project]
     MagicLinkAuth[magic-link-auth.spec.ts]
-    LinkEmail[link-email.spec.ts]
+    MagicLinkVerified[magic-link-verified.spec.ts]
   end
 
   subgraph ChromiumProj [Chromium project]
     ChatAssistant[chat-assistant.spec.ts]
   end
 
-  MagicLinkAuth --> LinkEmail --> ChromiumProj
+  MagicLinkAuth --> MagicLinkVerified --> ChromiumProj
 ```
 
 ### Disabled / skipped specs
