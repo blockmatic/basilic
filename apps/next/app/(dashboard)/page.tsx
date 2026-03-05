@@ -1,4 +1,4 @@
-import { DashboardWalletContent } from 'app/(dashboard)/dashboard'
+import { DashboardProfileSecurityContent } from 'app/(dashboard)/dashboard'
 import { getAuthStatus, getUserInfo } from 'lib/auth/auth-utils'
 import { redirect } from 'next/navigation'
 
@@ -10,5 +10,5 @@ export default async function Home() {
   }
 
   const user = await getUserInfo()
-  return <DashboardWalletContent user={user ?? {}} />
+  return <DashboardProfileSecurityContent user={user ?? {}} />
 }

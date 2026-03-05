@@ -50,10 +50,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <Image
-          src="/placeholder.svg"
-          alt="Image"
+          src="/images/auth-login-hero.webp"
+          alt="Login"
           fill
-          className="object-cover dark:brightness-[0.2] dark:grayscale"
+          className="object-cover dark:brightness-[0.6] dark:saturate-[0.8]"
         />
       </div>
     </div>

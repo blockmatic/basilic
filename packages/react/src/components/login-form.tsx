@@ -54,8 +54,8 @@ export function LoginForm({
 
   const defaultCallbackUrl =
     typeof window !== 'undefined'
-      ? `${window.location.origin}/api/auth/magic-link/verify?callbackURL=/`
-      : '/api/auth/magic-link/verify?callbackURL=/'
+      ? `${window.location.origin}/auth/callback/magiclink?callbackURL=/`
+      : '/auth/callback/magiclink?callbackURL=/'
 
   const { mutate, isPending } = useMagicLink({
     onSuccess: data => {

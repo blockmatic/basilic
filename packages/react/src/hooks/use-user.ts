@@ -23,7 +23,9 @@ import { useReactApiConfig } from '../context'
  * }
  * ```
  */
-export function useUser(options?: Omit<UseQueryOptions<GetUserResponse, Error>, 'queryFn'>) {
+export function useUser(
+  options?: Partial<Omit<UseQueryOptions<GetUserResponse, Error>, 'queryFn'>>,
+) {
   const { client, queryClientDefaults } = useReactApiConfig()
 
   return useQuery<GetUserResponse, Error>({
