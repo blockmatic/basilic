@@ -1,4 +1,12 @@
 #!/usr/bin/env node
+/**
+ * Build-time migration script for Fastify (PostgreSQL only).
+ *
+ * Wraps Drizzle's migrator with project-specific logic:
+ * - PGLite: Skips here; migrations run at runtime via src/db/migrate.ts
+ * - PostgreSQL: Runs migrations at build time (invoked by `pnpm build`)
+ * - Bootstrap: Initializes __drizzle_migrations for DBs that have tables but no migration history
+ */
 import 'dotenv/config'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
@@ -15,6 +23,7 @@ const scriptFile = fileURLToPath(import.meta.url)
 const scriptDir = dirname(scriptFile)
 const projectRoot = join(scriptDir, '..')
 
+/** Read sorted .sql migration files from src/db/migrations. */
 async function readMigrationFiles(): Promise<string[]> {
   const migrationsDir = join(projectRoot, 'src', 'db', 'migrations')
   try {
@@ -25,6 +34,7 @@ async function readMigrationFiles(): Promise<string[]> {
   }
 }
 
+/** Mark the first migration as applied when DB has tables but no __drizzle_migrations (e.g. restored dump). */
 async function initMigrationsTrackingWhenTablesExist(
   pool: Pool,
   migrationsDir: string,
@@ -33,6 +43,7 @@ async function initMigrationsTrackingWhenTablesExist(
   const firstMigrationFile = migrationFiles[0]
   if (!firstMigrationFile) return
 
+  // Same hash format Drizzle uses for migration tracking
   const migrationContent = readFileSync(join(migrationsDir, firstMigrationFile), 'utf-8')
   const hash = createHash('sha256').update(migrationContent).digest('hex')
   await pool.query(
@@ -46,6 +57,7 @@ async function initMigrationsTrackingWhenTablesExist(
 }
 
 try {
+  // --- PGLite vs PostgreSQL ---
   // Allow explicit override: RUN_PG_MIGRATE=true forces PostgreSQL path (e.g. after db:reset)
   const forcePg = process.env.RUN_PG_MIGRATE === 'true'
   const shouldUsePGLite = !forcePg && (env.PGLITE === true || env.NODE_ENV === 'test')
@@ -77,8 +89,9 @@ try {
 
   const pool = new Pool({ connectionString: env.DATABASE_URL })
 
-  // Check if migrations table exists - if it does, drizzle will handle migrations properly
-  // If it doesn't exist, check if all required tables exist
+  // --- Bootstrap for existing DBs ---
+  // If __drizzle_migrations is missing but tables exist (e.g. DB created before migrations, or restored),
+  // create the tracking table and mark first migration as applied so Drizzle doesn't re-create tables.
   let migrationsTableExists = false
   let allTablesExist = false
 
@@ -89,7 +102,7 @@ try {
     migrationsTableExists = migrationsTableCheck.rows[0]?.exists ?? false
 
     if (!migrationsTableExists) {
-      // Check if all required tables exist
+      // Tables that must exist to consider this a "seeded" DB (matches initial schema)
       const requiredTables = ['users', 'sessions', 'verification', 'account', 'wallet_identities']
       const tableCheckPromises = requiredTables.map(tableName =>
         pool.query(
@@ -127,11 +140,12 @@ try {
 
   const db = drizzle(pool)
 
+  // --- Run Drizzle migrations ---
   try {
     await migrate(db, { migrationsFolder: migrationsDir })
     logger.info({ context: 'migrate' }, 'Migrations completed successfully (PostgreSQL)')
   } catch (migrationError: unknown) {
-    // Check if error is about table already existing
+    // Handle "table already exists": bootstrap race, or dev DB with manual schema
     const errorMessage =
       migrationError instanceof Error ? migrationError.message : String(migrationError)
     const isTableExistsError =
