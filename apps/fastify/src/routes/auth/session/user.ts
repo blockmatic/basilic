@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
-import { walletIdentities } from '../../../db/schema/index.js'
+import { users, walletIdentities } from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const LinkedWalletSchema = Type.Object({
@@ -36,6 +36,7 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: UserResponseSchema,
           401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
           500: ErrorResponseSchema,
         },
       },
@@ -48,9 +49,20 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
+      const db = await getDb()
+      const [user] = await db
+        .select({ emailVerified: users.emailVerified })
+        .from(users)
+        .where(eq(users.id, request.session.user.id))
+      if (!user?.emailVerified) {
+        return reply.code(403).send({
+          code: 'EMAIL_VERIFICATION_REQUIRED',
+          message: 'Verify your email to continue',
+        })
+      }
+
       let linkedWallets: { id: string; chain: string; address: string }[]
       try {
-        const db = await getDb()
         linkedWallets = await db
           .select({
             id: walletIdentities.id,
@@ -72,7 +84,7 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           id: request.session.user.id,
           email: request.session.user.email,
           name: null,
-          emailVerified: null,
+          emailVerified: request.session.user.emailVerified ?? false,
           ...(request.session.user.wallet && { wallet: request.session.user.wallet }),
           linkedWallets,
         },

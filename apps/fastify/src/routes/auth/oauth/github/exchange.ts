@@ -166,6 +166,13 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       }
 
       let [user] = await db.select().from(users).where(eq(users.email, email))
+      if (user && !user.emailVerified) {
+        await db
+          .update(users)
+          .set({ emailVerified: true, updatedAt: new Date() })
+          .where(eq(users.id, user.id))
+        ;[user] = await db.select().from(users).where(eq(users.id, user.id))
+      }
       if (!user) {
         const userId = randomUUID()
         await db.insert(users).values({

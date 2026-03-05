@@ -77,6 +77,12 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
+      // Mark email as verified (magic link proves ownership)
+      await db
+        .update(users)
+        .set({ emailVerified: true, updatedAt: new Date() })
+        .where(eq(users.id, user.id))
+
       // Delete verification record (single-use)
       await db.delete(verification).where(eq(verification.id, verificationRecord.id))
 

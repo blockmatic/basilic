@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto'
 import { and, eq } from 'drizzle-orm'
 import { getDb } from '../db/index.js'
 import { users, walletIdentities, web3Nonce } from '../db/schema/index.js'
@@ -85,25 +84,22 @@ export async function verifyWeb3Auth({
   }
 
   if (!user) {
-    const userId = randomUUID()
-    await db.transaction(async tx => {
-      await tx.insert(users).values({
-        id: userId,
-        email: null,
-        emailVerified: false,
-      })
-      await tx.insert(walletIdentities).values({
-        id: randomUUID(),
-        userId,
-        chain,
-        address: validatedAddress,
-        walletProvider: null,
-      })
-    })
-    const [created] = await db.select().from(users).where(eq(users.id, userId))
-    if (!created) throw new Error('Failed to create user')
-    user = created
-  } else if (wallet) {
+    return {
+      ok: false,
+      code: 'SIGNUP_REQUIRED',
+      message: 'Sign up with email or OAuth first to use wallet login',
+    }
+  }
+
+  if (!user.emailVerified) {
+    return {
+      ok: false,
+      code: 'EMAIL_VERIFICATION_REQUIRED',
+      message: 'Verify your email first to use wallet login',
+    }
+  }
+
+  if (wallet) {
     await db
       .update(walletIdentities)
       .set({ lastUsedAt: new Date() })
