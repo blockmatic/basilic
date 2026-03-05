@@ -64,8 +64,12 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow callbacks and logout without auth
-  if (pathname.startsWith('/auth/callback') || pathname === '/auth/logout') {
+  // Allow callbacks, logout, and static assets without auth
+  if (
+    pathname.startsWith('/auth/callback') ||
+    pathname === '/auth/logout' ||
+    pathname.startsWith('/images/')
+  ) {
     return NextResponse.next()
   }
 
