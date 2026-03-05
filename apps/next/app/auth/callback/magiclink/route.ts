@@ -2,6 +2,7 @@ import { ApiError, createClient } from '@repo/core'
 import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
+import { extractTokens } from '@/lib/auth/callback-utils'
 import { env } from '@/lib/env'
 
 const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
@@ -17,21 +18,12 @@ export async function GET(request: Request) {
 
   try {
     const response = await client.auth.magiclink.verify({ body: { token } })
-    const accessToken =
-      response && typeof response === 'object' && 'token' in response
-        ? (response as { token: string }).token
-        : null
-    const refreshToken =
-      response && typeof response === 'object' && 'refreshToken' in response
-        ? (response as { refreshToken: string }).refreshToken
-        : null
-
-    if (!accessToken || !refreshToken)
-      redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
+    const tokens = extractTokens(response)
+    if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
 
     const redirectUrl = callbackURL ?? '/'
     const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url), 303)
-    setAuthCookiesOnResponse(redirectResponse, { token: accessToken, refreshToken })
+    setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {
     const code =

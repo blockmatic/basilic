@@ -102,7 +102,7 @@ Optional environment variables (see `.env-example`):
 ```
 apps/next/
 ├── app/                    # Next.js app directory
-│   ├── api/auth/          # Cookie update routes (update-tokens, test-set-session)
+│   ├── api/auth/          # Cookie update routes (update-tokens)
 │   ├── auth/              # Callbacks (magiclink, oauth, web3), logout
 │   └── ...
 ├── app/providers.tsx      # QueryClient, ApiProvider, createClient (JWT mode)

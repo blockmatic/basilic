@@ -2,6 +2,7 @@ import { createClient } from '@repo/core'
 import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
+import { extractTokens } from '@/lib/auth/callback-utils'
 import { env } from '@/lib/env'
 
 const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
@@ -29,20 +30,11 @@ export async function GET(request: Request) {
 
   try {
     const response = await client.auth.oauth.github.exchange({ body: { code, state } })
-    const accessToken =
-      response && typeof response === 'object' && 'token' in response
-        ? (response as { token: string }).token
-        : null
-    const refreshToken =
-      response && typeof response === 'object' && 'refreshToken' in response
-        ? (response as { refreshToken: string }).refreshToken
-        : null
-
-    if (!accessToken || !refreshToken)
-      redirect(`/auth/login?message=${encodeURIComponent('oauth_failed')}`)
+    const tokens = extractTokens(response)
+    if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('oauth_failed')}`)
 
     const redirectResponse = NextResponse.redirect(new URL('/', request.url), 303)
-    setAuthCookiesOnResponse(redirectResponse, { token: accessToken, refreshToken })
+    setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {
     const rawMessage = error instanceof Error ? error.message : 'GitHub sign-in failed'

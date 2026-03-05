@@ -1,16 +1,12 @@
 import { decodeJwt } from 'jose'
+import type { JwtPayload } from './auth-schemas'
+import { jwtPayloadSchema } from './auth-schemas'
 
-export type DecodedJwt = {
-  typ?: string
-  sub?: string
-  sid?: string
-  exp?: number
-  iat?: number
-}
-
-export function decodeJwtToken({ token }: { token: string }): DecodedJwt | null {
+export function decodeJwtToken({ token }: { token: string }): JwtPayload | null {
   try {
-    return decodeJwt(token) as DecodedJwt
+    const decoded = decodeJwt(token)
+    const parsed = jwtPayloadSchema.safeParse(decoded)
+    return parsed.success ? parsed.data : null
   } catch {
     return null
   }
