@@ -5,6 +5,9 @@ import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
 import { Button } from '@repo/ui/components/button'
 import { X } from 'lucide-react'
 import { useState } from 'react'
+import { Ethereum } from '@/components/icons/ethereum'
+import { GitHub } from '@/components/icons/github'
+import { Solana } from '@/components/icons/solana'
 
 type LoginActionsProps = { initialError?: string }
 
@@ -41,14 +44,35 @@ export function LoginActions({ initialError }: LoginActionsProps) {
       )}
       <LoginForm
         extraActions={
-          <Button
-            variant="outline"
-            type="button"
-            disabled={isOAuthPending}
-            onClick={() => startOAuthLogin()}
-          >
-            {isOAuthPending ? 'Redirecting...' : 'GitHub'}
-          </Button>
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              disabled={isOAuthPending}
+              onClick={() => startOAuthLogin()}
+              aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with GitHub'}
+              className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg disabled:cursor-not-allowed"
+            >
+              <GitHub className="size-5 shrink-0 cursor-pointer" aria-hidden />
+            </button>
+            <button
+              type="button"
+              disabled
+              aria-label="Continue with Ethereum (coming soon)"
+              title="Coming soon"
+              className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg disabled:cursor-not-allowed"
+            >
+              <Ethereum className="size-5 shrink-0 cursor-pointer" aria-hidden />
+            </button>
+            <button
+              type="button"
+              disabled
+              aria-label="Continue with Solana (coming soon)"
+              title="Coming soon"
+              className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg disabled:cursor-not-allowed"
+            >
+              <Solana className="size-5 shrink-0 cursor-pointer" aria-hidden />
+            </button>
+          </div>
         }
       />
     </div>

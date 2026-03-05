@@ -6,7 +6,6 @@ import {
   FieldDescription,
   FieldError,
   FieldGroup,
-  FieldLabel,
   FieldSeparator,
 } from '@repo/ui/components/field'
 import { Input } from '@repo/ui/components/input'
@@ -129,13 +128,11 @@ export function LoginForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
-          </p>
+          <h1 className="text-2xl font-bold">Welcome to Acme</h1>
+          <p className="text-muted-foreground text-sm text-balance">Enter your email to continue</p>
         </div>
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
+          {/* <FieldLabel htmlFor="email">Email</FieldLabel> */}
           <Input
             id="email"
             type="email"
@@ -145,9 +142,11 @@ export function LoginForm({
             onChange={handleEmailChange}
             disabled={isPending || isSuccess}
           />
-          {emailValidationError && <FieldError>{emailValidationError}</FieldError>}
+          {emailValidationError && (
+            <FieldError className="text-center">{emailValidationError}</FieldError>
+          )}
           {isSuccess && (
-            <FieldDescription className="text-green-600 dark:text-green-400">
+            <FieldDescription className="text-center !text-green-600 dark:!text-green-400">
               Check your email for the magic link
             </FieldDescription>
           )}
@@ -158,11 +157,16 @@ export function LoginForm({
           </FieldDescription>
         )}
         <Field>
-          <Button type="submit" disabled={isPending || isSuccess} data-testid="send-magic-link">
-            {isPending ? 'Sending...' : 'Send magic link'}
+          <Button
+            type="submit"
+            disabled={isPending || isSuccess}
+            data-testid="send-magic-link"
+            className="cursor-pointer disabled:cursor-not-allowed"
+          >
+            {isPending ? 'Sending...' : 'Continue'}
           </Button>
         </Field>
-        <FieldSeparator>Or continue with</FieldSeparator>
+        <FieldSeparator>Or sign in with</FieldSeparator>
         {extraActions ?? (
           <Field>
             <Button variant="outline" type="button" disabled={isPending || isSuccess}>
