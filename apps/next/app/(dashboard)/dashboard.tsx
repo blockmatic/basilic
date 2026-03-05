@@ -17,12 +17,12 @@ type DashboardContentProps = {
   user: User
 }
 
-export function DashboardWalletContent({ user: _user }: DashboardContentProps) {
+export function DashboardWalletContent({ user }: DashboardContentProps) {
   const [tab] = useQueryState('tab', tabParser)
 
   return (
     <>
-      {tab === 'profile' && <ProfileSection />}
+      {tab === 'profile' && <ProfileSection initialUser={user ?? undefined} />}
       {tab === 'security' && <SecuritySection />}
       <ChatAssistant />
     </>

@@ -1,5 +1,6 @@
 'use client'
 
+import type { GetUserResponse } from '@repo/core'
 import { useUser } from '@repo/react'
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
 import { Button } from '@repo/ui/components/button'
@@ -24,8 +25,19 @@ function getInitials(name: string | null | undefined, email: string | null | und
   return 'U'
 }
 
-export function ProfileSection() {
-  const { data, isLoading, isError, error } = useUser()
+type ProfileSectionProps = {
+  /** Server-fetched user to avoid client fetch on initial paint */
+  initialUser?: {
+    email?: string | null
+    name?: string | null
+    emailVerified?: boolean | null
+  } | null
+}
+
+export function ProfileSection({ initialUser }: ProfileSectionProps) {
+  const { data, isLoading, isError, error } = useUser(
+    initialUser != null ? { initialData: { user: initialUser } as GetUserResponse } : undefined,
+  )
   const [state, setState] = useSetState({ name: '' })
 
   useEffect(() => {
