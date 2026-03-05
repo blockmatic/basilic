@@ -20,12 +20,27 @@ const emailSchema = z
   .min(1, 'Email is required')
   .email('Please enter a valid email address')
 
+const variantCopy = {
+  signin: {
+    heading: 'Sign in to your account',
+    description: 'Enter your email below to login to your account',
+    submitLabel: 'Send magic link',
+  },
+  signup: {
+    heading: 'Create your account',
+    description: 'Enter your email to get started',
+    submitLabel: 'Send magic link',
+  },
+} as const
+
 type LoginFormProps = React.ComponentProps<'form'> & {
   initialError?: string
   callbackUrl?: string
   onSuccess?: () => void
   /** Optional content for "Or continue with" section (e.g. SIWE/SIWS wallet buttons) */
   extraActions?: React.ReactNode
+  /** Sign in vs sign up copy (same flow, different intent) */
+  variant?: 'signin' | 'signup'
 }
 
 export function LoginForm({
@@ -34,8 +49,10 @@ export function LoginForm({
   callbackUrl,
   onSuccess,
   extraActions,
+  variant = 'signin',
   ...props
 }: LoginFormProps) {
+  const copy = variantCopy[variant]
   const [email, setEmail] = useState('')
   const [emailValidationError, setEmailValidationError] = useState<string | null>(
     initialError || null,
@@ -129,10 +146,8 @@ export function LoginForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
-          </p>
+          <h1 className="text-2xl font-bold">{copy.heading}</h1>
+          <p className="text-muted-foreground text-sm text-balance">{copy.description}</p>
         </div>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -159,7 +174,7 @@ export function LoginForm({
         )}
         <Field>
           <Button type="submit" disabled={isPending || isSuccess} data-testid="send-magic-link">
-            {isPending ? 'Sending...' : 'Send magic link'}
+            {isPending ? 'Sending...' : copy.submitLabel}
           </Button>
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
