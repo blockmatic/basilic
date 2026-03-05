@@ -56,18 +56,16 @@ import { createClient } from '@repo/core'
 import { ApiProvider } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
+import { getAuthToken, getRefreshToken, updateAuthTokens } from '@/lib/auth/auth-client'
 
 const queryClient = new QueryClient()
 
 // JWT mode: pass getAuthToken, getRefreshToken, onTokensRefreshed for 401 refresh
 const coreClient = createClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  getAuthToken: async () => localStorage.getItem('accessToken'), // or from cookie
-  getRefreshToken: async () => localStorage.getItem('refreshToken'),
-  onTokensRefreshed: async ({ token, refreshToken }) => {
-    localStorage.setItem('accessToken', token)
-    localStorage.setItem('refreshToken', refreshToken)
-  },
+  getAuthToken,
+  getRefreshToken,
+  onTokensRefreshed: updateAuthTokens,
 })
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -144,6 +142,7 @@ import { createClient } from '@repo/core'
 const queryClient = new QueryClient()
 
 // Create core client instance with authentication (JWT mode)
+// For Next.js apps, use getAuthToken, getRefreshToken, updateAuthTokens from @/lib/auth/auth-client
 const coreClient = createClient({
   baseUrl: 'https://api.example.com',
   getAuthToken: async () => localStorage.getItem('accessToken'),

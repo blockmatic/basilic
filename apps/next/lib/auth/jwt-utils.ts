@@ -19,5 +19,5 @@ export function decodeJwtToken({ token }: { token: string }): DecodedJwt | null 
 export function isTokenExpired({ token }: { token: string }): boolean {
   const decoded = decodeJwtToken({ token })
   if (!decoded?.exp) return true
-  return decoded.exp * 1000 < Date.now()
+  return decoded.exp * 1000 <= Date.now()
 }

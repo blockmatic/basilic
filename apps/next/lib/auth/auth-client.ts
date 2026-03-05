@@ -10,9 +10,9 @@ function parseCookie(name: string): string | null {
 }
 
 function readAuthCookie(): { token: string; refreshToken: string } | null {
-  const raw = parseCookie(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)
-  if (!raw) return null
   try {
+    const raw = parseCookie(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)
+    if (!raw) return null
     const parsed = JSON.parse(raw) as unknown
     if (
       parsed &&
@@ -24,10 +24,10 @@ function readAuthCookie(): { token: string; refreshToken: string } | null {
         token: (parsed as { token: string }).token,
         refreshToken: (parsed as { refreshToken: string }).refreshToken,
       }
+    return null
   } catch {
-    // ignore
+    return null
   }
-  return null
 }
 
 export async function getAuthToken(): Promise<string | null> {

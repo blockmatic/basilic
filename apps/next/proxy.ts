@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { refreshTokensWithRefreshToken, setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { isTokenExpired } from '@/lib/auth/jwt-utils'
+import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
 import { env } from '@/lib/env'
 
 const cookieName = env.NEXT_PUBLIC_AUTH_COOKIE_NAME
@@ -12,29 +13,6 @@ type AuthCheckResult = {
   status: AuthStatus
   response?: NextResponse
   shouldClearCookies: boolean
-}
-
-function parseAuthCookie(value: string | undefined): {
-  token: string | null
-  refreshToken: string | null
-} {
-  if (!value) return { token: null, refreshToken: null }
-  try {
-    const parsed = JSON.parse(value) as unknown
-    if (
-      parsed &&
-      typeof parsed === 'object' &&
-      typeof (parsed as { token?: unknown }).token === 'string' &&
-      typeof (parsed as { refreshToken?: unknown }).refreshToken === 'string'
-    )
-      return {
-        token: (parsed as { token: string }).token,
-        refreshToken: (parsed as { refreshToken: string }).refreshToken,
-      }
-  } catch {
-    // ignore
-  }
-  return { token: null, refreshToken: null }
 }
 
 async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {

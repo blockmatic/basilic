@@ -3,6 +3,9 @@ import { authHelpers } from './auth-helpers'
 
 const { TEST_EMAIL } = authHelpers
 
+const authCookieName =
+  process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME ?? 'api.session'
+
 function checkAuthenticated(page: import('@playwright/test').Page) {
   return {
     async run() {
@@ -58,7 +61,7 @@ test.describe('Magic Link Authentication', () => {
       )
 
       const cookies = await page.context().cookies()
-      const sessionCookie = cookies.find(cookie => cookie.name === 'api.session')
+      const sessionCookie = cookies.find(cookie => cookie.name === authCookieName)
       expect(sessionCookie).toBeUndefined()
     })
 
@@ -157,7 +160,7 @@ test.describe('Magic Link Authentication', () => {
       await authHelpers.verifyMagicLink(page, token)
 
       const cookies = await page.context().cookies()
-      const sessionCookie = cookies.find(cookie => cookie.name === 'api.session')
+      const sessionCookie = cookies.find(cookie => cookie.name === authCookieName)
       expect(sessionCookie).toBeDefined()
       const rawValue = sessionCookie?.value ?? '{}'
       let parsed: { token?: string; refreshToken?: string }

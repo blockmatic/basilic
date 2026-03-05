@@ -1,6 +1,6 @@
 import type { CoreApiClient } from './api-client.gen'
 import { api } from './api-wrapper.gen'
-import type { CoreClientOptions } from './config'
+import type { CoreClientOptions, JwtOptions } from './config'
 import { ApiError } from './errors'
 import { createConfig, createClient as createHeyApiClient } from './gen/client/index'
 import * as gen from './gen/index'
@@ -45,10 +45,15 @@ function isApiKeyMode(
   return 'apiKey' in options && typeof options.apiKey === 'string'
 }
 
-function isJwtMode(
-  options: CoreClientOptions,
-): options is Extract<CoreClientOptions, { getRefreshToken: () => unknown }> {
-  return 'getRefreshToken' in options && typeof options.getRefreshToken === 'function'
+function isJwtMode(options: CoreClientOptions): options is Extract<CoreClientOptions, JwtOptions> {
+  return (
+    'getRefreshToken' in options &&
+    typeof options.getRefreshToken === 'function' &&
+    'getAuthToken' in options &&
+    typeof options.getAuthToken === 'function' &&
+    'onTokensRefreshed' in options &&
+    typeof options.onTokensRefreshed === 'function'
+  )
 }
 
 async function doRefresh(
