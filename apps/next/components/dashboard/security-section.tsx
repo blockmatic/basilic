@@ -15,7 +15,7 @@ export function SecuritySection() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <Tabs value={section} onValueChange={v => setSection(v as 'passkeys' | 'totp' | 'apikeys')}>
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
           <TabsTrigger value="passkeys">
             <ShieldCheckIcon />
             Passkeys

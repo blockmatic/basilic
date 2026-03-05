@@ -16,14 +16,9 @@ import { Input } from '@repo/ui/components/input'
 import { Label } from '@repo/ui/components/label'
 import { Skeleton } from '@repo/ui/components/skeleton'
 import { useSetState } from 'ahooks'
+import { User } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
-
-function getInitials(name: string | null | undefined, email: string | null | undefined) {
-  if (name) return name.slice(0, 2).toUpperCase()
-  if (email) return email.slice(0, 2).toUpperCase()
-  return 'U'
-}
 
 type ProfileSectionProps = {
   /** Server-fetched user to avoid client fetch on initial paint */
@@ -76,7 +71,6 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
     )
 
   const user = data?.user
-  const displayName = String(state.name ?? user?.name ?? '')
   const email = user?.email != null ? String(user.email) : null
 
   return (
@@ -89,7 +83,9 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
         <CardContent className="space-y-6">
           <div className="flex items-center gap-4">
             <Avatar className="size-16">
-              <AvatarFallback className="text-lg">{getInitials(displayName, email)}</AvatarFallback>
+              <AvatarFallback>
+                <User className="size-8 text-muted-foreground" />
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1 space-y-1">
               <p className="text-sm font-medium">Avatar</p>

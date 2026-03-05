@@ -135,7 +135,7 @@ export function LoginForm({
           </p>
         </div>
         <Field>
-          <InputGroup>
+          <InputGroup data-disabled={isPending || isSuccess}>
             <InputGroupInput
               id="email"
               type="email"
