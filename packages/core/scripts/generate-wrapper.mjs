@@ -87,9 +87,13 @@ function collectOperationIds(obj, acc = new Set()) {
   return acc
 }
 
-// opts optional for get/head/options, required for post/put/patch/delete
-function isOptsOptional(method) {
-  return ['get', 'head', 'options'].includes(method)
+// Returns true if the operation has required parameters or requestBody
+function hasRequiredInputs(operation) {
+  if (!operation) return false
+  const hasRequiredParam =
+    Array.isArray(operation.parameters) && operation.parameters.some(p => p.required === true)
+  const hasRequiredBody = operation.requestBody && operation.requestBody.required !== false
+  return hasRequiredParam || hasRequiredBody
 }
 
 // operationIds that have no *Response type (hey-api uses unknown, e.g. redirect endpoints)
@@ -108,8 +112,8 @@ function generateClientTypeLines(obj, indent = 0) {
 
     if (typeof value === 'string') {
       const opId = value
-      const method = operationIdToMethod[opId] ?? 'get'
-      const optional = isOptsOptional(method)
+      const operation = operationIdToOperation[opId]
+      const optional = !hasRequiredInputs(operation)
       const prefix = toPascalCase(opId)
       const dataType = `${prefix}Data`
       const responseType = NO_RESPONSE_OPERATIONS.has(opId) ? 'unknown' : `${prefix}Response`
@@ -129,8 +133,8 @@ function generateClientTypeLines(obj, indent = 0) {
 const openapiSpec = JSON.parse(readFileSync(openapiPath, 'utf-8'))
 const paths = openapiSpec.paths || {}
 const nestedStructure = {}
-/** operationId -> HTTP method, for opts optional (get/head) vs required (post/put/delete) */
-const operationIdToMethod = {}
+/** operationId -> operation object (for required inputs detection) */
+const operationIdToOperation = {}
 
 // Process each path
 for (const [path, methods] of Object.entries(paths)) {
@@ -152,7 +156,7 @@ for (const [path, methods] of Object.entries(paths)) {
       operationId = method.toLowerCase()
     }
 
-    operationIdToMethod[operationId] = method
+    operationIdToOperation[operationId] = operation
 
     // Parse path segments
     const pathSegments = path.split('/').filter(Boolean)

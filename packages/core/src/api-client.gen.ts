@@ -84,19 +84,19 @@ export type CoreApiClient = {
       }
     };
     session: {
-      logout: (opts: Options<LogoutData>) => Promise<LogoutResponse>;
+      logout: (opts?: Options<LogoutData>) => Promise<LogoutResponse>;
       refresh: (opts: Options<RefreshData>) => Promise<RefreshResponse>;
       user: (opts?: Options<GetUserData>) => Promise<GetUserResponse>
     };
     web3: {
       exchange: (opts: Options<Web3ExchangeData>) => Promise<Web3ExchangeResponse>;
-      nonce: (opts?: Options<Web3NonceData>) => Promise<Web3NonceResponse>;
+      nonce: (opts: Options<Web3NonceData>) => Promise<Web3NonceResponse>;
       eip155: {
-        nonce: (opts?: Options<Web3Eip155NonceData>) => Promise<Web3Eip155NonceResponse>;
+        nonce: (opts: Options<Web3Eip155NonceData>) => Promise<Web3Eip155NonceResponse>;
         verify: (opts: Options<Web3Eip155VerifyData>) => Promise<Web3Eip155VerifyResponse>
       };
       solana: {
-        nonce: (opts?: Options<Web3SolanaNonceData>) => Promise<Web3SolanaNonceResponse>;
+        nonce: (opts: Options<Web3SolanaNonceData>) => Promise<Web3SolanaNonceResponse>;
         verify: (opts: Options<Web3SolanaVerifyData>) => Promise<Web3SolanaVerifyResponse>
       }
     }
