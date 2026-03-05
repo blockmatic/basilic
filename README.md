@@ -1,6 +1,7 @@
-# Basilic: Web3 & AI App Starter
+# Basilic: API-First TypeScript FullStack Starter
 
-Full-stack monorepo starter for Web3 and AI apps. Built for teams shipping products that need SDKs, public APIs, and multichain support—without rebuilding auth, OpenAPI tooling, or design systems from scratch. Ship features faster; security, docs, and AI-assisted workflows are included.
+Build production-ready APIs and apps with typed SDKs, out-of-the-box authentication, a portable architecture, AI tooling, and crypto integrations.
+Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 
 > 🚧 **Active development** — Explore, fork, and contribute. 🏗️
 
@@ -14,7 +15,7 @@ Full-stack monorepo starter for Web3 and AI apps. Built for teams shipping produ
 - 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
 - 🛡️ **Security & quality** — Automated checks in CI (e.g. Gitleaks, OSV)
-- ⛓️ **Multichain** — EVM, Solana, Cosmos; shared validation and chain-specific tooling
+- ⛓️ **Multichain** — EVM, Solana; shared validation and chain-specific tooling
 - 📐 **Conventions** — Cursor rules per domain, @repo/sentry, Pino logging, shared TS and style
 - 🧑‍💻 **TypeScript-first** — End-to-end types from database to frontend
 

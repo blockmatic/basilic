@@ -2,45 +2,21 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@repo/ui/component
 import {
   ArrowRightLeft,
   Blocks,
-  BookOpen,
   Bot,
   FileCode2,
-  Network,
+  MessageCircle,
   PackageCheck,
+  Palette,
   ShieldCheck,
   Zap,
 } from 'lucide-react'
 
 const features = [
   {
-    icon: FileCode2,
-    title: 'End-to-End Type Safety',
-    description:
-      'TypeScript from database to frontend with full IntelliSense support. Catch errors at compile time, not in production.',
-  },
-  {
-    icon: Bot,
-    title: 'AI-Native Development',
-    description:
-      'Pre-configured rules and skills for Cursor and Claude. Ship features faster with AI pair programming that understands your codebase.',
-  },
-  {
     icon: Zap,
     title: 'Production-Ready REST API',
     description:
-      'Fastify-powered backend with automatic OpenAPI documentation, JWT authentication, and Web3 wallet integration out of the box.',
-  },
-  {
-    icon: ArrowRightLeft,
-    title: 'Zero Vendor Lock-in',
-    description:
-      'Portable architecture that runs anywhere—your VPS, AWS, Vercel, or locally. Own your stack, control your costs.',
-  },
-  {
-    icon: Blocks,
-    title: 'Web3 and AI Starters',
-    description:
-      'Launch-ready boilerplates for AI integrations, blockchain connectivity, payment processing, and more. Build MVPs in days, not months.',
+      'Fastify-powered backend with automatic OpenAPI documentation, JWT authentication, AI and Crypto wallet integration out of the box.',
   },
   {
     icon: PackageCheck,
@@ -49,22 +25,48 @@ const features = [
       'Automatically generate fully typed client SDKs from your OpenAPI specs for both server and browser. One source of truth, zero manual sync.',
   },
   {
+    icon: FileCode2,
+    title: 'End-to-End Type Safety',
+    description:
+      'TypeScript from database to frontend with full IntelliSense support. Catch errors at compile time, not in production.',
+  },
+  {
+    icon: Blocks,
+    title: 'Next.js and Expo Starters',
+    description:
+      'Launch-ready boilerplates for AI applications, crypto wallet connectivity, and more. Build MVPs in days, not months.',
+  },
+
+  {
+    icon: MessageCircle,
+    title: 'AI Assistant Component',
+    description:
+      'Streaming AI chat UI with Vercel AI SDK, connected to your Fastify backend. Drop-in conversation assistant—no setup required.',
+  },
+  {
+    icon: ArrowRightLeft,
+    title: 'Zero Vendor Lock-in',
+    description:
+      'Portable architecture that runs anywhere—your VPS, AWS, Vercel, or locally. Own your stack, control your costs.',
+  },
+
+  {
+    icon: Bot,
+    title: 'AI-Assisted Development',
+    description:
+      'Pre-configured rules and skills for Cursor and Claude. Ship features faster with AI pair programming that understands your codebase.',
+  },
+  {
     icon: ShieldCheck,
     title: 'Quality & Security Built-In',
     description:
-      'Pre-commit hooks run secret scanning (Gitleaks), dependency vulnerability checks (OSV), and blocked secret files. Optional audit and security-check scripts keep the repo safe.',
+      'Pre-commit hooks for secret scanning (Gitleaks) and dependency checks (OSV), plus blocked secret files.',
   },
   {
-    icon: Network,
-    title: 'Multichain Support',
+    icon: Palette,
+    title: 'ShadcnUI Design System',
     description:
-      'EVM, Solana, and Cosmos with shared validation and chain-specific rules. One codebase, multiple chains.',
-  },
-  {
-    icon: BookOpen,
-    title: 'Consistent Conventions',
-    description:
-      'Cursor rules and skills for frontend, backend, and tooling. Centralized error handling with `@repo/sentry` and Pino logging, plus shared TypeScript and style conventions.',
+      'Integrated ShadcnUI design system for consistent, reusable UI and theme support across all apps.',
   },
 ]
 

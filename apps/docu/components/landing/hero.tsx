@@ -35,12 +35,13 @@ export function Hero() {
         </Badge>
 
         <h1 className="text-balance text-3xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-4xl md:text-6xl lg:text-7xl">
-          FullStack Framework <span className="text-primary">for AI and Web3</span>
+          API-First TypeScript FullStack Starter
         </h1>
 
         <p className="mx-auto mt-4 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base md:mt-6 md:text-lg">
-          Production-ready frontends and APIs with TypeScript, Next.js, Fastify, and OpenAPI.
-          AI-native development, portable architecture, and first-class web3 support built in.
+          Build production-ready APIs and apps with typed SDKs, out-of-the-box authentication, a
+          portable architecture, AI tooling, and crypto integrations.
+          <br /> Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
         </p>
 
         {/* CTA */}
