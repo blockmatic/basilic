@@ -2,6 +2,7 @@ import { Keypair } from '@solana/web3.js'
 import bs58 from 'bs58'
 import * as nacl from 'tweetnacl'
 import { describe, expect, it } from 'vitest'
+import { seedVerifiedUserWithWallet } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../web3.spec.js'
 
 function buildSiwsMessage({
@@ -22,7 +23,42 @@ describe('POST /auth/web3/solana/verify', () => {
   const keypair = Keypair.generate()
   const address = keypair.publicKey.toBase58()
 
-  it('should verify valid SIWS signature and return JWTs', async () => {
+  it('should return 401 SIGNUP_REQUIRED when wallet not linked', async () => {
+    const ephemeralKeypair = Keypair.generate()
+    const ephemeralAddr = ephemeralKeypair.publicKey.toBase58()
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/solana/nonce',
+      query: { address: ephemeralAddr },
+    })
+    expect(nonceRes.statusCode).toBe(200)
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const message = buildSiwsMessage({
+      domain: 'localhost',
+      address: ephemeralAddr,
+      nonce,
+    })
+    const messageBytes = new TextEncoder().encode(message)
+    const signature = nacl.sign.detached(messageBytes, ephemeralKeypair.secretKey)
+    const signatureB58 = bs58.encode(signature)
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/solana/verify',
+      payload: { message, signature: signatureB58 },
+    })
+
+    expect(res.statusCode).toBe(401)
+    const body = JSON.parse(res.body)
+    expect(body.code).toBe('SIGNUP_REQUIRED')
+  })
+
+  it('should verify valid SIWS signature and return JWTs when wallet linked to verified user', async () => {
+    await seedVerifiedUserWithWallet({
+      chain: 'solana',
+      address,
+    })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',
@@ -132,6 +168,10 @@ describe('POST /auth/web3/solana/verify', () => {
   })
 
   it('should return 302 with encoded code when callbackUrl provided', async () => {
+    await seedVerifiedUserWithWallet({
+      chain: 'solana',
+      address,
+    })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',
@@ -164,6 +204,10 @@ describe('POST /auth/web3/solana/verify', () => {
   })
 
   it('should place code in query string when callbackUrl has fragment', async () => {
+    await seedVerifiedUserWithWallet({
+      chain: 'solana',
+      address,
+    })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',
@@ -196,6 +240,10 @@ describe('POST /auth/web3/solana/verify', () => {
   })
 
   it('should access protected route after SIWS authentication', async () => {
+    await seedVerifiedUserWithWallet({
+      chain: 'solana',
+      address,
+    })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',

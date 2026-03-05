@@ -1,8 +1,39 @@
 import { randomUUID } from 'node:crypto'
+import { and, eq } from 'drizzle-orm'
 import { getDb } from '../../src/db/index.js'
-import { apiKeys } from '../../src/db/schema/index.js'
+import { apiKeys, users, walletIdentities } from '../../src/db/schema/index.js'
 import { generateApiKey } from '../../src/lib/api-keys.js'
 import type { TestApp } from './fastify.js'
+
+/** Seed a verified user with linked wallet so Web3 verify succeeds (link-only flow). Idempotent - skips if wallet exists. */
+export async function seedVerifiedUserWithWallet({
+  chain,
+  address,
+}: {
+  chain: 'eip155' | 'solana'
+  address: string
+}): Promise<{ userId: string }> {
+  const db = await getDb()
+  const [existing] = await db
+    .select({ userId: walletIdentities.userId })
+    .from(walletIdentities)
+    .where(and(eq(walletIdentities.chain, chain), eq(walletIdentities.address, address)))
+  if (existing) return { userId: existing.userId }
+
+  const userId = randomUUID()
+  await db.insert(users).values({
+    id: userId,
+    email: `web3-test-${userId}@test.local`,
+    emailVerified: true,
+  })
+  await db.insert(walletIdentities).values({
+    id: randomUUID(),
+    userId,
+    chain,
+    address,
+  })
+  return { userId }
+}
 
 export async function createApiKey(
   _app: TestApp,

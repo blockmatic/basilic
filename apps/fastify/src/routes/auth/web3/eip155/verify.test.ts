@@ -1,6 +1,8 @@
+import { getAddress } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { describe, expect, it } from 'vitest'
+import { seedVerifiedUserWithWallet } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../web3.spec.js'
 
 const TEST_PRIVATE_KEY =
@@ -8,7 +10,47 @@ const TEST_PRIVATE_KEY =
 const TEST_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 
 describe('POST /auth/web3/eip155/verify', () => {
-  it('should verify valid SIWE signature and return JWTs', async () => {
+  it('should return 401 SIGNUP_REQUIRED when wallet not linked', async () => {
+    // Use a different address (not TEST_ADDRESS) that we never seed - triggers SIGNUP_REQUIRED
+    const UNLINKED_KEY =
+      '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d' as `0x${string}`
+    const unlinkedAccount = privateKeyToAccount(UNLINKED_KEY)
+
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/eip155/nonce',
+      query: { address: unlinkedAccount.address },
+    })
+    expect(nonceRes.statusCode).toBe(200)
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const message = createSiweMessage({
+      address: unlinkedAccount.address,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+
+    const signature = await unlinkedAccount.signMessage({ message })
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/eip155/verify',
+      payload: { message, signature },
+    })
+
+    expect(res.statusCode).toBe(401)
+    const body = JSON.parse(res.body)
+    expect(body.code).toBe('SIGNUP_REQUIRED')
+  })
+
+  it('should verify valid SIWE signature and return JWTs when wallet linked to verified user', async () => {
+    await seedVerifiedUserWithWallet({
+      chain: 'eip155',
+      address: getAddress(TEST_ADDRESS),
+    })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
@@ -128,6 +170,10 @@ describe('POST /auth/web3/eip155/verify', () => {
   })
 
   it('should return 302 with encoded code when callbackUrl provided', async () => {
+    await seedVerifiedUserWithWallet({
+      chain: 'eip155',
+      address: getAddress(TEST_ADDRESS),
+    })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
@@ -163,6 +209,10 @@ describe('POST /auth/web3/eip155/verify', () => {
   })
 
   it('should place code in query string when callbackUrl has fragment', async () => {
+    await seedVerifiedUserWithWallet({
+      chain: 'eip155',
+      address: getAddress(TEST_ADDRESS),
+    })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
@@ -198,6 +248,10 @@ describe('POST /auth/web3/eip155/verify', () => {
   })
 
   it('should access protected route after SIWE authentication', async () => {
+    await seedVerifiedUserWithWallet({
+      chain: 'eip155',
+      address: getAddress(TEST_ADDRESS),
+    })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
