@@ -224,23 +224,6 @@ export function getChainMetadata(chainId: number | string): ChainMetadata | unde
   return undefined
 }
 
-/**
- * Checks if a chain ID is supported by the registry.
- *
- * @param chainId - Chain ID (number for EVM, string for Solana clusters)
- * @returns True if the chain is supported, false otherwise
- *
- * @example
- * ```ts
- * if (isSupportedChain(chainId)) {
- *   // Chain is supported, proceed with operations
- * }
- * ```
- */
-export function isSupportedChain(chainId: number | string): boolean {
-  return getChainMetadata(chainId) !== undefined
-}
-
 const SLICE_LEN = 8
 
 /** Short display format for wallet address (chain:address or chain:first8chars… when long) */

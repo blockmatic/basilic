@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { generateApiKey, hashApiKeySecret, parseApiKey } from './api-keys.js'
+import { generateApiKey, parseApiKey } from './api-keys.js'
+import { hashToken } from './jwt.js'
 
 describe('api-keys', () => {
   describe('generateApiKey', () => {
@@ -14,7 +15,7 @@ describe('api-keys', () => {
       expect(parsed).not.toBeNull()
       if (!parsed) return
       expect(parsed.prefix).toBe(prefix)
-      expect(hashApiKeySecret(parsed.secret)).toBe(hash)
+      expect(hashToken(parsed.secret)).toBe(hash)
     })
   })
 
@@ -46,10 +47,10 @@ describe('api-keys', () => {
     })
   })
 
-  describe('hashApiKeySecret', () => {
+  describe('hashToken', () => {
     it('returns consistent hash for same secret', () => {
-      const h1 = hashApiKeySecret('secret')
-      const h2 = hashApiKeySecret('secret')
+      const h1 = hashToken('secret')
+      const h2 = hashToken('secret')
       expect(h1).toBe(h2)
     })
   })

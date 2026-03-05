@@ -21,7 +21,3 @@ export function parseApiKey(token: string): { prefix: string; secret: string } |
   if (!secret) return null
   return { prefix, secret }
 }
-
-export function hashApiKeySecret(secret: string): string {
-  return hashToken(secret)
-}
