@@ -9,8 +9,10 @@ function checkAuthenticated(page: import('@playwright/test').Page) {
       expect(page.url()).toMatch(/^https?:\/\/[^/]+\/?(\?.*)?$/)
       const dashboardHeading = page.locator('text=Dashboard')
       await expect(dashboardHeading).toBeVisible()
-      const welcomeText = page.locator(`text=Welcome back, ${TEST_EMAIL}`)
-      await expect(welcomeText).toBeVisible({ timeout: 5000 })
+      // Profile tab shows user email in read-only input
+      const emailInput = page.getByLabel('Email')
+      await expect(emailInput).toBeVisible({ timeout: 5000 })
+      await expect(emailInput).toHaveValue(TEST_EMAIL)
       const apiBadge = page.locator('text=API OK')
       await expect(apiBadge).toBeVisible({ timeout: 10000 })
     },

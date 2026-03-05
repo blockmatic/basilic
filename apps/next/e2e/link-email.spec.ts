@@ -11,6 +11,7 @@ test.describe('Link Email UI (magic link)', () => {
     await authHelpers.verifyMagicLink(page, token)
 
     await page.goto('/')
-    await expect(page.getByText(/already linked/i)).toBeVisible({ timeout: 5000 })
+    // Profile tab shows user email when linked; "Email cannot be changed" appears for linked accounts
+    await expect(page.getByText(/Email cannot be changed/i)).toBeVisible({ timeout: 5000 })
   })
 })
