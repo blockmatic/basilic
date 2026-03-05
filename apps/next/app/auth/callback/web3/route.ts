@@ -13,9 +13,7 @@ export async function GET(request: Request) {
     ? searchParams.get('callbackURL')
     : null
 
-  if (!code) {
-    redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
-  }
+  if (!code) redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
 
   try {
     const response = await client.auth.web3.exchange({ body: { code } })
@@ -28,9 +26,8 @@ export async function GET(request: Request) {
         ? (response as { refreshToken: string }).refreshToken
         : null
 
-    if (!accessToken || !refreshToken) {
+    if (!accessToken || !refreshToken)
       redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
-    }
 
     const redirectUrl = callbackURL ?? '/'
     const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url), 303)

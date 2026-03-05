@@ -25,12 +25,12 @@ function decodeSession(token: string | null): DecodedSession | null {
       sid: d.sid,
     }
     const wal = d.wal
-    if (wal && typeof wal === 'object' && 'chain' in wal && 'address' in wal) {
+    if (wal && typeof wal === 'object' && 'chain' in wal && 'address' in wal)
       session.wal = {
         chain: String((wal as { chain: unknown }).chain),
         address: String((wal as { address: unknown }).address),
       }
-    }
+
     if (typeof d.iss === 'string') session.iss = d.iss
     if (Array.isArray(d.aud)) session.aud = d.aud as string[]
     if (typeof d.iat === 'number') session.iat = d.iat

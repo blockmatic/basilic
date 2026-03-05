@@ -14,9 +14,8 @@ import {
 const formatTransactionDate = (date: string): string => {
   try {
     const parsed = parseISO(date)
-    if (isValid(parsed)) {
-      return format(parsed, 'MMM d')
-    }
+    if (isValid(parsed)) return format(parsed, 'MMM d')
+
     return '—'
   } catch {
     return '—'

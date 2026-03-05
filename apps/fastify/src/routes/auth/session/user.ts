@@ -41,12 +41,11 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Not authenticated',
         })
-      }
 
       let linkedWallets: { id: string; chain: string; address: string }[]
       try {

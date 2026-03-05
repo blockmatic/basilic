@@ -36,11 +36,8 @@ export function createBiMap<K, V>() {
       const midVal: T = arr[mid] as T
       const cmp = compareFn(midVal, target)
       if (cmp === 0) return mid
-      if (cmp < 0) {
-        lo = mid + 1
-      } else {
-        hi = mid - 1
-      }
+      if (cmp < 0) lo = mid + 1
+      else hi = mid - 1
     }
     return -1
   }
@@ -158,14 +155,12 @@ export function createBiMap<K, V>() {
       }
       ensureSorted()
       const result: [K, V][] = []
-      for (const key of sortedKeys) {
+      for (const key of sortedKeys)
         if (compareFn(key, min) >= 0 && compareFn(key, max) <= 0) {
           const value = fwd.get(key)
-          if (value !== undefined) {
-            result.push([key, value])
-          }
+          if (value !== undefined) result.push([key, value])
         }
-      }
+
       return result
     },
   }

@@ -12,9 +12,7 @@ const projectRoot = resolve(configDir)
 
 // Load .env.test for tests (before env.ts validation runs)
 const envTestFile = resolve(projectRoot, '.env.test')
-if (existsSync(envTestFile)) {
-  config({ path: envTestFile })
-}
+if (existsSync(envTestFile)) config({ path: envTestFile })
 
 function toTsPath(id: string, importer?: string): string | null {
   if (!id.endsWith('.js') || id.includes('node_modules')) return null
@@ -29,9 +27,8 @@ function toTsPath(id: string, importer?: string): string | null {
     tsPath = resolve(projectRoot, id.replace(/\.js$/, '.ts'))
   } else if (id.startsWith('file://')) {
     const pathPart = id.slice(7)
-    if (pathPart.startsWith(projectRoot) && pathPart.endsWith('.js')) {
+    if (pathPart.startsWith(projectRoot) && pathPart.endsWith('.js'))
       tsPath = pathPart.replace(/\.js$/, '.ts')
-    }
   }
   return tsPath && existsSync(tsPath) ? tsPath : null
 }
@@ -93,9 +90,7 @@ const resolveJsToTsPlugin = (): Plugin => ({
         },
       )
 
-      if (changed) {
-        return { code: transformed, map: null }
-      }
+      if (changed) return { code: transformed, map: null }
     }
     return null
   },

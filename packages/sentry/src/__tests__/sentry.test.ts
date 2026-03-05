@@ -122,13 +122,12 @@ describe('sentry', () => {
       })
 
       const lastCall = mockInit.mock.calls[mockInit.mock.calls.length - 1]?.[0]
-      if (name === 'Node.js') {
+      if (name === 'Node.js')
         expect(lastCall?.ignoreErrors).toEqual(['Non-Error promise rejection'])
-      } else {
+      else
         expect(lastCall?.ignoreErrors).toEqual(
           expect.arrayContaining(['Non-Error promise rejection']),
         )
-      }
     })
   })
 })

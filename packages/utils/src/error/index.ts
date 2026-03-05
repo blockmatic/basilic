@@ -52,9 +52,7 @@ export function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
  * Handles all possible thrown values (Error, string, object, etc.)
  */
 export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
-  if (isErrorWithMessage(maybeError)) {
-    return maybeError
-  }
+  if (isErrorWithMessage(maybeError)) return maybeError
 
   try {
     return new Error(String(maybeError))

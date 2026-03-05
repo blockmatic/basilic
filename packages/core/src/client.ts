@@ -29,7 +29,7 @@ function wrapApiWithClient<T>(
   client: ReturnType<typeof createHeyApiClient>,
   options: CoreClientOptions,
 ): T {
-  if (typeof obj === 'function') {
+  if (typeof obj === 'function')
     return (async (callOptions: Record<string, unknown> = {}) => {
       // Call underlying function with client
       const response = await obj({
@@ -56,9 +56,9 @@ function wrapApiWithClient<T>(
         options.onTokensRefreshed &&
         !isRefreshEndpoint
 
-      if (response.error && (canRefreshViaBff || canRefreshViaToken)) {
+      if (response.error && (canRefreshViaBff || canRefreshViaToken))
         try {
-          if (!refreshLock) {
+          if (!refreshLock)
             refreshLock = (async () => {
               if (options.refreshUrl) {
                 const res = await fetch(options.refreshUrl, {
@@ -74,7 +74,6 @@ function wrapApiWithClient<T>(
               await options.onTokensRefreshed?.(refreshResponse.data)
               return refreshResponse.data
             })()
-          }
 
           const newTokens = await refreshLock
           refreshLock = null
@@ -102,22 +101,18 @@ function wrapApiWithClient<T>(
           refreshLock = null
           // Refresh failed, throw original 401 error
         }
-      }
 
       // Throw error if response has error
-      if (response.error) {
-        throw new ApiError(errorStatus, errorMessage, response.error)
-      }
+      if (response.error) throw new ApiError(errorStatus, errorMessage, response.error)
 
       return response.data
     }) as T
-  }
 
   if (obj && typeof obj === 'object') {
     const wrapped: Record<string, unknown> = {}
-    for (const [key, value] of Object.entries(obj)) {
+    for (const [key, value] of Object.entries(obj))
       wrapped[key] = wrapApiWithClient(value, client, options)
-    }
+
     return wrapped as T
   }
 
@@ -168,16 +163,14 @@ export function createClient(options: CoreClientOptions): CoreApiClient {
     ])
 
     // Set Authorization header if token exists
-    if (token && !request.headers.has('Authorization')) {
+    if (token && !request.headers.has('Authorization'))
       request.headers.set('Authorization', `Bearer ${token}`)
-    }
 
     // Merge custom headers
-    if (extraHeaders) {
+    if (extraHeaders)
       Object.entries(extraHeaders).forEach(([key, value]) => {
         request.headers.set(key, value)
       })
-    }
 
     return request
   })

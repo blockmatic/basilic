@@ -35,7 +35,7 @@ export function DocsVideo({
     '1:1': 'aspect-square',
   }
 
-  if (error && caption) {
+  if (error && caption)
     return (
       <figure className="my-8 flex flex-col items-center">
         <div className="flex w-full max-w-full items-center justify-center rounded-lg border border-border bg-muted/50 p-8">
@@ -46,7 +46,6 @@ export function DocsVideo({
         </figcaption>
       </figure>
     )
-  }
 
   return (
     <figure className="my-8 flex flex-col items-center">

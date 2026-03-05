@@ -49,12 +49,11 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { message, signature, domain: expectedDomain, callbackUrl } = request.body
 
-      if (callbackUrl && !isAllowedUrl(callbackUrl)) {
+      if (callbackUrl && !isAllowedUrl(callbackUrl))
         return reply.code(400).send({
           code: 'INVALID_CALLBACK_URL',
           message: 'Callback URL origin is not allowed',
         })
-      }
 
       const result = await verifyWeb3Auth({
         chain: 'eip155',

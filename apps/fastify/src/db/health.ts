@@ -14,9 +14,7 @@ export async function waitForDatabase(logger?: {
   error: (msg: string, err?: unknown) => void
 }): Promise<void> {
   // Skip health check for PGLite (doesn't need connection check)
-  if (env.PGLITE === true || env.NODE_ENV === 'test') {
-    return
-  }
+  if (env.PGLITE === true || env.NODE_ENV === 'test') return
 
   const startTime = Date.now()
   let attempt = 0

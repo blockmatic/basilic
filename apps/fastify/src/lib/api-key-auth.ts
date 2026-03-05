@@ -24,9 +24,8 @@ export async function authenticateWithApiKey(token: string, db: Db): Promise<Api
   const computedHash = hashApiKeySecret(parsed.secret)
   const computedBuf = Buffer.from(computedHash, 'hex')
   const storedBuf = Buffer.from(apiKey.hash, 'hex')
-  if (computedBuf.length !== storedBuf.length || !timingSafeEqual(computedBuf, storedBuf)) {
+  if (computedBuf.length !== storedBuf.length || !timingSafeEqual(computedBuf, storedBuf))
     return null
-  }
 
   await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, apiKey.id))
 

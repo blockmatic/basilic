@@ -85,7 +85,7 @@ export function ApiKeysCard() {
     }
   }, [revokeId, revokeMutation])
 
-  if (isLoading) {
+  if (isLoading)
     return (
       <Card>
         <CardHeader>
@@ -97,9 +97,8 @@ export function ApiKeysCard() {
         </CardContent>
       </Card>
     )
-  }
 
-  if (isError) {
+  if (isError)
     return (
       <Card>
         <CardContent className="pt-6">
@@ -107,7 +106,6 @@ export function ApiKeysCard() {
         </CardContent>
       </Card>
     )
-  }
 
   const keys = data?.keys ?? []
 

@@ -104,7 +104,7 @@ const authPlugin: FastifyPluginAsync = async fastify => {
     } catch (error) {
       // JWT verification errors are expected for invalid tokens
       // Only log unexpected errors
-      if (error instanceof Error && !error.message.includes('jwt')) {
+      if (error instanceof Error && !error.message.includes('jwt'))
         captureError({
           code: 'INTERNAL_ERROR',
           error,
@@ -120,7 +120,7 @@ const authPlugin: FastifyPluginAsync = async fastify => {
             route: request.url,
           },
         })
-      }
+
       request.session = null
     }
   })

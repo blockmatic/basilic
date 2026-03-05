@@ -20,17 +20,12 @@ const allErrors = {
  * Maps HTTP status codes to error catalog codes
  */
 export function mapHttpStatusToErrorCode(statusCode?: number): ErrorCode {
-  if (!statusCode || typeof statusCode !== 'number' || statusCode < 100 || statusCode > 599) {
+  if (!statusCode || typeof statusCode !== 'number' || statusCode < 100 || statusCode > 599)
     return 'UNEXPECTED_ERROR'
-  }
 
-  if (statusCode >= 200 && statusCode < 300) {
-    return 'UNEXPECTED_ERROR'
-  }
+  if (statusCode >= 200 && statusCode < 300) return 'UNEXPECTED_ERROR'
 
-  if (statusCode >= 300 && statusCode < 400) {
-    return 'UNEXPECTED_ERROR'
-  }
+  if (statusCode >= 300 && statusCode < 400) return 'UNEXPECTED_ERROR'
 
   switch (statusCode) {
     case 400:
@@ -56,9 +51,8 @@ export function mapHttpStatusToErrorCode(statusCode?: number): ErrorCode {
     case 504:
       return 'GATEWAY_TIMEOUT'
     default:
-      if (statusCode >= 400 && statusCode < 500) {
-        return 'BAD_REQUEST'
-      }
+      if (statusCode >= 400 && statusCode < 500) return 'BAD_REQUEST'
+
       return 'SERVER_ERROR'
   }
 }

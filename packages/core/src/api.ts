@@ -51,25 +51,22 @@ export function createApi(options: CoreClientOptions) {
 
       // Build headers
       const headers: Record<string, string> = {}
-      if (extraHeaders) {
-        Object.assign(headers, extraHeaders)
-      }
-      if (token) {
-        headers.Authorization = `Bearer ${token}`
-      }
+      if (extraHeaders) Object.assign(headers, extraHeaders)
+
+      if (token) headers.Authorization = `Bearer ${token}`
 
       const response = await gen.healthCheck({
         client,
         ...(Object.keys(headers).length > 0 && { headers }),
       })
 
-      if (!response.data) {
+      if (!response.data)
         throw new ApiError(
           (response.error as { status?: number })?.status ?? 500,
           (response.error as { message?: string })?.message ?? 'Unknown error',
           response.error,
         )
-      }
+
       return response.data
     },
   }

@@ -33,11 +33,8 @@ export function useVConsole() {
     }
 
     // Sync query param to localStorage for subsequent changes
-    if (debugQuery === 'true' && !debugStorage) {
-      setDebugStorage(true)
-    } else if (debugQuery === 'false' && debugStorage) {
-      setDebugStorage(false)
-    }
+    if (debugQuery === 'true' && !debugStorage) setDebugStorage(true)
+    else if (debugQuery === 'false' && debugStorage) setDebugStorage(false)
   }, [debugQuery, debugStorage, setDebugStorage, setDebugQuery])
 
   // Initialize or destroy VConsole based on debug state

@@ -18,9 +18,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams
   const { authenticated } = await getAuthStatus()
 
-  if (authenticated) {
-    redirect('/')
-  }
+  if (authenticated) redirect('/')
 
   const errorParam = params.error || params.message
   const errorMessage = getAuthErrorMessage(errorParam)

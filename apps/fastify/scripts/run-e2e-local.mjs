@@ -22,9 +22,9 @@ function loadEnvTest() {
     if (idx < 0 || line.startsWith('#')) continue
     const key = line.slice(0, idx).trim()
     let val = line.slice(idx + 1).trim()
-    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
       val = val.slice(1, -1)
-    }
+
     out[key] = val
   }
   return out
@@ -49,7 +49,7 @@ function waitForUrl(url, timeoutMs = 60_000) {
 
 async function main() {
   // eslint-disable-next-line turbo/no-undeclared-env-vars -- set by root test:e2e or user
-  if (!process.env.SKIP_KILL_PORTS) {
+  if (!process.env.SKIP_KILL_PORTS)
     try {
       spawnSync('bash', [join(repoRoot, 'scripts/kill-test-servers.sh')], {
         cwd: repoRoot,
@@ -58,7 +58,7 @@ async function main() {
     } catch {
       /* ignore */
     }
-  }
+
   const loaded = loadEnvTest()
   const jwtSecret = loaded.JWT_SECRET ?? process.env.JWT_SECRET
   if (!jwtSecret) {

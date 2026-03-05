@@ -13,9 +13,7 @@ export async function GET(request: Request) {
     ? searchParams.get('callbackURL')
     : null
 
-  if (!token) {
-    redirect(`/auth/login?message=${encodeURIComponent('INVALID_TOKEN')}`)
-  }
+  if (!token) redirect(`/auth/login?message=${encodeURIComponent('INVALID_TOKEN')}`)
 
   try {
     const response = await client.auth.magiclink.verify({ body: { token } })
@@ -28,9 +26,8 @@ export async function GET(request: Request) {
         ? (response as { refreshToken: string }).refreshToken
         : null
 
-    if (!accessToken || !refreshToken) {
+    if (!accessToken || !refreshToken)
       redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
-    }
 
     const redirectUrl = callbackURL ?? '/'
     const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url), 303)

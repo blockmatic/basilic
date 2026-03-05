@@ -46,19 +46,17 @@ const web3NonceRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { chain, address } = request.query
 
-      if (!isValidChain(chain)) {
+      if (!isValidChain(chain))
         return reply.code(400).send({
           code: 'INVALID_CHAIN',
           message: 'Chain must be eip155 or solana',
         })
-      }
 
-      if (!chain || !address?.trim()) {
+      if (!chain || !address?.trim())
         return reply.code(400).send({
           code: 'MISSING_PARAMS',
           message: 'chain and address query parameters are required',
         })
-      }
 
       const db = await getDb()
       let normalizedAddr: string

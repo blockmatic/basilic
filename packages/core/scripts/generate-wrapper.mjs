@@ -36,23 +36,20 @@ function buildNestedObject(obj, segments, operationId) {
 
   if (rest.length === 0) {
     const existing = obj[key]
-    if (typeof existing === 'string') {
+    if (typeof existing === 'string')
       obj[key] = { [toActionKey(existing)]: existing, [toActionKey(operationId)]: operationId }
-    } else if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+    else if (existing && typeof existing === 'object' && !Array.isArray(existing))
       obj[key][toActionKey(operationId)] = operationId
-    } else {
-      obj[key] = operationId
-    }
+    else obj[key] = operationId
+
     return obj
   }
 
   const existing = obj[key]
-  if (typeof existing === 'string') {
-    obj[key] = { [toActionKey(existing)]: existing }
-  }
-  if (!obj[key] || typeof obj[key] === 'string') {
-    obj[key] = {}
-  }
+  if (typeof existing === 'string') obj[key] = { [toActionKey(existing)]: existing }
+
+  if (!obj[key] || typeof obj[key] === 'string') obj[key] = {}
+
   buildNestedObject(obj[key], rest, operationId)
   return obj
 }
@@ -62,7 +59,7 @@ function generateNestedObject(obj, indent = 0) {
   const spaces = '  '.repeat(indent)
   const lines = []
 
-  for (const [key, value] of Object.entries(obj)) {
+  for (const [key, value] of Object.entries(obj))
     if (typeof value === 'string') {
       lines.push(`${spaces}${key}: gen.${value},`)
     } else {
@@ -70,20 +67,16 @@ function generateNestedObject(obj, indent = 0) {
       lines.push(...generateNestedObject(value, indent + 1))
       lines.push(`${spaces}},`)
     }
-  }
 
   return lines
 }
 
 // Collect all operationIds from nested structure (for import list)
 function collectOperationIds(obj, acc = new Set()) {
-  for (const value of Object.values(obj)) {
-    if (typeof value === 'string') {
-      acc.add(value)
-    } else {
-      collectOperationIds(value, acc)
-    }
-  }
+  for (const value of Object.values(obj))
+    if (typeof value === 'string') acc.add(value)
+    else collectOperationIds(value, acc)
+
   return acc
 }
 
@@ -166,15 +159,11 @@ for (const [path, methods] of Object.entries(paths)) {
 
     // If no operationId, use HTTP method name (lowercase)
     // This matches openapi-ts behavior when operationId is missing
-    if (!operationId) {
-      operationId = method.toLowerCase()
-    }
+    if (!operationId) operationId = method.toLowerCase()
 
     operationIdToOperation[operationId] = operation
 
-    if (hasNoTypedResponse(operation)) {
-      noResponseOperationIds.add(operationId)
-    }
+    if (hasNoTypedResponse(operation)) noResponseOperationIds.add(operationId)
 
     // Parse path segments
     const pathSegments = path.split('/').filter(Boolean)

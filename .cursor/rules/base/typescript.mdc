@@ -24,8 +24,9 @@ alwaysApply: true
 - RORO (`({ name }: Input) => ({ id, name })`)
 - Functional (avoid classes/decorators)
 - Use `function` keyword for named function definitions, arrow functions for inline functions and React component methods
-- Early returns (guard clauses): reduces nesting, keep success path at same indentation level, avoid else after early returns
-- Single-line (`if (!value) return null`)
+- Fail-fast: Early returns (guard clauses), avoid else after return/throw; keep success path at top indentation
+- Single-line (`if (!value) return null`); no braces for single-statement blocks (curly multi)
+- Nesting: Prefer max 3–4 levels; extract helpers or invert conditions to flatten
 - Explicit return types for exported functions/API handlers
 - Zod-first (validate at boundaries)
 - Colocate schemas (`app/api/users/schema.ts`)

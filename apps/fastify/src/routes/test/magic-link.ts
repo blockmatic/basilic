@@ -26,9 +26,8 @@ const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (_request, reply) => {
-      if (!env.ALLOW_TEST || env.NODE_ENV === 'production') {
+      if (!env.ALLOW_TEST || env.NODE_ENV === 'production')
         return reply.code(200).send({ token: null })
-      }
 
       const db = await getDb()
       const [row] = await db

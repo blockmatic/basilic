@@ -39,9 +39,8 @@ const createEmailInput = <T extends keyof NotificationTypes>({
   teamContext,
   options,
 }: CreateEmailInputInput<T>): EmailInput => {
-  if (!handler.createEmail) {
-    throw new Error(`Handler for ${type} does not support email creation`)
-  }
+  if (!handler.createEmail) throw new Error(`Handler for ${type} does not support email creation`)
+
   // Type assertion is safe here because handler and validatedData are already matched by generic T
   const customEmail = (
     handler.createEmail as (
@@ -57,9 +56,7 @@ const createEmailInput = <T extends keyof NotificationTypes>({
   }
 
   const { priority: _priority, sendEmail: _sendEmail, ...resendOptions } = options || {}
-  if (Object.keys(resendOptions).length > 0) {
-    Object.assign(baseEmailInput, resendOptions)
-  }
+  if (Object.keys(resendOptions).length > 0) Object.assign(baseEmailInput, resendOptions)
 
   return baseEmailInput
 }
@@ -95,7 +92,7 @@ const create = async <T extends keyof NotificationTypes>({
     // Create activities if handler supports it
     if (handler.createActivity) {
       const activityInputs: CreateActivityInput[] = []
-      for (const user of validatedData.users) {
+      for (const user of validatedData.users)
         try {
           // Type assertion is safe here because handler and validatedData are already matched by generic T
           const activityInput = (
@@ -122,13 +119,12 @@ const create = async <T extends keyof NotificationTypes>({
             `Failed to create activity for notification ${type} for user ${user.id}`,
           )
         }
-      }
 
       // Persist activities via activity service or collect for return
       // TODO: When activity service is available, use: activityService.bulkCreate(activityInputs)
       // For now, activities are collected but not persisted
       // Counter increments only after successful collection (will be moved after persistence when service is added)
-      if (activityInputs.length > 0) {
+      if (activityInputs.length > 0)
         // TODO: When persistence is implemented, replace this with:
         // try {
         //   await activityService.bulkCreate(activityInputs)
@@ -137,16 +133,14 @@ const create = async <T extends keyof NotificationTypes>({
         //   logger.error({ err: error, type, activityCount: activityInputs.length }, 'Failed to persist activities')
         // }
         activities = activityInputs.length
-      }
     }
     const sendEmail = options?.sendEmail ?? false
-    if (!sendEmail || !handler.createEmail) {
+    if (!sendEmail || !handler.createEmail)
       return {
         type: type as string,
         activities,
         emails,
       }
-    }
 
     const firstUser = validatedData.users[0]
     if (!firstUser) throw new Error('No users available for email context')

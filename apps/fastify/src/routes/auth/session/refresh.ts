@@ -44,12 +44,11 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { refreshToken: refreshTokenInput } = request.body
 
-      if (!refreshTokenInput) {
+      if (!refreshTokenInput)
         return reply.code(400).send({
           code: 'MISSING_TOKEN',
           message: 'Refresh token is required',
         })
-      }
 
       // Verify refresh JWT
       let decoded: {
@@ -68,24 +67,22 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
       }
 
       // Validate token type
-      if (decoded.typ !== 'refresh' || !decoded.sub || !decoded.sid || !decoded.jti) {
+      if (decoded.typ !== 'refresh' || !decoded.sub || !decoded.sid || !decoded.jti)
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Invalid refresh token',
         })
-      }
 
       const db = await getDb()
 
       // Load session
       const [session] = await db.select().from(sessions).where(eq(sessions.id, decoded.sid))
 
-      if (!session) {
+      if (!session)
         return reply.code(401).send({
           code: 'SESSION_NOT_FOUND',
           message: 'Session not found',
         })
-      }
 
       // Check expiration
       if (session.expiresAt < new Date()) {

@@ -262,11 +262,10 @@ function installDocker() {
       if (checkDockerRunning()) {
         console.log(`✅ Docker daemon is running`)
         return true
-      } else {
-        console.log(`\n⚠️  Docker is installed but daemon may not be running.`)
-        console.log(`   Try: sudo systemctl start docker`)
-        return true // Still consider it installed
       }
+      console.log(`\n⚠️  Docker is installed but daemon may not be running.`)
+      console.log(`   Try: sudo systemctl start docker`)
+      return true // Still consider it installed
     } catch (error) {
       console.error(`\n❌ Failed to install ${displayName}`)
       if (error.message) {

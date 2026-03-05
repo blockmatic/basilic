@@ -22,11 +22,8 @@ export function encryptAccountTokens<T extends NewAccount | Partial<Account>>(ac
     const value = encrypted[field]
     if (value && typeof value === 'string') {
       const encryptedValue = encrypt(value)
-      if (encryptedValue) {
-        encrypted[field] = encryptedValue as T[typeof field]
-      } else {
-        throw new Error(`encryption failed for field ${field}`)
-      }
+      if (encryptedValue) encrypted[field] = encryptedValue as T[typeof field]
+      else throw new Error(`encryption failed for field ${field}`)
     }
   }
 
@@ -49,9 +46,8 @@ export function decryptAccountTokens(account: Account): Account {
     const value = decrypted[field]
     if (value && typeof value === 'string') {
       const decryptedValue = decrypt(value)
-      if (decryptedValue) {
-        decrypted[field] = decryptedValue
-      }
+      if (decryptedValue) decrypted[field] = decryptedValue
+
       // If decryption fails, leave as-is (could be plaintext or corrupted)
     }
   }

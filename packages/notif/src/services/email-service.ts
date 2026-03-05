@@ -65,11 +65,10 @@ const buildEmailPayload = async ({ email }: { email: EmailInput }): Promise<Crea
   const recipients = Array.isArray(email.to) && email.to.length > 0 ? email.to : [email.user.email]
 
   const fromAddress = email.from || env.EMAIL_FROM
-  if (!fromAddress) {
+  if (!fromAddress)
     throw new Error(
       'Email "from" address is required. Set EMAIL_FROM environment variable or provide email.from',
     )
-  }
 
   const payload: CreateEmailOptions = {
     from: fromAddress,

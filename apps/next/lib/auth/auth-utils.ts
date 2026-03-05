@@ -27,18 +27,13 @@ export function isTokenExpired({ token }: { token: string }): boolean {
 export async function getAuthStatus() {
   const { token } = await getServerAuthToken()
 
-  if (!token) {
-    return { authenticated: false, userId: null, sessionId: null }
-  }
+  if (!token) return { authenticated: false, userId: null, sessionId: null }
 
   const decoded = decodeJwtToken({ token })
-  if (!decoded || decoded.typ !== 'access' || !decoded.sub || !decoded.sid) {
+  if (!decoded || decoded.typ !== 'access' || !decoded.sub || !decoded.sid)
     return { authenticated: false, userId: null, sessionId: null }
-  }
 
-  if (isTokenExpired({ token })) {
-    return { authenticated: false, userId: null, sessionId: null }
-  }
+  if (isTokenExpired({ token })) return { authenticated: false, userId: null, sessionId: null }
 
   return {
     authenticated: true,

@@ -15,9 +15,7 @@ export function useNuqsDebug() {
   })
 
   useEffect(() => {
-    if (debug !== 'nuqs') {
-      setDebug('nuqs')
-    }
+    if (debug !== 'nuqs') setDebug('nuqs')
   }, [debug, setDebug])
 
   return {

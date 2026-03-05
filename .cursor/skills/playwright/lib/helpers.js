@@ -272,9 +272,8 @@ async function extractTableData(page, tableSelector) {
           obj[headers[index] || `column_${index}`] = cell.textContent?.trim()
           return obj
         }, {})
-      } else {
-        return cells.map(cell => cell.textContent?.trim())
       }
+      return cells.map(cell => cell.textContent?.trim())
     })
 
     return { headers, rows }

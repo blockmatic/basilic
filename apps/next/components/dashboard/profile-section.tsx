@@ -53,7 +53,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
     toast.info('Profile update coming soon')
   }, [])
 
-  if (isLoading) {
+  if (isLoading)
     return (
       <div className="mx-auto max-w-2xl space-y-6">
         <Card>
@@ -67,15 +67,13 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
         </Card>
       </div>
     )
-  }
 
-  if (isError) {
+  if (isError)
     return (
       <div className="mx-auto max-w-2xl">
         <p className="text-destructive text-sm">{error?.message ?? 'Failed to load profile'}</p>
       </div>
     )
-  }
 
   const user = data?.user
   const displayName = String(state.name ?? user?.name ?? '')

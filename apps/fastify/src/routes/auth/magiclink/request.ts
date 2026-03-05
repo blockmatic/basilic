@@ -42,12 +42,11 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       const { email, callbackUrl } = request.body
 
       // Validate callback URL (origin allowlist, http/https only, no relative URLs)
-      if (!isAllowedUrl(callbackUrl)) {
+      if (!isAllowedUrl(callbackUrl))
         return reply.status(400).send({
           code: 'INVALID_INPUT',
           message: 'Invalid or unsafe callback URL',
         })
-      }
 
       const db = await getDb()
 
@@ -61,9 +60,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
           emailVerified: false,
         })
         ;[user] = await db.select().from(users).where(eq(users.id, userId))
-        if (!user) {
-          throw new Error('Failed to create user')
-        }
+        if (!user) throw new Error('Failed to create user')
       }
 
       // Generate verification token
@@ -99,11 +96,10 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         html,
       })
 
-      if ('error' in emailResponse && emailResponse.error) {
+      if ('error' in emailResponse && emailResponse.error)
         throw new Error(
           `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
         )
-      }
 
       return reply.code(200).send({ ok: true })
     },

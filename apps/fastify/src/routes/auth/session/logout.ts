@@ -28,12 +28,11 @@ const sessionLogoutRoute: FastifyPluginAsync = async fastify => {
     },
     async (request, reply) => {
       // Session is already attached by auth plugin
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Not authenticated',
         })
-      }
 
       const db = await getDb()
 

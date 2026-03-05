@@ -34,9 +34,7 @@ function redactHeaders(headers: Record<string, unknown>): Record<string, unknown
   const sensitiveKeys = ['authorization', 'cookie', 'x-api-key', 'x-auth-token']
   for (const key of sensitiveKeys) {
     const lowerKey = Object.keys(redacted).find(k => k.toLowerCase() === key)
-    if (lowerKey) {
-      redacted[lowerKey] = '[REDACTED]'
-    }
+    if (lowerKey) redacted[lowerKey] = '[REDACTED]'
   }
   return redacted
 }
@@ -57,11 +55,7 @@ function redactBody(body: unknown): unknown {
     'authorization',
   ]
 
-  for (const field of sensitiveFields) {
-    if (field in redacted) {
-      redacted[field] = '[REDACTED]'
-    }
-  }
+  for (const field of sensitiveFields) if (field in redacted) redacted[field] = '[REDACTED]'
 
   return redacted
 }

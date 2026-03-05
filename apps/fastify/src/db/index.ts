@@ -15,7 +15,7 @@ function shouldUsePGLite(): boolean {
 }
 
 export async function getDb() {
-  if (!db) {
+  if (!db)
     if (shouldUsePGLite()) {
       if (env.NODE_ENV === 'test') {
         const g = globalThis as { __testPgliteInstance?: PGlite }
@@ -32,13 +32,12 @@ export async function getDb() {
         db = drizzlePGLite(pgLiteInstance, { schema })
       }
     } else {
-      if (!env.DATABASE_URL) {
-        throw new Error('DATABASE_URL is required when PGLITE is false')
-      }
+      if (!env.DATABASE_URL) throw new Error('DATABASE_URL is required when PGLITE is false')
+
       const pool = new Pool({ connectionString: env.DATABASE_URL })
       db = drizzle(pool, { schema })
     }
-  }
+
   return db
 }
 

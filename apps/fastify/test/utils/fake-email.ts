@@ -76,33 +76,25 @@ export class FakeEmailProvider implements EmailProvider {
     // Try to extract from HTML first - look for links with "magic-link" in URL
     const htmlMatch = decodedHtml.match(/href=["']([^"']*magic-link[^"']*)["']/i)
     const htmlLink = htmlMatch?.[1]
-    if (htmlLink) {
-      return htmlLink
-    }
+    if (htmlLink) return htmlLink
 
     // Try to extract from text if available
     if (targetEmail.text) {
       const textMatch = targetEmail.text.match(/(https?:\/\/[^\s]*magic-link[^\s]*)/i)
       const textLink = textMatch?.[1]
-      if (textLink) {
-        return textLink
-      }
+      if (textLink) return textLink
     }
 
     // Fallback: look for any URL with token parameter (more flexible regex)
     // Handles both ?token= and &token= patterns, and various quote styles
     const urlMatch = decodedHtml.match(/href\s*=\s*["']([^"']*[?&]token=[^"'&]*)["']/i)
     const urlLink = urlMatch?.[1]
-    if (urlLink) {
-      return urlLink
-    }
+    if (urlLink) return urlLink
 
     // Additional fallback: look for token parameter anywhere in HTML (not just in href)
     const tokenMatch = decodedHtml.match(/(https?:\/\/[^\s"']*[?&]token=[^\s"']*)/i)
     const tokenLink = tokenMatch?.[1]
-    if (tokenLink) {
-      return tokenLink
-    }
+    if (tokenLink) return tokenLink
 
     return null
   }

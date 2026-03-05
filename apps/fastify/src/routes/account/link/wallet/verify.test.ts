@@ -133,9 +133,9 @@ describe('POST /account/link/wallet/verify', () => {
       url: '/auth/session/user',
       headers: { Authorization: `Bearer ${apiKey}` },
     })
-    if (userRes.statusCode !== 200) {
+    if (userRes.statusCode !== 200)
       throw new Error(`session/user failed: ${userRes.statusCode} ${userRes.body}`)
-    }
+
     const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
 
     const nonceRes = await fastify.inject({

@@ -40,7 +40,7 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
       let jwtToken: string | null = null
       const token = (request.query as { token?: string })?.token
 
-      if (token) {
+      if (token)
         try {
           const verifyResponse = await fastify.inject({
             method: 'POST',
@@ -55,7 +55,6 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
         } catch (error) {
           fastify.log.error({ err: error }, 'Failed to verify magic link token')
         }
-      }
 
       const html = getReferenceHtml(apiUrl, openApiUrl, callbackUrl, jwtToken)
       return reply.type('text/html').send(html)

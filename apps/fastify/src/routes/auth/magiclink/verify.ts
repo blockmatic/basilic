@@ -47,12 +47,11 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
         .from(verification)
         .where(and(eq(verification.value, tokenHash), eq(verification.type, 'magic_link')))
 
-      if (!verificationRecord) {
+      if (!verificationRecord)
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Invalid or expired token',
         })
-      }
 
       // Check expiration
       if (verificationRecord.expiresAt < new Date()) {
@@ -70,12 +69,11 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
         .from(users)
         .where(eq(users.email, verificationRecord.identifier))
 
-      if (!user) {
+      if (!user)
         return reply.code(404).send({
           code: 'USER_NOT_FOUND',
           message: 'User not found',
         })
-      }
 
       // Delete verification record (single-use)
       await db.delete(verification).where(eq(verification.id, verificationRecord.id))

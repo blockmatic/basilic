@@ -37,12 +37,11 @@ const apikeysCreateRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
+      if (!request.session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Authentication required',
         })
-      }
 
       const { name } = request.body
       const { key, prefix, hash } = generateApiKey()

@@ -25,6 +25,26 @@ async function readMigrationFiles(): Promise<string[]> {
   }
 }
 
+async function initMigrationsTrackingWhenTablesExist(
+  pool: Pool,
+  migrationsDir: string,
+  migrationFiles: string[],
+): Promise<void> {
+  const firstMigrationFile = migrationFiles[0]
+  if (!firstMigrationFile) return
+
+  const migrationContent = readFileSync(join(migrationsDir, firstMigrationFile), 'utf-8')
+  const hash = createHash('sha256').update(migrationContent).digest('hex')
+  await pool.query(
+    `INSERT INTO "__drizzle_migrations" (hash, created_at) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+    [hash, Date.now()],
+  )
+  logger.info(
+    { context: 'migrate' },
+    'Migrations tracking initialized. Existing migration marked as applied.',
+  )
+}
+
 try {
   // Allow explicit override: RUN_PG_MIGRATE=true forces PostgreSQL path (e.g. after db:reset)
   const forcePg = process.env.RUN_PG_MIGRATE === 'true'
@@ -40,9 +60,7 @@ try {
   }
 
   // PostgreSQL: Run migrations at build time
-  if (!env.DATABASE_URL) {
-    throw new Error('DATABASE_URL is required when PGLITE is false')
-  }
+  if (!env.DATABASE_URL) throw new Error('DATABASE_URL is required when PGLITE is false')
 
   const migrationsDir = join(projectRoot, 'src', 'db', 'migrations')
   const migrationFiles = await readMigrationFiles()
@@ -87,7 +105,6 @@ try {
           { context: 'migrate' },
           'All required tables exist but migrations tracking not initialized. Initializing migrations tracking...',
         )
-        // Create migrations tracking table
         await pool.query(`
           CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
             id SERIAL PRIMARY KEY,
@@ -95,23 +112,7 @@ try {
             created_at bigint
           )
         `)
-        // Calculate hash for the migration and mark it as applied
-        // Drizzle uses a hash of the migration SQL - we'll calculate it the same way
-        const firstMigrationFile = migrationFiles[0]
-        if (firstMigrationFile) {
-          const migrationContent = readFileSync(join(migrationsDir, firstMigrationFile), 'utf-8')
-          // Drizzle calculates hash using a normalized version of the SQL
-          // Simplified: use SHA256 hash of the migration content
-          const hash = createHash('sha256').update(migrationContent).digest('hex')
-          await pool.query(
-            `INSERT INTO "__drizzle_migrations" (hash, created_at) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-            [hash, Date.now()],
-          )
-          logger.info(
-            { context: 'migrate' },
-            'Migrations tracking initialized. Existing migration marked as applied.',
-          )
-        }
+        await initMigrationsTrackingWhenTablesExist(pool, migrationsDir, migrationFiles)
       } else {
         logger.info({ context: 'migrate' }, 'Some tables are missing, running migrations...')
       }
@@ -151,9 +152,8 @@ try {
       )
       // In development/build, allow this to pass if tables exist and match schema
       // In production, this should fail to ensure proper migration tracking
-      if (process.env.NODE_ENV === 'production') {
-        throw migrationError
-      }
+      if (process.env.NODE_ENV === 'production') throw migrationError
+
       logger.info(
         { context: 'migrate' },
         'Allowing build to continue - tables exist and appear to match expected schema. Consider running db:reset for clean migration state.',

@@ -54,12 +54,10 @@ describe('LoginForm', () => {
     // Setup default mock return value
     // Capture onSuccess and onError callbacks from hook options
     vi.mocked(useMagicLinkModule.useMagicLink).mockImplementation(options => {
-      if (options?.onSuccess) {
-        capturedOnSuccess = options.onSuccess
-      }
-      if (options?.onError) {
-        capturedOnError = options.onError
-      }
+      if (options?.onSuccess) capturedOnSuccess = options.onSuccess
+
+      if (options?.onError) capturedOnError = options.onError
+
       return {
         mutate: mockMutate,
         isPending: false,
@@ -171,14 +169,13 @@ describe('LoginForm', () => {
 
     // Simulate mutation error by calling captured onError callback
     await act(async () => {
-      if (capturedOnError) {
+      if (capturedOnError)
         capturedOnError(
           validationError,
           { email: 'test@example.com', callbackUrl: '/' },
           undefined,
           undefined,
         )
-      }
     })
 
     // Wait for error to appear
@@ -214,14 +211,13 @@ describe('LoginForm', () => {
     await userEvent.click(submitButton)
 
     await act(async () => {
-      if (capturedOnSuccess) {
+      if (capturedOnSuccess)
         capturedOnSuccess(
           { ok: true },
           { email: 'test@example.com', callbackUrl: '/' },
           undefined,
           undefined,
         )
-      }
     })
 
     // Wait for success message to appear
@@ -246,12 +242,10 @@ describe('LoginForm', () => {
 
   it('should show pending state when mutation is in progress', async () => {
     vi.mocked(useMagicLinkModule.useMagicLink).mockImplementation(options => {
-      if (options?.onSuccess) {
-        capturedOnSuccess = options.onSuccess
-      }
-      if (options?.onError) {
-        capturedOnError = options.onError
-      }
+      if (options?.onSuccess) capturedOnSuccess = options.onSuccess
+
+      if (options?.onError) capturedOnError = options.onError
+
       return {
         mutate: mockMutate,
         isPending: true,
