@@ -1,9 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
+import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
-import { apiKeys } from '../../../db/schema/index.js'
+import { apiKeys, users } from '../../../db/schema/index.js'
 import { generateApiKey } from '../../../lib/api-keys.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
@@ -33,6 +34,7 @@ const apikeysCreateRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: CreateResponseSchema,
           401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
       },
     },
@@ -44,11 +46,21 @@ const apikeysCreateRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
+      const db = await getDb()
+      const [user] = await db
+        .select({ emailVerified: users.emailVerified })
+        .from(users)
+        .where(eq(users.id, request.session.user.id))
+      if (!user?.emailVerified) {
+        return reply.code(403).send({
+          code: 'EMAIL_VERIFICATION_REQUIRED',
+          message: 'Verify your email first to create an API key',
+        })
+      }
+
       const { name } = request.body
       const { key, prefix, hash } = generateApiKey()
       const id = randomUUID()
-
-      const db = await getDb()
       const [row] = await db
         .insert(apiKeys)
         .values({

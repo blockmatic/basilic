@@ -4,7 +4,7 @@ import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
-import { walletIdentities, web3Nonce } from '../../../../db/schema/index.js'
+import { users, walletIdentities, web3Nonce } from '../../../../db/schema/index.js'
 import {
   getCanonicalAddress,
   parseSignInMessage,
@@ -43,6 +43,7 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
           200: VerifyResponseSchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
           409: ErrorResponseSchema,
         },
       },
@@ -52,6 +53,18 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Authentication required',
+        })
+      }
+
+      const db = await getDb()
+      const [userRow] = await db
+        .select({ emailVerified: users.emailVerified })
+        .from(users)
+        .where(eq(users.id, request.session.user.id))
+      if (!userRow?.emailVerified) {
+        return reply.code(403).send({
+          code: 'EMAIL_VERIFICATION_REQUIRED',
+          message: 'Verify your email first to link a wallet',
         })
       }
 
@@ -78,8 +91,6 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
           message: 'Invalid wallet address in message',
         })
       }
-
-      const db = await getDb()
 
       const [nonceRow] = await db
         .select()

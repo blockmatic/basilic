@@ -9,7 +9,7 @@ type Db = Awaited<ReturnType<typeof getDb>>
 const FAR_FUTURE = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000)
 
 export type ApiKeySession = {
-  user: { id: string; email: string | null }
+  user: { id: string; email: string | null; emailVerified?: boolean }
   session: { id: string; userId: string; expiresAt: Date }
 }
 
@@ -31,10 +31,10 @@ export async function authenticateWithApiKey(token: string, db: Db): Promise<Api
   await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, apiKey.id))
 
   const [user] = await db.select().from(users).where(eq(users.id, apiKey.userId))
-  if (!user) return null
+  if (!user || !user.emailVerified) return null
 
   return {
-    user: { id: user.id, email: user.email ?? null },
+    user: { id: user.id, email: user.email ?? null, emailVerified: user.emailVerified },
     session: {
       id: apiKey.id,
       userId: apiKey.userId,
