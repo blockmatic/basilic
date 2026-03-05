@@ -11,10 +11,6 @@ account: {
     id: gen.accountApikeysRevoke,
   },
   link: {
-    email: {
-      request: gen.accountLinkEmailRequest,
-      verify: gen.accountLinkEmailVerify,
-    },
     wallet: {
       id: gen.accountLinkWalletUnlink,
       verify: gen.accountLinkWalletVerify,

@@ -1,6 +1,6 @@
 import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
-export const verificationTypes = ['magic_link', 'link_email', 'oauth_state'] as const
+export const verificationTypes = ['magic_link', 'oauth_state'] as const
 export type VerificationType = (typeof verificationTypes)[number]
 
 export const verification = pgTable(
@@ -8,7 +8,7 @@ export const verification = pgTable(
   {
     id: text('id').primaryKey(),
     type: text('type', { enum: verificationTypes }).default('magic_link').notNull(),
-    identifier: text('identifier').notNull(), // Email for magic_link/link_email; chain:address for wallet nonce
+    identifier: text('identifier').notNull(), // Email for magic_link; chain:address for oauth_state
     value: text('value').notNull(), // Token hash or nonce
     tokenPlain: text('token_plain'), // Plain token for @test.ai when ALLOW_TEST (DB-backed, no fake outbox)
     expiresAt: timestamp('expires_at').notNull(),

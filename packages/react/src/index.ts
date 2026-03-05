@@ -4,7 +4,6 @@ export { useReactApiConfig } from './context'
 // Export hooks
 export { useChatFromConfig } from './hooks/use-chat'
 export { useHealthCheck } from './hooks/use-health-check'
-export { useLinkEmail } from './hooks/use-link-email'
 export { useMagicLink } from './hooks/use-magic-link'
 export { useOAuthLogin } from './hooks/use-oauth-login'
 export { useSession } from './hooks/use-session'

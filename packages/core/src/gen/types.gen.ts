@@ -77,6 +77,13 @@ export type AccountApikeysCreateErrors = {
         code: string;
         message: string;
     };
+    /**
+     * Default Response
+     */
+    403: {
+        code: string;
+        message: string;
+    };
 };
 
 export type AccountApikeysCreateError = AccountApikeysCreateErrors[keyof AccountApikeysCreateErrors];
@@ -132,93 +139,6 @@ export type AccountApikeysRevokeResponses = {
 };
 
 export type AccountApikeysRevokeResponse = AccountApikeysRevokeResponses[keyof AccountApikeysRevokeResponses];
-
-export type AccountLinkEmailRequestData = {
-    body: {
-        email: string;
-        callbackUrl: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/account/link/email/request';
-};
-
-export type AccountLinkEmailRequestErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        code: string;
-        message: string;
-    };
-    /**
-     * Default Response
-     */
-    401: {
-        code: string;
-        message: string;
-    };
-    /**
-     * Default Response
-     */
-    409: {
-        code: string;
-        message: string;
-    };
-};
-
-export type AccountLinkEmailRequestError = AccountLinkEmailRequestErrors[keyof AccountLinkEmailRequestErrors];
-
-export type AccountLinkEmailRequestResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        ok: boolean;
-    };
-};
-
-export type AccountLinkEmailRequestResponse = AccountLinkEmailRequestResponses[keyof AccountLinkEmailRequestResponses];
-
-export type AccountLinkEmailVerifyData = {
-    body: {
-        token: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/account/link/email/verify';
-};
-
-export type AccountLinkEmailVerifyErrors = {
-    /**
-     * Default Response
-     */
-    401: {
-        code: string;
-        message: string;
-    };
-    /**
-     * Default Response
-     */
-    409: {
-        code: string;
-        message: string;
-    };
-};
-
-export type AccountLinkEmailVerifyError = AccountLinkEmailVerifyErrors[keyof AccountLinkEmailVerifyErrors];
-
-export type AccountLinkEmailVerifyResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        token: string;
-        refreshToken: string;
-    };
-};
-
-export type AccountLinkEmailVerifyResponse = AccountLinkEmailVerifyResponses[keyof AccountLinkEmailVerifyResponses];
 
 export type AccountLinkWalletUnlinkData = {
     body?: never;
@@ -280,6 +200,13 @@ export type AccountLinkWalletVerifyErrors = {
      * Default Response
      */
     401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    403: {
         code: string;
         message: string;
     };
@@ -618,6 +545,13 @@ export type GetUserErrors = {
      * Default Response
      */
     401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    403: {
         code: string;
         message: string;
     };
