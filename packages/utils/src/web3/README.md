@@ -10,15 +10,15 @@ Chain metadata, chain type, and RPC helpers for EVM and Solana. Uses a single re
 
 - **getChainMetadata(chainId)** — Full metadata for a chain (EVM number or Solana cluster string). Returns `undefined` if unsupported.
 - **getChainType(chainId)** — `'evm' | 'solana' | ...` or `undefined`.
-- **isSupportedChain(chainId)** — Whether the chain is in the registry.
+- For "is chain supported?", use `getChainMetadata(chainId) !== undefined`.
 
 ```ts
-import { getChainMetadata, getChainType, isSupportedChain } from '@repo/utils/web3'
+import { getChainMetadata, getChainType } from '@repo/utils/web3'
 
 getChainMetadata(1)           // Ethereum Mainnet
 getChainType(1)               // 'evm'
 getChainMetadata('mainnet-beta')  // Solana Mainnet
-isSupportedChain(chainId)     // boolean
+getChainMetadata(chainId) !== undefined  // boolean - is supported
 ```
 
 ### Types and schema

@@ -2,7 +2,8 @@ import { timingSafeEqual } from 'node:crypto'
 import { eq } from 'drizzle-orm'
 import type { getDb } from '../db/index.js'
 import { apiKeys, users } from '../db/schema/index.js'
-import { hashApiKeySecret, parseApiKey } from './api-keys.js'
+import { parseApiKey } from './api-keys.js'
+import { hashToken } from './jwt.js'
 
 type Db = Awaited<ReturnType<typeof getDb>>
 
@@ -21,7 +22,7 @@ export async function authenticateWithApiKey(token: string, db: Db): Promise<Api
 
   if (!apiKey || (apiKey.expiresAt && apiKey.expiresAt < new Date())) return null
 
-  const computedHash = hashApiKeySecret(parsed.secret)
+  const computedHash = hashToken(parsed.secret)
   const computedBuf = Buffer.from(computedHash, 'hex')
   const storedBuf = Buffer.from(apiKey.hash, 'hex')
   if (computedBuf.length !== storedBuf.length || !timingSafeEqual(computedBuf, storedBuf))

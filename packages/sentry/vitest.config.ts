@@ -1,5 +1,8 @@
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
+
+const configDir = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   test: {
@@ -9,8 +12,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@repo/utils/error': resolve(__dirname, '../../packages/utils/src/error/index.ts'),
-      '@repo/utils': resolve(__dirname, '../../packages/utils/src'),
+      '@repo/utils/error': resolve(configDir, '../utils/src/error/index.ts'),
+      '@repo/utils': resolve(configDir, '../utils/src'),
     },
   },
   server: {

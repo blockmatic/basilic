@@ -1,5 +1,8 @@
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
+
+const configDir = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   test: {
@@ -10,9 +13,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@repo/core': resolve(__dirname, '../core/src/index.ts'),
-      '@repo/ui': resolve(__dirname, '../ui/src'),
-      '@repo/utils': resolve(__dirname, '../utils/src'),
+      '@repo/core': resolve(configDir, '../core/src/index.ts'),
+      '@repo/ui': resolve(configDir, '../ui/src'),
+      '@repo/utils': resolve(configDir, '../utils/src'),
     },
   },
 })
