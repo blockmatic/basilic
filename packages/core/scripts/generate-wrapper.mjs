@@ -92,12 +92,24 @@ function hasRequiredInputs(operation) {
   if (!operation) return false
   const hasRequiredParam =
     Array.isArray(operation.parameters) && operation.parameters.some(p => p.required === true)
-  const hasRequiredBody = operation.requestBody && operation.requestBody.required !== false
+  const hasRequiredBody = operation.requestBody?.required === true
   return hasRequiredParam || hasRequiredBody
 }
 
-// operationIds that have no *Response type (hey-api uses unknown, e.g. redirect endpoints)
-const NO_RESPONSE_OPERATIONS = new Set(['oauthGithubAuthorize'])
+// Returns true if the operation has no concrete typed response schema (e.g. redirect-only, empty responses)
+function hasNoTypedResponse(operation) {
+  const responses = operation?.responses
+  if (!responses || typeof responses !== 'object') return true
+  for (const [status, response] of Object.entries(responses)) {
+    const code = parseInt(status, 10)
+    if (code === 200 || code === 201) {
+      const schema = response?.content?.['application/json']?.schema
+      if (schema) return false
+    }
+    if (code === 204) return false
+  }
+  return true
+}
 
 // Generate CoreApiClient type lines from nested structure
 function generateClientTypeLines(obj, indent = 0) {
@@ -116,7 +128,7 @@ function generateClientTypeLines(obj, indent = 0) {
       const optional = !hasRequiredInputs(operation)
       const prefix = toPascalCase(opId)
       const dataType = `${prefix}Data`
-      const responseType = NO_RESPONSE_OPERATIONS.has(opId) ? 'unknown' : `${prefix}Response`
+      const responseType = noResponseOperationIds.has(opId) ? 'unknown' : `${prefix}Response`
       const optsPart = optional ? `opts?: Options<${dataType}>` : `opts: Options<${dataType}>`
       lines.push(`${spaces}${key}: (${optsPart}) => Promise<${responseType}>${sep}`)
     } else {
@@ -135,6 +147,8 @@ const paths = openapiSpec.paths || {}
 const nestedStructure = {}
 /** operationId -> operation object (for required inputs detection) */
 const operationIdToOperation = {}
+/** operationIds with no typed response (redirect-only, empty, etc.) */
+const noResponseOperationIds = new Set()
 
 // Process each path
 for (const [path, methods] of Object.entries(paths)) {
@@ -157,6 +171,10 @@ for (const [path, methods] of Object.entries(paths)) {
     }
 
     operationIdToOperation[operationId] = operation
+
+    if (hasNoTypedResponse(operation)) {
+      noResponseOperationIds.add(operationId)
+    }
 
     // Parse path segments
     const pathSegments = path.split('/').filter(Boolean)
@@ -199,7 +217,7 @@ const operationIds = [...collectOperationIds(nestedStructure)].sort()
 const typeImports = operationIds.flatMap(opId => {
   const prefix = toPascalCase(opId)
   const types = [`${prefix}Data`]
-  if (!NO_RESPONSE_OPERATIONS.has(opId)) types.push(`${prefix}Response`)
+  if (!noResponseOperationIds.has(opId)) types.push(`${prefix}Response`)
   return types
 })
 const uniqueTypeImports = [...new Set(typeImports)].sort()
