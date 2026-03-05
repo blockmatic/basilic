@@ -75,25 +75,29 @@ describe('POST /ai/chat', () => {
     }
   })
 
-  it('should return 200 with default model via Open Router', async () => {
-    const response = await fastify.inject({
-      method: 'POST',
-      url: '/ai/chat',
-      headers: {
-        Authorization: `Bearer ${testToken}`,
-      },
-      payload: {
-        messages: [{ role: 'user', content: 'Hello, say hi' }],
-      },
-    })
+  it(
+    'should return 200 with default model via Open Router',
+    { retry: 2, timeout: 120000 },
+    async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+        payload: {
+          messages: [{ role: 'user', content: 'Hello, say hi' }],
+        },
+      })
 
-    if (skipIfInsufficientCredits(response, 'default model')) return
-    expect(response.statusCode).toBe(200)
-    const data = JSON.parse(response.body)
-    expect(() => ChatResponseSchema.parse(data)).not.toThrow()
-    expect(data.text).toBeTypeOf('string')
-    expect(data.text.length).toBeGreaterThan(0)
-  }, 120000)
+      if (skipIfInsufficientCredits(response, 'default model')) return
+      expect(response.statusCode).toBe(200)
+      const data = JSON.parse(response.body)
+      expect(() => ChatResponseSchema.parse(data)).not.toThrow()
+      expect(data.text).toBeTypeOf('string')
+      expect(data.text.length).toBeGreaterThan(0)
+    },
+  )
 
   it('should return 200 when authenticated via API key', async () => {
     const apiKey = await getApiKeyToken(fastify, 'ai-chat-apikey@test.ai')
