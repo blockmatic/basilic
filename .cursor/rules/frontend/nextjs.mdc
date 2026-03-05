@@ -9,6 +9,9 @@ ALWAYS default to Server Components. Only `'use client'` when necessary: interac
 
 ❌ Unnecessary client components, entire page as client
 
+## No Redundant Client Fetch When Server Data Exists
+When a page fetches data on the server and passes it as props (e.g., `user`), the client component must NOT trigger a refetch. Use the prop directly. Do not call `useQuery`/data hooks when server data is provided. If a hook is needed for caching, pass `initialData` with `refetchOnMount: false` or `staleTime: Infinity` to prevent duplicate requests.
+
 ## Performance Optimization
 See @.cursor/rules/frontend/react.mdc for concurrent rendering (Suspense/Transitions/Deferred Values)
 

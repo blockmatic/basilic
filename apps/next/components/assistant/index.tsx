@@ -10,16 +10,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@repo/ui/components/sheet'
-import {
-  Conversation,
-  ConversationContent,
-  ConversationEmptyState,
-} from 'components/assistant/conversation'
-import { Message, MessageContent, MessageResponse } from 'components/assistant/message'
-import { Input, PromptInputSubmit, PromptInputTextarea } from 'components/assistant/prompt-input'
-import { userInfoRegistry } from 'components/assistant/user-info-catalog'
 import { MessageCircleIcon } from 'lucide-react'
-import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react'
+import type { FormEvent, ReactNode } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Conversation, ConversationContent, ConversationEmptyState } from './conversation'
+import { Message, MessageContent, MessageResponse } from './message'
+import { Input, PromptInputSubmit, PromptInputTextarea } from './prompt-input'
+import { userInfoRegistry } from './user-info-catalog'
 
 const SUGGESTIONS = ['Who am I?', 'What can you help with?', 'Tell me a joke']
 
@@ -57,17 +54,6 @@ export function ChatAssistant() {
     }
     requestAnimationFrame(() => requestAnimationFrame(scrollToTop))
   }, [messages])
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    if (!input.trim()) return
-    sendMessage({ text: input })
-    setInput('')
-  }
-
-  const handleSuggestion = (text: string) => {
-    sendMessage({ text })
-  }
 
   const lastAssistantMessage = [...messages].reverse().find(m => m.role === 'assistant')
 
@@ -200,14 +186,21 @@ export function ChatAssistant() {
                   variant="outline"
                   size="sm"
                   className="text-xs"
-                  onClick={() => handleSuggestion(s)}
+                  onClick={() => sendMessage({ text: s })}
                   disabled={status === 'streaming' || status === 'submitted'}
                 >
                   {s}
                 </Button>
               ))}
             </div>
-            <Input onSubmit={handleSubmit}>
+            <Input
+              onSubmit={(e: FormEvent) => {
+                e.preventDefault()
+                if (!input.trim()) return
+                sendMessage({ text: input })
+                setInput('')
+              }}
+            >
               <div className="relative">
                 <PromptInputTextarea
                   value={input}

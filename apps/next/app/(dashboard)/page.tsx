@@ -1,12 +1,10 @@
-import { DashboardProfileSecurityContent } from 'app/(dashboard)/dashboard'
+import { ProfileSection } from 'app/(dashboard)/profile-section'
 import { getAuthStatus, getUserInfo } from 'lib/auth/auth-utils'
 import { redirect } from 'next/navigation'
 
 export default async function Home() {
   const { authenticated } = await getAuthStatus()
-
   if (!authenticated) redirect('/auth/login')
-
   const user = await getUserInfo()
-  return <DashboardProfileSecurityContent user={user ?? {}} />
+  return <ProfileSection user={user ?? undefined} />
 }

@@ -1,7 +1,5 @@
 'use client'
 
-import type { GetUserResponse } from '@repo/core'
-import { useUser } from '@repo/react'
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
 import { Button } from '@repo/ui/components/button'
 import {
@@ -14,63 +12,22 @@ import {
 } from '@repo/ui/components/card'
 import { Input } from '@repo/ui/components/input'
 import { Label } from '@repo/ui/components/label'
-import { Skeleton } from '@repo/ui/components/skeleton'
 import { useSetState } from 'ahooks'
 import { User } from 'lucide-react'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
 
 type ProfileSectionProps = {
-  /** Server-fetched user to avoid client fetch on initial paint */
-  initialUser?: {
-    email?: string | null
-    name?: string | null
-    emailVerified?: boolean | null
-  } | null
+  user?: { email?: string | null; name?: string | null; emailVerified?: boolean | null } | null
 }
 
-export function ProfileSection({ initialUser }: ProfileSectionProps) {
-  const { data, isLoading, isError, error } = useUser(
-    initialUser != null ? { initialData: { user: initialUser } as GetUserResponse } : undefined,
-  )
+export function ProfileSection({ user = null }: ProfileSectionProps) {
   const [state, setState] = useSetState<{ name: string | null }>({ name: null })
 
   useEffect(() => {
-    if (data?.user?.name != null) setState({ name: String(data.user.name) })
-  }, [data?.user?.name, setState])
+    if (user?.name != null) setState({ name: String(user.name) })
+  }, [user?.name, setState])
 
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => setState({ name: e.target.value }),
-    [setState],
-  )
-
-  const handleSave = useCallback(() => {
-    toast.info('Profile update coming soon')
-  }, [])
-
-  if (isLoading)
-    return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-8 w-24" />
-            <Skeleton className="h-4 w-48" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-20 w-full rounded-lg" />
-          </CardContent>
-        </Card>
-      </div>
-    )
-
-  if (isError)
-    return (
-      <div className="mx-auto max-w-2xl">
-        <p className="text-destructive text-sm">{error?.message ?? 'Failed to load profile'}</p>
-      </div>
-    )
-
-  const user = data?.user
   const email = user?.email != null ? String(user.email) : null
 
   return (
@@ -97,7 +54,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
             <Input
               id="name"
               value={String(state.name ?? user?.name ?? '')}
-              onChange={handleNameChange}
+              onChange={e => setState({ name: e.target.value })}
               placeholder="Your name"
             />
           </div>
@@ -115,7 +72,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
           </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSave}>Save changes</Button>
+          <Button onClick={() => toast.info('Profile update coming soon')}>Save changes</Button>
         </CardFooter>
       </Card>
     </div>

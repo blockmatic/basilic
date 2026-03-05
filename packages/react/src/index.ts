@@ -1,5 +1,4 @@
 // Export components
-export { LoginForm } from './components/login-form'
 export { useReactApiConfig } from './context'
 // Export hooks
 export { useChatFromConfig } from './hooks/use-chat'

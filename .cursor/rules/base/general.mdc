@@ -29,6 +29,10 @@ alwaysApply: true
 - Bug reports: fix autonomously—use logs, errors, failing tests; fix CI without being told
 
 ## Code Quality
+- **@packages/core first**: Leverage types and schemas from `@packages/core` before creating new local types
+- **Collocate route components**: Place route-specific components next to the route (e.g., `components/dashboard/*` → `app/(dashboard)/`)
+- **Avoid thin wrappers**: Do not create components that only wrap children or delegate; inline at call sites or consolidate logic
+- **Avoid handleX and useCallback**: Prefer inline handlers; avoid `handleSave`/`handleClick` naming; do not use `useCallback` (see @.cursor/rules/frontend/react-hooks.mdc)
 - Simplicity first, minimal impact—change only what's necessary
 - Find root cause; no temporary fixes
 - Collocate related functionality

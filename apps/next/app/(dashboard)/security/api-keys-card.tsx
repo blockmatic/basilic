@@ -31,10 +31,13 @@ import {
   TableHeader,
   TableRow,
 } from '@repo/ui/components/table'
+import { useSetState } from 'ahooks'
 import { useApiKeysList, useCreateApiKey, useRevokeApiKey } from 'hooks/use-api-keys'
 import { CopyIcon, PlusIcon, Trash2Icon } from 'lucide-react'
-import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
+import { z } from 'zod'
+
+const createKeySchema = z.object({ name: z.string().min(1).max(64) })
 
 function formatDate(iso: string) {
   try {
@@ -48,42 +51,12 @@ export function ApiKeysCard() {
   const { data, isLoading, isError, error } = useApiKeysList()
   const createMutation = useCreateApiKey()
   const revokeMutation = useRevokeApiKey()
-
-  const [createOpen, setCreateOpen] = useState(false)
-  const [createName, setCreateName] = useState('')
-  const [createdKey, setCreatedKey] = useState<string | null>(null)
-  const [revokeId, setRevokeId] = useState<string | null>(null)
-
-  const handleCreateSubmit = useCallback(async () => {
-    if (!createName.trim()) return
-    try {
-      const res = await createMutation.mutateAsync({ name: createName.trim() })
-      setCreateOpen(false)
-      setCreateName('')
-      setCreatedKey(res.key)
-      toast.success('API key created. Copy it now—you won’t see it again.')
-    } catch {
-      toast.error('Failed to create API key')
-    }
-  }, [createName, createMutation])
-
-  const handleCopyKey = useCallback(async () => {
-    if (!createdKey) return
-    await navigator.clipboard.writeText(createdKey)
-    toast.success('Copied to clipboard')
-  }, [createdKey])
-
-  const handleRevokeConfirm = useCallback(async (): Promise<boolean> => {
-    if (!revokeId) return false
-    try {
-      await revokeMutation.mutateAsync({ id: revokeId })
-      toast.success('API key revoked')
-      return true
-    } catch {
-      toast.error('Failed to revoke API key')
-      return false
-    }
-  }, [revokeId, revokeMutation])
+  const [state, setState] = useSetState({
+    createOpen: false,
+    createName: '',
+    createdKey: null as string | null,
+    revokeId: null as string | null,
+  })
 
   if (isLoading)
     return (
@@ -120,7 +93,7 @@ export function ApiKeysCard() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-end">
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
+            <Button size="sm" onClick={() => setState({ createOpen: true })}>
               <PlusIcon />
               Create key
             </Button>
@@ -152,7 +125,7 @@ export function ApiKeysCard() {
                         variant="ghost"
                         size="icon"
                         aria-label={`Revoke ${k.name}`}
-                        onClick={() => setRevokeId(k.id)}
+                        onClick={() => setState({ revokeId: k.id })}
                       >
                         <Trash2Icon />
                       </Button>
@@ -165,7 +138,7 @@ export function ApiKeysCard() {
         </CardContent>
       </Card>
 
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+      <Dialog open={state.createOpen} onOpenChange={open => setState({ createOpen: open })}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create API key</DialogTitle>
@@ -175,18 +148,28 @@ export function ApiKeysCard() {
             <Label htmlFor="key-name">Name</Label>
             <Input
               id="key-name"
-              value={createName}
-              onChange={e => setCreateName(e.target.value)}
+              value={state.createName}
+              onChange={e => setState({ createName: e.target.value })}
               placeholder="e.g. Production"
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)}>
+            <Button variant="outline" onClick={() => setState({ createOpen: false })}>
               Cancel
             </Button>
             <Button
-              onClick={handleCreateSubmit}
-              disabled={!createName.trim() || createMutation.isPending}
+              onClick={async () => {
+                const parsed = createKeySchema.safeParse({ name: state.createName.trim() })
+                if (!parsed.success) return
+                try {
+                  const res = await createMutation.mutateAsync({ name: parsed.data.name })
+                  setState({ createOpen: false, createName: '', createdKey: res.key })
+                  toast.success("API key created. Copy it now—you won't see it again.")
+                } catch {
+                  toast.error('Failed to create API key')
+                }
+              }}
+              disabled={!state.createName.trim() || createMutation.isPending}
             >
               {createMutation.isPending ? 'Creating…' : 'Create'}
             </Button>
@@ -194,27 +177,44 @@ export function ApiKeysCard() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!createdKey} onOpenChange={open => !open && setCreatedKey(null)}>
+      <AlertDialog
+        open={!!state.createdKey}
+        onOpenChange={open => !open && setState({ createdKey: null })}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Your API key</AlertDialogTitle>
             <AlertDialogDescription>
-              Copy this key now. You won’t be able to see it again.
+              Copy this key now. You won&apos;t be able to see it again.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-3">
-            <code className="flex-1 break-all font-mono text-sm">{createdKey}</code>
-            <Button variant="outline" size="icon" onClick={handleCopyKey} aria-label="Copy key">
+            <code className="flex-1 break-all font-mono text-sm">{state.createdKey}</code>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={async () => {
+                if (!state.createdKey) return
+                await navigator.clipboard.writeText(state.createdKey)
+                toast.success('Copied to clipboard')
+              }}
+              aria-label="Copy key"
+            >
               <CopyIcon />
             </Button>
           </div>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setCreatedKey(null)}>Done</AlertDialogAction>
+            <AlertDialogAction onClick={() => setState({ createdKey: null })}>
+              Done
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={!!revokeId} onOpenChange={open => !open && setRevokeId(null)}>
+      <AlertDialog
+        open={!!state.revokeId}
+        onOpenChange={open => !open && setState({ revokeId: null })}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Revoke API key</AlertDialogTitle>
@@ -227,8 +227,14 @@ export function ApiKeysCard() {
             <Button
               variant="destructive"
               onClick={async () => {
-                const ok = await handleRevokeConfirm()
-                if (ok) setRevokeId(null)
+                if (!state.revokeId) return
+                try {
+                  await revokeMutation.mutateAsync({ id: state.revokeId })
+                  toast.success('API key revoked')
+                  setState({ revokeId: null })
+                } catch {
+                  toast.error('Failed to revoke API key')
+                }
               }}
               disabled={revokeMutation.isPending}
             >

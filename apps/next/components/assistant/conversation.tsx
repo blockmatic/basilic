@@ -4,7 +4,7 @@ import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
 import { DownloadIcon } from 'lucide-react'
 import type { ComponentProps } from 'react'
-import { forwardRef, useCallback } from 'react'
+import { forwardRef } from 'react'
 
 export type ConversationProps = ComponentProps<'div'>
 
@@ -90,26 +90,24 @@ export function ConversationDownload({
   children,
   ...props
 }: ConversationDownloadProps) {
-  const handleDownload = useCallback(() => {
-    const markdown = messagesToMarkdown(messages, formatMessage)
-    const blob = new Blob([markdown], { type: 'text/markdown' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    document.body.append(link)
-    link.click()
-    link.remove()
-    URL.revokeObjectURL(url)
-  }, [messages, filename, formatMessage])
-
   return (
     <Button
       className={cn(
         'absolute top-4 right-4 rounded-full dark:bg-background dark:hover:bg-muted',
         className,
       )}
-      onClick={handleDownload}
+      onClick={() => {
+        const markdown = messagesToMarkdown(messages, formatMessage)
+        const blob = new Blob([markdown], { type: 'text/markdown' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = filename
+        document.body.append(link)
+        link.click()
+        link.remove()
+        URL.revokeObjectURL(url)
+      }}
       size="icon"
       type="button"
       variant="outline"

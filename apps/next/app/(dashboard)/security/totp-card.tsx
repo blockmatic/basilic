@@ -3,11 +3,15 @@
 import { Button } from '@repo/ui/components/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/card'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@repo/ui/components/input-otp'
-import { useState } from 'react'
+import { useSetState } from 'ahooks'
 import { toast } from 'sonner'
+import { z } from 'zod'
+
+// For when submit is implemented: z.string().length(6).regex(/^\d+$/)
+export const totpCodeSchema = z.object({ code: z.string().length(6).regex(/^\d+$/) })
 
 export function TotpCard() {
-  const [code, setCode] = useState('')
+  const [state, setState] = useSetState({ code: '' })
 
   return (
     <Card>
@@ -28,7 +32,7 @@ export function TotpCard() {
         </div>
         <div className="space-y-2">
           <p className="text-sm font-medium">Enter verification code</p>
-          <InputOTP maxLength={6} value={code} onChange={setCode}>
+          <InputOTP maxLength={6} value={state.code} onChange={code => setState({ code })}>
             <InputOTPGroup>
               <InputOTPSlot index={0} />
               <InputOTPSlot index={1} />
