@@ -30,9 +30,7 @@ export function useUser(
 
   return useQuery<GetUserResponse, Error>({
     queryKey: ['auth', 'session', 'user'],
-    queryFn: async () => {
-      return (await client.auth.session.user()) as unknown as GetUserResponse
-    },
+    queryFn: async () => client.auth.session.user(),
     retry: false,
     ...queryClientDefaults,
     ...options,

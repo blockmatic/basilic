@@ -7,6 +7,7 @@ const scriptFile = fileURLToPath(import.meta.url)
 const scriptDir = dirname(scriptFile)
 const openapiPath = join(scriptDir, '../../../apps/fastify/openapi/openapi.json')
 const outputPath = join(scriptDir, '../src/api-wrapper.gen.ts')
+const apiClientOutputPath = join(scriptDir, '../src/api-client.gen.ts')
 
 // Convert string to camelCase; strip {...} from path params for valid keys
 function toCamelCase(str) {
@@ -18,6 +19,11 @@ function toCamelCase(str) {
 function toActionKey(operationId) {
   const match = operationId.match(/[A-Z][a-z]+$/)
   return match ? match[0].toLowerCase() : operationId
+}
+
+// operationId (camelCase) -> hey-api type prefix (PascalCase), e.g. getUser -> GetUser
+function toPascalCase(operationId) {
+  return operationId.charAt(0).toUpperCase() + operationId.slice(1)
 }
 
 // Build nested object structure from path segments.
@@ -69,10 +75,80 @@ function generateNestedObject(obj, indent = 0) {
   return lines
 }
 
+// Collect all operationIds from nested structure (for import list)
+function collectOperationIds(obj, acc = new Set()) {
+  for (const value of Object.values(obj)) {
+    if (typeof value === 'string') {
+      acc.add(value)
+    } else {
+      collectOperationIds(value, acc)
+    }
+  }
+  return acc
+}
+
+// Returns true if the operation has required parameters or requestBody
+function hasRequiredInputs(operation) {
+  if (!operation) return false
+  const hasRequiredParam =
+    Array.isArray(operation.parameters) && operation.parameters.some(p => p.required === true)
+  const hasRequiredBody = operation.requestBody?.required === true
+  return hasRequiredParam || hasRequiredBody
+}
+
+// Returns true if the operation has no concrete typed response schema (e.g. redirect-only, empty responses)
+function hasNoTypedResponse(operation) {
+  const responses = operation?.responses
+  if (!responses || typeof responses !== 'object') return true
+  for (const [status, response] of Object.entries(responses)) {
+    const code = parseInt(status, 10)
+    if (code === 200 || code === 201) {
+      const schema = response?.content?.['application/json']?.schema
+      if (schema) return false
+    }
+    if (code === 204) return false
+  }
+  return true
+}
+
+// Generate CoreApiClient type lines from nested structure
+function generateClientTypeLines(obj, indent = 0) {
+  const spaces = '  '.repeat(indent)
+  const lines = []
+  const entries = Object.entries(obj)
+
+  for (let i = 0; i < entries.length; i++) {
+    const [key, value] = entries[i]
+    const isLast = i === entries.length - 1
+    const sep = isLast ? '' : ';'
+
+    if (typeof value === 'string') {
+      const opId = value
+      const operation = operationIdToOperation[opId]
+      const optional = !hasRequiredInputs(operation)
+      const prefix = toPascalCase(opId)
+      const dataType = `${prefix}Data`
+      const responseType = noResponseOperationIds.has(opId) ? 'unknown' : `${prefix}Response`
+      const optsPart = optional ? `opts?: Options<${dataType}>` : `opts: Options<${dataType}>`
+      lines.push(`${spaces}${key}: (${optsPart}) => Promise<${responseType}>${sep}`)
+    } else {
+      lines.push(`${spaces}${key}: {`)
+      lines.push(...generateClientTypeLines(value, indent + 1))
+      lines.push(`${spaces}}${sep}`)
+    }
+  }
+
+  return lines
+}
+
 // Read OpenAPI spec
 const openapiSpec = JSON.parse(readFileSync(openapiPath, 'utf-8'))
 const paths = openapiSpec.paths || {}
 const nestedStructure = {}
+/** operationId -> operation object (for required inputs detection) */
+const operationIdToOperation = {}
+/** operationIds with no typed response (redirect-only, empty, etc.) */
+const noResponseOperationIds = new Set()
 
 // Process each path
 for (const [path, methods] of Object.entries(paths)) {
@@ -92,6 +168,12 @@ for (const [path, methods] of Object.entries(paths)) {
     // This matches openapi-ts behavior when operationId is missing
     if (!operationId) {
       operationId = method.toLowerCase()
+    }
+
+    operationIdToOperation[operationId] = operation
+
+    if (hasNoTypedResponse(operation)) {
+      noResponseOperationIds.add(operationId)
     }
 
     // Parse path segments
@@ -129,3 +211,29 @@ ${nestedObjectLines.join('\n')}
 // Write generated file
 writeFileSync(outputPath, output, 'utf-8')
 logger.info('✅ Generated api-wrapper.gen.ts')
+
+// Generate api-client.gen.ts with CoreApiClient type
+const operationIds = [...collectOperationIds(nestedStructure)].sort()
+const typeImports = operationIds.flatMap(opId => {
+  const prefix = toPascalCase(opId)
+  const types = [`${prefix}Data`]
+  if (!noResponseOperationIds.has(opId)) types.push(`${prefix}Response`)
+  return types
+})
+const uniqueTypeImports = [...new Set(typeImports)].sort()
+const clientTypeLines = generateClientTypeLines(nestedStructure, 1)
+
+const apiClientOutput = `// This file is auto-generated. Do not edit manually.
+
+import type { Options } from './gen/index'
+import type {
+  ${uniqueTypeImports.join(',\n  ')},
+} from './gen/types.gen'
+
+export type CoreApiClient = {
+${clientTypeLines.join('\n')}
+}
+`
+
+writeFileSync(apiClientOutputPath, apiClientOutput, 'utf-8')
+logger.info('✅ Generated api-client.gen.ts')

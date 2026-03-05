@@ -1,3 +1,4 @@
+import type { CoreApiClient } from './api-client.gen'
 import { api } from './api-wrapper.gen'
 import type { CoreClientOptions } from './config'
 import { ApiError } from './errors'
@@ -150,7 +151,7 @@ function wrapApiWithClient<T>(
  * await client.ai.chat({ body: { messages: [...] } })
  * ```
  */
-export function createClient(options: CoreClientOptions) {
+export function createClient(options: CoreClientOptions): CoreApiClient {
   // Create hey-api client with baseUrl
   const client = createHeyApiClient(
     createConfig({
@@ -181,8 +182,9 @@ export function createClient(options: CoreClientOptions) {
     return request
   })
 
-  // Wrap api object to use client
-  const wrapped = wrapApiWithClient(api, client, options)
+  // Wrap api object to use client (returns data only, throws on error).
+  // Cast needed: wrapApiWithClient preserves raw SDK type but runtime returns data only.
+  const wrapped = wrapApiWithClient(api, client, options) as unknown as CoreApiClient
   clientConfigMap.set(wrapped, {
     baseUrl: options.baseUrl,
     getAuthToken: options.getAuthToken,

@@ -45,13 +45,11 @@ export function useLinkEmail(config?: UseLinkEmailConfig): UseLinkEmailResult {
   })
 
   const verifyMutation = useMutation({
-    mutationFn: async ({ token }: { token: string }) => {
-      const result = (await client.account.link.email.verify({
+    mutationFn: async ({ token }: { token: string }) =>
+      client.account.link.email.verify({
         body: { token },
         throwOnError: true,
-      })) as unknown as { token: string; refreshToken: string }
-      return result
-    },
+      }),
     onSuccess: data => {
       config?.onVerifySuccess?.(data)
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
