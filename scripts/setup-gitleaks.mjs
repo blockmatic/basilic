@@ -131,7 +131,7 @@ function installTool() {
         return true
       }
     } catch (_error) {
-      console.error(`\n⚠️  Homebrew installation failed, trying manual method...`)
+      console.error('\n⚠️  Homebrew installation failed, trying manual method...')
     }
   }
 

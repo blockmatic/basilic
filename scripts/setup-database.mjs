@@ -254,17 +254,17 @@ function installDocker() {
 
       console.log(`\n✅ ${displayName} Engine installed successfully`)
       console.log(
-        `\n⚠️  Note: You may need to logout and login again for group changes to take effect.`,
+        '\n⚠️  Note: You may need to logout and login again for group changes to take effect.',
       )
-      console.log(`   Or run: newgrp docker`)
+      console.log('   Or run: newgrp docker')
 
       // Verify Docker is running
       if (checkDockerRunning()) {
-        console.log(`✅ Docker daemon is running`)
+        console.log('✅ Docker daemon is running')
         return true
       }
-      console.log(`\n⚠️  Docker is installed but daemon may not be running.`)
-      console.log(`   Try: sudo systemctl start docker`)
+      console.log('\n⚠️  Docker is installed but daemon may not be running.')
+      console.log('   Try: sudo systemctl start docker')
       return true // Still consider it installed
     } catch (error) {
       console.error(`\n❌ Failed to install ${displayName}`)
@@ -386,7 +386,7 @@ function installSupabase() {
       execSync(downloadCommand, { stdio: 'inherit' })
 
       // Install .deb package
-      console.log(`   Installing package...`)
+      console.log('   Installing package...')
       execSync(`sudo dpkg -i ${debFile}`, { stdio: 'inherit' })
 
       // Clean up .deb file
@@ -433,7 +433,7 @@ function installSupabase() {
 
   // Fallback: Print manual instructions
   if (instructions.manual) {
-    console.error(`\n⚠️  Automatic installation failed. Please install manually:`)
+    console.error('\n⚠️  Automatic installation failed. Please install manually:')
     console.error(`   ${instructions.manual}`)
   }
 
@@ -453,27 +453,27 @@ function main() {
       const version = execSync(DOCKER.checkCommand, { encoding: 'utf-8' }).trim()
       console.log(`✅ Docker is already installed (${version})`)
     } catch {
-      console.log(`✅ Docker is already installed`)
+      console.log('✅ Docker is already installed')
     }
 
     // Check if Docker daemon is running
     if (checkDockerRunning()) {
-      console.log(`✅ Docker daemon is running`)
+      console.log('✅ Docker daemon is running')
     } else {
-      console.log(`\n⚠️  Docker is installed but daemon is not running.`)
+      console.log('\n⚠️  Docker is installed but daemon is not running.')
       const os = getPlatform()
       if (os === 'linux') {
-        console.log(`   Please start it with: sudo systemctl start docker`)
+        console.log('   Please start it with: sudo systemctl start docker')
       } else if (os === 'macos') {
-        console.log(`   Please start Docker Desktop from Applications`)
+        console.log('   Please start Docker Desktop from Applications')
       }
-      console.log(`   Supabase CLI requires Docker to be running.\n`)
+      console.log('   Supabase CLI requires Docker to be running.\n')
     }
   } else {
-    console.log(`📥 Docker is not installed (required)`)
+    console.log('📥 Docker is not installed (required)')
     const installed = installDocker()
     if (!installed) {
-      console.error(`\n❌ Docker is required but installation failed`)
+      console.error('\n❌ Docker is required but installation failed')
       console.error('Please install Docker manually and try again.\n')
       exit(1)
     }
@@ -482,7 +482,7 @@ function main() {
   // Step 2: Check Docker Compose
   console.log('\n📦 Step 2/3: Checking Docker Compose...')
   if (!checkDockerCompose()) {
-    console.error(`\n❌ Docker Compose is required but not available`)
+    console.error('\n❌ Docker Compose is required but not available')
     console.error('Docker Compose should be included with Docker installation.')
     hasErrors = true
   }
@@ -494,7 +494,7 @@ function main() {
       const version = execSync(SUPABASE.checkCommand, { encoding: 'utf-8' }).trim()
       console.log(`✅ Supabase CLI is already installed (${version})`)
     } catch {
-      console.log(`✅ Supabase CLI is already installed`)
+      console.log('✅ Supabase CLI is already installed')
     }
   } else {
     console.log(
@@ -503,11 +503,11 @@ function main() {
     const installed = installSupabase()
     if (!installed) {
       if (SUPABASE.required) {
-        console.error(`\n❌ Supabase CLI is required but installation failed`)
+        console.error('\n❌ Supabase CLI is required but installation failed')
         console.error('Please install Supabase CLI manually and try again.\n')
         exit(1)
       } else {
-        console.log(`\n⚠️  Supabase CLI installation skipped (optional)`)
+        console.log('\n⚠️  Supabase CLI installation skipped (optional)')
         console.log('   Database features will skip if Supabase CLI is not available')
       }
     }

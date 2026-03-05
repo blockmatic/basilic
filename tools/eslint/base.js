@@ -67,6 +67,12 @@ export const config = [
       'no-else-return': 'error',
       // Limit block nesting depth
       'max-depth': ['error', 4],
+      // Throw Error instances only (@repo/error)
+      'no-throw-literal': 'error',
+      // RORO: max 4 params encourages options objects
+      'max-params': ['error', { max: 4 }],
+      // Limit cyclomatic complexity
+      complexity: ['warn', { max: 30 }],
       // Prefer interfaces over types for object definitions
       '@typescript-eslint/consistent-type-definitions': 'off',
       // Ban CommonJS globals (__dirname, __filename) - enforce ESM patterns

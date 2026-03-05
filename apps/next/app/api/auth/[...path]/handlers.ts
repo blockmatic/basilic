@@ -5,7 +5,7 @@ import type { AuthProxyOptions } from './handlers/utils'
 export const proxyRequest = async ({ pathSegments, request }: AuthProxyOptions) => {
   const path = pathSegments.join('/')
 
-  // NOTE: This is only used for testing purposes. Remove this once we have a proper test suite.
+  // TODO: This is only used for testing purposes. Remove this once we have a proper test suite.
   if (path === 'test-set-session') return handleTestSetSession({ request })
 
   if (path === 'update-tokens') return handleUpdateTokens({ request })
