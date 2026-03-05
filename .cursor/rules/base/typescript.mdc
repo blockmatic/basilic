@@ -34,5 +34,6 @@ alwaysApply: true
 - Avoid unnecessary runtime validations in functions, we validate at build time
 - Prefer inline expressions, minimize code without sacrificing readability
 - No intermediate vars unless reused (`process(fetch())` not `const data = fetch(); process(data)`). Exceptions: destructuring, readability, error handling
+- Avoid thin wrappers: don't export functions that only delegate to another without adding logic; inline at call sites or consolidate
 - Lodash per-function (`import isEmpty from "lodash-es/isEmpty"`)
 
