@@ -17,7 +17,7 @@ type DashboardContentProps = {
   user: User
 }
 
-export function DashboardWalletContent({ user }: DashboardContentProps) {
+export function DashboardProfileSecurityContent({ user }: DashboardContentProps) {
   const [tab] = useQueryState('tab', tabParser)
 
   return (

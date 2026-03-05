@@ -64,12 +64,11 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow callbacks, logout, and static assets without auth
-  if (
-    pathname.startsWith('/auth/callback') ||
-    pathname === '/auth/logout' ||
-    pathname.startsWith('/images/')
-  ) {
+  const allowedImagePaths = ['/images/auth-login-hero.webp'] as const
+  const isAllowedImage = (allowedImagePaths as readonly string[]).includes(pathname)
+
+  // Allow callbacks, logout, and explicitly listed image assets without auth
+  if (pathname.startsWith('/auth/callback') || pathname === '/auth/logout' || isAllowedImage) {
     return NextResponse.next()
   }
 

@@ -38,7 +38,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
   const { data, isLoading, isError, error } = useUser(
     initialUser != null ? { initialData: { user: initialUser } as GetUserResponse } : undefined,
   )
-  const [state, setState] = useSetState({ name: '' })
+  const [state, setState] = useSetState<{ name: string | null }>({ name: null })
 
   useEffect(() => {
     if (data?.user?.name != null) setState({ name: String(data.user.name) })
@@ -78,7 +78,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
   }
 
   const user = data?.user
-  const displayName = String((state.name || user?.name) ?? '')
+  const displayName = String(state.name ?? user?.name ?? '')
   const email = user?.email != null ? String(user.email) : null
 
   return (
@@ -102,7 +102,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
             <Label htmlFor="name">Display name</Label>
             <Input
               id="name"
-              value={String((state.name || user?.name) ?? '')}
+              value={String(state.name ?? user?.name ?? '')}
               onChange={handleNameChange}
               placeholder="Your name"
             />

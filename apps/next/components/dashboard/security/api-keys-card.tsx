@@ -73,14 +73,15 @@ export function ApiKeysCard() {
     toast.success('Copied to clipboard')
   }, [createdKey])
 
-  const handleRevokeConfirm = useCallback(async () => {
-    if (!revokeId) return
+  const handleRevokeConfirm = useCallback(async (): Promise<boolean> => {
+    if (!revokeId) return false
     try {
       await revokeMutation.mutateAsync({ id: revokeId })
-      setRevokeId(null)
       toast.success('API key revoked')
+      return true
     } catch {
       toast.error('Failed to revoke API key')
+      return false
     }
   }, [revokeId, revokeMutation])
 
@@ -144,8 +145,10 @@ export function ApiKeysCard() {
                   <TableRow key={k.id}>
                     <TableCell>{k.name}</TableCell>
                     <TableCell className="font-mono text-muted-foreground">{k.prefix}…</TableCell>
-                    <TableCell>{k.lastUsedAt ? formatDate(k.lastUsedAt) : 'Never'}</TableCell>
-                    <TableCell>{formatDate(k.createdAt)}</TableCell>
+                    <TableCell>
+                      {typeof k.lastUsedAt === 'string' ? formatDate(k.lastUsedAt) : 'Never'}
+                    </TableCell>
+                    <TableCell>{formatDate(String(k.createdAt))}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
@@ -226,8 +229,8 @@ export function ApiKeysCard() {
             <Button
               variant="destructive"
               onClick={async () => {
-                await handleRevokeConfirm()
-                setRevokeId(null)
+                const ok = await handleRevokeConfirm()
+                if (ok) setRevokeId(null)
               }}
               disabled={revokeMutation.isPending}
             >

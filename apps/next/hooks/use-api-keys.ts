@@ -1,5 +1,6 @@
 'use client'
 
+import type { AccountApikeysCreateResponse, AccountApikeysListResponse } from '@repo/core'
 import { useReactApiConfig } from '@repo/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -10,17 +11,10 @@ export function useApiKeysList() {
   return useQuery({
     queryKey: apiKeysQueryKey,
     queryFn: async () => {
-      const res = await client.account.apikeys.list({ throwOnError: true })
-      return res as unknown as {
-        keys: {
-          id: string
-          name: string
-          prefix: string
-          lastUsedAt: string | null
-          expiresAt: string | null
-          createdAt: string
-        }[]
-      }
+      const res = (await client.account.apikeys.list({ throwOnError: true })) as unknown as
+        | AccountApikeysListResponse
+        | { data: AccountApikeysListResponse }
+      return 'keys' in res ? res : res.data
     },
   })
 }
@@ -31,17 +25,11 @@ export function useCreateApiKey() {
 
   return useMutation({
     mutationFn: async ({ name }: { name: string }) => {
-      const res = await client.account.apikeys.create({
+      const res = (await client.account.apikeys.create({
         body: { name },
         throwOnError: true,
-      })
-      return res as unknown as {
-        id: string
-        name: string
-        key: string
-        prefix: string
-        createdAt: string
-      }
+      })) as unknown as AccountApikeysCreateResponse | { data: AccountApikeysCreateResponse }
+      return 'key' in res ? res : res.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: apiKeysQueryKey })
