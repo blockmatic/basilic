@@ -1,5 +1,4 @@
-const authCookieName = 'better-auth.jwt_token'
-const refreshCookieName = 'better-auth.refresh_token'
+import { env } from '@/lib/env'
 
 function parseCookie(name: string): string | null {
   if (typeof document === 'undefined') return null
@@ -10,16 +9,33 @@ function parseCookie(name: string): string | null {
   return value ? decodeURIComponent(value) : null
 }
 
-export function getAuthTokenFromCookie(): string | null {
-  return parseCookie(authCookieName)
-}
-
-export function getRefreshTokenFromCookie(): string | null {
-  return parseCookie(refreshCookieName)
+function readAuthCookie(): { token: string; refreshToken: string } | null {
+  try {
+    const raw = parseCookie(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as unknown
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      typeof (parsed as { token?: unknown }).token === 'string' &&
+      typeof (parsed as { refreshToken?: unknown }).refreshToken === 'string'
+    )
+      return {
+        token: (parsed as { token: string }).token,
+        refreshToken: (parsed as { refreshToken: string }).refreshToken,
+      }
+    return null
+  } catch {
+    return null
+  }
 }
 
 export async function getAuthToken(): Promise<string | null> {
-  return getAuthTokenFromCookie()
+  return readAuthCookie()?.token ?? null
+}
+
+export async function getRefreshToken(): Promise<string | null> {
+  return readAuthCookie()?.refreshToken ?? null
 }
 
 export async function updateAuthTokens({

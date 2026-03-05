@@ -47,7 +47,7 @@ export default nextConfig
 
 #### Setup Provider
 
-Create a client component provider (e.g., `app/components/providers.tsx`):
+Create a client component provider (e.g., `app/providers.tsx`). For JWT mode with automatic refresh on 401, provide `getAuthToken`, `getRefreshToken`, and `onTokensRefreshed` (all three required). In `apps/next`, use `getAuthToken`, `getRefreshToken`, and `updateAuthTokens` from `lib/auth/auth-client` (reads single cookie `api.session`):
 
 ```tsx
 'use client'
@@ -56,32 +56,33 @@ import { createClient } from '@repo/core'
 import { ApiProvider } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
+import { getAuthToken, getRefreshToken, updateAuthTokens } from '@/lib/auth/auth-client'
 
-// Create clients at module level (singleton pattern)
 const queryClient = new QueryClient()
 
+// JWT mode: pass getAuthToken, getRefreshToken, onTokensRefreshed for 401 refresh
 const coreClient = createClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  getAuthToken: async () => localStorage.getItem('accessToken'),
+  getAuthToken,
+  getRefreshToken,
+  onTokensRefreshed: updateAuthTokens,
 })
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ApiProvider client={coreClient}>
-        {children}
-      </ApiProvider>
+      <ApiProvider client={coreClient}>{children}</ApiProvider>
     </QueryClientProvider>
   )
 }
 ```
 
-`ApiProvider` derives `baseUrl` and `getAuthToken` from the client when it was created with `createClient` from `@repo/core`, so you only pass `client`.
+See [Authentication](https://basilic-docs.vercel.app/docs/architecture/authentication) for apiKey and no-auth modes. `ApiProvider` derives `baseUrl` and `getAuthToken` from the client.
 
 Wrap your app in `app/layout.tsx`:
 
 ```tsx
-import { Providers } from './components/providers'
+import { Providers } from './providers'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -140,19 +141,13 @@ import { createClient } from '@repo/core'
 
 const queryClient = new QueryClient()
 
-// Create core client instance with authentication
+// Create core client instance with authentication (JWT mode)
+// For Next.js apps, use getAuthToken, getRefreshToken, updateAuthTokens from @/lib/auth/auth-client
 const coreClient = createClient({
   baseUrl: 'https://api.example.com',
-  getAuthToken: async () => {
-    // Get access token from storage
-    return localStorage.getItem('accessToken')
-  },
-  getRefreshToken: async () => {
-    // Get refresh token from storage
-    return localStorage.getItem('refreshToken')
-  },
+  getAuthToken: async () => localStorage.getItem('accessToken'),
+  getRefreshToken: async () => localStorage.getItem('refreshToken'),
   onTokensRefreshed: async ({ token, refreshToken }) => {
-    // Update tokens in storage
     localStorage.setItem('accessToken', token)
     localStorage.setItem('refreshToken', refreshToken)
   },

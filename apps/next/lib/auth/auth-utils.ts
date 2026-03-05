@@ -1,28 +1,8 @@
-import { decodeJwt } from 'jose'
 import { env } from '@/lib/env'
 import { getServerAuthToken } from './auth-server'
+import { decodeJwtToken, isTokenExpired } from './jwt-utils'
 
-type DecodedJwt = {
-  typ?: string
-  sub?: string
-  sid?: string
-  exp?: number
-  iat?: number
-}
-
-export function decodeJwtToken({ token }: { token: string }): DecodedJwt | null {
-  try {
-    return decodeJwt(token) as DecodedJwt
-  } catch {
-    return null
-  }
-}
-
-export function isTokenExpired({ token }: { token: string }): boolean {
-  const decoded = decodeJwtToken({ token })
-  if (!decoded || !decoded.exp) return true
-  return decoded.exp * 1000 < Date.now()
-}
+export { decodeJwtToken, isTokenExpired } from './jwt-utils'
 
 export async function getAuthStatus() {
   const { token } = await getServerAuthToken()

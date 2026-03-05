@@ -38,6 +38,7 @@ alwaysApply: true
 - Never use console, use `@repo/utils/logger/server` or `@repo/utils/logger/client`
 - Use `@repo/error` for error handling
 - Use `t3-oss` packages for environment variable validation
+- Prefer app `lib/env.ts` values with defaults over global constants; never use global constants (e.g. `constants.ts` or scattered `export const X = ...`). Put config values in `lib/env.ts` as env vars with defaults or exported constants collocated there
 - Use `lodash-es` (per-function imports)
 
 

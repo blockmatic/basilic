@@ -1,6 +1,6 @@
 import type { CoreApiClient } from './api-client.gen'
 import { api } from './api-wrapper.gen'
-import type { CoreClientOptions } from './config'
+import type { CoreClientOptions, JwtOptions } from './config'
 import { ApiError } from './errors'
 import { createConfig, createClient as createHeyApiClient } from './gen/client/index'
 import * as gen from './gen/index'
@@ -10,7 +10,7 @@ let refreshLock: Promise<{ token: string; refreshToken: string } | null> | null 
 
 const clientConfigMap = new WeakMap<
   object,
-  { baseUrl: string; getAuthToken?: CoreClientOptions['getAuthToken'] }
+  { baseUrl: string; getAuthToken?: () => string | null | Promise<string | null> }
 >()
 
 /** Config subset exposed to consumers (e.g. ReactApiProvider) for auth/URL. */
@@ -39,22 +39,34 @@ function getErrorFromResponse(response: { error?: unknown; response?: { status?:
   return { status, message }
 }
 
+function isApiKeyMode(
+  options: CoreClientOptions,
+): options is Extract<CoreClientOptions, { apiKey: string }> {
+  return 'apiKey' in options && typeof options.apiKey === 'string'
+}
+
+function isJwtMode(options: CoreClientOptions): options is Extract<CoreClientOptions, JwtOptions> {
+  return (
+    'getRefreshToken' in options &&
+    typeof options.getRefreshToken === 'function' &&
+    'getAuthToken' in options &&
+    typeof options.getAuthToken === 'function' &&
+    'onTokensRefreshed' in options &&
+    typeof options.onTokensRefreshed === 'function'
+  )
+}
+
 async function doRefresh(
   options: CoreClientOptions,
   client: ReturnType<typeof createHeyApiClient>,
 ): Promise<{ token: string; refreshToken: string } | null> {
-  if (options.refreshUrl) {
-    const res = await fetch(options.refreshUrl, {
-      method: 'POST',
-      credentials: 'include',
-    })
-    return res.ok ? { token: '', refreshToken: '' } : null
-  }
-  const refreshToken = await options.getRefreshToken?.()
+  if (isApiKeyMode(options)) return null
+  if (!isJwtMode(options)) return null
+  const refreshToken = await options.getRefreshToken()
   if (!refreshToken) return null
   const refreshResponse = await gen.refresh({ client, body: { refreshToken } })
   if (refreshResponse.error || !refreshResponse.data) return null
-  await options.onTokensRefreshed?.(refreshResponse.data)
+  await options.onTokensRefreshed(refreshResponse.data)
   return refreshResponse.data
 }
 
@@ -64,8 +76,12 @@ function canAttemptRefresh(
   isRefreshEndpoint: boolean,
 ): boolean {
   if (errorStatus !== 401 || isRefreshEndpoint) return false
-  if (options.refreshUrl) return true
-  return !!(options.getRefreshToken && options.onTokensRefreshed)
+  if (isApiKeyMode(options)) return false
+  return isJwtMode(options)
+}
+
+function isRefreshEndpointUrl(url: string | undefined): boolean {
+  return url?.includes('/auth/session/refresh') ?? false
 }
 
 async function tryRefreshAndRetry<T extends { data?: unknown; error?: unknown }>({
@@ -107,9 +123,7 @@ function wrapApiWithClient<T>(
       const response = await obj({ ...callOptions, client })
       const { status: errorStatus, message: errorMessage } = getErrorFromResponse(response)
 
-      const isRefreshEndpoint =
-        (response.request?.url?.includes('/auth/session/refresh') ?? false) ||
-        !!(options.refreshUrl && response.request?.url?.includes(options.refreshUrl))
+      const isRefreshEndpoint = isRefreshEndpointUrl(response.request?.url)
       const shouldAttemptRefresh = canAttemptRefresh(errorStatus, options, isRefreshEndpoint)
 
       if (response.error && shouldAttemptRefresh) {
@@ -146,10 +160,18 @@ function wrapApiWithClient<T>(
  * The client provides a nested namespace API (e.g., `client.auth.magiclink.request()`)
  * and automatically handles authentication token injection and refresh on 401 errors.
  *
- * @param options - Client configuration options
+ * @param options - Client configuration (apiKey, JWT callbacks, or no-auth)
  * @returns API client with nested namespace structure matching the OpenAPI spec
  *
- * @example
+ * @example API key mode
+ * ```ts
+ * const client = createClient({
+ *   baseUrl: 'https://api.example.com',
+ *   apiKey: 'bask_xxx_secret',
+ * })
+ * ```
+ *
+ * @example JWT mode
  * ```ts
  * const client = createClient({
  *   baseUrl: 'https://api.example.com',
@@ -160,34 +182,32 @@ function wrapApiWithClient<T>(
  *     localStorage.setItem('refreshToken', refreshToken)
  *   },
  * })
+ * ```
  *
- * // Nested namespace API
- * await client.auth.magiclink.request({ body: { email, callbackUrl } })
- * await client.auth.session.logout()
- * await client.ai.chat({ body: { messages: [...] } })
+ * @example No-auth mode
+ * ```ts
+ * const client = createClient({ baseUrl: 'https://api.example.com' })
  * ```
  */
 export function createClient(options: CoreClientOptions): CoreApiClient {
-  // Create hey-api client with baseUrl
   const client = createHeyApiClient(
     createConfig({
       baseUrl: options.baseUrl,
     }),
   )
 
-  // Add request interceptor to inject auth token and headers
   client.interceptors.request.use(async request => {
-    // Get auth token and headers
-    const [token, extraHeaders] = await Promise.all([
-      options.getAuthToken?.(),
-      options.getHeaders?.(),
-    ])
+    const token = isApiKeyMode(options)
+      ? options.apiKey
+      : isJwtMode(options)
+        ? await options.getAuthToken()
+        : undefined
 
-    // Set Authorization header if token exists
+    const extraHeaders = await options.getHeaders?.()
+
     if (token && !request.headers.has('Authorization'))
       request.headers.set('Authorization', `Bearer ${token}`)
 
-    // Merge custom headers
     if (extraHeaders)
       Object.entries(extraHeaders).forEach(([key, value]) => {
         request.headers.set(key, value)
@@ -196,12 +216,15 @@ export function createClient(options: CoreClientOptions): CoreApiClient {
     return request
   })
 
-  // Wrap api object to use client (returns data only, throws on error).
-  // Cast needed: wrapApiWithClient preserves raw SDK type but runtime returns data only.
   const wrapped = wrapApiWithClient(api, client, options) as unknown as CoreApiClient
+  const getAuthToken = isApiKeyMode(options)
+    ? () => options.apiKey
+    : isJwtMode(options)
+      ? options.getAuthToken
+      : undefined
   clientConfigMap.set(wrapped, {
     baseUrl: options.baseUrl,
-    getAuthToken: options.getAuthToken,
+    getAuthToken,
   })
   return wrapped
 }

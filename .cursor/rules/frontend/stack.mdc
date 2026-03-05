@@ -15,4 +15,4 @@ See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete documen
 - `ahooks`: `useSetState` (grouped state), `useLocalStorageState` (localStorage)
 
 ## Essential Patterns
-Query Key Factory (see @.cursor/rules/frontend/react-hooks.mdc), nuqs for URL-shareable state, `@repo/core` for API clients
+Query Key Factory (see @.cursor/rules/frontend/react-hooks.mdc), nuqs for URL-shareable state, `@repo/core` for API clients. Auth: see @.cursor/rules/frontend/auth.mdc

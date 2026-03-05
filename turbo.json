@@ -31,12 +31,15 @@
         "PGLITE",
         "VERCEL",
         "VERCEL_ENV",
-        "VERCEL_GIT_COMMIT_REF"
+        "VERCEL_GIT_COMMIT_REF",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
     },
     "lint": {},
     "lint:eslint": {
       "env": [
+        "AUTH_COOKIE_NAME",
         "NODE_ENV",
         "CI",
         "DATABASE_URL",
@@ -50,6 +53,7 @@
         "VERCEL",
         "VERCEL_GIT_COMMIT_REF",
         "VERCEL_ENV",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
         "PLAYWRIGHT_API_URL",
@@ -64,6 +68,7 @@
     "lint:eslint:fix": {
       "cache": false,
       "env": [
+        "AUTH_COOKIE_NAME",
         "NODE_ENV",
         "CI",
         "DATABASE_URL",
@@ -77,6 +82,7 @@
         "VERCEL",
         "VERCEL_GIT_COMMIT_REF",
         "VERCEL_ENV",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
         "PLAYWRIGHT_API_URL",
@@ -99,7 +105,9 @@
         "CI",
         "VITEST_WORKER_ID",
         "ALLOW_TEST",
-        "VITEST"
+        "VITEST",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
     },
     "@repo/next#test": {
@@ -112,7 +120,9 @@
         "CI",
         "VITEST_WORKER_ID",
         "ALLOW_TEST",
-        "VITEST"
+        "VITEST",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
     },
     "test:unit": {
@@ -125,7 +135,9 @@
         "CI",
         "VITEST_WORKER_ID",
         "ALLOW_TEST",
-        "VITEST"
+        "VITEST",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
     },
     "test:e2e": {
@@ -143,7 +155,9 @@
         "JWT_SECRET",
         "PLAYWRIGHT_APP_URL",
         "PLAYWRIGHT_API_URL",
-        "VERCEL_AUTOMATION_BYPASS_SECRET"
+        "VERCEL_AUTOMATION_BYPASS_SECRET",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
     },
     "dev": {
@@ -158,7 +172,9 @@
         "PGLITE",
         "RUN_PG_MIGRATE",
         "OPEN_ROUTER_API_KEY",
-        "NEXT_PUBLIC_API_URL"
+        "NEXT_PUBLIC_API_URL",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
     }
   }

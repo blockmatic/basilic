@@ -3,6 +3,9 @@ import { authHelpers } from './auth-helpers'
 
 const { TEST_EMAIL } = authHelpers
 
+const authCookieName =
+  process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME ?? 'api.session'
+
 function checkAuthenticated(page: import('@playwright/test').Page) {
   return {
     async run() {
@@ -58,8 +61,8 @@ test.describe('Magic Link Authentication', () => {
       )
 
       const cookies = await page.context().cookies()
-      const jwtCookie = cookies.find(cookie => cookie.name === 'better-auth.jwt_token')
-      expect(jwtCookie).toBeUndefined()
+      const sessionCookie = cookies.find(cookie => cookie.name === authCookieName)
+      expect(sessionCookie).toBeUndefined()
     })
 
     test('should redirect to login with error message for missing token displayed below input', async ({
@@ -157,11 +160,23 @@ test.describe('Magic Link Authentication', () => {
       await authHelpers.verifyMagicLink(page, token)
 
       const cookies = await page.context().cookies()
-      const jwtCookie = cookies.find(cookie => cookie.name === 'better-auth.jwt_token')
-      expect(jwtCookie).toBeDefined()
+      const sessionCookie = cookies.find(cookie => cookie.name === authCookieName)
+      expect(sessionCookie).toBeDefined()
+      const rawValue = sessionCookie?.value ?? '{}'
+      let parsed: { token?: string; refreshToken?: string }
+      try {
+        parsed = JSON.parse(rawValue) as { token?: string; refreshToken?: string }
+      } catch {
+        parsed = JSON.parse(decodeURIComponent(rawValue)) as {
+          token?: string
+          refreshToken?: string
+        }
+      }
+      expect(typeof parsed.token).toBe('string')
+      expect(typeof parsed.refreshToken).toBe('string')
 
       const response = await page.request.get(`${authHelpers.API_URL}/auth/session/user`, {
-        headers: { Authorization: `Bearer ${jwtCookie?.value ?? ''}` },
+        headers: { Authorization: `Bearer ${parsed.token ?? ''}` },
       })
       expect(response.ok()).toBeTruthy()
 

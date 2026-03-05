@@ -102,15 +102,13 @@ Optional environment variables (see `.env-example`):
 ```
 apps/next/
 ├── app/                    # Next.js app directory
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Home page
-│   └── globals.css        # Global styles
-├── components/            # React components
-│   ├── providers.tsx      # App providers (nuqs, next-themes)
-│   └── error-boundary.tsx # Error boundary component
-├── lib/                   # Utilities
-│   └── env.ts            # Environment variable validation
-└── package.json          # Dependencies and scripts
+│   ├── api/auth/          # Cookie update routes (update-tokens, test-set-session)
+│   ├── auth/              # Callbacks (magiclink, oauth, web3), logout
+│   └── ...
+├── app/providers.tsx      # QueryClient, ApiProvider, createClient (JWT mode)
+├── lib/auth/              # auth-client, auth-server, jwt-utils
+├── lib/env.ts             # Environment validation (AUTH_COOKIE_NAME)
+└── proxy.ts               # Middleware: auth check, token refresh on navigation
 ```
 
 ## Providers
@@ -126,7 +124,7 @@ See `components/providers.tsx` for the provider setup.
 
 ## Authentication
 
-Auth callback pages (`/auth/callback/*`) exchange credentials with Fastify and set cookies. The cookies are readable on the frontend (`httpOnly: false`) for SSR convenience—the JWT can be read and decoded from `document.cookie`. Clients call Fastify directly (`NEXT_PUBLIC_API_URL`); Next.js API routes exist only for cookie updates (`refresh`, `update-tokens`).
+Auth callback pages (`/auth/callback/*`) exchange credentials with Fastify and set cookies. A single cookie `api.session` (configurable via `AUTH_COOKIE_NAME`) stores JSON `{ token, refreshToken }`—readable on the frontend (`httpOnly: false`) so `getAuthToken` can read from `document.cookie`. Clients call Fastify directly (`NEXT_PUBLIC_API_URL`); Next.js API routes exist only for cookie updates (`update-tokens`). On 401, core calls Fastify `POST /auth/session/refresh` directly, then `onTokensRefreshed` persists new tokens via `POST /api/auth/update-tokens`.
 
 See [Authentication Architecture](@apps/docu/content/docs/architecture/authentication.mdx) for complete details.
 
