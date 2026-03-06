@@ -13,6 +13,8 @@ const projectRoot = resolve(configDir)
 // Load .env.test for tests (before env.ts validation runs)
 const envTestFile = resolve(projectRoot, '.env.test')
 if (existsSync(envTestFile)) config({ path: envTestFile })
+// Ensure tests run against the default model only (no AI_DEFAULT_MODEL override)
+Reflect.deleteProperty(process.env, 'AI_DEFAULT_MODEL')
 
 function toTsPath(id: string, importer?: string): string | null {
   if (!id.endsWith('.js') || id.includes('node_modules')) return null

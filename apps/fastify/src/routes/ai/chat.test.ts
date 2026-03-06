@@ -75,7 +75,7 @@ describe('POST /ai/chat', () => {
     }
   })
 
-  it('should return 200 with default model via Open Router', async () => {
+  it('should return 200 with default model', async () => {
     const response = await fastify.inject({
       method: 'POST',
       url: '/ai/chat',

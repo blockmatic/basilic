@@ -121,7 +121,7 @@ export const accountLinkWalletVerify = <ThrowOnError extends boolean = false>(op
 /**
  * Generate AI chat response
  *
- * Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: openrouter/free). Supports streaming and tools.
+ * Chat with AI via Ollama (default) or Open Router. Set OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.
  */
 export const chat = <ThrowOnError extends boolean = false>(options: Options<ChatData, ThrowOnError>) => (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

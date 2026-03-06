@@ -11,6 +11,7 @@
  *
  * ## AI Tests
  *
- * Chat tests call real Open Router API. Requires OPEN_ROUTER_API_KEY in .env.test.
+ * Chat tests call real AI API. Requires OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY in .env.test.
+ * Tests use the default model only; do not set AI_DEFAULT_MODEL.
  * When OpenRouter returns 402 (insufficient credits), tests warn and pass without full validation.
  */
