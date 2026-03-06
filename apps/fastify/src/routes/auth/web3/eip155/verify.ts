@@ -70,6 +70,8 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
         },
         validateAddress: validateEip155Address,
         verifySignature: async ({ message: msg, signature: sig }) => {
+          // Valid ECDSA signature: 0x + 65 bytes (r,s,v) = 130 hex chars
+          if (!/^0x[a-fA-F0-9]{130}$/.test(sig)) return false
           const m = new SiweMessage(msg)
           const r = await m.verify({ signature: sig }, { suppressExceptions: true })
           return r.success

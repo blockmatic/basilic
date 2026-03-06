@@ -230,7 +230,7 @@ The Fastify chat route (`/ai/chat`) uses **Ollama as the default** AI provider w
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `OLLAMA_BASE_URL` | No (one of OLLAMA/OPEN_ROUTER required) | `https://ollama.gaboesquivel.com` | Ollama server URL (OpenAI-compatible `/v1` API) |
+| `OLLAMA_BASE_URL` | No (one of OLLAMA/OPEN_ROUTER required) | `https://ollama.example.com` | Ollama server URL (OpenAI-compatible `/v1` API) |
 | `AI_PROVIDER` | No | Inferred | `ollama` or `openrouter` — force provider when both are configured |
 | `AI_DEFAULT_MODEL` | No | `qwen2.5:3b` (Ollama) / `openrouter/free` (Open Router) | Default model for chat |
 | `OPEN_ROUTER_API_KEY` | No | — | Required only when using Open Router |

@@ -78,11 +78,11 @@ function getProvider(provider: ResolvedProvider, modelParam?: string): LanguageM
     const useDefault =
       m === undefined || m === defaultOllamaModel || m === 'aurora-alpha' || m === 'default'
     const modelId = useDefault ? defaultModel : (m ?? defaultModel)
-    const openai = createOpenAI({
+    const ollama = createOpenAI({
       baseURL: `${env.OLLAMA_BASE_URL}/v1`,
       apiKey: 'ollama',
     })
-    return openai.chat(modelId) as unknown as LanguageModel
+    return ollama(modelId) as unknown as LanguageModel
   }
   const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
   const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOpenRouterModel
