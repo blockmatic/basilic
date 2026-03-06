@@ -54,8 +54,10 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, OAUTH_GITHUB_CALLBACK_URL } = env
-      if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET || !OAUTH_GITHUB_CALLBACK_URL)
+      const githubClientId = env.GITHUB_CLIENT_ID
+      const githubClientSecret = env.GITHUB_CLIENT_SECRET
+      const oauthGithubCallbackUrl = env.OAUTH_GITHUB_CALLBACK_URL
+      if (!githubClientId || !githubClientSecret || !oauthGithubCallbackUrl)
         return reply.code(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'GitHub OAuth is not configured',
@@ -93,10 +95,10 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          client_id: GITHUB_CLIENT_ID,
-          client_secret: GITHUB_CLIENT_SECRET,
+          client_id: githubClientId,
+          client_secret: githubClientSecret,
           code,
-          redirect_uri: OAUTH_GITHUB_CALLBACK_URL,
+          redirect_uri: oauthGithubCallbackUrl,
         }),
       })
 

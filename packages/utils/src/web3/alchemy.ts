@@ -1,7 +1,7 @@
 import { getChainMetadata } from './index.js'
 
 // EVM ChainId -> Alchemy network slug mapping
-const ALCHEMY_EVM_SLUGS: Record<number, string> = {
+const alchemyEvmSlugs: Record<number, string> = {
   // Ethereum
   1: 'eth-mainnet',
   11155111: 'eth-sepolia',
@@ -20,7 +20,7 @@ const ALCHEMY_EVM_SLUGS: Record<number, string> = {
 } as const
 
 // Solana cluster -> Alchemy network slug mapping
-const ALCHEMY_SOLANA_SLUGS: Record<string, string> = {
+const alchemySolanaSlugs: Record<string, string> = {
   'mainnet-beta': 'solana-mainnet',
   devnet: 'solana-devnet',
   testnet: 'solana-testnet',
@@ -52,9 +52,9 @@ export function getAlchemyRpcUrl(chainId: number | string, apiKey: string): stri
 
   let slug: string | undefined
 
-  if (metadata.chainType === 'evm' && typeof chainId === 'number') slug = ALCHEMY_EVM_SLUGS[chainId]
+  if (metadata.chainType === 'evm' && typeof chainId === 'number') slug = alchemyEvmSlugs[chainId]
   else if (metadata.chainType === 'solana' && typeof chainId === 'string')
-    slug = ALCHEMY_SOLANA_SLUGS[chainId]
+    slug = alchemySolanaSlugs[chainId]
 
   if (!slug) return undefined
 
@@ -114,11 +114,10 @@ export function isAlchemySupported(chainId: number | string): boolean {
   const metadata = getChainMetadata(chainId)
   if (!metadata) return false
 
-  if (metadata.chainType === 'evm' && typeof chainId === 'number')
-    return chainId in ALCHEMY_EVM_SLUGS
+  if (metadata.chainType === 'evm' && typeof chainId === 'number') return chainId in alchemyEvmSlugs
 
   if (metadata.chainType === 'solana' && typeof chainId === 'string')
-    return chainId in ALCHEMY_SOLANA_SLUGS
+    return chainId in alchemySolanaSlugs
 
   return false
 }

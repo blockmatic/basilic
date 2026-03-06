@@ -51,7 +51,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
   if (isLoading)
     return (
       <div className="mx-auto max-w-2xl space-y-6">
-        <Card>
+        <Card className="shadow-lg">
           <CardHeader>
             <Skeleton className="h-8 w-24" />
             <Skeleton className="h-4 w-48" />
@@ -75,7 +75,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Card>
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle>Profile</CardTitle>
           <CardDescription>Manage your account information</CardDescription>

@@ -9,12 +9,12 @@ import { getDb } from '../../../db/index.js'
 import { web3Nonce } from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
-const NONCE_EXPIRY_MINUTES = 5
-const VALID_CHAINS = ['eip155', 'solana'] as const
-type ValidChain = (typeof VALID_CHAINS)[number]
+const nonceExpiryMinutes = 5
+const validChains = ['eip155', 'solana'] as const
+type ValidChain = (typeof validChains)[number]
 
 function isValidChain(chain: string): chain is ValidChain {
-  return VALID_CHAINS.includes(chain as ValidChain)
+  return validChains.includes(chain as ValidChain)
 }
 
 const NonceResponseSchema = Type.Object({
@@ -71,7 +71,7 @@ const web3NonceRoute: FastifyPluginAsync = async fastify => {
       }
 
       const nonce = generateSiweNonce()
-      const expiresAt = new Date(Date.now() + NONCE_EXPIRY_MINUTES * 60 * 1000)
+      const expiresAt = new Date(Date.now() + nonceExpiryMinutes * 60 * 1000)
 
       await db
         .delete(web3Nonce)

@@ -78,6 +78,18 @@
         "noDangerouslySetInnerHtml": "off"
       },
       "style": {
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": false,
+            "conventions": [
+              {
+                "selector": { "kind": "const", "scope": "global" },
+                "formats": ["camelCase", "PascalCase"]
+              }
+            ]
+          }
+        },
         "noEnum": "error",
         "noUselessElse": "error",
         "noParameterAssign": "error",
@@ -100,6 +112,25 @@
   },
   "overrides": [
     {
+      "includes": ["**/lib/env.ts", "**/env.ts", "**/load-env.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/markets/**", "**/(news)/**"],
+      "linter": {
+        "rules": {
+          "style": { "useNamingConvention": "off" },
+          "performance": { "noImgElement": "off" }
+        }
+      }
+    },
+    {
       "includes": [
         "scripts/**/*.mjs",
         "scripts/**/*.js",
@@ -111,6 +142,34 @@
         "rules": {
           "suspicious": {
             "noConsole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/mdx-components.tsx",
+        "**/lib/catalogs/**",
+        "**/scripts/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/routes/**",
+        "**/test/**",
+        "**/e2e/**",
+        "**/auth-error-messages.ts",
+        "**/user-info-catalog.tsx",
+        "**/chart.tsx",
+        "**/packages/ui/**",
+        "**/app/auth/**",
+        "**/lib/auth/**",
+        "**/next.config.mjs",
+        "**/packages/email/**",
+        "**/packages/notif/**"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
           }
         }
       }

@@ -1,11 +1,11 @@
 import { PublicKey } from '@solana/web3.js'
 import { getAddress } from 'viem'
 
-const VALID_CHAINS = ['eip155', 'solana'] as const
-export type Web3Chain = (typeof VALID_CHAINS)[number]
+const validChains = ['eip155', 'solana'] as const
+export type Web3Chain = (typeof validChains)[number]
 
 export function isValidChain(chain: string): chain is Web3Chain {
-  return VALID_CHAINS.includes(chain as Web3Chain)
+  return validChains.includes(chain as Web3Chain)
 }
 
 export function validateEip155Address(address: string): string {

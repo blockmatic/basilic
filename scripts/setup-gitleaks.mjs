@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process'
 import { platform } from 'node:os'
 import { exit } from 'node:process'
 
-const TOOL = {
+const Tool = {
   name: 'gitleaks',
   command: 'gitleaks',
   checkCommand: 'gitleaks version',
@@ -112,8 +112,8 @@ function normalizeArchForGitleaks(arch) {
 
 function installTool() {
   const os = getPlatform()
-  const instructions = TOOL[os]
-  const displayName = TOOL.name
+  const instructions = Tool[os]
+  const displayName = Tool.name
 
   if (!instructions) {
     console.error(`\n⚠️  Cannot install ${displayName} on ${os}`)
@@ -126,7 +126,7 @@ function installTool() {
     try {
       console.log(`\n📦 Installing ${displayName} via Homebrew...`)
       execSync(instructions.brew, { stdio: 'inherit' })
-      if (checkToolExists(TOOL.command, TOOL.checkCommand)) {
+      if (checkToolExists(Tool.command, Tool.checkCommand)) {
         console.log(`✅ ${displayName} installed successfully`)
         return true
       }
@@ -138,7 +138,7 @@ function installTool() {
   // Linux/macOS: Manual installation via wget
   if (instructions.getDownloadUrl) {
     try {
-      const version = getLatestVersion(TOOL.repo)
+      const version = getLatestVersion(Tool.repo)
       if (!version) {
         console.error(`\n❌ Failed to get latest version for ${displayName}`)
         if (instructions.manual) {
@@ -182,7 +182,7 @@ function installTool() {
       execSync(`sudo mv ${sourcePath} /usr/local/bin/`, { stdio: 'inherit' })
 
       // Verify installation
-      if (checkToolExists(TOOL.command, TOOL.checkCommand)) {
+      if (checkToolExists(Tool.command, Tool.checkCommand)) {
         console.log(`✅ ${displayName} installed successfully`)
         return true
       }
@@ -222,12 +222,12 @@ function installTool() {
 function main() {
   console.log('\n🔒 Setting up gitleaks (secret scanning tool)...\n')
 
-  const isRequired = TOOL.required
-  const displayName = TOOL.name
+  const isRequired = Tool.required
+  const displayName = Tool.name
 
-  if (checkToolExists(TOOL.command, TOOL.checkCommand)) {
+  if (checkToolExists(Tool.command, Tool.checkCommand)) {
     try {
-      const version = execSync(TOOL.checkCommand, { encoding: 'utf-8' }).trim()
+      const version = execSync(Tool.checkCommand, { encoding: 'utf-8' }).trim()
       console.log(`✅ ${displayName} is already installed (${version})`)
     } catch {
       console.log(`✅ ${displayName} is already installed`)

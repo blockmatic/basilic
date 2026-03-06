@@ -4,7 +4,7 @@ import type { Account, NewAccount } from './schema/tables/account.js'
 /**
  * Token fields that should be encrypted at rest
  */
-const ENCRYPTED_FIELDS = ['accessToken', 'refreshToken', 'idToken'] as const
+const encryptedFields = ['accessToken', 'refreshToken', 'idToken'] as const
 
 /**
  * Encrypts OAuth token fields in an account object before database insert/update
@@ -18,7 +18,7 @@ const ENCRYPTED_FIELDS = ['accessToken', 'refreshToken', 'idToken'] as const
 export function encryptAccountTokens<T extends NewAccount | Partial<Account>>(account: T): T {
   const encrypted = { ...account }
 
-  for (const field of ENCRYPTED_FIELDS) {
+  for (const field of encryptedFields) {
     const value = encrypted[field]
     if (value && typeof value === 'string') {
       const encryptedValue = encrypt(value)
@@ -42,7 +42,7 @@ export function encryptAccountTokens<T extends NewAccount | Partial<Account>>(ac
 export function decryptAccountTokens(account: Account): Account {
   const decrypted = { ...account }
 
-  for (const field of ENCRYPTED_FIELDS) {
+  for (const field of encryptedFields) {
     const value = decrypted[field]
     if (value && typeof value === 'string') {
       const decryptedValue = decrypt(value)

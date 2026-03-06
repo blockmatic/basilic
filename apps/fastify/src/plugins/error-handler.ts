@@ -6,7 +6,7 @@ import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
 /**
  * Exception map for irregular plural-to-singular conversions
  */
-const PLURAL_EXCEPTIONS: Record<string, string> = {
+const pluralExceptions: Record<string, string> = {
   status: 'status',
   class: 'class',
   addresses: 'address',
@@ -24,7 +24,7 @@ function extractModuleFromRoute(routePath: string): string | null {
 
   const resource = match[1]
   // Check exception map first, then fall back to regex removal
-  const singular = PLURAL_EXCEPTIONS[resource] ?? resource.replace(/s$/, '')
+  const singular = pluralExceptions[resource] ?? resource.replace(/s$/, '')
   return `${singular}-service`
 }
 

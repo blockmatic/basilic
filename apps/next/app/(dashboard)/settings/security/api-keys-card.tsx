@@ -87,7 +87,7 @@ export function ApiKeysCard() {
 
   if (isLoading)
     return (
-      <Card>
+      <Card className="shadow-lg">
         <CardHeader>
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-64" />
@@ -100,7 +100,7 @@ export function ApiKeysCard() {
 
   if (isError)
     return (
-      <Card>
+      <Card className="shadow-lg">
         <CardContent className="pt-6">
           <p className="text-destructive text-sm">{error?.message ?? 'Failed to load API keys'}</p>
         </CardContent>
@@ -111,7 +111,7 @@ export function ApiKeysCard() {
 
   return (
     <>
-      <Card>
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle>API keys</CardTitle>
           <CardDescription>
@@ -171,7 +171,7 @@ export function ApiKeysCard() {
             <DialogTitle>Create API key</DialogTitle>
             <DialogDescription>Give your key a name to identify it later.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 py-2">
+          <div className="space-y-4">
             <Label htmlFor="key-name">Name</Label>
             <Input
               id="key-name"

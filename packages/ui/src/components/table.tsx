@@ -3,9 +3,16 @@
 import { cn } from '@repo/ui/lib/utils'
 import type * as React from 'react'
 
-function Table({ className, ...props }: React.ComponentProps<'table'>) {
+function Table({
+  className,
+  fluid,
+  ...props
+}: React.ComponentProps<'table'> & { fluid?: boolean }) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div
+      data-slot="table-container"
+      className={cn('relative w-full', fluid ? 'overflow-hidden' : 'overflow-x-auto')}
+    >
       <table
         data-slot="table"
         className={cn('w-full caption-bottom text-sm', className)}

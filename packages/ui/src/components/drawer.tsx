@@ -8,16 +8,31 @@ function Drawer({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>)
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />
 }
 
-function DrawerTrigger({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-  return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />
+function DrawerTrigger({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
+  return (
+    <DrawerPrimitive.Trigger
+      data-slot="drawer-trigger"
+      className={cn('cursor-pointer', className)}
+      {...props}
+    />
+  )
 }
 
 function DrawerPortal({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
   return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />
 }
 
-function DrawerClose({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Close>) {
-  return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
+function DrawerClose({ className, ...props }: React.ComponentProps<typeof DrawerPrimitive.Close>) {
+  return (
+    <DrawerPrimitive.Close
+      data-slot="drawer-close"
+      className={cn('cursor-pointer', className)}
+      {...props}
+    />
+  )
 }
 
 function DrawerOverlay({

@@ -12,10 +12,10 @@ import {
 } from '../../../../lib/web3-verify.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
-const VALID_CHAINS = ['eip155', 'solana'] as const
+const validChains = ['eip155', 'solana'] as const
 
-function isValidChain(chain: string): chain is (typeof VALID_CHAINS)[number] {
-  return VALID_CHAINS.includes(chain as (typeof VALID_CHAINS)[number])
+function isValidChain(chain: string): chain is (typeof validChains)[number] {
+  return validChains.includes(chain as (typeof validChains)[number])
 }
 
 const VerifySchema = Type.Object({

@@ -10,7 +10,7 @@ export function TotpCard() {
   const [code, setCode] = useState('')
 
   return (
-    <Card>
+    <Card className="shadow-lg">
       <CardHeader>
         <CardTitle>Authenticator app</CardTitle>
         <CardDescription>Use an authenticator app to generate one-time codes.</CardDescription>

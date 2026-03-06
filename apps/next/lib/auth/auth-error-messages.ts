@@ -1,4 +1,4 @@
-const AUTH_ERROR_MESSAGES: Record<string, string> = {
+const authErrorMessages: Record<string, string> = {
   invalid_token: 'Invalid or expired magic link',
   expired_token: 'Magic link has expired',
   failed_verify: 'Failed to verify magic link',
@@ -17,5 +17,5 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
 export function getAuthErrorMessage(errorCode: string | undefined): string | undefined {
   if (!errorCode) return undefined
   const key = errorCode.toLowerCase().trim()
-  return AUTH_ERROR_MESSAGES[key] ?? 'An error occurred'
+  return authErrorMessages[key] ?? 'An error occurred'
 }

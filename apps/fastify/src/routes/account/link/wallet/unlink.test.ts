@@ -4,25 +4,24 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { getApiKeyToken, getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
-const TEST_PRIVATE_KEY =
-  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as const
-const TEST_ACCOUNT = privateKeyToAccount(TEST_PRIVATE_KEY as `0x${string}`)
+const testPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as const
+const testAccount = privateKeyToAccount(testPrivateKey as `0x${string}`)
 
 async function linkWallet(jwt: string): Promise<string> {
   const nonceRes = await fastify.inject({
     method: 'GET',
-    url: `/auth/web3/nonce?chain=eip155&address=${TEST_ACCOUNT.address}`,
+    url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
   })
   const { nonce } = JSON.parse(nonceRes.body)
   const message = createSiweMessage({
-    address: TEST_ACCOUNT.address,
+    address: testAccount.address,
     chainId: 1,
     domain: 'localhost',
     nonce,
     uri: 'https://localhost',
     version: '1',
   })
-  const signature = await TEST_ACCOUNT.signMessage({ message })
+  const signature = await testAccount.signMessage({ message })
 
   await fastify.inject({
     method: 'POST',

@@ -30,12 +30,12 @@ const ChatMessageItemSchema = Type.Union([
   }),
 ])
 /** Fixed default for OpenAPI/schema; runtime override via AI_DEFAULT_MODEL env. */
-const DEFAULT_AI_MODEL = 'openrouter/free'
+const defaultAiModel = 'openrouter/free'
 
 const ChatRequestSchema = Type.Object({
   messages: Type.Array(ChatMessageItemSchema, { minItems: 1, maxItems: 50 }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(Type.String({ default: DEFAULT_AI_MODEL })),
+  model: Type.Optional(Type.String({ default: defaultAiModel })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
   tools: Type.Optional(Type.Any()),
 })
@@ -44,8 +44,8 @@ const ChatResponseSchema = Type.Object({
   text: Type.String(),
 })
 
-const MODEL_ALIASES: Record<string, string> = {
-  'aurora-alpha': DEFAULT_AI_MODEL,
+const modelAliases: Record<string, string> = {
+  'aurora-alpha': defaultAiModel,
   grok: 'x-ai/grok-3-mini',
   'grok-3-mini': 'x-ai/grok-3-mini',
   sonnet: 'anthropic/claude-3-5-sonnet',
@@ -57,11 +57,11 @@ function getOpenRouter() {
 }
 
 function resolveModel(model?: string) {
-  const defaultModel = env.AI_DEFAULT_MODEL ?? DEFAULT_AI_MODEL
+  const defaultModel = env.AI_DEFAULT_MODEL ?? defaultAiModel
   const useRuntimeDefault =
-    model === undefined || model === DEFAULT_AI_MODEL || model === 'aurora-alpha'
+    model === undefined || model === defaultAiModel || model === 'aurora-alpha'
   const m = useRuntimeDefault ? defaultModel : model
-  const modelId = MODEL_ALIASES[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
+  const modelId = modelAliases[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
   return getOpenRouter().chat(modelId)
 }
 
@@ -106,7 +106,7 @@ async function resolveMessages(rawMessages: unknown[], tools: ToolSet): Promise<
   )
 }
 
-const USER_INFO_SPEC_ROOT = 'user-info-1'
+const userInfoSpecRoot = 'user-info-1'
 
 function buildUserInfoSpec(user: {
   name: string | null
@@ -120,9 +120,9 @@ function buildUserInfoSpec(user: {
     year: 'numeric',
   }).format(user.createdAt)
   return {
-    root: USER_INFO_SPEC_ROOT,
+    root: userInfoSpecRoot,
     elements: {
-      [USER_INFO_SPEC_ROOT]: {
+      [userInfoSpecRoot]: {
         type: 'UserInfo',
         props: {
           name: user.name ?? null,
@@ -146,7 +146,7 @@ function createAccountInfoTool(userId: string) {
       const [user] = await db.select().from(users).where(eq(users.id, userId))
       if (!user) return 'Account not found.'
       const spec = buildUserInfoSpec(user)
-      const summaryParts = [`You joined in ${spec.elements[USER_INFO_SPEC_ROOT].props.joinedAt}`]
+      const summaryParts = [`You joined in ${spec.elements[userInfoSpecRoot].props.joinedAt}`]
       if (user.email) summaryParts.push(`Email: ${user.email}`)
       if (user.name) summaryParts.push(`Name: ${user.name}`)
       return {

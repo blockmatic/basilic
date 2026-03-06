@@ -8,25 +8,25 @@ const hex64 = z
   .regex(/^[0-9a-fA-F]+$/, 'Must be a 32-byte hex string')
 
 const isProduction = process.env.NODE_ENV === 'production'
-const WEAK_ENCRYPTION_KEY = '0'.repeat(64)
-const REJECTED_DEV_DEFAULT = 'default-jwt-secret-min-32-chars-for-dev'
+const weakEncryptionKey = '0'.repeat(64)
+const rejectedDevDefault = 'default-jwt-secret-min-32-chars-for-dev'
 
 const encryptionKeySchema = isProduction
   ? hex64.refine(
-      val => val !== WEAK_ENCRYPTION_KEY,
+      val => val !== weakEncryptionKey,
       'ENCRYPTION_KEY must not be the all-zero default in production',
     )
-  : hex64.default(WEAK_ENCRYPTION_KEY)
+  : hex64.default(weakEncryptionKey)
 
 const jwtSecretSchema = isProduction
   ? z
       .string()
       .min(32)
       .refine(
-        val => val !== REJECTED_DEV_DEFAULT,
+        val => val !== rejectedDevDefault,
         'JWT_SECRET must not be the dev default in production',
       )
-  : z.string().min(32).default(REJECTED_DEV_DEFAULT)
+  : z.string().min(32).default(rejectedDevDefault)
 
 export const env = createEnv({
   server: {

@@ -12,7 +12,7 @@ import { appendCodeToCallbackUrl, isAllowedUrl } from '../../../../lib/url.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { validateEip155Address } from '../validate-address.js'
 
-const CALLBACK_CODE_EXPIRY_MINUTES = 5
+const callbackCodeExpiryMinutes = 5
 
 const VerifySchema = Type.Object({
   message: Type.String(),
@@ -90,7 +90,7 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
       if (callbackUrl) {
         const code = generateToken()
         const codeHash = hashToken(code)
-        const expiresAt = new Date(Date.now() + CALLBACK_CODE_EXPIRY_MINUTES * 60 * 1000)
+        const expiresAt = new Date(Date.now() + callbackCodeExpiryMinutes * 60 * 1000)
         await db.insert(web3Callback).values({
           id: randomUUID(),
           codeHash,

@@ -105,19 +105,10 @@ export const config = [
           disallowTypeAnnotations: false, // Allow type annotations in dynamic imports (vi.importActual<typeof import('ai')>)
         },
       ],
-      // Enforce naming conventions: error codes must be UPPER_SNAKE_CASE
-      // Note: Boolean naming (aux verbs) not enforced automatically to avoid type-aware linting overhead
+      // Enforce naming conventions: no UPPER_SNAKE_CASE for variables (only env keys use uppercase)
+      // See .cursor/rules/base/naming.mdc
       '@typescript-eslint/naming-convention': [
         'error',
-        // Error code variables: UPPER_SNAKE_CASE for variables ending in _ERROR or _CODE
-        {
-          selector: 'variable',
-          filter: {
-            regex: '(_ERROR|_CODE)$',
-            match: true,
-          },
-          format: ['UPPER_CASE'],
-        },
         // Allow double underscore variables (CommonJS compatibility: __filename, __dirname, test globals)
         {
           selector: 'variable',
@@ -127,10 +118,10 @@ export const config = [
           },
           format: null, // Allow any format for double underscore variables
         },
-        // Variables: allow camelCase, PascalCase (for schemas/classes), and UPPER_CASE (for constants)
+        // Variables: camelCase or PascalCase only—no UPPER_CASE (reserved for env vars)
         {
           selector: 'variable',
-          format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+          format: ['camelCase', 'PascalCase'],
           leadingUnderscore: 'allow',
           trailingUnderscore: 'allow',
         },

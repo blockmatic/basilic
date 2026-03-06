@@ -1,7 +1,7 @@
 'use client'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
-import { KeyRoundIcon, ShieldCheckIcon } from 'lucide-react'
+import { KeyRoundIcon, ShieldCheckIcon, TerminalIcon } from 'lucide-react'
 import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import { ApiKeysCard } from './api-keys-card'
 import { PasskeysCard } from './passkeys-card'
@@ -15,16 +15,19 @@ export function SecuritySection() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <Tabs value={section} onValueChange={v => setSection(v as 'passkeys' | 'totp' | 'apikeys')}>
-        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 [&>[data-slot=tabs-trigger]]:min-w-0">
           <TabsTrigger value="passkeys">
             <ShieldCheckIcon />
-            Passkeys
+            <span className="truncate">Passkeys</span>
           </TabsTrigger>
           <TabsTrigger value="totp">
             <KeyRoundIcon />
-            Authenticator
+            <span className="truncate">Authenticator</span>
           </TabsTrigger>
-          <TabsTrigger value="apikeys">API keys</TabsTrigger>
+          <TabsTrigger value="apikeys">
+            <TerminalIcon />
+            <span className="truncate">API keys</span>
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="passkeys" className="mt-6">
           <PasskeysCard />

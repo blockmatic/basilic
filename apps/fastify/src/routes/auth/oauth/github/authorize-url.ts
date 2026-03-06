@@ -29,8 +29,9 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (_request, reply) => {
-      const { GITHUB_CLIENT_ID, OAUTH_GITHUB_CALLBACK_URL } = env
-      if (!GITHUB_CLIENT_ID || !OAUTH_GITHUB_CALLBACK_URL)
+      const githubClientId = env.GITHUB_CLIENT_ID
+      const oauthGithubCallbackUrl = env.OAUTH_GITHUB_CALLBACK_URL
+      if (!githubClientId || !oauthGithubCallbackUrl)
         return reply.status(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'GitHub OAuth is not configured',
@@ -50,8 +51,8 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
       })
 
       const redirectUrl = new URL('https://github.com/login/oauth/authorize')
-      redirectUrl.searchParams.set('client_id', GITHUB_CLIENT_ID)
-      redirectUrl.searchParams.set('redirect_uri', OAUTH_GITHUB_CALLBACK_URL)
+      redirectUrl.searchParams.set('client_id', githubClientId)
+      redirectUrl.searchParams.set('redirect_uri', oauthGithubCallbackUrl)
       redirectUrl.searchParams.set('scope', 'user:email')
       redirectUrl.searchParams.set('state', state)
 

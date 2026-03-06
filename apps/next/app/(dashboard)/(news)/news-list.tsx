@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader } from '@repo/ui/components/card'
+import Image from 'next/image'
 import type { ReactNode } from 'react'
 
 export type NewsListArticle = {
@@ -39,13 +40,19 @@ export function NewsList({ articles, error, fallback }: NewsListProps) {
         <Card key={a.url ?? i}>
           <CardHeader className="pb-2">
             {a.urlToImage && (
-              <a href={a.url ?? '#'} target="_blank" rel="noopener noreferrer" className="block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <a
+                href={a.url ?? '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative block aspect-video w-full overflow-hidden rounded-md"
+              >
+                <Image
                   src={a.urlToImage}
                   alt=""
-                  className="h-40 w-full rounded-md object-cover"
-                  loading="lazy"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 672px) 100vw, 672px"
+                  unoptimized
                 />
               </a>
             )}

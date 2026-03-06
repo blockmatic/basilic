@@ -5,8 +5,8 @@
 // - Production: basilic-fastify.vercel.app (or basilic-fastify-gaboesquivel.vercel.app)
 // - Preview (commit): basilic-fastify-{hash}-gaboesquivel.vercel.app
 // - Preview (branch): basilic-fastify-git-{branch}-gaboesquivel.vercel.app
-const API_PROJECT_NAME = 'basilic-fastify'
-const TEAM_SLUG = 'gaboesquivel'
+const ApiProjectName = 'basilic-fastify'
+const TeamSlug = 'gaboesquivel'
 
 function toBranchSlug(ref) {
   return ref
@@ -35,7 +35,7 @@ function getApiUrl() {
   const isProductionBranch = vercelEnv === 'production' || branch === 'main' || branch === 'develop'
   const url = isProductionBranch
     ? process.env.NEXT_PUBLIC_API_URL
-    : `https://${API_PROJECT_NAME}-git-${toBranchSlug(branch)}-${TEAM_SLUG}.vercel.app`
+    : `https://${ApiProjectName}-git-${toBranchSlug(branch)}-${TeamSlug}.vercel.app`
 
   if (isProductionBranch && !url) {
     const msg = `[next.config] getApiUrl: NEXT_PUBLIC_API_URL must be configured for production/main/develop deployments (vercelEnv=${vercelEnv}, branch=${branch})`
@@ -57,6 +57,11 @@ const nextConfig = {
   ...(apiUrl !== undefined && {
     env: { NEXT_PUBLIC_API_URL: apiUrl },
   }),
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'assets.coingecko.com', pathname: '/coins/**' },
+    ],
+  },
   async redirects() {
     return [{ source: '/dashboard', destination: '/', permanent: true }]
   },

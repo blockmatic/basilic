@@ -3,7 +3,7 @@
 import { execSync } from 'node:child_process'
 import { exit } from 'node:process'
 
-const BLOCKED_PATTERNS = [
+const BlockedPatterns = [
   /^\.env$/,
   /\.env$/,
   /\.pem$/,
@@ -26,7 +26,7 @@ const BLOCKED_PATTERNS = [
   /\.keytab$/,
 ]
 
-const ALLOWED_PATTERNS = [
+const AllowedPatterns = [
   /\.env-example$/,
   /\.env\.example$/,
   /\.env\.schema$/,
@@ -53,13 +53,13 @@ function getStagedFiles() {
 }
 
 function isBlocked(filename) {
-  for (const allowed of ALLOWED_PATTERNS) {
+  for (const allowed of AllowedPatterns) {
     if (allowed.test(filename)) {
       return false
     }
   }
 
-  for (const blocked of BLOCKED_PATTERNS) {
+  for (const blocked of BlockedPatterns) {
     if (blocked.test(filename)) {
       return true
     }

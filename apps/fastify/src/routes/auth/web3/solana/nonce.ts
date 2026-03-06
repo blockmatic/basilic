@@ -8,7 +8,7 @@ import { web3Nonce } from '../../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { isValidChain, validateAddress } from '../validate-address.js'
 
-const NONCE_TTL_MS = 5 * 60 * 1000 // 5 minutes
+const nonceTtlMs = 5 * 60 * 1000 // 5 minutes
 
 const NonceResponseSchema = Type.Object({
   nonce: Type.String(),
@@ -52,7 +52,7 @@ const solanaNonceRoute: FastifyPluginAsync = async fastify => {
       }
 
       const nonce = randomBytes(16).toString('hex')
-      const expiresAt = new Date(Date.now() + NONCE_TTL_MS)
+      const expiresAt = new Date(Date.now() + nonceTtlMs)
       const db = await getDb()
 
       await db

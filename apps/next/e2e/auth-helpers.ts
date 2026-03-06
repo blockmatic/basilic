@@ -1,14 +1,14 @@
 import type { Page } from '@playwright/test'
 
-const TEST_EMAIL = 'test@test.ai'
-const API_URL =
+const testEmail = 'test@test.ai'
+const apiUrl =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
-const apiBase = API_URL.replace(/\/$/, '')
+const apiBase = apiUrl.replace(/\/$/, '')
 
 async function sendMagicLinkOnce(page: Page) {
   await page.goto('/auth/login')
   await page.getByRole('button', { name: /send magic link/i }).waitFor({ state: 'visible' })
-  await page.fill('input[type="email"]', TEST_EMAIL)
+  await page.fill('input[type="email"]', testEmail)
   const [response] = await Promise.all([
     page.waitForResponse(
       resp =>
@@ -35,8 +35,8 @@ async function enrichError(response: Awaited<ReturnType<typeof sendMagicLinkOnce
 }
 
 export const authHelpers = {
-  TEST_EMAIL,
-  API_URL,
+  testEmail,
+  apiUrl,
 
   async sendMagicLink(page: Page) {
     let response = await sendMagicLinkOnce(page)
@@ -52,7 +52,7 @@ export const authHelpers = {
     const delayMs = 500
     for (let attempt = 0; attempt < maxRetries; attempt++)
       try {
-        const response = await page.request.get(`${API_URL}/test/magic-link/last`)
+        const response = await page.request.get(`${apiUrl}/test/magic-link/last`)
         if (!response.ok()) {
           if (attempt < maxRetries - 1) {
             await new Promise(r => setTimeout(r, delayMs))

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { fastify } from '../../web3.spec.js'
 
-const VALID_SOLANA_ADDRESS = '4Cw1koUQtqybLFem7uqhzMBznMPGARbFS4cjaYbM9RnR'
+const validSolanaAddress = '4Cw1koUQtqybLFem7uqhzMBznMPGARbFS4cjaYbM9RnR'
 
 describe('GET /auth/web3/solana/nonce', () => {
   it('should return nonce for valid Solana address', async () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',
-      query: { address: VALID_SOLANA_ADDRESS },
+      query: { address: validSolanaAddress },
     })
 
     expect(response.statusCode).toBe(200)

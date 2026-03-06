@@ -9,7 +9,7 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <div role="alert" className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="max-w-md space-y-4 text-center">
-        <h2 className="text-2xl font-bold">Something went wrong</h2>
+        <h2 className="font-heading text-xl font-bold md:text-2xl">Something went wrong</h2>
         <p className="text-muted-foreground">{errorMessage}</p>
         <button
           onClick={resetErrorBoundary}

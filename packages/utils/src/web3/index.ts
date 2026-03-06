@@ -64,7 +64,7 @@ export interface ChainMetadata {
 }
 
 // EVM Chain ID to metadata mapping
-const EVM_CHAINS: Record<number, ChainMetadata> = {
+const evmChains: Record<number, ChainMetadata> = {
   // Ethereum
   1: {
     chainType: 'evm',
@@ -134,7 +134,7 @@ const EVM_CHAINS: Record<number, ChainMetadata> = {
 }
 
 // Solana cluster mapping
-const SOLANA_CLUSTERS: Record<string, ChainMetadata> = {
+const solanaClusters: Record<string, ChainMetadata> = {
   'mainnet-beta': {
     chainType: 'solana',
     chainId: 'mainnet-beta',
@@ -156,16 +156,16 @@ const SOLANA_CLUSTERS: Record<string, ChainMetadata> = {
 }
 
 // Combined chain registry (Chain ID -> Metadata)
-const CHAIN_REGISTRY = new Map<string, ChainMetadata>()
+const chainRegistry = new Map<string, ChainMetadata>()
 
 // Populate registry from EVM chains
-Object.values(EVM_CHAINS).forEach(chain => {
-  CHAIN_REGISTRY.set(String(chain.chainId), chain)
+Object.values(evmChains).forEach(chain => {
+  chainRegistry.set(String(chain.chainId), chain)
 })
 
 // Populate registry from Solana clusters
-Object.values(SOLANA_CLUSTERS).forEach(chain => {
-  CHAIN_REGISTRY.set(String(chain.chainId), chain)
+Object.values(solanaClusters).forEach(chain => {
+  chainRegistry.set(String(chain.chainId), chain)
 })
 
 /**
@@ -206,28 +206,28 @@ export function getChainType(chainId: number | string): ChainType | undefined {
 export function getChainMetadata(chainId: number | string): ChainMetadata | undefined {
   // Try as string chain ID
   if (isString(chainId)) {
-    const byChainId = CHAIN_REGISTRY.get(chainId)
+    const byChainId = chainRegistry.get(chainId)
     if (byChainId) return byChainId
 
     // Try as Solana cluster name
-    const bySolanaCluster = SOLANA_CLUSTERS[chainId]
+    const bySolanaCluster = solanaClusters[chainId]
     if (bySolanaCluster) return bySolanaCluster
   }
 
   // Try as numeric chain ID (EVM)
-  if (isNumber(chainId)) return EVM_CHAINS[chainId]
+  if (isNumber(chainId)) return evmChains[chainId]
 
   // Try parsing as number
   const numericId = Number(chainId)
-  if (!Number.isNaN(numericId)) return EVM_CHAINS[numericId]
+  if (!Number.isNaN(numericId)) return evmChains[numericId]
 
   return undefined
 }
 
-const SLICE_LEN = 8
+const sliceLen = 8
 
 /** Short display format for wallet address (chain:address or chain:first8chars… when long) */
 export function formatWalletShort({ chain, address }: { chain: string; address: string }): string {
-  const suffix = address.length > SLICE_LEN ? `${address.slice(0, SLICE_LEN)}…` : address
+  const suffix = address.length > sliceLen ? `${address.slice(0, sliceLen)}…` : address
   return `${chain}:${suffix}`
 }
