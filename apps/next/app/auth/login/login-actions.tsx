@@ -11,9 +11,9 @@ type LoginActionsProps = { initialError?: string }
 function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () => void }) {
   return (
     <Alert variant="destructive" className="mb-4">
-      <AlertTitle>Error</AlertTitle>
+      <AlertTitle className="text-center">Error</AlertTitle>
       <AlertDescription className="flex items-center justify-between gap-2">
-        <span>{message}</span>
+        <span className="flex-1 text-center">{message}</span>
         <Button
           variant="ghost"
           size="icon"

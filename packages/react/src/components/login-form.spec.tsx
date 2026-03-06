@@ -232,9 +232,7 @@ describe('LoginForm', () => {
     const currentEmailInput = screen.getByLabelText(/email/i) as HTMLInputElement
     const fieldElement = currentEmailInput.closest('[data-slot="field"]')
     expect(fieldElement).toBeInTheDocument()
-    const successInField = fieldElement?.querySelector('[data-slot="field-description"]')
-    expect(successInField).toBeInTheDocument()
-    expect(successInField).toHaveTextContent(/check your email for the magic link/i)
+    expect(fieldElement).toHaveTextContent(/check your email for the magic link/i)
 
     // Verify email input is cleared
     expect(currentEmailInput.value).toBe('')

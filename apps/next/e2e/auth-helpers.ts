@@ -3,8 +3,6 @@ import type { Page } from '@playwright/test'
 const TEST_EMAIL = 'test@test.ai'
 const API_URL =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
-const APP_URL =
-  process.env.PLAYWRIGHT_APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 const apiBase = API_URL.replace(/\/$/, '')
 
 async function sendMagicLinkOnce(page: Page) {
@@ -101,42 +99,5 @@ export const authHelpers = {
     const token = await this.extractToken(page)
     if (!token) throw new Error('Failed to extract magic link token')
     await this.verifyMagicLink(page, token)
-  },
-
-  /**
-   * E2E-only: login via direct Fastify verify + test-set-session to inject cookies.
-   * Bypasses magic-link verify redirect when cookie propagation fails (e.g. storageState).
-   */
-  async loginAsTestUserWithTokenInjection(page: Page) {
-    const response = await this.sendMagicLink(page)
-    if (response.status() !== 200) throw new Error('Magic link request failed')
-    const successMessage = page.getByText(/check your email for the magic link/i)
-    await successMessage.waitFor({ state: 'visible', timeout: 10000 })
-    await new Promise(r => setTimeout(r, 200))
-    const magicToken = await this.extractToken(page)
-    if (!magicToken) throw new Error('Failed to extract magic link token')
-
-    const verifyRes = await page.request.post(`${API_URL}/auth/magiclink/verify`, {
-      data: { token: magicToken },
-    })
-    if (!verifyRes.ok()) throw new Error(`Magic link verify failed: ${verifyRes.status()}`)
-    const { token, refreshToken } = (await verifyRes.json()) as {
-      token: string
-      refreshToken: string
-    }
-    if (!token || !refreshToken) throw new Error('Verify response missing token')
-
-    const injectUrl = `${APP_URL}/api/auth/test-set-session?${new URLSearchParams({
-      token,
-      refreshToken,
-    })}`
-    await page.goto(injectUrl)
-    await page.waitForURL(
-      url => {
-        const path = new URL(url).pathname
-        return path === '/' || path === ''
-      },
-      { timeout: 10000 },
-    )
   },
 }

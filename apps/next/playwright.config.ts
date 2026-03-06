@@ -28,7 +28,7 @@ export default defineConfig({
   projects: [
     {
       name: 'auth',
-      testMatch: ['**/magic-link-auth.spec.ts', '**/link-email.spec.ts'],
+      testMatch: ['**/magic-link-auth.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     {

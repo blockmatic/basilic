@@ -1,21 +1,21 @@
 import { cookies } from 'next/headers'
 import { env } from '@/lib/env'
+import type { AuthCookie } from './auth-schemas'
+import { authCookieSchema } from './auth-schemas'
 import { decodeJwtToken } from './jwt-utils'
 import { parseAuthCookie } from './parse-auth-cookie'
 
 const cookieName = env.NEXT_PUBLIC_AUTH_COOKIE_NAME
 
-type AuthCookieOptions = {
-  maxAge?: number
+function getAuthCookieOptions({ maxAge }: { maxAge?: number }) {
+  return {
+    httpOnly: false,
+    maxAge,
+    path: '/',
+    sameSite: 'lax' as const,
+    secure: env.NODE_ENV === 'production',
+  }
 }
-
-export const getAuthCookieOptions = ({ maxAge }: AuthCookieOptions) => ({
-  httpOnly: false,
-  maxAge,
-  path: '/',
-  sameSite: 'lax' as const,
-  secure: env.NODE_ENV === 'production',
-})
 
 function getMaxAgeFromRefreshToken(refreshToken: string): number {
   const decoded = decodeJwtToken({ token: refreshToken })
@@ -23,20 +23,18 @@ function getMaxAgeFromRefreshToken(refreshToken: string): number {
   return Math.max(0, Math.floor(decoded.exp - Date.now() / 1000))
 }
 
-export type SetAuthCookiesInput = {
-  token: string
-  refreshToken: string
-}
-
 export function setAuthCookiesOnResponse(
   response: { cookies: { set: (name: string, value: string, opts?: object) => void } },
-  { token, refreshToken }: SetAuthCookiesInput,
+  { token, refreshToken }: AuthCookie,
 ) {
   const maxAge = getMaxAgeFromRefreshToken(refreshToken)
   const opts = getAuthCookieOptions({ maxAge })
   const cleanOpts = Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined))
-  const value = JSON.stringify({ token, refreshToken })
-  response.cookies.set(cookieName, value, cleanOpts as typeof opts)
+  response.cookies.set(
+    cookieName,
+    JSON.stringify({ token, refreshToken }),
+    cleanOpts as typeof opts,
+  )
 }
 
 export function clearAuthCookiesOnResponse(response: {
@@ -47,29 +45,17 @@ export function clearAuthCookiesOnResponse(response: {
   response.cookies.set(cookieName, '', { ...cleanOpts, maxAge: 0 } as typeof opts)
 }
 
-export async function getServerAuthToken() {
+export async function getServerAuthToken(): Promise<{ token: string | null }> {
   const cookieStore = await cookies()
   const { token } = parseAuthCookie(cookieStore.get(cookieName)?.value)
   return { token }
-}
-
-export async function getServerRefreshToken() {
-  const cookieStore = await cookies()
-  const { refreshToken } = parseAuthCookie(cookieStore.get(cookieName)?.value)
-  return { refreshToken }
-}
-
-export async function refreshTokensFromCookie(): Promise<SetAuthCookiesInput | null> {
-  const { refreshToken } = await getServerRefreshToken()
-  if (!refreshToken) return null
-  return refreshTokensWithRefreshToken({ refreshToken })
 }
 
 export async function refreshTokensWithRefreshToken({
   refreshToken,
 }: {
   refreshToken: string
-}): Promise<SetAuthCookiesInput | null> {
+}): Promise<AuthCookie | null> {
   try {
     const response = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/session/refresh`, {
       method: 'POST',
@@ -77,9 +63,8 @@ export async function refreshTokensWithRefreshToken({
       body: JSON.stringify({ refreshToken }),
     })
     if (!response.ok) return null
-    const data = (await response.json()) as { token?: string; refreshToken?: string }
-    if (typeof data?.token !== 'string' || typeof data?.refreshToken !== 'string') return null
-    return { token: data.token, refreshToken: data.refreshToken }
+    const parsed = authCookieSchema.safeParse(await response.json())
+    return parsed.success ? parsed.data : null
   } catch {
     return null
   }
