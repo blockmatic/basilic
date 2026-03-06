@@ -82,7 +82,7 @@ function getProvider(provider: ResolvedProvider, modelParam?: string): LanguageM
       baseURL: `${env.OLLAMA_BASE_URL}/v1`,
       apiKey: 'ollama',
     })
-    return ollama(modelId) as unknown as LanguageModel
+    return ollama(modelId)
   }
   const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
   const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOpenRouterModel
@@ -93,7 +93,7 @@ function getProvider(provider: ResolvedProvider, modelParam?: string): LanguageM
     (effective.startsWith('gpt') ? `openai/${effective}` : effective)
   const apiKey = env.OPEN_ROUTER_API_KEY
   if (!apiKey) throw new Error('OPEN_ROUTER_API_KEY required for Open Router')
-  return createOpenRouter({ apiKey }).chat(modelId) as unknown as LanguageModel
+  return createOpenRouter({ apiKey }).chat(modelId)
 }
 
 function isUIMessage(msg: unknown): msg is { role: string; parts: unknown[] } {

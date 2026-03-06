@@ -52,7 +52,6 @@
         "RUN_PG_MIGRATE",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
-        "AI_DEFAULT_MODEL",
         "VITEST",
         "LOG_ENABLED",
         "LOG_LEVEL",
