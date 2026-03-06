@@ -48,7 +48,7 @@ export function NewsList({ articles, error, fallback }: NewsListProps) {
               >
                 <Image
                   src={a.urlToImage}
-                  alt=""
+                  alt={a.title ?? 'News image'}
                   fill
                   className="object-cover"
                   sizes="(max-width: 672px) 100vw, 672px"

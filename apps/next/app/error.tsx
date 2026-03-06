@@ -15,7 +15,7 @@ export default function ErrorPage({
       <div className="max-w-md space-y-4 text-center">
         <h2 className="font-heading text-xl font-bold md:text-2xl">Something went wrong</h2>
         <p className="text-muted-foreground">An unexpected error occurred</p>
-        {(env.NEXT_PUBLIC_NODE_ENV ?? 'development') === 'development' && error?.message && (
+        {env.NEXT_PUBLIC_NODE_ENV === 'development' && error?.message && (
           <pre className="bg-muted text-left text-xs overflow-auto max-h-32 p-3 rounded-md">
             {error.message}
           </pre>
