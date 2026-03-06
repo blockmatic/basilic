@@ -9,10 +9,7 @@ export const env = createEnv({
     NEWSAPI_KEY: z.string().optional(),
   },
   client: {
-    NEXT_PUBLIC_NODE_ENV: z
-      .enum(['development', 'test', 'production'])
-      .default('development')
-      .optional(),
+    NEXT_PUBLIC_NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
     NEXT_PUBLIC_API_URL: z.string().min(1),
     NEXT_PUBLIC_AUTH_COOKIE_NAME: z.string().default('api.session'),
     // Logging configuration

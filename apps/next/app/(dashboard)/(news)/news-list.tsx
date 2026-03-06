@@ -39,23 +39,35 @@ export function NewsList({ articles, error, fallback }: NewsListProps) {
       {articles.map((a, i) => (
         <Card key={a.url ?? i}>
           <CardHeader className="pb-2">
-            {a.urlToImage && (
-              <a
-                href={a.url ?? '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative block aspect-video w-full overflow-hidden rounded-md"
-              >
-                <Image
-                  src={a.urlToImage}
-                  alt={a.title ?? 'News image'}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 672px) 100vw, 672px"
-                  unoptimized
-                />
-              </a>
-            )}
+            {a.urlToImage &&
+              (a.url ? (
+                <a
+                  href={a.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block aspect-video w-full overflow-hidden rounded-md"
+                >
+                  <Image
+                    src={a.urlToImage}
+                    alt={a.title ?? 'News image'}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 672px) 100vw, 672px"
+                    unoptimized
+                  />
+                </a>
+              ) : (
+                <div className="relative block aspect-video w-full overflow-hidden rounded-md">
+                  <Image
+                    src={a.urlToImage}
+                    alt={a.title ?? 'News image'}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 672px) 100vw, 672px"
+                    unoptimized
+                  />
+                </div>
+              ))}
             <p className="text-muted-foreground text-xs">{a.source?.name ?? 'Unknown'}</p>
             {a.publishedAt && (
               <time dateTime={a.publishedAt} className="text-muted-foreground text-xs">
@@ -64,14 +76,18 @@ export function NewsList({ articles, error, fallback }: NewsListProps) {
             )}
           </CardHeader>
           <CardContent className="space-y-2">
-            <a
-              href={a.url ?? '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium hover:underline"
-            >
-              {a.title ?? 'Untitled'}
-            </a>
+            {a.url ? (
+              <a
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium hover:underline"
+              >
+                {a.title ?? 'Untitled'}
+              </a>
+            ) : (
+              <span className="font-medium">{a.title ?? 'Untitled'}</span>
+            )}
             {a.description && <p className="text-muted-foreground text-sm">{a.description}</p>}
           </CardContent>
         </Card>

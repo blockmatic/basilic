@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process'
 import { platform } from 'node:os'
 import { exit } from 'node:process'
 
-const Docker = {
+const docker = {
   name: 'Docker',
   command: 'docker',
   checkCommand: 'docker --version',
@@ -23,7 +23,7 @@ const Docker = {
   },
 }
 
-const DockerCompose = {
+const dockerCompose = {
   name: 'Docker Compose',
   command: 'docker',
   checkCommand: 'docker compose version',
@@ -42,7 +42,7 @@ const DockerCompose = {
   },
 }
 
-const Supabase = {
+const supabase = {
   name: 'Supabase CLI',
   command: 'supabase',
   checkCommand: 'supabase --version',
@@ -150,8 +150,8 @@ function getLatestVersion(repo) {
 
 function installDocker() {
   const os = getPlatform()
-  const instructions = Docker[os]
-  const displayName = Docker.name
+  const instructions = docker[os]
+  const displayName = docker.name
 
   if (!instructions) {
     console.error(`\n⚠️  Cannot install ${displayName} on ${os}`)
@@ -297,8 +297,8 @@ function installDocker() {
 
 function checkDockerCompose() {
   const os = getPlatform()
-  const instructions = DockerCompose[os]
-  const displayName = DockerCompose.name
+  const instructions = dockerCompose[os]
+  const displayName = dockerCompose.name
 
   // Docker Compose is included with Docker Desktop (macOS/Windows) and Docker Engine (Linux)
   // Just verify it's available
@@ -323,8 +323,8 @@ function checkDockerCompose() {
 
 function installSupabase() {
   const os = getPlatform()
-  const instructions = Supabase[os]
-  const displayName = Supabase.name
+  const instructions = supabase[os]
+  const displayName = supabase.name
 
   if (!instructions) {
     console.error(`\n⚠️  Cannot install ${displayName} on ${os}`)
@@ -337,7 +337,7 @@ function installSupabase() {
     try {
       console.log(`\n📦 Installing ${displayName} via Homebrew...`)
       execSync(instructions.brew, { stdio: 'inherit' })
-      if (checkToolExists(Supabase.command, Supabase.checkCommand)) {
+      if (checkToolExists(supabase.command, supabase.checkCommand)) {
         console.log(`✅ ${displayName} installed successfully`)
         return true
       }
@@ -352,7 +352,7 @@ function installSupabase() {
   if (os === 'linux' && instructions.getDownloadUrl) {
     try {
       // Get latest version
-      const version = getLatestVersion(Supabase.repo)
+      const version = getLatestVersion(supabase.repo)
       if (!version) {
         console.error(`\n❌ Failed to get latest version for ${displayName}`)
         if (instructions.manual) {
@@ -397,7 +397,7 @@ function installSupabase() {
       }
 
       // Verify installation
-      if (checkToolExists(Supabase.command, Supabase.checkCommand)) {
+      if (checkToolExists(supabase.command, supabase.checkCommand)) {
         console.log(`✅ ${displayName} installed successfully`)
         return true
       }
@@ -447,10 +447,10 @@ function main() {
   let hasErrors = false
 
   // Step 1: Check/Install Docker
-  console.log('📦 Step 1/3: Checking Docker...')
-  if (checkToolExists(Docker.command, Docker.checkCommand)) {
+  console.log('📦 Step 1/3: Checking docker...')
+  if (checkToolExists(docker.command, docker.checkCommand)) {
     try {
-      const version = execSync(Docker.checkCommand, { encoding: 'utf-8' }).trim()
+      const version = execSync(docker.checkCommand, { encoding: 'utf-8' }).trim()
       console.log(`✅ Docker is already installed (${version})`)
     } catch {
       console.log('✅ Docker is already installed')
@@ -489,20 +489,20 @@ function main() {
 
   // Step 3: Check/Install Supabase CLI
   console.log('\n📦 Step 3/3: Checking Supabase CLI...')
-  if (checkToolExists(Supabase.command, Supabase.checkCommand)) {
+  if (checkToolExists(supabase.command, supabase.checkCommand)) {
     try {
-      const version = execSync(Supabase.checkCommand, { encoding: 'utf-8' }).trim()
+      const version = execSync(supabase.checkCommand, { encoding: 'utf-8' }).trim()
       console.log(`✅ Supabase CLI is already installed (${version})`)
     } catch {
       console.log('✅ Supabase CLI is already installed')
     }
   } else {
     console.log(
-      `📥 Supabase CLI is not installed${Supabase.required ? ' (required)' : ' (optional)'}`,
+      `📥 Supabase CLI is not installed${supabase.required ? ' (required)' : ' (optional)'}`,
     )
     const installed = installSupabase()
     if (!installed) {
-      if (Supabase.required) {
+      if (supabase.required) {
         console.error('\n❌ Supabase CLI is required but installation failed')
         console.error('Please install Supabase CLI manually and try again.\n')
         exit(1)

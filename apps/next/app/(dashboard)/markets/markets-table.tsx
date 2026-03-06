@@ -45,14 +45,17 @@ function formatChange24h(value: number | null | undefined) {
 }
 
 function Change24hBadge({ value }: { value: number | null | undefined }) {
-  const isPositive = (value ?? 0) >= 0
+  const isNeutral = value == null
+  const isPositive = !isNeutral && value >= 0
   return (
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-heading text-xs font-semibold tabular-nums transition-colors',
-        isPositive
-          ? 'bg-emerald-500/12 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400'
-          : 'bg-red-500/12 text-red-700 dark:bg-red-500/15 dark:text-red-400',
+        isNeutral
+          ? 'bg-muted/50 text-muted-foreground'
+          : isPositive
+            ? 'bg-emerald-500/12 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400'
+            : 'bg-red-500/12 text-red-700 dark:bg-red-500/15 dark:text-red-400',
       )}
     >
       {formatChange24h(value)}
@@ -176,7 +179,11 @@ export function MarketsTable({ coins, error }: MarketsTableProps) {
                 <TableCell
                   className={cn(
                     'numeric min-w-0 px-2 text-right',
-                    (c.price_change_percentage_24h ?? 0) >= 0 ? 'text-green-600' : 'text-red-600',
+                    c.price_change_percentage_24h == null
+                      ? 'text-muted-foreground'
+                      : c.price_change_percentage_24h >= 0
+                        ? 'text-green-600'
+                        : 'text-red-600',
                   )}
                 >
                   {formatChange24h(c.price_change_percentage_24h)}

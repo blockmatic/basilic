@@ -1,7 +1,7 @@
 import { logger } from '@repo/utils/logger/server'
 
-const PollTimeoutMs = 60_000
-const PollIntervalMs = 500
+const pollTimeoutMs = 60_000
+const pollIntervalMs = 500
 
 const apiUrl =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
@@ -15,15 +15,15 @@ async function waitForUrl(url: string, timeoutMs: number): Promise<boolean> {
     } catch {
       // continue polling
     }
-    await new Promise(r => setTimeout(r, PollIntervalMs))
+    await new Promise(r => setTimeout(r, pollIntervalMs))
   }
   return false
 }
 
 async function globalSetup() {
-  const apiOk = await waitForUrl(`${apiUrl}/health`, PollTimeoutMs)
+  const apiOk = await waitForUrl(`${apiUrl}/health`, pollTimeoutMs)
   if (!apiOk) {
-    logger.error(`E2E setup: API unreachable at ${apiUrl}/health after ${PollTimeoutMs}ms`)
+    logger.error(`E2E setup: API unreachable at ${apiUrl}/health after ${pollTimeoutMs}ms`)
     process.exit(1)
   }
 }

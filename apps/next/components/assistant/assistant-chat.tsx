@@ -139,7 +139,15 @@ export function AssistantChat({ className, header, hideHeader }: AssistantChatPr
                       </StateProvider>,
                     )
                   } else {
-                    const str = typeof output === 'string' ? output : JSON.stringify(output)
+                    let str: string
+                    try {
+                      str = typeof output === 'string' ? output : JSON.stringify(output)
+                    } catch {
+                      str =
+                        typeof output === 'object' && output !== null
+                          ? '[unserializable output]'
+                          : String(output)
+                    }
                     if (str.length > 0) hasContent = true
                     elements.push(
                       <MessageResponse key={`${message.id}-tool-${i}`}>{str}</MessageResponse>,

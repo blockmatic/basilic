@@ -217,9 +217,11 @@ export function getChainMetadata(chainId: number | string): ChainMetadata | unde
   // Try as numeric chain ID (EVM)
   if (isNumber(chainId)) return evmChains[chainId]
 
-  // Try parsing as number
-  const numericId = Number(chainId)
-  if (!Number.isNaN(numericId)) return evmChains[numericId]
+  // Try parsing as decimal digits-only string (reject '0x1', '1e0', etc.)
+  if (isString(chainId) && /^\d+$/.test(chainId)) {
+    const numericId = Number(chainId)
+    return evmChains[numericId]
+  }
 
   return undefined
 }

@@ -13,8 +13,8 @@ async function fetchHeadlines() {
 
   try {
     const res = await fetch(
-      `https://newsapi.org/v2/everything?q=${encodeURIComponent(newsQuery)}&pageSize=20&sortBy=publishedAt&language=en&apiKey=${key}`,
-      { next: { revalidate: 300 } },
+      `https://newsapi.org/v2/everything?q=${encodeURIComponent(newsQuery)}&pageSize=20&sortBy=publishedAt&language=en`,
+      { headers: { 'X-Api-Key': key }, next: { revalidate: 300 } },
     )
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data = (await res.json()) as { status?: string; articles?: NewsListArticle[] }

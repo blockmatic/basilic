@@ -34,7 +34,7 @@ export default async function Layout({ children }: Readonly<{ children: React.Re
                 aria-label="Sign out"
                 asChild
               >
-                <Link href="/auth/logout">
+                <Link href="/auth/logout" prefetch={false}>
                   <LogOut />
                 </Link>
               </Button>

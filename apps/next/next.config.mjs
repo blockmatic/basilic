@@ -5,8 +5,8 @@
 // - Production: basilic-fastify.vercel.app (or basilic-fastify-gaboesquivel.vercel.app)
 // - Preview (commit): basilic-fastify-{hash}-gaboesquivel.vercel.app
 // - Preview (branch): basilic-fastify-git-{branch}-gaboesquivel.vercel.app
-const ApiProjectName = 'basilic-fastify'
-const TeamSlug = 'gaboesquivel'
+const apiProjectName = 'basilic-fastify'
+const teamSlug = 'gaboesquivel'
 
 function toBranchSlug(ref) {
   return ref
@@ -35,7 +35,7 @@ function getApiUrl() {
   const isProductionBranch = vercelEnv === 'production' || branch === 'main' || branch === 'develop'
   const url = isProductionBranch
     ? process.env.NEXT_PUBLIC_API_URL
-    : `https://${ApiProjectName}-git-${toBranchSlug(branch)}-${TeamSlug}.vercel.app`
+    : `https://${apiProjectName}-git-${toBranchSlug(branch)}-${teamSlug}.vercel.app`
 
   if (isProductionBranch && !url) {
     const msg = `[next.config] getApiUrl: NEXT_PUBLIC_API_URL must be configured for production/main/develop deployments (vercelEnv=${vercelEnv}, branch=${branch})`

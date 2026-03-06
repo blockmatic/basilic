@@ -57,11 +57,12 @@ function getOpenRouter() {
 }
 
 function resolveModel(model?: string) {
+  const m = (model?.trim().length ?? 0) > 0 ? model?.trim() : undefined
   const defaultModel = env.AI_DEFAULT_MODEL ?? defaultAiModel
-  const useRuntimeDefault =
-    model === undefined || model === defaultAiModel || model === 'aurora-alpha'
-  const m = useRuntimeDefault ? defaultModel : model
-  const modelId = modelAliases[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
+  const useRuntimeDefault = m === undefined || m === defaultAiModel || m === 'aurora-alpha'
+  const effective = useRuntimeDefault ? defaultModel : m
+  const modelId =
+    modelAliases[effective] ?? (effective.startsWith('gpt') ? `openai/${effective}` : effective)
   return getOpenRouter().chat(modelId)
 }
 

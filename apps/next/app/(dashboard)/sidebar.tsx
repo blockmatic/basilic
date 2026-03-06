@@ -87,7 +87,7 @@ export function DashboardSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Sign out">
-              <Link href="/auth/logout">
+              <Link href="/auth/logout" prefetch={false}>
                 <LogOut />
                 <span>Sign out</span>
               </Link>
