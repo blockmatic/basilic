@@ -54,7 +54,7 @@ export const env = createEnv({
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).default('info'),
     SENTRY_DSN: z.string().min(1).optional(),
     SENTRY_ENVIRONMENT: z.string().min(1).optional(),
-    OLLAMA_BASE_URL: z.string().url().optional().default('https://ollama.gaboesquivel.com'),
+    OLLAMA_BASE_URL: z.string().url().optional().default('http://localhost:11434'),
     AI_PROVIDER: z.enum(['ollama', 'openrouter']).optional(),
     OPEN_ROUTER_API_KEY: z.string().min(1).optional(),
     AI_DEFAULT_MODEL: z.string().min(1).optional(),

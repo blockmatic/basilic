@@ -41,7 +41,7 @@ const skipIfProviderUnavailable = (
   return false
 }
 
-/** Throttle between AI requests to avoid overloading ollama.gaboesquivel.com */
+/** Throttle between AI requests to avoid overloading the configured Ollama server */
 const aiThrottleMs = 2000
 let lastAiRequestAt = 0
 const throttleAiRequests = async () => {

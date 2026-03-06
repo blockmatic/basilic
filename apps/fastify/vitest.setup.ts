@@ -11,14 +11,13 @@
  *
  * ## AI Tests
  *
- * Chat tests call real AI API. AI tests use Ollama at ollama.gaboesquivel.com by default.
- * Overrides are applied here so tests never hit localhost or OpenRouter.
+ * Chat tests call real AI API. Use OLLAMA_BASE_URL in .env.test (or CI env).
+ * Overrides here: AI_PROVIDER=ollama, OPEN_ROUTER_API_KEY unset (tests use Ollama only).
  * Tests use the default model only; do not set AI_DEFAULT_MODEL.
  * When OpenRouter returns 402 (insufficient credits), tests warn and pass without full validation.
  * When the AI provider is unreachable (5xx, ECONNREFUSED, etc.), tests skip with clear message.
  */
 
-// Enforce Ollama at ollama.gaboesquivel.com for AI tests (overrides .env.test)
-process.env.OLLAMA_BASE_URL = 'https://ollama.gaboesquivel.com'
+// Enforce Ollama for AI tests (OLLAMA_BASE_URL from .env.test or CI env)
 process.env.AI_PROVIDER = 'ollama'
 Reflect.deleteProperty(process.env, 'OPEN_ROUTER_API_KEY')
