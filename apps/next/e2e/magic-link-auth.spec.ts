@@ -10,7 +10,7 @@ function checkAuthenticated(page: import('@playwright/test').Page) {
   return {
     async run() {
       expect(page.url()).toMatch(/^https?:\/\/[^/]+\/?(\?.*)?$/)
-      const signOutButton = page.getByRole('link', { name: 'Sign out' })
+      const signOutButton = page.getByRole('link', { name: 'Sign out' }).first()
       await expect(signOutButton).toBeVisible({ timeout: 5000 })
       const apiBadge = page.locator('text=API OK')
       await expect(apiBadge).toBeVisible({ timeout: 10000 })
