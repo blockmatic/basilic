@@ -40,6 +40,7 @@
     "lint:eslint": {
       "env": [
         "AUTH_COOKIE_NAME",
+        "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
         "DATABASE_URL",
@@ -69,6 +70,7 @@
       "cache": false,
       "env": [
         "AUTH_COOKIE_NAME",
+        "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
         "DATABASE_URL",

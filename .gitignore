@@ -12,6 +12,7 @@ __dev
 
 # Sensitive environment files (never commit)
 .env
+.env.local
 
 # Note: .env.development, .env.staging, .env.production are committed (configs, not sensitive)
 

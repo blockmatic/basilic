@@ -37,6 +37,7 @@
     "@lukemorales/query-key-factory": "^1.3.4",
     "@repo/core": "workspace:*",
     "@repo/react": "workspace:*",
+    "@repo/sentry": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/utils": "workspace:*",
     "@solana/wallet-adapter-base": "^0.9.27",
