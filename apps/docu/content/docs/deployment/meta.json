@@ -1,4 +1,4 @@
 {
   "title": "Deployment",
-  "pages": ["index", "github-actions", "vercel", "publishing"]
+  "pages": ["index", "github-actions", "vercel", "self-hosted-llm", "publishing"]
 }

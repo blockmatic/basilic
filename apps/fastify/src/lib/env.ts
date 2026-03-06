@@ -8,25 +8,25 @@ const hex64 = z
   .regex(/^[0-9a-fA-F]+$/, 'Must be a 32-byte hex string')
 
 const isProduction = process.env.NODE_ENV === 'production'
-const WEAK_ENCRYPTION_KEY = '0'.repeat(64)
-const REJECTED_DEV_DEFAULT = 'default-jwt-secret-min-32-chars-for-dev'
+const weakEncryptionKey = '0'.repeat(64)
+const rejectedDevDefault = 'default-jwt-secret-min-32-chars-for-dev'
 
 const encryptionKeySchema = isProduction
   ? hex64.refine(
-      val => val !== WEAK_ENCRYPTION_KEY,
+      val => val !== weakEncryptionKey,
       'ENCRYPTION_KEY must not be the all-zero default in production',
     )
-  : hex64.default(WEAK_ENCRYPTION_KEY)
+  : hex64.default(weakEncryptionKey)
 
 const jwtSecretSchema = isProduction
   ? z
       .string()
       .min(32)
       .refine(
-        val => val !== REJECTED_DEV_DEFAULT,
+        val => val !== rejectedDevDefault,
         'JWT_SECRET must not be the dev default in production',
       )
-  : z.string().min(32).default(REJECTED_DEV_DEFAULT)
+  : z.string().min(32).default(rejectedDevDefault)
 
 export const env = createEnv({
   server: {
@@ -54,7 +54,9 @@ export const env = createEnv({
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).default('info'),
     SENTRY_DSN: z.string().min(1).optional(),
     SENTRY_ENVIRONMENT: z.string().min(1).optional(),
-    OPEN_ROUTER_API_KEY: z.string().min(1),
+    OLLAMA_BASE_URL: z.string().url().optional().default('http://localhost:11434'),
+    AI_PROVIDER: z.enum(['ollama', 'openrouter']).optional(),
+    OPEN_ROUTER_API_KEY: z.string().min(1).optional(),
     AI_DEFAULT_MODEL: z.string().min(1).optional(),
     ENCRYPTION_KEY: encryptionKeySchema,
     JWT_SECRET: jwtSecretSchema,

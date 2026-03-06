@@ -1,0 +1,254 @@
+---
+title: "Self-Hosted LLM (Ollama)"
+description: "Run local LLMs for data privacy. Simple dev setup and production deployment with recommended hardware."
+---
+
+We recommend **self-hosting** an LLM when data privacy is a priority. Prompts and responses stay on your infrastructure—no third-party API calls, no data retention by vendors, and full control over model choice and updates.
+
+This guide covers [Ollama](https://ollama.com)—a local inference runtime with an OpenAI-compatible API—for both development and production.
+
+## Why Self-Host for Data Privacy
+
+| Concern | Cloud APIs (OpenAI, Anthropic, etc.) | Self-Hosted (Ollama) |
+|--------|-------------------------------------|----------------------|
+| Data leaves your infra | Yes—sent to vendor | No—stays local |
+| Vendor retention | Varies by ToS | None |
+| Compliance (HIPAA, SOC2) | Requires BAA, audits | Full control |
+| Cost at scale | Per-token pricing | Fixed (hardware) |
+| Latency | Network round-trip | Local inference |
+
+**Use self-hosted when:** handling PII, sensitive business data, or regulated workloads. Use cloud APIs for rapid prototyping or when you need the latest frontier models.
+
+---
+
+## Development Setup (Simple)
+
+For local development, run Ollama on your machine. No Nginx or TLS required.
+
+### 1. Install Ollama
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+### 2. Pull a Small Model
+
+```bash
+ollama pull qwen2.5:3b
+ollama run qwen2.5:3b "Say hello"
+```
+
+### 3. Point Your App to Local Ollama
+
+Ollama exposes an OpenAI-compatible API at `http://localhost:11434`. Configure your app:
+
+```bash
+# .env.local or .env
+OLLAMA_BASE_URL=http://localhost:11434
+```
+
+If using Open Router or a custom provider, set the base URL to `http://localhost:11434/v1` for OpenAI-style endpoints.
+
+### Dev Hardware
+
+- **CPU-only:** 8 GB RAM minimum; 16 GB recommended for 3B models
+- **GPU (NVIDIA):** 6 GB VRAM for 7B models; 8 GB+ for 13B
+- **Model sizes:** `qwen2.5:3b` (~2 GB), `llama3.2:3b` (~2 GB), `llama3.1:8b` (~4.7 GB)
+
+---
+
+## Production Setup
+
+For production, run Ollama on a server behind Nginx with TLS. Bind Ollama to localhost only; expose only through the reverse proxy.
+
+### Recommended Hardware (Production)
+
+| Use Case | RAM | GPU | Example Models |
+|----------|-----|-----|----------------|
+| Demo / low traffic | 16 GB | Optional (CPU OK) | qwen2.5:3b, llama3.2:3b |
+| Chat, moderate traffic | 32 GB | 12–24 GB VRAM | llama3.1:8b, mistral:7b |
+| Heavy inference | 64 GB+ | 24 GB+ VRAM | llama3.1:70b, mixtral:8x7b |
+
+**CPU-only:** Expect 2–10 tokens/sec for 3B models; 7B+ models are slow without GPU. For production chat, a GPU is strongly recommended.
+
+### 1. Install Ollama on the Server
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+### 2. Configure systemd (Low-Memory Mode)
+
+Create an override to limit memory usage when coexisting with other workloads:
+
+```bash
+sudo mkdir -p /etc/systemd/system/ollama.service.d
+sudo tee /etc/systemd/system/ollama.service.d/override.conf << 'EOF'
+[Service]
+Environment="OLLAMA_MAX_LOADED_MODELS=1"
+Environment="OLLAMA_NUM_PARALLEL=1"
+Environment="OLLAMA_CONTEXT_LENGTH=2048"
+Environment="OLLAMA_KEEP_ALIVE=10m"
+Environment="OLLAMA_KV_CACHE_TYPE=q4_0"
+EOF
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+sudo systemctl enable ollama
+```
+
+### 3. Install Nginx and Create Site Config
+
+```bash
+sudo apt install nginx
+```
+
+Create `/etc/nginx/sites-available/ollama.example.com`:
+
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ollama.example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:11434;
+        proxy_http_version 1.1;
+        proxy_set_header Host 127.0.0.1:11434;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+        proxy_send_timeout 300s;
+        chunked_transfer_encoding on;
+    }
+}
+```
+
+**Important:** Use `proxy_set_header Host 127.0.0.1:11434`—Ollama returns 403 for unknown Host headers.
+
+```bash
+sudo ln -sf /etc/nginx/sites-available/ollama.example.com /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### 4. DNS Configuration
+
+Before TLS, the domain must resolve to your server. Add a record in your DNS provider (Cloudflare, Namecheap, Google Domains, etc.):
+
+**Option A — A record (recommended)**
+
+| Type | Name/Host | Value | TTL |
+|------|------------|-------|-----|
+| A | `ollama` | `<your-server-public-ip>` | 300 |
+
+If your provider uses full hostnames for the name field, use `ollama.example.com` instead of `ollama`.
+
+**Find your server's public IP:**
+
+```bash
+curl -s ifconfig.me
+# or
+curl -s icanhazip.com
+```
+
+**Option B — CNAME (if you have an existing A record)**
+
+If you already have an A record for the server (e.g. `server.example.com`):
+
+| Type | Name | Value |
+|------|------|-------|
+| CNAME | `ollama` | `server.example.com` |
+
+**Verify propagation:**
+
+```bash
+dig +short ollama.example.com
+# or
+nslookup ollama.example.com
+```
+
+Wait 5–15 minutes (up to 48 hours in rare cases) before running Certbot.
+
+### 5. TLS with Let's Encrypt
+
+```bash
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d ollama.example.com --non-interactive --agree-tos --email admin@example.com
+```
+
+Certbot adds HTTPS and HTTP→HTTPS redirect. Auto-renewal runs via `certbot.timer`.
+
+### 6. Security
+
+- **Ollama:** Binds to `127.0.0.1:11434` by default—not exposed publicly
+- **Auth:** Add Nginx `auth_basic` or API-key validation if exposing beyond trusted users
+- **Firewall:** Allow 80/443; do not open 11434
+
+---
+
+## Model Recommendations
+
+| Model | Size | Use Case |
+|-------|------|----------|
+| qwen2.5:3b | ~2 GB | Dev, demos, low-resource |
+| llama3.2:3b | ~2 GB | Dev, demos |
+| llama3.1:8b | ~4.7 GB | Production chat (GPU recommended) |
+| mistral:7b | ~4.1 GB | Production chat |
+| llama3.1:70b | ~40 GB | Heavy workloads (24 GB+ VRAM) |
+
+---
+
+## Validation
+
+```bash
+# Service
+systemctl status ollama
+
+# Models
+ollama list
+
+# Local API
+curl -s http://127.0.0.1:11434/api/tags
+
+# Via Nginx (after TLS)
+curl -s https://ollama.example.com/api/tags
+curl -s https://ollama.example.com/api/generate -d '{"model":"qwen2.5:3b","prompt":"Hello","stream":false}'
+```
+
+---
+
+## Using Ollama as Default in Fastify
+
+The Fastify chat route (`/ai/chat`) uses **Ollama as the default** AI provider when `OLLAMA_BASE_URL` is set. Open Router is an optional alternative when `OPEN_ROUTER_API_KEY` is configured.
+
+### Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `OLLAMA_BASE_URL` | No (one of OLLAMA/OPEN_ROUTER required) | `https://ollama.example.com` | Ollama server URL (OpenAI-compatible `/v1` API) |
+| `AI_PROVIDER` | No | Inferred | `ollama` or `openrouter` — force provider when both are configured |
+| `AI_DEFAULT_MODEL` | No | `qwen2.5:3b` (Ollama) / `openrouter/free` (Open Router) | Default model for chat |
+| `OPEN_ROUTER_API_KEY` | No | — | Required only when using Open Router |
+
+### Provider Selection
+
+1. If `AI_PROVIDER` is set, use it (requires the corresponding env var).
+2. Else if `OLLAMA_BASE_URL` is set, use Ollama.
+3. Else if `OPEN_ROUTER_API_KEY` is set, use Open Router.
+4. Else the server returns 500 with "No AI provider configured".
+
+### Tool Support Caveat
+
+Small Ollama models (e.g. `qwen2.5:3b`) may not reliably support tool/function-calling. For better tool use (e.g. `getAccountInfo`), use 7B+ models such as `llama3.1:8b` or `mistral:7b`.
+
+---
+
+## Related Documentation
+
+- [Vercel Deployment](/docs/deployment/vercel) — Frontend and API deployment
+- [Portability Strategy](/docs/architecture/portability) — Migration paths

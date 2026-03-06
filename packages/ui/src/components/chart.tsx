@@ -9,7 +9,7 @@ import type {
 import * as RechartsPrimitive from 'recharts'
 
 // Format: { THEME_NAME: CSS_SELECTOR }
-const THEMES = { light: '', dark: '.dark' } as const
+const themes = { light: '', dark: '.dark' } as const
 
 export type ChartConfig = {
   [k in string]: {
@@ -17,7 +17,7 @@ export type ChartConfig = {
     icon?: React.ComponentType
   } & (
     | { color?: string; theme?: never }
-    | { color?: never; theme: Record<keyof typeof THEMES, string> }
+    | { color?: never; theme: Record<keyof typeof themes, string> }
   )
 }
 
@@ -74,7 +74,7 @@ function ChartStyle({ id, config }: { id: string; config: ChartConfig }) {
   return (
     <style
       dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
+        __html: Object.entries(themes)
           .map(
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
@@ -209,7 +209,7 @@ function ChartTooltipContent({
                         </span>
                       </div>
                       {item.value && (
-                        <span className="text-foreground font-mono font-medium tabular-nums">
+                        <span className="text-foreground font-heading font-semibold tabular-nums">
                           {item.value.toLocaleString()}
                         </span>
                       )}

@@ -7,7 +7,7 @@ import { hashToken } from './jwt.js'
 
 type Db = Awaited<ReturnType<typeof getDb>>
 
-const FAR_FUTURE = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000)
+const farFuture = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000)
 
 export type ApiKeySession = {
   user: { id: string; email: string | null }
@@ -38,7 +38,7 @@ export async function authenticateWithApiKey(token: string, db: Db): Promise<Api
     session: {
       id: apiKey.id,
       userId: apiKey.userId,
-      expiresAt: apiKey.expiresAt ?? FAR_FUTURE,
+      expiresAt: apiKey.expiresAt ?? farFuture,
     },
   }
 }

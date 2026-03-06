@@ -14,7 +14,7 @@ import { ErrorResponseSchema } from '../../../schemas.js'
 import { parseSiwsMessage } from '../siws-parse.js'
 import { validateSolanaAddress } from '../validate-address.js'
 
-const CALLBACK_CODE_EXPIRY_MINUTES = 5
+const callbackCodeExpiryMinutes = 5
 
 const VerifySchema = Type.Object({
   message: Type.String(),
@@ -99,7 +99,7 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
       if (callbackUrl) {
         const code = generateToken()
         const codeHash = hashToken(code)
-        const expiresAt = new Date(Date.now() + CALLBACK_CODE_EXPIRY_MINUTES * 60 * 1000)
+        const expiresAt = new Date(Date.now() + callbackCodeExpiryMinutes * 60 * 1000)
         await db.insert(web3Callback).values({
           id: randomUUID(),
           codeHash,

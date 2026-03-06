@@ -1,14 +1,14 @@
 import { expect, test } from '@playwright/test'
 
-const TEST_EMAIL = 'test@test.ai'
-const API_URL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:3001'
+const testEmail = 'test@test.ai'
+const apiUrl = process.env.PLAYWRIGHT_API_URL || 'http://localhost:3001'
 
 /**
  * Helper function to extract magic link token from test endpoint
  */
 async function extractToken(page: ReturnType<typeof test>['page']): Promise<string | null> {
   try {
-    const response = await page.request.get(`${API_URL}/test/magic-link/last`)
+    const response = await page.request.get(`${apiUrl}/test/magic-link/last`)
     if (!response.ok()) return null
 
     const data = await response.json()
@@ -23,7 +23,7 @@ test.describe('Scalar UI Login Flow', () => {
 
   test('should complete full login flow through Scalar UI', async ({ page }) => {
     // Step 1: Navigate to Scalar UI
-    await page.goto(`${API_URL}/reference`)
+    await page.goto(`${apiUrl}/reference`)
     await page.waitForLoadState('networkidle')
 
     // Step 2: Wait for Scalar UI to load and login button to be injected
@@ -41,7 +41,7 @@ test.describe('Scalar UI Login Flow', () => {
     // Step 5: Enter email in the form
     const emailInput = page.locator('#email')
     await expect(emailInput).toBeVisible()
-    await emailInput.fill(TEST_EMAIL)
+    await emailInput.fill(testEmail)
 
     // Step 6: Submit form to request magic link
     const submitButton = page.locator('#submit-button')
@@ -61,7 +61,7 @@ test.describe('Scalar UI Login Flow', () => {
     if (!token) throw new Error('Failed to extract magic link token')
 
     // Step 9: Open callback URL in same window (for E2E testing)
-    const callbackUrl = `${API_URL}/reference?token=${token}`
+    const callbackUrl = `${apiUrl}/reference?token=${token}`
     await page.goto(callbackUrl)
     await page.waitForLoadState('networkidle')
 
@@ -80,7 +80,7 @@ test.describe('Scalar UI Login Flow', () => {
     await expect(logoutButton).toHaveText('Logout', { timeout: 5000 })
 
     // Step 13: Verify we can call the authenticated endpoint directly with the token
-    const authedResponse = await page.request.get(`${API_URL}/test/authed`, {
+    const authedResponse = await page.request.get(`${apiUrl}/test/authed`, {
       headers: {
         authorization: `Bearer ${tokenInStorage}`,
       },
@@ -89,12 +89,12 @@ test.describe('Scalar UI Login Flow', () => {
     expect(authedResponse.ok()).toBeTruthy()
     const authedData = await authedResponse.json()
     expect(authedData.user).toBeDefined()
-    expect(authedData.user.email).toBe(TEST_EMAIL)
+    expect(authedData.user.email).toBe(testEmail)
   })
 
   test('should handle logout correctly', async ({ page }) => {
     // First, login (reuse logic from previous test)
-    await page.goto(`${API_URL}/reference`)
+    await page.goto(`${apiUrl}/reference`)
     await page.waitForLoadState('networkidle')
 
     const loginButton = page.locator('[data-login-link]')
@@ -106,7 +106,7 @@ test.describe('Scalar UI Login Flow', () => {
     await expect(modalOverlay).toBeVisible({ timeout: 5000 })
 
     const emailInput = page.locator('#email')
-    await emailInput.fill(TEST_EMAIL)
+    await emailInput.fill(testEmail)
 
     const submitButton = page.locator('#submit-button')
     await submitButton.click()
@@ -118,7 +118,7 @@ test.describe('Scalar UI Login Flow', () => {
     const token = await extractToken(page)
     if (!token) throw new Error('Failed to extract token')
 
-    const callbackUrl = `${API_URL}/reference?token=${token}`
+    const callbackUrl = `${apiUrl}/reference?token=${token}`
     await page.goto(callbackUrl)
     await page.waitForURL(/\/reference$/, { timeout: 5000 })
     await page.waitForLoadState('networkidle')

@@ -11,6 +11,13 @@
  *
  * ## AI Tests
  *
- * Chat tests call real Open Router API. Requires OPEN_ROUTER_API_KEY in .env.test.
+ * Chat tests call real AI API. Use OLLAMA_BASE_URL in .env.test (or CI env).
+ * Overrides here: AI_PROVIDER=ollama, OPEN_ROUTER_API_KEY unset (tests use Ollama only).
+ * Tests use the default model only; do not set AI_DEFAULT_MODEL.
  * When OpenRouter returns 402 (insufficient credits), tests warn and pass without full validation.
+ * When the AI provider is unreachable (5xx, ECONNREFUSED, etc.), tests skip with clear message.
  */
+
+// Enforce Ollama for AI tests (OLLAMA_BASE_URL from .env.test or CI env)
+process.env.AI_PROVIDER = 'ollama'
+Reflect.deleteProperty(process.env, 'OPEN_ROUTER_API_KEY')

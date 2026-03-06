@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { fastify } from '../web3.spec.js'
 
-const VALID_ETH_ADDRESS = '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e'
-const VALID_SOLANA_ADDRESS = '4Cw1koUQtqybLFem7uqhzMBznMPGARbFS4cjaYbM9RnR'
+const validEthAddress = '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e'
+const validSolanaAddress = '4Cw1koUQtqybLFem7uqhzMBznMPGARbFS4cjaYbM9RnR'
 
 describe('GET /auth/web3/nonce', () => {
   it('should return nonce for valid eip155 address', async () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/nonce',
-      query: { chain: 'eip155', address: VALID_ETH_ADDRESS },
+      query: { chain: 'eip155', address: validEthAddress },
     })
 
     expect(response.statusCode).toBe(200)
@@ -23,7 +23,7 @@ describe('GET /auth/web3/nonce', () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/nonce',
-      query: { chain: 'solana', address: VALID_SOLANA_ADDRESS },
+      query: { chain: 'solana', address: validSolanaAddress },
     })
 
     expect(response.statusCode).toBe(200)
@@ -37,7 +37,7 @@ describe('GET /auth/web3/nonce', () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/nonce',
-      query: { chain: 'invalid', address: VALID_ETH_ADDRESS },
+      query: { chain: 'invalid', address: validEthAddress },
     })
 
     expect(response.statusCode).toBe(400)
@@ -62,7 +62,7 @@ describe('GET /auth/web3/nonce', () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/nonce',
-      query: { address: VALID_ETH_ADDRESS },
+      query: { address: validEthAddress },
     })
 
     expect(response.statusCode).toBe(400)

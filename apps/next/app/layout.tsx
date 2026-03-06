@@ -1,12 +1,20 @@
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist_Mono, Inter, Poppins } from 'next/font/google'
 
 import '@repo/ui/styles/globals.css'
 import { Providers } from '@/app/providers'
 import { ErrorBoundary } from '@/components/shared/error-boundary'
 
-const fontSans = Geist({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
 })
 
 const fontMono = Geist_Mono({
@@ -23,7 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}>
+      <body
+        className={`${inter.variable} ${poppins.variable} ${fontMono.variable} font-sans antialiased`}
+      >
         <ErrorBoundary>
           <Providers>{children}</Providers>
         </ErrorBoundary>

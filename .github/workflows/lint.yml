@@ -15,6 +15,7 @@ jobs:
     env:
       PGLITE: true
       DATABASE_URL: postgresql://localhost/test
+      OLLAMA_BASE_URL: https://ollama.example.com
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-lint' }}
     steps:
       - name: Checkout code

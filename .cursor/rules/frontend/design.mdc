@@ -12,9 +12,41 @@ alwaysApply: true
 
 **Rule of thumb**: If you can do it with `transition-*` or `animate-*` + data attributes, do not use Motion.
 
+## Spacing Cadence
+
+Use an 8pt-based scale (Tailwind: 1=4px, 2=8px, 4=16px, 6=24px, 8=32px). gap-3 and gap-4 are permitted for component spacing; avoid p-3, p-5, px-5 except for micro-adjustments.
+
+| Level | Classes | Use |
+|-------|---------|-----|
+| xs | gap-1, p-1 | Badges, icon+text tight |
+| sm | gap-2, p-2, space-y-2 | Related inline, label+input |
+| md | gap-3, gap-4, p-4, space-y-4 | Component internal, form fields |
+| lg | gap-6, p-6, space-y-6 | Section internal, card padding, page sections |
+| xl | gap-8, p-8 | Between major blocks |
+| 2xl | p-10 | Hero/auth generous layouts |
+
+**Layout**: Main content `p-4 md:p-6`, header `px-4 md:px-6`. Mobile-first. **Forms**: `space-y-2` (label+input), `space-y-4` (between fields), `space-y-6` (between sections).
+
+## Typography Cadence
+
+Use a consistent type scale. Mobile-first: base size on mobile, step up on `md:` for larger screens.
+
+| Level | Classes | Use |
+|-------|---------|-----|
+| xs | text-xs | Captions, metadata, badges, code snippets |
+| sm | text-sm | Body secondary, descriptions, form labels, errors, empty states |
+| base | text-base | Body default (implicit) |
+| lg | text-lg | Card/section titles |
+| xl | text-xl | Page titles (desktop) |
+| 2xl | text-2xl | Hero, full-page error titles |
+
+**Page titles**: `text-lg md:text-xl font-heading font-semibold`. **Card titles**: `text-lg font-heading font-semibold`. **Sidebar/panel labels**: `text-sm font-heading font-semibold`. **Body secondary**: `text-sm text-muted-foreground`.
+
 ## Design Principles
 
-- **Typography**: Distinctive fonts, avoid generic (Inter, Arial). Pair display + body. See @.cursor/skills/frontend-design
+- **Typography**: Distinctive fonts, avoid generic (Inter, Arial). Pair display + body. See @.cursor/skills/frontend-design.
+- **Font usage (dashboard)**: Exception for crypto dashboard theme—Inter (UI) + Poppins (headings).
+- **Font classes**: `font-sans` for UI text, `font-heading` / `font-heading font-semibold` for titles and large stats, `numeric` / `tabular-nums` for prices/balances/trading data, `font-mono` for code and API keys.
 - **Color & theme**: Semantic tokens from @theme. Dominant colors + sharp accents. Use `bg-primary`, `text-muted-foreground` etc. from design system.
 - **Motion**: Purposeful—feedback, orientation, focus. Never decorate. Timing: 100–150ms micro, 200–300ms transitions, 500ms drawers. See @.cursor/skills/emilkowal-animations
 - **Easing**: `ease-out` default, `cubic-bezier(0.32, 0.72, 0, 1)` for drawers, springs for natural feel.

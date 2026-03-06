@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process'
 import { platform } from 'node:os'
 import { exit } from 'node:process'
 
-const TOOL_INSTALL_INSTRUCTIONS = {
+const ToolInstallInstructions = {
   gitleaks: {
     macos: {
       brew: 'brew install gitleaks',
@@ -76,7 +76,7 @@ function getPlatform() {
 
 function printInstallInstructions(toolName) {
   const os = getPlatform()
-  const instructions = TOOL_INSTALL_INSTRUCTIONS[toolName]?.[os]
+  const instructions = ToolInstallInstructions[toolName]?.[os]
 
   if (!instructions) {
     console.error(`\n⚠️  ${toolName} is not installed.`)

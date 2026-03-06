@@ -3,6 +3,7 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -11,7 +12,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@repo/ui/components/sidebar'
-import { BarChart3Icon, NewspaperIcon, ShieldIcon, UserIcon } from 'lucide-react'
+import {
+  BarChart3Icon,
+  GalleryVerticalEnd,
+  LogOut,
+  NewspaperIcon,
+  ShieldIcon,
+  UserIcon,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -32,11 +40,16 @@ export function DashboardSidebar() {
     <Sidebar side="left" collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-2">
-          <span className="font-semibold">Dashboard</span>
+          <Link href="/" className="font-heading flex items-center gap-2 font-medium">
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+              <GalleryVerticalEnd className="size-4" />
+            </div>
+            Acme Inc.
+          </Link>
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="pt-6">
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map(({ href, label, icon: Icon }) => (
@@ -70,6 +83,18 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="border-t border-sidebar-border">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Sign out">
+              <Link href="/auth/logout" prefetch={false}>
+                <LogOut />
+                <span>Sign out</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   )
 }

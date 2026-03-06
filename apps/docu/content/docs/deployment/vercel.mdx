@@ -35,7 +35,9 @@ Set environment variables in Vercel project settings:
 DATABASE_URL=postgresql://user:pass@host:5432/dbname
 ENCRYPTION_KEY=<64-char-hex>
 JWT_SECRET=<min-32-chars-not-dev-default>
-OPEN_ROUTER_API_KEY=sk-...
+# AI: Ollama (default) or Open Router. At least one required.
+OLLAMA_BASE_URL=https://ollama.yourdomain.com
+# OPEN_ROUTER_API_KEY=sk-...
 RESEND_API_KEY=re_...
 PORT=3001
 NODE_ENV=production

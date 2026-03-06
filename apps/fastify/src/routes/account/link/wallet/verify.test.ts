@@ -4,9 +4,8 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { getApiKeyToken, getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
-const TEST_PRIVATE_KEY =
-  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as const
-const TEST_ACCOUNT = privateKeyToAccount(TEST_PRIVATE_KEY as `0x${string}`)
+const testPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as const
+const testAccount = privateKeyToAccount(testPrivateKey as `0x${string}`)
 
 describe('POST /account/link/wallet/verify', () => {
   beforeEach(async () => {
@@ -39,12 +38,12 @@ describe('POST /account/link/wallet/verify', () => {
 
     const nonceRes = await fastify.inject({
       method: 'GET',
-      url: `/auth/web3/nonce?chain=eip155&address=${TEST_ACCOUNT.address}`,
+      url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const message = createSiweMessage({
-      address: TEST_ACCOUNT.address,
+      address: testAccount.address,
       chainId: 1,
       domain: 'localhost',
       nonce,
@@ -86,19 +85,19 @@ describe('POST /account/link/wallet/verify', () => {
 
     const nonceRes = await fastify.inject({
       method: 'GET',
-      url: `/auth/web3/nonce?chain=eip155&address=${TEST_ACCOUNT.address}`,
+      url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const messageToSign = createSiweMessage({
-      address: TEST_ACCOUNT.address,
+      address: testAccount.address,
       chainId: 1,
       domain: 'localhost',
       nonce,
       uri: 'https://localhost',
       version: '1',
     })
-    const signature = await TEST_ACCOUNT.signMessage({ message: messageToSign })
+    const signature = await testAccount.signMessage({ message: messageToSign })
 
     const response = await fastify.inject({
       method: 'POST',
@@ -122,7 +121,7 @@ describe('POST /account/link/wallet/verify', () => {
       .where(eq(walletIdentities.userId, userId))
     expect(row).toBeDefined()
     expect(row?.chain).toBe('eip155')
-    expect(row?.address?.toLowerCase()).toBe(TEST_ACCOUNT.address.toLowerCase())
+    expect(row?.address?.toLowerCase()).toBe(testAccount.address.toLowerCase())
   })
 
   it('should link wallet when authenticated via API key', async () => {
@@ -140,19 +139,19 @@ describe('POST /account/link/wallet/verify', () => {
 
     const nonceRes = await fastify.inject({
       method: 'GET',
-      url: `/auth/web3/nonce?chain=eip155&address=${TEST_ACCOUNT.address}`,
+      url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const messageToSign = createSiweMessage({
-      address: TEST_ACCOUNT.address,
+      address: testAccount.address,
       chainId: 1,
       domain: 'localhost',
       nonce,
       uri: 'https://localhost',
       version: '1',
     })
-    const signature = await TEST_ACCOUNT.signMessage({ message: messageToSign })
+    const signature = await testAccount.signMessage({ message: messageToSign })
 
     const response = await fastify.inject({
       method: 'POST',
@@ -189,19 +188,19 @@ describe('POST /account/link/wallet/verify', () => {
 
     const nonceRes = await fastify.inject({
       method: 'GET',
-      url: `/auth/web3/nonce?chain=eip155&address=${TEST_ACCOUNT.address}`,
+      url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const messageToSign = createSiweMessage({
-      address: TEST_ACCOUNT.address,
+      address: testAccount.address,
       chainId: 1,
       domain: 'localhost',
       nonce,
       uri: 'https://localhost',
       version: '1',
     })
-    const signature = await TEST_ACCOUNT.signMessage({ message: messageToSign })
+    const signature = await testAccount.signMessage({ message: messageToSign })
 
     await fastify.inject({
       method: 'POST',
@@ -220,19 +219,19 @@ describe('POST /account/link/wallet/verify', () => {
 
     const nonceRes2 = await fastify.inject({
       method: 'GET',
-      url: `/auth/web3/nonce?chain=eip155&address=${TEST_ACCOUNT.address}`,
+      url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
     })
     const { nonce: nonce2 } = JSON.parse(nonceRes2.body)
 
     const messageToSign2 = createSiweMessage({
-      address: TEST_ACCOUNT.address,
+      address: testAccount.address,
       chainId: 1,
       domain: 'localhost',
       nonce: nonce2,
       uri: 'https://localhost',
       version: '1',
     })
-    const signature2 = await TEST_ACCOUNT.signMessage({ message: messageToSign2 })
+    const signature2 = await testAccount.signMessage({ message: messageToSign2 })
 
     const response = await fastify.inject({
       method: 'POST',

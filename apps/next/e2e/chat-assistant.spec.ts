@@ -4,6 +4,8 @@ import { authHelpers } from './auth-helpers'
 // Skip: getAuthToken returns null for chat transport despite Signed In (useUser works; chat gets UNAUTHORIZED)
 test.describe
   .skip('Chat Assistant', () => {
+    test.use({ viewport: { width: 375, height: 667 } })
+
     test('should send message via Who am I? and show assistant response', async ({ page }) => {
       test.setTimeout(120000)
       await authHelpers.loginAsTestUser(page)

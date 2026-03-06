@@ -10,9 +10,18 @@ function AlertDialog({ ...props }: React.ComponentProps<typeof AlertDialogPrimit
 }
 
 function AlertDialogTrigger({
+  className,
+  disabled,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
-  return <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />
+  return (
+    <AlertDialogPrimitive.Trigger
+      data-slot="alert-dialog-trigger"
+      className={cn('cursor-pointer data-[disabled]:cursor-not-allowed', className)}
+      disabled={disabled}
+      {...props}
+    />
+  )
 }
 
 function AlertDialogPortal({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) {

@@ -4,14 +4,17 @@ import { redirect } from 'next/navigation'
 import { env } from '@/lib/env'
 import { NewsList, type NewsListArticle } from './news-list'
 
+const newsQuery =
+  '(crypto OR bitcoin OR ethereum OR blockchain) OR (AI OR "artificial intelligence" OR "machine learning")'
+
 async function fetchHeadlines() {
   const key = env.NEWSAPI_KEY
   if (!key) return { articles: null, error: null, hasKey: false }
 
   try {
     const res = await fetch(
-      `https://newsapi.org/v2/top-headlines?country=us&pageSize=20&apiKey=${key}`,
-      { next: { revalidate: 300 } },
+      `https://newsapi.org/v2/everything?q=${encodeURIComponent(newsQuery)}&pageSize=20&sortBy=publishedAt&language=en`,
+      { headers: { 'X-Api-Key': key }, next: { revalidate: 300 } },
     )
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data = (await res.json()) as { status?: string; articles?: NewsListArticle[] }
@@ -36,7 +39,6 @@ export default async function Home() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Top headlines</h1>
       <NewsList articles={articles ?? undefined} error={error ?? undefined} fallback={fallback} />
     </div>
   )

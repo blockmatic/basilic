@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { authHelpers } from './auth-helpers'
 
-const { TEST_EMAIL } = authHelpers
+const { testEmail } = authHelpers
 
 const authCookieName =
   process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME ?? 'api.session'
@@ -10,7 +10,7 @@ function checkAuthenticated(page: import('@playwright/test').Page) {
   return {
     async run() {
       expect(page.url()).toMatch(/^https?:\/\/[^/]+\/?(\?.*)?$/)
-      const signOutButton = page.getByRole('link', { name: 'Sign out' })
+      const signOutButton = page.getByRole('link', { name: 'Sign out' }).first()
       await expect(signOutButton).toBeVisible({ timeout: 5000 })
       const apiBadge = page.locator('text=API OK')
       await expect(apiBadge).toBeVisible({ timeout: 10000 })
@@ -171,7 +171,7 @@ test.describe('Magic Link Authentication', () => {
       expect(typeof parsed.token).toBe('string')
       expect(typeof parsed.refreshToken).toBe('string')
 
-      const response = await page.request.get(`${authHelpers.API_URL}/auth/session/user`, {
+      const response = await page.request.get(`${authHelpers.apiUrl}/auth/session/user`, {
         headers: { Authorization: `Bearer ${parsed.token ?? ''}` },
       })
       expect(response.ok()).toBeTruthy()
@@ -179,7 +179,7 @@ test.describe('Magic Link Authentication', () => {
       const sessionData = (await response.json()) as { user?: { email?: string } }
       expect(sessionData).toHaveProperty('user')
       expect(sessionData.user).not.toBeNull()
-      expect(sessionData.user?.email).toBe(TEST_EMAIL)
+      expect(sessionData.user?.email).toBe(testEmail)
     })
   })
 })

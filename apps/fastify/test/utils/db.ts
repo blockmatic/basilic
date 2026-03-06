@@ -79,7 +79,7 @@ export async function getTestDatabase() {
 }
 
 /** Tables to truncate (order respects FK: users referenced by others) */
-const TABLES = [
+const tables = [
   'api_keys',
   'account',
   'sessions',
@@ -96,7 +96,7 @@ const TABLES = [
 export async function truncateAllTables() {
   if (!pgLiteInstance) return
   try {
-    await pgLiteInstance.exec(`TRUNCATE ${TABLES.join(', ')} RESTART IDENTITY CASCADE`)
+    await pgLiteInstance.exec(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY CASCADE`)
   } catch {
     // Tables may not exist (e.g. db.spec runs without migrations)
   }

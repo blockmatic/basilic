@@ -1,9 +1,11 @@
+import { createOpenAI } from '@ai-sdk/openai'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { Type } from '@sinclair/typebox'
 import {
   convertToModelMessages,
   generateText,
+  type LanguageModel,
   type ModelMessage,
   smoothStream,
   streamText,
@@ -29,13 +31,14 @@ const ChatMessageItemSchema = Type.Union([
     parts: Type.Array(Type.Any()),
   }),
 ])
-/** Fixed default for OpenAPI/schema; runtime override via AI_DEFAULT_MODEL env. */
-const DEFAULT_AI_MODEL = 'openrouter/free'
+
+const defaultOllamaModel = 'qwen2.5:3b'
+const defaultOpenRouterModel = 'openrouter/free'
 
 const ChatRequestSchema = Type.Object({
   messages: Type.Array(ChatMessageItemSchema, { minItems: 1, maxItems: 50 }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(Type.String({ default: DEFAULT_AI_MODEL })),
+  model: Type.Optional(Type.String({ default: defaultOllamaModel })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
   tools: Type.Optional(Type.Any()),
 })
@@ -44,25 +47,53 @@ const ChatResponseSchema = Type.Object({
   text: Type.String(),
 })
 
-const MODEL_ALIASES: Record<string, string> = {
-  'aurora-alpha': DEFAULT_AI_MODEL,
+const openRouterModelAliases: Record<string, string> = {
+  'aurora-alpha': defaultOpenRouterModel,
   grok: 'x-ai/grok-3-mini',
   'grok-3-mini': 'x-ai/grok-3-mini',
   sonnet: 'anthropic/claude-3-5-sonnet',
   opus: 'anthropic/claude-3-opus',
 }
 
-function getOpenRouter() {
-  return createOpenRouter({ apiKey: env.OPEN_ROUTER_API_KEY })
+type ResolvedProvider = 'ollama' | 'openrouter'
+
+function getResolvedProvider(): ResolvedProvider | null {
+  if (env.AI_PROVIDER === 'openrouter') {
+    if (env.OPEN_ROUTER_API_KEY) return 'openrouter'
+    return null
+  }
+  if (env.AI_PROVIDER === 'ollama') {
+    if (env.OLLAMA_BASE_URL) return 'ollama'
+    return null
+  }
+  if (env.OLLAMA_BASE_URL) return 'ollama'
+  if (env.OPEN_ROUTER_API_KEY) return 'openrouter'
+  return null
 }
 
-function resolveModel(model?: string) {
-  const defaultModel = env.AI_DEFAULT_MODEL ?? DEFAULT_AI_MODEL
-  const useRuntimeDefault =
-    model === undefined || model === DEFAULT_AI_MODEL || model === 'aurora-alpha'
-  const m = useRuntimeDefault ? defaultModel : model
-  const modelId = MODEL_ALIASES[m] ?? (m.startsWith('gpt') ? `openai/${m}` : m)
-  return getOpenRouter().chat(modelId)
+function getProvider(provider: ResolvedProvider, modelParam?: string): LanguageModel {
+  if (provider === 'ollama') {
+    const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOllamaModel
+    const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
+    const useDefault =
+      m === undefined || m === defaultOllamaModel || m === 'aurora-alpha' || m === 'default'
+    const modelId = useDefault ? defaultModel : (m ?? defaultModel)
+    const ollama = createOpenAI({
+      baseURL: `${env.OLLAMA_BASE_URL}/v1`,
+      apiKey: 'ollama',
+    })
+    return ollama(modelId)
+  }
+  const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
+  const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOpenRouterModel
+  const useRuntimeDefault = m === undefined || m === defaultOpenRouterModel || m === 'aurora-alpha'
+  const effective = useRuntimeDefault ? defaultModel : (m ?? defaultModel)
+  const modelId =
+    openRouterModelAliases[effective] ??
+    (effective.startsWith('gpt') ? `openai/${effective}` : effective)
+  const apiKey = env.OPEN_ROUTER_API_KEY
+  if (!apiKey) throw new Error('OPEN_ROUTER_API_KEY required for Open Router')
+  return createOpenRouter({ apiKey }).chat(modelId)
 }
 
 function isUIMessage(msg: unknown): msg is { role: string; parts: unknown[] } {
@@ -106,7 +137,7 @@ async function resolveMessages(rawMessages: unknown[], tools: ToolSet): Promise<
   )
 }
 
-const USER_INFO_SPEC_ROOT = 'user-info-1'
+const userInfoSpecRoot = 'user-info-1'
 
 function buildUserInfoSpec(user: {
   name: string | null
@@ -120,9 +151,9 @@ function buildUserInfoSpec(user: {
     year: 'numeric',
   }).format(user.createdAt)
   return {
-    root: USER_INFO_SPEC_ROOT,
+    root: userInfoSpecRoot,
     elements: {
-      [USER_INFO_SPEC_ROOT]: {
+      [userInfoSpecRoot]: {
         type: 'UserInfo',
         props: {
           name: user.name ?? null,
@@ -146,7 +177,7 @@ function createAccountInfoTool(userId: string) {
       const [user] = await db.select().from(users).where(eq(users.id, userId))
       if (!user) return 'Account not found.'
       const spec = buildUserInfoSpec(user)
-      const summaryParts = [`You joined in ${spec.elements[USER_INFO_SPEC_ROOT].props.joinedAt}`]
+      const summaryParts = [`You joined in ${spec.elements[userInfoSpecRoot].props.joinedAt}`]
       if (user.email) summaryParts.push(`Email: ${user.email}`)
       if (user.name) summaryParts.push(`Name: ${user.name}`)
       return {
@@ -165,7 +196,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'chat',
         description:
-          'Chat with AI via Open Router. Default model is configurable via AI_DEFAULT_MODEL (fallback: openrouter/free). Supports streaming and tools.',
+          'Chat with AI via Ollama (default) or Open Router. Set OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.',
         summary: 'Generate AI chat response',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],
@@ -188,14 +219,15 @@ const chatRoute: FastifyPluginAsync = async fastify => {
           message: 'Authentication required',
         })
 
-      if (!env.OPEN_ROUTER_API_KEY)
+      const provider = getResolvedProvider()
+      if (!provider)
         return reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Server misconfiguration: OPEN_ROUTER_API_KEY is not set',
+          message: 'No AI provider configured. Set OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY.',
         })
 
       const { messages: rawMessages, stream, model, temperature } = request.body
-      const resolvedModel = resolveModel(model)
+      const resolvedModel = getProvider(provider, model)
 
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
       const shouldStream = stream === true || acceptHeader.includes('text/event-stream')

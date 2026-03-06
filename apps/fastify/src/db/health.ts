@@ -1,9 +1,9 @@
 import { Pool } from 'pg'
 import { env } from '../lib/env.js'
 
-const MAX_RETRIES = 10
-const INITIAL_RETRY_DELAY = 1000 // 1 second
-const MAX_WAIT_TIME = 30000 // 30 seconds
+const maxRetries = 10
+const initialRetryDelay = 1000 // 1 second
+const maxWaitTime = 30000 // 30 seconds
 
 /**
  * Wait for database connection to be available
@@ -19,10 +19,10 @@ export async function waitForDatabase(logger?: {
   const startTime = Date.now()
   let attempt = 0
 
-  while (attempt < MAX_RETRIES) {
-    // Calculate timeout per attempt: distribute MAX_WAIT_TIME across retries
+  while (attempt < maxRetries) {
+    // Calculate timeout per attempt: distribute maxWaitTime across retries
     const connectionTimeoutMillis = Math.max(
-      Math.floor(MAX_WAIT_TIME / MAX_RETRIES),
+      Math.floor(maxWaitTime / maxRetries),
       1000, // Minimum 1 second timeout
     )
     const pool = new Pool({
@@ -44,17 +44,17 @@ export async function waitForDatabase(logger?: {
       attempt++
 
       const elapsed = Date.now() - startTime
-      if (elapsed >= MAX_WAIT_TIME) {
-        logger?.error(`Database connection timeout after ${MAX_WAIT_TIME}ms`, err)
+      if (elapsed >= maxWaitTime) {
+        logger?.error(`Database connection timeout after ${maxWaitTime}ms`, err)
         throw new Error(
-          `Database connection failed after ${MAX_WAIT_TIME}ms. Make sure your database is running and accessible via DATABASE_URL. Error: ${err instanceof Error ? err.message : String(err)}`,
+          `Database connection failed after ${maxWaitTime}ms. Make sure your database is running and accessible via DATABASE_URL. Error: ${err instanceof Error ? err.message : String(err)}`,
         )
       }
 
-      if (attempt < MAX_RETRIES) {
-        const delay = Math.min(INITIAL_RETRY_DELAY * 2 ** (attempt - 1), 5000)
+      if (attempt < maxRetries) {
+        const delay = Math.min(initialRetryDelay * 2 ** (attempt - 1), 5000)
         logger?.info(
-          `Database connection attempt ${attempt}/${MAX_RETRIES} failed, retrying in ${delay}ms...`,
+          `Database connection attempt ${attempt}/${maxRetries} failed, retrying in ${delay}ms...`,
         )
         await new Promise(resolve => setTimeout(resolve, delay))
       }

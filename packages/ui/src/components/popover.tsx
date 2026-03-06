@@ -8,8 +8,17 @@ function Popover({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Root
   return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
 
-function PopoverTrigger({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
+function PopoverTrigger({
+  className,
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
+  return (
+    <PopoverPrimitive.Trigger
+      data-slot="popover-trigger"
+      className={cn('cursor-pointer', className)}
+      {...props}
+    />
+  )
 }
 
 function PopoverContent({

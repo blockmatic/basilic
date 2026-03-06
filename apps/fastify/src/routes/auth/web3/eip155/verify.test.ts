@@ -3,22 +3,22 @@ import { createSiweMessage } from 'viem/siwe'
 import { describe, expect, it } from 'vitest'
 import { fastify } from '../../web3.spec.js'
 
-const TEST_PRIVATE_KEY =
+const testPrivateKey =
   '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as `0x${string}`
-const TEST_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+const testAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 
 describe('POST /auth/web3/eip155/verify', () => {
   it('should verify valid SIWE signature and return JWTs', async () => {
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
-      query: { address: TEST_ADDRESS },
+      query: { address: testAddress },
     })
     expect(nonceRes.statusCode).toBe(200)
     const { nonce } = JSON.parse(nonceRes.body)
 
     const message = createSiweMessage({
-      address: TEST_ADDRESS,
+      address: testAddress,
       chainId: 1,
       domain: 'localhost',
       nonce,
@@ -26,7 +26,7 @@ describe('POST /auth/web3/eip155/verify', () => {
       version: '1',
     })
 
-    const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+    const account = privateKeyToAccount(testPrivateKey)
     const signature = await account.signMessage({ message })
 
     const verifyRes = await fastify.inject({
@@ -44,7 +44,7 @@ describe('POST /auth/web3/eip155/verify', () => {
 
   it('should return 401 for invalid nonce', async () => {
     const message = createSiweMessage({
-      address: TEST_ADDRESS,
+      address: testAddress,
       chainId: 1,
       domain: 'localhost',
       nonce: 'invalidnonce123',
@@ -52,7 +52,7 @@ describe('POST /auth/web3/eip155/verify', () => {
       version: '1',
     })
 
-    const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+    const account = privateKeyToAccount(testPrivateKey)
     const signature = await account.signMessage({ message })
 
     const res = await fastify.inject({
@@ -70,12 +70,12 @@ describe('POST /auth/web3/eip155/verify', () => {
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
-      query: { address: TEST_ADDRESS },
+      query: { address: testAddress },
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const message = createSiweMessage({
-      address: TEST_ADDRESS,
+      address: testAddress,
       chainId: 1,
       domain: 'localhost',
       nonce,
@@ -98,12 +98,12 @@ describe('POST /auth/web3/eip155/verify', () => {
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
-      query: { address: TEST_ADDRESS },
+      query: { address: testAddress },
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const message = createSiweMessage({
-      address: TEST_ADDRESS,
+      address: testAddress,
       chainId: 1,
       domain: 'localhost',
       nonce,
@@ -111,7 +111,7 @@ describe('POST /auth/web3/eip155/verify', () => {
       version: '1',
     })
 
-    const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+    const account = privateKeyToAccount(testPrivateKey)
     const signature = await account.signMessage({ message })
 
     const res = await fastify.inject({
@@ -131,12 +131,12 @@ describe('POST /auth/web3/eip155/verify', () => {
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
-      query: { address: TEST_ADDRESS },
+      query: { address: testAddress },
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const message = createSiweMessage({
-      address: TEST_ADDRESS,
+      address: testAddress,
       chainId: 1,
       domain: 'localhost',
       nonce,
@@ -144,7 +144,7 @@ describe('POST /auth/web3/eip155/verify', () => {
       version: '1',
     })
 
-    const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+    const account = privateKeyToAccount(testPrivateKey)
     const signature = await account.signMessage({ message })
     const callbackUrl = 'https://example.com/auth/callback'
 
@@ -166,12 +166,12 @@ describe('POST /auth/web3/eip155/verify', () => {
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
-      query: { address: TEST_ADDRESS },
+      query: { address: testAddress },
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const message = createSiweMessage({
-      address: TEST_ADDRESS,
+      address: testAddress,
       chainId: 1,
       domain: 'localhost',
       nonce,
@@ -179,7 +179,7 @@ describe('POST /auth/web3/eip155/verify', () => {
       version: '1',
     })
 
-    const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+    const account = privateKeyToAccount(testPrivateKey)
     const signature = await account.signMessage({ message })
     const callbackUrl = 'https://example.com/auth/callback#section'
 
@@ -201,12 +201,12 @@ describe('POST /auth/web3/eip155/verify', () => {
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
-      query: { address: TEST_ADDRESS },
+      query: { address: testAddress },
     })
     const { nonce } = JSON.parse(nonceRes.body)
 
     const message = createSiweMessage({
-      address: TEST_ADDRESS,
+      address: testAddress,
       chainId: 1,
       domain: 'localhost',
       nonce,
@@ -214,7 +214,7 @@ describe('POST /auth/web3/eip155/verify', () => {
       version: '1',
     })
 
-    const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+    const account = privateKeyToAccount(testPrivateKey)
     const signature = await account.signMessage({ message })
 
     const verifyRes = await fastify.inject({

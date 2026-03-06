@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 export function PasskeysCard() {
   return (
-    <Card>
+    <Card className="shadow-lg">
       <CardHeader>
         <CardTitle>Passkeys</CardTitle>
         <CardDescription>
