@@ -76,7 +76,7 @@ async function main() {
     JWT_SECRET: jwtSecret,
   }
 
-  const fastify = spawn('pnpm', ['start:ci'], {
+  const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
     cwd: fastifyDir,
     env,
     stdio: 'ignore',

@@ -21,7 +21,7 @@ const phases = [
   { name: 'lint:fix', cmd: 'pnpm', args: ['lint:fix'] },
   { name: 'build', cmd: 'pnpm', args: ['build'] },
   { name: 'test', cmd: 'pnpm', args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'] },
-  { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'], env: { ...process.env, SKIP_BUILD: '1' } },
+  { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'] },
 ]
 
 for (const { name, cmd, args, env } of phases) {

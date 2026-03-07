@@ -34,6 +34,7 @@ async function main() {
   killPorts()
   await run('pnpm', ['-F', '@repo/fastify', 'test:e2e:local'])
   killPorts()
+  await new Promise(r => setTimeout(r, 2000))
   await run('pnpm', ['-F', '@repo/next', 'test:e2e:local'])
 }
 
