@@ -15,11 +15,22 @@ account: {
       request: gen.accountLinkEmailRequest,
       verify: gen.accountLinkEmailVerify,
     },
+    passkey: {
+      id: gen.accountLinkPasskeyDelete,
+      finish: gen.accountLinkPasskeyFinish,
+      start: gen.accountLinkPasskeyStart,
+    },
+    totp: {
+      setup: gen.accountLinkTotpSetup,
+      unlink: gen.accountLinkTotpUnlink,
+      verify: gen.accountLinkTotpVerify,
+    },
     wallet: {
       id: gen.accountLinkWalletUnlink,
       verify: gen.accountLinkWalletVerify,
     },
   },
+  passkeys: gen.accountPasskeysList,
 },
 ai: {
   chat: gen.chat,
@@ -35,6 +46,11 @@ auth: {
       authorize: gen.oauthGithubAuthorize,
       exchange: gen.oauthGithubExchange,
     },
+  },
+  passkey: {
+    exchange: gen.authPasskeyExchange,
+    start: gen.authPasskeyStart,
+    verify: gen.authPasskeyVerify,
   },
   session: {
     logout: gen.logout,

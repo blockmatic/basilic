@@ -220,6 +220,290 @@ export type AccountLinkEmailVerifyResponses = {
 
 export type AccountLinkEmailVerifyResponse = AccountLinkEmailVerifyResponses[keyof AccountLinkEmailVerifyResponses];
 
+export type AccountLinkPasskeyDeleteData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/account/link/passkey/{id}';
+};
+
+export type AccountLinkPasskeyDeleteErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkPasskeyDeleteError = AccountLinkPasskeyDeleteErrors[keyof AccountLinkPasskeyDeleteErrors];
+
+export type AccountLinkPasskeyDeleteResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type AccountLinkPasskeyDeleteResponse = AccountLinkPasskeyDeleteResponses[keyof AccountLinkPasskeyDeleteResponses];
+
+export type AccountLinkPasskeyFinishData = {
+    body: {
+        credential: {
+            id: string;
+            rawId: string;
+            response: {
+                clientDataJSON: string;
+                attestationObject: string;
+                authenticatorData?: string;
+                transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
+                publicKeyAlgorithm?: number;
+                publicKey?: string;
+            };
+            authenticatorAttachment?: 'platform' | 'cross-platform';
+            clientExtensionResults?: unknown;
+            type: 'public-key';
+        };
+        name?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/link/passkey/finish';
+};
+
+export type AccountLinkPasskeyFinishErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkPasskeyFinishError = AccountLinkPasskeyFinishErrors[keyof AccountLinkPasskeyFinishErrors];
+
+export type AccountLinkPasskeyFinishResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: true;
+    };
+};
+
+export type AccountLinkPasskeyFinishResponse = AccountLinkPasskeyFinishResponses[keyof AccountLinkPasskeyFinishResponses];
+
+export type AccountLinkPasskeyStartData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/link/passkey/start';
+};
+
+export type AccountLinkPasskeyStartErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkPasskeyStartError = AccountLinkPasskeyStartErrors[keyof AccountLinkPasskeyStartErrors];
+
+export type AccountLinkPasskeyStartResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        options: {
+            rp: {
+                name: string;
+                id?: string;
+            };
+            user: {
+                id: string;
+                name: string;
+                displayName: string;
+            };
+            challenge: string;
+            pubKeyCredParams: Array<{
+                alg: number;
+                type: 'public-key';
+            }>;
+            timeout?: number;
+            excludeCredentials?: Array<{
+                id: string;
+                type: 'public-key';
+                transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
+            }>;
+            authenticatorSelection?: {
+                authenticatorAttachment?: 'platform' | 'cross-platform';
+                requireResidentKey?: boolean;
+                residentKey?: 'discouraged' | 'preferred' | 'required';
+                userVerification?: 'discouraged' | 'preferred' | 'required';
+            };
+            attestation?: 'direct' | 'enterprise' | 'indirect' | 'none';
+            extensions?: unknown;
+        };
+    };
+};
+
+export type AccountLinkPasskeyStartResponse = AccountLinkPasskeyStartResponses[keyof AccountLinkPasskeyStartResponses];
+
+export type AccountLinkTotpSetupData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/link/totp/setup';
+};
+
+export type AccountLinkTotpSetupErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkTotpSetupError = AccountLinkTotpSetupErrors[keyof AccountLinkTotpSetupErrors];
+
+export type AccountLinkTotpSetupResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        otpauthUri: string;
+        manualEntryKey: string;
+        qrCodeDataUrl: string;
+    };
+};
+
+export type AccountLinkTotpSetupResponse = AccountLinkTotpSetupResponses[keyof AccountLinkTotpSetupResponses];
+
+export type AccountLinkTotpUnlinkData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/link/totp/';
+};
+
+export type AccountLinkTotpUnlinkErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkTotpUnlinkError = AccountLinkTotpUnlinkErrors[keyof AccountLinkTotpUnlinkErrors];
+
+export type AccountLinkTotpUnlinkResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type AccountLinkTotpUnlinkResponse = AccountLinkTotpUnlinkResponses[keyof AccountLinkTotpUnlinkResponses];
+
+export type AccountLinkTotpVerifyData = {
+    body: {
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/link/totp/verify';
+};
+
+export type AccountLinkTotpVerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkTotpVerifyError = AccountLinkTotpVerifyErrors[keyof AccountLinkTotpVerifyErrors];
+
+export type AccountLinkTotpVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: true;
+    };
+};
+
+export type AccountLinkTotpVerifyResponse = AccountLinkTotpVerifyResponses[keyof AccountLinkTotpVerifyResponses];
+
 export type AccountLinkWalletUnlinkData = {
     body?: never;
     path: {
@@ -304,6 +588,40 @@ export type AccountLinkWalletVerifyResponses = {
 };
 
 export type AccountLinkWalletVerifyResponse = AccountLinkWalletVerifyResponses[keyof AccountLinkWalletVerifyResponses];
+
+export type AccountPasskeysListData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/passkeys/';
+};
+
+export type AccountPasskeysListErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountPasskeysListError = AccountPasskeysListErrors[keyof AccountPasskeysListErrors];
+
+export type AccountPasskeysListResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        passkeys: Array<{
+            id: string;
+            name: string;
+            createdAt: string;
+        }>;
+    };
+};
+
+export type AccountPasskeysListResponse = AccountPasskeysListResponses[keyof AccountPasskeysListResponses];
 
 export type ChatData = {
     body: {
@@ -532,6 +850,144 @@ export type OauthGithubExchangeResponses = {
 
 export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof OauthGithubExchangeResponses];
 
+export type AuthPasskeyExchangeData = {
+    body: {
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/passkey/exchange';
+};
+
+export type AuthPasskeyExchangeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AuthPasskeyExchangeError = AuthPasskeyExchangeErrors[keyof AuthPasskeyExchangeErrors];
+
+export type AuthPasskeyExchangeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type AuthPasskeyExchangeResponse = AuthPasskeyExchangeResponses[keyof AuthPasskeyExchangeResponses];
+
+export type AuthPasskeyStartData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/passkey/start';
+};
+
+export type AuthPasskeyStartErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AuthPasskeyStartError = AuthPasskeyStartErrors[keyof AuthPasskeyStartErrors];
+
+export type AuthPasskeyStartResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        options: {
+            challenge: string;
+            timeout?: number;
+            rpId?: string;
+            allowCredentials?: Array<{
+                id: string;
+                type: 'public-key';
+                transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
+            }>;
+            userVerification?: 'discouraged' | 'preferred' | 'required';
+            extensions?: unknown;
+        };
+        sessionId: string;
+    };
+};
+
+export type AuthPasskeyStartResponse = AuthPasskeyStartResponses[keyof AuthPasskeyStartResponses];
+
+export type AuthPasskeyVerifyData = {
+    body: {
+        assertion: {
+            id: string;
+            rawId: string;
+            response: {
+                clientDataJSON: string;
+                authenticatorData: string;
+                signature: string;
+                userHandle?: string;
+            };
+            authenticatorAttachment?: 'platform' | 'cross-platform';
+            clientExtensionResults?: unknown;
+            type: 'public-key';
+        };
+        sessionId: string;
+        callbackUrl?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/passkey/verify';
+};
+
+export type AuthPasskeyVerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AuthPasskeyVerifyError = AuthPasskeyVerifyErrors[keyof AuthPasskeyVerifyErrors];
+
+export type AuthPasskeyVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    } | {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type AuthPasskeyVerifyResponse = AuthPasskeyVerifyResponses[keyof AuthPasskeyVerifyResponses];
+
 export type LogoutData = {
     body?: never;
     path?: never;
@@ -650,6 +1106,12 @@ export type GetUserResponses = {
                 id: string;
                 chain: string;
                 address: string;
+            }>;
+            totpEnabled: boolean;
+            passkeys: Array<{
+                id: string;
+                name: string;
+                createdAt: string;
             }>;
         };
     };

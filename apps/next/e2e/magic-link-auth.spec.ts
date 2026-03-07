@@ -29,6 +29,11 @@ test.describe('Magic Link Authentication', () => {
       expect(response.status()).toBe(200)
       expect(response.ok()).toBe(true)
 
+      await page
+        .getByText(/check your email for the magic link/i)
+        .waitFor({ state: 'visible', timeout: 10000 })
+      await new Promise(r => setTimeout(r, 500))
+
       const token = await authHelpers.extractToken(page)
       expect(token).toBeTruthy()
       expect(typeof token).toBe('string')

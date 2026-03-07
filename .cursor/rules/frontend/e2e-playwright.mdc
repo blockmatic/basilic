@@ -11,15 +11,16 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - CI: test:e2e:local only (spawn local servers; no Vercel URLs)
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
-- projects: auth first (magic-link-auth, link-email), then chromium (chat-assistant)
+- projects: auth first (magic-link-auth), then chromium (chat-assistant), then security (authenticator, passkeys, api-keys)
 
 ## Session Model
 - Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
 - One login per worker, then navigate and assert. No per-test login for authed tests
 - Session reused via worker-scoped storageState (saved after login, new context per test)
 ## Test Order
-- Auth project first: magic-link-auth, link-email (both use auth-helpers magic link flow). Use `/auth/login` for login page
+- Auth project first: magic-link-auth (auth-helpers magic link flow). Use `/auth/login` for login page
 - Chromium project: chat-assistant (uses authenticatedPage; fixture triggers magic link login)
+- Security project: authenticator, passkeys, api-keys (use authenticatedPage; TOTP spec uses extractSessionToken for test endpoint)
 
 ## Disabled Specs
 - chat-assistant skipped (test.describe.skip) until getAuthToken fixed for chat transport

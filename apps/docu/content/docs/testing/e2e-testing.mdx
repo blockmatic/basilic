@@ -94,8 +94,10 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 | Spec | Coverage |
 |------|----------|
 | `magic-link-auth.spec.ts` | Magic link login, invalid/expired token errors, email validation, protected route, JWT session |
-| `link-email.spec.ts` | "Already linked" when user has email (magic link flow via `/auth/login`) |
 | `chat-assistant.spec.ts` | Chat UI with authenticatedPage; Who am I? prompt (skipped until getAuthToken fixed) |
+| `security/api-keys.spec.ts` | API keys CRUD: create, revoke, empty state |
+| `security/authenticator.spec.ts` | TOTP setup/unlink via extractSessionToken + test endpoint |
+| `security/passkeys.spec.ts` | Passkeys add/remove with CDP virtual authenticator |
 
 ### Project order
 
@@ -103,14 +105,19 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 flowchart TB
   subgraph AuthProj [Auth project]
     MagicLinkAuth[magic-link-auth.spec.ts]
-    LinkEmail[link-email.spec.ts]
   end
 
   subgraph ChromiumProj [Chromium project]
     ChatAssistant[chat-assistant.spec.ts]
   end
 
-  MagicLinkAuth --> LinkEmail --> ChromiumProj
+  subgraph SecurityProj [Security project]
+    ApiKeys[api-keys.spec.ts]
+    Authenticator[authenticator.spec.ts]
+    Passkeys[passkeys.spec.ts]
+  end
+
+  MagicLinkAuth --> ChromiumProj --> SecurityProj
 ```
 
 ### Disabled / skipped specs

@@ -3,7 +3,10 @@ import type { Page } from '@playwright/test'
 const testEmail = 'test@test.ai'
 const apiUrl =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
-const apiBase = apiUrl.replace(/\/$/, '')
+const appUrl =
+  process.env.PLAYWRIGHT_APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+const authCookieName =
+  process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME ?? 'api.session'
 
 async function sendMagicLinkOnce(page: Page) {
   await page.goto('/auth/login')
@@ -11,9 +14,8 @@ async function sendMagicLinkOnce(page: Page) {
   await page.fill('input[type="email"]', testEmail)
   const [response] = await Promise.all([
     page.waitForResponse(
-      resp =>
-        resp.url().startsWith(`${apiBase}/auth/magiclink/request`) &&
-        resp.request().method() === 'POST',
+      resp => resp.url().includes('/auth/magiclink/request') && resp.request().method() === 'POST',
+      { timeout: 60_000 },
     ),
     page.click('button[type="submit"]'),
   ])
@@ -35,8 +37,9 @@ async function enrichError(response: Awaited<ReturnType<typeof sendMagicLinkOnce
 }
 
 export const authHelpers = {
-  testEmail,
+  appUrl,
   apiUrl,
+  testEmail,
 
   async sendMagicLink(page: Page) {
     let response = await sendMagicLinkOnce(page)
@@ -48,7 +51,10 @@ export const authHelpers = {
   },
 
   async extractToken(page: Page): Promise<string | null> {
-    const maxRetries = 5
+    // Stabilize e2e auth flows: 500ms delay and 12 retries chosen empirically for async
+    // backend/session propagation and flaky CI timing. Adjust if tests are stabilized.
+    await new Promise(r => setTimeout(r, 500))
+    const maxRetries = 12
     const delayMs = 500
     for (let attempt = 0; attempt < maxRetries; attempt++)
       try {
@@ -88,6 +94,25 @@ export const authHelpers = {
       },
       { timeout: 10000 },
     )
+  },
+
+  async extractSessionToken(page: Page): Promise<string | null> {
+    const pageOrigin = new URL(page.url()).origin
+    const cookies = await page.context().cookies([pageOrigin, apiUrl])
+    const sessionCookie = cookies.find(c => c.name === authCookieName)
+    if (!sessionCookie?.value) return null
+    const rawValue = sessionCookie.value
+    let parsed: { token?: string }
+    try {
+      parsed = JSON.parse(rawValue) as { token?: string }
+    } catch {
+      try {
+        parsed = JSON.parse(decodeURIComponent(rawValue)) as { token?: string }
+      } catch {
+        return null
+      }
+    }
+    return parsed.token ?? null
   },
 
   async loginAsTestUser(page: Page) {

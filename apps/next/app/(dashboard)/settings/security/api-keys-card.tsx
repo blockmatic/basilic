@@ -1,5 +1,6 @@
 'use client'
 
+import { useApiKeysList, useCreateApiKey, useRevokeApiKey } from '@repo/react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,9 +32,8 @@ import {
   TableHeader,
   TableRow,
 } from '@repo/ui/components/table'
-import { useApiKeysList, useCreateApiKey, useRevokeApiKey } from 'hooks/use-api-keys'
 import { CopyIcon, PlusIcon, Trash2Icon } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 function formatDate(iso: string) {
@@ -54,7 +54,7 @@ export function ApiKeysCard() {
   const [createdKey, setCreatedKey] = useState<string | null>(null)
   const [revokeId, setRevokeId] = useState<string | null>(null)
 
-  const handleCreateSubmit = useCallback(async () => {
+  async function handleCreateSubmit() {
     if (!createName.trim()) return
     try {
       const res = await createMutation.mutateAsync({ name: createName.trim() })
@@ -65,15 +65,23 @@ export function ApiKeysCard() {
     } catch {
       toast.error('Failed to create API key')
     }
-  }, [createName, createMutation])
+  }
 
-  const handleCopyKey = useCallback(async () => {
+  async function handleCopyKey() {
     if (!createdKey) return
-    await navigator.clipboard.writeText(createdKey)
-    toast.success('Copied to clipboard')
-  }, [createdKey])
+    if (!navigator.clipboard) {
+      toast.error('Clipboard not available')
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(createdKey)
+      toast.success('Copied to clipboard')
+    } catch (err) {
+      toast.error(`Failed to copy: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
+  }
 
-  const handleRevokeConfirm = useCallback(async (): Promise<boolean> => {
+  async function handleRevokeConfirm(): Promise<boolean> {
     if (!revokeId) return false
     try {
       await revokeMutation.mutateAsync({ id: revokeId })
@@ -83,7 +91,7 @@ export function ApiKeysCard() {
       toast.error('Failed to revoke API key')
       return false
     }
-  }, [revokeId, revokeMutation])
+  }
 
   if (isLoading)
     return (

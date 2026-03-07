@@ -12,10 +12,30 @@ import type {
   AccountLinkEmailRequestResponse,
   AccountLinkEmailVerifyData,
   AccountLinkEmailVerifyResponse,
+  AccountLinkPasskeyDeleteData,
+  AccountLinkPasskeyDeleteResponse,
+  AccountLinkPasskeyFinishData,
+  AccountLinkPasskeyFinishResponse,
+  AccountLinkPasskeyStartData,
+  AccountLinkPasskeyStartResponse,
+  AccountLinkTotpSetupData,
+  AccountLinkTotpSetupResponse,
+  AccountLinkTotpUnlinkData,
+  AccountLinkTotpUnlinkResponse,
+  AccountLinkTotpVerifyData,
+  AccountLinkTotpVerifyResponse,
   AccountLinkWalletUnlinkData,
   AccountLinkWalletUnlinkResponse,
   AccountLinkWalletVerifyData,
   AccountLinkWalletVerifyResponse,
+  AccountPasskeysListData,
+  AccountPasskeysListResponse,
+  AuthPasskeyExchangeData,
+  AuthPasskeyExchangeResponse,
+  AuthPasskeyStartData,
+  AuthPasskeyStartResponse,
+  AuthPasskeyVerifyData,
+  AuthPasskeyVerifyResponse,
   ChatData,
   ChatResponse,
   GetUserData,
@@ -62,11 +82,22 @@ export type CoreApiClient = {
         request: (opts: Options<AccountLinkEmailRequestData>) => Promise<AccountLinkEmailRequestResponse>;
         verify: (opts: Options<AccountLinkEmailVerifyData>) => Promise<AccountLinkEmailVerifyResponse>
       };
+      passkey: {
+        id: (opts: Options<AccountLinkPasskeyDeleteData>) => Promise<AccountLinkPasskeyDeleteResponse>;
+        finish: (opts: Options<AccountLinkPasskeyFinishData>) => Promise<AccountLinkPasskeyFinishResponse>;
+        start: (opts?: Options<AccountLinkPasskeyStartData>) => Promise<AccountLinkPasskeyStartResponse>
+      };
+      totp: {
+        setup: (opts?: Options<AccountLinkTotpSetupData>) => Promise<AccountLinkTotpSetupResponse>;
+        unlink: (opts?: Options<AccountLinkTotpUnlinkData>) => Promise<AccountLinkTotpUnlinkResponse>;
+        verify: (opts: Options<AccountLinkTotpVerifyData>) => Promise<AccountLinkTotpVerifyResponse>
+      };
       wallet: {
         id: (opts: Options<AccountLinkWalletUnlinkData>) => Promise<AccountLinkWalletUnlinkResponse>;
         verify: (opts: Options<AccountLinkWalletVerifyData>) => Promise<AccountLinkWalletVerifyResponse>
       }
-    }
+    };
+    passkeys: (opts?: Options<AccountPasskeysListData>) => Promise<AccountPasskeysListResponse>
   };
   ai: {
     chat: (opts: Options<ChatData>) => Promise<ChatResponse>
@@ -82,6 +113,11 @@ export type CoreApiClient = {
         authorize: (opts?: Options<OauthGithubAuthorizeData>) => Promise<unknown>;
         exchange: (opts: Options<OauthGithubExchangeData>) => Promise<OauthGithubExchangeResponse>
       }
+    };
+    passkey: {
+      exchange: (opts: Options<AuthPasskeyExchangeData>) => Promise<AuthPasskeyExchangeResponse>;
+      start: (opts?: Options<AuthPasskeyStartData>) => Promise<AuthPasskeyStartResponse>;
+      verify: (opts: Options<AuthPasskeyVerifyData>) => Promise<AuthPasskeyVerifyResponse>
     };
     session: {
       logout: (opts?: Options<LogoutData>) => Promise<LogoutResponse>;

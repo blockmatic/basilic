@@ -24,8 +24,12 @@ const phases = [
   { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'] },
 ]
 
-for (const { name, cmd, args } of phases) {
-  const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: 'inherit' })
+for (const { name, cmd, args, env } of phases) {
+  const result = spawnSync(cmd, args, {
+    cwd: repoRoot,
+    stdio: 'inherit',
+    env: { ...process.env, ...(env ?? {}) },
+  })
   if (result.status !== 0) {
     const code = result.status ?? 1
     console.error('\n---\nQA FAILED at phase "%s" (exit code %d)\n---\n', name, code)

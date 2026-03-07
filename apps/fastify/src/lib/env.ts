@@ -85,6 +85,8 @@ export const env = createEnv({
           .filter(Boolean)
         return parts.length > 0 ? parts : ['*']
       }),
+    TOTP_ISSUER: z.string().optional(),
+    WEBAUTHN_RP_NAME: z.string().optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

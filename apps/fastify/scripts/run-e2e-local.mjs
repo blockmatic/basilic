@@ -76,10 +76,26 @@ async function main() {
     JWT_SECRET: jwtSecret,
   }
 
-  const fastify = spawn('pnpm', ['start:ci'], {
+  const fastify = spawn(process.execPath, ['--import', 'tsx', 'server.ts'], {
     cwd: fastifyDir,
     env,
     stdio: 'ignore',
+  })
+
+  fastify.on('error', err => {
+    process.stderr.write(`fastify spawn error: ${String(err)}\n`)
+    process.exit(1)
+  })
+  fastify.on('exit', (code, signal) => {
+    if (signal === 'SIGTERM') return
+    if (code !== 0 && code != null) {
+      process.stderr.write(`fastify exited with code ${code}\n`)
+      process.exit(1)
+    }
+    if (signal) {
+      process.stderr.write(`fastify exited with signal ${signal}\n`)
+      process.exit(1)
+    }
   })
 
   const cleanup = () => fastify.kill('SIGTERM')

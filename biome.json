@@ -122,7 +122,7 @@
       }
     },
     {
-      "includes": ["**/markets/**", "**/(news)/**"],
+      "includes": ["**/markets/**", "**/(news)/**", "**/settings/security/**"],
       "linter": {
         "rules": {
           "style": { "useNamingConvention": "off" },

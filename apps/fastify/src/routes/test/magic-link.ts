@@ -25,7 +25,7 @@ const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
         },
       },
     },
-    async (_request, reply) => {
+    async (request, reply) => {
       if (!env.ALLOW_TEST || env.NODE_ENV === 'production')
         return reply.code(200).send({ token: null })
 
@@ -37,7 +37,11 @@ const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
         .orderBy(desc(verification.createdAt))
         .limit(1)
 
-      return reply.code(200).send({ token: row?.tokenPlain ?? null })
+      const fromDb = row?.tokenPlain ?? null
+      if (fromDb) return reply.code(200).send({ token: fromDb })
+
+      const fromFake = request.server.fakeEmail?.extractToken()
+      return reply.code(200).send({ token: fromFake ?? null })
     },
   )
 }

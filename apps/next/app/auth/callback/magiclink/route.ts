@@ -32,6 +32,9 @@ export async function GET(request: Request) {
           ? 'INVALID_TOKEN'
           : 'FAILED_VERIFY'
         : 'FAILED_VERIFY'
-    redirect(`/auth/login?message=${encodeURIComponent(code)}`)
+    return NextResponse.redirect(
+      new URL(`/auth/login?message=${encodeURIComponent(code)}`, request.url),
+      303,
+    )
   }
 }

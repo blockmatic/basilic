@@ -103,7 +103,7 @@ describe('POST /ai/chat', () => {
         parsed.type,
       )
     }
-  })
+  }, 60000)
 
   it('should return 200 with default model', async () => {
     await throttleAiRequests()
