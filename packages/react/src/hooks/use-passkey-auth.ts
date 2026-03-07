@@ -30,7 +30,11 @@ export function usePasskeyAuth() {
       }
       if (!assertion) throw new Error('Sign-in cancelled')
 
-      const body: AuthPasskeyVerifyData['body'] = { assertion, sessionId, callbackUrl }
+      const body: AuthPasskeyVerifyData['body'] = {
+        assertion: assertion as AuthPasskeyVerifyData['body']['assertion'],
+        sessionId,
+        callbackUrl,
+      }
       const result = await client.auth.passkey.verify({ body, throwOnError: true })
       const redirectUrl = 'redirectUrl' in result ? result.redirectUrl : undefined
       if (redirectUrl) window.location.assign(redirectUrl)

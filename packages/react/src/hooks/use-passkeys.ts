@@ -1,5 +1,6 @@
 'use client'
 
+import type { AccountLinkPasskeyFinishData } from '@repo/core'
 import { startRegistration } from '@simplewebauthn/browser'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
@@ -24,7 +25,10 @@ export function usePasskeyRegister() {
       const { options } = await client.account.link.passkey.start({ throwOnError: true })
       const credential = await startRegistration({ optionsJSON: options })
       await client.account.link.passkey.finish({
-        body: { credential, ...(name?.trim() && { name: name.trim().slice(0, 64) }) },
+        body: {
+          credential: credential as AccountLinkPasskeyFinishData['body']['credential'],
+          ...(name?.trim() && { name: name.trim().slice(0, 64) }),
+        },
         throwOnError: true,
       })
     },
