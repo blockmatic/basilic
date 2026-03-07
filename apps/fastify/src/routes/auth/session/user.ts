@@ -3,13 +3,19 @@ import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
-import { walletIdentities } from '../../../db/schema/index.js'
+import { passkeyCredentials, totp, walletIdentities } from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const LinkedWalletSchema = Type.Object({
   id: Type.String(),
   chain: Type.String(),
   address: Type.String(),
+})
+
+const PasskeySchema = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  createdAt: Type.String({ format: 'date-time' }),
 })
 
 const UserResponseSchema = Type.Object({
@@ -20,6 +26,8 @@ const UserResponseSchema = Type.Object({
     emailVerified: Type.Union([Type.Boolean(), Type.Null()]),
     wallet: Type.Optional(Type.Object({ chain: Type.String(), address: Type.String() })),
     linkedWallets: Type.Array(LinkedWalletSchema),
+    totpEnabled: Type.Boolean(),
+    passkeys: Type.Array(PasskeySchema),
   }),
 })
 
@@ -47,7 +55,11 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           message: 'Not authenticated',
         })
 
+      const userId = request.session.user.id
       let linkedWallets: { id: string; chain: string; address: string }[]
+      let totpEnabled = false
+      let passkeys: { id: string; name: string; createdAt: string }[] = []
+
       try {
         const db = await getDb()
         linkedWallets = await db
@@ -57,9 +69,26 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
             address: walletIdentities.address,
           })
           .from(walletIdentities)
-          .where(eq(walletIdentities.userId, request.session.user.id))
+          .where(eq(walletIdentities.userId, userId))
+
+        const [totpRow] = await db.select().from(totp).where(eq(totp.userId, userId))
+        totpEnabled = !!totpRow
+
+        const passkeyRows = await db
+          .select({
+            id: passkeyCredentials.id,
+            name: passkeyCredentials.name,
+            createdAt: passkeyCredentials.createdAt,
+          })
+          .from(passkeyCredentials)
+          .where(eq(passkeyCredentials.userId, userId))
+        passkeys = passkeyRows.map(p => ({
+          id: p.id,
+          name: p.name,
+          createdAt: p.createdAt.toISOString(),
+        }))
       } catch (err) {
-        logger.error({ err }, 'Failed to fetch linked wallets')
+        logger.error({ err }, 'Failed to fetch user data')
         return reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to fetch user data',
@@ -74,6 +103,8 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           emailVerified: null,
           ...(request.session.user.wallet && { wallet: request.session.user.wallet }),
           linkedWallets,
+          totpEnabled,
+          passkeys,
         },
       })
     },
