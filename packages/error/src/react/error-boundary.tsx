@@ -22,8 +22,8 @@ interface AppErrorBoundaryState {
 }
 
 /**
- * Error Boundary component that captures errors via provided captureError function
- * Platform-agnostic - works with Node.js, Next.js, and Browser error reporting implementations
+ * Client-only Error Boundary that captures errors via the provided captureError function.
+ * Supports client-side implementations such as Next.js (client) and browser error reporting.
  */
 export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
   constructor(props: AppErrorBoundaryProps) {
