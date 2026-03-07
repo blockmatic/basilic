@@ -1,5 +1,5 @@
 import { createClient } from '@repo/core'
-import { redirect } from 'next/navigation'
+import { redirect, unstable_rethrow } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { extractTokens } from '@/lib/auth/callback-utils'
@@ -25,7 +25,8 @@ export async function GET(request: Request) {
     const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url), 303)
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error)
     redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
   }
 }

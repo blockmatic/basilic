@@ -71,10 +71,18 @@ export async function verifyPasskeyAuth({
   if (!verification.verified || !verification.authenticationInfo)
     return { ok: false, code: 'VERIFICATION_FAILED', message: 'Verification failed' }
 
-  await db
+  const [updated] = await db
     .update(passkeyCredentials)
     .set({ counter: String(verification.authenticationInfo.newCounter) })
     .where(eq(passkeyCredentials.id, credential.id))
+    .returning()
+
+  if (!updated)
+    return {
+      ok: false,
+      code: 'COUNTER_UPDATE_FAILED',
+      message: 'Failed to update credential counter',
+    }
 
   return { ok: true, userId: credential.userId }
 }

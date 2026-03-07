@@ -1,5 +1,5 @@
 import { ApiError, createClient } from '@repo/core'
-import { redirect } from 'next/navigation'
+import { redirect, unstable_rethrow } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { extractTokens } from '@/lib/auth/callback-utils'
@@ -26,6 +26,7 @@ export async function GET(request: Request) {
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {
+    unstable_rethrow(error)
     const code =
       error instanceof ApiError
         ? error.status === 401

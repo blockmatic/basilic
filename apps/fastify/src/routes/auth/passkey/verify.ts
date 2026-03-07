@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { eq } from 'drizzle-orm'
+import { and, eq, gt } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { passkeyAuthChallenges, passkeyCallback } from '../../../db/schema/index.js'
@@ -53,21 +53,19 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
 
       const db = await getDb()
       const [challengeRow] = await db
-        .select()
-        .from(passkeyAuthChallenges)
-        .where(eq(passkeyAuthChallenges.sessionId, sessionId))
-        .limit(1)
+        .delete(passkeyAuthChallenges)
+        .where(
+          and(
+            eq(passkeyAuthChallenges.sessionId, sessionId),
+            gt(passkeyAuthChallenges.expiresAt, new Date()),
+          ),
+        )
+        .returning()
 
       if (!challengeRow)
         return reply.code(401).send({
           code: 'EXPIRED_CHALLENGE',
           message: 'Challenge expired or not found',
-        })
-
-      if (challengeRow.expiresAt < new Date())
-        return reply.code(401).send({
-          code: 'EXPIRED_CHALLENGE',
-          message: 'Challenge has expired',
         })
 
       const origin = getWebAuthnOriginFromRequest(request.headers.origin)
@@ -89,8 +87,6 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
         expectedOrigin: origin.expectedOrigin,
         expectedRPID: origin.rpID,
       })
-
-      await db.delete(passkeyAuthChallenges).where(eq(passkeyAuthChallenges.id, challengeRow.id))
 
       if (!result.ok) return reply.code(401).send({ code: result.code, message: result.message })
 
