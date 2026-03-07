@@ -24,7 +24,7 @@ export default function GlobalError({
       label: 'Next.js global-error.tsx',
       tags: { runtime: 'nextjs' },
     })
-    logger.error({ digest: error.digest, error }, 'Unhandled error in root layout')
+    logger.error({ digest: error.digest }, 'Unhandled error in root layout')
   }, [error])
 
   return (

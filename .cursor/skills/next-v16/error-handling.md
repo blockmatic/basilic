@@ -1,6 +1,6 @@
 # Error Handling
 
-Handle errors in Next.js with **Sentry reporting** (`@repo/error/*`) and **structured logging** (`@repo/utils/logger/server` or `@repo/utils/logger/client`).
+Handle errors in Next.js with the **`@repo/error` package** (Sentry-backed) and **structured logging** (`@repo/utils/logger/server` or `@repo/utils/logger/client`).
 
 Reference: https://nextjs.org/docs/app/getting-started/error-handling
 

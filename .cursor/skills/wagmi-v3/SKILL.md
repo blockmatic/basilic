@@ -567,7 +567,7 @@ function useContractWriteWithErrorHandling() {
         userMessage = 'Gas estimation failed. Please try again.'
       }
 
-      // Log to Sentry
+      // Report error via @repo/error/nextjs
       captureError({
         code: 'TRANSACTION_ERROR',
         error,

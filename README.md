@@ -54,7 +54,7 @@ Run with `pnpm <script>`.
   - `setup:database` — Database tools
 **Primary**
   - `build` — Build packages and apps
-  - `dev` — Start dev (core, react, sentry, utils, fastify, next)
+  - `dev` — Start dev (core, react, error, utils, fastify, next)
   - `qa` — Full check: install → checktypes → lint → build → test (unit) → test:e2e (Fastify + Next, local spawn)
 **Format / Lint**
   - `checktypes` — Type-check all packages

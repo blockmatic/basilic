@@ -41,6 +41,13 @@
       "node": "./dist/logger/client.js",
       "default": "./dist/logger/client.js"
     },
+    "./logger/types": {
+      "types": "./src/logger/types.ts",
+      "source": "./src/logger/types.ts",
+      "import": "./dist/logger/types.js",
+      "node": "./dist/logger/types.js",
+      "default": "./dist/logger/types.js"
+    },
     "./debug": {
       "types": "./src/debug/index.ts",
       "source": "./src/debug/index.ts",

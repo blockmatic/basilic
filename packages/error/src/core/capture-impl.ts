@@ -79,10 +79,20 @@ export function createCaptureError(reporting: ReportingAdapter, defaultLogger: L
       })
       .catch(err => {
         const log = options.logger ?? defaultLogger
-        log.error(
-          { err, label: options.label, code: options.code, ...options.data },
-          'Error reporting failed (captureException threw)',
-        )
+        try {
+          log.error(
+            { err, label: options.label, code: options.code, ...options.data },
+            'Error reporting failed (captureException threw)',
+          )
+        } catch (logErr) {
+          // biome-ignore lint/suspicious/noConsole: last-resort fallback when logger throws
+          console.error(
+            'Error reporting failed (logger threw):',
+            { label: options.label, code: options.code, ...options.data },
+            err,
+            logErr,
+          )
+        }
       })
   }
 }

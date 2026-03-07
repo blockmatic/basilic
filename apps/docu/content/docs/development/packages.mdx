@@ -18,11 +18,11 @@ Only import from **exported entrypoints** (package root or documented subpaths).
   - `@repo/react`
 - **Subpath-only packages** (no root export):
   - `@repo/ui/*`
-  - `@repo/error/*`
   - `@repo/email/*`
   - `@repo/notif/*`
 - **Mixed**:
-  - `@repo/utils` has a root barrel **and** subpath exports. Prefer subpaths for clarity and smaller import surfaces.
+  - `@repo/error` — root exports (`getErrorMessage`, `tryCatch`, etc.); platform-specific modules require subpaths (`@repo/error/node`, `@repo/error/nextjs`, `@repo/error/browser`)
+  - `@repo/utils` — root barrel **and** subpath exports; prefer subpaths for clarity and smaller import surfaces
 
 Examples:
 
@@ -169,7 +169,7 @@ import { cn } from '@repo/ui/lib/utils'
 
 ### `@repo/error` — capture interface + error utilities
 
-Subpath-only exports (choose the platform path):
+Root exports for utilities; platform-specific modules use subpaths:
 
 - `@repo/error` — error utilities (`getErrorMessage`, `tryCatch`, `toErrorWithMessage`, …)
 - `@repo/error/node`

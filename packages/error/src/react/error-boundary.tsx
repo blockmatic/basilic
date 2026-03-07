@@ -8,7 +8,7 @@ export interface AppErrorBoundaryProps {
   children: ReactNode
   /** Application name for tagging (required) */
   app: string
-  /** Error capture function - import from @repo/error/node, @repo/error/nextjs, or @repo/error/browser */
+  /** Error capture function - import from @repo/error/nextjs or @repo/error/browser (client bundles only) */
   captureError: (options: CaptureErrorOptions) => void
   /** Optional fallback component */
   fallback?: (props: { error: Error; resetErrorBoundary: () => void }) => ReactNode
@@ -23,7 +23,7 @@ interface AppErrorBoundaryState {
 
 /**
  * Error Boundary component that captures errors via provided captureError function
- * Platform-agnostic - works with Node.js, Next.js, and Browser Sentry implementations
+ * Platform-agnostic - works with Node.js, Next.js, and Browser error reporting implementations
  */
 export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
   constructor(props: AppErrorBoundaryProps) {

@@ -1,4 +1,4 @@
-import type { Logger } from '@repo/utils/logger/server'
+import type { Logger } from '@repo/utils/logger/types'
 
 /**
  * Options for capturing an error to the reporting backend.

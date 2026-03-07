@@ -7,6 +7,7 @@ export default defineConfig({
     'src/web3/index.ts',
     'src/logger/client.ts',
     'src/logger/server.ts',
+    'src/logger/types.ts',
     'src/debug/index.ts',
     'src/data/index.ts',
   ],
