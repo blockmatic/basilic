@@ -104,7 +104,7 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
         userId,
         credentialId: credentialIdStr,
         publicKey: publicKeyB64,
-        counter: String(cred.counter),
+        counter: cred.counter,
         name,
         transports: transports?.length ? transports : undefined,
         credentialDeviceType: credentialDeviceType ?? undefined,

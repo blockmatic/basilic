@@ -44,7 +44,13 @@ export async function verifyPasskeyAuth({
   if (!credential) return { ok: false, code: 'UNKNOWN_CREDENTIAL', message: 'Credential not found' }
 
   const publicKey = Buffer.from(credential.publicKey, 'base64')
-  const counter = Number.parseInt(credential.counter, 10)
+  const counter = credential.counter
+  if (!Number.isInteger(counter) || Number.isNaN(counter) || counter < 0)
+    return {
+      ok: false,
+      code: 'INVALID_COUNTER',
+      message: 'Invalid credential counter',
+    }
 
   let verification: Awaited<ReturnType<typeof verifyAuthenticationResponse>>
   try {
@@ -73,7 +79,7 @@ export async function verifyPasskeyAuth({
 
   const [updated] = await db
     .update(passkeyCredentials)
-    .set({ counter: String(verification.authenticationInfo.newCounter) })
+    .set({ counter: verification.authenticationInfo.newCounter })
     .where(eq(passkeyCredentials.id, credential.id))
     .returning()
 

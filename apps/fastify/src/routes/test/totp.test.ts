@@ -58,5 +58,14 @@ describe('GET /test/totp/current', () => {
       payload: { code },
     })
     expect(verifyRes.statusCode).toBe(200)
+
+    const afterVerifyRes = await fastify.inject({
+      method: 'GET',
+      url: '/test/totp/current',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    expect(afterVerifyRes.statusCode).not.toBe(200)
+    const afterBody = afterVerifyRes.json() as { code?: string }
+    expect(afterBody.code).toBeUndefined()
   })
 })

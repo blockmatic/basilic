@@ -34,7 +34,7 @@ export async function verifyTotpCode({
   secret: string
   token: string
 }): Promise<boolean> {
-  const result = await verify({ secret, token })
+  const result = await verify({ secret, token, epochTolerance: 30 })
   return result.valid
 }
 

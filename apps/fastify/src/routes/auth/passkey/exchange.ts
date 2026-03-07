@@ -3,12 +3,14 @@ import { Type } from '@sinclair/typebox'
 import { and, eq, gt } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
+import { decryptPasskeyTokens } from '../../../db/passkey-callback.js'
 import { passkeyCallback } from '../../../db/schema/index.js'
 import { hashToken } from '../../../lib/jwt.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const ExchangeSchema = Type.Object({
   code: Type.String(),
+  origin: Type.Optional(Type.String()),
 })
 
 const ExchangeResponseSchema = Type.Object({
@@ -35,13 +37,15 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      const { code } = request.body
+      const { code, origin: bodyOrigin } = request.body
 
       if (!code?.trim())
         return reply.code(400).send({
           code: 'MISSING_CODE',
           message: 'code is required',
         })
+
+      const requestOrigin = (bodyOrigin ?? request.headers.origin)?.trim()
 
       const codeHash = hashToken(code.trim())
       const db = await getDb()
@@ -58,9 +62,23 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Invalid or expired code',
         })
 
+      if (row.callbackOrigin) {
+        if (!requestOrigin)
+          return reply.code(400).send({
+            code: 'MISSING_ORIGIN',
+            message: 'Origin is required for code exchange (pass in body or Origin header)',
+          })
+        if (row.callbackOrigin !== requestOrigin)
+          return reply.code(401).send({
+            code: 'ORIGIN_MISMATCH',
+            message: 'Request origin does not match callback origin',
+          })
+      }
+
+      const decrypted = decryptPasskeyTokens(row)
       return reply.code(200).send({
-        token: row.accessToken,
-        refreshToken: row.refreshToken,
+        token: decrypted.accessToken,
+        refreshToken: decrypted.refreshToken,
       })
     },
   )

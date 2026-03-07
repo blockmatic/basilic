@@ -34,7 +34,7 @@ test.describe('Passkey sign-in', () => {
     ).toBeVisible({ timeout: 5000 })
     await authenticatedPage.getByRole('button', { name: /sign in with passkey/i }).click()
 
-    await expect(authenticatedPage).toHaveURL(/\//, { timeout: 15000 })
+    await expect(authenticatedPage).toHaveURL(/^\/$/, { timeout: 15000 })
     await expect(authenticatedPage.getByRole('link', { name: /settings/i })).toBeVisible({
       timeout: 5000,
     })

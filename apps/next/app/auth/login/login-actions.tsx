@@ -30,6 +30,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
 
 export function LoginActions({ initialError }: LoginActionsProps) {
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
+  const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
   const { mutate: startOAuthLogin, error: oauthError, isPending: isOAuthPending } = useOAuthLogin()
   const {
     mutate: startPasskeyAuth,
@@ -37,7 +38,12 @@ export function LoginActions({ initialError }: LoginActionsProps) {
     isPending: isPasskeyPending,
   } = usePasskeyAuth()
   const webauthnAvailable = useWebAuthnAvailable()
-  const displayError = oauthError?.message ?? passkeyError?.message ?? initialError
+  const displayError =
+    lastAuthMethod === 'passkey'
+      ? (passkeyError?.message ?? oauthError?.message ?? initialError)
+      : lastAuthMethod === 'oauth'
+        ? (oauthError?.message ?? passkeyError?.message ?? initialError)
+        : (oauthError?.message ?? passkeyError?.message ?? initialError)
   const showBanner = displayError && displayError !== dismissedForError
 
   return (
@@ -53,11 +59,12 @@ export function LoginActions({ initialError }: LoginActionsProps) {
                 variant="outline"
                 type="button"
                 disabled={isOAuthPending || isPasskeyPending}
-                onClick={() =>
+                onClick={() => {
+                  setLastAuthMethod('passkey')
                   startPasskeyAuth({
                     callbackUrl: `${window.location.origin}/auth/callback/passkey?callbackUrl=/`,
                   })
-                }
+                }}
               >
                 {isPasskeyPending ? 'Signing in…' : 'Sign in with passkey'}
               </Button>
@@ -66,7 +73,10 @@ export function LoginActions({ initialError }: LoginActionsProps) {
               variant="outline"
               type="button"
               disabled={isOAuthPending || isPasskeyPending}
-              onClick={() => startOAuthLogin()}
+              onClick={() => {
+                setLastAuthMethod('oauth')
+                startOAuthLogin()
+              }}
             >
               {isOAuthPending ? 'Redirecting...' : 'GitHub'}
             </Button>

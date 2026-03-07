@@ -26,20 +26,38 @@ export function TotpCard() {
 
   const [code, setCode] = useState('')
   const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
+  const [setupRequested, setSetupRequested] = useState(false)
 
+  const userLoaded = !isLoading && data !== undefined
   const totpEnabled = data?.user?.totpEnabled ?? false
   const setupData = setupMutation.data
 
   useEffect(() => {
-    if (!totpEnabled && !setupData && !setupMutation.isPending && !setupMutation.isError)
+    if (
+      userLoaded &&
+      !totpEnabled &&
+      !setupData &&
+      !setupMutation.isPending &&
+      !setupMutation.isError &&
+      setupRequested
+    )
       setupMutation.mutate()
-  }, [totpEnabled, setupData, setupMutation.isPending, setupMutation.isError, setupMutation])
+  }, [
+    userLoaded,
+    totpEnabled,
+    setupData,
+    setupMutation.isPending,
+    setupMutation.isError,
+    setupRequested,
+    setupMutation,
+  ])
 
   async function handleVerify() {
     if (!code || code.length !== 6) return
     try {
       await verifyMutation.mutateAsync({ code })
       toast.success('Authenticator enabled')
+      setSetupRequested(false)
       setupMutation.reset()
       setCode('')
     } catch (err) {
@@ -70,6 +88,7 @@ export function TotpCard() {
   }
 
   function handleCancelSetup() {
+    setSetupRequested(false)
     setupMutation.reset()
     setCode('')
   }
@@ -157,6 +176,12 @@ export function TotpCard() {
               disabled={setupMutation.isPending}
             >
               {setupMutation.isPending ? 'Retrying…' : 'Try again'}
+            </Button>
+          </div>
+        ) : !setupRequested ? (
+          <div className="space-y-4 py-4">
+            <Button onClick={() => setSetupRequested(true)} disabled={setupMutation.isPending}>
+              Start setup
             </Button>
           </div>
         ) : setupData ? (

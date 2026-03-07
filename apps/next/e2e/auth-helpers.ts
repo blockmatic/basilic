@@ -48,6 +48,8 @@ export const authHelpers = {
   },
 
   async extractToken(page: Page): Promise<string | null> {
+    // Stabilize e2e auth flows: 500ms delay and 12 retries chosen empirically for async
+    // backend/session propagation and flaky CI timing. Adjust if tests are stabilized.
     await new Promise(r => setTimeout(r, 500))
     const maxRetries = 12
     const delayMs = 500

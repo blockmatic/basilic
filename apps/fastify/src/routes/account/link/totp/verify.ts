@@ -77,11 +77,13 @@ const totpVerifyRoute: FastifyPluginAsync = async fastify => {
         })
 
       const encrypted = setup.secretEncrypted
-      await db.delete(totpSetup).where(eq(totpSetup.id, setup.id))
-      await db.insert(totp).values({
-        id: randomUUID(),
-        userId,
-        secretEncrypted: encrypted,
+      await db.transaction(async tx => {
+        await tx.delete(totpSetup).where(eq(totpSetup.id, setup.id))
+        await tx.insert(totp).values({
+          id: randomUUID(),
+          userId,
+          secretEncrypted: encrypted,
+        })
       })
 
       return reply.code(200).send({ ok: true })

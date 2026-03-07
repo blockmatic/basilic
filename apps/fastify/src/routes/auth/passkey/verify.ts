@@ -4,6 +4,7 @@ import { Type } from '@sinclair/typebox'
 import { and, eq, gt } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
+import { encryptPasskeyTokens } from '../../../db/passkey-callback.js'
 import { passkeyAuthChallenges, passkeyCallback } from '../../../db/schema/index.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
 import { getWebAuthnOriginFromRequest } from '../../../lib/passkey.js'
@@ -53,14 +54,15 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
 
       const db = await getDb()
       const [challengeRow] = await db
-        .delete(passkeyAuthChallenges)
+        .select()
+        .from(passkeyAuthChallenges)
         .where(
           and(
             eq(passkeyAuthChallenges.sessionId, sessionId),
             gt(passkeyAuthChallenges.expiresAt, new Date()),
           ),
         )
-        .returning()
+        .limit(1)
 
       if (!challengeRow)
         return reply.code(401).send({
@@ -97,21 +99,30 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
       })
 
       if (callbackUrl) {
+        const callbackOrigin = new URL(callbackUrl).origin
         const code = generateToken()
         const codeHash = hashToken(code)
         const expiresAt = new Date(Date.now() + callbackCodeExpiryMinutes * 60 * 1000)
-        await db.insert(passkeyCallback).values({
-          id: randomUUID(),
-          codeHash,
-          accessToken,
-          refreshToken,
-          expiresAt,
+        const encrypted = encryptPasskeyTokens({ accessToken, refreshToken })
+        await db.transaction(async tx => {
+          await tx
+            .delete(passkeyAuthChallenges)
+            .where(eq(passkeyAuthChallenges.id, challengeRow.id))
+          await tx.insert(passkeyCallback).values({
+            id: randomUUID(),
+            codeHash,
+            accessToken: encrypted.accessToken,
+            refreshToken: encrypted.refreshToken,
+            callbackOrigin,
+            expiresAt,
+          })
         })
         return reply.code(200).send({
           redirectUrl: appendCodeToCallbackUrl(callbackUrl, code),
         })
       }
 
+      await db.delete(passkeyAuthChallenges).where(eq(passkeyAuthChallenges.id, challengeRow.id))
       return reply.code(200).send({ token: accessToken, refreshToken })
     },
   )

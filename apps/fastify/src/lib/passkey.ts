@@ -21,6 +21,12 @@ export function getWebAuthnOriginFromRequest(originHeader: string | undefined): 
 
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null
 
+  if (parsed.protocol === 'http:') {
+    const host = parsed.hostname.toLowerCase()
+    const allowedHosts = ['localhost', '127.0.0.1', '::1', '[::1]']
+    if (!allowedHosts.includes(host)) return null
+  }
+
   const allowed = env.ALLOWED_ORIGINS
   if (!allowed.includes('*') && !allowed.includes(parsed.origin)) return null
 

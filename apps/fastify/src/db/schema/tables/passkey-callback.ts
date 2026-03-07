@@ -7,6 +7,7 @@ export const passkeyCallback = pgTable(
     codeHash: text('code_hash').notNull(),
     accessToken: text('access_token').notNull(),
     refreshToken: text('refresh_token').notNull(),
+    callbackOrigin: text('callback_origin').notNull().default(''),
     expiresAt: timestamp('expires_at').notNull(),
   },
   table => [

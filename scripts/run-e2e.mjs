@@ -34,6 +34,8 @@ async function main() {
   killPorts()
   await run('pnpm', ['-F', '@repo/fastify', 'test:e2e:local'])
   killPorts()
+  // Allow server shutdown and port release before starting Next e2e; 2s is conservative;
+  // shorten if CI is stable.
   await new Promise(r => setTimeout(r, 2000))
   await run('pnpm', ['-F', '@repo/next', 'test:e2e:local'])
 }

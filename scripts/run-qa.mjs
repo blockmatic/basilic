@@ -25,7 +25,11 @@ const phases = [
 ]
 
 for (const { name, cmd, args, env } of phases) {
-  const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: 'inherit', env: env ?? process.env })
+  const result = spawnSync(cmd, args, {
+    cwd: repoRoot,
+    stdio: 'inherit',
+    env: { ...process.env, ...(env ?? {}) },
+  })
   if (result.status !== 0) {
     const code = result.status ?? 1
     console.error('\n---\nQA FAILED at phase "%s" (exit code %d)\n---\n', name, code)

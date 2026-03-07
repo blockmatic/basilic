@@ -28,10 +28,19 @@ const navItems = [
   { href: '/markets', label: 'Markets', icon: BarChart3Icon },
 ] as const
 
-const settingsItems = [
+const settingsItems: Array<{
+  href: string
+  label: string
+  icon: typeof UserIcon
+  matchPrefix?: boolean
+}> = [
   { href: '/settings', label: 'Profile', icon: UserIcon },
-  { href: '/settings/security', label: 'Security', icon: ShieldIcon },
-] as const
+  { href: '/settings/security', label: 'Security', icon: ShieldIcon, matchPrefix: true },
+]
+
+function isActive(href: string, pathname: string, matchPrefix?: boolean) {
+  return matchPrefix ? pathname.startsWith(href) : pathname === href
+}
 
 export function DashboardSidebar() {
   const pathname = usePathname()
@@ -69,15 +78,11 @@ export function DashboardSidebar() {
           <SidebarGroupLabel>Settings</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {settingsItems.map(({ href, label, icon: Icon }) => (
+              {settingsItems.map(({ href, label, icon: Icon, matchPrefix }) => (
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={
-                      href === '/settings/security'
-                        ? pathname.startsWith('/settings/security')
-                        : pathname === href
-                    }
+                    isActive={isActive(href, pathname, matchPrefix)}
                     tooltip={label}
                   >
                     <Link href={href}>

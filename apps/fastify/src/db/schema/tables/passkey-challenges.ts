@@ -11,7 +11,10 @@ export const passkeyChallenges = pgTable(
     challenge: text('challenge').notNull(),
     expiresAt: timestamp('expires_at').notNull(),
   },
-  table => [index('passkey_challenges_user_id_idx').on(table.userId)],
+  table => [
+    index('passkey_challenges_user_id_idx').on(table.userId),
+    index('passkey_challenges_expires_at_idx').on(table.expiresAt),
+  ],
 )
 
 export type PasskeyChallenge = typeof passkeyChallenges.$inferSelect

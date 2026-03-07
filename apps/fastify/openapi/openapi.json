@@ -2321,6 +2321,9 @@
                 "properties": {
                   "code": {
                     "type": "string"
+                  },
+                  "origin": {
+                    "type": "string"
                   }
                 }
               }

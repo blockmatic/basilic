@@ -846,6 +846,7 @@ export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof Oau
 export type AuthPasskeyExchangeData = {
     body: {
         code: string;
+        origin?: string;
     };
     path?: never;
     query?: never;

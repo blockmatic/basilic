@@ -1,5 +1,5 @@
 import { createClient } from '@repo/core'
-import { redirect, unstable_rethrow } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { extractTokens } from '@/lib/auth/callback-utils'
@@ -17,7 +17,8 @@ export async function GET(request: Request) {
   if (!code) redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
 
   try {
-    const response = await client.auth.passkey.exchange({ body: { code } })
+    const origin = new URL(request.url).origin
+    const response = await client.auth.passkey.exchange({ body: { code, origin } })
     const tokens = extractTokens(response)
     if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
 
@@ -25,8 +26,10 @@ export async function GET(request: Request) {
     const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url), 303)
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
-  } catch (error) {
-    unstable_rethrow(error)
-    redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
+  } catch {
+    return NextResponse.redirect(
+      new URL(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`, request.url),
+      303,
+    )
   }
 }

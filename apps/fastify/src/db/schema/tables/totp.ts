@@ -1,4 +1,4 @@
-import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 import { users } from './users.js'
 
 export const totp = pgTable(
@@ -12,7 +12,7 @@ export const totp = pgTable(
     secretEncrypted: text('secret_encrypted').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
-  table => [index('totp_user_id_idx').on(table.userId)],
+  _table => [],
 )
 
 export type Totp = typeof totp.$inferSelect

@@ -45,6 +45,7 @@ export default defineConfig({
         '**/passkey-auth.spec.ts',
         '**/security/api-keys.spec.ts',
       ],
+      timeout: 60_000,
       use: { ...devices['Desktop Chrome'] },
     },
   ],

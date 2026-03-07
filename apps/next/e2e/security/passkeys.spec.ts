@@ -15,7 +15,7 @@ test.describe('Security - Passkeys', () => {
   }) => {
     await authenticatedPage.goto('/settings/security?section=passkeys')
     await expect(authenticatedPage).toHaveURL(/\/settings\/security/)
-    await expect(authenticatedPage.getByText('Passkeys')).toBeVisible()
+    await expect(authenticatedPage.getByRole('heading', { name: 'Passkeys' })).toBeVisible()
     await expect(authenticatedPage.getByText(/no passkeys configured/i)).toBeVisible()
     await expect(authenticatedPage.getByRole('button', { name: /add passkey/i })).toBeVisible()
   })

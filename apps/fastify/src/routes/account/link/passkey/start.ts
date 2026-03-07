@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { passkeyChallenges, passkeyCredentials } from '../../../../db/schema/index.js'
+import { env } from '../../../../lib/env.js'
 import { getWebAuthnOriginFromRequest } from '../../../../lib/passkey.js'
 import { PublicKeyCredentialCreationOptionsJSONSchema } from '../../../../lib/schemas/webauthn.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
@@ -70,7 +71,7 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
 
       const userIDBytes = new TextEncoder().encode(userId)
       const options = await generateRegistrationOptions({
-        rpName: 'Acme Inc.',
+        rpName: env.WEBAUTHN_RP_NAME ?? 'Acme Inc.',
         rpID: origin.rpID,
         userName,
         userID: userIDBytes,

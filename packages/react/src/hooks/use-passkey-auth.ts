@@ -30,7 +30,6 @@ export function usePasskeyAuth() {
       } catch (err) {
         throw new Error(err instanceof Error ? err.message : 'Sign-in cancelled')
       }
-      if (!assertion) throw new Error('Sign-in cancelled')
 
       const body: AuthPasskeyVerifyData['body'] = {
         assertion: assertion as AuthPasskeyVerifyData['body']['assertion'],

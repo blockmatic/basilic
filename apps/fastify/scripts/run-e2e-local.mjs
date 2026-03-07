@@ -82,6 +82,21 @@ async function main() {
     stdio: 'ignore',
   })
 
+  fastify.on('error', err => {
+    process.stderr.write(`fastify spawn error: ${String(err)}\n`)
+    process.exit(1)
+  })
+  fastify.on('exit', (code, signal) => {
+    if (code !== 0 && code != null) {
+      process.stderr.write(`fastify exited with code ${code}\n`)
+      process.exit(1)
+    }
+    if (signal) {
+      process.stderr.write(`fastify exited with signal ${signal}\n`)
+      process.exit(1)
+    }
+  })
+
   const cleanup = () => fastify.kill('SIGTERM')
   process.on('SIGINT', () => {
     cleanup()

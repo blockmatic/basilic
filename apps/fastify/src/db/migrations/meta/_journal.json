@@ -71,6 +71,13 @@
       "when": 1772903849402,
       "tag": "0009_flippant_quasar",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1772913079585,
+      "tag": "0010_cloudy_ultimatum",
+      "breakpoints": true
     }
   ]
 }
