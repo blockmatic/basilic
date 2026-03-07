@@ -24,7 +24,9 @@ export function usePasskeyAuth() {
       const { options, sessionId } = await client.auth.passkey.start({ throwOnError: true })
       let assertion: Awaited<ReturnType<typeof startAuthentication>>
       try {
-        assertion = await startAuthentication({ optionsJSON: options })
+        assertion = await startAuthentication({
+          optionsJSON: options as Parameters<typeof startAuthentication>[0]['optionsJSON'],
+        })
       } catch (err) {
         throw new Error(err instanceof Error ? err.message : 'Sign-in cancelled')
       }

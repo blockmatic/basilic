@@ -23,7 +23,9 @@ export function usePasskeyRegister() {
   return useMutation({
     mutationFn: async ({ name }: { name?: string } = {}) => {
       const { options } = await client.account.link.passkey.start({ throwOnError: true })
-      const credential = await startRegistration({ optionsJSON: options })
+      const credential = await startRegistration({
+        optionsJSON: options as Parameters<typeof startRegistration>[0]['optionsJSON'],
+      })
       await client.account.link.passkey.finish({
         body: {
           credential: credential as AccountLinkPasskeyFinishData['body']['credential'],
