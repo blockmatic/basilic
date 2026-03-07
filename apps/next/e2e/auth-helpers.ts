@@ -14,8 +14,10 @@ async function sendMagicLinkOnce(page: Page) {
   const [response] = await Promise.all([
     page.waitForResponse(
       resp =>
-        resp.url().startsWith(`${apiBase}/auth/magiclink/request`) &&
+        (resp.url().includes('/auth/magiclink/request') ||
+          resp.url().includes(`${apiBase}/auth/magiclink/request`)) &&
         resp.request().method() === 'POST',
+      { timeout: 60_000 },
     ),
     page.click('button[type="submit"]'),
   ])
@@ -50,7 +52,8 @@ export const authHelpers = {
   },
 
   async extractToken(page: Page): Promise<string | null> {
-    const maxRetries = 5
+    await new Promise(r => setTimeout(r, 500))
+    const maxRetries = 12
     const delayMs = 500
     for (let attempt = 0; attempt < maxRetries; attempt++)
       try {

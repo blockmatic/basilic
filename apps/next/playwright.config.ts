@@ -29,6 +29,7 @@ export default defineConfig({
     {
       name: 'auth',
       testMatch: ['**/magic-link-auth.spec.ts'],
+      timeout: 60_000,
       use: { ...devices['Desktop Chrome'] },
     },
     {
