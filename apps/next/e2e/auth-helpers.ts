@@ -3,7 +3,6 @@ import type { Page } from '@playwright/test'
 const testEmail = 'test@test.ai'
 const apiUrl =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
-const apiBase = apiUrl.replace(/\/$/, '')
 const authCookieName =
   process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME ?? 'api.session'
 
@@ -13,10 +12,7 @@ async function sendMagicLinkOnce(page: Page) {
   await page.fill('input[type="email"]', testEmail)
   const [response] = await Promise.all([
     page.waitForResponse(
-      resp =>
-        (resp.url().includes('/auth/magiclink/request') ||
-          resp.url().includes(`${apiBase}/auth/magiclink/request`)) &&
-        resp.request().method() === 'POST',
+      resp => resp.url().includes('/auth/magiclink/request') && resp.request().method() === 'POST',
       { timeout: 60_000 },
     ),
     page.click('button[type="submit"]'),
