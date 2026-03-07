@@ -81,9 +81,14 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
           message: 'Passkey verification failed',
         })
 
-      const { credential: cred } = verification.registrationInfo
+      const {
+        credential: cred,
+        credentialDeviceType,
+        credentialBackedUp,
+      } = verification.registrationInfo
       const credentialIdStr = cred.id
       const publicKeyB64 = Buffer.from(cred.publicKey).toString('base64')
+      const transports = (credential as { transports?: string[] }).transports ?? undefined
 
       await db.delete(passkeyChallenges).where(eq(passkeyChallenges.id, challengeRow.id))
 
@@ -98,6 +103,9 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
         publicKey: publicKeyB64,
         counter: String(cred.counter),
         name,
+        transports: transports?.length ? transports : undefined,
+        credentialDeviceType: credentialDeviceType ?? undefined,
+        credentialBackedUp: credentialBackedUp ?? undefined,
       })
 
       return reply.code(200).send({ ok: true })

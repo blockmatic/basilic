@@ -78,6 +78,10 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
         userID: userIDBytes,
         attestationType: 'none',
         excludeCredentials: excludeCredentials.length > 0 ? excludeCredentials : undefined,
+        authenticatorSelection: {
+          residentKey: 'required',
+          userVerification: 'required',
+        },
       })
 
       await db.delete(passkeyChallenges).where(eq(passkeyChallenges.userId, userId))

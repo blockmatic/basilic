@@ -1,4 +1,4 @@
-import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { boolean, index, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 import { users } from './users.js'
 
 export const passkeyCredentials = pgTable(
@@ -12,6 +12,9 @@ export const passkeyCredentials = pgTable(
     publicKey: text('public_key').notNull(),
     counter: text('counter').notNull(),
     name: text('name').notNull(),
+    transports: jsonb('transports').$type<string[]>(),
+    credentialDeviceType: text('credential_device_type'),
+    credentialBackedUp: boolean('credential_backed_up'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   table => [
