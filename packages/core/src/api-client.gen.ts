@@ -30,6 +30,12 @@ import type {
   AccountLinkWalletVerifyResponse,
   AccountPasskeysListData,
   AccountPasskeysListResponse,
+  AuthPasskeyExchangeData,
+  AuthPasskeyExchangeResponse,
+  AuthPasskeyStartData,
+  AuthPasskeyStartResponse,
+  AuthPasskeyVerifyData,
+  AuthPasskeyVerifyResponse,
   ChatData,
   ChatResponse,
   GetUserData,
@@ -107,6 +113,11 @@ export type CoreApiClient = {
         authorize: (opts?: Options<OauthGithubAuthorizeData>) => Promise<unknown>;
         exchange: (opts: Options<OauthGithubExchangeData>) => Promise<OauthGithubExchangeResponse>
       }
+    };
+    passkey: {
+      exchange: (opts: Options<AuthPasskeyExchangeData>) => Promise<AuthPasskeyExchangeResponse>;
+      start: (opts?: Options<AuthPasskeyStartData>) => Promise<AuthPasskeyStartResponse>;
+      verify: (opts: Options<AuthPasskeyVerifyData>) => Promise<AuthPasskeyVerifyResponse>
     };
     session: {
       logout: (opts?: Options<LogoutData>) => Promise<LogoutResponse>;

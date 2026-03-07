@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkPasskeyDeleteData, AccountLinkPasskeyDeleteErrors, AccountLinkPasskeyDeleteResponses, AccountLinkPasskeyFinishData, AccountLinkPasskeyFinishErrors, AccountLinkPasskeyFinishResponses, AccountLinkPasskeyStartData, AccountLinkPasskeyStartErrors, AccountLinkPasskeyStartResponses, AccountLinkTotpSetupData, AccountLinkTotpSetupErrors, AccountLinkTotpSetupResponses, AccountLinkTotpUnlinkData, AccountLinkTotpUnlinkErrors, AccountLinkTotpUnlinkResponses, AccountLinkTotpVerifyData, AccountLinkTotpVerifyErrors, AccountLinkTotpVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, AccountPasskeysListData, AccountPasskeysListErrors, AccountPasskeysListResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3ExchangeData, Web3ExchangeErrors, Web3ExchangeResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
+import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkPasskeyDeleteData, AccountLinkPasskeyDeleteErrors, AccountLinkPasskeyDeleteResponses, AccountLinkPasskeyFinishData, AccountLinkPasskeyFinishErrors, AccountLinkPasskeyFinishResponses, AccountLinkPasskeyStartData, AccountLinkPasskeyStartErrors, AccountLinkPasskeyStartResponses, AccountLinkTotpSetupData, AccountLinkTotpSetupErrors, AccountLinkTotpSetupResponses, AccountLinkTotpUnlinkData, AccountLinkTotpUnlinkErrors, AccountLinkTotpUnlinkResponses, AccountLinkTotpVerifyData, AccountLinkTotpVerifyErrors, AccountLinkTotpVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, AccountPasskeysListData, AccountPasskeysListErrors, AccountPasskeysListResponses, AuthPasskeyExchangeData, AuthPasskeyExchangeErrors, AuthPasskeyExchangeResponses, AuthPasskeyStartData, AuthPasskeyStartErrors, AuthPasskeyStartResponses, AuthPasskeyVerifyData, AuthPasskeyVerifyErrors, AuthPasskeyVerifyResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3ExchangeData, Web3ExchangeErrors, Web3ExchangeResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -267,6 +267,41 @@ export const oauthGithubAuthorize = <ThrowOnError extends boolean = false>(optio
  */
 export const oauthGithubExchange = <ThrowOnError extends boolean = false>(options: Options<OauthGithubExchangeData, ThrowOnError>) => (options.client ?? client).post<OauthGithubExchangeResponses, OauthGithubExchangeErrors, ThrowOnError>({
     url: '/auth/oauth/github/exchange',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Exchange passkey code for tokens
+ *
+ * Exchange one-time code for tokens (passkey redirect flow)
+ */
+export const authPasskeyExchange = <ThrowOnError extends boolean = false>(options: Options<AuthPasskeyExchangeData, ThrowOnError>) => (options.client ?? client).post<AuthPasskeyExchangeResponses, AuthPasskeyExchangeErrors, ThrowOnError>({
+    url: '/auth/passkey/exchange',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Passkey auth start
+ *
+ * Start passkey authentication, returns options for startAuthentication
+ */
+export const authPasskeyStart = <ThrowOnError extends boolean = false>(options?: Options<AuthPasskeyStartData, ThrowOnError>) => (options?.client ?? client).post<AuthPasskeyStartResponses, AuthPasskeyStartErrors, ThrowOnError>({ url: '/auth/passkey/start', ...options });
+
+/**
+ * Passkey auth verify
+ *
+ * Verify passkey assertion and create session
+ */
+export const authPasskeyVerify = <ThrowOnError extends boolean = false>(options: Options<AuthPasskeyVerifyData, ThrowOnError>) => (options.client ?? client).post<AuthPasskeyVerifyResponses, AuthPasskeyVerifyErrors, ThrowOnError>({
+    url: '/auth/passkey/verify',
     ...options,
     headers: {
         'Content-Type': 'application/json',

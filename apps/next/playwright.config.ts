@@ -42,6 +42,7 @@ export default defineConfig({
       testMatch: [
         '**/security/authenticator.spec.ts',
         '**/security/passkeys.spec.ts',
+        '**/passkey-auth.spec.ts',
         '**/security/api-keys.spec.ts',
       ],
       use: { ...devices['Desktop Chrome'] },

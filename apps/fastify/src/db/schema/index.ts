@@ -1,5 +1,7 @@
 export * from './tables/account.js'
 export * from './tables/api-keys.js'
+export * from './tables/passkey-auth-challenges.js'
+export * from './tables/passkey-callback.js'
 export * from './tables/passkey-challenges.js'
 export * from './tables/passkey-credentials.js'
 export * from './tables/sessions.js'

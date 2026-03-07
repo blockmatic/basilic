@@ -800,6 +800,121 @@ export type OauthGithubExchangeResponses = {
 
 export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof OauthGithubExchangeResponses];
 
+export type AuthPasskeyExchangeData = {
+    body: {
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/passkey/exchange';
+};
+
+export type AuthPasskeyExchangeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AuthPasskeyExchangeError = AuthPasskeyExchangeErrors[keyof AuthPasskeyExchangeErrors];
+
+export type AuthPasskeyExchangeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type AuthPasskeyExchangeResponse = AuthPasskeyExchangeResponses[keyof AuthPasskeyExchangeResponses];
+
+export type AuthPasskeyStartData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/passkey/start';
+};
+
+export type AuthPasskeyStartErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AuthPasskeyStartError = AuthPasskeyStartErrors[keyof AuthPasskeyStartErrors];
+
+export type AuthPasskeyStartResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        options: unknown;
+        sessionId: string;
+    };
+};
+
+export type AuthPasskeyStartResponse = AuthPasskeyStartResponses[keyof AuthPasskeyStartResponses];
+
+export type AuthPasskeyVerifyData = {
+    body: {
+        assertion: unknown;
+        sessionId: string;
+        callbackUrl?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/passkey/verify';
+};
+
+export type AuthPasskeyVerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AuthPasskeyVerifyError = AuthPasskeyVerifyErrors[keyof AuthPasskeyVerifyErrors];
+
+export type AuthPasskeyVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    } | {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type AuthPasskeyVerifyResponse = AuthPasskeyVerifyResponses[keyof AuthPasskeyVerifyResponses];
+
 export type LogoutData = {
     body?: never;
     path?: never;

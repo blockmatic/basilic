@@ -47,6 +47,11 @@ auth: {
       exchange: gen.oauthGithubExchange,
     },
   },
+  passkey: {
+    exchange: gen.authPasskeyExchange,
+    start: gen.authPasskeyStart,
+    verify: gen.authPasskeyVerify,
+  },
   session: {
     logout: gen.logout,
     refresh: gen.refresh,

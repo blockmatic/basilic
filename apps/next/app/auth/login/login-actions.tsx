@@ -1,6 +1,6 @@
 'use client'
 
-import { LoginForm, useOAuthLogin } from '@repo/react'
+import { LoginForm, useOAuthLogin, usePasskeyAuth, useWebAuthnAvailable } from '@repo/react'
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
 import { Button } from '@repo/ui/components/button'
 import { X } from 'lucide-react'
@@ -31,7 +31,13 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
 export function LoginActions({ initialError }: LoginActionsProps) {
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const { mutate: startOAuthLogin, error: oauthError, isPending: isOAuthPending } = useOAuthLogin()
-  const displayError = oauthError?.message ?? initialError
+  const {
+    mutate: startPasskeyAuth,
+    error: passkeyError,
+    isPending: isPasskeyPending,
+  } = usePasskeyAuth()
+  const webauthnAvailable = useWebAuthnAvailable()
+  const displayError = oauthError?.message ?? passkeyError?.message ?? initialError
   const showBanner = displayError && displayError !== dismissedForError
 
   return (
@@ -41,14 +47,30 @@ export function LoginActions({ initialError }: LoginActionsProps) {
       )}
       <LoginForm
         extraActions={
-          <Button
-            variant="outline"
-            type="button"
-            disabled={isOAuthPending}
-            onClick={() => startOAuthLogin()}
-          >
-            {isOAuthPending ? 'Redirecting...' : 'GitHub'}
-          </Button>
+          <>
+            {webauthnAvailable && (
+              <Button
+                variant="outline"
+                type="button"
+                disabled={isOAuthPending || isPasskeyPending}
+                onClick={() =>
+                  startPasskeyAuth({
+                    callbackUrl: `${window.location.origin}/auth/callback/passkey?callbackUrl=/`,
+                  })
+                }
+              >
+                {isPasskeyPending ? 'Signing in…' : 'Sign in with passkey'}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              type="button"
+              disabled={isOAuthPending || isPasskeyPending}
+              onClick={() => startOAuthLogin()}
+            >
+              {isOAuthPending ? 'Redirecting...' : 'GitHub'}
+            </Button>
+          </>
         }
       />
     </div>
