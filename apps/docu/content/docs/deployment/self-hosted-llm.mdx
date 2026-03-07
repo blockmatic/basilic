@@ -99,7 +99,20 @@ sudo systemctl restart ollama
 sudo systemctl enable ollama
 ```
 
-### 3. Install Nginx and Create Site Config
+### 3. CI / Parallel Workflows
+
+When Ollama is used as the CI AI provider (e.g. `OLLAMA_BASE_URL` secret in GitHub Actions), `api-e2e` and `next-e2e` can run in parallel and both hit the same server. With `OLLAMA_NUM_PARALLEL=1`, requests serialize and tests may time out.
+
+For CI hosts, increase parallelism if the machine has enough RAM:
+
+```bash
+# In /etc/systemd/system/ollama.service.d/override.conf
+Environment="OLLAMA_NUM_PARALLEL=2"   # or 4 if RAM allows
+```
+
+Keep `OLLAMA_MAX_LOADED_MODELS=1` to avoid loading multiple models at once.
+
+### 4. Install Nginx and Create Site Config
 
 ```bash
 sudo apt install nginx
