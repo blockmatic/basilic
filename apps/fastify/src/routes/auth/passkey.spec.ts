@@ -5,6 +5,7 @@ import { cleanupGroupDatabase, setupGroupDatabase } from '../../../test/utils/db
 import type { TestApp } from '../../../test/utils/fastify.js'
 import { buildTestApp } from '../../../test/utils/fastify.js'
 import { getDb } from '../../db/index.js'
+import { encryptPasskeyTokens } from '../../db/passkey-callback.js'
 import { passkeyCallback } from '../../db/schema/index.js'
 import { generateToken, hashToken } from '../../lib/jwt.js'
 
@@ -57,7 +58,7 @@ describe('POST /auth/passkey/start', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/start',
-      headers: { origin: 'https://example.com' },
+      headers: { origin: 'http://evil.example' },
     })
     expect(res.statusCode).toBe(400)
   })
@@ -144,13 +145,17 @@ describe('POST /auth/passkey/exchange', () => {
     const code = generateToken()
     const codeHash = hashToken(code)
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000)
+    const encrypted = encryptPasskeyTokens({
+      accessToken: 'test-access-token',
+      refreshToken: 'test-refresh-token',
+    })
 
     const db = await getDb()
     await db.insert(passkeyCallback).values({
       id: randomUUID(),
       codeHash,
-      accessToken: 'test-access-token',
-      refreshToken: 'test-refresh-token',
+      accessToken: encrypted.accessToken,
+      refreshToken: encrypted.refreshToken,
       callbackOrigin: '',
       expiresAt,
     })
@@ -190,13 +195,17 @@ describe('POST /auth/passkey/exchange', () => {
     const code = generateToken()
     const codeHash = hashToken(code)
     const expiresAt = new Date(Date.now() - 60 * 1000)
+    const encrypted = encryptPasskeyTokens({
+      accessToken: 'test-access-token',
+      refreshToken: 'test-refresh-token',
+    })
 
     const db = await getDb()
     await db.insert(passkeyCallback).values({
       id: randomUUID(),
       codeHash,
-      accessToken: 'test-access-token',
-      refreshToken: 'test-refresh-token',
+      accessToken: encrypted.accessToken,
+      refreshToken: encrypted.refreshToken,
       callbackOrigin: '',
       expiresAt,
     })

@@ -92,37 +92,53 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (!result.ok) return reply.code(401).send({ code: result.code, message: result.message })
 
-      const { accessToken, refreshToken } = await createSessionAndIssueTokens({
-        fastify,
-        db,
-        userId: result.userId,
-      })
-
       if (callbackUrl) {
         const callbackOrigin = new URL(callbackUrl).origin
         const code = generateToken()
         const codeHash = hashToken(code)
         const expiresAt = new Date(Date.now() + callbackCodeExpiryMinutes * 60 * 1000)
-        const encrypted = encryptPasskeyTokens({ accessToken, refreshToken })
-        await db.transaction(async tx => {
-          await tx
-            .delete(passkeyAuthChallenges)
-            .where(eq(passkeyAuthChallenges.id, challengeRow.id))
-          await tx.insert(passkeyCallback).values({
-            id: randomUUID(),
-            codeHash,
-            accessToken: encrypted.accessToken,
-            refreshToken: encrypted.refreshToken,
-            callbackOrigin,
-            expiresAt,
+        const [deleted] = await db
+          .delete(passkeyAuthChallenges)
+          .where(eq(passkeyAuthChallenges.id, challengeRow.id))
+          .returning()
+        if (!deleted)
+          return reply.code(401).send({
+            code: 'EXPIRED_CHALLENGE',
+            message: 'Challenge already consumed',
           })
+        const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+          fastify,
+          db,
+          userId: result.userId,
+        })
+        const encrypted = encryptPasskeyTokens({ accessToken, refreshToken })
+        await db.insert(passkeyCallback).values({
+          id: randomUUID(),
+          codeHash,
+          accessToken: encrypted.accessToken,
+          refreshToken: encrypted.refreshToken,
+          callbackOrigin,
+          expiresAt,
         })
         return reply.code(200).send({
           redirectUrl: appendCodeToCallbackUrl(callbackUrl, code),
         })
       }
 
-      await db.delete(passkeyAuthChallenges).where(eq(passkeyAuthChallenges.id, challengeRow.id))
+      const [deleted] = await db
+        .delete(passkeyAuthChallenges)
+        .where(eq(passkeyAuthChallenges.id, challengeRow.id))
+        .returning()
+      if (!deleted)
+        return reply.code(401).send({
+          code: 'EXPIRED_CHALLENGE',
+          message: 'Challenge already consumed',
+        })
+      const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+        fastify,
+        db,
+        userId: result.userId,
+      })
       return reply.code(200).send({ token: accessToken, refreshToken })
     },
   )

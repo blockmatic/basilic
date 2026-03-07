@@ -333,6 +333,13 @@ export type AccountLinkPasskeyStartErrors = {
         code: string;
         message: string;
     };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
 };
 
 export type AccountLinkPasskeyStartError = AccountLinkPasskeyStartErrors[keyof AccountLinkPasskeyStartErrors];
@@ -846,7 +853,6 @@ export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof Oau
 export type AuthPasskeyExchangeData = {
     body: {
         code: string;
-        origin?: string;
     };
     path?: never;
     query?: never;

@@ -10,7 +10,6 @@ import { ErrorResponseSchema } from '../../schemas.js'
 
 const ExchangeSchema = Type.Object({
   code: Type.String(),
-  origin: Type.Optional(Type.String()),
 })
 
 const ExchangeResponseSchema = Type.Object({
@@ -37,7 +36,7 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      const { code, origin: bodyOrigin } = request.body
+      const { code } = request.body
 
       if (!code?.trim())
         return reply.code(400).send({
@@ -45,16 +44,31 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'code is required',
         })
 
-      const requestOrigin = (bodyOrigin ?? request.headers.origin)?.trim()
+      const rawOrigin = request.headers['x-callback-origin'] ?? request.headers.origin
+      const requestOrigin =
+        (typeof rawOrigin === 'string' ? rawOrigin : rawOrigin?.[0])?.trim() ?? ''
 
       const codeHash = hashToken(code.trim())
       const db = await getDb()
       const now = new Date()
 
-      const [row] = await db
-        .delete(passkeyCallback)
-        .where(and(eq(passkeyCallback.codeHash, codeHash), gt(passkeyCallback.expiresAt, now)))
-        .returning()
+      const row = await db.transaction(async tx => {
+        const [r] = await tx
+          .select()
+          .from(passkeyCallback)
+          .where(and(eq(passkeyCallback.codeHash, codeHash), gt(passkeyCallback.expiresAt, now)))
+          .limit(1)
+        if (!r) return null
+        if (r.callbackOrigin) {
+          if (!requestOrigin) throw new Error('MISSING_ORIGIN')
+          if (r.callbackOrigin !== requestOrigin) throw new Error('ORIGIN_MISMATCH')
+        }
+        const [deleted] = await tx
+          .delete(passkeyCallback)
+          .where(and(eq(passkeyCallback.codeHash, codeHash), eq(passkeyCallback.id, r.id)))
+          .returning()
+        return deleted ?? null
+      })
 
       if (!row)
         return reply.code(401).send({
@@ -62,24 +76,25 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Invalid or expired code',
         })
 
-      if (row.callbackOrigin) {
-        if (!requestOrigin)
+      try {
+        const decrypted = decryptPasskeyTokens(row)
+        return reply.code(200).send({
+          token: decrypted.accessToken,
+          refreshToken: decrypted.refreshToken,
+        })
+      } catch (err) {
+        if (err instanceof Error && err.message === 'MISSING_ORIGIN')
           return reply.code(400).send({
             code: 'MISSING_ORIGIN',
-            message: 'Origin is required for code exchange (pass in body or Origin header)',
+            message: 'Origin is required for code exchange (Origin or X-Callback-Origin header)',
           })
-        if (row.callbackOrigin !== requestOrigin)
+        if (err instanceof Error && err.message === 'ORIGIN_MISMATCH')
           return reply.code(401).send({
             code: 'ORIGIN_MISMATCH',
             message: 'Request origin does not match callback origin',
           })
+        throw err
       }
-
-      const decrypted = decryptPasskeyTokens(row)
-      return reply.code(200).send({
-        token: decrypted.accessToken,
-        refreshToken: decrypted.refreshToken,
-      })
     },
   )
 }

@@ -76,7 +76,7 @@ async function main() {
     JWT_SECRET: jwtSecret,
   }
 
-  const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
+  const fastify = spawn(process.execPath, ['--import', 'tsx', 'server.ts'], {
     cwd: fastifyDir,
     env,
     stdio: 'ignore',
@@ -87,6 +87,7 @@ async function main() {
     process.exit(1)
   })
   fastify.on('exit', (code, signal) => {
+    if (signal === 'SIGTERM') return
     if (code !== 0 && code != null) {
       process.stderr.write(`fastify exited with code ${code}\n`)
       process.exit(1)

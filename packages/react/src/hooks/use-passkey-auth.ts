@@ -39,7 +39,8 @@ export function usePasskeyAuth() {
       }
       const result = await client.auth.passkey.verify({ body, throwOnError: true })
       const redirectUrl = 'redirectUrl' in result ? result.redirectUrl : undefined
-      if (redirectUrl) window.location.assign(redirectUrl)
+      if (!redirectUrl) throw new Error('Server did not return redirect URL for passkey callback')
+      window.location.assign(redirectUrl)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })

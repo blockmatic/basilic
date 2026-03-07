@@ -6,13 +6,14 @@ export const pageTitles: Record<string, string> = {
   '/': 'Everything',
   '/markets': 'Markets',
   '/settings': 'Profile',
-  '/settings/security': 'Authenticator',
+  '/settings/security': 'Passkeys',
   '/settings/security/passkeys': 'Passkeys',
   '/settings/security/api-keys': 'API keys',
 }
 
 const securitySectionTitles: Record<string, string> = {
   passkeys: 'Passkeys',
+  totp: 'Authenticator',
   apikeys: 'API keys',
   apikey: 'API keys',
 }

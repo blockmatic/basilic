@@ -68,15 +68,24 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
           message: 'Registration challenge expired or not found',
         })
 
-      const verification = await verifyRegistrationResponse({
-        response: {
-          ...credential,
-          clientExtensionResults: credential.clientExtensionResults ?? {},
-        },
-        expectedChallenge: challengeRow.challenge,
-        expectedOrigin: origin.expectedOrigin,
-        expectedRPID: origin.rpID,
-      })
+      let verification: Awaited<ReturnType<typeof verifyRegistrationResponse>>
+      try {
+        verification = await verifyRegistrationResponse({
+          response: {
+            ...credential,
+            clientExtensionResults: credential.clientExtensionResults ?? {},
+          },
+          expectedChallenge: challengeRow.challenge,
+          expectedOrigin: origin.expectedOrigin,
+          expectedRPID: origin.rpID,
+        })
+      } catch (err) {
+        request.log.warn({ err }, 'Passkey registration verification failed')
+        return reply.code(400).send({
+          code: 'VERIFICATION_FAILED',
+          message: 'Passkey verification failed',
+        })
+      }
 
       if (!verification.verified || !verification.registrationInfo)
         return reply.code(400).send({
@@ -93,22 +102,28 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
       const publicKeyB64 = Buffer.from(cred.publicKey).toString('base64')
       const transports = credential.response.transports ?? undefined
 
-      await db.delete(passkeyChallenges).where(eq(passkeyChallenges.id, challengeRow.id))
-
       const id = randomUUID()
       const trimmed = rawName?.trim()
       const name =
         trimmed && trimmed.length > 0 ? trimmed.slice(0, 64) : `Passkey ${id.slice(0, 8)}`
-      await db.insert(passkeyCredentials).values({
-        id,
-        userId,
-        credentialId: credentialIdStr,
-        publicKey: publicKeyB64,
-        counter: cred.counter,
-        name,
-        transports: transports?.length ? transports : undefined,
-        credentialDeviceType: credentialDeviceType ?? undefined,
-        credentialBackedUp: credentialBackedUp ?? undefined,
+
+      await db.transaction(async tx => {
+        const deleted = await tx
+          .delete(passkeyChallenges)
+          .where(eq(passkeyChallenges.id, challengeRow.id))
+          .returning()
+        if (deleted.length !== 1) throw new Error('Challenge already consumed or not found')
+        await tx.insert(passkeyCredentials).values({
+          id,
+          userId,
+          credentialId: credentialIdStr,
+          publicKey: publicKeyB64,
+          counter: cred.counter,
+          name,
+          transports: transports?.length ? transports : undefined,
+          credentialDeviceType: credentialDeviceType ?? undefined,
+          credentialBackedUp: credentialBackedUp ?? undefined,
+        })
       })
 
       return reply.code(200).send({ ok: true })

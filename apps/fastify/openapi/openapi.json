@@ -1153,6 +1153,28 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2320,9 +2342,6 @@
                 ],
                 "properties": {
                   "code": {
-                    "type": "string"
-                  },
-                  "origin": {
                     "type": "string"
                   }
                 }

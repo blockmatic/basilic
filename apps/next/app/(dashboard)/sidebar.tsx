@@ -38,8 +38,8 @@ const settingsItems: Array<{
   { href: '/settings/security', label: 'Security', icon: ShieldIcon, matchPrefix: true },
 ]
 
-function isActive(href: string, pathname: string, matchPrefix?: boolean) {
-  return matchPrefix ? pathname.startsWith(href) : pathname === href
+function isActive(href: string, pathname: string, matchPrefix?: boolean): boolean {
+  return matchPrefix ? pathname === href || pathname.startsWith(`${href}/`) : pathname === href
 }
 
 export function DashboardSidebar() {

@@ -14,9 +14,13 @@ export function encryptPasskeyTokens(payload: { accessToken: string; refreshToke
 export function decryptPasskeyTokens(record: PasskeyCallback): PasskeyCallback {
   const accessDecrypted = decrypt(record.accessToken)
   const refreshDecrypted = decrypt(record.refreshToken)
+  if (!accessDecrypted)
+    throw new Error('Passkey token decryption failed: accessToken could not be decrypted')
+  if (!refreshDecrypted)
+    throw new Error('Passkey token decryption failed: refreshToken could not be decrypted')
   return {
     ...record,
-    accessToken: accessDecrypted ?? record.accessToken,
-    refreshToken: refreshDecrypted ?? record.refreshToken,
+    accessToken: accessDecrypted,
+    refreshToken: refreshDecrypted,
   }
 }

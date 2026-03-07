@@ -64,8 +64,8 @@ describe('GET /test/totp/current', () => {
       url: '/test/totp/current',
       headers: { Authorization: `Bearer ${token}` },
     })
-    expect(afterVerifyRes.statusCode).not.toBe(200)
+    expect(afterVerifyRes.statusCode).toBe(404)
     const afterBody = afterVerifyRes.json() as { code?: string }
-    expect(afterBody.code).toBeUndefined()
+    expect(afterBody.code).toBe('NOT_FOUND')
   })
 })

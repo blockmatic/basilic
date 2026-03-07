@@ -29,6 +29,7 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
           200: StartResponseSchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -69,9 +70,18 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
         )[],
       }))
 
+      const rpName = env.WEBAUTHN_RP_NAME
+      if (!rpName?.trim()) {
+        request.log.error('WEBAUTHN_RP_NAME is required for passkey registration')
+        return reply.code(500).send({
+          code: 'CONFIGURATION_ERROR',
+          message: 'WebAuthn RP name is not configured',
+        })
+      }
+
       const userIDBytes = new TextEncoder().encode(userId)
       const options = await generateRegistrationOptions({
-        rpName: env.WEBAUTHN_RP_NAME ?? 'Acme Inc.',
+        rpName,
         rpID: origin.rpID,
         userName,
         userID: userIDBytes,
