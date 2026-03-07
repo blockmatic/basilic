@@ -21,6 +21,7 @@ export function usePasskeyAuth() {
 
   return useMutation({
     mutationFn: async ({ callbackUrl }: UsePasskeyAuthParams) => {
+      if (!callbackUrl?.trim()) throw new Error('Invalid callbackUrl')
       const { options, sessionId } = await client.auth.passkey.start({ throwOnError: true })
       let assertion: Awaited<ReturnType<typeof startAuthentication>>
       try {
