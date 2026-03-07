@@ -3,7 +3,7 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 import { verifyRegistrationResponse } from '@simplewebauthn/server'
 import { Type } from '@sinclair/typebox'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { passkeyChallenges, passkeyCredentials } from '../../../../db/schema/index.js'
@@ -58,7 +58,8 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
         .select()
         .from(passkeyChallenges)
         .where(eq(passkeyChallenges.userId, userId))
-        .orderBy(passkeyChallenges.expiresAt)
+        .orderBy(desc(passkeyChallenges.expiresAt))
+        .limit(1)
 
       if (!challengeRow || challengeRow.expiresAt < new Date())
         return reply.code(400).send({

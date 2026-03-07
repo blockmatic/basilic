@@ -47,5 +47,8 @@ export function decryptTotpSecret(encrypted: string): string | null {
 }
 
 export function getTotpIssuer(): string {
-  return env.TOTP_ISSUER ?? env.JWT_ISSUER
+  const issuer = env.TOTP_ISSUER ?? env.JWT_ISSUER
+  if (!issuer || typeof issuer !== 'string')
+    throw new Error('TOTP issuer is required: set TOTP_ISSUER or JWT_ISSUER in environment')
+  return issuer
 }

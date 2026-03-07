@@ -1,6 +1,12 @@
 'use client'
 
-import { usePasskeyRegister, usePasskeyRemove, usePasskeysList } from '@repo/react'
+import {
+  usePasskeyRegister,
+  usePasskeyRemove,
+  usePasskeysList,
+  useWebAuthnAvailable,
+} from '@repo/react'
+import { Alert, AlertDescription } from '@repo/ui/components/alert'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -25,7 +31,11 @@ function formatDate(iso: string) {
   }
 }
 
+const webauthnUnavailableMessage =
+  'Passkeys require a secure connection (HTTPS) and a modern browser. Try accessing this page over HTTPS or updating your browser.'
+
 export function PasskeysCard() {
+  const webauthnAvailable = useWebAuthnAvailable()
   const { data, isLoading, isError, error } = usePasskeysList()
   const registerMutation = usePasskeyRegister()
   const removeMutation = usePasskeyRemove()
@@ -90,13 +100,18 @@ export function PasskeysCard() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {!webauthnAvailable && (
+            <Alert>
+              <AlertDescription>{webauthnUnavailableMessage}</AlertDescription>
+            </Alert>
+          )}
           {passkeys.length === 0 ? (
             <div className="space-y-4 py-8">
               <p className="text-muted-foreground text-sm">No passkeys configured.</p>
               <Button
                 variant="outline"
                 onClick={handleAddPasskey}
-                disabled={registerMutation.isPending}
+                disabled={registerMutation.isPending || !webauthnAvailable}
               >
                 {registerMutation.isPending ? 'Adding…' : 'Add passkey'}
               </Button>
@@ -104,7 +119,11 @@ export function PasskeysCard() {
           ) : (
             <div className="space-y-4">
               <div className="flex justify-end">
-                <Button size="sm" onClick={handleAddPasskey} disabled={registerMutation.isPending}>
+                <Button
+                  size="sm"
+                  onClick={handleAddPasskey}
+                  disabled={registerMutation.isPending || !webauthnAvailable}
+                >
                   {registerMutation.isPending ? 'Adding…' : 'Add passkey'}
                 </Button>
               </div>

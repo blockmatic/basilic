@@ -21,11 +21,11 @@ const phases = [
   { name: 'lint:fix', cmd: 'pnpm', args: ['lint:fix'] },
   { name: 'build', cmd: 'pnpm', args: ['build'] },
   { name: 'test', cmd: 'pnpm', args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'] },
-  { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'] },
+  { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'], env: { ...process.env, SKIP_BUILD: '1' } },
 ]
 
-for (const { name, cmd, args } of phases) {
-  const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: 'inherit' })
+for (const { name, cmd, args, env } of phases) {
+  const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: 'inherit', env: env ?? process.env })
   if (result.status !== 0) {
     const code = result.status ?? 1
     console.error('\n---\nQA FAILED at phase "%s" (exit code %d)\n---\n', name, code)

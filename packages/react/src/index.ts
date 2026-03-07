@@ -14,6 +14,7 @@ export { useTotpSetup, useTotpUnlink, useTotpVerify } from './hooks/use-totp'
 export { useUser } from './hooks/use-user'
 export { useVerifyLinkWallet } from './hooks/use-verify-link-wallet'
 export { useVerifyWeb3Auth } from './hooks/use-verify-web3-auth'
+export { useWebAuthnAvailable } from './hooks/use-webauthn-available'
 // Export provider and context
 export { ApiProvider } from './provider'
 export type { ReactApiConfig } from './setup'

@@ -69,8 +69,16 @@ export function ApiKeysCard() {
 
   async function handleCopyKey() {
     if (!createdKey) return
-    await navigator.clipboard.writeText(createdKey)
-    toast.success('Copied to clipboard')
+    if (!navigator.clipboard) {
+      toast.error('Clipboard not available')
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(createdKey)
+      toast.success('Copied to clipboard')
+    } catch (err) {
+      toast.error(`Failed to copy: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
   }
 
   async function handleRevokeConfirm(): Promise<boolean> {
