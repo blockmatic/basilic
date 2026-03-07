@@ -22,6 +22,8 @@ It supports:
 - **OAuth**: sign in with providers
 - **Web3**: sign in with wallets
 - **API keys**: programmatic auth for servers, CLIs, and scripts (alternate Bearer format)
+- **TOTP**: authenticator app (e.g. Google Authenticator) for one-time codes
+- **Passkeys**: WebAuthn passkeys for passwordless sign-in (registration only in this phase)
 
 ## Principles
 
@@ -41,6 +43,25 @@ API keys enable programmatic auth for servers, CLIs, and scripts. Users create k
 - **Usage**: `X-API-Key: bask_<prefix>_<secret>` or `Authorization: Bearer bask_<prefix>_<secret>` — same header as JWT; Fastify distinguishes by prefix
 - **Endpoints** (Bearer required — JWT or API key): `POST /account/apikeys` (create), `GET /account/apikeys` (list), `DELETE /account/apikeys/:id` (revoke)
 - **Security**: timing-safe hash comparison; secrets hashed at rest; `lastUsedAt` nullable (null = never used)
+
+### TOTP authenticator (implemented)
+
+TOTP enables users to add an authenticator app (e.g. Google Authenticator, Authy) for one-time codes. One TOTP factor per user.
+
+- **Setup flow**: `POST /account/link/totp/setup` → returns `{ otpauthUri, manualEntryKey, qrCodeDataUrl }` → user scans QR or enters key → `POST /account/link/totp/verify` with `{ code }` → persists to `totp` table
+- **Unlink**: `DELETE /account/link/totp` → removes TOTP for user
+- **Session user**: `GET /auth/session/user` includes `totpEnabled: boolean`
+- **Error codes**: `INVALID_CODE`, `EXPIRED_SETUP`
+
+### Passkeys (implemented)
+
+Passkeys use WebAuthn for passwordless registration. Users can add multiple passkeys. rpID is derived from the request `Origin` header (validated against `ALLOWED_ORIGINS`).
+
+- **Add passkey**: `POST /account/link/passkey/start` → returns `{ options }` for `startRegistration` → client calls `POST /account/link/passkey/finish` with credential
+- **List**: `GET /account/passkeys` → `{ passkeys: [{ id, name, createdAt }] }`
+- **Remove**: `DELETE /account/link/passkey/:id`
+- **Session user**: `GET /auth/session/user` includes `passkeys` array
+- **Error codes**: `INVALID_ORIGIN`, `EXPIRED_CHALLENGE`, `VERIFICATION_FAILED`
 
 ### Magic link (implemented)
 
@@ -238,8 +259,19 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `GET /account/apikeys` → `{ keys: [{ id, name, prefix, lastUsedAt, expiresAt, createdAt }] }`
   - `DELETE /account/apikeys/:id` → `204`
 
+- **TOTP** (Bearer required)
+  - `POST /account/link/totp/setup` → `{ otpauthUri, manualEntryKey, qrCodeDataUrl }`
+  - `POST /account/link/totp/verify` → `{ ok }` (body: `{ code }`)
+  - `DELETE /account/link/totp` → `204`
+
+- **Passkeys** (Bearer required)
+  - `POST /account/link/passkey/start` → `{ options }` (for `startRegistration`)
+  - `POST /account/link/passkey/finish` → `{ ok }` (body: `{ credential }`)
+  - `GET /account/passkeys` → `{ passkeys: [{ id, name, createdAt }] }`
+  - `DELETE /account/link/passkey/:id` → `204`
+
 - **Session**
-  - `GET /auth/session/user` (Bearer) → `{ user }` (includes optional `wallet`, `linkedWallets` with `{ id, chain, address }` for unlink)
+  - `GET /auth/session/user` (Bearer) → `{ user }` (includes optional `wallet`, `linkedWallets` with `{ id, chain, address }` for unlink, `totpEnabled`, `passkeys` with `{ id, name, createdAt }`)
   - `POST /auth/session/logout` (Bearer) → `204`
   - `POST /auth/session/refresh` → `{ token, refreshToken }`
 
@@ -355,6 +387,10 @@ The auth system relies on these tables:
 - **`account`**: OAuth provider accounts (provider id + encrypted tokens at rest)
 - **`wallet_identities`**: Web3 identities (`eip155`/`solana` + normalized address)
 - **`api_keys`**: user-scoped API keys (prefix, hashed secret, optional `lastUsedAt`, `expiresAt`)
+- **`totp`**: user TOTP secret (encrypted at rest); one per user
+- **`totp_setup`**: temporary TOTP setup (encrypted secret, 10-min TTL); replaced on new setup
+- **`passkey_credentials`**: WebAuthn credentials (credentialId, publicKey, counter, name)
+- **`passkey_challenges`**: registration challenges (challenge, 5-min TTL)
 
 ## Security notes
 
