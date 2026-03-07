@@ -1,13 +1,16 @@
 // Export components
 export { LoginForm } from './components/login-form'
 export { useReactApiConfig } from './context'
+export { useApiKeysList, useCreateApiKey, useRevokeApiKey } from './hooks/use-api-keys'
 // Export hooks
 export { useChatFromConfig } from './hooks/use-chat'
 export { useHealthCheck } from './hooks/use-health-check'
 export { useLinkEmail } from './hooks/use-link-email'
 export { useMagicLink } from './hooks/use-magic-link'
 export { useOAuthLogin } from './hooks/use-oauth-login'
+export { usePasskeyRegister, usePasskeyRemove, usePasskeysList } from './hooks/use-passkeys'
 export { useSession } from './hooks/use-session'
+export { useTotpSetup, useTotpUnlink, useTotpVerify } from './hooks/use-totp'
 export { useUser } from './hooks/use-user'
 export { useVerifyLinkWallet } from './hooks/use-verify-link-wallet'
 export { useVerifyWeb3Auth } from './hooks/use-verify-web3-auth'
