@@ -9,15 +9,15 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.ts'],
     globals: true,
     environment: 'node',
+    server: {
+      deps: {
+        inline: [/@repo\/utils/],
+      },
+    },
   },
   resolve: {
     alias: {
       '@repo/utils': resolve(configDir, '../utils/src'),
-    },
-  },
-  server: {
-    deps: {
-      inline: [/@repo\/utils/],
     },
   },
 })

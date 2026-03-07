@@ -31,50 +31,58 @@ export function createCaptureError(reporting: ReportingAdapter, defaultLogger: L
 
     if (options.report === false) return
 
-    Promise.resolve().then(() => {
-      const reportingClient = reporting.getClient()
+    Promise.resolve()
+      .then(() => {
+        const reportingClient = reporting.getClient()
 
-      if (!reportingClient) {
-        if (!reportingWarningShown) {
+        if (!reportingClient) {
+          if (!reportingWarningShown) {
+            const log = options.logger ?? defaultLogger
+            log.warn(
+              'Error reporting not initialized - errors will be logged only. Set ERROR_REPORTING_DSN to enable.',
+            )
+            reportingWarningShown = true
+          }
           const log = options.logger ?? defaultLogger
-          log.warn(
-            'Error reporting not initialized - errors will be logged only. Set ERROR_REPORTING_DSN to enable.',
-          )
-          reportingWarningShown = true
-        }
-        const log = options.logger ?? defaultLogger
-        log.error(
-          {
-            err: errorWithMessage,
-            label: options.label,
-            code: options.code,
-            ...options.data,
-          },
-          'Error captured (no DSN)',
-        )
-        return
-      }
-
-      const tags: Record<string, string> = {
-        component: options.label,
-        ...(options.code ? { errorCode: options.code } : {}),
-        ...options.tags,
-      }
-
-      reporting.captureException(
-        options.error instanceof Error ? options.error : new Error(errorWithMessage.message),
-        {
-          tags,
-          level: options.level ?? 'error',
-          contexts: {
-            error: {
+          log.error(
+            {
+              err: errorWithMessage,
               label: options.label,
-              ...(options.code ? { code: options.code } : {}),
+              code: options.code,
               ...options.data,
             },
+            'Error captured (no DSN)',
+          )
+          return
+        }
+
+        const tags: Record<string, string> = {
+          component: options.label,
+          ...(options.code ? { errorCode: options.code } : {}),
+          ...options.tags,
+        }
+
+        reporting.captureException(
+          options.error instanceof Error ? options.error : new Error(errorWithMessage.message),
+          {
+            tags,
+            level: options.level ?? 'error',
+            contexts: {
+              error: {
+                label: options.label,
+                ...(options.code ? { code: options.code } : {}),
+                ...options.data,
+              },
+            },
           },
-        },
-      )
-    })
+        )
+      })
+      .catch(err => {
+        const log = options.logger ?? defaultLogger
+        log.error(
+          { err, label: options.label, code: options.code, ...options.data },
+          'Error reporting failed (captureException threw)',
+        )
+      })
   }
 }

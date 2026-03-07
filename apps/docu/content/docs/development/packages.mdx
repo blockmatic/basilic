@@ -139,7 +139,6 @@ export function HealthStatus() {
 Prefer subpath imports:
 
 - `@repo/utils/async` — async helpers (`delay`, `fetchWithTimeout`, …)
-- `@repo/error` — error normalization (`getErrorMessage`, `tryCatch`, …)
 - `@repo/utils/web3` — chain metadata + helpers
 - `@repo/utils/logger/server`, `@repo/utils/logger/client` — Pino (server) and console (client)
 - `@repo/utils/debug` — client-only debug hooks (`useDevtools`, `useNuqsDebug`, `useVconsole`)
@@ -168,10 +167,11 @@ import { cn } from '@repo/ui/lib/utils'
 
 ## Error reporting
 
-### `@repo/error` — capture interface
+### `@repo/error` — capture interface + error utilities
 
 Subpath-only exports (choose the platform path):
 
+- `@repo/error` — error utilities (`getErrorMessage`, `tryCatch`, `toErrorWithMessage`, …)
 - `@repo/error/node`
 - `@repo/error/nextjs`
 - `@repo/error/browser`
@@ -179,8 +179,10 @@ Subpath-only exports (choose the platform path):
 
 ```ts
 import { captureError } from '@repo/error/node' // or /nextjs, /browser
+import { getErrorMessage, tryCatch } from '@repo/error' // or @repo/error/nextjs
 
 captureError({ error, label: 'API Call', tags: { app: 'api' } })
+const message = getErrorMessage(error)
 ```
 
 ## Email
