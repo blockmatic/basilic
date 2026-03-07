@@ -48,13 +48,6 @@
       "node": "./dist/debug/index.js",
       "default": "./dist/debug/index.js"
     },
-    "./error": {
-      "types": "./src/error/index.ts",
-      "source": "./src/error/index.ts",
-      "import": "./dist/error/index.js",
-      "node": "./dist/error/index.js",
-      "default": "./dist/error/index.js"
-    },
     "./data": {
       "types": "./src/data/index.ts",
       "source": "./src/data/index.ts",

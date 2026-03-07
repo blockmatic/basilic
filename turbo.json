@@ -9,7 +9,7 @@
       "env": ["NODE_ENV"]
     },
     "@repo/fastify#generate:openapi": {
-      "dependsOn": ["@repo/utils#build", "@repo/sentry#build"],
+      "dependsOn": ["@repo/utils#build", "@repo/error#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
       "env": ["NODE_ENV", "OLLAMA_BASE_URL", "OPEN_ROUTER_API_KEY", "AI_PROVIDER"]
@@ -68,7 +68,12 @@
         "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
-        "EMAIL_ASSETS_URL"
+        "EMAIL_ASSETS_URL",
+        "ERROR_REPORTING_DSN",
+        "ERROR_REPORTING_ENVIRONMENT",
+        "NEXT_PUBLIC_ERROR_REPORTING_DSN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT"
       ]
     },
     "lint:eslint:fix": {
@@ -101,7 +106,12 @@
         "NEXT_RUNTIME",
         "DEBUG_TEST",
         "APP_URL",
-        "EMAIL_ASSETS_URL"
+        "EMAIL_ASSETS_URL",
+        "ERROR_REPORTING_DSN",
+        "ERROR_REPORTING_ENVIRONMENT",
+        "NEXT_PUBLIC_ERROR_REPORTING_DSN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT"
       ]
     },
     "checktypes": { "env": ["NODE_ENV"] },

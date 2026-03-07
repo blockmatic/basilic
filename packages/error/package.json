@@ -1,0 +1,89 @@
+{
+  "name": "@repo/error",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "description": "Error reporting and utilities",
+  "license": "PROPRIETARY",
+  "exports": {
+    ".": {
+      "types": "./src/utils/index.ts",
+      "source": "./src/utils/index.ts",
+      "import": "./dist/index.js",
+      "node": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./src/node/index.ts",
+      "source": "./src/node/index.ts",
+      "import": "./dist/node.js",
+      "node": "./dist/node.js",
+      "default": "./dist/node.js"
+    },
+    "./nextjs": {
+      "types": "./src/nextjs/index.ts",
+      "source": "./src/nextjs/index.ts",
+      "import": "./dist/nextjs.js",
+      "node": "./dist/nextjs.js",
+      "default": "./dist/nextjs.js"
+    },
+    "./browser": {
+      "types": "./src/browser/index.ts",
+      "source": "./src/browser/index.ts",
+      "import": "./dist/browser.js"
+    },
+    "./react": {
+      "types": "./src/react/index.ts",
+      "source": "./src/react/index.ts",
+      "import": "./dist/react.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "checktypes": "tsgo --noEmit",
+    "dev": "tsup --watch",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "test": "pnpm test:unit",
+    "test:unit": "vitest run",
+    "test:types": "tsgo --noEmit src/__tests__/types.test-d.ts",
+    "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
+    "postpack": "node ../../scripts/restore-publish.mjs"
+  },
+  "dependencies": {
+    "@repo/utils": "workspace:*"
+  },
+  "peerDependencies": {
+    "@repo/utils": "workspace:*",
+    "@sentry/browser": "^10.34.0",
+    "@sentry/nextjs": "^10.34.0",
+    "@sentry/node": "^10.34.0",
+    "pino": "*",
+    "react": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@sentry/node": {
+      "optional": true
+    },
+    "@sentry/nextjs": {
+      "optional": true
+    },
+    "@sentry/browser": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@sentry/browser": "^10.38.0",
+    "@sentry/nextjs": "^10.38.0",
+    "@sentry/node": "^10.38.0",
+    "@types/node": "^25.2.3",
+    "@types/react": "^19.2.14",
+    "@typescript/native-preview": "7.0.0-dev.20260213.1",
+    "eslint": "^9.0.0",
+    "react": "^19.2.4",
+    "tsup": "^8.5.1",
+    "vitest": "^4.0.18"
+  }
+}

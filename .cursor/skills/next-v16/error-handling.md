@@ -1,12 +1,12 @@
 # Error Handling
 
-Handle errors in Next.js with **Sentry reporting** (`@repo/sentry/*`) and **structured logging** (`@repo/utils/logger/server` or `@repo/utils/logger/client`).
+Handle errors in Next.js with **Sentry reporting** (`@repo/error/*`) and **structured logging** (`@repo/utils/logger/server` or `@repo/utils/logger/client`).
 
 Reference: https://nextjs.org/docs/app/getting-started/error-handling
 
 ## Observability (Required)
 
-- Report unexpected errors with `captureError` from `@repo/sentry/nextjs`
+- Report unexpected errors with `captureError` from `@repo/error/nextjs`
 - Log operational context with `logger` from `@repo/utils/logger/server` or `@repo/utils/logger/client` (never `console.*`)
 
 ## Error Boundaries
@@ -18,7 +18,7 @@ Catches errors in a route segment and its children:
 ```tsx
 'use client'
 
-import { captureError } from '@repo/sentry/nextjs'
+import { captureError } from '@repo/error/nextjs'
 import { logger } from '@repo/utils/logger/client'
 import { useEffect } from 'react'
 
@@ -58,7 +58,7 @@ Catches errors in the root layout. Same capture pattern as `error.tsx`, but it *
 ```tsx
 'use client'
 
-import { captureError } from '@repo/sentry/nextjs'
+import { captureError } from '@repo/error/nextjs'
 import { logger } from '@repo/utils/logger/client'
 import { useEffect } from 'react'
 
@@ -97,7 +97,7 @@ Reference: https://nextjs.org/docs/app/api-reference/functions/redirect#behavior
 'use server'
 
 import { redirect, unstable_rethrow } from 'next/navigation'
-import { captureError } from '@repo/sentry/nextjs'
+import { captureError } from '@repo/error/nextjs'
 import { logger } from '@repo/utils/logger/server'
 
 export async function action() {
@@ -119,7 +119,7 @@ Capture, log, then return a safe result. If navigation APIs may be involved, cal
 
 ```tsx
 import { unstable_rethrow } from 'next/navigation'
-import { captureError } from '@repo/sentry/nextjs'
+import { captureError } from '@repo/error/nextjs'
 import { logger } from '@repo/utils/logger/server'
 
 async function action() {

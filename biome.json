@@ -101,7 +101,7 @@
           "options": {
             "paths": {
               "lodash-es": "Use per-function imports: lodash-es/<fn> (e.g., lodash-es/isEmpty).",
-              "@repo/sentry": "Use subpath imports: @repo/sentry/nextjs, @repo/sentry/node, etc.",
+              "@repo/error": "Use subpath imports: @repo/error/nextjs, @repo/error/node, etc.",
               "@repo/utils": "Use subpath imports: @repo/utils/logger/server, @repo/utils/logger/client, @repo/utils/async, etc.",
               "@repo/ui": "Use subpath imports: @repo/ui/components/*, @repo/ui/radix, etc."
             }

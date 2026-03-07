@@ -56,7 +56,7 @@
     "@fastify/type-provider-typebox": "^6.1.0",
     "@openrouter/ai-sdk-provider": "^2.2.3",
     "@repo/email": "workspace:*",
-    "@repo/sentry": "workspace:*",
+    "@repo/error": "workspace:*",
     "@repo/utils": "workspace:*",
     "@scalar/fastify-api-reference": "^1.44.18",
     "@sentry/node": "^10.38.0",

@@ -215,10 +215,10 @@ try {
 }
 ```
 
-**5. Integration with `@repo/sentry`** - When using `captureError` in Fastify, pass `request.log` to use Fastify's native logger. The catalog and response are built in the app (e.g. from `apps/fastify/src/lib/catalogs/`):
+**5. Integration with `@repo/error`** - When using `captureError` in Fastify, pass `request.log` to use Fastify's native logger. The catalog and response are built in the app (e.g. from `apps/fastify/src/lib/catalogs/`):
 
 ```typescript
-import { captureError } from '@repo/sentry/node'
+import { captureError } from '@repo/error/node'
 
 fastify.setErrorHandler((error, request, reply) => {
   captureError({
@@ -251,4 +251,4 @@ fastify.setErrorHandler((error, request, reply) => {
 ## Related Documentation
 
 - [Installation](/docs/development) - Environment variable configuration
-- [Error Handling](/docs/architecture/error-handling) - Error logging with `@repo/sentry`
+- [Error Handling](/docs/architecture/error-handling) - Error logging with `@repo/error`

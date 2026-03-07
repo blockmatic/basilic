@@ -8,7 +8,6 @@ export default defineConfig({
     'src/logger/client.ts',
     'src/logger/server.ts',
     'src/debug/index.ts',
-    'src/error/index.ts',
     'src/data/index.ts',
   ],
   format: ['esm'],
