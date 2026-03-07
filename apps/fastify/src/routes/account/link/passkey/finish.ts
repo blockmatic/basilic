@@ -12,6 +12,7 @@ import { ErrorResponseSchema } from '../../../schemas.js'
 
 const FinishBodySchema = Type.Object({
   credential: Type.Any(),
+  name: Type.Optional(Type.String({ maxLength: 64 })),
 })
 
 const FinishResponseSchema = Type.Object({
@@ -50,7 +51,7 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
           message: 'Invalid or missing Origin header',
         })
 
-      const { credential } = request.body
+      const { credential, name: rawName } = request.body
       const userId = request.session.user.id
 
       const db = await getDb()
@@ -87,7 +88,9 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
       await db.delete(passkeyChallenges).where(eq(passkeyChallenges.id, challengeRow.id))
 
       const id = randomUUID()
-      const name = `Passkey ${id.slice(0, 8)}`
+      const trimmed = rawName?.trim()
+      const name =
+        trimmed && trimmed.length > 0 ? trimmed.slice(0, 64) : `Passkey ${id.slice(0, 8)}`
       await db.insert(passkeyCredentials).values({
         id,
         userId,

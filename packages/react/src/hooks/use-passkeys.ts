@@ -23,13 +23,13 @@ export function usePasskeyRegister() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ name }: { name?: string } = {}) => {
       const { options } = await client.account.link.passkey.start({ throwOnError: true })
       const credential = await startRegistration({
         optionsJSON: options as PublicKeyCredentialCreationOptionsJSON,
       })
       await client.account.link.passkey.finish({
-        body: { credential },
+        body: { credential, ...(name?.trim() && { name: name.trim().slice(0, 64) }) },
         throwOnError: true,
       })
     },

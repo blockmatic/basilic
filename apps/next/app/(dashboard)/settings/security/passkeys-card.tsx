@@ -18,6 +18,16 @@ import {
 } from '@repo/ui/components/alert-dialog'
 import { Button } from '@repo/ui/components/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@repo/ui/components/dialog'
+import { Input } from '@repo/ui/components/input'
+import { Label } from '@repo/ui/components/label'
 import { Skeleton } from '@repo/ui/components/skeleton'
 import { Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
@@ -41,10 +51,14 @@ export function PasskeysCard() {
   const removeMutation = usePasskeyRemove()
 
   const [removeId, setRemoveId] = useState<string | null>(null)
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
+  const [addName, setAddName] = useState('')
 
-  async function handleAddPasskey() {
+  async function handleAddPasskey(name?: string) {
     try {
-      await registerMutation.mutateAsync()
+      await registerMutation.mutateAsync({ name: name?.trim() || undefined })
+      setAddDialogOpen(false)
+      setAddName('')
       toast.success('Passkey added')
     } catch (err) {
       const isAbort = err instanceof Error && err.name === 'NotAllowedError'
@@ -110,7 +124,7 @@ export function PasskeysCard() {
               <p className="text-muted-foreground text-sm">No passkeys configured.</p>
               <Button
                 variant="outline"
-                onClick={handleAddPasskey}
+                onClick={() => setAddDialogOpen(true)}
                 disabled={registerMutation.isPending || !webauthnAvailable}
               >
                 {registerMutation.isPending ? 'Adding…' : 'Add passkey'}
@@ -121,7 +135,7 @@ export function PasskeysCard() {
               <div className="flex justify-end">
                 <Button
                   size="sm"
-                  onClick={handleAddPasskey}
+                  onClick={() => setAddDialogOpen(true)}
                   disabled={registerMutation.isPending || !webauthnAvailable}
                 >
                   {registerMutation.isPending ? 'Adding…' : 'Add passkey'}
@@ -154,6 +168,40 @@ export function PasskeysCard() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog
+        open={addDialogOpen}
+        onOpenChange={open => {
+          setAddDialogOpen(open)
+          if (!open) setAddName('')
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add passkey</DialogTitle>
+            <DialogDescription>
+              Give your passkey a name to identify it later (e.g. MacBook, iPhone).
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Label htmlFor="passkey-name">Name</Label>
+            <Input
+              id="passkey-name"
+              value={addName}
+              onChange={e => setAddName(e.target.value)}
+              placeholder="e.g. MacBook"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => handleAddPasskey(addName)} disabled={registerMutation.isPending}>
+              {registerMutation.isPending ? 'Adding…' : 'Add'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={!!removeId} onOpenChange={open => !open && setRemoveId(null)}>
         <AlertDialogContent>

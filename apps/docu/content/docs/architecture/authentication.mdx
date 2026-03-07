@@ -57,7 +57,7 @@ TOTP enables users to add an authenticator app (e.g. Google Authenticator, Authy
 
 Passkeys use WebAuthn for passwordless registration. Users can add multiple passkeys. rpID is derived from the request `Origin` header (validated against `ALLOWED_ORIGINS`).
 
-- **Add passkey**: `POST /account/link/passkey/start` → returns `{ options }` for `startRegistration` → client calls `POST /account/link/passkey/finish` with credential
+- **Add passkey**: `POST /account/link/passkey/start` → returns `{ options }` for `startRegistration` → client calls `POST /account/link/passkey/finish` with `{ credential, name? }` — optional name for display
 - **List**: `GET /account/passkeys` → `{ passkeys: [{ id, name, createdAt }] }`
 - **Remove**: `DELETE /account/link/passkey/:id`
 - **Session user**: `GET /auth/session/user` includes `passkeys` array

@@ -647,7 +647,11 @@
                   "credential"
                 ],
                 "properties": {
-                  "credential": {}
+                  "credential": {},
+                  "name": {
+                    "maxLength": 64,
+                    "type": "string"
+                  }
                 }
               }
             }

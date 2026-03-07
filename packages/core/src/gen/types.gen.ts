@@ -260,6 +260,7 @@ export type AccountLinkPasskeyDeleteResponse = AccountLinkPasskeyDeleteResponses
 export type AccountLinkPasskeyFinishData = {
     body: {
         credential: unknown;
+        name?: string;
     };
     path?: never;
     query?: never;
