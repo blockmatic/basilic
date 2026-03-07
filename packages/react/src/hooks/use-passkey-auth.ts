@@ -1,5 +1,6 @@
 'use client'
 
+import type { AuthPasskeyVerifyData } from '@repo/core'
 import { startAuthentication } from '@simplewebauthn/browser'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
@@ -15,50 +16,23 @@ export type UsePasskeyAuthParams = {
  * No credentials required; sessionId is passed in request body.
  */
 export function usePasskeyAuth() {
-  const { client, baseUrl } = useReactApiConfig()
+  const { client } = useReactApiConfig()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ callbackUrl }: UsePasskeyAuthParams) => {
-      const url =
-        baseUrl?.replace(/\/$/, '') ??
-        (await import('@repo/core').then(m => m.getClientConfig?.(client)?.baseUrl)) ??
-        ''
-      if (!url) throw new Error('baseUrl is required for passkey auth')
-
-      const startRes = await fetch(`${url}/auth/passkey/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      if (!startRes.ok) {
-        const err = await startRes.text()
-        throw new Error(err || `Start failed: ${startRes.status}`)
-      }
-      const { options, sessionId } = (await startRes.json()) as {
-        options: import('@simplewebauthn/browser').PublicKeyCredentialRequestOptionsJSON
-        sessionId: string
-      }
+      const { options, sessionId } = await client.auth.passkey.start({ throwOnError: true })
       let assertion: Awaited<ReturnType<typeof startAuthentication>>
       try {
-        assertion = await startAuthentication({
-          optionsJSON:
-            options as import('@simplewebauthn/browser').PublicKeyCredentialRequestOptionsJSON,
-        })
+        assertion = await startAuthentication({ optionsJSON: options })
       } catch (err) {
         throw new Error(err instanceof Error ? err.message : 'Sign-in cancelled')
       }
       if (!assertion) throw new Error('Sign-in cancelled')
 
-      const verifyRes = await fetch(`${url}/auth/passkey/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assertion, sessionId, callbackUrl }),
-      })
-      if (!verifyRes.ok) {
-        const err = await verifyRes.json().catch(() => ({ message: verifyRes.statusText }))
-        throw new Error(err?.message ?? `Verify failed: ${verifyRes.status}`)
-      }
-      const { redirectUrl } = (await verifyRes.json()) as { redirectUrl: string }
+      const body: AuthPasskeyVerifyData['body'] = { assertion, sessionId, callbackUrl }
+      const result = await client.auth.passkey.verify({ body, throwOnError: true })
+      const redirectUrl = 'redirectUrl' in result ? result.redirectUrl : undefined
       if (redirectUrl) window.location.assign(redirectUrl)
     },
     onSuccess: () => {

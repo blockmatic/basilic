@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 import { verifyRegistrationResponse } from '@simplewebauthn/server'
 import { Type } from '@sinclair/typebox'
 import { desc, eq } from 'drizzle-orm'
@@ -8,10 +7,11 @@ import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { passkeyChallenges, passkeyCredentials } from '../../../../db/schema/index.js'
 import { getWebAuthnOriginFromRequest } from '../../../../lib/passkey.js'
+import { RegistrationResponseJSONSchema } from '../../../../lib/schemas/webauthn.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const FinishBodySchema = Type.Object({
-  credential: Type.Any(),
+  credential: RegistrationResponseJSONSchema,
   name: Type.Optional(Type.String({ maxLength: 64 })),
 })
 
@@ -69,7 +69,10 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
         })
 
       const verification = await verifyRegistrationResponse({
-        response: credential as RegistrationResponseJSON,
+        response: {
+          ...credential,
+          clientExtensionResults: credential.clientExtensionResults ?? {},
+        },
         expectedChallenge: challengeRow.challenge,
         expectedOrigin: origin.expectedOrigin,
         expectedRPID: origin.rpID,
@@ -88,7 +91,7 @@ const passkeyFinishRoute: FastifyPluginAsync = async fastify => {
       } = verification.registrationInfo
       const credentialIdStr = cred.id
       const publicKeyB64 = Buffer.from(cred.publicKey).toString('base64')
-      const transports = (credential as { transports?: string[] }).transports ?? undefined
+      const transports = credential.response.transports ?? undefined
 
       await db.delete(passkeyChallenges).where(eq(passkeyChallenges.id, challengeRow.id))
 

@@ -1,11 +1,19 @@
-import type {
-  AuthenticationResponseJSON,
-  AuthenticatorTransportFuture,
-} from '@simplewebauthn/server'
+import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
 import { eq } from 'drizzle-orm'
 import { getDb } from '../db/index.js'
 import { passkeyCredentials } from '../db/schema/index.js'
+
+const validTransports = ['ble', 'cable', 'hybrid', 'internal', 'nfc', 'smart-card', 'usb'] as const
+type AuthenticatorTransportFuture = (typeof validTransports)[number]
+
+function filterTransports(arr: string[] | null): AuthenticatorTransportFuture[] | undefined {
+  if (!arr?.length) return undefined
+  const set = new Set(validTransports)
+  return arr.filter((t): t is AuthenticatorTransportFuture =>
+    set.has(t as AuthenticatorTransportFuture),
+  )
+}
 
 export type VerifyPasskeyAuthResult =
   | { ok: true; userId: string }
@@ -49,7 +57,7 @@ export async function verifyPasskeyAuth({
         id: credential.credentialId,
         publicKey: new Uint8Array(publicKey),
         counter,
-        transports: (credential.transports as AuthenticatorTransportFuture[] | null) ?? undefined,
+        transports: filterTransports(credential.transports) ?? undefined,
       },
     })
   } catch (err) {

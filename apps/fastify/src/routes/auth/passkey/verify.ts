@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
@@ -9,6 +8,7 @@ import { passkeyAuthChallenges, passkeyCallback } from '../../../db/schema/index
 import { generateToken, hashToken } from '../../../lib/jwt.js'
 import { getWebAuthnOriginFromRequest } from '../../../lib/passkey.js'
 import { verifyPasskeyAuth } from '../../../lib/passkey-auth.js'
+import { AuthenticationResponseJSONSchema } from '../../../lib/schemas/webauthn.js'
 import { createSessionAndIssueTokens } from '../../../lib/session.js'
 import { appendCodeToCallbackUrl, isAllowedUrl } from '../../../lib/url.js'
 import { ErrorResponseSchema } from '../../schemas.js'
@@ -16,7 +16,7 @@ import { ErrorResponseSchema } from '../../schemas.js'
 const callbackCodeExpiryMinutes = 5
 
 const VerifyBodySchema = Type.Object({
-  assertion: Type.Any(),
+  assertion: AuthenticationResponseJSONSchema,
   sessionId: Type.String(),
   callbackUrl: Type.Optional(Type.String()),
 })
@@ -84,7 +84,7 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
         })
 
       const result = await verifyPasskeyAuth({
-        assertion: assertion as AuthenticationResponseJSON,
+        assertion: { ...assertion, clientExtensionResults: assertion.clientExtensionResults ?? {} },
         expectedChallenge: challengeRow.challenge,
         expectedOrigin: origin.expectedOrigin,
         expectedRPID: origin.rpID,

@@ -259,7 +259,23 @@ export type AccountLinkPasskeyDeleteResponse = AccountLinkPasskeyDeleteResponses
 
 export type AccountLinkPasskeyFinishData = {
     body: {
-        credential: unknown;
+        credential: {
+            id: string;
+            rawId: string;
+            response: {
+                clientDataJSON: string;
+                attestationObject: string;
+                authenticatorData?: string;
+                transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
+                publicKeyAlgorithm?: number;
+                publicKey?: string;
+            };
+            authenticatorAttachment?: 'platform' | 'cross-platform';
+            clientExtensionResults?: {
+                [key: string]: unknown;
+            };
+            type: 'public-key';
+        };
         name?: string;
     };
     path?: never;
@@ -328,7 +344,38 @@ export type AccountLinkPasskeyStartResponses = {
      * Default Response
      */
     200: {
-        options: unknown;
+        options: {
+            rp: {
+                name: string;
+                id?: string;
+            };
+            user: {
+                id: string;
+                name: string;
+                displayName: string;
+            };
+            challenge: string;
+            pubKeyCredParams: Array<{
+                alg: number;
+                type: 'public-key';
+            }>;
+            timeout?: number;
+            excludeCredentials?: Array<{
+                id: string;
+                type: 'public-key';
+                transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
+            }>;
+            authenticatorSelection?: {
+                authenticatorAttachment?: 'platform' | 'cross-platform';
+                requireResidentKey?: boolean;
+                residentKey?: 'discouraged' | 'preferred' | 'required';
+                userVerification?: 'discouraged' | 'preferred' | 'required';
+            };
+            attestation?: 'direct' | 'enterprise' | 'indirect' | 'none';
+            extensions?: {
+                [key: string]: unknown;
+            };
+        };
     };
 };
 
@@ -864,7 +911,20 @@ export type AuthPasskeyStartResponses = {
      * Default Response
      */
     200: {
-        options: unknown;
+        options: {
+            challenge: string;
+            timeout?: number;
+            rpId?: string;
+            allowCredentials?: Array<{
+                id: string;
+                type: 'public-key';
+                transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
+            }>;
+            userVerification?: 'discouraged' | 'preferred' | 'required';
+            extensions?: {
+                [key: string]: unknown;
+            };
+        };
         sessionId: string;
     };
 };
@@ -873,7 +933,21 @@ export type AuthPasskeyStartResponse = AuthPasskeyStartResponses[keyof AuthPassk
 
 export type AuthPasskeyVerifyData = {
     body: {
-        assertion: unknown;
+        assertion: {
+            id: string;
+            rawId: string;
+            response: {
+                clientDataJSON: string;
+                authenticatorData: string;
+                signature: string;
+                userHandle?: string;
+            };
+            authenticatorAttachment?: 'platform' | 'cross-platform';
+            clientExtensionResults?: {
+                [key: string]: unknown;
+            };
+            type: 'public-key';
+        };
         sessionId: string;
         callbackUrl?: string;
     };

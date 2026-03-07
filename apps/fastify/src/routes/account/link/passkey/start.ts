@@ -1,19 +1,17 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import {
-  generateRegistrationOptions,
-  type PublicKeyCredentialCreationOptionsJSON,
-} from '@simplewebauthn/server'
-import { Type } from '@sinclair/typebox'
+import { generateRegistrationOptions } from '@simplewebauthn/server'
+import { type Static, Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { passkeyChallenges, passkeyCredentials } from '../../../../db/schema/index.js'
 import { getWebAuthnOriginFromRequest } from '../../../../lib/passkey.js'
+import { PublicKeyCredentialCreationOptionsJSONSchema } from '../../../../lib/schemas/webauthn.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const StartResponseSchema = Type.Object({
-  options: Type.Any(),
+  options: PublicKeyCredentialCreationOptionsJSONSchema,
 })
 
 const passkeyStartRoute: FastifyPluginAsync = async fastify => {
@@ -71,7 +69,7 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
       }))
 
       const userIDBytes = new TextEncoder().encode(userId)
-      const options: PublicKeyCredentialCreationOptionsJSON = await generateRegistrationOptions({
+      const options = await generateRegistrationOptions({
         rpName: 'Acme Inc.',
         rpID: origin.rpID,
         userName,
@@ -99,7 +97,9 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
         expiresAt,
       })
 
-      return reply.code(200).send({ options })
+      return reply.code(200).send({
+        options: options as Static<typeof PublicKeyCredentialCreationOptionsJSONSchema>,
+      })
     },
   )
 }

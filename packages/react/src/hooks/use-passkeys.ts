@@ -1,11 +1,8 @@
 'use client'
 
-import { useReactApiConfig } from '@repo/react'
-import {
-  type PublicKeyCredentialCreationOptionsJSON,
-  startRegistration,
-} from '@simplewebauthn/browser'
+import { startRegistration } from '@simplewebauthn/browser'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useReactApiConfig } from '../context'
 
 const passkeysQueryKey = ['account', 'passkeys'] as const
 const userQueryKey = ['auth', 'session', 'user'] as const
@@ -25,9 +22,7 @@ export function usePasskeyRegister() {
   return useMutation({
     mutationFn: async ({ name }: { name?: string } = {}) => {
       const { options } = await client.account.link.passkey.start({ throwOnError: true })
-      const credential = await startRegistration({
-        optionsJSON: options as PublicKeyCredentialCreationOptionsJSON,
-      })
+      const credential = await startRegistration({ optionsJSON: options })
       await client.account.link.passkey.finish({
         body: { credential, ...(name?.trim() && { name: name.trim().slice(0, 64) }) },
         throwOnError: true,

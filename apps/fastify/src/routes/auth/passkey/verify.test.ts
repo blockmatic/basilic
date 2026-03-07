@@ -1,17 +1,29 @@
 import { describe, expect, it } from 'vitest'
 import { fastify } from '../passkey.spec.js'
 
+const minimalAssertion = {
+  id: 'fake',
+  rawId: 'fake',
+  response: {
+    clientDataJSON: 'fake',
+    authenticatorData: 'fake',
+    signature: 'fake',
+  },
+  type: 'public-key' as const,
+}
+
 describe('POST /auth/passkey/verify', () => {
   it('should return 400 when sessionId is missing', async () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/verify',
       headers: { origin: 'http://localhost:3000' },
-      payload: { assertion: { id: 'fake', rawId: 'fake', response: {}, type: 'public-key' } },
+      payload: { assertion: minimalAssertion },
     })
     expect(res.statusCode).toBe(400)
     const body = res.json()
-    expect(body).toHaveProperty('statusCode', 400)
+    expect(body).toHaveProperty('code')
+    expect(body).toHaveProperty('message')
   })
 
   it('should return 401 when sessionId does not match any challenge', async () => {
@@ -20,7 +32,7 @@ describe('POST /auth/passkey/verify', () => {
       url: '/auth/passkey/verify',
       headers: { origin: 'http://localhost:3000' },
       payload: {
-        assertion: { id: 'fake', rawId: 'fake', response: {}, type: 'public-key' },
+        assertion: minimalAssertion,
         sessionId: 'non-existent-session-id',
       },
     })
@@ -46,7 +58,7 @@ describe('POST /auth/passkey/verify', () => {
       url: '/auth/passkey/verify',
       headers: { origin: 'http://localhost:3000' },
       payload: {
-        assertion: { id: 'fake', rawId: 'fake', response: {}, type: 'public-key' },
+        assertion: minimalAssertion,
         sessionId,
         callbackUrl: 'javascript:alert(1)',
       },

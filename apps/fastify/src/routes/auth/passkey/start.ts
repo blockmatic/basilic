@@ -1,17 +1,18 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { generateAuthenticationOptions } from '@simplewebauthn/server'
-import { Type } from '@sinclair/typebox'
+import { type Static, Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { passkeyAuthChallenges } from '../../../db/schema/index.js'
 import { getWebAuthnOriginFromRequest } from '../../../lib/passkey.js'
+import { PublicKeyCredentialRequestOptionsJSONSchema } from '../../../lib/schemas/webauthn.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const challengeMaxAge = 5 * 60 // 5 minutes
 
 const StartResponseSchema = Type.Object({
-  options: Type.Any(),
+  options: PublicKeyCredentialRequestOptionsJSONSchema,
   sessionId: Type.String(),
 })
 
@@ -59,7 +60,10 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
         expiresAt,
       })
 
-      return reply.code(200).send({ options, sessionId })
+      return reply.code(200).send({
+        options: options as Static<typeof PublicKeyCredentialRequestOptionsJSONSchema>,
+        sessionId,
+      })
     },
   )
 }

@@ -647,7 +647,122 @@
                   "credential"
                 ],
                 "properties": {
-                  "credential": {},
+                  "credential": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "rawId",
+                      "response",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "rawId": {
+                        "type": "string"
+                      },
+                      "response": {
+                        "type": "object",
+                        "required": [
+                          "clientDataJSON",
+                          "attestationObject"
+                        ],
+                        "properties": {
+                          "clientDataJSON": {
+                            "type": "string"
+                          },
+                          "attestationObject": {
+                            "type": "string"
+                          },
+                          "authenticatorData": {
+                            "type": "string"
+                          },
+                          "transports": {
+                            "type": "array",
+                            "items": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "ble"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "cable"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "hybrid"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "internal"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "nfc"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "smart-card"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "usb"
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          "publicKeyAlgorithm": {
+                            "type": "number"
+                          },
+                          "publicKey": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "authenticatorAttachment": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "platform"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "cross-platform"
+                            ]
+                          }
+                        ]
+                      },
+                      "clientExtensionResults": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "public-key"
+                        ]
+                      }
+                    }
+                  },
                   "name": {
                     "maxLength": 64,
                     "type": "string"
@@ -755,7 +870,247 @@
                     "options"
                   ],
                   "properties": {
-                    "options": {}
+                    "options": {
+                      "type": "object",
+                      "required": [
+                        "rp",
+                        "user",
+                        "challenge",
+                        "pubKeyCredParams"
+                      ],
+                      "properties": {
+                        "rp": {
+                          "type": "object",
+                          "required": [
+                            "name"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "id": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "user": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "name",
+                            "displayName"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "challenge": {
+                          "type": "string"
+                        },
+                        "pubKeyCredParams": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "alg",
+                              "type"
+                            ],
+                            "properties": {
+                              "alg": {
+                                "type": "number"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "public-key"
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        "timeout": {
+                          "type": "number"
+                        },
+                        "excludeCredentials": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "type"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "public-key"
+                                ]
+                              },
+                              "transports": {
+                                "type": "array",
+                                "items": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "ble"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "cable"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "hybrid"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "internal"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "nfc"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "smart-card"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "usb"
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "authenticatorSelection": {
+                          "type": "object",
+                          "properties": {
+                            "authenticatorAttachment": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "platform"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "cross-platform"
+                                  ]
+                                }
+                              ]
+                            },
+                            "requireResidentKey": {
+                              "type": "boolean"
+                            },
+                            "residentKey": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "discouraged"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "preferred"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "required"
+                                  ]
+                                }
+                              ]
+                            },
+                            "userVerification": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "discouraged"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "preferred"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "required"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "attestation": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "direct"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "enterprise"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "indirect"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "none"
+                              ]
+                            }
+                          ]
+                        },
+                        "extensions": {
+                          "type": "object",
+                          "additionalProperties": {}
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -2070,7 +2425,119 @@
                     "sessionId"
                   ],
                   "properties": {
-                    "options": {},
+                    "options": {
+                      "type": "object",
+                      "required": [
+                        "challenge"
+                      ],
+                      "properties": {
+                        "challenge": {
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "type": "number"
+                        },
+                        "rpId": {
+                          "type": "string"
+                        },
+                        "allowCredentials": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "type"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "public-key"
+                                ]
+                              },
+                              "transports": {
+                                "type": "array",
+                                "items": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "ble"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "cable"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "hybrid"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "internal"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "nfc"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "smart-card"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "usb"
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "userVerification": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "discouraged"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "preferred"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "required"
+                              ]
+                            }
+                          ]
+                        },
+                        "extensions": {
+                          "type": "object",
+                          "additionalProperties": {}
+                        }
+                      }
+                    },
                     "sessionId": {
                       "type": "string"
                     }
@@ -2123,7 +2590,71 @@
                   "sessionId"
                 ],
                 "properties": {
-                  "assertion": {},
+                  "assertion": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "rawId",
+                      "response",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "rawId": {
+                        "type": "string"
+                      },
+                      "response": {
+                        "type": "object",
+                        "required": [
+                          "clientDataJSON",
+                          "authenticatorData",
+                          "signature"
+                        ],
+                        "properties": {
+                          "clientDataJSON": {
+                            "type": "string"
+                          },
+                          "authenticatorData": {
+                            "type": "string"
+                          },
+                          "signature": {
+                            "type": "string"
+                          },
+                          "userHandle": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "authenticatorAttachment": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "platform"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "cross-platform"
+                            ]
+                          }
+                        ]
+                      },
+                      "clientExtensionResults": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "public-key"
+                        ]
+                      }
+                    }
+                  },
                   "sessionId": {
                     "type": "string"
                   },
