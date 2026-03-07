@@ -220,6 +220,239 @@ export type AccountLinkEmailVerifyResponses = {
 
 export type AccountLinkEmailVerifyResponse = AccountLinkEmailVerifyResponses[keyof AccountLinkEmailVerifyResponses];
 
+export type AccountLinkPasskeyDeleteData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/account/link/passkey/{id}';
+};
+
+export type AccountLinkPasskeyDeleteErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkPasskeyDeleteError = AccountLinkPasskeyDeleteErrors[keyof AccountLinkPasskeyDeleteErrors];
+
+export type AccountLinkPasskeyDeleteResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type AccountLinkPasskeyDeleteResponse = AccountLinkPasskeyDeleteResponses[keyof AccountLinkPasskeyDeleteResponses];
+
+export type AccountLinkPasskeyFinishData = {
+    body: {
+        credential: unknown;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/link/passkey/finish';
+};
+
+export type AccountLinkPasskeyFinishErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkPasskeyFinishError = AccountLinkPasskeyFinishErrors[keyof AccountLinkPasskeyFinishErrors];
+
+export type AccountLinkPasskeyFinishResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: true;
+    };
+};
+
+export type AccountLinkPasskeyFinishResponse = AccountLinkPasskeyFinishResponses[keyof AccountLinkPasskeyFinishResponses];
+
+export type AccountLinkPasskeyStartData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/link/passkey/start';
+};
+
+export type AccountLinkPasskeyStartErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkPasskeyStartError = AccountLinkPasskeyStartErrors[keyof AccountLinkPasskeyStartErrors];
+
+export type AccountLinkPasskeyStartResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        options: unknown;
+    };
+};
+
+export type AccountLinkPasskeyStartResponse = AccountLinkPasskeyStartResponses[keyof AccountLinkPasskeyStartResponses];
+
+export type AccountLinkTotpSetupData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/link/totp/setup';
+};
+
+export type AccountLinkTotpSetupErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkTotpSetupError = AccountLinkTotpSetupErrors[keyof AccountLinkTotpSetupErrors];
+
+export type AccountLinkTotpSetupResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        otpauthUri: string;
+        manualEntryKey: string;
+        qrCodeDataUrl: string;
+    };
+};
+
+export type AccountLinkTotpSetupResponse = AccountLinkTotpSetupResponses[keyof AccountLinkTotpSetupResponses];
+
+export type AccountLinkTotpUnlinkData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/link/totp/';
+};
+
+export type AccountLinkTotpUnlinkErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkTotpUnlinkError = AccountLinkTotpUnlinkErrors[keyof AccountLinkTotpUnlinkErrors];
+
+export type AccountLinkTotpUnlinkResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type AccountLinkTotpUnlinkResponse = AccountLinkTotpUnlinkResponses[keyof AccountLinkTotpUnlinkResponses];
+
+export type AccountLinkTotpVerifyData = {
+    body: {
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/link/totp/verify';
+};
+
+export type AccountLinkTotpVerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkTotpVerifyError = AccountLinkTotpVerifyErrors[keyof AccountLinkTotpVerifyErrors];
+
+export type AccountLinkTotpVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: true;
+    };
+};
+
+export type AccountLinkTotpVerifyResponse = AccountLinkTotpVerifyResponses[keyof AccountLinkTotpVerifyResponses];
+
 export type AccountLinkWalletUnlinkData = {
     body?: never;
     path: {
@@ -304,6 +537,40 @@ export type AccountLinkWalletVerifyResponses = {
 };
 
 export type AccountLinkWalletVerifyResponse = AccountLinkWalletVerifyResponses[keyof AccountLinkWalletVerifyResponses];
+
+export type AccountPasskeysListData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/account/passkeys/';
+};
+
+export type AccountPasskeysListErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountPasskeysListError = AccountPasskeysListErrors[keyof AccountPasskeysListErrors];
+
+export type AccountPasskeysListResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        passkeys: Array<{
+            id: string;
+            name: string;
+            createdAt: string;
+        }>;
+    };
+};
+
+export type AccountPasskeysListResponse = AccountPasskeysListResponses[keyof AccountPasskeysListResponses];
 
 export type ChatData = {
     body: {
@@ -650,6 +917,12 @@ export type GetUserResponses = {
                 id: string;
                 chain: string;
                 address: string;
+            }>;
+            totpEnabled: boolean;
+            passkeys: Array<{
+                id: string;
+                name: string;
+                createdAt: string;
             }>;
         };
     };
