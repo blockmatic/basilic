@@ -15,7 +15,7 @@ import { Button } from '@repo/ui/components/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/card'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@repo/ui/components/input-otp'
 import { Skeleton } from '@repo/ui/components/skeleton'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 export function TotpCard() {
@@ -25,32 +25,22 @@ export function TotpCard() {
   const unlinkMutation = useTotpUnlink()
 
   const [code, setCode] = useState('')
-  const [setupData, setSetupData] = useState<{
-    qrCodeDataUrl: string
-    manualEntryKey: string
-  } | null>(null)
   const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
 
   const totpEnabled = data?.user?.totpEnabled ?? false
+  const setupData = setupMutation.data
 
-  async function handleSetup() {
-    try {
-      const res = await setupMutation.mutateAsync()
-      setSetupData({
-        qrCodeDataUrl: res.qrCodeDataUrl,
-        manualEntryKey: res.manualEntryKey,
-      })
-    } catch {
-      toast.error('Failed to start setup')
-    }
-  }
+  useEffect(() => {
+    if (!totpEnabled && !setupData && !setupMutation.isPending && !setupMutation.isError)
+      setupMutation.mutate()
+  }, [totpEnabled, setupData, setupMutation.isPending, setupMutation.isError, setupMutation])
 
   async function handleVerify() {
     if (!code || code.length !== 6) return
     try {
       await verifyMutation.mutateAsync({ code })
       toast.success('Authenticator enabled')
-      setSetupData(null)
+      setupMutation.reset()
       setCode('')
     } catch (err) {
       if (
@@ -80,7 +70,7 @@ export function TotpCard() {
   }
 
   function handleCancelSetup() {
-    setSetupData(null)
+    setupMutation.reset()
     setCode('')
   }
 
@@ -97,7 +87,7 @@ export function TotpCard() {
       </Card>
     )
 
-  if (totpEnabled && !setupData)
+  if (totpEnabled)
     return (
       <>
         <Card className="shadow-lg">
@@ -153,11 +143,23 @@ export function TotpCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {!setupData ? (
-          <Button onClick={handleSetup} disabled={setupMutation.isPending}>
-            {setupMutation.isPending ? 'Starting…' : 'Enable authenticator'}
-          </Button>
-        ) : (
+        {setupMutation.isPending && !setupData ? (
+          <div className="space-y-4 py-4">
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        ) : setupMutation.isError ? (
+          <div className="space-y-4 py-4">
+            <p className="text-destructive text-sm">Failed to start setup.</p>
+            <Button
+              variant="outline"
+              onClick={() => setupMutation.mutate()}
+              disabled={setupMutation.isPending}
+            >
+              {setupMutation.isPending ? 'Retrying…' : 'Try again'}
+            </Button>
+          </div>
+        ) : setupData ? (
           <>
             <div className="space-y-2">
               <p className="text-sm font-medium">Scan QR code</p>
@@ -203,7 +205,7 @@ export function TotpCard() {
               </Button>
             </div>
           </>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   )
