@@ -1,4 +1,4 @@
-import { generateSecret, generateURI, verify } from 'otplib'
+import { generate, generateSecret, generateURI, verify } from 'otplib'
 import QRCode from 'qrcode'
 import { decrypt, encrypt } from './crypto.js'
 import { env } from './env.js'
@@ -21,6 +21,10 @@ export function generateTotpUri({
     label,
     secret,
   })
+}
+
+export async function generateTotpCode(secret: string): Promise<string> {
+  return generate({ secret })
 }
 
 export async function verifyTotpCode({

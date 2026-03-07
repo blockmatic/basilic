@@ -4,6 +4,8 @@ const testEmail = 'test@test.ai'
 const apiUrl =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 const apiBase = apiUrl.replace(/\/$/, '')
+const authCookieName =
+  process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME ?? 'api.session'
 
 async function sendMagicLinkOnce(page: Page) {
   await page.goto('/auth/login')
@@ -88,6 +90,24 @@ export const authHelpers = {
       },
       { timeout: 10000 },
     )
+  },
+
+  async extractSessionToken(page: Page): Promise<string | null> {
+    const cookies = await page.context().cookies()
+    const sessionCookie = cookies.find(c => c.name === authCookieName)
+    if (!sessionCookie?.value) return null
+    const rawValue = sessionCookie.value
+    let parsed: { token?: string }
+    try {
+      parsed = JSON.parse(rawValue) as { token?: string }
+    } catch {
+      try {
+        parsed = JSON.parse(decodeURIComponent(rawValue)) as { token?: string }
+      } catch {
+        return null
+      }
+    }
+    return parsed.token ?? null
   },
 
   async loginAsTestUser(page: Page) {
