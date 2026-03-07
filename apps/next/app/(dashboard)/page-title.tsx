@@ -6,7 +6,9 @@ export const pageTitles: Record<string, string> = {
   '/': 'Everything',
   '/markets': 'Markets',
   '/settings': 'Profile',
-  '/settings/security': 'Security',
+  '/settings/security': 'Authenticator',
+  '/settings/security/passkeys': 'Passkeys',
+  '/settings/security/api-keys': 'API keys',
 }
 
 export function PageTitle() {
