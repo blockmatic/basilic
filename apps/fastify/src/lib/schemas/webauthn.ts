@@ -32,7 +32,7 @@ const AuthenticatorAttestationResponseJSONSchema = Type.Object({
   clientDataJSON: Type.String(),
   attestationObject: Type.String(),
   authenticatorData: Type.Optional(Type.String()),
-  transports: Type.Optional(Type.Array(AuthenticatorTransportSchema)),
+  transports: Type.Optional(Type.Array(AuthenticatorTransportSchema, { maxItems: 7 })),
   publicKeyAlgorithm: Type.Optional(Type.Number()),
   publicKey: Type.Optional(Type.String()),
 })
@@ -51,7 +51,7 @@ export const RegistrationResponseJSONSchema = Type.Object({
 const PublicKeyCredentialDescriptorJSONSchema = Type.Object({
   id: Type.String(),
   type: Type.Literal('public-key'),
-  transports: Type.Optional(Type.Array(AuthenticatorTransportSchema)),
+  transports: Type.Optional(Type.Array(AuthenticatorTransportSchema, { maxItems: 7 })),
 })
 
 export const PublicKeyCredentialRequestOptionsJSONSchema = Type.Object({

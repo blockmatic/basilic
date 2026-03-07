@@ -679,6 +679,7 @@
                             "type": "string"
                           },
                           "transports": {
+                            "maxItems": 7,
                             "type": "array",
                             "items": {
                               "anyOf": [
@@ -955,6 +956,7 @@
                                 ]
                               },
                               "transports": {
+                                "maxItems": 7,
                                 "type": "array",
                                 "items": {
                                   "anyOf": [
@@ -2475,6 +2477,7 @@
                                 ]
                               },
                               "transports": {
+                                "maxItems": 7,
                                 "type": "array",
                                 "items": {
                                   "anyOf": [

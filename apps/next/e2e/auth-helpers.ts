@@ -37,8 +37,9 @@ async function enrichError(response: Awaited<ReturnType<typeof sendMagicLinkOnce
 }
 
 export const authHelpers = {
-  testEmail,
+  appUrl,
   apiUrl,
+  testEmail,
 
   async sendMagicLink(page: Page) {
     let response = await sendMagicLinkOnce(page)
@@ -96,7 +97,8 @@ export const authHelpers = {
   },
 
   async extractSessionToken(page: Page): Promise<string | null> {
-    const cookies = await page.context().cookies([appUrl, apiUrl])
+    const pageOrigin = new URL(page.url()).origin
+    const cookies = await page.context().cookies([pageOrigin, apiUrl])
     const sessionCookie = cookies.find(c => c.name === authCookieName)
     if (!sessionCookie?.value) return null
     const rawValue = sessionCookie.value

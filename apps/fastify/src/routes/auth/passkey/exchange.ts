@@ -52,31 +52,31 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
       const db = await getDb()
       const now = new Date()
 
-      const row = await db.transaction(async tx => {
-        const [r] = await tx
-          .select()
-          .from(passkeyCallback)
-          .where(and(eq(passkeyCallback.codeHash, codeHash), gt(passkeyCallback.expiresAt, now)))
-          .limit(1)
-        if (!r) return null
-        if (r.callbackOrigin) {
-          if (!requestOrigin) throw new Error('MISSING_ORIGIN')
-          if (r.callbackOrigin !== requestOrigin) throw new Error('ORIGIN_MISMATCH')
-        }
-        const [deleted] = await tx
-          .delete(passkeyCallback)
-          .where(and(eq(passkeyCallback.codeHash, codeHash), eq(passkeyCallback.id, r.id)))
-          .returning()
-        return deleted ?? null
-      })
-
-      if (!row)
-        return reply.code(401).send({
-          code: 'INVALID_OR_EXPIRED_CODE',
-          message: 'Invalid or expired code',
+      try {
+        const row = await db.transaction(async tx => {
+          const [r] = await tx
+            .select()
+            .from(passkeyCallback)
+            .where(and(eq(passkeyCallback.codeHash, codeHash), gt(passkeyCallback.expiresAt, now)))
+            .limit(1)
+          if (!r) return null
+          if (r.callbackOrigin) {
+            if (!requestOrigin) throw new Error('MISSING_ORIGIN')
+            if (r.callbackOrigin !== requestOrigin) throw new Error('ORIGIN_MISMATCH')
+          }
+          const [deleted] = await tx
+            .delete(passkeyCallback)
+            .where(and(eq(passkeyCallback.codeHash, codeHash), eq(passkeyCallback.id, r.id)))
+            .returning()
+          return deleted ?? null
         })
 
-      try {
+        if (!row)
+          return reply.code(401).send({
+            code: 'INVALID_OR_EXPIRED_CODE',
+            message: 'Invalid or expired code',
+          })
+
         const decrypted = decryptPasskeyTokens(row)
         return reply.code(200).send({
           token: decrypted.accessToken,
