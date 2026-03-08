@@ -77,9 +77,9 @@ Passkeys use WebAuthn for passwordless registration and sign-in. Registration cr
 
 **Vercel-style discovery UX** (optional):
 
-- **Resolve user**: `POST /auth/passkey/resolve-user` with `{ userHandle }` (base64url from assertion) → returns `{ email }` for "Login as {email}" display. Rate limited (10/min per IP).
+- **Resolve user**: `POST /auth/passkey/resolve-user` with `{ userHandle }` (base64url from assertion) → returns `{ email }` for "Login as …" display. Rate limited (10/min per IP).
 - **Discovery flow**: On login page load, client calls start → `startAuthentication({ useBrowserAutofill: true })` (conditional UI) → if credential returned, call resolve-user with `response.userHandle` → show `PasskeyShortcut` card above the form.
-- **PasskeyShortcut**: Compact card with "Login as {email}", [Use Passkey] button, "Use another method" link. When user clicks "Use Passkey", verify without `callbackUrl` → receive `{ token, refreshToken }` → `updateAuthTokens` + `router.push`.
+- **PasskeyShortcut**: Compact card with "Login as [email]", [Use Passkey] button, "Use another method" link. When user clicks "Use Passkey", verify without `callbackUrl` → receive `{ token, refreshToken }` → `updateAuthTokens` + `router.push`.
 - **Direct token flow**: When `callbackUrl` is absent, verify returns `{ token, refreshToken }` directly (no redirect). Caller uses `onSuccess` to update cookies and navigate.
 - **Fallback**: When discovery finds nothing, passkey remains in "Or continue with" (redirect flow).
 
