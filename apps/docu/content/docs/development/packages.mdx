@@ -18,11 +18,11 @@ Only import from **exported entrypoints** (package root or documented subpaths).
   - `@repo/react`
 - **Subpath-only packages** (no root export):
   - `@repo/ui/*`
-  - `@repo/sentry/*`
   - `@repo/email/*`
   - `@repo/notif/*`
 - **Mixed**:
-  - `@repo/utils` has a root barrel **and** subpath exports. Prefer subpaths for clarity and smaller import surfaces.
+  - `@repo/error` — root exports (`getErrorMessage`, `tryCatch`, etc.); platform-specific modules require subpaths (`@repo/error/node`, `@repo/error/nextjs`, `@repo/error/browser`)
+  - `@repo/utils` — root barrel **and** subpath exports; prefer subpaths for clarity and smaller import surfaces
 
 Examples:
 
@@ -40,7 +40,7 @@ Examples:
 | `@repo/react` | React Query hooks + React utilities | `@repo/react` |
 | `@repo/utils` | Cross-runtime utilities | `@repo/utils/*` (prefer subpaths) |
 | `@repo/ui` | Shared shadcn/ui components | `@repo/ui/components/*`, `@repo/ui/lib/*`, `@repo/ui/radix` |
-| `@repo/sentry` | Error reporting interface | `@repo/sentry/node`, `/nextjs`, `/browser`, `/react` |
+| `@repo/error` | Error reporting interface | `@repo/error/node`, `/nextjs`, `/browser`, `/react` |
 | `@repo/email` | Email templates + renderer | `@repo/email/emails/*`, `@repo/email/render` |
 | `@repo/notif` | Notification env/types (no root export) | `@repo/notif/node`, `@repo/notif/types/*` |
 
@@ -139,7 +139,6 @@ export function HealthStatus() {
 Prefer subpath imports:
 
 - `@repo/utils/async` — async helpers (`delay`, `fetchWithTimeout`, …)
-- `@repo/utils/error` — error normalization (`getErrorMessage`, `tryCatch`, …)
 - `@repo/utils/web3` — chain metadata + helpers
 - `@repo/utils/logger/server`, `@repo/utils/logger/client` — Pino (server) and console (client)
 - `@repo/utils/debug` — client-only debug hooks (`useDevtools`, `useNuqsDebug`, `useVconsole`)
@@ -168,19 +167,22 @@ import { cn } from '@repo/ui/lib/utils'
 
 ## Error reporting
 
-### `@repo/sentry` — capture interface
+### `@repo/error` — capture interface + error utilities
 
-Subpath-only exports (choose the platform path):
+Root exports for utilities; platform-specific modules use subpaths:
 
-- `@repo/sentry/node`
-- `@repo/sentry/nextjs`
-- `@repo/sentry/browser`
-- `@repo/sentry/react`
+- `@repo/error` — error utilities (`getErrorMessage`, `tryCatch`, `toErrorWithMessage`, …)
+- `@repo/error/node`
+- `@repo/error/nextjs`
+- `@repo/error/browser`
+- `@repo/error/react`
 
 ```ts
-import { captureError } from '@repo/sentry/node' // or /nextjs, /browser
+import { captureError } from '@repo/error/node' // or /nextjs, /browser
+import { getErrorMessage, tryCatch } from '@repo/error' // or @repo/error/nextjs
 
 captureError({ error, label: 'API Call', tags: { app: 'api' } })
+const message = getErrorMessage(error)
 ```
 
 ## Email

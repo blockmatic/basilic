@@ -1,6 +1,6 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { initErrorReporting } from '@repo/error/node'
 import { logger } from '@repo/utils/logger/server'
-import * as Sentry from '@sentry/node'
 import Fastify from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
@@ -13,14 +13,10 @@ if (env.NODE_ENV === 'production' && env.ALLOW_TEST) {
   process.exit(1)
 }
 
-// Initialize Sentry before other app code (conventional Node setup)
-if (env.SENTRY_DSN)
-  Sentry.init({
-    dsn: env.SENTRY_DSN,
-    environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
-    tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
-    ignoreErrors: ['Non-Error promise rejection'],
-  })
+initErrorReporting({
+  dsn: env.ERROR_REPORTING_DSN,
+  environment: env.ERROR_REPORTING_ENVIRONMENT ?? env.NODE_ENV,
+})
 
 const isTestOrCi = env.NODE_ENV === 'test' || env.CI
 const fastify = Fastify({

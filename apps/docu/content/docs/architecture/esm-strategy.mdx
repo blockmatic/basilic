@@ -41,7 +41,7 @@ Packages expose TypeScript source for workspace consumption. Two patterns exist:
 }
 ```
 
-**Pattern B** – `source` condition for bundlers, `node`/`import` for Node (packages like `@repo/utils`, `@repo/sentry`, `@repo/email`, `@repo/notif`):
+**Pattern B** – `source` condition for bundlers, `node`/`import` for Node (packages like `@repo/utils`, `@repo/error`, `@repo/email`, `@repo/notif`):
 
 ```json
 {
@@ -113,7 +113,7 @@ Next.js apps import TypeScript source directly using **package interpolation**:
 ```js
 // next.config.mjs
 export default {
-  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/sentry', '@repo/utils'],
+  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/error', '@repo/utils'],
   serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
   webpack: config => {
     // Resolve "source" condition so Next.js uses TypeScript source from workspace packages

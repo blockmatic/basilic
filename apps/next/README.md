@@ -54,14 +54,14 @@ This starts all development servers including:
 
 ```bash
 # Build required packages first
-pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/sentry --filter=@repo/utils
+pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/utils
 
 # Then run from this directory
 cd apps/next
 pnpm dev
 ```
 
-**Note**: When running directly, you must rebuild dependencies (`@repo/core`, `@repo/react`, `@repo/sentry`, `@repo/utils`) whenever they change. Using `pnpm dev` from the root handles this automatically with watch mode.
+**Note**: When running directly, you must rebuild dependencies (`@repo/core`, `@repo/react`, `@repo/error`, `@repo/utils`) whenever they change. Using `pnpm dev` from the root handles this automatically with watch mode.
 
 The application will be available at `http://localhost:3000` (or the next available port).
 

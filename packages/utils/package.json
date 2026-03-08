@@ -41,19 +41,19 @@
       "node": "./dist/logger/client.js",
       "default": "./dist/logger/client.js"
     },
+    "./logger/types": {
+      "types": "./src/logger/types.ts",
+      "source": "./src/logger/types.ts",
+      "import": "./dist/logger/types.js",
+      "node": "./dist/logger/types.js",
+      "default": "./dist/logger/types.js"
+    },
     "./debug": {
       "types": "./src/debug/index.ts",
       "source": "./src/debug/index.ts",
       "import": "./dist/debug/index.js",
       "node": "./dist/debug/index.js",
       "default": "./dist/debug/index.js"
-    },
-    "./error": {
-      "types": "./src/error/index.ts",
-      "source": "./src/error/index.ts",
-      "import": "./dist/error/index.js",
-      "node": "./dist/error/index.js",
-      "default": "./dist/error/index.js"
     },
     "./data": {
       "types": "./src/data/index.ts",

@@ -1,4 +1,4 @@
-import { captureError } from '@repo/sentry/node'
+import { captureError } from '@repo/error/node'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'

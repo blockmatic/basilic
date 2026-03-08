@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import 'dotenv/config'
-import { captureError } from '@repo/sentry/node'
+import { captureError } from '@repo/error/node'
 import { logger } from '@repo/utils/logger/server'
 import { Pool } from 'pg'
 import { env } from '../src/lib/env.js'

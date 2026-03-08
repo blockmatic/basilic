@@ -29,7 +29,7 @@ Add `@repo/react` and `@repo/core` to `transpilePackages` in your `next.config.m
 // next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/sentry', '@repo/utils'],
+  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/error', '@repo/utils'],
   webpack: config => {
     // Resolve .js imports to .ts files for transpiled packages
     config.resolve.extensionAlias = {

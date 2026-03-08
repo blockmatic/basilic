@@ -1,15 +1,15 @@
 ---
 title: "Error Handling"
-description: "Error handling with Sentry integration and app-level error catalogs."
+description: "Error handling with error reporting and app-level error catalogs."
 ---
 
-Complete guide for error handling across the monorepo: **`@repo/sentry`** for reporting to Sentry, **`@repo/utils/error`** for message extraction, and **app-level catalogs** for safe API responses.
+Complete guide for error handling across the monorepo: **`@repo/error`** for error reporting and message extraction, and **app-level catalogs** for safe API responses.
 
 ## Overview
 
-- **`@repo/sentry`** – `captureError(options)` sends errors to Sentry (void; does not return a catalog). Use platform subpaths: `node`, `nextjs`, `browser`, `react`.
-- **`@repo/utils/error`** – `getErrorMessage(error)` and related utilities for type-safe message extraction.
-- **Sentry initialization** – Not in `@repo/sentry`. Initialize per your platform’s [Sentry docs](https://docs.sentry.io/platforms/) (Node, Next.js, Browser).
+- **`@repo/error`** – `captureError(options)` sends errors to the reporting backend (void; does not return a catalog). Use platform subpaths: `node`, `nextjs`, `browser`, `react`.
+- **`@repo/error`** – `getErrorMessage(error)` and related utilities for type-safe message extraction (base export or `@repo/error/nextjs`).
+- **Initialization** – Use `initErrorReporting` from `@repo/error/node` or `@repo/error/nextjs`. [GlitchTip](https://glitchtip.com/sdkdocs/javascript/) is recommended; Sentry also works (same DSN format).
 - **Error catalogs and safe responses** – Implemented in each app (e.g. Fastify’s `apps/fastify/src/lib/catalogs/` with `getError`, `mapHttpStatusToErrorCode`). Apps build the safe `{ code, message }` response themselves.
 
 **Key principles:**
@@ -23,10 +23,10 @@ Complete guide for error handling across the monorepo: **`@repo/sentry`** for re
 
 ```typescript
 // For Next.js apps
-import { captureError } from '@repo/sentry/nextjs'
+import { captureError } from '@repo/error/nextjs'
 
 // For Node.js/Fastify apps
-// import { captureError } from '@repo/sentry/node'
+// import { captureError } from '@repo/error/node'
 
 captureError({
   error,
@@ -41,14 +41,14 @@ captureError({
 ### Extract Error Message
 
 ```typescript
-import { getErrorMessage } from '@repo/utils/error'
+import { getErrorMessage } from '@repo/error/nextjs'
 
 const message = getErrorMessage(error) // Type-safe
 ```
 
-### Initialize Sentry
+### Error Reporting Initialization
 
-Sentry is not initialized by `@repo/sentry`. Follow your platform’s setup:
+Sentry is not initialized by `@repo/error`. Follow your platform’s setup:
 
 - **Next.js**: [Sentry Next.js guide](https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/) – `withSentryConfig`, `instrumentation.ts`, etc.
 - **Node/Fastify**: [Sentry Node guide](https://docs.sentry.io/platforms/javascript/guides/node/)
@@ -96,7 +96,7 @@ reply.status(500).send(catalogError)
 
 ### App-level error catalogs
 
-Error catalogs and safe responses are implemented **per app**, not in `@repo/sentry`. For example, the Fastify app defines catalogs in `apps/fastify/src/lib/catalogs/` (e.g. `server.ts`, `client.ts`, `common.ts`) and exposes `getError(code)`, `mapHttpStatusToErrorCode(statusCode)`. The error handler calls `captureError` from `@repo/sentry/node` then builds the response using the app’s `getError`.
+Error catalogs and safe responses are implemented **per app**, not in `@repo/error`. For example, the Fastify app defines catalogs in `apps/fastify/src/lib/catalogs/` (e.g. `server.ts`, `client.ts`, `common.ts`) and exposes `getError(code)`, `mapHttpStatusToErrorCode(statusCode)`. The error handler calls `captureError` from `@repo/error/node` then builds the response using the app’s `getError`.
 
 **Adding new error codes:** Add them to your app’s catalog (e.g. `apps/fastify/src/lib/catalogs/`), then use `getError(yourCode)` when building responses. Use `UPPER_SNAKE_CASE` (e.g. `NETWORK_ERROR`, `USER_NOT_FOUND`).
 
@@ -121,11 +121,11 @@ Error catalogs and safe responses are implemented **per app**, not in `@repo/sen
 
 #### Global Error Handler Plugin
 
-Use `captureError` from `@repo/sentry/node` (void); build the response from the app’s catalog (`getError`, `mapHttpStatusToErrorCode` from `apps/fastify/src/lib/catalogs/`):
+Use `captureError` from `@repo/error/node` (void); build the response from the app’s catalog (`getError`, `mapHttpStatusToErrorCode` from `apps/fastify/src/lib/catalogs/`):
 
 ```typescript
 // apps/fastify/src/plugins/error-handler.ts
-import { captureError } from '@repo/sentry/node'
+import { captureError } from '@repo/error/node'
 import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
 // ... route extraction, redaction ...
 
@@ -158,8 +158,8 @@ fastify.setErrorHandler((error, request, reply) => {
 // apps/next/app/layout.tsx
 'use client'
 
-import { AppErrorBoundary } from '@repo/sentry/react'
-import { captureError } from '@repo/sentry/nextjs'
+import { AppErrorBoundary } from '@repo/error/react'
+import { captureError } from '@repo/error/nextjs'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -170,13 +170,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-**Custom implementation:** Use `captureError` from `@repo/sentry/nextjs` in `onError`; it returns void. Show user-facing message via your fallback (e.g. `getErrorMessage(error)` from `@repo/utils/error`).
+**Custom implementation:** Use `captureError` from `@repo/error/nextjs` in `onError`; it returns void. Show user-facing message via your fallback (e.g. `getErrorMessage(error)` from `@repo/error/nextjs`).
 
 #### Event Handlers
 
 ```typescript
-import { captureError } from '@repo/sentry/nextjs'
-import { getErrorMessage } from '@repo/utils/error'
+import { captureError } from '@repo/error/nextjs'
+import { getErrorMessage } from '@repo/error/nextjs'
 import { toast } from 'sonner'
 
 async function handleSubmit() {
@@ -200,7 +200,7 @@ async function handleSubmit() {
 ```typescript
 // app/error.tsx
 'use client'
-import { captureError } from '@repo/sentry/nextjs'
+import { captureError } from '@repo/error/nextjs'
 import { useEffect } from 'react'
 
 export default function ErrorPage({ 
@@ -237,8 +237,8 @@ export default function ErrorPage({
 
 ```typescript
 'use server'
-import { captureError } from '@repo/sentry/nextjs'
-import { getErrorMessage } from '@repo/utils/error'
+import { captureError } from '@repo/error/nextjs'
+import { getErrorMessage } from '@repo/error/nextjs'
 
 export async function serverAction() {
   try {
@@ -255,7 +255,7 @@ export async function serverAction() {
 
 ```typescript
 'use server'
-import { captureError } from '@repo/sentry/nextjs'
+import { captureError } from '@repo/error/nextjs'
 
 export async function serverAction() {
   try {
@@ -267,16 +267,16 @@ export async function serverAction() {
 }
 ```
 
-**Initialization:** Sentry is not initialized by `@repo/sentry`. Use [Sentry’s Next.js setup](https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/) in `next.config`, `instrumentation.ts`, etc.
+**Initialization:** Sentry is not initialized by `@repo/error`. Use [Sentry’s Next.js setup](https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/) in `next.config`, `instrumentation.ts`, etc.
 
 ## API Reference
 
-### `captureError(options): void` (`@repo/sentry/*`)
+### `captureError(options): void` (`@repo/error/*`)
 
 Sends the error to Sentry asynchronously. Does not return a catalog; each app builds its own response.
 
 ```typescript
-import { captureError } from '@repo/sentry/nextjs' // or /node, /browser
+import { captureError } from '@repo/error/nextjs' // or /node, /browser
 
 captureError({
   error: unknown,        // Converted to Error if needed; full stack sent to Sentry
@@ -290,27 +290,27 @@ captureError({
 })
 ```
 
-See [packages/sentry/README.md](https://github.com/blockmatic/basilic/blob/main/packages/sentry/README.md) for full options. **Serverless:** Consider `Sentry.flush()` before function exit if the process terminates quickly.
+See [@repo/error](https://github.com/blockmatic/basilic/blob/main/packages/error/README.md) for full options. **Serverless:** Consider `Sentry.flush()` before function exit if the process terminates quickly.
 
-### `getErrorMessage(error)` (`@repo/utils/error`)
+### `getErrorMessage(error)` (`@repo/error` or `@repo/error/nextjs`)
 
 ```typescript
-import { getErrorMessage } from '@repo/utils/error'
+import { getErrorMessage } from '@repo/error/nextjs'
 
 const message = getErrorMessage(error) // Type-safe extraction from unknown
 ```
 
 ### App-level: `getError`, `mapHttpStatusToErrorCode`
 
-These live in each app (e.g. Fastify’s `apps/fastify/src/lib/catalogs/mapper.ts`). `mapHttpStatusToErrorCode(statusCode)` maps HTTP status to a catalog code; `getError(code)` returns `{ code, message }` for the response. Not part of `@repo/sentry`.
+These live in each app (e.g. Fastify’s `apps/fastify/src/lib/catalogs/mapper.ts`). `mapHttpStatusToErrorCode(statusCode)` maps HTTP status to a catalog code; `getError(code)` returns `{ code, message }` for the response. Not part of `@repo/error`.
 
 ## Best Practices
 
 ### Common Patterns
 
 ```typescript
-import { getErrorMessage } from '@repo/utils/error'
-import { captureError } from '@repo/sentry/nextjs'
+import { getErrorMessage } from '@repo/error/nextjs'
+import { captureError } from '@repo/error/nextjs'
 
 // Extract message
 const message = getErrorMessage(error)

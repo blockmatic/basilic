@@ -1,4 +1,4 @@
-import { captureError } from '@repo/sentry/node'
+import { captureError } from '@repo/error/node'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
@@ -76,17 +76,17 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
         ? error.statusCode
         : 500
 
-    // Redact sensitive data before sending to Sentry
+    // Redact sensitive data before sending to error reporting
     const sanitizedHeaders = redactHeaders(request.headers as Record<string, unknown>)
     const sanitizedBody = redactBody(request.body)
 
     // Map status code to error code
     const errorCode = mapHttpStatusToErrorCode(statusCode)
 
-    // Report to Sentry (non-blocking)
+    // Report via @repo/error/node (non-blocking)
     captureError({
       code: errorCode,
-      error, // ← Full stack trace → Sentry
+      error, // ← Full stack trace → reporting backend
       logger: request.log, // ← Use Fastify's native logger
       label: `${request.method} ${request.url}`,
       data: {

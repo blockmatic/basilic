@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+import { withSentryConfig } from '@sentry/nextjs'
+
 // Must match basilic-fastify Vercel deployment URL pattern. Fork/deploy: change API_PROJECT_NAME
 // and TEAM_SLUG to your Fastify project and Vercel team slug.
 // - Production: basilic-fastify.vercel.app (or basilic-fastify-gaboesquivel.vercel.app)
@@ -69,7 +71,7 @@ const nextConfig = {
     '@repo/ui',
     '@repo/core',
     '@repo/react',
-    '@repo/sentry',
+    '@repo/error',
     '@repo/utils',
     'ai',
     'eventsource-parser',
@@ -110,4 +112,8 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG ?? 'placeholder',
+  project: process.env.SENTRY_PROJECT ?? 'placeholder',
+  silent: !process.env.CI,
+})

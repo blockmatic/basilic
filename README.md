@@ -16,7 +16,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
 - 🛡️ **Security & quality** — Automated checks in CI (e.g. Gitleaks, OSV)
 - ⛓️ **Multichain** — EVM, Solana; shared validation and chain-specific tooling
-- 📐 **Conventions** — Cursor rules per domain, @repo/sentry, Pino logging, shared TS and style
+- 📐 **Conventions** — Cursor rules per domain, @repo/error, Pino logging, shared TS and style
 - 🧑‍💻 **TypeScript-first** — End-to-end types from database to frontend
 
 ## Technology stack
@@ -39,7 +39,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - **[@repo/react](packages/react/README.md)** — React Query hooks for `@repo/core` API functions
 - **[@repo/ui](packages/ui/README.md)** — Shared UI component library (Shadcn/ui, Tailwind)
 - **[@repo/utils](packages/utils/README.md)** — Shared utilities (async, data, debug, error, logger, web3)
-- **[@repo/sentry](packages/sentry/README.md)** — Common `captureError` interface for error reporting
+- **[@repo/error](packages/error/README.md)** — Error reporting and utilities (`captureError`, `getErrorMessage`)
 - **[@repo/email](packages/email/README.md)** — Email template library built with React Email
 - **[@repo/notif](packages/notif/README.md)** — Notification service (email, activity) with type-safe schemas
 
@@ -54,7 +54,7 @@ Run with `pnpm <script>`.
   - `setup:database` — Database tools
 **Primary**
   - `build` — Build packages and apps
-  - `dev` — Start dev (core, react, sentry, utils, fastify, next)
+  - `dev` — Start dev (core, react, error, utils, fastify, next)
   - `qa` — Full check: install → checktypes → lint → build → test (unit) → test:e2e (Fastify + Next, local spawn)
 **Format / Lint**
   - `checktypes` — Type-check all packages

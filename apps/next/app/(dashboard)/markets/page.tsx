@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@repo/utils/error'
+import { getErrorMessage } from '@repo/error/nextjs'
 import { getAuthStatus } from 'lib/auth/auth-utils'
 import { redirect } from 'next/navigation'
 import type { CoinMarket } from './markets-table'
