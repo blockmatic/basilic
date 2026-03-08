@@ -32,6 +32,8 @@ import type {
   AccountPasskeysListResponse,
   AuthPasskeyExchangeData,
   AuthPasskeyExchangeResponse,
+  AuthPasskeyResolveUserData,
+  AuthPasskeyResolveUserResponse,
   AuthPasskeyStartData,
   AuthPasskeyStartResponse,
   AuthPasskeyVerifyData,
@@ -116,6 +118,7 @@ export type CoreApiClient = {
     };
     passkey: {
       exchange: (opts: Options<AuthPasskeyExchangeData>) => Promise<AuthPasskeyExchangeResponse>;
+      resolveUser: (opts: Options<AuthPasskeyResolveUserData>) => Promise<AuthPasskeyResolveUserResponse>;
       start: (opts?: Options<AuthPasskeyStartData>) => Promise<AuthPasskeyStartResponse>;
       verify: (opts: Options<AuthPasskeyVerifyData>) => Promise<AuthPasskeyVerifyResponse>
     };

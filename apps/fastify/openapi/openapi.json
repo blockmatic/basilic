@@ -2422,6 +2422,99 @@
         }
       }
     },
+    "/auth/passkey/resolve-user": {
+      "post": {
+        "operationId": "authPasskeyResolveUser",
+        "summary": "Passkey resolve user",
+        "tags": [
+          "auth"
+        ],
+        "description": "Resolve user email from passkey assertion userHandle (for discovery UX)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "userHandle"
+                ],
+                "properties": {
+                  "userHandle": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "email"
+                  ],
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/passkey/start": {
       "post": {
         "operationId": "authPasskeyStart",

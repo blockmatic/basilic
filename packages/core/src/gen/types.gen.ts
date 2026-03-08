@@ -890,6 +890,45 @@ export type AuthPasskeyExchangeResponses = {
 
 export type AuthPasskeyExchangeResponse = AuthPasskeyExchangeResponses[keyof AuthPasskeyExchangeResponses];
 
+export type AuthPasskeyResolveUserData = {
+    body: {
+        userHandle: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/passkey/resolve-user';
+};
+
+export type AuthPasskeyResolveUserErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AuthPasskeyResolveUserError = AuthPasskeyResolveUserErrors[keyof AuthPasskeyResolveUserErrors];
+
+export type AuthPasskeyResolveUserResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        email: string;
+    };
+};
+
+export type AuthPasskeyResolveUserResponse = AuthPasskeyResolveUserResponses[keyof AuthPasskeyResolveUserResponses];
+
 export type AuthPasskeyStartData = {
     body?: never;
     path?: never;

@@ -49,6 +49,7 @@ auth: {
   },
   passkey: {
     exchange: gen.authPasskeyExchange,
+    resolveUser: gen.authPasskeyResolveUser,
     start: gen.authPasskeyStart,
     verify: gen.authPasskeyVerify,
   },

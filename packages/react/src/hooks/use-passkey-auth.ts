@@ -6,14 +6,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
 
 export type UsePasskeyAuthParams = {
-  /** Absolute callback URL (e.g. `${origin}/auth/callback/passkey?callbackUrl=/`) */
-  callbackUrl: string
+  /** Absolute callback URL for redirect flow. When absent, returns tokens directly. */
+  callbackUrl?: string
+  /** Called with tokens when callbackUrl is absent (direct token flow) */
+  onSuccess?: (data: { token: string; refreshToken: string }) => void
 }
 
 /**
  * Mutation hook for passkey sign-in. Calls start → startAuthentication → verify.
- * When successful, server returns { redirectUrl }; client performs window.location.assign.
- * No credentials required; sessionId is passed in request body.
+ * When callbackUrl provided: server returns { redirectUrl }, client performs window.location.assign.
+ * When callbackUrl absent: server returns { token, refreshToken }, onSuccess is called.
  */
 export function usePasskeyAuth() {
   const { client } = useReactApiConfig()
@@ -21,7 +23,6 @@ export function usePasskeyAuth() {
 
   return useMutation({
     mutationFn: async ({ callbackUrl }: UsePasskeyAuthParams) => {
-      if (!callbackUrl?.trim()) throw new Error('Invalid callbackUrl')
       const { options, sessionId } = await client.auth.passkey.start({ throwOnError: true })
       let assertion: Awaited<ReturnType<typeof startAuthentication>>
       try {
@@ -35,16 +36,25 @@ export function usePasskeyAuth() {
       const body: AuthPasskeyVerifyData['body'] = {
         assertion: assertion as AuthPasskeyVerifyData['body']['assertion'],
         sessionId,
-        callbackUrl,
+        ...(callbackUrl?.trim() && { callbackUrl }),
       }
       const result = await client.auth.passkey.verify({ body, throwOnError: true })
+
       const redirectUrl = 'redirectUrl' in result ? result.redirectUrl : undefined
-      if (!redirectUrl) throw new Error('Server did not return redirect URL for passkey callback')
-      window.location.assign(redirectUrl)
+      if (redirectUrl) {
+        window.location.assign(redirectUrl)
+        return
+      }
+
+      const token = 'token' in result ? result.token : undefined
+      const refreshToken = 'refreshToken' in result ? result.refreshToken : undefined
+      if (token && refreshToken) return { token, refreshToken }
+      throw new Error('Server did not return tokens')
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
+      if (data) variables.onSuccess?.(data)
     },
   })
 }
