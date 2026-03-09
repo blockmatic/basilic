@@ -99,7 +99,7 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         user: {
           id: request.session.user.id,
           email: request.session.user.email,
-          name: null,
+          name: request.session.user.name ?? null,
           emailVerified: null,
           ...(request.session.user.wallet && { wallet: request.session.user.wallet }),
           linkedWallets,

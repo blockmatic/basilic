@@ -79,7 +79,8 @@
     "siwe": "^3.0.0",
     "tweetnacl": "^1.0.3",
     "viem": "^2.45.3",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "@faker-js/faker": "^9.4.0"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.15",

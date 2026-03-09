@@ -221,6 +221,7 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
       )}
       <LoginForm
         defaultEmail={defaultEmail}
+        initialError={initialError}
         extraActions={
           <OAuthButtons
             anyPending={anyPending}

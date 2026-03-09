@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { faker } from '@faker-js/faker'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import MagicLinkLoginEmail from '@repo/email/emails/magic-link-login'
 import { render } from '@repo/email/render'
@@ -54,10 +55,12 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       let [user] = await db.select().from(users).where(eq(users.email, email))
       if (!user) {
         const userId = randomUUID()
+        const funnyName = `${faker.word.adjective()} ${faker.animal.type()}`
         await db.insert(users).values({
           id: userId,
           email,
           emailVerified: false,
+          name: funnyName,
         })
         ;[user] = await db.select().from(users).where(eq(users.id, userId))
         if (!user) throw new Error('Failed to create user')
