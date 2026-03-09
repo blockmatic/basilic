@@ -9,7 +9,7 @@ export type UsePasskeyAuthParams = {
   /** Absolute callback URL for redirect flow. When absent, returns tokens directly. */
   callbackUrl?: string
   /** Called with tokens when callbackUrl is absent (direct token flow) */
-  onSuccess?: (data: { token: string; refreshToken: string }) => void
+  onSuccess?: (data: { token: string; refreshToken: string }) => void | Promise<void>
 }
 
 /**
@@ -42,15 +42,22 @@ export function usePasskeyAuth() {
 
       const redirectUrl = 'redirectUrl' in result ? result.redirectUrl : undefined
       if (redirectUrl) {
-        if (redirectUrl.startsWith('/')) window.location.assign(redirectUrl)
-        else
-          try {
-            new URL(redirectUrl)
-            window.location.assign(redirectUrl)
-          } catch {
-            window.location.assign('/')
-          }
-
+        if (redirectUrl.startsWith('/')) {
+          window.location.assign(redirectUrl)
+          return
+        }
+        try {
+          const parsed = new URL(redirectUrl)
+          const allowedOrigin = callbackUrl?.trim()
+            ? new URL(callbackUrl).origin
+            : window.location.origin
+          const okScheme = parsed.protocol === 'http:' || parsed.protocol === 'https:'
+          const okOrigin = parsed.origin === allowedOrigin
+          if (okScheme && okOrigin) window.location.assign(redirectUrl)
+          else window.location.assign('/')
+        } catch {
+          window.location.assign('/')
+        }
         return
       }
 

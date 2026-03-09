@@ -1,24 +1,11 @@
-import { createClient } from '@repo/core'
+import { ApiError, createClient } from '@repo/core'
 import { NextResponse } from 'next/server'
+import { translateOAuthError } from '@/lib/auth/auth-error-messages'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { extractTokens } from '@/lib/auth/callback-utils'
 import { env } from '@/lib/env'
 
 const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
-
-function mapAuthError(raw: string): string {
-  const known: Record<string, string> = {
-    'Invalid OAuth callback - missing code or state': 'missing_params',
-    'Invalid or expired state': 'invalid_state',
-    'State has expired': 'expired_state',
-    'Failed to exchange code for token': 'token_exchange_failed',
-    'Failed to fetch GitHub user': 'fetch_user_failed',
-    'Could not retrieve email from GitHub': 'email_required',
-    'GitHub OAuth is not configured': 'oauth_not_configured',
-    'GitHub sign-in failed': 'oauth_failed',
-  }
-  return known[raw] ?? 'oauth_failed'
-}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -45,7 +32,8 @@ export async function GET(request: Request) {
     return redirectResponse
   } catch (error) {
     const rawMessage = error instanceof Error ? error.message : 'GitHub sign-in failed'
-    const errorCode = mapAuthError(rawMessage)
+    const body = error instanceof ApiError ? error.body : undefined
+    const errorCode = translateOAuthError(rawMessage, body)
     return NextResponse.redirect(
       new URL(`/auth/login?message=${encodeURIComponent(errorCode)}`, request.url),
       303,

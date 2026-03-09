@@ -8,5 +8,5 @@ export const ErrorResponseSchema = Type.Object({
 export const RateLimitResponseSchema = Type.Object({
   error: Type.String(),
   message: Type.String(),
-  retryAfter: Type.Number(),
+  retryAfter: Type.Integer(),
 })

@@ -162,16 +162,16 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
     },
   })
   const {
-    prompt: promptGoogle,
-    isPending: isGooglePending,
-    isReady: isGoogleReady,
-  } = useGoogleOneTap()
-  const {
     github: isGithubConfigured,
     google: isGoogleConfigured,
     facebook: isFacebookConfigured,
     twitter: isTwitterConfigured,
   } = useOAuthProviders()
+  const {
+    prompt: promptGoogle,
+    isPending: isGooglePending,
+    isReady: isGoogleReady,
+  } = useGoogleOneTap({ enabled: isGoogleConfigured })
   const {
     mutate: startPasskeyAuth,
     error: passkeyError,

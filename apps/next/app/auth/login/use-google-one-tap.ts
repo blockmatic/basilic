@@ -121,7 +121,7 @@ export function useGoogleOneTap({
           return
         }
         if (!res.ok) {
-          toast.error(getAuthErrorMessage('oauth_failed'))
+          toast.error(getAuthErrorMessage('oauth_failed_google'))
           handledRef.current = false
           setIsPending(false)
           return
@@ -131,7 +131,7 @@ export function useGoogleOneTap({
             ? { token: data.token, refreshToken: data.refreshToken }
             : null
         if (!tokens) {
-          toast.error(getAuthErrorMessage('oauth_failed'))
+          toast.error(getAuthErrorMessage('oauth_failed_google'))
           handledRef.current = false
           setIsPending(false)
           return
@@ -139,7 +139,7 @@ export function useGoogleOneTap({
         await updateAuthTokens(tokens)
         router.push('/')
       } catch {
-        toast.error(getAuthErrorMessage('oauth_failed'))
+        toast.error(getAuthErrorMessage('oauth_failed_google'))
         handledRef.current = false
       } finally {
         setIsPending(false)

@@ -3043,6 +3043,8 @@
                 ],
                 "properties": {
                   "userHandle": {
+                    "pattern": "^[A-Za-z0-9_-]+(={0,2})?$",
+                    "minLength": 1,
                     "type": "string"
                   }
                 }
@@ -3111,7 +3113,7 @@
                       "type": "string"
                     },
                     "retryAfter": {
-                      "type": "number"
+                      "type": "integer"
                     }
                   }
                 }

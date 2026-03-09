@@ -44,12 +44,15 @@ export function useOAuthLogin(
       if (typeof url !== 'string' || !url.trim())
         throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)
 
+      let parsed: URL
       try {
-        new URL(url)
+        parsed = new URL(url)
       } catch {
         throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)
       }
-      window.location.href = url
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')
+        throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)
+      window.location.href = parsed.href
       return data
     },
     ...queryClientDefaults,

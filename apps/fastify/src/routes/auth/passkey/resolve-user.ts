@@ -4,10 +4,11 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { passkeyCredentials, users } from '../../../db/schema/index.js'
+import { env } from '../../../lib/env.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 const ResolveUserBodySchema = Type.Object({
-  userHandle: Type.String(),
+  userHandle: Type.String({ pattern: '^[A-Za-z0-9_-]+(={0,2})?$', minLength: 1 }),
 })
 
 function maskEmail(email: string): string {
@@ -32,7 +33,7 @@ const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
     '/resolve-user',
     {
       config: {
-        rateLimit: { max: 10, timeWindow: 60_000 },
+        rateLimit: { max: 10, timeWindow: env.RATE_LIMIT_TIME_WINDOW },
       },
       schema: {
         operationId: 'authPasskeyResolveUser',
@@ -51,20 +52,7 @@ const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { userHandle } = request.body
 
-      const trimmed = userHandle.trim()
-      if (!trimmed)
-        return reply.code(400).send({
-          code: 'INVALID_USER_HANDLE',
-          message: 'Invalid userHandle encoding',
-        })
-
-      if (!/^[A-Za-z0-9_-]+(={0,2})?$/.test(trimmed))
-        return reply.code(400).send({
-          code: 'INVALID_USER_HANDLE',
-          message: 'Invalid userHandle encoding',
-        })
-
-      const bytes = Buffer.from(trimmed, 'base64url')
+      const bytes = Buffer.from(userHandle.trim(), 'base64url')
       const userId = bytes.toString('utf-8')
       if (!userId?.trim())
         return reply.code(400).send({

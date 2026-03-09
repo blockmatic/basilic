@@ -1,3 +1,27 @@
+/** Backend OAuth error codes (snake_case) that map to auth-error-messages keys. */
+const knownOAuthCodes = new Set([
+  'missing_params',
+  'invalid_state',
+  'expired_state',
+  'token_exchange_failed',
+  'fetch_user_failed',
+  'email_required',
+  'oauth_not_configured',
+  'oauth_failed',
+])
+
+/** Fallback: map raw backend message strings to auth-error-messages keys. */
+const messageToKey: Record<string, string> = {
+  'Invalid OAuth callback - missing code or state': 'missing_params',
+  'Invalid or expired state': 'invalid_state',
+  'State has expired': 'expired_state',
+  'Failed to exchange code for token': 'token_exchange_failed',
+  'Failed to fetch GitHub user': 'fetch_user_failed',
+  'Could not retrieve email from GitHub': 'email_required',
+  'GitHub OAuth is not configured': 'oauth_not_configured',
+  'GitHub sign-in failed': 'oauth_failed',
+}
+
 const authErrorMessages: Record<string, string> = {
   invalid_token: 'Invalid or expired magic link',
   expired_token: 'Magic link has expired',
@@ -11,6 +35,7 @@ const authErrorMessages: Record<string, string> = {
   email_required: 'No verified email found. Please add a verified email to your GitHub account.',
   oauth_not_configured: 'Sign-in is temporarily unavailable.',
   oauth_failed: 'GitHub sign-in failed. Please try again.',
+  oauth_failed_google: 'Google sign-in failed. Please try again.',
   facebook_invalid_state: 'Invalid or expired sign-in session. Please try again.',
   facebook_expired_state: 'Sign-in session expired. Please try again.',
   facebook_token_exchange_failed: 'Facebook sign-in failed. Please try again.',
@@ -26,4 +51,17 @@ export function getAuthErrorMessage(errorCode: string | undefined): string | und
   if (!errorCode) return undefined
   const key = errorCode.toLowerCase().trim()
   return authErrorMessages[key] ?? 'An error occurred'
+}
+
+/** Map API error (code or message) to auth-error-messages key for redirect. */
+export function translateOAuthError(raw: string, body?: unknown): string {
+  const code =
+    body &&
+    typeof body === 'object' &&
+    'code' in body &&
+    typeof (body as { code: string }).code === 'string'
+      ? (body as { code: string }).code.toLowerCase().trim()
+      : null
+  if (code && knownOAuthCodes.has(code)) return code
+  return messageToKey[raw] ?? 'oauth_failed'
 }
