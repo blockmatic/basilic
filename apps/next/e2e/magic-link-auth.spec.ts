@@ -24,7 +24,7 @@ test.describe('Magic Link Authentication', () => {
   test.describe('Valid Magic Link Flow', () => {
     test.describe.configure({ mode: 'serial' })
 
-    test('should complete full magic link authentication flow', async ({ page }) => {
+    test('should complete full magic link authentication flow (code entry)', async ({ page }) => {
       const response = await authHelpers.sendMagicLink(page)
       expect(response.status()).toBe(200)
       expect(response.ok()).toBe(true)
@@ -50,6 +50,24 @@ test.describe('Magic Link Authentication', () => {
         },
         { timeout: 10000 },
       )
+      await checkAuthenticated(page).run()
+    })
+
+    test('should complete magic link authentication flow (link click)', async ({ page }) => {
+      const response = await authHelpers.sendMagicLink(page)
+      expect(response.status()).toBe(200)
+      expect(response.ok()).toBe(true)
+
+      await page
+        .getByRole('heading', { name: 'Check your email' })
+        .waitFor({ state: 'visible', timeout: 10000 })
+      await new Promise(r => setTimeout(r, 500))
+
+      const code = await authHelpers.extractToken(page)
+      expect(code).toBeTruthy()
+      if (!code) throw new Error('Failed to extract login code')
+
+      await authHelpers.verifyMagicLink(page, code)
       await checkAuthenticated(page).run()
     })
   })
