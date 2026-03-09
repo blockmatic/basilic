@@ -12,6 +12,7 @@ import { Button } from '@repo/ui/components/button'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { GitHub, Passkey } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { PasskeyShortcut } from './passkey-shortcut'
 
@@ -83,10 +84,9 @@ export function LoginActions({ initialError }: LoginActionsProps) {
       )}
       <LoginForm
         extraActions={
-          <>
+          <div className="flex items-center justify-center gap-3">
             {webauthnAvailable && (
-              <Button
-                variant="outline"
+              <button
                 type="button"
                 disabled={isOAuthPending || isPasskeyPending}
                 onClick={() => {
@@ -95,22 +95,25 @@ export function LoginActions({ initialError }: LoginActionsProps) {
                     callbackUrl: `${window.location.origin}/auth/callback/passkey?callbackUrl=/`,
                   })
                 }}
+                aria-label={isPasskeyPending ? 'Signing in…' : 'Continue with Passkey'}
+                className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isPasskeyPending ? 'Signing in…' : 'Passkey'}
-              </Button>
+                <Passkey className="size-5" aria-hidden />
+              </button>
             )}
-            <Button
-              variant="outline"
+            <button
               type="button"
               disabled={isOAuthPending || isPasskeyPending}
               onClick={() => {
                 setLastAuthMethod('oauth')
                 startOAuthLogin()
               }}
+              aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with GitHub'}
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isOAuthPending ? 'Redirecting...' : 'GitHub'}
-            </Button>
-          </>
+              <GitHub className="size-5" aria-hidden />
+            </button>
+          </div>
         }
       />
     </div>
