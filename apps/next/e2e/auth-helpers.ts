@@ -84,6 +84,11 @@ export const authHelpers = {
     return null
   },
 
+  async enterLoginCodeAndSubmit(page: Page, code: string) {
+    await page.getByTestId('login-code-input').fill(code)
+    await page.getByTestId('submit-login-code').click()
+  },
+
   async verifyMagicLink(page: Page, token: string) {
     const verifyUrl = `/auth/callback/magiclink?token=${encodeURIComponent(token)}&callbackURL=/`
     await page.goto(verifyUrl)
@@ -118,7 +123,7 @@ export const authHelpers = {
   async loginAsTestUser(page: Page) {
     const response = await this.sendMagicLink(page)
     if (response.status() !== 200) throw new Error('Magic link request failed')
-    const successMessage = page.getByText(/check your email for the magic link/i)
+    const successMessage = page.getByRole('heading', { name: 'Check your email' })
     await successMessage.waitFor({ state: 'visible', timeout: 10000 })
     await new Promise(r => setTimeout(r, 200))
     const token = await this.extractToken(page)

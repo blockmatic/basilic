@@ -9,7 +9,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { users, verification } from '../../../db/schema/index.js'
 import { env } from '../../../lib/env.js'
-import { generateToken, hashToken } from '../../../lib/jwt.js'
+import { generateLoginCode, hashToken } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
@@ -66,9 +66,9 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         if (!user) throw new Error('Failed to create user')
       }
 
-      // Generate verification token
-      const token = generateToken()
-      const tokenHash = hashToken(token)
+      // Generate 6-digit login code
+      const code = generateLoginCode()
+      const tokenHash = hashToken(code)
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
 
       const storePlain =
@@ -81,21 +81,25 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         type: 'magic_link',
         identifier: email,
         value: tokenHash,
-        ...(storePlain && { tokenPlain: token }),
+        ...(storePlain && { tokenPlain: code }),
         expiresAt,
       })
 
       const magicLinkUrl = new URL(callbackUrl)
-      magicLinkUrl.searchParams.set('token', token)
+      magicLinkUrl.searchParams.set('token', code)
 
       // Send email
       const html = await render(
-        MagicLinkLoginEmail({ magicLink: magicLinkUrl.toString(), expirationMinutes: 15 }),
+        MagicLinkLoginEmail({
+          magicLink: magicLinkUrl.toString(),
+          loginCode: code,
+          expirationMinutes: 15,
+        }),
       )
       const emailResponse = await fastify.emailProvider.emails.send({
         from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
         to: email,
-        subject: 'Sign in to your account',
+        subject: `${code} - ${env.APP_NAME} verification code`,
         html,
       })
 

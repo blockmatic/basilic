@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto'
+import { createHash, randomBytes, randomInt } from 'node:crypto'
 import { env } from './env.js'
 
 type AccessTokenPayload = {
@@ -29,6 +29,11 @@ export function hashToken(token: string): string {
 
 export function generateToken(): string {
   return randomBytes(32).toString('base64url')
+}
+
+/** Returns 6-digit code (100000–999999) for magic link login. */
+export function generateLoginCode(): string {
+  return String(randomInt(100000, 1000000))
 }
 
 export function generateJti(): string {

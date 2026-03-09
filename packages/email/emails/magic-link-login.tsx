@@ -11,11 +11,17 @@ import {
 
 interface Props {
   magicLink: string
+  loginCode: string
   expirationMinutes?: number
   fullName?: string
 }
 
-export function MagicLinkLoginEmail({ magicLink, expirationMinutes = 15, fullName = '' }: Props) {
+export function MagicLinkLoginEmail({
+  magicLink,
+  loginCode,
+  expirationMinutes = 15,
+  fullName = '',
+}: Props) {
   const firstName = fullName ? fullName.split(' ').at(0) : ''
   const previewText = `${firstName ? `Hi ${firstName}, ` : ''}Sign in to your account`
   const themeClasses = getEmailThemeClasses()
@@ -47,10 +53,18 @@ export function MagicLinkLoginEmail({ magicLink, expirationMinutes = 15, fullNam
             {firstName ? `Hi ${firstName}` : 'Hello'},
             <br />
             <br />
-            Click the button below to sign in. This link will expire in {expirationMinutes} minutes.
+            Use the code below or click the button to sign in. This link will expire in{' '}
+            {expirationMinutes} minutes.
           </Text>
 
-          <br />
+          <Section className="my-6 text-center">
+            <Text
+              className="font-mono text-[28px] font-bold tracking-[0.25em]"
+              style={{ color: lightStyles.text.color }}
+            >
+              {loginCode}
+            </Text>
+          </Section>
 
           <Section className="text-center mt-[32px] mb-[32px]">
             <Button href={magicLink}>Sign in</Button>

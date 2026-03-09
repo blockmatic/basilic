@@ -21,7 +21,7 @@ import { LoginForm } from './login-form'
 import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
 
-type LoginActionsProps = { initialError?: string; defaultEmail?: string }
+type LoginActionsProps = { initialError?: string }
 
 type OAuthButtonsProps = {
   anyPending: boolean
@@ -146,7 +146,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
   )
 }
 
-export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) {
+export function LoginActions({ initialError }: LoginActionsProps) {
   const router = useRouter()
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
@@ -220,8 +220,11 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
         />
       )}
       <LoginForm
-        defaultEmail={defaultEmail}
         initialError={initialError}
+        onVerifySuccess={async ({ token, refreshToken }) => {
+          await updateAuthTokens({ token, refreshToken })
+          router.push('/')
+        }}
         extraActions={
           <OAuthButtons
             anyPending={anyPending}

@@ -45,7 +45,7 @@ describe('POST /auth/magiclink/verify', () => {
       method: 'POST',
       url: '/auth/magiclink/verify',
       payload: {
-        token: 'invalid-token-12345',
+        token: '000000',
       },
     })
 

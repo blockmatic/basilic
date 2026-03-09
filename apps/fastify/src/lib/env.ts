@@ -70,6 +70,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().min(1).default('re_placeholder'),
     EMAIL_FROM: z.string().email().default('noreply@localhost'),
     EMAIL_FROM_NAME: z.string().default('App'),
+    APP_NAME: z.string().default('Your App'),
     ALLOW_TEST: z.coerce.boolean().default(false),
     // GitHub OAuth (optional - OAuth routes return 503 when unset)
     GITHUB_CLIENT_ID: z.string().min(1).optional(),

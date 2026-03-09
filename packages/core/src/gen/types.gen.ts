@@ -726,6 +726,13 @@ export type MagiclinkVerifyErrors = {
     /**
      * Default Response
      */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     401: {
         code: string;
         message: string;

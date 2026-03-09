@@ -30,6 +30,7 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
         body: VerifySchema,
         response: {
           200: VerifyResponseSchema,
+          400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           404: ErrorResponseSchema,
         },
@@ -37,6 +38,11 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
     },
     async (request, reply) => {
       const { token } = request.body
+      if (!/^\d{6}$/.test(token))
+        return reply.code(400).send({
+          code: 'INVALID_TOKEN',
+          message: 'Token must be a 6-digit code',
+        })
       const tokenHash = hashToken(token)
 
       const db = await getDb()

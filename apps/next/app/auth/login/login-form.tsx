@@ -1,6 +1,6 @@
 'use client'
 
-import { useMagicLink } from '@repo/react'
+import { useMagicLink, useMagicLinkVerify } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
 import {
   Field,
@@ -16,22 +16,28 @@ import {
   InputGroupInput,
 } from '@repo/ui/components/input-group'
 import { cn } from '@repo/ui/lib/utils'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { z } from 'zod'
+import { LoginCodeView } from './login-code-view'
 
 const emailSchema = z
   .string()
   .min(1, 'Email is required')
   .email('Please enter a valid email address')
 
+const codeSchema = z
+  .string()
+  .length(6, 'Enter the 6-digit code')
+  .regex(/^\d{6}$/, 'Code must be 6 digits')
+
 type LoginFormProps = React.ComponentProps<'form'> & {
   initialError?: string
   callbackUrl?: string
   onSuccess?: () => void
-  /** Default email to pre-fill */
-  defaultEmail?: string
   /** Called when magic link request succeeds, with the email used */
   onMagicLinkSent?: (email: string) => void
+  /** Called when code verify succeeds; caller updates tokens and redirects */
+  onVerifySuccess?: (tokens: { token: string; refreshToken: string }) => Promise<void>
   /** Optional content for "Or continue with" section (e.g. SIWE/SIWS wallet buttons) */
   extraActions?: React.ReactNode
 }
@@ -41,52 +47,40 @@ export function LoginForm({
   initialError,
   callbackUrl,
   onSuccess,
-  defaultEmail,
   onMagicLinkSent,
+  onVerifySuccess,
   extraActions,
   ...props
 }: LoginFormProps) {
-  const [email, setEmail] = useState(defaultEmail ?? '')
+  const [email, setEmail] = useState('')
   const [emailValidationError, setEmailValidationError] = useState<string | null>(
     initialError || null,
   )
   const [catalogError, setCatalogError] = useState<string | null>(null)
-  const [isSuccess, setIsSuccess] = useState(false)
-
-  // Update error when initialError prop changes - syncing prop to state
-  // Only update if initialError is actually provided (not undefined)
-  useEffect(() => {
-    if (initialError !== undefined)
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- Syncing prop to state
-      setEmailValidationError(initialError || null)
-  }, [initialError])
-
-  // Sync defaultEmail when it becomes defined
-  useEffect(() => {
-    if (defaultEmail !== undefined)
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- Syncing prop to state
-      setEmail(defaultEmail ?? '')
-  }, [defaultEmail])
+  const [codeError, setCodeError] = useState<string | null>(null)
+  const [code, setCode] = useState('')
+  const [showCodeEntry, setShowCodeEntry] = useState(false)
 
   const defaultCallbackUrl =
     typeof window !== 'undefined'
       ? `${window.location.origin}/auth/callback/magiclink?callbackURL=/`
       : '/auth/callback/magiclink?callbackURL=/'
 
-  const { mutate, isPending } = useMagicLink({
+  const { mutate: sendMagicLink, isPending: isRequestPending } = useMagicLink({
     onSuccess: (data, variables) => {
       if (data?.ok) {
-        setIsSuccess(true)
+        setShowCodeEntry(true)
+        setCode('')
         setEmail('')
         setEmailValidationError(null)
         setCatalogError(null)
+        setCodeError(null)
         onMagicLinkSent?.(variables.email)
         onSuccess?.()
       }
     },
     onError: error => {
       const errorMessage = error.message || 'Failed to send magic link'
-      // Check if error has code property indicating validation error
       const errorWithCode = error as Error & { code?: string }
       const isValidationError =
         errorWithCode.code === 'VALIDATION_ERROR' ||
@@ -98,10 +92,26 @@ export function LoginForm({
         setEmailValidationError(errorMessage)
         setCatalogError(null)
       } else {
-        // General error - don't report to Sentry here, let consuming app handle it
         setCatalogError('Failed to send magic link. Please try again.')
         setEmailValidationError(null)
       }
+    },
+  })
+
+  const { mutate: verifyCode, isPending: isVerifyPending } = useMagicLinkVerify({
+    onSuccess: async data => {
+      setCodeError(null)
+      await onVerifySuccess?.({ token: data.token, refreshToken: data.refreshToken })
+    },
+    onError: error => {
+      const body =
+        error && typeof error === 'object' && 'body' in error
+          ? (error as { body?: { code?: string } }).body
+          : undefined
+      const code = body?.code
+      if (code === 'INVALID_TOKEN' || code === 'EXPIRED_TOKEN')
+        setCodeError('Invalid or expired code. Please try again or request a new one.')
+      else setCodeError(error.message || 'Verification failed. Please try again.')
     },
   })
 
@@ -109,19 +119,27 @@ export function LoginForm({
     const result = emailSchema.safeParse(emailValue)
     if (!result.success)
       return result.error.issues[0]?.message || 'Please enter a valid email address'
+    return null
+  }
 
+  const validateCode = (codeValue: string): string | null => {
+    const result = codeSchema.safeParse(codeValue)
+    if (!result.success) return result.error.issues[0]?.message || 'Enter the 6-digit code'
     return null
   }
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value)
-    // Clear validation error and success state when user starts typing
     if (emailValidationError) setEmailValidationError(null)
-
-    if (isSuccess) setIsSuccess(false)
+    if (catalogError) setCatalogError(null)
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCode(e.currentTarget.value.replace(/\D/g, '').slice(0, 6))
+    if (codeError) setCodeError(null)
+  }
+
+  const handleEmailSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const validationError = validateEmail(email)
     if (validationError) {
@@ -131,13 +149,44 @@ export function LoginForm({
     }
     setEmailValidationError(null)
     setCatalogError(null)
-    mutate({ email, callbackUrl: callbackUrl || defaultCallbackUrl })
+    sendMagicLink({ email, callbackUrl: callbackUrl || defaultCallbackUrl })
   }
+
+  const handleCodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const validationError = validateCode(code)
+    if (validationError) {
+      setCodeError(validationError)
+      return
+    }
+    setCodeError(null)
+    verifyCode({ token: code })
+  }
+
+  const handleBackToEmail = () => {
+    setShowCodeEntry(false)
+    setCodeError(null)
+    setCode('')
+  }
+
+  if (showCodeEntry)
+    return (
+      <LoginCodeView
+        className={className}
+        code={code}
+        codeError={codeError}
+        isVerifyPending={isVerifyPending}
+        onCodeChange={handleCodeChange}
+        onSubmit={handleCodeSubmit}
+        onBackToEmail={handleBackToEmail}
+        {...props}
+      />
+    )
 
   return (
     <form
       className={cn('flex flex-col gap-6', className)}
-      onSubmit={handleSubmit}
+      onSubmit={handleEmailSubmit}
       noValidate
       {...props}
     >
@@ -149,7 +198,7 @@ export function LoginForm({
           </p>
         </div>
         <Field>
-          <InputGroup data-disabled={isPending || isSuccess}>
+          <InputGroup data-disabled={isRequestPending}>
             <InputGroupInput
               id="email"
               type="email"
@@ -158,7 +207,7 @@ export function LoginForm({
               required
               value={email}
               onChange={handleEmailChange}
-              disabled={isPending || isSuccess}
+              disabled={isRequestPending}
               aria-invalid={!!emailValidationError}
             />
             <InputGroupAddon align="inline-end">
@@ -166,12 +215,12 @@ export function LoginForm({
                 type="submit"
                 size="icon-sm"
                 className="cursor-pointer [&_svg]:pointer-events-auto [&_svg]:cursor-pointer [&_span]:cursor-pointer hover:bg-transparent dark:hover:bg-transparent"
-                disabled={isPending || isSuccess}
-                aria-label={isPending ? 'Sending magic link' : 'Send magic link'}
-                aria-busy={isPending}
+                disabled={isRequestPending}
+                aria-label={isRequestPending ? 'Sending magic link' : 'Send magic link'}
+                aria-busy={isRequestPending}
                 data-testid="send-magic-link"
               >
-                {isPending ? (
+                {isRequestPending ? (
                   <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 ) : (
                   <svg
@@ -195,11 +244,6 @@ export function LoginForm({
           {emailValidationError && (
             <FieldError className="text-center">{emailValidationError}</FieldError>
           )}
-          {isSuccess && (
-            <p className="text-center text-sm" style={{ color: '#4ade80' }}>
-              Check your email for the magic link
-            </p>
-          )}
         </Field>
         {catalogError && (
           <FieldDescription className="text-center text-destructive">
@@ -209,7 +253,7 @@ export function LoginForm({
         <FieldSeparator>Or continue with</FieldSeparator>
         {extraActions ?? (
           <Field>
-            <Button variant="outline" type="button" disabled={isPending || isSuccess}>
+            <Button variant="outline" type="button" disabled={isRequestPending}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
