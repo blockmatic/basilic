@@ -1,5 +1,6 @@
 'use client'
 
+import { useMagicLink } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
 import {
   Field,
@@ -17,7 +18,6 @@ import {
 import { cn } from '@repo/ui/lib/utils'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
-import { useMagicLink } from '../hooks/use-magic-link'
 
 const emailSchema = z
   .string()
@@ -143,7 +143,7 @@ export function LoginForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Welcome to Acme</h1>
+          <h1 className="text-4xl font-heading font-bold md:text-6xl">Welcome to Acme</h1>
           <p className="text-muted-foreground text-sm text-balance">
             Enter your email below to continue
           </p>

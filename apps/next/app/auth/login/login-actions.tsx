@@ -2,7 +2,6 @@
 
 import { ApiError } from '@repo/core'
 import {
-  LoginForm,
   useOAuthLogin,
   useOAuthProviders,
   usePasskeyAuth,
@@ -18,6 +17,7 @@ import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
+import { LoginForm } from './login-form'
 import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
 

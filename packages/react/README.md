@@ -4,7 +4,7 @@ Provides React Query hooks for `@repo/core` API functions.
 
 ## Overview
 
-This package provides React Query hooks that wrap `@repo/core` API client methods. All types are imported from `@repo/core`, ensuring a single source of truth for API types and eliminating duplication.
+This package provides React Query hooks that wrap `@repo/core` API client methods. **Hooks and helpers only—no UI components.** Route-specific UI (e.g. login form) lives in apps, collocated by route. All types are imported from `@repo/core`, ensuring a single source of truth for API types and eliminating duplication.
 
 ## Exports
 
@@ -14,7 +14,6 @@ This package provides React Query hooks that wrap `@repo/core` API client method
 - `useVerifyWeb3Auth` - Mutation hook: given `{ chain, message, signature, domain }`, calls auth verify endpoint (SIWE/SIWS)
 - `useVerifyLinkWallet` - Mutation hook: given `{ chain, message, signature }`, calls link wallet verify endpoint
 - `useMagicLink` - React Query mutation hook for magic link request endpoint
-- `LoginForm` - Framework-agnostic login form component
 - `createReactApiConfig` - Utility function to normalize API configuration
 
 ## Usage
@@ -91,23 +90,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>{children}</Providers>
       </body>
     </html>
-  )
-}
-```
-
-#### Using Components
-
-Components from `@repo/react` (like `LoginForm`) are client components and can be used directly in your pages:
-
-```tsx
-// app/login/page.tsx
-import { LoginForm } from '@repo/react'
-
-export default function LoginPage() {
-  return (
-    <div>
-      <LoginForm />
-    </div>
   )
 }
 ```

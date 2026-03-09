@@ -7,7 +7,7 @@ See @apps/docu/content/docs/architecture/frontend-stack.mdx for complete documen
 
 ## Core Libraries
 - `@tanstack/react-query`: Data fetching/async (use `@lukemorales/query-key-factory`)
-- `@repo/react`: Generated React Query hooks from Hey API clients
+- `@repo/react`: React Query hooks and helpers only—never UI components. Route-specific UI (e.g. login form) lives in apps, collocated by route
 - `nuqs`: URL-based state (search/filters/tabs/pagination)
 - `zod`: Schema validation
 - `@repo/lib`: Utility library

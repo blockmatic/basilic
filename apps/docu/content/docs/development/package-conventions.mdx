@@ -28,7 +28,7 @@ The key idea:
 - **Fastify routes + TypeBox schemas** are the source of truth.
 - The **OpenAPI spec** is generated from routes.
 - `@repo/core` contains the **generated client + types** and a small wrapper API.
-- `@repo/react` is a **React Query layer** on top of `@repo/core` (handwritten hooks/components).
+- `@repo/react` is a **React Query layer** on top of `@repo/core` (handwritten hooks and helpers only—no UI components).
 
 ## Workspace layout
 
@@ -122,10 +122,11 @@ React-only helpers using **TanStack Query**.
 
 - React Query hooks that call `@repo/core` (handwritten)
 - Shared provider/context to supply a core client instance to hooks
-- Small React utilities/components that are reusable across apps
+- Hooks and helpers only—no UI components (login forms, cards, etc.). UI lives in apps, collocated by route
 
 **Hard rules**
 
+* ✅ Hooks and helpers only—never add UI components to `@repo/react`
 * ✅ React-only dependencies live here
 * ✅ `@tanstack/react-query` is a peer dependency (apps own the version)
 
