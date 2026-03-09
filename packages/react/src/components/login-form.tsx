@@ -61,6 +61,13 @@ export function LoginForm({
       setEmailValidationError(initialError || null)
   }, [initialError])
 
+  // Sync defaultEmail when it becomes defined (e.g. after hydration from useLastMagicLinkEmail)
+  useEffect(() => {
+    if (defaultEmail !== undefined)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Syncing prop to state
+      setEmail(defaultEmail ?? '')
+  }, [defaultEmail])
+
   const defaultCallbackUrl =
     typeof window !== 'undefined'
       ? `${window.location.origin}/auth/callback/magiclink?callbackURL=/`

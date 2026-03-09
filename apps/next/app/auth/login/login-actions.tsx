@@ -27,6 +27,23 @@ import { useGoogleOneTap } from './use-google-one-tap'
 
 type LoginActionsProps = { initialError?: string; defaultEmail?: string }
 
+type OAuthButtonsProps = {
+  anyPending: boolean
+  setLastAuthMethod: (m: 'oauth' | 'passkey') => void
+  startOAuthLogin: (p: 'github' | 'facebook' | 'twitter') => void
+  promptGoogle: () => void
+  isGithubConfigured: boolean
+  isGoogleConfigured: boolean
+  isGoogleReady: boolean
+  isFacebookConfigured: boolean
+  isTwitterConfigured: boolean
+  isOAuthPending: boolean
+  isGooglePending: boolean
+  webauthnAvailable: boolean
+  startPasskeyAuth: (opts: { callbackUrl: string }) => void
+  isPasskeyPending: boolean
+}
+
 function OAuthButtons({
   anyPending,
   setLastAuthMethod,
@@ -42,22 +59,7 @@ function OAuthButtons({
   webauthnAvailable,
   startPasskeyAuth,
   isPasskeyPending,
-}: {
-  anyPending: boolean
-  setLastAuthMethod: (m: 'oauth' | 'passkey') => void
-  startOAuthLogin: (p: 'github' | 'facebook' | 'twitter') => void
-  promptGoogle: () => void
-  isGithubConfigured: boolean
-  isGoogleConfigured: boolean
-  isGoogleReady: boolean
-  isFacebookConfigured: boolean
-  isTwitterConfigured: boolean
-  isOAuthPending: boolean
-  isGooglePending: boolean
-  webauthnAvailable: boolean
-  startPasskeyAuth: (opts: { callbackUrl: string }) => void
-  isPasskeyPending: boolean
-}) {
+}: OAuthButtonsProps) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-3">
       {webauthnAvailable && (

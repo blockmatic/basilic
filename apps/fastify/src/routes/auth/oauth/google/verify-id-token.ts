@@ -83,14 +83,7 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
 
       const accountId = payload.sub
       const email = payload.email ?? ''
-      const name = payload.name ?? payload.email ?? 'Google user'
       const emailVerified = !!payload.email_verified
-
-      if (!email)
-        return reply.code(400).send({
-          code: 'EMAIL_REQUIRED',
-          message: 'Could not retrieve email from Google',
-        })
 
       const db = await getDb()
       const [existingAccount] = await db
@@ -103,19 +96,25 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
         ;[user] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
       }
       if (!user) {
+        if (!emailVerified || !email)
+          return reply.code(400).send({
+            code: 'EMAIL_NOT_VERIFIED',
+            message: 'Could not retrieve verified email from Google',
+          })
+        const name = payload.name ?? email
         const [byEmail] = await db.select().from(users).where(eq(users.email, email))
         if (byEmail) user = byEmail
-      }
-      if (!user) {
-        const userId = randomUUID()
-        await db.insert(users).values({
-          id: userId,
-          email,
-          emailVerified,
-          name,
-        })
-        ;[user] = await db.select().from(users).where(eq(users.id, userId))
-        if (!user) throw new Error('Failed to create user')
+        if (!user) {
+          const userId = randomUUID()
+          await db.insert(users).values({
+            id: userId,
+            email,
+            emailVerified: true,
+            name,
+          })
+          ;[user] = await db.select().from(users).where(eq(users.id, userId))
+          if (!user) throw new Error('Failed to create user')
+        }
       }
 
       const accountData = {

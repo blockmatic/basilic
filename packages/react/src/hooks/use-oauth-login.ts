@@ -40,8 +40,16 @@ export function useOAuthLogin(
         twitter: client.auth.oauth.twitter.authorizeUrl,
       }
       const data = await endpoints[provider]()
-      if (typeof data?.redirectUrl === 'string') window.location.href = data.redirectUrl
+      const url = data?.redirectUrl
+      if (typeof url !== 'string' || !url.trim())
+        throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)
 
+      try {
+        new URL(url)
+      } catch {
+        throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)
+      }
+      window.location.href = url
       return data
     },
     ...queryClientDefaults,

@@ -11,6 +11,14 @@ const authErrorMessages: Record<string, string> = {
   email_required: 'No verified email found. Please add a verified email to your GitHub account.',
   oauth_not_configured: 'Sign-in is temporarily unavailable.',
   oauth_failed: 'GitHub sign-in failed. Please try again.',
+  facebook_invalid_state: 'Invalid or expired sign-in session. Please try again.',
+  facebook_expired_state: 'Sign-in session expired. Please try again.',
+  facebook_token_exchange_failed: 'Facebook sign-in failed. Please try again.',
+  facebook_fetch_user_failed: 'Could not load your Facebook profile. Please try again.',
+  facebook_email_required:
+    'No verified email found. Please add a verified email to your Facebook account.',
+  facebook_oauth_not_configured: 'Sign-in is temporarily unavailable.',
+  facebook_oauth_failed: 'Facebook sign-in failed. Please try again.',
   unexpected_error: 'Something went wrong. Please try again.',
 }
 

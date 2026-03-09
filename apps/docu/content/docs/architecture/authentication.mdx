@@ -77,7 +77,7 @@ Passkeys use WebAuthn for passwordless registration and sign-in. Registration cr
 
 **Vercel-style discovery UX** (optional):
 
-- **Resolve user**: `POST /auth/passkey/resolve-user` with `{ userHandle }` (base64url from assertion) → returns `{ email }` for "Login as …" display. Rate limited (10/min per IP).
+- **Resolve user**: `POST /auth/passkey/resolve-user` with `{ userHandle }` (base64url from assertion) → returns `{ maskedIdentifier }` for "Login as …" display (PII-safe). Rate limited (10/min per IP).
 - **Discovery flow**: On login page load, client calls start → `startAuthentication({ useBrowserAutofill: true })` (conditional UI) → if credential returned, call resolve-user with `response.userHandle` → show `PasskeyShortcut` card above the form.
 - **PasskeyShortcut**: Compact card with "Login as [email]", [Use Passkey] button, "Use another method" link. When user clicks "Use Passkey", verify without `callbackUrl` → receive `{ token, refreshToken }` → `updateAuthTokens` + `router.push`.
 - **Direct token flow**: When `callbackUrl` is absent, verify returns `{ token, refreshToken }` directly (no redirect). Caller uses `onSuccess` to update cookies and navigate.
@@ -311,7 +311,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 - **Passkey sign-in** (no auth)
   - `POST /auth/passkey/start` → `{ options, sessionId }`
   - `POST /auth/passkey/verify` → `{ redirectUrl }` or `{ token, refreshToken }` (body: `{ assertion, sessionId, callbackUrl? }`)
-  - `POST /auth/passkey/resolve-user` → `{ email }` (body: `{ userHandle }`, for discovery UX)
+  - `POST /auth/passkey/resolve-user` → `{ maskedIdentifier }` (body: `{ userHandle }`, for discovery UX)
   - `POST /auth/passkey/exchange` → `{ token, refreshToken }` (body: `{ code }`)
 
 - **Session**

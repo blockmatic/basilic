@@ -21,9 +21,9 @@ export function setLastMagicLinkEmail(email: string): void {
 
 function getSnapshot(): string | undefined {
   if (typeof window === 'undefined') return undefined
-  const value = localStorage.getItem(lastMagicLinkEmailStorageKey)
-  if (!value) return undefined
   try {
+    const value = localStorage.getItem(lastMagicLinkEmailStorageKey)
+    if (!value) return undefined
     return decodeURIComponent(value)
   } catch {
     return undefined

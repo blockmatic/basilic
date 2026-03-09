@@ -1159,6 +1159,14 @@ export type AuthPasskeyResolveUserErrors = {
         code: string;
         message: string;
     };
+    /**
+     * Default Response
+     */
+    429: {
+        error: string;
+        message: string;
+        retryAfter: number;
+    };
 };
 
 export type AuthPasskeyResolveUserError = AuthPasskeyResolveUserErrors[keyof AuthPasskeyResolveUserErrors];
@@ -1168,7 +1176,7 @@ export type AuthPasskeyResolveUserResponses = {
      * Default Response
      */
     200: {
-        email: string;
+        maskedIdentifier: string;
     };
 };
 

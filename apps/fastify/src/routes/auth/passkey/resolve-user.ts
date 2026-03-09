@@ -4,14 +4,27 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { passkeyCredentials, users } from '../../../db/schema/index.js'
-import { ErrorResponseSchema } from '../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 const ResolveUserBodySchema = Type.Object({
   userHandle: Type.String(),
 })
 
+function maskEmail(email: string): string {
+  const at = email.indexOf('@')
+  if (at <= 0) return '***@***'
+  const local = email.slice(0, at)
+  const domain = email.slice(at + 1)
+  const maskedLocal = local.length <= 2 ? '***' : `${local[0]}***`
+  const dot = domain.lastIndexOf('.')
+  const domainName = dot > 0 ? domain.slice(0, dot) : domain
+  const maskedDomain = domainName.length <= 2 ? '***' : `${domainName[0]}***${domainName.slice(-1)}`
+  const tld = dot > 0 ? domain.slice(dot) : ''
+  return `${maskedLocal}@${maskedDomain}${tld}`
+}
+
 const ResolveUserResponseSchema = Type.Object({
-  email: Type.String(),
+  maskedIdentifier: Type.String(),
 })
 
 const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
@@ -31,6 +44,7 @@ const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: ResolveUserResponseSchema,
           400: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
         },
       },
     },
@@ -72,7 +86,7 @@ const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
           message: 'Invalid userHandle encoding',
         })
 
-      return reply.code(200).send({ email: row.email })
+      return reply.code(200).send({ maskedIdentifier: maskEmail(row.email) })
     },
   )
 }

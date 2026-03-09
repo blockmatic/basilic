@@ -47,7 +47,10 @@ function loadScript(src: string): Promise<void> {
         el.addEventListener('load', () => resolve(), { once: true })
         el.addEventListener(
           'error',
-          () => reject(new Error('Failed to load Google Identity Services')),
+          () => {
+            el.remove()
+            reject(new Error('Failed to load Google Identity Services'))
+          },
           { once: true },
         )
       })
@@ -56,7 +59,10 @@ function loadScript(src: string): Promise<void> {
         script.src = src
         script.async = true
         script.onload = () => resolve()
-        script.onerror = () => reject(new Error('Failed to load Google Identity Services'))
+        script.onerror = () => {
+          script.remove()
+          reject(new Error('Failed to load Google Identity Services'))
+        }
         document.head.appendChild(script)
       })
   const promise = rawPromise.catch(err => {

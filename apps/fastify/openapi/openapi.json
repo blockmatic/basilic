@@ -3059,10 +3059,10 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "email"
+                    "maskedIdentifier"
                   ],
                   "properties": {
-                    "email": {
+                    "maskedIdentifier": {
                       "type": "string"
                     }
                   }
@@ -3086,6 +3086,32 @@
                     },
                     "message": {
                       "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error",
+                    "message",
+                    "retryAfter"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "retryAfter": {
+                      "type": "number"
                     }
                   }
                 }

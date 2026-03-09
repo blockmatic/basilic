@@ -45,9 +45,8 @@ export function usePasskeyAuth() {
         if (redirectUrl.startsWith('/')) window.location.assign(redirectUrl)
         else
           try {
-            const url = new URL(redirectUrl)
-            if (url.origin === window.location.origin) window.location.assign(redirectUrl)
-            else window.location.assign('/')
+            new URL(redirectUrl)
+            window.location.assign(redirectUrl)
           } catch {
             window.location.assign('/')
           }
@@ -61,9 +60,9 @@ export function usePasskeyAuth() {
       throw new Error('Server did not return tokens')
     },
     onSuccess: (data, variables) => {
+      if (data) variables.onSuccess?.(data)
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
-      if (data) variables.onSuccess?.(data)
     },
   })
 }

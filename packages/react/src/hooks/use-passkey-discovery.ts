@@ -37,7 +37,7 @@ export function usePasskeyDiscovery() {
         body: { userHandle },
         throwOnError: true,
       })
-      return { email: result.email }
+      return { email: result.maskedIdentifier }
     },
     enabled: webauthnAvailable,
     staleTime: 5 * 60 * 1000,
