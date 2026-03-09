@@ -18,10 +18,6 @@ import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
-import {
-  setLastMagicLinkEmail,
-  useLastMagicLinkEmail,
-} from '@/lib/auth/last-magic-link-email-client'
 import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
 
@@ -183,7 +179,6 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
   } = usePasskeyAuth()
   const { email: discoveryEmail } = usePasskeyDiscovery()
   const webauthnAvailable = useWebAuthnAvailable()
-  const lastMagicLinkEmail = useLastMagicLinkEmail()
   const anyPending = isOAuthPending || isPasskeyPending || isGooglePending
   const displayError =
     lastAuthMethod === 'passkey'
@@ -220,8 +215,7 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
         />
       )}
       <LoginForm
-        defaultEmail={defaultEmail ?? lastMagicLinkEmail}
-        onMagicLinkSent={setLastMagicLinkEmail}
+        defaultEmail={defaultEmail}
         extraActions={
           <OAuthButtons
             anyPending={anyPending}

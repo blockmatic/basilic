@@ -28,7 +28,7 @@ type LoginFormProps = React.ComponentProps<'form'> & {
   initialError?: string
   callbackUrl?: string
   onSuccess?: () => void
-  /** Default email to pre-fill (e.g. from cookie) */
+  /** Default email to pre-fill */
   defaultEmail?: string
   /** Called when magic link request succeeds, with the email used */
   onMagicLinkSent?: (email: string) => void
@@ -61,7 +61,7 @@ export function LoginForm({
       setEmailValidationError(initialError || null)
   }, [initialError])
 
-  // Sync defaultEmail when it becomes defined (e.g. after hydration from useLastMagicLinkEmail)
+  // Sync defaultEmail when it becomes defined
   useEffect(() => {
     if (defaultEmail !== undefined)
       // eslint-disable-next-line react-hooks/set-state-in-effect -- Syncing prop to state
