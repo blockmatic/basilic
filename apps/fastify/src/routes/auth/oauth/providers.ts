@@ -27,10 +27,19 @@ const oauthProvidersRoute: FastifyPluginAsync = async fastify => {
     },
     async (_request, reply) =>
       reply.status(200).send({
-        github: Boolean(env.GITHUB_CLIENT_ID) && Boolean(env.OAUTH_GITHUB_CALLBACK_URL),
+        github:
+          Boolean(env.GITHUB_CLIENT_ID) &&
+          Boolean(env.GITHUB_CLIENT_SECRET) &&
+          Boolean(env.OAUTH_GITHUB_CALLBACK_URL),
         google: Boolean(env.GOOGLE_CLIENT_ID),
-        facebook: Boolean(env.FACEBOOK_CLIENT_ID) && Boolean(env.OAUTH_FACEBOOK_CALLBACK_URL),
-        twitter: Boolean(env.TWITTER_CLIENT_ID) && Boolean(env.OAUTH_TWITTER_CALLBACK_URL),
+        facebook:
+          Boolean(env.FACEBOOK_CLIENT_ID) &&
+          Boolean(env.FACEBOOK_CLIENT_SECRET) &&
+          Boolean(env.OAUTH_FACEBOOK_CALLBACK_URL),
+        twitter:
+          Boolean(env.TWITTER_CLIENT_ID) &&
+          Boolean(env.TWITTER_CLIENT_SECRET) &&
+          Boolean(env.OAUTH_TWITTER_CALLBACK_URL),
       }),
   )
 }

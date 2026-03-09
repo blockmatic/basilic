@@ -50,6 +50,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           200: ExchangeResponseSchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
           503: ErrorResponseSchema,
         },
       },
@@ -153,25 +154,31 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
 
       const accountId = twUser.id
       const name = twUser.name ?? twUser.username ?? 'Twitter user'
-      const email = `${twUser.username ?? accountId}@twitter.placeholder`
-
-      let [user] = await db.select().from(users).where(eq(users.email, email))
-      if (!user) {
-        const userId = randomUUID()
-        await db.insert(users).values({
-          id: userId,
-          email,
-          emailVerified: true,
-          name,
-        })
-        ;[user] = await db.select().from(users).where(eq(users.id, userId))
-        if (!user) throw new Error('Failed to create user')
-      }
 
       const [existingAccount] = await db
         .select()
         .from(account)
         .where(and(eq(account.providerId, 'twitter'), eq(account.accountId, accountId)))
+
+      let user: typeof users.$inferSelect | undefined
+      if (existingAccount) {
+        ;[user] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
+      }
+      if (!user) {
+        const userId = randomUUID()
+        await db.insert(users).values({
+          id: userId,
+          email: null,
+          emailVerified: false,
+          name,
+        })
+        ;[user] = await db.select().from(users).where(eq(users.id, userId))
+        if (!user)
+          return reply.code(500).send({
+            code: 'USER_CREATE_FAILED',
+            message: 'Failed to create user',
+          })
+      }
 
       const accountData = {
         id: existingAccount?.id ?? randomUUID(),

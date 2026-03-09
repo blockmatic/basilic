@@ -31,19 +31,36 @@ declare global {
 
 const gisScriptUrl = 'https://accounts.google.com/gsi/client'
 
+const loadPromises = new Map<string, Promise<void>>()
+
 function loadScript(src: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) {
-      resolve()
-      return
-    }
-    const script = document.createElement('script')
-    script.src = src
-    script.async = true
-    script.onload = () => resolve()
-    script.onerror = () => reject(new Error('Failed to load Google Identity Services'))
-    document.head.appendChild(script)
-  })
+  const existing = loadPromises.get(src)
+  if (existing) return existing
+
+  const el = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`)
+  const promise = el
+    ? new Promise<void>((resolve, reject) => {
+        if (window.google?.accounts?.id) {
+          resolve()
+          return
+        }
+        el.addEventListener('load', () => resolve(), { once: true })
+        el.addEventListener(
+          'error',
+          () => reject(new Error('Failed to load Google Identity Services')),
+          { once: true },
+        )
+      })
+    : new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = src
+        script.async = true
+        script.onload = () => resolve()
+        script.onerror = () => reject(new Error('Failed to load Google Identity Services'))
+        document.head.appendChild(script)
+      })
+  loadPromises.set(src, promise)
+  return promise
 }
 
 export function useGoogleOneTap({
@@ -66,8 +83,14 @@ export function useGoogleOneTap({
       setIsPending(true)
 
       if (onCredential) {
-        await onCredential(credential)
-        setIsPending(false)
+        try {
+          await onCredential(credential)
+        } catch (err) {
+          handledRef.current = false
+          throw err
+        } finally {
+          setIsPending(false)
+        }
         return
       }
 

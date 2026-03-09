@@ -832,7 +832,21 @@ export type OauthFacebookExchangeErrors = {
     /**
      * Default Response
      */
+    500: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     503: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    504: {
         code: string;
         message: string;
     };
@@ -1041,6 +1055,13 @@ export type OauthTwitterExchangeErrors = {
      * Default Response
      */
     401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
         code: string;
         message: string;
     };

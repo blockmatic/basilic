@@ -48,7 +48,9 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           200: ExchangeResponseSchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
           503: ErrorResponseSchema,
+          504: ErrorResponseSchema,
         },
       },
     },
@@ -93,7 +95,20 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       tokenUrl.searchParams.set('redirect_uri', oauthFacebookCallbackUrl)
       tokenUrl.searchParams.set('code', code)
 
-      const tokenRes = await fetch(tokenUrl.toString())
+      const fetchTimeoutMs = 15_000
+      let tokenRes: Response
+      try {
+        tokenRes = await fetch(tokenUrl.toString(), {
+          signal: AbortSignal.timeout(fetchTimeoutMs),
+        })
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError')
+          return reply.code(504).send({
+            code: 'TOKEN_EXCHANGE_FAILED',
+            message: 'Token exchange timed out',
+          })
+        throw err
+      }
       if (!tokenRes.ok)
         return reply.code(400).send({
           code: 'TOKEN_EXCHANGE_FAILED',
@@ -120,10 +135,22 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       userUrl.searchParams.set('fields', 'id,name,email')
       userUrl.searchParams.set('access_token', accessToken)
 
-      const userRes = await fetch(userUrl.toString())
+      let userRes: Response
+      try {
+        userRes = await fetch(userUrl.toString(), {
+          signal: AbortSignal.timeout(fetchTimeoutMs),
+        })
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError')
+          return reply.code(504).send({
+            code: 'USER_INFO_FAILED',
+            message: 'Failed to fetch Facebook user (timeout)',
+          })
+        throw err
+      }
       if (!userRes.ok)
         return reply.code(400).send({
-          code: 'FETCH_USER_FAILED',
+          code: 'USER_INFO_FAILED',
           message: 'Failed to fetch Facebook user',
         })
 
@@ -138,18 +165,21 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Could not retrieve email from Facebook',
         })
 
-      let [user] = await db.select().from(users).where(eq(users.email, email))
-      if (!user) {
-        const userId = randomUUID()
-        await db.insert(users).values({
-          id: userId,
+      await db
+        .insert(users)
+        .values({
+          id: randomUUID(),
           email,
           emailVerified: true,
           name,
         })
-        ;[user] = await db.select().from(users).where(eq(users.id, userId))
-        if (!user) throw new Error('Failed to create user')
-      }
+        .onConflictDoNothing({ target: users.email })
+      const [user] = await db.select().from(users).where(eq(users.email, email))
+      if (!user)
+        return reply.code(500).send({
+          code: 'USER_CREATE_FAILED',
+          message: 'Failed to create or find user',
+        })
 
       const [existingAccount] = await db
         .select()
