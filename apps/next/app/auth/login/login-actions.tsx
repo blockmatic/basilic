@@ -96,7 +96,7 @@ export function LoginActions({ initialError }: LoginActionsProps) {
                   })
                 }}
               >
-                {isPasskeyPending ? 'Signing in…' : 'Sign in with passkey'}
+                {isPasskeyPending ? 'Signing in…' : 'Passkey'}
               </Button>
             )}
             <Button
