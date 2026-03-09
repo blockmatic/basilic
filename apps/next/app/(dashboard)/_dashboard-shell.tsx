@@ -32,7 +32,7 @@ export function DashboardShell({
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-dvh min-h-0 overflow-hidden">
       <DashboardSidebar />
       <div className="flex min-w-0 flex-1">
         <SidebarInset className="flex min-w-0 flex-1 flex-col">
