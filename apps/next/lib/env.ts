@@ -13,6 +13,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
     NEXT_PUBLIC_API_URL: z.string().min(1),
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().min(1).optional(),
     NEXT_PUBLIC_AUTH_COOKIE_NAME: z.string().default('api.session'),
     NEXT_PUBLIC_ERROR_REPORTING_DSN: z.string().min(1).optional(),
     NEXT_PUBLIC_ERROR_REPORTING_ENVIRONMENT: z.string().min(1).optional(),
@@ -27,6 +28,7 @@ export const env = createEnv({
     AUTH_COOKIE_NAME: process.env.AUTH_COOKIE_NAME,
     NEWSAPI_KEY: process.env.NEWSAPI_KEY,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     NEXT_PUBLIC_AUTH_COOKIE_NAME:
       process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME,
     NEXT_PUBLIC_ERROR_REPORTING_DSN: process.env.NEXT_PUBLIC_ERROR_REPORTING_DSN,

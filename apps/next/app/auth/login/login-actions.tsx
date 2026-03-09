@@ -1,5 +1,6 @@
 'use client'
 
+import { ApiError } from '@repo/core'
 import {
   LoginForm,
   useOAuthLogin,
@@ -12,9 +13,12 @@ import { Button } from '@repo/ui/components/button'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { GitHub, Passkey } from '@/components/icons'
+import { toast } from 'sonner'
+import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
+import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
 import { PasskeyShortcut } from './passkey-shortcut'
+import { useGoogleOneTap } from './use-google-one-tap'
 
 type LoginActionsProps = { initialError?: string }
 
@@ -43,7 +47,21 @@ export function LoginActions({ initialError }: LoginActionsProps) {
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
   const [optedOut, setOptedOut] = useState(false)
-  const { mutate: startOAuthLogin, error: oauthError, isPending: isOAuthPending } = useOAuthLogin()
+  const {
+    mutate: startOAuthLogin,
+    error: oauthError,
+    isPending: isOAuthPending,
+  } = useOAuthLogin({
+    onError: err => {
+      if (err instanceof ApiError && err.status === 503)
+        toast.error(getAuthErrorMessage('oauth_not_configured'))
+    },
+  })
+  const {
+    prompt: promptGoogle,
+    isPending: isGooglePending,
+    isConfigured: isGoogleConfigured,
+  } = useGoogleOneTap()
   const {
     mutate: startPasskeyAuth,
     error: passkeyError,
@@ -51,6 +69,7 @@ export function LoginActions({ initialError }: LoginActionsProps) {
   } = usePasskeyAuth()
   const { email: discoveryEmail } = usePasskeyDiscovery()
   const webauthnAvailable = useWebAuthnAvailable()
+  const anyPending = isOAuthPending || isPasskeyPending || isGooglePending
   const displayError =
     lastAuthMethod === 'passkey'
       ? (passkeyError?.message ?? oauthError?.message ?? initialError)
@@ -84,11 +103,11 @@ export function LoginActions({ initialError }: LoginActionsProps) {
       )}
       <LoginForm
         extraActions={
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             {webauthnAvailable && (
               <button
                 type="button"
-                disabled={isOAuthPending || isPasskeyPending}
+                disabled={anyPending}
                 onClick={() => {
                   setLastAuthMethod('passkey')
                   startPasskeyAuth({
@@ -103,15 +122,51 @@ export function LoginActions({ initialError }: LoginActionsProps) {
             )}
             <button
               type="button"
-              disabled={isOAuthPending || isPasskeyPending}
+              disabled={anyPending}
               onClick={() => {
                 setLastAuthMethod('oauth')
-                startOAuthLogin()
+                startOAuthLogin('github')
               }}
               aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with GitHub'}
               className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
             >
               <GitHub className="size-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              disabled={anyPending || !isGoogleConfigured}
+              onClick={() => {
+                setLastAuthMethod('oauth')
+                promptGoogle()
+              }}
+              aria-label={isGooglePending ? 'Signing in…' : 'Continue with Google'}
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Google className="size-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              disabled={anyPending}
+              onClick={() => {
+                setLastAuthMethod('oauth')
+                startOAuthLogin('facebook')
+              }}
+              aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with Facebook'}
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Facebook className="size-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              disabled={anyPending}
+              onClick={() => {
+                setLastAuthMethod('oauth')
+                startOAuthLogin('twitter')
+              }}
+              aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with X'}
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Twitter className="size-5" aria-hidden />
             </button>
           </div>
         }

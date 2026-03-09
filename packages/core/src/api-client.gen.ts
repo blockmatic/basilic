@@ -50,11 +50,21 @@ import type {
   MagiclinkRequestResponse,
   MagiclinkVerifyData,
   MagiclinkVerifyResponse,
+  OauthFacebookAuthorizeUrlData,
+  OauthFacebookAuthorizeUrlResponse,
+  OauthFacebookExchangeData,
+  OauthFacebookExchangeResponse,
   OauthGithubAuthorizeData,
   OauthGithubAuthorizeUrlData,
   OauthGithubAuthorizeUrlResponse,
   OauthGithubExchangeData,
   OauthGithubExchangeResponse,
+  OauthGoogleVerifyIdTokenData,
+  OauthGoogleVerifyIdTokenResponse,
+  OauthTwitterAuthorizeUrlData,
+  OauthTwitterAuthorizeUrlResponse,
+  OauthTwitterExchangeData,
+  OauthTwitterExchangeResponse,
   RefreshData,
   RefreshResponse,
   Web3Eip155NonceData,
@@ -110,10 +120,21 @@ export type CoreApiClient = {
       verify: (opts: Options<MagiclinkVerifyData>) => Promise<MagiclinkVerifyResponse>
     };
     oauth: {
+      facebook: {
+        authorizeUrl: (opts?: Options<OauthFacebookAuthorizeUrlData>) => Promise<OauthFacebookAuthorizeUrlResponse>;
+        exchange: (opts: Options<OauthFacebookExchangeData>) => Promise<OauthFacebookExchangeResponse>
+      };
       github: {
         authorizeUrl: (opts?: Options<OauthGithubAuthorizeUrlData>) => Promise<OauthGithubAuthorizeUrlResponse>;
         authorize: (opts?: Options<OauthGithubAuthorizeData>) => Promise<unknown>;
         exchange: (opts: Options<OauthGithubExchangeData>) => Promise<OauthGithubExchangeResponse>
+      };
+      google: {
+        verifyIdToken: (opts: Options<OauthGoogleVerifyIdTokenData>) => Promise<OauthGoogleVerifyIdTokenResponse>
+      };
+      twitter: {
+        authorizeUrl: (opts?: Options<OauthTwitterAuthorizeUrlData>) => Promise<OauthTwitterAuthorizeUrlResponse>;
+        exchange: (opts: Options<OauthTwitterExchangeData>) => Promise<OauthTwitterExchangeResponse>
       }
     };
     passkey: {
