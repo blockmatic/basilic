@@ -4,6 +4,7 @@ import { ApiError } from '@repo/core'
 import {
   LoginForm,
   useOAuthLogin,
+  useOAuthProviders,
   usePasskeyAuth,
   usePasskeyDiscovery,
   useWebAuthnAvailable,
@@ -21,6 +22,105 @@ import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
 
 type LoginActionsProps = { initialError?: string }
+
+function OAuthButtons({
+  anyPending,
+  setLastAuthMethod,
+  startOAuthLogin,
+  promptGoogle,
+  isGithubConfigured,
+  isGoogleConfigured,
+  isFacebookConfigured,
+  isTwitterConfigured,
+  isOAuthPending,
+  isGooglePending,
+  webauthnAvailable,
+  startPasskeyAuth,
+  isPasskeyPending,
+}: {
+  anyPending: boolean
+  setLastAuthMethod: (m: 'oauth' | 'passkey') => void
+  startOAuthLogin: (p: 'github' | 'facebook' | 'twitter') => void
+  promptGoogle: () => void
+  isGithubConfigured: boolean
+  isGoogleConfigured: boolean
+  isFacebookConfigured: boolean
+  isTwitterConfigured: boolean
+  isOAuthPending: boolean
+  isGooglePending: boolean
+  webauthnAvailable: boolean
+  startPasskeyAuth: (opts: { callbackUrl: string }) => void
+  isPasskeyPending: boolean
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-3">
+      {webauthnAvailable && (
+        <button
+          type="button"
+          disabled={anyPending}
+          onClick={() => {
+            setLastAuthMethod('passkey')
+            startPasskeyAuth({
+              callbackUrl: `${window.location.origin}/auth/callback/passkey?callbackUrl=/`,
+            })
+          }}
+          aria-label={isPasskeyPending ? 'Signing in…' : 'Continue with Passkey'}
+          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Passkey className="size-5" aria-hidden />
+        </button>
+      )}
+      <button
+        type="button"
+        disabled={anyPending || !isGithubConfigured}
+        onClick={() => {
+          setLastAuthMethod('oauth')
+          startOAuthLogin('github')
+        }}
+        aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with GitHub'}
+        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <GitHub className="size-5" aria-hidden />
+      </button>
+      <button
+        type="button"
+        disabled={anyPending || !isGoogleConfigured}
+        onClick={() => {
+          setLastAuthMethod('oauth')
+          promptGoogle()
+        }}
+        aria-label={isGooglePending ? 'Signing in…' : 'Continue with Google'}
+        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Google className="size-5" aria-hidden />
+      </button>
+      <button
+        type="button"
+        disabled={anyPending || !isFacebookConfigured}
+        onClick={() => {
+          setLastAuthMethod('oauth')
+          startOAuthLogin('facebook')
+        }}
+        aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with Facebook'}
+        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Facebook className="size-5" aria-hidden />
+      </button>
+      <button
+        type="button"
+        disabled={anyPending || !isTwitterConfigured}
+        onClick={() => {
+          setLastAuthMethod('oauth')
+          startOAuthLogin('twitter')
+        }}
+        aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with X'}
+        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Twitter className="size-5" aria-hidden />
+      </button>
+    </div>
+  )
+}
 
 function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () => void }) {
   return (
@@ -57,11 +157,13 @@ export function LoginActions({ initialError }: LoginActionsProps) {
         toast.error(getAuthErrorMessage('oauth_not_configured'))
     },
   })
+  const { prompt: promptGoogle, isPending: isGooglePending } = useGoogleOneTap()
   const {
-    prompt: promptGoogle,
-    isPending: isGooglePending,
-    isConfigured: isGoogleConfigured,
-  } = useGoogleOneTap()
+    github: isGithubConfigured,
+    google: isGoogleConfigured,
+    facebook: isFacebookConfigured,
+    twitter: isTwitterConfigured,
+  } = useOAuthProviders()
   const {
     mutate: startPasskeyAuth,
     error: passkeyError,
@@ -103,72 +205,21 @@ export function LoginActions({ initialError }: LoginActionsProps) {
       )}
       <LoginForm
         extraActions={
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {webauthnAvailable && (
-              <button
-                type="button"
-                disabled={anyPending}
-                onClick={() => {
-                  setLastAuthMethod('passkey')
-                  startPasskeyAuth({
-                    callbackUrl: `${window.location.origin}/auth/callback/passkey?callbackUrl=/`,
-                  })
-                }}
-                aria-label={isPasskeyPending ? 'Signing in…' : 'Continue with Passkey'}
-                className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Passkey className="size-5" aria-hidden />
-              </button>
-            )}
-            <button
-              type="button"
-              disabled={anyPending}
-              onClick={() => {
-                setLastAuthMethod('oauth')
-                startOAuthLogin('github')
-              }}
-              aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with GitHub'}
-              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <GitHub className="size-5" aria-hidden />
-            </button>
-            <button
-              type="button"
-              disabled={anyPending || !isGoogleConfigured}
-              onClick={() => {
-                setLastAuthMethod('oauth')
-                promptGoogle()
-              }}
-              aria-label={isGooglePending ? 'Signing in…' : 'Continue with Google'}
-              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Google className="size-5" aria-hidden />
-            </button>
-            <button
-              type="button"
-              disabled={anyPending}
-              onClick={() => {
-                setLastAuthMethod('oauth')
-                startOAuthLogin('facebook')
-              }}
-              aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with Facebook'}
-              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Facebook className="size-5" aria-hidden />
-            </button>
-            <button
-              type="button"
-              disabled={anyPending}
-              onClick={() => {
-                setLastAuthMethod('oauth')
-                startOAuthLogin('twitter')
-              }}
-              aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with X'}
-              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Twitter className="size-5" aria-hidden />
-            </button>
-          </div>
+          <OAuthButtons
+            anyPending={anyPending}
+            setLastAuthMethod={setLastAuthMethod}
+            startOAuthLogin={startOAuthLogin}
+            promptGoogle={promptGoogle}
+            isGithubConfigured={isGithubConfigured}
+            isGoogleConfigured={isGoogleConfigured}
+            isFacebookConfigured={isFacebookConfigured}
+            isTwitterConfigured={isTwitterConfigured}
+            isOAuthPending={isOAuthPending}
+            isGooglePending={isGooglePending}
+            webauthnAvailable={webauthnAvailable}
+            startPasskeyAuth={startPasskeyAuth}
+            isPasskeyPending={isPasskeyPending}
+          />
         }
       />
     </div>

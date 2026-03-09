@@ -18,6 +18,7 @@ afterAll(async () => {
 export { fastify }
 
 import './oauth/facebook/authorize-url.test'
+import './oauth/providers.test'
 import './oauth/facebook/exchange.test'
 import './oauth/github/authorize.test'
 import './oauth/github/authorize-url.test'

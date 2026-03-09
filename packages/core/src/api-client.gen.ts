@@ -61,6 +61,8 @@ import type {
   OauthGithubExchangeResponse,
   OauthGoogleVerifyIdTokenData,
   OauthGoogleVerifyIdTokenResponse,
+  OauthProvidersData,
+  OauthProvidersResponse,
   OauthTwitterAuthorizeUrlData,
   OauthTwitterAuthorizeUrlResponse,
   OauthTwitterExchangeData,
@@ -120,6 +122,7 @@ export type CoreApiClient = {
       verify: (opts: Options<MagiclinkVerifyData>) => Promise<MagiclinkVerifyResponse>
     };
     oauth: {
+      providers: (opts?: Options<OauthProvidersData>) => Promise<OauthProvidersResponse>;
       facebook: {
         authorizeUrl: (opts?: Options<OauthFacebookAuthorizeUrlData>) => Promise<OauthFacebookAuthorizeUrlResponse>;
         exchange: (opts: Options<OauthFacebookExchangeData>) => Promise<OauthFacebookExchangeResponse>

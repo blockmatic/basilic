@@ -2103,6 +2103,49 @@
         }
       }
     },
+    "/auth/oauth/providers": {
+      "get": {
+        "operationId": "oauthProviders",
+        "summary": "OAuth providers availability",
+        "tags": [
+          "auth"
+        ],
+        "description": "Return which OAuth providers are configured",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "github",
+                    "google",
+                    "facebook",
+                    "twitter"
+                  ],
+                  "properties": {
+                    "github": {
+                      "type": "boolean"
+                    },
+                    "google": {
+                      "type": "boolean"
+                    },
+                    "facebook": {
+                      "type": "boolean"
+                    },
+                    "twitter": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/oauth/facebook/authorize-url": {
       "get": {
         "operationId": "oauthFacebookAuthorizeUrl",

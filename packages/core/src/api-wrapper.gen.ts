@@ -41,6 +41,7 @@ auth: {
     verify: gen.magiclinkVerify,
   },
   oauth: {
+    providers: gen.oauthProviders,
     facebook: {
       authorizeUrl: gen.oauthFacebookAuthorizeUrl,
       exchange: gen.oauthFacebookExchange,

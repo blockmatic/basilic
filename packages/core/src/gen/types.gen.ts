@@ -753,6 +753,27 @@ export type MagiclinkVerifyResponses = {
 
 export type MagiclinkVerifyResponse = MagiclinkVerifyResponses[keyof MagiclinkVerifyResponses];
 
+export type OauthProvidersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/providers';
+};
+
+export type OauthProvidersResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        github: boolean;
+        google: boolean;
+        facebook: boolean;
+        twitter: boolean;
+    };
+};
+
+export type OauthProvidersResponse = OauthProvidersResponses[keyof OauthProvidersResponses];
+
 export type OauthFacebookAuthorizeUrlData = {
     body?: never;
     path?: never;
