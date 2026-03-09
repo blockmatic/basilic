@@ -203,7 +203,12 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
             setLastAuthMethod('passkey')
             startPasskeyAuth({
               onSuccess: async ({ token, refreshToken }) => {
-                await updateAuthTokens({ token, refreshToken })
+                try {
+                  await updateAuthTokens({ token, refreshToken })
+                } catch (err) {
+                  toast.error(err instanceof Error ? err.message : 'Failed to complete sign-in')
+                  return
+                }
                 router.push('/')
               },
             })

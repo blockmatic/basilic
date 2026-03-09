@@ -10,16 +10,29 @@ const knownOAuthCodes = new Set([
   'oauth_failed',
 ])
 
-/** Fallback: map raw backend message strings to auth-error-messages keys. */
+/** Fallback: map raw backend message strings to auth-error-messages keys. Provider-agnostic. */
 const messageToKey: Record<string, string> = {
   'Invalid OAuth callback - missing code or state': 'missing_params',
   'Invalid or expired state': 'invalid_state',
   'State has expired': 'expired_state',
   'Failed to exchange code for token': 'token_exchange_failed',
   'Failed to fetch GitHub user': 'fetch_user_failed',
+  'Failed to fetch Facebook user': 'fetch_user_failed',
+  'Failed to fetch Facebook user (timeout)': 'fetch_user_failed',
+  'Failed to fetch Twitter user': 'fetch_user_failed',
+  'Failed to fetch Twitter user (timeout)': 'fetch_user_failed',
+  'Invalid Twitter user response': 'fetch_user_failed',
   'Could not retrieve email from GitHub': 'email_required',
+  'Could not retrieve email from Facebook': 'email_required',
+  'Could not retrieve email from Twitter': 'email_required',
+  'Could not retrieve verified email from Google': 'email_required',
   'GitHub OAuth is not configured': 'oauth_not_configured',
+  'Facebook OAuth is not configured': 'oauth_not_configured',
+  'Twitter OAuth is not configured': 'oauth_not_configured',
+  'Google OAuth is not configured': 'oauth_not_configured',
   'GitHub sign-in failed': 'oauth_failed',
+  'Facebook sign-in failed': 'oauth_failed',
+  'Twitter sign-in failed': 'oauth_failed',
 }
 
 const authErrorMessages: Record<string, string> = {

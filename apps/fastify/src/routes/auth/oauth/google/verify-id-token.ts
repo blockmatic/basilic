@@ -4,7 +4,6 @@ import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { OAuth2Client } from 'google-auth-library'
-import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
 import { account, users } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
@@ -126,13 +125,12 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
           scope: 'openid email profile',
         }
 
-        if (existingAccount) {
-          const encrypted = encryptAccountTokens({ updatedAt: new Date() })
+        if (existingAccount)
           await tx
             .update(account)
-            .set({ updatedAt: encrypted.updatedAt ?? new Date() })
+            .set({ updatedAt: new Date() })
             .where(eq(account.id, existingAccount.id))
-        } else {
+        else
           await tx.insert(account).values({
             id: accountData.id,
             userId: accountData.userId,
@@ -140,11 +138,10 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
             providerId: accountData.providerId,
             scope: accountData.scope,
           })
-        }
 
         const { accessToken, refreshToken } = await createSessionAndIssueTokens({
           fastify,
-          db: tx as unknown as Awaited<ReturnType<typeof getDb>>,
+          db: tx,
           userId: user.id,
         })
         return { token: accessToken, refreshToken }

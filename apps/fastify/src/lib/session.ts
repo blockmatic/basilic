@@ -10,6 +10,8 @@ import {
   hashToken,
 } from './jwt.js'
 
+type DbForSession = Pick<Awaited<ReturnType<typeof getDb>>, 'insert'>
+
 export async function createSessionAndIssueTokens({
   fastify,
   db,
@@ -17,7 +19,7 @@ export async function createSessionAndIssueTokens({
   wallet,
 }: {
   fastify: FastifyInstance
-  db: Awaited<ReturnType<typeof getDb>>
+  db: DbForSession
   userId: string
   wallet?: { chain: string; address: string }
 }) {

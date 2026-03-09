@@ -5,12 +5,12 @@ import { startAuthentication } from '@simplewebauthn/browser'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
 
-export type UsePasskeyAuthParams = {
-  /** Absolute callback URL for redirect flow. When absent, returns tokens directly. */
-  callbackUrl?: string
-  /** Called with tokens when callbackUrl is absent (direct token flow) */
-  onSuccess?: (data: { token: string; refreshToken: string }) => void | Promise<void>
-}
+export type UsePasskeyAuthParams =
+  | { callbackUrl: string; onSuccess?: never }
+  | {
+      callbackUrl?: undefined
+      onSuccess: (data: { token: string; refreshToken: string }) => void | Promise<void>
+    }
 
 /**
  * Mutation hook for passkey sign-in. Calls start → startAuthentication → verify.
@@ -22,7 +22,8 @@ export function usePasskeyAuth() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ callbackUrl }: UsePasskeyAuthParams) => {
+    mutationFn: async (variables: UsePasskeyAuthParams) => {
+      const callbackUrl = 'callbackUrl' in variables ? variables.callbackUrl : undefined
       const { options, sessionId } = await client.auth.passkey.start({ throwOnError: true })
       let assertion: Awaited<ReturnType<typeof startAuthentication>>
       try {
@@ -42,14 +43,10 @@ export function usePasskeyAuth() {
 
       const redirectUrl = 'redirectUrl' in result ? result.redirectUrl : undefined
       if (redirectUrl) {
-        if (redirectUrl.startsWith('/')) {
-          window.location.assign(redirectUrl)
-          return
-        }
         try {
-          const parsed = new URL(redirectUrl)
+          const parsed = new URL(redirectUrl, window.location.origin)
           const allowedOrigin = callbackUrl?.trim()
-            ? new URL(callbackUrl).origin
+            ? new URL(callbackUrl, window.location.origin).origin
             : window.location.origin
           const okScheme = parsed.protocol === 'http:' || parsed.protocol === 'https:'
           const okOrigin = parsed.origin === allowedOrigin
