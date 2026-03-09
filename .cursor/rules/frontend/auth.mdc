@@ -25,3 +25,9 @@ See @apps/docu/content/docs/architecture/authentication.mdx for full architectur
 - Core calls Fastify `POST /auth/session/refresh` directly on 401 (no BFF proxy)
 - `onTokensRefreshed` → `updateAuthTokens` → `POST /api/auth/update-tokens` persists new tokens in cookie
 - Proxy (`proxy.ts`) refreshes on navigation; core refreshes on client-side 401 (e.g. `useUser`)
+
+## Auth Protection (proxy.ts)
+
+- Proxy (`proxy.ts`) is the single source of truth for route-level auth: unauthenticated users → `/auth/login`; authenticated on `/auth/login` → `/`
+- **Never** add `getAuthStatus()` + `redirect()` in layouts or pages for auth gating—proxy already enforces this
+- Use `getAuthStatus()` or `getUserInfo()` only when you need user/session data for rendering (e.g. shell, profile), not for redirect logic

@@ -1,6 +1,4 @@
 import { getErrorMessage } from '@repo/error/nextjs'
-import { getAuthStatus } from 'lib/auth/auth-utils'
-import { redirect } from 'next/navigation'
 import type { CoinMarket } from './markets-table'
 import { MarketsTable } from './markets-table'
 
@@ -19,9 +17,6 @@ async function fetchMarkets() {
 }
 
 export default async function MarketsPage() {
-  const { authenticated } = await getAuthStatus()
-  if (!authenticated) redirect('/auth/login')
-
   const { coins, error } = await fetchMarkets()
 
   return (

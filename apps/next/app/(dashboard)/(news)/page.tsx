@@ -1,6 +1,4 @@
 import { getErrorMessage } from '@repo/error/nextjs'
-import { getAuthStatus } from 'lib/auth/auth-utils'
-import { redirect } from 'next/navigation'
 import { env } from '@/lib/env'
 import { NewsList, type NewsListArticle } from './news-list'
 
@@ -26,9 +24,6 @@ async function fetchHeadlines() {
 }
 
 export default async function Home() {
-  const { authenticated } = await getAuthStatus()
-  if (!authenticated) redirect('/auth/login')
-
   const { articles, error, hasKey } = await fetchHeadlines()
 
   const fallback = !hasKey ? (

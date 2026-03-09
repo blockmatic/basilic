@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { refreshTokensWithRefreshToken, setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
-import { isTokenExpired } from '@/lib/auth/jwt-utils'
+import { decodeJwtToken, isTokenExpired, verifyJwtToken } from '@/lib/auth/jwt-utils'
 import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
 import { env } from '@/lib/env'
 
@@ -22,12 +22,15 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
   if (!token) return { status: 'unauthenticated', shouldClearCookies: false }
 
   try {
-    const { decodeJwtToken } = await import('@/lib/auth/jwt-utils')
-    const jwtDecoded = decodeJwtToken({ token })
-    if (jwtDecoded?.typ !== 'access' || !jwtDecoded?.sub || !jwtDecoded?.sid)
+    const payload = decodeJwtToken({ token })
+    if (payload?.typ !== 'access' || !payload?.sub || !payload?.sid)
       return { status: 'unauthenticated', shouldClearCookies: true }
 
-    if (!isTokenExpired({ token })) return { status: 'authenticated', shouldClearCookies: false }
+    if (!isTokenExpired({ token })) {
+      const verified = await verifyJwtToken({ token, secret: env.JWT_SECRET })
+      if (verified) return { status: 'authenticated', shouldClearCookies: false }
+      return { status: 'unauthenticated', shouldClearCookies: true }
+    }
 
     if (!refreshToken) return { status: 'unauthenticated', shouldClearCookies: true }
 

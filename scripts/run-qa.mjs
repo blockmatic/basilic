@@ -11,6 +11,10 @@ import { fileURLToPath } from 'node:url'
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = dirname(scriptDir)
 
+const qaBuildEnv = process.env.JWT_SECRET
+  ? undefined
+  : { JWT_SECRET: 'qa-build-placeholder-min-32-chars-to-pass-validation' }
+
 const phases = [
   { name: 'install', cmd: 'pnpm', args: ['i', '--no-frozen-lockfile'] },
   {
@@ -19,7 +23,7 @@ const phases = [
     args: ['exec', 'turbo', 'run', 'checktypes', '--concurrency=100%'],
   },
   { name: 'lint:fix', cmd: 'pnpm', args: ['lint:fix'] },
-  { name: 'build', cmd: 'pnpm', args: ['build'] },
+  { name: 'build', cmd: 'pnpm', args: ['build'], env: qaBuildEnv },
   { name: 'test', cmd: 'pnpm', args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'] },
   { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'] },
 ]

@@ -6,6 +6,16 @@ export const env = createEnv({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     ALLOW_TEST: z.enum(['true', 'false']).optional(),
     AUTH_COOKIE_NAME: z.string().default('api.session'),
+    JWT_SECRET:
+      process.env.NODE_ENV === 'production'
+        ? z
+            .string()
+            .min(32)
+            .refine(
+              val => val !== 'default-jwt-secret-min-32-chars-for-dev',
+              'JWT_SECRET must not be the dev default in production',
+            )
+        : z.string().min(32).default('default-jwt-secret-min-32-chars-for-dev'),
     NEWSAPI_KEY: z.string().optional(),
     ERROR_REPORTING_DSN: z.string().min(1).optional(),
     ERROR_REPORTING_ENVIRONMENT: z.string().min(1).optional(),
@@ -26,6 +36,7 @@ export const env = createEnv({
     NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
     ALLOW_TEST: process.env.ALLOW_TEST,
     AUTH_COOKIE_NAME: process.env.AUTH_COOKIE_NAME,
+    JWT_SECRET: process.env.JWT_SECRET,
     NEWSAPI_KEY: process.env.NEWSAPI_KEY,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,

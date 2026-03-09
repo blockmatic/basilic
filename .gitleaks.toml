@@ -28,6 +28,7 @@ paths = [
   '''examples/''',
   '''docs/''',
   '''apps/fastify/scripts/generate-openapi\.ts$''',
+  '''scripts/run-qa\.mjs$''',
 ]
 
 regexes = [
