@@ -6,14 +6,14 @@ test.describe('Security - Authenticator', () => {
 
   test('should redirect to login when unauthenticated', async ({ page }) => {
     await page.context().clearCookies()
-    await page.goto('/settings/security?section=totp')
+    await page.goto('/settings/security/totp')
     await page.waitForURL(/\/auth\/login/, { timeout: 5000 })
     await expect(page.locator('input[type="email"]')).toBeVisible()
   })
 
   test('should reach page and see layout when authenticated', async ({ authenticatedPage }) => {
-    await authenticatedPage.goto('/settings/security?section=totp')
-    await expect(authenticatedPage).toHaveURL(/\/settings\/security/)
+    await authenticatedPage.goto('/settings/security/totp')
+    await expect(authenticatedPage).toHaveURL(/\/settings\/security\/totp/)
     await expect(authenticatedPage.getByRole('tab', { name: /passkeys/i })).toBeVisible()
     await expect(authenticatedPage.getByRole('tab', { name: /authenticator/i })).toBeVisible()
     await expect(authenticatedPage.getByRole('tab', { name: /api keys/i })).toBeVisible()
@@ -23,7 +23,7 @@ test.describe('Security - Authenticator', () => {
   test('should show setup flow with QR and InputOTP when TOTP not configured', async ({
     authenticatedPage,
   }) => {
-    await authenticatedPage.goto('/settings/security?section=totp')
+    await authenticatedPage.goto('/settings/security/totp')
     await expect(authenticatedPage.getByText('Authenticator app')).toBeVisible({ timeout: 10000 })
     await expect(authenticatedPage.getByText(/scan qr code/i)).toBeVisible({ timeout: 15000 })
     await expect(authenticatedPage.locator('[data-slot="input-otp-group"]')).toBeVisible({
@@ -34,7 +34,7 @@ test.describe('Security - Authenticator', () => {
   })
 
   test('should complete full TOTP setup and unlink', async ({ authenticatedPage }) => {
-    await authenticatedPage.goto('/settings/security?section=totp')
+    await authenticatedPage.goto('/settings/security/totp')
     await expect(authenticatedPage.getByText('Authenticator app')).toBeVisible({ timeout: 10000 })
     await expect(authenticatedPage.getByText(/scan qr code/i)).toBeVisible({ timeout: 15000 })
 

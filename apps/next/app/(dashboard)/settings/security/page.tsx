@@ -1,9 +1,5 @@
-import { SecuritySection } from './security-section'
+import { redirect } from 'next/navigation'
 
 export default function SecurityPage() {
-  return (
-    <div className="mx-auto max-w-2xl">
-      <SecuritySection />
-    </div>
-  )
+  redirect('/settings/security/passkeys')
 }
