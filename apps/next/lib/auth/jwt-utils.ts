@@ -30,14 +30,7 @@ export async function verifyJwtToken({
 }
 
 export function isTokenExpired({ token }: { token: string }): boolean {
-  try {
-    const parts = token.split('.')
-    const payloadPart = parts[1]
-    if (parts.length !== 3 || !payloadPart) return true
-    const payload = JSON.parse(atob(payloadPart)) as { exp?: number }
-    if (!payload?.exp) return true
-    return payload.exp * 1000 <= Date.now()
-  } catch {
-    return true
-  }
+  const payload = decodeJwtToken({ token })
+  if (!payload?.exp) return true
+  return payload.exp * 1000 <= Date.now()
 }

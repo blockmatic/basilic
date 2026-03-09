@@ -8,6 +8,7 @@ import { AssistantSidebar } from 'components/assistant'
 import { ApiHealthBadge } from 'components/shared/api-health-badge'
 import { AuthBadge } from 'components/shared/auth-badge'
 import { LogOut } from 'lucide-react'
+import { toast } from 'sonner'
 import { authSessionJwtQueryKey, authSessionUserQueryKey } from '@/lib/query-keys'
 
 import { PageTitle } from './page-title'
@@ -19,7 +20,12 @@ export function DashboardShell({
   const queryClient = useQueryClient()
 
   async function handleSignOut() {
-    await fetch('/auth/logout', { redirect: 'manual' })
+    const response = await fetch('/auth/logout', { redirect: 'manual' })
+    const isSuccess = response.status >= 200 && response.status < 400
+    if (!isSuccess) {
+      toast.error('Sign out failed. Please try again.')
+      return
+    }
     queryClient.invalidateQueries({ queryKey: authSessionUserQueryKey })
     queryClient.invalidateQueries({ queryKey: authSessionJwtQueryKey })
     window.location.href = '/'
