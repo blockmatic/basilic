@@ -59,8 +59,8 @@ export function usePasskeyAuth() {
       if (token && refreshToken) return { token, refreshToken }
       throw new Error('Server did not return tokens')
     },
-    onSuccess: (data, variables) => {
-      if (data) variables.onSuccess?.(data)
+    onSuccess: async (data, variables) => {
+      if (data) await variables.onSuccess?.(data)
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
     },
