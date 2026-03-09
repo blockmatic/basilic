@@ -38,22 +38,27 @@ const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { userHandle } = request.body
 
-      let userId: string
-      try {
-        const bytes = Buffer.from(userHandle, 'base64url')
-        userId = bytes.toString('utf-8')
-      } catch {
+      const trimmed = userHandle.trim()
+      if (!trimmed) {
         return reply.code(400).send({
           code: 'INVALID_USER_HANDLE',
           message: 'Invalid userHandle encoding',
         })
       }
-
-      if (!userId?.trim())
+      if (!/^[A-Za-z0-9_-]+(={0,2})?$/.test(trimmed)) {
+        return reply.code(400).send({
+          code: 'INVALID_USER_HANDLE',
+          message: 'Invalid userHandle encoding',
+        })
+      }
+      const bytes = Buffer.from(trimmed, 'base64url')
+      const userId = bytes.toString('utf-8')
+      if (!userId?.trim()) {
         return reply.code(400).send({
           code: 'INVALID_USER_HANDLE',
           message: 'Empty userHandle after decode',
         })
+      }
 
       const db = await getDb()
       const [row] = await db
