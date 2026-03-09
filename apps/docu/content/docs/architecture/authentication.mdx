@@ -328,6 +328,8 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 
 **Proxy vs coreClient refresh**: The proxy (`proxy.ts`) runs on navigation before React mounts—it refreshes expired tokens so the user isn’t redirected to login. The core client runs on client-side 401 (e.g. `useUser`)—it calls Fastify `POST /auth/session/refresh` directly, then `onTokensRefreshed` POSTs to `/api/auth/update-tokens` to persist new tokens in the cookie. Both are needed.
 
+**Route protection**: Proxy handles all auth redirects. Do not duplicate `getAuthStatus()` + redirect in layouts or pages.
+
 **Cookies**: Single cookie `api.session` (configurable via `AUTH_COOKIE_NAME` / `NEXT_PUBLIC_AUTH_COOKIE_NAME`) stores JSON `{ token, refreshToken }`. Readable on the client (`httpOnly: false`) so `getAuthToken` can read from `document.cookie`. Cookie `maxAge` is derived from refresh JWT `exp`.
 
 **Core auth modes**: `createClient` supports three modes—(1) **apiKey**: static Bearer, no refresh; (2) **JWT**: `getAuthToken`, `getRefreshToken`, `onTokensRefreshed` required, refresh on 401; (3) **no-auth**: `baseUrl` only.

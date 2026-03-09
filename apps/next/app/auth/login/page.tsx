@@ -1,10 +1,8 @@
 import { ApiHealthBadge } from 'components/shared/api-health-badge'
 import { AuthBadge } from 'components/shared/auth-badge'
 import { getAuthErrorMessage } from 'lib/auth/auth-error-messages'
-import { getAuthStatus } from 'lib/auth/auth-utils'
 import { GalleryVerticalEnd } from 'lucide-react'
 import Image from 'next/image'
-import { redirect } from 'next/navigation'
 import { LoginActions } from './login-actions'
 
 type LoginPageProps = {
@@ -16,10 +14,6 @@ type LoginPageProps = {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams
-  const { authenticated } = await getAuthStatus()
-
-  if (authenticated) redirect('/')
-
   const errorParam = params.error || params.message
   const errorMessage = getAuthErrorMessage(errorParam)
 
