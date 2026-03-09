@@ -28,6 +28,10 @@ type LoginFormProps = React.ComponentProps<'form'> & {
   initialError?: string
   callbackUrl?: string
   onSuccess?: () => void
+  /** Default email to pre-fill (e.g. from cookie) */
+  defaultEmail?: string
+  /** Called when magic link request succeeds, with the email used */
+  onMagicLinkSent?: (email: string) => void
   /** Optional content for "Or continue with" section (e.g. SIWE/SIWS wallet buttons) */
   extraActions?: React.ReactNode
 }
@@ -37,10 +41,12 @@ export function LoginForm({
   initialError,
   callbackUrl,
   onSuccess,
+  defaultEmail,
+  onMagicLinkSent,
   extraActions,
   ...props
 }: LoginFormProps) {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(defaultEmail ?? '')
   const [emailValidationError, setEmailValidationError] = useState<string | null>(
     initialError || null,
   )
@@ -61,12 +67,13 @@ export function LoginForm({
       : '/auth/callback/magiclink?callbackURL=/'
 
   const { mutate, isPending } = useMagicLink({
-    onSuccess: data => {
+    onSuccess: (data, variables) => {
       if (data?.ok) {
         setIsSuccess(true)
         setEmail('')
         setEmailValidationError(null)
         setCatalogError(null)
+        onMagicLinkSent?.(variables.email)
         onSuccess?.()
       }
     },

@@ -83,11 +83,21 @@ describe('LoginForm', () => {
     vi.clearAllMocks()
   })
 
-  function renderLoginForm(initialError?: string, callbackUrl?: string) {
+  function renderLoginForm(opts?: {
+    initialError?: string
+    callbackUrl?: string
+    defaultEmail?: string
+    onMagicLinkSent?: (email: string) => void
+  }) {
     return render(
       <QueryClientProvider client={queryClient}>
         <ApiProvider client={mockClient}>
-          <LoginForm initialError={initialError} callbackUrl={callbackUrl} />
+          <LoginForm
+            initialError={opts?.initialError}
+            callbackUrl={opts?.callbackUrl}
+            defaultEmail={opts?.defaultEmail}
+            onMagicLinkSent={opts?.onMagicLinkSent}
+          />
         </ApiProvider>
       </QueryClientProvider>,
     )
@@ -111,7 +121,7 @@ describe('LoginForm', () => {
   })
 
   it('should use provided callbackUrl prop', async () => {
-    renderLoginForm(undefined, 'https://example.com/custom-callback')
+    renderLoginForm({ callbackUrl: 'https://example.com/custom-callback' })
 
     const emailInput = screen.getByLabelText(/email/i)
     const submitButton = screen.getByRole('button', { name: /send magic link/i })
@@ -187,7 +197,7 @@ describe('LoginForm', () => {
   })
 
   it('should display initialError prop below input field', () => {
-    renderLoginForm('Invalid or expired magic link')
+    renderLoginForm({ initialError: 'Invalid or expired magic link' })
 
     const errorElement = screen.getByRole('alert')
     expect(errorElement).toBeInTheDocument()
@@ -269,5 +279,36 @@ describe('LoginForm', () => {
     const submitButton = screen.getByRole('button', { name: /sending/i })
     expect(submitButton).toBeInTheDocument()
     expect(submitButton).toBeDisabled()
+  })
+
+  it('should pre-fill email when defaultEmail prop is provided', () => {
+    renderLoginForm({ defaultEmail: 'prev@example.com' })
+
+    const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement
+    expect(emailInput.value).toBe('prev@example.com')
+  })
+
+  it('should call onMagicLinkSent with email when magic link request succeeds', async () => {
+    const onMagicLinkSent = vi.fn()
+
+    renderLoginForm({ onMagicLinkSent })
+
+    const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement
+    const submitButton = screen.getByRole('button', { name: /send magic link/i })
+
+    await userEvent.type(emailInput, 'sent@example.com')
+    await userEvent.click(submitButton)
+
+    await act(async () => {
+      if (capturedOnSuccess)
+        capturedOnSuccess(
+          { ok: true },
+          { email: 'sent@example.com', callbackUrl: '/' },
+          undefined,
+          undefined,
+        )
+    })
+
+    expect(onMagicLinkSent).toHaveBeenCalledWith('sent@example.com')
   })
 })

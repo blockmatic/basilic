@@ -18,10 +18,11 @@ import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
+import { setLastMagicLinkEmailCookie } from '@/lib/auth/last-magic-link-email-client'
 import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
 
-type LoginActionsProps = { initialError?: string }
+type LoginActionsProps = { initialError?: string; defaultEmail?: string }
 
 function OAuthButtons({
   anyPending,
@@ -142,7 +143,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
   )
 }
 
-export function LoginActions({ initialError }: LoginActionsProps) {
+export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) {
   const router = useRouter()
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
@@ -204,6 +205,8 @@ export function LoginActions({ initialError }: LoginActionsProps) {
         />
       )}
       <LoginForm
+        defaultEmail={defaultEmail}
+        onMagicLinkSent={setLastMagicLinkEmailCookie}
         extraActions={
           <OAuthButtons
             anyPending={anyPending}
