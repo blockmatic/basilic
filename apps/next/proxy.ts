@@ -22,8 +22,8 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
   if (!token) return { status: 'unauthenticated', shouldClearCookies: false }
 
   try {
-    const { decodeJwtToken } = await import('@/lib/auth/jwt-utils')
-    const jwtDecoded = decodeJwtToken({ token })
+    const { verifyJwtToken } = await import('@/lib/auth/jwt-utils')
+    const jwtDecoded = await verifyJwtToken({ token, secret: env.JWT_SECRET })
     if (jwtDecoded?.typ !== 'access' || !jwtDecoded?.sub || !jwtDecoded?.sid)
       return { status: 'unauthenticated', shouldClearCookies: true }
 

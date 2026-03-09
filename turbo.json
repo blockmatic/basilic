@@ -26,6 +26,7 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**", ".react-email/**"],
       "env": [
         "NODE_ENV",
+        "JWT_SECRET",
         "AI_PROVIDER",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",

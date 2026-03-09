@@ -3,16 +3,28 @@
 import { Button } from '@repo/ui/components/button'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@repo/ui/components/sidebar'
 import { Toaster } from '@repo/ui/components/sonner'
+import { useQueryClient } from '@tanstack/react-query'
 import { AssistantSidebar } from 'components/assistant'
 import { ApiHealthBadge } from 'components/shared/api-health-badge'
 import { AuthBadge } from 'components/shared/auth-badge'
 import { LogOut } from 'lucide-react'
-import Link from 'next/link'
+import { authSessionJwtQueryKey, authSessionUserQueryKey } from '@/lib/query-keys'
 
 import { PageTitle } from './page-title'
 import { DashboardSidebar } from './sidebar'
 
-export function DashboardShell({ children }: Readonly<{ children: React.ReactNode }>) {
+export function DashboardShell({
+  children,
+}: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
+  const queryClient = useQueryClient()
+
+  async function handleSignOut() {
+    await fetch('/auth/logout', { redirect: 'manual' })
+    queryClient.invalidateQueries({ queryKey: authSessionUserQueryKey })
+    queryClient.invalidateQueries({ queryKey: authSessionJwtQueryKey })
+    window.location.href = '/'
+  }
+
   return (
     <SidebarProvider>
       <DashboardSidebar />
@@ -33,11 +45,10 @@ export function DashboardShell({ children }: Readonly<{ children: React.ReactNod
                 size="icon"
                 className="size-11 sm:size-9"
                 aria-label="Sign out"
-                asChild
+                type="button"
+                onClick={handleSignOut}
               >
-                <Link href="/auth/logout">
-                  <LogOut />
-                </Link>
+                <LogOut />
               </Button>
             </div>
           </header>
