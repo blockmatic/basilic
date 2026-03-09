@@ -32,6 +32,8 @@ import type {
   AccountPasskeysListResponse,
   AuthPasskeyExchangeData,
   AuthPasskeyExchangeResponse,
+  AuthPasskeyResolveUserData,
+  AuthPasskeyResolveUserResponse,
   AuthPasskeyStartData,
   AuthPasskeyStartResponse,
   AuthPasskeyVerifyData,
@@ -48,11 +50,23 @@ import type {
   MagiclinkRequestResponse,
   MagiclinkVerifyData,
   MagiclinkVerifyResponse,
+  OauthFacebookAuthorizeUrlData,
+  OauthFacebookAuthorizeUrlResponse,
+  OauthFacebookExchangeData,
+  OauthFacebookExchangeResponse,
   OauthGithubAuthorizeData,
   OauthGithubAuthorizeUrlData,
   OauthGithubAuthorizeUrlResponse,
   OauthGithubExchangeData,
   OauthGithubExchangeResponse,
+  OauthGoogleVerifyIdTokenData,
+  OauthGoogleVerifyIdTokenResponse,
+  OauthProvidersData,
+  OauthProvidersResponse,
+  OauthTwitterAuthorizeUrlData,
+  OauthTwitterAuthorizeUrlResponse,
+  OauthTwitterExchangeData,
+  OauthTwitterExchangeResponse,
   RefreshData,
   RefreshResponse,
   Web3Eip155NonceData,
@@ -108,14 +122,27 @@ export type CoreApiClient = {
       verify: (opts: Options<MagiclinkVerifyData>) => Promise<MagiclinkVerifyResponse>
     };
     oauth: {
+      providers: (opts?: Options<OauthProvidersData>) => Promise<OauthProvidersResponse>;
+      facebook: {
+        authorizeUrl: (opts?: Options<OauthFacebookAuthorizeUrlData>) => Promise<OauthFacebookAuthorizeUrlResponse>;
+        exchange: (opts: Options<OauthFacebookExchangeData>) => Promise<OauthFacebookExchangeResponse>
+      };
       github: {
         authorizeUrl: (opts?: Options<OauthGithubAuthorizeUrlData>) => Promise<OauthGithubAuthorizeUrlResponse>;
         authorize: (opts?: Options<OauthGithubAuthorizeData>) => Promise<unknown>;
         exchange: (opts: Options<OauthGithubExchangeData>) => Promise<OauthGithubExchangeResponse>
+      };
+      google: {
+        verifyIdToken: (opts: Options<OauthGoogleVerifyIdTokenData>) => Promise<OauthGoogleVerifyIdTokenResponse>
+      };
+      twitter: {
+        authorizeUrl: (opts?: Options<OauthTwitterAuthorizeUrlData>) => Promise<OauthTwitterAuthorizeUrlResponse>;
+        exchange: (opts: Options<OauthTwitterExchangeData>) => Promise<OauthTwitterExchangeResponse>
       }
     };
     passkey: {
       exchange: (opts: Options<AuthPasskeyExchangeData>) => Promise<AuthPasskeyExchangeResponse>;
+      resolveUser: (opts: Options<AuthPasskeyResolveUserData>) => Promise<AuthPasskeyResolveUserResponse>;
       start: (opts?: Options<AuthPasskeyStartData>) => Promise<AuthPasskeyStartResponse>;
       verify: (opts: Options<AuthPasskeyVerifyData>) => Promise<AuthPasskeyVerifyResponse>
     };

@@ -41,14 +41,27 @@ auth: {
     verify: gen.magiclinkVerify,
   },
   oauth: {
+    providers: gen.oauthProviders,
+    facebook: {
+      authorizeUrl: gen.oauthFacebookAuthorizeUrl,
+      exchange: gen.oauthFacebookExchange,
+    },
     github: {
       authorizeUrl: gen.oauthGithubAuthorizeUrl,
       authorize: gen.oauthGithubAuthorize,
       exchange: gen.oauthGithubExchange,
     },
+    google: {
+      verifyIdToken: gen.oauthGoogleVerifyIdToken,
+    },
+    twitter: {
+      authorizeUrl: gen.oauthTwitterAuthorizeUrl,
+      exchange: gen.oauthTwitterExchange,
+    },
   },
   passkey: {
     exchange: gen.authPasskeyExchange,
+    resolveUser: gen.authPasskeyResolveUser,
     start: gen.authPasskeyStart,
     verify: gen.authPasskeyVerify,
   },

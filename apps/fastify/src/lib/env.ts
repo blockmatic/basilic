@@ -75,6 +75,16 @@ export const env = createEnv({
     GITHUB_CLIENT_ID: z.string().min(1).optional(),
     GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
     OAUTH_GITHUB_CALLBACK_URL: z.string().url().optional(),
+    // Google OAuth One Tap (optional)
+    GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+    // Facebook OAuth (optional)
+    FACEBOOK_CLIENT_ID: z.string().min(1).optional(),
+    FACEBOOK_CLIENT_SECRET: z.string().min(1).optional(),
+    OAUTH_FACEBOOK_CALLBACK_URL: z.string().url().optional(),
+    // Twitter OAuth (optional, PKCE)
+    TWITTER_CLIENT_ID: z.string().min(1).optional(),
+    TWITTER_CLIENT_SECRET: z.string().min(1).optional(),
+    OAUTH_TWITTER_CALLBACK_URL: z.string().url().optional(),
     ALLOWED_ORIGINS: z
       .string()
       .default('*')

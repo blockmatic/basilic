@@ -75,6 +75,14 @@ Passkeys use WebAuthn for passwordless registration and sign-in. Registration cr
 - **Flow**: Client calls start → stores sessionId → `startAuthentication` → verify with sessionId in body → `window.location.assign(redirectUrl)` → callback page exchanges code, sets cookies, redirects
 - **Error codes**: `INVALID_ORIGIN`, `EXPIRED_CHALLENGE`, `UNKNOWN_CREDENTIAL`, `VERIFICATION_FAILED`, `INVALID_CALLBACK_URL`
 
+**Vercel-style discovery UX** (optional):
+
+- **Resolve user**: `POST /auth/passkey/resolve-user` with `{ userHandle }` (base64url from assertion) → returns `{ maskedIdentifier }` for "Login as …" display (PII-safe). Rate limited (10/min per IP).
+- **Discovery flow**: On login page load, client calls start → `startAuthentication({ useBrowserAutofill: true })` (conditional UI) → if credential returned, call resolve-user with `response.userHandle` → show `PasskeyShortcut` card above the form.
+- **PasskeyShortcut**: Compact card with "Login as [email]", [Use Passkey] button, "Use another method" link. When user clicks "Use Passkey", verify without `callbackUrl` → receive `{ token, refreshToken }` → `updateAuthTokens` + `router.push`.
+- **Direct token flow**: When `callbackUrl` is absent, verify returns `{ token, refreshToken }` directly (no redirect). Caller uses `onSuccess` to update cookies and navigate.
+- **Fallback**: When discovery finds nothing, passkey remains in "Or continue with" (redirect flow).
+
 ### Magic link (implemented)
 
 Magic link sign-in issues a **single-use token** over email, then exchanges it for JWTs.
@@ -91,6 +99,16 @@ OAuth sign-in uses provider authorization + callback flows and issues access + r
 4. Callback page sets cookies and redirects to `/`
 
 **Setup:** Create a [GitHub OAuth App](https://github.com/settings/applications/new). Set callback URL to `http://localhost:3000/auth/callback/oauth/github` (dev) or your production URL. Add `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `OAUTH_GITHUB_CALLBACK_URL` to Fastify env.
+
+### OAuth (Google, Facebook, Twitter)
+
+**Google One Tap:** Uses [Google Identity Services](https://developers.google.com/identity/gsi/web) (GIS). Load GIS script, call `google.accounts.id.prompt()` — popup appears in top-right when user is logged into Google. Client POSTs `{ credential }` to `POST /auth/oauth/google/verify-id-token`. Backend verifies JWT with `google-auth-library`, creates session. **Setup:** `GOOGLE_CLIENT_ID` (Fastify), `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (Next.js).
+
+**Facebook:** Redirect flow like GitHub. `GET /auth/oauth/facebook/authorize-url` → `POST /auth/oauth/facebook/exchange`. Callback: `/auth/callback/oauth/facebook`. **Setup:** `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET`, `OAUTH_FACEBOOK_CALLBACK_URL`.
+
+**Twitter (X):** OAuth 2.0 with PKCE. `GET /auth/oauth/twitter/authorize-url` (includes `code_challenge`) → `POST /auth/oauth/twitter/exchange` (includes `code_verifier` from verification `meta`). Callback: `/auth/callback/oauth/twitter`. **Setup:** `TWITTER_CLIENT_ID`, `TWITTER_CLIENT_SECRET`, `OAUTH_TWITTER_CALLBACK_URL`.
+
+When a provider is not configured (503 `OAUTH_NOT_CONFIGURED`), the client shows a Sonner toast instead of redirecting.
 
 ### Web3 (SIWE / SIWS)
 
@@ -254,6 +272,14 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `GET /auth/oauth/github/authorize-url` → `{ redirectUrl }` (for client-side redirect; preferred)
   - `GET /auth/oauth/github/authorize` → 302 redirect to GitHub (legacy)
   - `POST /auth/oauth/github/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
+- **OAuth (Google One Tap)**
+  - `POST /auth/oauth/google/verify-id-token` → `{ token, refreshToken }` (body: `{ credential }`)
+- **OAuth (Facebook)**
+  - `GET /auth/oauth/facebook/authorize-url` → `{ redirectUrl }`
+  - `POST /auth/oauth/facebook/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
+- **OAuth (Twitter)**
+  - `GET /auth/oauth/twitter/authorize-url` → `{ redirectUrl }` (PKCE)
+  - `POST /auth/oauth/twitter/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
 - **Web3**
   - `GET /auth/web3/nonce` → `{ nonce }` (query: `chain`, `address`)
   - `POST /auth/web3/:chain/verify` → `{ token, refreshToken }`
@@ -285,6 +311,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 - **Passkey sign-in** (no auth)
   - `POST /auth/passkey/start` → `{ options, sessionId }`
   - `POST /auth/passkey/verify` → `{ redirectUrl }` or `{ token, refreshToken }` (body: `{ assertion, sessionId, callbackUrl? }`)
+  - `POST /auth/passkey/resolve-user` → `{ maskedIdentifier }` (body: `{ userHandle }`, for discovery UX)
   - `POST /auth/passkey/exchange` → `{ token, refreshToken }` (body: `{ code }`)
 
 - **Session**

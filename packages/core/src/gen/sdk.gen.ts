@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkPasskeyDeleteData, AccountLinkPasskeyDeleteErrors, AccountLinkPasskeyDeleteResponses, AccountLinkPasskeyFinishData, AccountLinkPasskeyFinishErrors, AccountLinkPasskeyFinishResponses, AccountLinkPasskeyStartData, AccountLinkPasskeyStartErrors, AccountLinkPasskeyStartResponses, AccountLinkTotpSetupData, AccountLinkTotpSetupErrors, AccountLinkTotpSetupResponses, AccountLinkTotpUnlinkData, AccountLinkTotpUnlinkErrors, AccountLinkTotpUnlinkResponses, AccountLinkTotpVerifyData, AccountLinkTotpVerifyErrors, AccountLinkTotpVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, AccountPasskeysListData, AccountPasskeysListErrors, AccountPasskeysListResponses, AuthPasskeyExchangeData, AuthPasskeyExchangeErrors, AuthPasskeyExchangeResponses, AuthPasskeyStartData, AuthPasskeyStartErrors, AuthPasskeyStartResponses, AuthPasskeyVerifyData, AuthPasskeyVerifyErrors, AuthPasskeyVerifyResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3ExchangeData, Web3ExchangeErrors, Web3ExchangeResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
+import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkPasskeyDeleteData, AccountLinkPasskeyDeleteErrors, AccountLinkPasskeyDeleteResponses, AccountLinkPasskeyFinishData, AccountLinkPasskeyFinishErrors, AccountLinkPasskeyFinishResponses, AccountLinkPasskeyStartData, AccountLinkPasskeyStartErrors, AccountLinkPasskeyStartResponses, AccountLinkTotpSetupData, AccountLinkTotpSetupErrors, AccountLinkTotpSetupResponses, AccountLinkTotpUnlinkData, AccountLinkTotpUnlinkErrors, AccountLinkTotpUnlinkResponses, AccountLinkTotpVerifyData, AccountLinkTotpVerifyErrors, AccountLinkTotpVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, AccountPasskeysListData, AccountPasskeysListErrors, AccountPasskeysListResponses, AuthPasskeyExchangeData, AuthPasskeyExchangeErrors, AuthPasskeyExchangeResponses, AuthPasskeyResolveUserData, AuthPasskeyResolveUserErrors, AuthPasskeyResolveUserResponses, AuthPasskeyStartData, AuthPasskeyStartErrors, AuthPasskeyStartResponses, AuthPasskeyVerifyData, AuthPasskeyVerifyErrors, AuthPasskeyVerifyResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthFacebookAuthorizeUrlData, OauthFacebookAuthorizeUrlErrors, OauthFacebookAuthorizeUrlResponses, OauthFacebookExchangeData, OauthFacebookExchangeErrors, OauthFacebookExchangeResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, OauthGoogleVerifyIdTokenData, OauthGoogleVerifyIdTokenErrors, OauthGoogleVerifyIdTokenResponses, OauthProvidersData, OauthProvidersResponses, OauthTwitterAuthorizeUrlData, OauthTwitterAuthorizeUrlErrors, OauthTwitterAuthorizeUrlResponses, OauthTwitterExchangeData, OauthTwitterExchangeErrors, OauthTwitterExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3ExchangeData, Web3ExchangeErrors, Web3ExchangeResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -247,6 +247,34 @@ export const magiclinkVerify = <ThrowOnError extends boolean = false>(options: O
 });
 
 /**
+ * OAuth providers availability
+ *
+ * Return which OAuth providers are configured
+ */
+export const oauthProviders = <ThrowOnError extends boolean = false>(options?: Options<OauthProvidersData, ThrowOnError>) => (options?.client ?? client).get<OauthProvidersResponses, unknown, ThrowOnError>({ url: '/auth/oauth/providers', ...options });
+
+/**
+ * Facebook OAuth authorize URL
+ *
+ * Return Facebook OAuth authorization URL for client-side redirect
+ */
+export const oauthFacebookAuthorizeUrl = <ThrowOnError extends boolean = false>(options?: Options<OauthFacebookAuthorizeUrlData, ThrowOnError>) => (options?.client ?? client).get<OauthFacebookAuthorizeUrlResponses, OauthFacebookAuthorizeUrlErrors, ThrowOnError>({ url: '/auth/oauth/facebook/authorize-url', ...options });
+
+/**
+ * Facebook OAuth exchange
+ *
+ * Exchange Facebook OAuth code for JWTs
+ */
+export const oauthFacebookExchange = <ThrowOnError extends boolean = false>(options: Options<OauthFacebookExchangeData, ThrowOnError>) => (options.client ?? client).post<OauthFacebookExchangeResponses, OauthFacebookExchangeErrors, ThrowOnError>({
+    url: '/auth/oauth/facebook/exchange',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * GitHub OAuth authorize URL
  *
  * Return GitHub OAuth authorization URL for client-side redirect
@@ -275,12 +303,61 @@ export const oauthGithubExchange = <ThrowOnError extends boolean = false>(option
 });
 
 /**
+ * Google OAuth verify ID token
+ *
+ * Verify Google One Tap ID token and issue JWTs
+ */
+export const oauthGoogleVerifyIdToken = <ThrowOnError extends boolean = false>(options: Options<OauthGoogleVerifyIdTokenData, ThrowOnError>) => (options.client ?? client).post<OauthGoogleVerifyIdTokenResponses, OauthGoogleVerifyIdTokenErrors, ThrowOnError>({
+    url: '/auth/oauth/google/verify-id-token',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Twitter OAuth authorize URL
+ *
+ * Return Twitter/X OAuth authorization URL for client-side redirect (PKCE)
+ */
+export const oauthTwitterAuthorizeUrl = <ThrowOnError extends boolean = false>(options?: Options<OauthTwitterAuthorizeUrlData, ThrowOnError>) => (options?.client ?? client).get<OauthTwitterAuthorizeUrlResponses, OauthTwitterAuthorizeUrlErrors, ThrowOnError>({ url: '/auth/oauth/twitter/authorize-url', ...options });
+
+/**
+ * Twitter OAuth exchange
+ *
+ * Exchange Twitter/X OAuth code for JWTs (PKCE)
+ */
+export const oauthTwitterExchange = <ThrowOnError extends boolean = false>(options: Options<OauthTwitterExchangeData, ThrowOnError>) => (options.client ?? client).post<OauthTwitterExchangeResponses, OauthTwitterExchangeErrors, ThrowOnError>({
+    url: '/auth/oauth/twitter/exchange',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Exchange passkey code for tokens
  *
  * Exchange one-time code for tokens (passkey redirect flow)
  */
 export const authPasskeyExchange = <ThrowOnError extends boolean = false>(options: Options<AuthPasskeyExchangeData, ThrowOnError>) => (options.client ?? client).post<AuthPasskeyExchangeResponses, AuthPasskeyExchangeErrors, ThrowOnError>({
     url: '/auth/passkey/exchange',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Passkey resolve user
+ *
+ * Resolve user email from passkey assertion userHandle (for discovery UX)
+ */
+export const authPasskeyResolveUser = <ThrowOnError extends boolean = false>(options: Options<AuthPasskeyResolveUserData, ThrowOnError>) => (options.client ?? client).post<AuthPasskeyResolveUserResponses, AuthPasskeyResolveUserErrors, ThrowOnError>({
+    url: '/auth/passkey/resolve-user',
     ...options,
     headers: {
         'Content-Type': 'application/json',

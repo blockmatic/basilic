@@ -2,6 +2,7 @@
 
 import { createClient } from '@repo/core'
 import { ApiProvider } from '@repo/react'
+import { Toaster } from '@repo/ui/components/sonner'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { getAuthToken, getRefreshToken, updateAuthTokens } from 'lib/auth/auth-client'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
@@ -31,6 +32,7 @@ export function Providers({ children }: { children: ReactNode }) {
             enableColorScheme
           >
             {children}
+            <Toaster richColors position="top-right" />
           </NextThemesProvider>
         </NuqsAdapter>
       </ApiProvider>

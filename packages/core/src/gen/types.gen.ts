@@ -753,6 +753,119 @@ export type MagiclinkVerifyResponses = {
 
 export type MagiclinkVerifyResponse = MagiclinkVerifyResponses[keyof MagiclinkVerifyResponses];
 
+export type OauthProvidersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/providers';
+};
+
+export type OauthProvidersResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        github: boolean;
+        google: boolean;
+        facebook: boolean;
+        twitter: boolean;
+    };
+};
+
+export type OauthProvidersResponse = OauthProvidersResponses[keyof OauthProvidersResponses];
+
+export type OauthFacebookAuthorizeUrlData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/facebook/authorize-url';
+};
+
+export type OauthFacebookAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthFacebookAuthorizeUrlError = OauthFacebookAuthorizeUrlErrors[keyof OauthFacebookAuthorizeUrlErrors];
+
+export type OauthFacebookAuthorizeUrlResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    };
+};
+
+export type OauthFacebookAuthorizeUrlResponse = OauthFacebookAuthorizeUrlResponses[keyof OauthFacebookAuthorizeUrlResponses];
+
+export type OauthFacebookExchangeData = {
+    body: {
+        code: string;
+        state: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/facebook/exchange';
+};
+
+export type OauthFacebookExchangeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    504: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthFacebookExchangeError = OauthFacebookExchangeErrors[keyof OauthFacebookExchangeErrors];
+
+export type OauthFacebookExchangeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type OauthFacebookExchangeResponse = OauthFacebookExchangeResponses[keyof OauthFacebookExchangeResponses];
+
 export type OauthGithubAuthorizeUrlData = {
     body?: never;
     path?: never;
@@ -850,6 +963,145 @@ export type OauthGithubExchangeResponses = {
 
 export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof OauthGithubExchangeResponses];
 
+export type OauthGoogleVerifyIdTokenData = {
+    body: {
+        credential: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/google/verify-id-token';
+};
+
+export type OauthGoogleVerifyIdTokenErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthGoogleVerifyIdTokenError = OauthGoogleVerifyIdTokenErrors[keyof OauthGoogleVerifyIdTokenErrors];
+
+export type OauthGoogleVerifyIdTokenResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type OauthGoogleVerifyIdTokenResponse = OauthGoogleVerifyIdTokenResponses[keyof OauthGoogleVerifyIdTokenResponses];
+
+export type OauthTwitterAuthorizeUrlData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/twitter/authorize-url';
+};
+
+export type OauthTwitterAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthTwitterAuthorizeUrlError = OauthTwitterAuthorizeUrlErrors[keyof OauthTwitterAuthorizeUrlErrors];
+
+export type OauthTwitterAuthorizeUrlResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    };
+};
+
+export type OauthTwitterAuthorizeUrlResponse = OauthTwitterAuthorizeUrlResponses[keyof OauthTwitterAuthorizeUrlResponses];
+
+export type OauthTwitterExchangeData = {
+    body: {
+        code: string;
+        state: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/twitter/exchange';
+};
+
+export type OauthTwitterExchangeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    502: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    504: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthTwitterExchangeError = OauthTwitterExchangeErrors[keyof OauthTwitterExchangeErrors];
+
+export type OauthTwitterExchangeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type OauthTwitterExchangeResponse = OauthTwitterExchangeResponses[keyof OauthTwitterExchangeResponses];
+
 export type AuthPasskeyExchangeData = {
     body: {
         code: string;
@@ -889,6 +1141,46 @@ export type AuthPasskeyExchangeResponses = {
 };
 
 export type AuthPasskeyExchangeResponse = AuthPasskeyExchangeResponses[keyof AuthPasskeyExchangeResponses];
+
+export type AuthPasskeyResolveUserData = {
+    body: {
+        userHandle: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/passkey/resolve-user';
+};
+
+export type AuthPasskeyResolveUserErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        error: string;
+        message: string;
+        retryAfter: number;
+    };
+};
+
+export type AuthPasskeyResolveUserError = AuthPasskeyResolveUserErrors[keyof AuthPasskeyResolveUserErrors];
+
+export type AuthPasskeyResolveUserResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        maskedIdentifier: string;
+    };
+};
+
+export type AuthPasskeyResolveUserResponse = AuthPasskeyResolveUserResponses[keyof AuthPasskeyResolveUserResponses];
 
 export type AuthPasskeyStartData = {
     body?: never;

@@ -28,6 +28,10 @@ type LoginFormProps = React.ComponentProps<'form'> & {
   initialError?: string
   callbackUrl?: string
   onSuccess?: () => void
+  /** Default email to pre-fill */
+  defaultEmail?: string
+  /** Called when magic link request succeeds, with the email used */
+  onMagicLinkSent?: (email: string) => void
   /** Optional content for "Or continue with" section (e.g. SIWE/SIWS wallet buttons) */
   extraActions?: React.ReactNode
 }
@@ -37,10 +41,12 @@ export function LoginForm({
   initialError,
   callbackUrl,
   onSuccess,
+  defaultEmail,
+  onMagicLinkSent,
   extraActions,
   ...props
 }: LoginFormProps) {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(defaultEmail ?? '')
   const [emailValidationError, setEmailValidationError] = useState<string | null>(
     initialError || null,
   )
@@ -55,18 +61,26 @@ export function LoginForm({
       setEmailValidationError(initialError || null)
   }, [initialError])
 
+  // Sync defaultEmail when it becomes defined
+  useEffect(() => {
+    if (defaultEmail !== undefined)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Syncing prop to state
+      setEmail(defaultEmail ?? '')
+  }, [defaultEmail])
+
   const defaultCallbackUrl =
     typeof window !== 'undefined'
       ? `${window.location.origin}/auth/callback/magiclink?callbackURL=/`
       : '/auth/callback/magiclink?callbackURL=/'
 
   const { mutate, isPending } = useMagicLink({
-    onSuccess: data => {
+    onSuccess: (data, variables) => {
       if (data?.ok) {
         setIsSuccess(true)
         setEmail('')
         setEmailValidationError(null)
         setCatalogError(null)
+        onMagicLinkSent?.(variables.email)
         onSuccess?.()
       }
     },
