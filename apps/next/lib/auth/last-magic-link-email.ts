@@ -1,19 +1,8 @@
-import { cookies } from 'next/headers'
-
-const lastMagicLinkEmailCookieName = 'auth.last_magic_link_email'
-
 /**
- * Server-side: reads the last magic link email from the cookie.
- * Returns undefined if not set or invalid.
+ * @deprecated Magic link email is now stored in localStorage (client-only).
+ * Use useLastMagicLinkEmail from last-magic-link-email-client for prefill.
+ * This function always returns undefined.
  */
 export async function getLastMagicLinkEmail(): Promise<string | undefined> {
-  const cookieStore = await cookies()
-  const value = cookieStore.get(lastMagicLinkEmailCookieName)?.value
-  if (!value) return undefined
-
-  try {
-    return decodeURIComponent(value)
-  } catch {
-    return undefined
-  }
+  return undefined
 }

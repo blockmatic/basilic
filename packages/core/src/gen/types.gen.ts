@@ -1068,7 +1068,21 @@ export type OauthTwitterExchangeErrors = {
     /**
      * Default Response
      */
+    502: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     503: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    504: {
         code: string;
         message: string;
     };
@@ -1142,13 +1156,6 @@ export type AuthPasskeyResolveUserErrors = {
      * Default Response
      */
     400: {
-        code: string;
-        message: string;
-    };
-    /**
-     * Default Response
-     */
-    404: {
         code: string;
         message: string;
     };

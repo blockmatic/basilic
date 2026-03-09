@@ -31,7 +31,7 @@ export async function GET(request: Request) {
   try {
     const response = await client.auth.oauth.twitter.exchange({ body: { code, state } })
     const tokens = extractTokens(response)
-    if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('oauth_failed')}`)
+    if (!tokens) return redirect(`/auth/login?message=${encodeURIComponent('oauth_failed')}`)
 
     const redirectResponse = NextResponse.redirect(new URL('/', request.url), 303)
     setAuthCookiesOnResponse(redirectResponse, tokens)

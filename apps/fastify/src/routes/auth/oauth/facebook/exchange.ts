@@ -102,7 +102,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           signal: AbortSignal.timeout(fetchTimeoutMs),
         })
       } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError')
+        if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
           return reply.code(504).send({
             code: 'TOKEN_EXCHANGE_FAILED',
             message: 'Token exchange timed out',
@@ -141,7 +141,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           signal: AbortSignal.timeout(fetchTimeoutMs),
         })
       } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError')
+        if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
           return reply.code(504).send({
             code: 'USER_INFO_FAILED',
             message: 'Failed to fetch Facebook user (timeout)',

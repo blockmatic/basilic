@@ -1,17 +1,43 @@
-import { env } from '@/lib/env'
+'use client'
 
-const lastMagicLinkEmailCookieName = 'auth.last_magic_link_email'
+import { useSyncExternalStore } from 'react'
+
+const lastMagicLinkEmailStorageKey = 'auth.last_magic_link_email'
 
 /**
- * Client-side: sets a cookie with the last email used for magic link request.
- * Used for pre-filling the magic link form on next visit.
+ * Client-side: stores the last email used for magic link in localStorage.
+ * Used for pre-filling the magic link form on next visit. Does not send PII with requests.
  */
-export function setLastMagicLinkEmailCookie(email: string): void {
-  if (typeof document === 'undefined') return
+export function setLastMagicLinkEmail(email: string): void {
+  if (typeof window === 'undefined') return
 
-  const value = encodeURIComponent(email)
-  const maxAge = 31536000 // 1 year
-  const secure = env.NEXT_PUBLIC_NODE_ENV !== 'development' ? '; Secure' : ''
-  // biome-ignore lint/suspicious/noDocumentCookie: client-only UX cookie for magic link email pre-fill
-  document.cookie = `${lastMagicLinkEmailCookieName}=${value}; path=/; max-age=${maxAge}; sameSite=lax${secure}`
+  try {
+    const value = encodeURIComponent(email)
+    localStorage.setItem(lastMagicLinkEmailStorageKey, value)
+  } catch {
+    // localStorage may be full or disabled
+  }
+}
+
+function getSnapshot(): string | undefined {
+  if (typeof window === 'undefined') return undefined
+  const value = localStorage.getItem(lastMagicLinkEmailStorageKey)
+  if (!value) return undefined
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Hook that reads the last magic link email from localStorage for form prefill.
+ * Returns undefined during SSR.
+ */
+export function useLastMagicLinkEmail(): string | undefined {
+  return useSyncExternalStore(
+    () => () => {},
+    getSnapshot,
+    () => undefined,
+  )
 }

@@ -31,7 +31,6 @@ const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: ResolveUserResponseSchema,
           400: ErrorResponseSchema,
-          404: ErrorResponseSchema,
         },
       },
     },
@@ -68,9 +67,9 @@ const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
         .limit(1)
 
       if (!row?.email)
-        return reply.code(404).send({
-          code: 'USER_NOT_FOUND',
-          message: 'User not found or has no passkey',
+        return reply.code(400).send({
+          code: 'INVALID_USER_HANDLE',
+          message: 'Invalid userHandle encoding',
         })
 
       return reply.code(200).send({ email: row.email })

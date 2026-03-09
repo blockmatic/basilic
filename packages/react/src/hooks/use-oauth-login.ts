@@ -13,6 +13,14 @@ type AuthorizeUrlResponse = { redirectUrl: string }
  * Fetches the authorization URL from the API and redirects the browser to the provider.
  * On 503 (OAUTH_NOT_CONFIGURED), the mutation throws so the caller can show a toast.
  *
+ * The returned `mutate` function requires a provider argument. Previous no-arg calls (GitHub-only)
+ * will fail. Migration: replace `mutate()` with `mutate('github')` or pass the appropriate
+ * provider string.
+ *
+ * @example
+ * mutate('github')  // Start GitHub OAuth
+ * mutate('facebook')  // Start Facebook OAuth
+ *
  * @param options - Additional TanStack Query mutation options (merged with context defaults)
  * @returns TanStack Query mutation result
  */

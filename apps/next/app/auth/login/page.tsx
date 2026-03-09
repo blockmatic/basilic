@@ -2,7 +2,6 @@ import { ApiHealthBadge } from 'components/shared/api-health-badge'
 import { AuthBadge } from 'components/shared/auth-badge'
 import { getAuthErrorMessage } from 'lib/auth/auth-error-messages'
 import { getAuthStatus } from 'lib/auth/auth-utils'
-import { getLastMagicLinkEmail } from 'lib/auth/last-magic-link-email'
 import { GalleryVerticalEnd } from 'lucide-react'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
@@ -21,7 +20,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   if (authenticated) redirect('/')
 
-  const defaultEmail = await getLastMagicLinkEmail()
   const errorParam = params.error || params.message
   const errorMessage = getAuthErrorMessage(errorParam)
 
@@ -44,7 +42,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginActions initialError={errorMessage} defaultEmail={defaultEmail} />
+            <LoginActions initialError={errorMessage} />
           </div>
         </div>
       </div>

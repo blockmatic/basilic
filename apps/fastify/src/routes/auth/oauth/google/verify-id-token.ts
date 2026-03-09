@@ -54,7 +54,12 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
       const { credential } = request.body
 
       const client = new OAuth2Client(googleClientId)
-      let payload: { sub: string; email?: string; name?: string } | null = null
+      let payload: {
+        sub: string
+        email?: string
+        email_verified?: boolean
+        name?: string
+      } | null = null
       try {
         const ticket = await client.verifyIdToken({
           idToken: credential,
@@ -79,6 +84,7 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
       const accountId = payload.sub
       const email = payload.email ?? ''
       const name = payload.name ?? payload.email ?? 'Google user'
+      const emailVerified = !!payload.email_verified
 
       if (!email)
         return reply.code(400).send({
@@ -87,23 +93,30 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
         })
 
       const db = await getDb()
-      let [user] = await db.select().from(users).where(eq(users.email, email))
+      const [existingAccount] = await db
+        .select()
+        .from(account)
+        .where(and(eq(account.providerId, 'google'), eq(account.accountId, accountId)))
+
+      let user: typeof users.$inferSelect | undefined
+      if (existingAccount) {
+        ;[user] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
+      }
+      if (!user) {
+        const [byEmail] = await db.select().from(users).where(eq(users.email, email))
+        if (byEmail) user = byEmail
+      }
       if (!user) {
         const userId = randomUUID()
         await db.insert(users).values({
           id: userId,
           email,
-          emailVerified: true,
+          emailVerified,
           name,
         })
         ;[user] = await db.select().from(users).where(eq(users.id, userId))
         if (!user) throw new Error('Failed to create user')
       }
-
-      const [existingAccount] = await db
-        .select()
-        .from(account)
-        .where(and(eq(account.providerId, 'google'), eq(account.accountId, accountId)))
 
       const accountData = {
         id: existingAccount?.id ?? randomUUID(),

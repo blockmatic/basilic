@@ -25,22 +25,19 @@ export function usePasskeyDiscovery() {
           optionsJSON: options as Parameters<typeof startAuthentication>[0]['optionsJSON'],
           useBrowserAutofill: true,
         })
-      } catch {
-        return { email: null }
+      } catch (err) {
+        if (err instanceof Error && err.name === 'NotAllowedError') return { email: null }
+        throw err
       }
 
       const userHandle = credential?.response?.userHandle
       if (!userHandle) return { email: null }
 
-      try {
-        const result = await client.auth.passkey.resolveUser({
-          body: { userHandle },
-          throwOnError: true,
-        })
-        return { email: result.email }
-      } catch {
-        return { email: null }
-      }
+      const result = await client.auth.passkey.resolveUser({
+        body: { userHandle },
+        throwOnError: true,
+      })
+      return { email: result.email }
     },
     enabled: webauthnAvailable,
     staleTime: 5 * 60 * 1000,

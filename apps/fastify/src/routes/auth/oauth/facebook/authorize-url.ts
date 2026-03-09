@@ -30,8 +30,9 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
     },
     async (_request, reply) => {
       const facebookClientId = env.FACEBOOK_CLIENT_ID
+      const facebookClientSecret = env.FACEBOOK_CLIENT_SECRET
       const oauthFacebookCallbackUrl = env.OAUTH_FACEBOOK_CALLBACK_URL
-      if (!facebookClientId || !oauthFacebookCallbackUrl)
+      if (!facebookClientId || !facebookClientSecret || !oauthFacebookCallbackUrl)
         return reply.status(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'Facebook OAuth is not configured',

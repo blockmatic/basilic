@@ -38,7 +38,7 @@ function loadScript(src: string): Promise<void> {
   if (existing) return existing
 
   const el = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`)
-  const promise = el
+  const rawPromise = el
     ? new Promise<void>((resolve, reject) => {
         if (window.google?.accounts?.id) {
           resolve()
@@ -59,6 +59,10 @@ function loadScript(src: string): Promise<void> {
         script.onerror = () => reject(new Error('Failed to load Google Identity Services'))
         document.head.appendChild(script)
       })
+  const promise = rawPromise.catch(err => {
+    loadPromises.delete(src)
+    throw err
+  })
   loadPromises.set(src, promise)
   return promise
 }

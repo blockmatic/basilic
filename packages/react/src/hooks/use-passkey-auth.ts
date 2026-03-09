@@ -42,7 +42,16 @@ export function usePasskeyAuth() {
 
       const redirectUrl = 'redirectUrl' in result ? result.redirectUrl : undefined
       if (redirectUrl) {
-        window.location.assign(redirectUrl)
+        if (redirectUrl.startsWith('/')) window.location.assign(redirectUrl)
+        else
+          try {
+            const url = new URL(redirectUrl)
+            if (url.origin === window.location.origin) window.location.assign(redirectUrl)
+            else window.location.assign('/')
+          } catch {
+            window.location.assign('/')
+          }
+
         return
       }
 

@@ -18,7 +18,10 @@ import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
-import { setLastMagicLinkEmailCookie } from '@/lib/auth/last-magic-link-email-client'
+import {
+  setLastMagicLinkEmail,
+  useLastMagicLinkEmail,
+} from '@/lib/auth/last-magic-link-email-client'
 import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
 
@@ -31,6 +34,7 @@ function OAuthButtons({
   promptGoogle,
   isGithubConfigured,
   isGoogleConfigured,
+  isGoogleReady,
   isFacebookConfigured,
   isTwitterConfigured,
   isOAuthPending,
@@ -45,6 +49,7 @@ function OAuthButtons({
   promptGoogle: () => void
   isGithubConfigured: boolean
   isGoogleConfigured: boolean
+  isGoogleReady: boolean
   isFacebookConfigured: boolean
   isTwitterConfigured: boolean
   isOAuthPending: boolean
@@ -85,10 +90,10 @@ function OAuthButtons({
       </button>
       <button
         type="button"
-        disabled={anyPending || !isGoogleConfigured}
+        disabled={anyPending || !isGoogleConfigured || !isGoogleReady}
         onClick={() => {
           setLastAuthMethod('oauth')
-          promptGoogle()
+          if (isGoogleConfigured && isGoogleReady) promptGoogle()
         }}
         aria-label={isGooglePending ? 'Signing in…' : 'Continue with Google'}
         className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
@@ -147,7 +152,7 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
   const router = useRouter()
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
-  const [optedOut, setOptedOut] = useState(false)
+  const [optedOutEmails, setOptedOutEmails] = useState<Set<string>>(() => new Set())
   const {
     mutate: startOAuthLogin,
     error: oauthError,
@@ -158,7 +163,11 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
         toast.error(getAuthErrorMessage('oauth_not_configured'))
     },
   })
-  const { prompt: promptGoogle, isPending: isGooglePending } = useGoogleOneTap()
+  const {
+    prompt: promptGoogle,
+    isPending: isGooglePending,
+    isReady: isGoogleReady,
+  } = useGoogleOneTap()
   const {
     github: isGithubConfigured,
     google: isGoogleConfigured,
@@ -172,6 +181,7 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
   } = usePasskeyAuth()
   const { email: discoveryEmail } = usePasskeyDiscovery()
   const webauthnAvailable = useWebAuthnAvailable()
+  const lastMagicLinkEmail = useLastMagicLinkEmail()
   const anyPending = isOAuthPending || isPasskeyPending || isGooglePending
   const displayError =
     lastAuthMethod === 'passkey'
@@ -181,7 +191,8 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
         : (oauthError?.message ?? passkeyError?.message ?? initialError)
   const showBanner = displayError && displayError !== dismissedForError
 
-  const showPasskeyShortcut = discoveryEmail && !optedOut
+  const showPasskeyShortcut =
+    webauthnAvailable && discoveryEmail && !optedOutEmails.has(discoveryEmail)
 
   return (
     <div className="flex flex-col gap-4">
@@ -200,13 +211,15 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
               },
             })
           }}
-          onUseAnotherMethod={() => setOptedOut(true)}
+          onUseAnotherMethod={() =>
+            discoveryEmail && setOptedOutEmails(prev => new Set(prev).add(discoveryEmail))
+          }
           isPending={isPasskeyPending}
         />
       )}
       <LoginForm
-        defaultEmail={defaultEmail}
-        onMagicLinkSent={setLastMagicLinkEmailCookie}
+        defaultEmail={defaultEmail ?? lastMagicLinkEmail}
+        onMagicLinkSent={setLastMagicLinkEmail}
         extraActions={
           <OAuthButtons
             anyPending={anyPending}
@@ -215,6 +228,7 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
             promptGoogle={promptGoogle}
             isGithubConfigured={isGithubConfigured}
             isGoogleConfigured={isGoogleConfigured}
+            isGoogleReady={isGoogleReady}
             isFacebookConfigured={isFacebookConfigured}
             isTwitterConfigured={isTwitterConfigured}
             isOAuthPending={isOAuthPending}

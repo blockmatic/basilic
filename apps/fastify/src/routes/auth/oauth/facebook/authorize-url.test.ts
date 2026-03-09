@@ -1,5 +1,17 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { fastify } from '../../oauth.spec.js'
+
+vi.mock('../../../../lib/env.js', async importOriginal => {
+  const actual = (await importOriginal()) as { env: Record<string, unknown> }
+  return {
+    env: {
+      ...actual.env,
+      FACEBOOK_CLIENT_ID: undefined,
+      FACEBOOK_CLIENT_SECRET: undefined,
+      OAUTH_FACEBOOK_CALLBACK_URL: undefined,
+    },
+  }
+})
 
 describe('GET /auth/oauth/facebook/authorize-url', () => {
   it('returns 503 when Facebook OAuth is not configured', async () => {
