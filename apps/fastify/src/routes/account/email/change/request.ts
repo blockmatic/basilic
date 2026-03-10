@@ -111,30 +111,43 @@ const changeEmailRequestRoute: FastifyPluginAsync = async fastify => {
         expiresAt,
       })
 
-      const changeEmailUrl = new URL(callbackUrl)
-      changeEmailUrl.searchParams.set('token', code)
-      changeEmailUrl.searchParams.set('verificationId', verificationId)
+      try {
+        const changeEmailUrl = new URL(callbackUrl)
+        changeEmailUrl.searchParams.set('token', code)
+        changeEmailUrl.searchParams.set('verificationId', verificationId)
 
-      const html = await render(
-        ChangeEmailEmail({
-          changeEmailLink: changeEmailUrl.toString(),
-          loginCode: code,
-          expirationMinutes: 15,
-        }),
-      )
-      const emailResponse = await fastify.emailProvider.emails.send({
-        from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-        to: normalizedEmail,
-        subject: `Update your email - ${env.APP_NAME}`,
-        html,
-      })
-
-      if ('error' in emailResponse && emailResponse.error)
-        throw new Error(
-          `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
+        const html = await render(
+          ChangeEmailEmail({
+            changeEmailLink: changeEmailUrl.toString(),
+            loginCode: code,
+            expirationMinutes: 15,
+          }),
         )
+        const emailResponse = await fastify.emailProvider.emails.send({
+          from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
+          to: normalizedEmail,
+          subject: `Update your email - ${env.APP_NAME}`,
+          html,
+        })
 
-      return reply.code(200).send({ ok: true })
+        if ('error' in emailResponse && emailResponse.error)
+          throw new Error(
+            `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
+          )
+
+        return reply.code(200).send({ ok: true })
+      } catch (err) {
+        await db
+          .delete(verification)
+          .where(
+            and(
+              eq(verification.id, verificationId),
+              eq(verification.type, 'change_email'),
+              eq(verification.identifier, identifier),
+            ),
+          )
+        throw err
+      }
     },
   )
 }

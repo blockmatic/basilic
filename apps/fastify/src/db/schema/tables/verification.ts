@@ -19,6 +19,7 @@ export const verification = pgTable(
     tokenPlain: text('token_plain'), // Plain token for @test.ai when ALLOW_TEST (DB-backed, no fake outbox)
     expiresAt: timestamp('expires_at').notNull(),
     meta: jsonb('meta').$type<{ codeVerifier?: string; userId?: string }>(),
+    consumedAt: timestamp('consumed_at'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },

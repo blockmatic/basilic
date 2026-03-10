@@ -319,12 +319,12 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 - **Change email** (Bearer required)
   - `POST /account/email/change/request` → `{ ok }` (body: `email`, `callbackUrl`), rate limit 3/hour
   - `POST /account/email/change/verify` → `{ token, refreshToken }` (body: `{ token, email }` or `{ token, verificationId }`)
-- **Account linking** (Bearer required — JWT or API key)
+- **Account linking** (Bearer required — JWT or API key, except link-authorize-url)
   - `POST /account/link/wallet/verify` → `{ ok }` (body: `chain`, `message`, `signature`)
   - `DELETE /account/link/wallet/:id` → `204` (unlink wallet by id from `linkedWallets`)
   - `POST /account/link/email/request` → `{ ok }` (body: `email`, `callbackUrl`)
   - `POST /account/link/email/verify` → `{ token, refreshToken }` (body: `token`)
-  - `GET /auth/oauth/{github,facebook,twitter}/link-authorize-url` → `{ redirectUrl }` (Bearer), rate limit 10/hour
+  - `GET /auth/oauth/{github,facebook,twitter}/link-authorize-url` → `{ redirectUrl }` (Session required — cookie/JWT session, no API key; rate limit 10/hour)
   - `DELETE /account/link/oauth/:providerId` → `204` (unlink OAuth provider)
 
 **Account link error codes**: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `PROVIDER_ALREADY_LINKED`, `LAST_SIGN_IN_METHOD`
@@ -358,7 +358,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 
 ## Next.js Auth (web)
 
-**Callback pages** (`/auth/callback/magiclink`, `/auth/callback/change-email`, `/auth/callback/oauth/github`, `/auth/callback/web3`, `/auth/callback/passkey`) exchange credentials with Fastify, set cookies, and redirect. **Logout** (`/auth/logout`) calls Fastify to revoke the session and clears cookies.
+**Callback pages** (`/auth/callback/magiclink`, `/auth/callback/change-email`, `/auth/callback/oauth/github`, `/auth/callback/oauth/facebook`, `/auth/callback/oauth/twitter`, `/auth/callback/web3`, `/auth/callback/passkey`) exchange credentials with Fastify, set cookies, and redirect. **Logout** (`/auth/logout`) calls Fastify to revoke the session and clears cookies.
 
 **API routes** (cookie updates only):
 - `POST /api/auth/update-tokens`: accepts `{ token, refreshToken }`, sets single cookie. Used after 401 refresh (core's `onTokensRefreshed`) and after link email or profile edit.

@@ -16,7 +16,7 @@ export function useOAuthLink(provider: OAuthLinkProvider) {
         facebook: client.auth.oauth.facebook.linkAuthorizeUrl,
         twitter: client.auth.oauth.twitter.linkAuthorizeUrl,
       }
-      const data = await endpoints[provider]()
+      const data = await endpoints[provider]({ throwOnError: true })
       const url = data?.redirectUrl
       if (typeof url !== 'string' || !url.trim())
         throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)

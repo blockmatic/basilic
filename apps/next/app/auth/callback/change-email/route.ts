@@ -29,11 +29,17 @@ export async function GET(request: Request) {
     return NextResponse.redirect(redirectUrl, 303)
   }
 
+  let refreshedToken = authToken
+  let refreshedRefreshToken = refreshToken
+
   const authedClient = createClient({
     baseUrl: env.NEXT_PUBLIC_API_URL,
-    getAuthToken: () => authToken,
-    getRefreshToken: () => refreshToken,
-    onTokensRefreshed: async () => {},
+    getAuthToken: () => refreshedToken,
+    getRefreshToken: () => refreshedRefreshToken,
+    onTokensRefreshed: async ({ token, refreshToken: rt }) => {
+      refreshedToken = token
+      refreshedRefreshToken = rt
+    },
   })
 
   try {

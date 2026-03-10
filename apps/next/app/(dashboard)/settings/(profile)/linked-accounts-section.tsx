@@ -57,7 +57,7 @@ export function LinkedAccountsSection() {
     [unlinkMutation, setConfirmUnlink],
   )
 
-  const configuredProviders = ['github', 'facebook', 'twitter'] as const
+  const providerIds = Object.keys(providerLabels) as (keyof typeof providerLabels)[]
 
   return (
     <section className="space-y-4 border-b pb-6">
@@ -68,7 +68,7 @@ export function LinkedAccountsSection() {
         </p>
       </div>
       <div className="space-y-3">
-        {configuredProviders.map(providerId => {
+        {providerIds.map(providerId => {
           const isLinked = linkedProviderIds.has(providerId)
           const label = providerLabels[providerId] ?? providerId
           return (
@@ -138,14 +138,27 @@ function UnlinkButton({
   )
 }
 
+const linkableProviders = ['github', 'facebook', 'twitter'] as const
+
 function LinkProviderButton({ providerId, label }: { providerId: string; label: string }) {
-  const linkMutation = useOAuthLink(providerId as 'github' | 'facebook' | 'twitter')
+  const canLink = linkableProviders.includes(providerId as (typeof linkableProviders)[number])
+  const linkMutation = useOAuthLink(
+    canLink ? (providerId as (typeof linkableProviders)[number]) : 'github',
+  )
 
   const handleLink = useCallback(() => {
+    if (!canLink) return
     linkMutation.mutateAsync(undefined).catch(() => {
       toast.error(`Failed to start ${label} link`)
     })
-  }, [linkMutation, label])
+  }, [canLink, linkMutation, label])
+
+  if (!canLink)
+    return (
+      <Button variant="outline" size="sm" disabled>
+        Coming soon
+      </Button>
+    )
 
   return (
     <Button variant="outline" size="sm" onClick={handleLink} disabled={linkMutation.isPending}>

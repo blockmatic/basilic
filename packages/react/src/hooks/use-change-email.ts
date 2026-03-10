@@ -55,19 +55,15 @@ export function useChangeEmail(config?: UseChangeEmailConfig): UseChangeEmailRes
       const body = verificationId ? { token, verificationId } : { token, email }
       return client.account.email.change.verify({ body, throwOnError: true })
     },
-    onSuccess: data => {
-      config?.onVerifySuccess?.(data)
+    onSuccess: async data => {
+      await config?.onVerifySuccess?.(data)
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
       queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
     },
   })
 
   const requestChange = async (params: { email: string; callbackUrl: string }) => {
-    try {
-      await requestMutation.mutateAsync(params)
-    } catch {
-      /* Error in requestMutation.error */
-    }
+    await requestMutation.mutateAsync(params)
   }
 
   const verify = async (params: { token: string; email?: string; verificationId?: string }) => {

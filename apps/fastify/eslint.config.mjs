@@ -8,14 +8,7 @@ export default [
       'src/routes/auth/oauth/github/exchange.ts',
       'src/routes/auth/oauth/facebook/exchange.ts',
     ],
-    rules: {
-      'max-lines': ['error', { max: 350, skipBlankLines: true, skipComments: true }],
-      complexity: 'off',
-    },
-  },
-  {
-    files: ['src/lib/oauth-twitter.ts'],
-    rules: { 'max-params': 'off' },
+    rules: { complexity: 'off' },
   },
   {
     files: ['src/routes/reference/template.ts'],

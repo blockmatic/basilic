@@ -1,12 +1,11 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, eq, inArray } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
-import { verification } from '../../../../db/schema/index.js'
 import { isUniqueViolation } from '../../../../lib/db-errors.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
+import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
 import {
   fetchTwitterOAuthData,
   OAuthUpstreamError,
@@ -64,40 +63,24 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const stateHash = hashToken(state)
 
       const db = await getDb()
-      const [stateRecord] = await db
-        .select()
-        .from(verification)
-        .where(
-          and(
-            eq(verification.value, stateHash),
-            inArray(verification.type, ['oauth_state', 'oauth_link_state']),
-          ),
-        )
-
-      if (!stateRecord)
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Invalid or expired state',
-        })
-
-      if (stateRecord.expiresAt < new Date()) {
-        await db.delete(verification).where(eq(verification.id, stateRecord.id))
-        return reply.code(401).send({
-          code: 'EXPIRED_STATE',
-          message: 'State has expired',
-        })
-      }
-
+      const validated = await validateAndConsumeOAuthState({
+        db,
+        stateHash,
+        request,
+        reply,
+        preConsumeCheck: r =>
+          !r.meta?.codeVerifier
+            ? { code: 'INVALID_STATE', message: 'Missing code verifier for Twitter PKCE' }
+            : null,
+      })
+      if (!validated.ok) return
+      const { isLinkMode, linkUserId, stateRecord } = validated
       const codeVerifier = stateRecord.meta?.codeVerifier
       if (!codeVerifier)
         return reply.code(401).send({
           code: 'INVALID_STATE',
           message: 'Missing code verifier for Twitter PKCE',
         })
-
-      const isLinkMode = stateRecord.type === 'oauth_link_state'
-      const linkUserId = stateRecord.meta?.userId
-      await db.delete(verification).where(eq(verification.id, stateRecord.id))
 
       let accountId: string
       let name: string

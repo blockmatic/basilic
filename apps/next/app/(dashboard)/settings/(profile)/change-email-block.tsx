@@ -23,15 +23,23 @@ export function ChangeEmailBlock({ email }: { email: string | null }) {
 
   const handleRequest = useCallback(async () => {
     if (!newEmail.trim()) return
-    const callbackUrl =
-      typeof window !== 'undefined' ? `${window.location.origin}/auth/callback/change-email` : ''
-    await changeEmail.requestChange({ email: newEmail.trim(), callbackUrl })
-    setStep('requested')
+    try {
+      const callbackUrl =
+        typeof window !== 'undefined' ? `${window.location.origin}/auth/callback/change-email` : ''
+      await changeEmail.requestChange({ email: newEmail.trim(), callbackUrl })
+      setStep('requested')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to send verification email')
+    }
   }, [newEmail, changeEmail])
 
   const handleVerify = useCallback(async () => {
-    if (!code.trim()) return
-    await changeEmail.verify({ token: code.trim(), email: newEmail.trim() })
+    if (!code.trim() || !newEmail.trim()) return
+    try {
+      await changeEmail.verify({ token: code.trim(), email: newEmail.trim() })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Verification failed')
+    }
   }, [code, newEmail, changeEmail])
 
   if (step === 'requested')

@@ -89,7 +89,8 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           .select({ providerId: account.providerId })
           .from(account)
           .where(eq(account.userId, userId))
-        linkedAccounts = accountRows.map(a => ({ providerId: a.providerId }))
+        const uniqueProviderIds = [...new Set(accountRows.map(a => a.providerId))]
+        linkedAccounts = uniqueProviderIds.map(providerId => ({ providerId }))
 
         const [totpRow] = await db.select().from(totp).where(eq(totp.userId, userId))
         totpEnabled = !!totpRow
