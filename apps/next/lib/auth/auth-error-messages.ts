@@ -83,7 +83,9 @@ export function getAuthErrorMessage(errorCode: string | undefined): string | und
 const googleOverrides: Record<string, string> = {
   token_exchange_failed: 'google_token_exchange_failed',
   user_info_failed: 'google_fetch_user_failed',
+  fetch_user_failed: 'google_fetch_user_failed',
   email_required: 'google_email_required',
+  oauth_failed: 'oauth_failed_google',
 }
 
 /** Map API error (code or message) to auth-error-messages key for redirect. */

@@ -1368,6 +1368,13 @@ export type OauthGoogleExchangeErrors = {
     /**
      * Default Response
      */
+    429: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     500: {
         code: string;
         message: string;

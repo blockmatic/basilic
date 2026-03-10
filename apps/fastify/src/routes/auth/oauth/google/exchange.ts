@@ -21,7 +21,7 @@ import {
 } from '../../../../lib/oauth-google.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
-import { buildTokenExchangeError, buildUserInfoError } from './exchange-helpers.js'
+import { buildTokenExchangeError, buildUserInfoError, toAllowedStatus } from './exchange-helpers.js'
 
 const ExchangeSchema = Type.Object({
   code: Type.String(),
@@ -50,6 +50,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           409: ErrorResponseSchema,
+          429: ErrorResponseSchema,
           500: ErrorResponseSchema,
           503: ErrorResponseSchema,
           504: ErrorResponseSchema,
@@ -85,6 +86,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       })
       if (!validated.ok) return
       const { isLinkMode, linkUserId, stateRecord } = validated
+      if (isLinkMode && !linkUserId)
+        return reply.code(401).send({
+          code: 'INVALID_STATE',
+          message: 'Link mode requires user ID',
+        })
       const redirectUri = stateRecord.meta?.redirectUri ?? defaultUrl
       if (!allowedUrls.includes(redirectUri))
         return reply.code(401).send({
@@ -109,8 +115,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         })
       } catch (err) {
         const tokenErr = buildTokenExchangeError(err)
-        if (tokenErr)
-          return reply.code(tokenErr.message.includes('timeout') ? 504 : 400).send(tokenErr)
+        if (tokenErr) {
+          const raw = tokenErr.status ?? (tokenErr.message.includes('timeout') ? 504 : 400)
+          return reply
+            .code(toAllowedStatus(raw))
+            .send({ code: tokenErr.code, message: tokenErr.message })
+        }
         throw err
       }
 
@@ -119,8 +129,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         gUser = await fetchGoogleUserInfo(tokenData.access_token)
       } catch (err) {
         const userErr = buildUserInfoError(err)
-        if (userErr)
-          return reply.code(userErr.message.includes('timeout') ? 504 : 400).send(userErr)
+        if (userErr) {
+          const raw = userErr.status ?? (userErr.message.includes('timeout') ? 504 : 400)
+          return reply
+            .code(toAllowedStatus(raw))
+            .send({ code: userErr.code, message: userErr.message })
+        }
         throw err
       }
       const accountId = gUser.id
@@ -197,7 +211,9 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           .update(account)
           .set({
             accessToken: encrypted.accessToken,
-            refreshToken: encrypted.refreshToken ?? null,
+            refreshToken: tokenData.refresh_token
+              ? (encrypted.refreshToken ?? null)
+              : existingAccount.refreshToken,
             idToken: encrypted.idToken ?? null,
             updatedAt: encrypted.updatedAt ?? new Date(),
             accessTokenExpiresAt: accountData.accessTokenExpiresAt,
