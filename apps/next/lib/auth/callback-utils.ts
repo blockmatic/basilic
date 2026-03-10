@@ -9,7 +9,7 @@ export function extractTokens(response: unknown): { token: string; refreshToken:
 export function getOAuthRedirectTarget(response: unknown, fallback = '/'): string {
   if (response && typeof response === 'object' && 'redirectTo' in response) {
     const v = (response as { redirectTo?: unknown }).redirectTo
-    if (typeof v === 'string' && v.startsWith('/')) return v
+    if (typeof v === 'string' && v.startsWith('/') && !v.startsWith('//')) return v
   }
   return fallback
 }
