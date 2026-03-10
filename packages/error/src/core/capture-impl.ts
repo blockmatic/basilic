@@ -39,7 +39,7 @@ export function createCaptureError(reporting: ReportingAdapter, defaultLogger: L
           if (!reportingWarningShown) {
             const log = options.logger ?? defaultLogger
             log.warn(
-              'Error reporting not initialized - errors will be logged only. Set ERROR_REPORTING_DSN to enable.',
+              'Error reporting not initialized - errors will be logged only. Set SENTRY_DSN to enable.',
             )
             reportingWarningShown = true
           }
