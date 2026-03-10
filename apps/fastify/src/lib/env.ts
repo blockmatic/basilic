@@ -58,6 +58,7 @@ export const env = createEnv({
     AI_PROVIDER: z.enum(['ollama', 'openrouter']).optional(),
     OPEN_ROUTER_API_KEY: z.string().min(1).optional(),
     AI_DEFAULT_MODEL: z.string().min(1).optional(),
+    BRAVE_SEARCH_API_KEY: z.string().min(1).optional(),
     ENCRYPTION_KEY: encryptionKeySchema,
     JWT_SECRET: jwtSecretSchema,
     ACCESS_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(900),

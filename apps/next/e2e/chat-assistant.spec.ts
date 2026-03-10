@@ -1,14 +1,14 @@
-import { expect, test } from '@playwright/test'
-import { authHelpers } from './auth-helpers'
+import { expect, test } from './fixtures'
 
-// Skip: getAuthToken returns null for chat transport despite Signed In (useUser works; chat gets UNAUTHORIZED)
 test.describe
   .skip('Chat Assistant', () => {
     test.use({ viewport: { width: 375, height: 667 } })
 
-    test('should send message via Who am I? and show assistant response', async ({ page }) => {
+    test('should send message via Who am I? and show assistant response', async ({
+      authenticatedPage: page,
+    }) => {
       test.setTimeout(120000)
-      await authHelpers.loginAsTestUser(page)
+      await page.goto('/')
       await expect(page.locator('text=Signed In')).toBeVisible({ timeout: 15000 })
       await expect(page.locator('text=API OK')).toBeVisible({ timeout: 15000 })
 
@@ -20,7 +20,9 @@ test.describe
 
       await expect(
         sheet.locator('[data-role="user"]').filter({ hasText: 'Who am I?' }),
-      ).toBeVisible({ timeout: 10000 })
+      ).toBeVisible({
+        timeout: 10000,
+      })
 
       const chatError = sheet.getByTestId('chat-error')
       const errorVisible = await chatError.isVisible().catch(() => false)

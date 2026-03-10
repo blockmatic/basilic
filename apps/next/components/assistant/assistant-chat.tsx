@@ -15,7 +15,7 @@ import { userInfoRegistry } from 'components/assistant/user-info-catalog'
 import { MessageCircleIcon } from 'lucide-react'
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 
-const suggestions = ['Who am I?', 'What can you help with?', 'Tell me a joke']
+const suggestions = ['Who am I?', 'What can you help with?']
 
 function isUserInfoSpecOutput(
   output: unknown,
