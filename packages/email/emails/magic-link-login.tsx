@@ -21,7 +21,7 @@ export function MagicLinkLoginEmail({
   loginCode,
   expirationMinutes = 15,
   fullName = '',
-}: Props) {
+}: Props): React.JSX.Element {
   const firstName = fullName ? fullName.split(' ').at(0) : ''
   const previewText = `${firstName ? `Hi ${firstName}, ` : ''}Sign in to your account`
   const themeClasses = getEmailThemeClasses()

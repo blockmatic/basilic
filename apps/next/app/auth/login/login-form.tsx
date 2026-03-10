@@ -71,7 +71,6 @@ export function LoginForm({
       if (data?.ok) {
         setShowCodeEntry(true)
         setCode('')
-        setEmail('')
         setEmailValidationError(null)
         setCatalogError(null)
         setCodeError(null)

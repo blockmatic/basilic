@@ -53,8 +53,10 @@ profile-*
 *code-workspace
 
 # clinic (profile-*.json etc; exclude account profile route)
-profile*
+profile-*.json
+profile-*.txt
 !src/routes/account/profile/
+!src/routes/account/profile/**
 *clinic*
 *flamegraph*
 

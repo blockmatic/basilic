@@ -82,8 +82,8 @@ export async function verifyWeb3Auth({
 
   if (!user) {
     const userId = randomUUID()
-    const username = await generateFunnyUsername(db)
     await db.transaction(async tx => {
+      const username = await generateFunnyUsername(tx)
       await tx.insert(users).values({
         id: userId,
         email: null,

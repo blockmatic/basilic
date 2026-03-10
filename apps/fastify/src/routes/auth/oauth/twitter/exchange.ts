@@ -218,7 +218,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           }
           if (!user) {
             const userId = randomUUID()
-            const username = await generateFunnyUsername(db)
+            const username = await generateFunnyUsername(tx)
             await tx.insert(users).values({
               id: userId,
               email: null,

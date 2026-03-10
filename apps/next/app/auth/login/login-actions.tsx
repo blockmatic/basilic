@@ -146,7 +146,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
   )
 }
 
-export function LoginActions({ initialError }: LoginActionsProps) {
+export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Element {
   const router = useRouter()
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
@@ -222,8 +222,12 @@ export function LoginActions({ initialError }: LoginActionsProps) {
       <LoginForm
         initialError={initialError}
         onVerifySuccess={async ({ token, refreshToken }) => {
-          await updateAuthTokens({ token, refreshToken })
-          router.push('/')
+          try {
+            await updateAuthTokens({ token, refreshToken })
+            router.push('/')
+          } catch (err) {
+            toast.error(err instanceof Error ? err.message : 'Failed to complete sign-in')
+          }
         }}
         extraActions={
           <OAuthButtons

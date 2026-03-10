@@ -61,7 +61,7 @@ const profileUpdateRoute: FastifyPluginAsync = async fastify => {
       if (name !== undefined) updates.name = name
       if (username !== undefined) updates.username = username === '' ? null : username
 
-      if (Object.keys(updates).length <= 2)
+      if (name === undefined && username === undefined)
         return reply.code(200).send({
           user: {
             id: userId,
@@ -85,18 +85,30 @@ const profileUpdateRoute: FastifyPluginAsync = async fastify => {
           })
       }
 
-      const [row] = await db.update(users).set(updates).where(eq(users.id, userId)).returning()
+      try {
+        const [row] = await db.update(users).set(updates).where(eq(users.id, userId)).returning()
 
-      if (!row) throw new Error('Failed to update profile')
+        if (!row) throw new Error('Failed to update profile')
 
-      return reply.code(200).send({
-        user: {
-          id: row.id,
-          email: row.email ?? null,
-          name: row.name ?? null,
-          username: row.username ?? null,
-        },
-      })
+        return reply.code(200).send({
+          user: {
+            id: row.id,
+            email: row.email ?? null,
+            name: row.name ?? null,
+            username: row.username ?? null,
+          },
+        })
+      } catch (err) {
+        const code =
+          (err as { cause?: { code?: string }; code?: string }).cause?.code ??
+          (err as { code?: string }).code
+        if (code === '23505')
+          return reply.code(409).send({
+            code: 'USERNAME_TAKEN',
+            message: 'Username is already in use',
+          })
+        throw err
+      }
     },
   )
 }

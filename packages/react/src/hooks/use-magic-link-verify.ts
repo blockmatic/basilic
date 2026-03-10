@@ -24,6 +24,7 @@ export function useMagicLinkVerify(
     mutationFn: async variables =>
       client.auth.magiclink.verify({
         body: variables,
+        throwOnError: true,
       }),
     ...queryClientDefaults,
     ...options,

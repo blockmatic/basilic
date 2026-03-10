@@ -12,7 +12,7 @@ export const pageTitles: Record<string, string> = {
   '/settings/security/apikeys': 'API keys',
 }
 
-export function PageTitle() {
+export function PageTitle(): React.JSX.Element | null {
   const pathname = usePathname()
   const title = pageTitles[pathname]
   if (!title) return null

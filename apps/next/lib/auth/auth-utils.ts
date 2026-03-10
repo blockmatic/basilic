@@ -7,7 +7,7 @@ const userResponseSchema = z
   .object({
     user: z
       .object({
-        id: z.string().optional(),
+        id: z.string(),
         email: z.string().nullable().optional(),
         name: z.string().nullable().optional(),
         username: z.string().nullable().optional(),

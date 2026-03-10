@@ -166,18 +166,21 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Could not retrieve email from Facebook',
         })
 
-      const username = await generateFunnyUsername(db)
-      await db
-        .insert(users)
-        .values({
-          id: randomUUID(),
-          email,
-          emailVerified: true,
-          name,
-          username,
-        })
-        .onConflictDoNothing({ target: users.email })
-      const [user] = await db.select().from(users).where(eq(users.email, email))
+      let [user] = await db.select().from(users).where(eq(users.email, email))
+      if (!user) {
+        const username = await generateFunnyUsername(db)
+        await db
+          .insert(users)
+          .values({
+            id: randomUUID(),
+            email,
+            emailVerified: true,
+            name,
+            username,
+          })
+          .onConflictDoNothing({ target: users.email })
+        ;[user] = await db.select().from(users).where(eq(users.email, email))
+      }
       if (!user)
         return reply.code(500).send({
           code: 'USER_CREATE_FAILED',

@@ -128,6 +128,13 @@ export const authHelpers = {
     await new Promise(r => setTimeout(r, 200))
     const token = await this.extractToken(page)
     if (!token) throw new Error('Failed to extract magic link token')
-    await this.verifyMagicLink(page, token)
+    await this.enterLoginCodeAndSubmit(page, token)
+    await page.waitForURL(
+      url => {
+        const path = new URL(url).pathname
+        return path === '/' || path === ''
+      },
+      { timeout: 10000 },
+    )
   },
 }

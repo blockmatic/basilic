@@ -26,7 +26,7 @@ export function TotpCard() {
 
   const [code, setCode] = useState('')
   const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
-  const [setupRequested, setSetupRequested] = useState(true)
+  const [setupRequested, setSetupRequested] = useState(false)
 
   const userLoaded = !isLoading && data !== undefined
   const totpEnabled = data?.user?.totpEnabled ?? false

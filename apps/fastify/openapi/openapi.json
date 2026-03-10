@@ -2175,6 +2175,8 @@
                 ],
                 "properties": {
                   "token": {
+                    "pattern": "^\\d{6}$",
+                    "description": "6-digit code",
                     "type": "string"
                   }
                 }
@@ -2251,6 +2253,28 @@
             }
           },
           "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
             "description": "Default Response",
             "content": {
               "application/json": {

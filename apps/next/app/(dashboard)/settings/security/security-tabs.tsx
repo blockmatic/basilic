@@ -1,6 +1,6 @@
 'use client'
 
-import { Tabs, TabsList } from '@repo/ui/components/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
 import { cn } from '@repo/ui/lib/utils'
 import { KeyRoundIcon, ShieldCheckIcon, TerminalIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -34,19 +34,16 @@ export function SecurityTabs() {
     <Tabs value={active} className="w-full">
       <TabsList className="grid w-full grid-cols-3 [&>[data-slot=tabs-trigger]]:min-w-0">
         {tabs.map(({ href, value, icon: Icon, label }) => (
-          <Link
-            key={value}
-            href={href}
-            role="tab"
-            aria-selected={active === value}
-            aria-current={active === value ? 'page' : undefined}
-            data-slot="tabs-trigger"
-            data-state={active === value ? 'active' : 'inactive'}
-            className={cn(triggerStyles)}
-          >
-            <Icon />
-            <span className="truncate">{label}</span>
-          </Link>
+          <TabsTrigger key={value} value={value} asChild>
+            <Link
+              href={href}
+              aria-current={active === value ? 'page' : undefined}
+              className={cn(triggerStyles)}
+            >
+              <Icon />
+              <span className="truncate">{label}</span>
+            </Link>
+          </TabsTrigger>
         ))}
       </TabsList>
     </Tabs>

@@ -92,6 +92,13 @@
       "when": 1773101583952,
       "tag": "0012_aberrant_johnny_blaze",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1773105082451,
+      "tag": "0013_familiar_master_chief",
+      "breakpoints": true
     }
   ]
 }

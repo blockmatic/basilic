@@ -13,24 +13,42 @@ function slugify(str: string) {
 
 import type { getDb } from '../db/index.js'
 
-export async function generateFunnyUsername(
-  db: Awaited<ReturnType<typeof getDb>>,
-): Promise<string> {
+type Db = Awaited<ReturnType<typeof getDb>>
+type Tx = Parameters<Parameters<NonNullable<Db>['transaction']>[0]>[0]
+
+export async function generateFunnyUsername(client: Db | Tx): Promise<string> {
   const base = slugify(`${faker.word.adjective()}_${faker.animal.type()}`)
   if (!base) return `user_${randomBytes(4).toString('hex')}`
 
-  const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.username, base))
+  const [existing] = await client
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.username, base))
   if (!existing) return base
 
   const suffix = randomBytes(4).toString('hex')
   const candidate =
     base.length + suffix.length + 1 <= 48 ? `${base}_${suffix}` : `${base.slice(0, 39)}_${suffix}`
 
-  const [existing2] = await db
+  const [existing2] = await client
     .select({ id: users.id })
     .from(users)
     .where(eq(users.username, candidate))
   if (!existing2) return candidate
 
-  return `${candidate}${randomBytes(2).toString('hex')}`
+  for (let i = 0; i < 10; i++) {
+    const maxSuffixLen = Math.max(0, 48 - candidate.length)
+    const suffix =
+      maxSuffixLen > 0
+        ? randomBytes(2).toString('hex').slice(0, maxSuffixLen)
+        : randomBytes(2).toString('hex').slice(0, 4)
+    const base = candidate.length + suffix.length > 48 ? candidate.slice(0, 44) : candidate
+    const newCandidate = `${base}${suffix}`.slice(0, 48)
+    const [existing3] = await client
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.username, newCandidate))
+    if (!existing3) return newCandidate
+  }
+  return `${candidate.slice(0, 41)}_${randomBytes(3).toString('hex')}`
 }

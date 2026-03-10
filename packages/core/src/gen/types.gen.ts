@@ -760,6 +760,9 @@ export type MagiclinkRequestResponse = MagiclinkRequestResponses[keyof Magiclink
 
 export type MagiclinkVerifyData = {
     body: {
+        /**
+         * 6-digit code
+         */
         token: string;
     };
     path?: never;
@@ -786,6 +789,13 @@ export type MagiclinkVerifyErrors = {
      * Default Response
      */
     404: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
         code: string;
         message: string;
     };

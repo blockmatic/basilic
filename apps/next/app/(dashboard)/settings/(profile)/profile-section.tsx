@@ -39,7 +39,8 @@ function buildSavePayload(
   const payload: { name?: string; username?: string | null } = {}
   const userName = user?.name != null ? String(user.name) : null
   const userUsername = user?.username != null ? String(user.username) : null
-  if (state.name !== undefined && state.name !== userName) payload.name = state.name ?? undefined
+  const name = state.name
+  if (typeof name === 'string' && name !== '' && name !== userName) payload.name = name
   if (state.username !== undefined && state.username !== userUsername)
     payload.username = state.username || null
   return payload
@@ -142,7 +143,7 @@ function ProfileFormContent({
           <div className="flex-1 space-y-1">
             <h2 className="text-lg font-heading font-semibold">Avatar</h2>
             <p className="text-muted-foreground text-sm">
-              Click on the avatar to upload a custom one from your files.
+              Add an avatar to personalize your profile.
             </p>
             <p className="text-muted-foreground text-xs">An avatar is optional but recommended.</p>
           </div>
@@ -224,7 +225,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
   const nameDirty =
     (state.name ?? '') !== (userForForm.name ?? '') ||
     (state.username ?? '') !== (userForForm.username ?? '')
-  const userId = userForForm.id != null ? `user_${userForForm.id}` : null
+  const userId = userForForm.id != null ? String(userForForm.id) : null
 
   const handleSave = useCallback(async () => {
     if (!nameDirty) return

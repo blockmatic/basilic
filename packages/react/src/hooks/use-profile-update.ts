@@ -1,5 +1,6 @@
 'use client'
 
+import type { AccountProfileUpdateData } from '@repo/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
 
@@ -10,7 +11,7 @@ export function useProfileUpdate() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (body: { name?: string; username?: string | null }) =>
+    mutationFn: (body: AccountProfileUpdateData['body']) =>
       client.account.profile({
         body,
         throwOnError: true,

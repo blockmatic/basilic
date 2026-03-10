@@ -422,11 +422,11 @@ sequenceDiagram
     FastifyAPI-->>LoginForm: { token, refreshToken }
     LoginForm->>LoginForm: updateAuthTokens, redirect
   else Link click
-    Browser->>CallbackPage: GET /auth/callback/magiclink?token={code}&callbackURL=...
+    Browser->>CallbackPage: GET /auth/callback/magiclink?token={code}&callbackUrl=...
     CallbackPage->>FastifyAPI: POST /auth/magiclink/verify (token)
     FastifyAPI->>DB: consume code, create session
     FastifyAPI-->>CallbackPage: { token, refreshToken }
-    CallbackPage->>CallbackPage: set cookies, redirect to callbackURL
+    CallbackPage->>CallbackPage: set cookies, redirect to callbackUrl
   end
 
   Browser->>FastifyAPI: GET /auth/session/user (Bearer from cookie)

@@ -85,6 +85,7 @@ const tables = [
   'sessions',
   'wallet_identities',
   'web3_nonce',
+  'auth_attempts',
   'users',
   'verification',
 ] as const

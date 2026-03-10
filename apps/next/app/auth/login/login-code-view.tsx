@@ -25,7 +25,7 @@ export function LoginCodeView({
   onSubmit,
   onBackToEmail,
   ...props
-}: LoginCodeViewProps) {
+}: LoginCodeViewProps): React.JSX.Element {
   return (
     <form
       className={cn('flex flex-col gap-6', className)}

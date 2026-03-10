@@ -57,15 +57,19 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       if (!user) {
         const userId = randomUUID()
         const funnyName = `${faker.word.adjective()} ${faker.animal.type()}`
-        const username = await generateFunnyUsername(db)
-        await db.insert(users).values({
-          id: userId,
-          email,
-          emailVerified: false,
-          name: funnyName,
-          username,
+        ;[user] = await db.transaction(async tx => {
+          const username = await generateFunnyUsername(tx)
+          await tx.insert(users).values({
+            id: userId,
+            email,
+            emailVerified: false,
+            name: funnyName,
+            username,
+          })
+          const [created] = await tx.select().from(users).where(eq(users.id, userId))
+          if (!created) throw new Error('Failed to create user')
+          return [created]
         })
-        ;[user] = await db.select().from(users).where(eq(users.id, userId))
         if (!user) throw new Error('Failed to create user')
       }
 

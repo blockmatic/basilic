@@ -9,12 +9,23 @@ This package provides React Query hooks that wrap `@repo/core` API client method
 ## Exports
 
 - `ApiProvider` - Provider component that makes API client available to hooks
-- `useReactApiConfig` - Hook to access API client and query defaults from context
-- `useHealthCheck` - React Query hook for health check endpoint
-- `useVerifyWeb3Auth` - Mutation hook: given `{ chain, message, signature, domain }`, calls auth verify endpoint (SIWE/SIWS)
-- `useVerifyLinkWallet` - Mutation hook: given `{ chain, message, signature }`, calls link wallet verify endpoint
-- `useMagicLink` - React Query mutation hook for magic link request endpoint
 - `createReactApiConfig` - Utility function to normalize API configuration
+- `useReactApiConfig` - Hook to access API client and query defaults from context
+- `useApiKeysList`, `useCreateApiKey`, `useRevokeApiKey` - API keys CRUD hooks
+- `useChatFromConfig` - Chat hook with AI SDK integration
+- `useHealthCheck` - React Query hook for health check endpoint
+- `useLinkEmail` - Mutation hook for link-email request
+- `useMagicLink` - Mutation hook for magic link request endpoint
+- `useMagicLinkVerify` - Mutation hook for magic link verification
+- `useOAuthLogin`, `useOAuthProviders` - OAuth login and provider detection hooks
+- `usePasskeyAuth`, `usePasskeyDiscovery`, `usePasskeyRegister`, `usePasskeyRemove`, `usePasskeysList` - Passkey hooks
+- `useProfileUpdate` - Mutation hook for profile update
+- `useSession` - Session hook (decoded JWT claims)
+- `useTotpSetup`, `useTotpUnlink`, `useTotpVerify` - TOTP hooks
+- `useUser` - Query hook for current user (GET /auth/session/user)
+- `useVerifyLinkWallet` - Mutation hook for link wallet verify
+- `useVerifyWeb3Auth` - Mutation hook for Web3 auth verify (SIWE/SIWS)
+- `useWebAuthnAvailable` - Hook to check WebAuthn availability
 
 ## Usage
 
