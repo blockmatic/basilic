@@ -17,8 +17,7 @@ const tabs = [
   { href: '/settings/security/apikeys', value: 'apikeys', icon: TerminalIcon, label: 'API keys' },
 ] as const
 
-const triggerStyles =
-  "inline-flex h-[calc(100%-1px)] min-w-0 flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium transition-[color,box-shadow] data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 dark:data-[state=active]:text-primary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+const triggerStyles = 'min-w-0'
 
 function getActiveValue(pathname: string) {
   if (pathname.endsWith('/totp')) return 'totp'

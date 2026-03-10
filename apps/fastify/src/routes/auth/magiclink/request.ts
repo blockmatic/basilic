@@ -8,6 +8,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { users, verification } from '../../../db/schema/index.js'
+import { isUniqueViolation } from '../../../lib/db-errors.js'
 import { env } from '../../../lib/env.js'
 import { generateLoginCode, hashToken } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
@@ -57,19 +58,28 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       if (!user) {
         const userId = randomUUID()
         const funnyName = `${faker.word.adjective()} ${faker.animal.type()}`
-        ;[user] = await db.transaction(async tx => {
-          const username = await generateFunnyUsername(tx)
-          await tx.insert(users).values({
-            id: userId,
-            email,
-            emailVerified: false,
-            name: funnyName,
-            username,
-          })
-          const [created] = await tx.select().from(users).where(eq(users.id, userId))
-          if (!created) throw new Error('Failed to create user')
-          return [created]
-        })
+        const maxRetries = 5
+        for (let attempt = 0; attempt < maxRetries; attempt++)
+          try {
+            ;[user] = await db.transaction(async tx => {
+              const username = await generateFunnyUsername(tx)
+              await tx.insert(users).values({
+                id: userId,
+                email,
+                emailVerified: false,
+                name: funnyName,
+                username,
+              })
+              const [created] = await tx.select().from(users).where(eq(users.id, userId))
+              if (!created) throw new Error('Failed to create user')
+              return [created]
+            })
+            if (user) break
+          } catch (err) {
+            if (isUniqueViolation(err) && attempt < maxRetries - 1) continue
+            throw err
+          }
+
         if (!user) throw new Error('Failed to create user')
       }
 

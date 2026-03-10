@@ -50,7 +50,7 @@ function ProfileFormContent({
   state,
   user,
   setState,
-  nameDirty,
+  formDirty,
   userId,
   onSave,
   onCopyId,
@@ -60,7 +60,7 @@ function ProfileFormContent({
   state: { name: string | null; username: string | null }
   user: { id?: string; name?: string | null; username?: string | null; email?: string | null }
   setState: (patch: Record<string, string | null | undefined>) => void
-  nameDirty: boolean
+  formDirty: boolean
   userId: string | null
   onSave: () => void
   onCopyId: () => void
@@ -99,7 +99,7 @@ function ProfileFormContent({
             </TooltipTrigger>
             <TooltipContent>Generate a funny username</TooltipContent>
           </Tooltip>
-          {nameDirty && (
+          {formDirty && (
             <Button variant="outline" onClick={onSave} disabled={isSaving}>
               {isSaving ? 'Saving…' : 'Save'}
             </Button>
@@ -222,13 +222,13 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
         : { id: undefined as string | undefined, name: null, username: null, email: null },
     [user],
   )
-  const nameDirty =
+  const formDirty =
     (state.name ?? '') !== (userForForm.name ?? '') ||
     (state.username ?? '') !== (userForForm.username ?? '')
   const userId = userForForm.id != null ? String(userForForm.id) : null
 
   const handleSave = useCallback(async () => {
-    if (!nameDirty) return
+    if (!formDirty) return
     const payload = buildSavePayload(state, userForForm)
     if (Object.keys(payload).length === 0) return
     try {
@@ -237,7 +237,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to update profile')
     }
-  }, [nameDirty, state, userForForm, updateMutation])
+  }, [formDirty, state, userForForm, updateMutation])
 
   const handleCopyId = useCallback(async () => {
     if (!userId || !navigator.clipboard) {
@@ -287,7 +287,7 @@ export function ProfileSection({ initialUser }: ProfileSectionProps) {
             ...(patch.username !== undefined && { username: patch.username ?? null }),
           }))
         }
-        nameDirty={nameDirty}
+        formDirty={formDirty}
         userId={userId}
         onSave={handleSave}
         onCopyId={handleCopyId}

@@ -5,7 +5,7 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
-import { account, sessions, users, verification } from '../../../../db/schema/index.js'
+import { account, sessions, verification } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,
@@ -13,7 +13,7 @@ import {
   generateJti,
   hashToken,
 } from '../../../../lib/jwt.js'
-import { generateFunnyUsername } from '../../../../lib/username.js'
+import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -166,21 +166,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Could not retrieve email from Facebook',
         })
 
-      let [user] = await db.select().from(users).where(eq(users.email, email))
-      if (!user) {
-        const username = await generateFunnyUsername(db)
-        await db
-          .insert(users)
-          .values({
-            id: randomUUID(),
-            email,
-            emailVerified: true,
-            name,
-            username,
-          })
-          .onConflictDoNothing({ target: users.email })
-        ;[user] = await db.select().from(users).where(eq(users.email, email))
-      }
+      const user = await findOrCreateUserByEmail(db, {
+        email,
+        name,
+        emailVerified: true,
+      })
       if (!user)
         return reply.code(500).send({
           code: 'USER_CREATE_FAILED',

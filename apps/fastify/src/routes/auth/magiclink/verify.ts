@@ -6,6 +6,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { authAttempts, users, verification } from '../../../db/schema/index.js'
 import { hashToken } from '../../../lib/jwt.js'
+import { getTrustedClientIp } from '../../../lib/request.js'
 import { createSessionAndIssueTokens } from '../../../lib/session.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
@@ -43,15 +44,10 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
     },
     async (request, reply) => {
       const { token } = request.body
-      if (!/^\d{6}$/.test(token))
-        return reply.code(400).send({
-          code: 'INVALID_TOKEN',
-          message: 'Token must be a 6-digit code',
-        })
       const tokenHash = hashToken(token)
 
       const db = await getDb()
-      const ip = request.ip ?? 'unknown'
+      const ip = getTrustedClientIp(request)
 
       const [attemptRow] = await db
         .select()

@@ -90,7 +90,10 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           createdAt: p.createdAt.toISOString(),
         }))
 
-        ;[userRow] = await db.select().from(users).where(eq(users.id, userId))
+        ;[userRow] = await db
+          .select({ name: users.name, username: users.username })
+          .from(users)
+          .where(eq(users.id, userId))
       } catch (err) {
         logger.error({ err }, 'Failed to fetch user data')
         return reply.code(500).send({
