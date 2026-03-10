@@ -22,6 +22,9 @@ glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/
 - Chromium project: chat-assistant (uses authenticatedPage; fixture triggers magic link login)
 - Security project: authenticator, passkeys, api-keys (use authenticatedPage; TOTP spec uses extractSessionToken for test endpoint)
 
+## Disabled Specs
+- chat-assistant skipped until OLLAMA_BASE_URL or valid OPEN_ROUTER_API_KEY secret in CI
+
 ## Auth Fixtures
 - Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)
 - Authed feature tests: import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body
