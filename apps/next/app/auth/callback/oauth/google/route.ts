@@ -50,7 +50,7 @@ export async function GET(request: Request) {
   } catch (error) {
     const rawMessage = error instanceof Error ? error.message : 'Google sign-in failed'
     const body = error instanceof ApiError ? error.body : undefined
-    const errorCode = translateOAuthError(rawMessage, body)
+    const errorCode = translateOAuthError(rawMessage, body, 'google')
     return NextResponse.redirect(
       new URL(`/auth/login?message=${encodeURIComponent(errorCode)}`, request.url),
       303,

@@ -198,10 +198,6 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
       return
     }
     if (!isGoogleReady) return
-    if (!isGoogleRedirectConfigured) {
-      toast.error(getAuthErrorMessage('oauth_not_configured'))
-      return
-    }
     promptGoogle()
   }, [oneTapSkipped, isGoogleReady, isGoogleRedirectConfigured, startOAuthLogin, promptGoogle])
 

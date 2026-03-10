@@ -14,6 +14,11 @@ import {
   hashToken,
 } from '../../../../lib/jwt.js'
 import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
+import {
+  fetchGoogleTokens,
+  fetchGoogleUserInfo,
+  type GoogleTokenResponse,
+} from '../../../../lib/oauth-google.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
@@ -27,18 +32,6 @@ const ExchangeResponseSchema = Type.Object({
   refreshToken: Type.String(),
   redirectTo: Type.Optional(Type.String()),
 })
-
-type GoogleTokenResponse = {
-  access_token: string
-  token_type: string
-  expires_in?: number
-  scope?: string
-  refresh_token?: string
-  id_token?: string
-  error?: string
-}
-
-type GoogleUser = { id: string; email?: string; name?: string; verified_email?: boolean }
 
 const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
@@ -99,23 +92,14 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Missing code verifier for Google PKCE',
         })
 
-      const tokenBody = new URLSearchParams({
-        code,
-        client_id: googleClientId,
-        client_secret: googleClientSecret,
-        redirect_uri: redirectUri,
-        grant_type: 'authorization_code',
-        code_verifier: codeVerifier,
-      })
-
-      const fetchTimeoutMs = 15_000
-      let tokenRes: Response
+      let tokenData: GoogleTokenResponse
       try {
-        tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: tokenBody.toString(),
-          signal: AbortSignal.timeout(fetchTimeoutMs),
+        tokenData = await fetchGoogleTokens({
+          code,
+          codeVerifier,
+          redirectUri,
+          clientId: googleClientId,
+          clientSecret: googleClientSecret,
         })
       } catch (err) {
         if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
@@ -123,49 +107,33 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
             code: 'TOKEN_EXCHANGE_FAILED',
             message: 'Token exchange timed out',
           })
+        if (err && typeof err === 'object' && 'tokenData' in err) {
+          const e = err as { status: number; tokenData: { error?: string } }
+          return reply.code(400).send({
+            code: 'TOKEN_EXCHANGE_FAILED',
+            message: e.tokenData.error ?? 'Failed to exchange code for token',
+          })
+        }
         throw err
       }
-      if (!tokenRes.ok)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: 'Failed to exchange code for token',
-        })
 
-      const tokenData = (await tokenRes.json()) as GoogleTokenResponse
-      if (tokenData.error)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: tokenData.error,
-        })
-
-      const accessToken = tokenData.access_token
-      if (!accessToken)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: 'No access token in response',
-        })
-
-      let userRes: Response
+      let gUser: { id: string; email?: string; name?: string; verified_email?: boolean }
       try {
-        userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          signal: AbortSignal.timeout(fetchTimeoutMs),
-        })
+        gUser = await fetchGoogleUserInfo(tokenData.access_token)
       } catch (err) {
         if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
           return reply.code(504).send({
             code: 'USER_INFO_FAILED',
             message: 'Failed to fetch Google user (timeout)',
           })
+        if (err && typeof err === 'object' && 'gUser' in err) {
+          return reply.code(400).send({
+            code: 'USER_INFO_FAILED',
+            message: 'Failed to fetch Google user',
+          })
+        }
         throw err
       }
-      if (!userRes.ok)
-        return reply.code(400).send({
-          code: 'USER_INFO_FAILED',
-          message: 'Failed to fetch Google user',
-        })
-
-      const gUser = (await userRes.json()) as GoogleUser
       const accountId = gUser.id
       const email = gUser.email ?? ''
       const name = gUser.name ?? 'Google user'
@@ -221,7 +189,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         userId: user.id,
         accountId,
         providerId: 'google',
-        accessToken,
+        accessToken: tokenData.access_token,
         refreshToken: tokenData.refresh_token ?? null,
         idToken: tokenData.id_token ?? null,
         accessTokenExpiresAt: new Date(Date.now() + (tokenData.expires_in ?? 3600) * 1000),
