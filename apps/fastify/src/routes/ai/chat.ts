@@ -143,6 +143,7 @@ function buildUserInfoSpec(user: {
   name: string | null
   email: string | null
   image: string | null
+  username: string | null
   createdAt: Date
 }) {
   const joinedAt = new Intl.DateTimeFormat('en-US', {
@@ -159,6 +160,7 @@ function buildUserInfoSpec(user: {
           name: user.name ?? null,
           email: user.email ?? null,
           image: user.image ?? null,
+          username: user.username ?? null,
           joinedAt,
         },
         children: [],
@@ -180,6 +182,7 @@ function createAccountInfoTool(userId: string) {
       const summaryParts = [`You joined in ${spec.elements[userInfoSpecRoot].props.joinedAt}`]
       if (user.email) summaryParts.push(`Email: ${user.email}`)
       if (user.name) summaryParts.push(`Name: ${user.name}`)
+      if (user.username) summaryParts.push(`Username: ${user.username}`)
       return {
         __render: 'user-info',
         spec,

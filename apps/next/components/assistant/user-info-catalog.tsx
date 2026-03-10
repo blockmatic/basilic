@@ -15,8 +15,9 @@ export const userInfoCatalog = defineCatalog(schema, {
         email: z.string().nullable(),
         joinedAt: z.string(),
         image: z.string().nullable(),
+        username: z.string().nullable(),
       }),
-      description: 'Account info card with avatar, name, email, joined date',
+      description: 'Account info card with avatar, name, email, username, joined date',
     },
   },
   actions: {},
@@ -37,7 +38,13 @@ function getInitials(name: string | null, email: string | null): string {
 function UserInfoComponent({
   props,
 }: {
-  props: { name: string | null; email: string | null; joinedAt: string; image: string | null }
+  props: {
+    name: string | null
+    email: string | null
+    joinedAt: string
+    image: string | null
+    username: string | null
+  }
 }) {
   return (
     <Card
@@ -56,6 +63,9 @@ function UserInfoComponent({
       </Avatar>
       <div className="min-w-0 flex-1 space-y-0.5">
         {props.name ? <p className="font-medium truncate">{props.name}</p> : null}
+        {props.username ? (
+          <p className="text-muted-foreground text-sm truncate">@{props.username}</p>
+        ) : null}
         {props.email ? (
           <p className="text-muted-foreground text-sm truncate">{props.email}</p>
         ) : null}

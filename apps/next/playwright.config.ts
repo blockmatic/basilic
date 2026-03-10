@@ -36,6 +36,7 @@ export default defineConfig({
       name: 'chromium',
       testMatch: ['**/chat-assistant.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['auth'],
     },
     {
       name: 'security',
