@@ -96,7 +96,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         user = created
       }
 
-      // Generate 6-digit login code (delivered only in email body, never in URL)
+      // Generate 6-digit login code (in email body and link for one-click; manual flow uses email+token)
       const code = generateLoginCode()
       const tokenHash = hashToken(code)
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
@@ -118,6 +118,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
 
       const magicLinkUrl = new URL(callbackUrl)
       magicLinkUrl.searchParams.set('verificationId', verificationId)
+      magicLinkUrl.searchParams.set('token', code)
 
       // Send email
       const html = await render(

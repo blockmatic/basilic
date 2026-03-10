@@ -93,6 +93,7 @@ describe('POST /auth/magiclink/request', () => {
       const magicLink = fastify.fakeEmail?.extractMagicLink(sentEmail)
       expect(magicLink).toBeTruthy()
       expect(magicLink).toContain('verificationId=')
+      expect(magicLink).toContain('token=')
     })
 
     it('should extract magic link URL from email', async () => {
@@ -114,6 +115,7 @@ describe('POST /auth/magiclink/request', () => {
       expect(magicLink).toBeTruthy()
       expect(magicLink).toContain('callback')
       expect(magicLink).toContain('verificationId=')
+      expect(magicLink).toContain('token=')
     })
 
     it('should extract code from email body and verificationId from link', async () => {
