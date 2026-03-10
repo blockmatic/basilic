@@ -86,6 +86,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       if (!validated.ok) return
       const { isLinkMode, linkUserId, stateRecord } = validated
       const redirectUri = stateRecord.meta?.redirectUri ?? defaultUrl
+      if (!allowedUrls.includes(redirectUri))
+        return reply.code(401).send({
+          code: 'INVALID_STATE',
+          message: 'Invalid or tampered redirect URI',
+        })
       const codeVerifier = stateRecord.meta?.codeVerifier
       if (!codeVerifier)
         return reply.code(401).send({

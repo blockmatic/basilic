@@ -9,6 +9,7 @@ const knownOAuthCodes = new Set([
   'google_fetch_user_failed',
   'user_info_failed',
   'email_required',
+  'google_email_required',
   'oauth_not_configured',
   'oauth_failed',
   'oauth_failed_google',
@@ -56,6 +57,8 @@ const authErrorMessages: Record<string, string> = {
   fetch_user_failed: 'Could not load your GitHub profile. Please try again.',
   google_fetch_user_failed: 'Could not load your Google profile. Please try again.',
   email_required: 'No verified email found. Please add a verified email to your GitHub account.',
+  google_email_required:
+    'No verified email found. Please add a verified email to your Google account.',
   oauth_not_configured: 'Sign-in is temporarily unavailable.',
   oauth_failed: 'GitHub sign-in failed. Please try again.',
   oauth_failed_google: 'Google sign-in failed. Please try again.',
@@ -76,6 +79,13 @@ export function getAuthErrorMessage(errorCode: string | undefined): string | und
   return authErrorMessages[key] ?? 'An error occurred'
 }
 
+/** Base keys that are overridden to Google-specific variants when provider is 'google'. */
+const googleOverrides: Record<string, string> = {
+  token_exchange_failed: 'google_token_exchange_failed',
+  user_info_failed: 'google_fetch_user_failed',
+  email_required: 'google_email_required',
+}
+
 /** Map API error (code or message) to auth-error-messages key for redirect. */
 export function translateOAuthError(
   raw: string,
@@ -89,12 +99,7 @@ export function translateOAuthError(
     typeof (body as { code: string }).code === 'string'
       ? (body as { code: string }).code.toLowerCase().trim()
       : null
-  if (code && knownOAuthCodes.has(code)) {
-    if (provider === 'google') {
-      if (code === 'token_exchange_failed') return 'google_token_exchange_failed'
-      if (code === 'user_info_failed') return 'google_fetch_user_failed'
-    }
-    return code
-  }
-  return messageToKey[raw] ?? (provider === 'google' ? 'oauth_failed_google' : 'oauth_failed')
+  const baseKey = (code && knownOAuthCodes.has(code) ? code : null) ?? messageToKey[raw] ?? null
+  if (!baseKey) return provider === 'google' ? 'oauth_failed_google' : 'oauth_failed'
+  return (provider === 'google' ? googleOverrides[baseKey] : null) ?? baseKey
 }
