@@ -88,8 +88,34 @@ export const authHelpers = {
   },
 
   async extractToken(page: Page): Promise<string | null> {
-    const data = await this.extractMagicLinkData(page)
-    return data?.token ?? null
+    await new Promise(r => setTimeout(r, 500))
+    const maxRetries = 12
+    const delayMs = 500
+    for (let attempt = 0; attempt < maxRetries; attempt++)
+      try {
+        const response = await page.request.get(`${apiUrl}/test/magic-link/last`)
+        if (!response.ok()) {
+          if (attempt < maxRetries - 1) {
+            await new Promise(r => setTimeout(r, delayMs))
+            continue
+          }
+          return null
+        }
+        const data = (await response.json()) as { token?: string }
+        if (data.token) return data.token
+        if (attempt < maxRetries - 1) {
+          await new Promise(r => setTimeout(r, delayMs))
+          continue
+        }
+        return null
+      } catch {
+        if (attempt < maxRetries - 1) {
+          await new Promise(r => setTimeout(r, delayMs))
+          continue
+        }
+        return null
+      }
+    return null
   },
 
   async enterLoginCodeAndSubmit(page: Page, code: string) {

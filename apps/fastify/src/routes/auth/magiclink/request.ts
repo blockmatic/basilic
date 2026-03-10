@@ -39,10 +39,10 @@ async function findOrCreateUserForMagicLink(
       })
       return created
     } catch (err) {
-      if (isUniqueViolation(err) && attempt < maxRetries - 1) {
+      if (isUniqueViolation(err)) {
         const [existing] = await db.select().from(users).where(eq(users.email, email))
         if (existing) return existing
-        continue
+        if (attempt < maxRetries - 1) continue
       }
       throw err
     }

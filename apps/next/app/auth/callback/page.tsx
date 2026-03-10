@@ -28,7 +28,7 @@ export default async function AuthCallbackPage({ searchParams }: AuthCallbackPag
   const token = params.token
   if (token)
     redirect(
-      `/auth/callback/magiclink?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(callbackURL)}`,
+      `/auth/callback/magiclink?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(callbackURL)}&legacyToken=1`,
     )
 
   redirect('/auth/login?message=Invalid or expired magic link')

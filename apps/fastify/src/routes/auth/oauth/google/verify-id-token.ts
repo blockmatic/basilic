@@ -1,7 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, eq } from 'drizzle-orm'
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import { OAuth2Client } from 'google-auth-library'
 import { getDb } from '../../../../db/index.js'
@@ -36,37 +35,20 @@ async function runGoogleVerifyIdTokenTx(input: {
   if (!user) throw new Error('Failed to create or find user')
 
   return db.transaction(async tx => {
-    const [existingAccount] = await tx
-      .select()
-      .from(account)
-      .where(and(eq(account.providerId, 'google'), eq(account.accountId, accountId)))
-
-    const linkedUserId = existingAccount?.userId ?? user.id
-    const accountData = {
-      id: existingAccount?.id ?? randomUUID(),
-      userId: linkedUserId,
-      accountId,
-      providerId: 'google' as const,
-      accessToken: null as string | null,
-      refreshToken: null as string | null,
-      idToken: null as string | null,
-      accessTokenExpiresAt: null as Date | null,
-      refreshTokenExpiresAt: null as Date | null,
-      scope: 'openid email profile',
-    }
-
-    if (existingAccount)
-      await tx
-        .update(account)
-        .set({ updatedAt: new Date() })
-        .where(eq(account.id, existingAccount.id))
-    else
-      await tx.insert(account).values({
-        id: accountData.id,
-        userId: accountData.userId,
-        accountId: accountData.accountId,
-        providerId: accountData.providerId,
-        scope: accountData.scope,
+    const linkedUserId = user.id
+    const now = new Date()
+    await tx
+      .insert(account)
+      .values({
+        id: randomUUID(),
+        userId: linkedUserId,
+        accountId,
+        providerId: 'google',
+        scope: 'openid email profile',
+      })
+      .onConflictDoUpdate({
+        target: [account.providerId, account.accountId],
+        set: { userId: linkedUserId, updatedAt: now },
       })
 
     const { accessToken, refreshToken } = await createSessionAndIssueTokens({

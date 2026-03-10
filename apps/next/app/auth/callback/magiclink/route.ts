@@ -7,14 +7,28 @@ import { env } from '@/lib/env'
 
 const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
 
+const sixDigitCode = /^\d{6}$/
+const uuidLike = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+function isSafeCallbackUrl(raw: string | null, requestUrl: string): string {
+  if (!raw || !raw.startsWith('/')) return '/'
+  if (raw.startsWith('//')) return '/'
+  try {
+    const url = new URL(raw, requestUrl)
+    if (url.origin !== new URL(requestUrl).origin) return '/'
+    return url.pathname + url.search + url.hash
+  } catch {
+    return '/'
+  }
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const verificationId = searchParams.get('verificationId')
-  const callbackURL =
-    (searchParams.get('callbackURL')?.startsWith('/') ? searchParams.get('callbackURL') : null) ??
-    '/'
+  const rawCallback = searchParams.get('callbackURL')
+  const callbackURL = isSafeCallbackUrl(rawCallback, request.url)
 
-  if (verificationId) {
+  if (verificationId && uuidLike.test(verificationId)) {
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -50,12 +64,15 @@ export async function POST(request: Request) {
   const formData = await request.formData()
   const verificationId = formData.get('verificationId')?.toString()
   const token = formData.get('token')?.toString()
-  const callbackURL = formData.get('callbackURL')?.toString()?.startsWith('/')
-    ? formData.get('callbackURL')?.toString()
-    : '/'
+  const rawCallback = formData.get('callbackURL')?.toString()
+  const callbackURL = isSafeCallbackUrl(rawCallback ?? null, request.url)
 
-  if (!verificationId || !token)
-    redirect(`/auth/login?message=${encodeURIComponent('INVALID_TOKEN')}`)
+  if (!verificationId || !token || !uuidLike.test(verificationId) || !sixDigitCode.test(token)) {
+    const backUrl = verificationId
+      ? `/auth/callback/magiclink?verificationId=${encodeURIComponent(verificationId)}&callbackURL=${encodeURIComponent(callbackURL)}&message=${encodeURIComponent('INVALID_CODE')}`
+      : `/auth/callback/magiclink?message=${encodeURIComponent('INVALID_CODE')}`
+    redirect(backUrl)
+  }
 
   try {
     const response = await client.auth.magiclink.verify({

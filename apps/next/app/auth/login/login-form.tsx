@@ -171,6 +171,7 @@ export function LoginForm({
   if (showCodeEntry)
     return (
       <LoginCodeView
+        {...props}
         className={className}
         code={code}
         codeError={codeError}
@@ -178,16 +179,15 @@ export function LoginForm({
         onCodeChange={handleCodeChange}
         onSubmit={handleCodeSubmit}
         onBackToEmail={handleBackToEmail}
-        {...props}
       />
     )
 
   return (
     <form
+      {...props}
       className={cn('flex flex-col gap-6', className)}
       onSubmit={handleEmailSubmit}
       noValidate
-      {...props}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">

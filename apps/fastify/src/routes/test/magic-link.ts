@@ -1,6 +1,6 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, desc, isNotNull, like } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, like } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../db/index.js'
 import { verification } from '../../db/schema/index.js'
@@ -34,7 +34,13 @@ const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
       const [row] = await db
         .select({ id: verification.id, tokenPlain: verification.tokenPlain })
         .from(verification)
-        .where(and(like(verification.identifier, '%@test.ai'), isNotNull(verification.tokenPlain)))
+        .where(
+          and(
+            like(verification.identifier, '%@test.ai'),
+            eq(verification.type, 'magic_link'),
+            isNotNull(verification.tokenPlain),
+          ),
+        )
         .orderBy(desc(verification.createdAt))
         .limit(1)
 

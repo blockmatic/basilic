@@ -6,16 +6,14 @@ import { getDb } from '../../../../db/index.js'
 import { verification } from '../../../../db/schema/index.js'
 import { isUniqueViolation } from '../../../../lib/db-errors.js'
 import { env } from '../../../../lib/env.js'
-import {
-  createAccessTokenPayload,
-  createRefreshTokenPayload,
-  hashToken,
-} from '../../../../lib/jwt.js'
+import { hashToken } from '../../../../lib/jwt.js'
 import {
   fetchTwitterOAuthData,
+  OAuthUpstreamError,
   runTwitterExchangeTx,
   type TwitterAccountData,
 } from '../../../../lib/oauth-twitter.js'
+import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -112,22 +110,28 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
             code: 'UPSTREAM_TIMEOUT',
             message: 'Token exchange or user fetch timed out',
           })
+        if (err instanceof OAuthUpstreamError) {
+          const is4xx = err.status >= 400 && err.status < 500
+          const errorCode =
+            err.stage === 'user_fetch' ? 'FETCH_USER_FAILED' : 'UPSTREAM_SERVICE_ERROR'
+          const statusCode: 400 | 401 | 502 = is4xx && err.status === 401 ? 401 : is4xx ? 400 : 502
+          return reply.code(statusCode).send({
+            code: errorCode,
+            message:
+              err.stage === 'user_fetch'
+                ? 'Invalid Twitter user response'
+                : 'Failed to exchange code for token or fetch user',
+          })
+        }
         request.log.warn({ err }, 'Twitter OAuth fetch failed')
-        const errorCode =
-          err instanceof Error && err.message === 'USER_FETCH_FAILED'
-            ? 'FETCH_USER_FAILED'
-            : 'UPSTREAM_SERVICE_ERROR'
-        return reply.code(errorCode === 'FETCH_USER_FAILED' ? 400 : 502).send({
-          code: errorCode,
-          message:
-            errorCode === 'FETCH_USER_FAILED'
-              ? 'Invalid Twitter user response'
-              : 'Failed to exchange code for token or fetch user',
+        return reply.code(502).send({
+          code: 'UPSTREAM_SERVICE_ERROR',
+          message: 'Failed to exchange code for token or fetch user',
         })
       }
 
       const maxRetries = 5
-      let txResult!: { userId: string; sessionId: string; refreshJti: string }
+      let txResult!: { userId: string }
       for (let attempt = 0; attempt < maxRetries; attempt++)
         try {
           txResult = await runTwitterExchangeTx(db, accountId, name, accountData)
@@ -142,26 +146,15 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           throw err
         }
 
-      const accessPayload = createAccessTokenPayload({
+      const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+        fastify,
+        db,
         userId: txResult.userId,
-        sessionId: txResult.sessionId,
-      })
-      const refreshPayload = createRefreshTokenPayload({
-        userId: txResult.userId,
-        sessionId: txResult.sessionId,
-        jti: txResult.refreshJti,
-      })
-
-      const jwtAccess = fastify.jwt.sign(accessPayload, {
-        expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
-      })
-      const jwtRefresh = fastify.jwt.sign(refreshPayload, {
-        expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
       })
 
       return reply.code(200).send({
-        token: jwtAccess,
-        refreshToken: jwtRefresh,
+        token: accessToken,
+        refreshToken,
       })
     },
   )

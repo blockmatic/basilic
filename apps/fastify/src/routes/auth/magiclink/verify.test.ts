@@ -45,7 +45,9 @@ describe('POST /auth/magiclink/verify', () => {
       payload: { email: 'nonexistent@example.com', token: '000000' },
     })
 
-    expect([400, 401, 404]).toContain(response.statusCode)
+    expect(response.statusCode).toBe(401)
+    const body = JSON.parse(response.body)
+    expect(body.code).toBe('INVALID_TOKEN')
   })
 
   it('should return error for missing token', async () => {

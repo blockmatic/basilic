@@ -187,13 +187,15 @@ function getInitScript(opts: {
     const banner = document.createElement('div');
     banner.id = 'verify-banner';
     banner.style.cssText = 'position:fixed;top:0;left:0;right:0;padding:12px 16px;background:#1e3a5f;color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;z-index:10000;font-size:14px;';
-    banner.innerHTML = '<span>Enter the 6-digit code from your email:</span><form style="display:inline-flex;gap:8px;"><input type="text" inputmode="numeric" pattern="\\\\d*" maxlength="6" placeholder="000000" style="width:80px;padding:6px;font-size:14px;border-radius:4px;"/><button type="submit" style="padding:6px 12px;background:#667eea;color:#fff;border:none;border-radius:4px;cursor:pointer;">Verify</button></form>';
+    banner.innerHTML = '<span>Enter the 6-digit code from your email:</span><form style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;"><input type="text" inputmode="numeric" pattern="\\\\d*" maxlength="6" placeholder="000000" style="width:80px;padding:6px;font-size:14px;border-radius:4px;"/><button type="submit" style="padding:6px 12px;background:#667eea;color:#fff;border:none;border-radius:4px;cursor:pointer;">Verify</button><span data-verify-error="" aria-live="polite" style="color:#ef4444;font-size:12px;margin-left:8px;"></span></form>';
     document.body.prepend(banner);
     banner.querySelector('form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const input = banner.querySelector('input');
       const code = input?.value?.trim();
       if (!code || code.length !== 6) return;
+      const errorEl = banner.querySelector('[data-verify-error]');
+      if (errorEl) errorEl.textContent = '';
       try {
         const res = await fetch(apiUrl + '/auth/magiclink/verify', {
           method: 'POST',
@@ -207,8 +209,20 @@ function getInitScript(opts: {
           updateScalarAuth(scalarApiReference, data.token);
           banner.remove();
           if (window.updateLoginButton) window.updateLoginButton();
+        } else {
+          let msg = 'Verification failed. Please try again.';
+          try {
+            const body = await res.json();
+            msg = body.message || msg;
+          } catch {}
+          const errDiv = banner.querySelector('[data-verify-error]');
+          if (errDiv) errDiv.textContent = msg;
         }
-      } catch (err) { console.error(err); }
+      } catch (err) {
+        const msg = 'Verification failed. Please try again.';
+        const errDiv = banner.querySelector('[data-verify-error]');
+        if (errDiv) errDiv.textContent = msg;
+      }
     });
   }
   

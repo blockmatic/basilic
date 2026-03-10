@@ -2,9 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { and, eq } from 'drizzle-orm'
 import { encryptAccountTokens } from '../db/account.js'
 import type { getDb } from '../db/index.js'
-import { account, sessions, users } from '../db/schema/index.js'
-import { env } from './env.js'
-import { generateJti, hashToken } from './jwt.js'
+import { account, users } from '../db/schema/index.js'
 import { generateFunnyUsername } from './username.js'
 
 /** OAuth API response; snake_case from Twitter API */
@@ -17,7 +15,20 @@ export type TwitterTokenResponse = {
   token_type?: string
   /* biome-ignore lint/style/useNamingConvention: OAuth API uses snake_case */
   expires_in?: number
+  scope?: string
   error?: string
+}
+
+export class OAuthUpstreamError extends Error {
+  constructor(
+    message: string,
+    public readonly stage: 'token_exchange' | 'user_fetch',
+    public readonly status: number,
+    public readonly body: unknown,
+  ) {
+    super(message)
+    this.name = 'OAuthUpstreamError'
+  }
 }
 
 export type TwitterUser = { data?: { id: string; name?: string; username?: string } }
@@ -35,7 +46,7 @@ export async function runTwitterExchangeTx(
   accountId: string,
   name: string,
   accountData: TwitterAccountData,
-): Promise<{ userId: string; sessionId: string; refreshJti: string }> {
+): Promise<{ userId: string }> {
   return db.transaction(async tx => {
     const [existingAccount] = await tx
       .select()
@@ -97,19 +108,7 @@ export async function runTwitterExchangeTx(
       await tx.insert(account).values(toInsert)
     }
 
-    const sessionId = randomUUID()
-    const refreshJti = generateJti()
-    const refreshJtiHash = hashToken(refreshJti)
-    const sessionExpiresAt = new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000)
-
-    await tx.insert(sessions).values({
-      id: sessionId,
-      userId: user.id,
-      token: refreshJtiHash,
-      expiresAt: sessionExpiresAt,
-    })
-
-    return { userId: user.id, sessionId, refreshJti }
+    return { userId: user.id }
   })
 }
 
@@ -143,11 +142,20 @@ export async function fetchTwitterOAuthData(input: {
     body: tokenBody.toString(),
     signal: AbortSignal.timeout(fetchTimeoutMs),
   })
-  if (!tokenRes.ok) throw new Error('TOKEN_EXCHANGE_FAILED')
+  if (!tokenRes.ok) {
+    const body = await tokenRes.text().catch(() => '')
+    throw new OAuthUpstreamError('TOKEN_EXCHANGE_FAILED', 'token_exchange', tokenRes.status, body)
+  }
   const tokenData = (await tokenRes.json()) as TwitterTokenResponse
-  if (tokenData.error) throw new Error('TOKEN_EXCHANGE_FAILED')
+  if (tokenData.error || !tokenData.access_token)
+    throw new OAuthUpstreamError(
+      'TOKEN_EXCHANGE_FAILED',
+      'token_exchange',
+      400,
+      tokenData.error ? tokenData : { error: 'missing access_token' },
+    )
+
   const accessToken = tokenData.access_token
-  if (!accessToken) throw new Error('TOKEN_EXCHANGE_FAILED')
   const userRes = await fetch('https://api.x.com/2/users/me', {
     headers: {
       /* biome-ignore lint/style/useNamingConvention: HTTP header canonical form */
@@ -155,20 +163,30 @@ export async function fetchTwitterOAuthData(input: {
     },
     signal: AbortSignal.timeout(fetchTimeoutMs),
   })
-  if (!userRes.ok) throw new Error('USER_FETCH_FAILED')
+  if (!userRes.ok) {
+    const body = await userRes.text().catch(() => '')
+    throw new OAuthUpstreamError('USER_FETCH_FAILED', 'user_fetch', userRes.status, body)
+  }
   const userData = (await userRes.json()) as TwitterUser
   const twUser = userData.data
-  if (!twUser?.id) throw new Error('USER_FETCH_FAILED')
+  if (!twUser?.id) throw new OAuthUpstreamError('USER_FETCH_FAILED', 'user_fetch', 200, userData)
+
   const accountId = twUser.id
   const name = twUser.name ?? twUser.username ?? 'Twitter user'
+  const refreshToken = tokenData.refresh_token ?? null
+  const baseScope = (tokenData.scope ?? 'tweet.read users.read').trim()
+  const scope =
+    refreshToken && !baseScope.includes('offline.access')
+      ? `${baseScope} offline.access`.trim()
+      : baseScope || 'tweet.read users.read'
   const accountData: TwitterAccountData = {
     accessToken,
-    refreshToken: tokenData.refresh_token ?? null,
+    refreshToken,
     accessTokenExpiresAt: tokenData.expires_in
       ? new Date(Date.now() + tokenData.expires_in * 1000)
       : null,
     refreshTokenExpiresAt: null,
-    scope: 'tweet.read users.read offline.access',
+    scope,
   }
   return { accountId, name, accountData }
 }
