@@ -47,6 +47,7 @@
   "license": "ISC",
   "dependencies": {
     "@ai-sdk/openai": "^3.0.0",
+    "ai-sdk-ollama": "^3.8.0",
     "@fastify/autoload": "^6.3.1",
     "@fastify/cors": "^11.2.0",
     "@fastify/jwt": "^10.0.0",

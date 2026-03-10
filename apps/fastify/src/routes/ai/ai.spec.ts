@@ -18,3 +18,4 @@ afterAll(async () => {
 export { fastify }
 
 import './chat.test'
+import './generate.test'

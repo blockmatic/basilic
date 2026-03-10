@@ -874,6 +874,62 @@ export type ChatResponses = {
 
 export type ChatResponse = ChatResponses[keyof ChatResponses];
 
+export type GenerateData = {
+    body: {
+        prompt: string;
+        stream?: boolean;
+        model?: string;
+        temperature?: number;
+    };
+    path?: never;
+    query?: never;
+    url: '/ai/generate';
+};
+
+export type GenerateErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    502: {
+        code: string;
+        message: string;
+    };
+};
+
+export type GenerateError = GenerateErrors[keyof GenerateErrors];
+
+export type GenerateResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        text: string;
+    } | string;
+};
+
+export type GenerateResponse = GenerateResponses[keyof GenerateResponses];
+
 export type MagiclinkRequestData = {
     body: {
         email: string;

@@ -12,7 +12,13 @@
       "dependsOn": ["@repo/utils#build", "@repo/error#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
-      "env": ["NODE_ENV", "OLLAMA_BASE_URL", "OPEN_ROUTER_API_KEY", "AI_PROVIDER"]
+      "env": [
+        "NODE_ENV",
+        "OLLAMA_BASE_URL",
+        "OLLAMA_REMOTE_TESTS",
+        "OPEN_ROUTER_API_KEY",
+        "AI_PROVIDER"
+      ]
     },
     "@repo/core#generate": {
       "dependsOn": ["@repo/fastify#generate:openapi"],
@@ -48,6 +54,7 @@
         "AUTH_COOKIE_NAME",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "OLLAMA_REMOTE_TESTS",
         "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
@@ -94,6 +101,7 @@
         "PGLITE",
         "RUN_PG_MIGRATE",
         "OLLAMA_BASE_URL",
+        "OLLAMA_REMOTE_TESTS",
         "OPEN_ROUTER_API_KEY",
         "AI_DEFAULT_MODEL",
         "VITEST",
@@ -132,6 +140,7 @@
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
         "OLLAMA_BASE_URL",
+        "OLLAMA_REMOTE_TESTS",
         "OPEN_ROUTER_API_KEY",
         "CI",
         "VITEST_WORKER_ID",
@@ -168,6 +177,7 @@
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
         "OLLAMA_BASE_URL",
+        "OLLAMA_REMOTE_TESTS",
         "OPEN_ROUTER_API_KEY",
         "CI",
         "VITEST_WORKER_ID",
@@ -189,6 +199,7 @@
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
         "OLLAMA_BASE_URL",
+        "OLLAMA_REMOTE_TESTS",
         "OPEN_ROUTER_API_KEY",
         "NEXT_PUBLIC_API_URL",
         "PLAYWRIGHT_REUSE_SERVER",

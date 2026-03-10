@@ -237,15 +237,24 @@ curl -s https://ollama.example.com/api/generate -d '{"model":"qwen2.5:3b","promp
 
 ## Using Ollama as Default in Fastify
 
-The Fastify chat route (`/ai/chat`) uses **Ollama as the default** AI provider when `OLLAMA_BASE_URL` is set. Open Router is an optional alternative when `OPEN_ROUTER_API_KEY` is configured.
+The Fastify API uses **Ollama as the default** AI provider when `OLLAMA_BASE_URL` is set. Open Router is an optional alternative when `OPEN_ROUTER_API_KEY` is configured.
+
+### Routes
+
+| Route | Use case |
+|-------|----------|
+| `POST /ai/chat` | Chat UI, messages, tools when supported |
+| `POST /ai/generate` | CLI, scripts, pipelines—single prompt, plain text SSE |
+
+Both routes use the same provider; clients call the Fastify API, not Ollama directly.
 
 ### Environment Variables
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `OLLAMA_BASE_URL` | No (one of OLLAMA/OPEN_ROUTER required) | `https://ollama.example.com` | Ollama server URL (OpenAI-compatible `/v1` API) |
+| `OLLAMA_BASE_URL` | No (one of OLLAMA/OPEN_ROUTER required) | `https://ollama.gaboesquivel.com` | Ollama server URL (native `/api` via ai-sdk-ollama) |
 | `AI_PROVIDER` | No | Inferred | `ollama` or `openrouter` — force provider when both are configured |
-| `AI_DEFAULT_MODEL` | No | `qwen2.5:3b` (Ollama) / `openrouter/free` (Open Router) | Default model for chat |
+| `AI_DEFAULT_MODEL` | No | `qwen2.5:14b` (Ollama) / `openrouter/free` (Open Router) | Default model |
 | `OPEN_ROUTER_API_KEY` | No | — | Required only when using Open Router |
 
 ### Provider Selection
