@@ -37,14 +37,20 @@ export function useOAuthLogin(
     mutationFn: async input => {
       const provider = typeof input === 'string' ? input : input.provider
       const redirectUri = typeof input === 'object' ? input.redirectUri : undefined
+      if (redirectUri !== undefined && redirectUri.trim() === '')
+        throw new Error('redirectUri cannot be blank')
       const authorizeUrl = {
-        github: client.auth.oauth.github.authorizeUrl,
-        google: client.auth.oauth.google.authorizeUrl,
-        facebook: client.auth.oauth.facebook.authorizeUrl,
-        twitter: client.auth.oauth.twitter.authorizeUrl,
+        github: (opts?: Parameters<typeof client.auth.oauth.github.authorizeUrl>[0]) =>
+          client.auth.oauth.github.authorizeUrl(opts),
+        google: (opts?: Parameters<typeof client.auth.oauth.google.authorizeUrl>[0]) =>
+          client.auth.oauth.google.authorizeUrl(opts),
+        facebook: (opts?: Parameters<typeof client.auth.oauth.facebook.authorizeUrl>[0]) =>
+          client.auth.oauth.facebook.authorizeUrl(opts),
+        twitter: (opts?: Parameters<typeof client.auth.oauth.twitter.authorizeUrl>[0]) =>
+          client.auth.oauth.twitter.authorizeUrl(opts),
       } as const
       const data = await authorizeUrl[provider](
-        redirectUri
+        redirectUri !== undefined
           ? {
               query: {
                 // biome-ignore lint/style/useNamingConvention: OAuth API expects redirect_uri

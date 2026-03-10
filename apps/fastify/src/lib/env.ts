@@ -2,6 +2,26 @@ import 'dotenv/config'
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
+function parseCallbackUrls(val: string | undefined): string[] | undefined {
+  if (!val) return undefined
+  const arr = val
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+  const result: string[] = []
+  for (const item of arr)
+    try {
+      const u = new URL(item)
+      if ((u.protocol !== 'http:' && u.protocol !== 'https:') || !u.hostname)
+        throw new Error('Invalid scheme or hostname')
+      result.push(item)
+    } catch {
+      throw new Error(`OAUTH_*_CALLBACK_URLS: invalid URL "${item}"`)
+    }
+
+  return result.length > 0 ? result : undefined
+}
+
 const hex64 = z
   .string()
   .length(64)
@@ -92,14 +112,7 @@ export const env = createEnv({
     OAUTH_GITHUB_CALLBACK_URLS: z
       .string()
       .optional()
-      .transform(val =>
-        val
-          ? val
-              .split(',')
-              .map(s => s.trim())
-              .filter(Boolean)
-          : undefined,
-      ),
+      .transform(val => parseCallbackUrls(val)),
     // Google OAuth (optional - One Tap + redirect fallback)
     GOOGLE_CLIENT_ID: z.string().min(1).optional(),
     GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
@@ -107,14 +120,7 @@ export const env = createEnv({
     OAUTH_GOOGLE_CALLBACK_URLS: z
       .string()
       .optional()
-      .transform(val =>
-        val
-          ? val
-              .split(',')
-              .map(s => s.trim())
-              .filter(Boolean)
-          : undefined,
-      ),
+      .transform(val => parseCallbackUrls(val)),
     // Facebook OAuth (optional)
     FACEBOOK_CLIENT_ID: z.string().min(1).optional(),
     FACEBOOK_CLIENT_SECRET: z.string().min(1).optional(),
@@ -122,14 +128,7 @@ export const env = createEnv({
     OAUTH_FACEBOOK_CALLBACK_URLS: z
       .string()
       .optional()
-      .transform(val =>
-        val
-          ? val
-              .split(',')
-              .map(s => s.trim())
-              .filter(Boolean)
-          : undefined,
-      ),
+      .transform(val => parseCallbackUrls(val)),
     // Twitter OAuth (optional, PKCE)
     TWITTER_CLIENT_ID: z.string().min(1).optional(),
     TWITTER_CLIENT_SECRET: z.string().min(1).optional(),
@@ -137,14 +136,7 @@ export const env = createEnv({
     OAUTH_TWITTER_CALLBACK_URLS: z
       .string()
       .optional()
-      .transform(val =>
-        val
-          ? val
-              .split(',')
-              .map(s => s.trim())
-              .filter(Boolean)
-          : undefined,
-      ),
+      .transform(val => parseCallbackUrls(val)),
     ALLOWED_ORIGINS: z
       .string()
       .default('*')

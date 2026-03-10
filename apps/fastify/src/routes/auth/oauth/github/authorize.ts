@@ -42,7 +42,7 @@ const oauthAuthorizeRoute: FastifyPluginAsync = async fastify => {
       })
       const resolved = resolveOAuthCallbackUrl({
         allowedUrls,
-        requestedRedirectUri: (request.query as { redirect_uri?: string })?.redirect_uri,
+        requestedRedirectUri: request.query.redirect_uri,
       })
       if (!resolved.ok)
         return reply.status(resolved.error === 'NOT_CONFIGURED' ? 503 : 400).send({

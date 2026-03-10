@@ -100,6 +100,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           code: 'INVALID_STATE',
           message: 'Invalid or tampered redirect URI',
         })
+      // preConsumeCheck guarantees codeVerifier; this check narrows the type for TS
       const codeVerifier = meta?.codeVerifier
       if (!codeVerifier)
         return reply.code(401).send({
