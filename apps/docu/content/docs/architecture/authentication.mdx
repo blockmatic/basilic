@@ -123,7 +123,7 @@ OAuth sign-in uses provider authorization + callback flows and issues access + r
 
 ### OAuth (Google, Facebook, Twitter)
 
-**Google One Tap:** Uses [Google Identity Services](https://developers.google.com/identity/gsi/web) (GIS). Load GIS script, call `google.accounts.id.prompt()` — popup appears in top-right when user is logged into Google. Client POSTs `{ credential }` to `POST /auth/oauth/google/verify-id-token`. Backend verifies JWT with `google-auth-library`, creates session. **Setup:** `GOOGLE_CLIENT_ID` (Fastify), `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (Next.js).
+**Google:** Two flows. **(1) One Tap (primary):** Uses [Google Identity Services](https://developers.google.com/identity/gsi/web) (GIS). Popup in top-right when user is logged into Google. Client POSTs `{ credential }` to `POST /auth/oauth/google/verify-id-token`. **(2) Redirect (fallback + linking):** When One Tap is blocked/dismissed or for account linking. `GET /auth/oauth/google/authorize-url?redirect_uri=` (optional) → callback → `POST /auth/oauth/google/exchange`. Client can send `redirect_uri` to choose which callback URL to use (must be in allowlist). **Setup:** One Tap: `GOOGLE_CLIENT_ID`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. Redirect/linking: add `GOOGLE_CLIENT_SECRET`, and either `OAUTH_GOOGLE_CALLBACK_URL` (single) or `OAUTH_GOOGLE_CALLBACK_URLS` (comma-separated for web + mobile).
 
 **Facebook:** Redirect flow like GitHub. `GET /auth/oauth/facebook/authorize-url` → `POST /auth/oauth/facebook/exchange`. Callback: `/auth/callback/oauth/facebook`. **Setup:** `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET`, `OAUTH_FACEBOOK_CALLBACK_URL`.
 

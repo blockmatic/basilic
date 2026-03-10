@@ -26,6 +26,10 @@ const messageToKey: Record<string, string> = {
   'Could not retrieve email from Facebook': 'email_required',
   'Could not retrieve email from Twitter': 'email_required',
   'Could not retrieve verified email from Google': 'email_required',
+  'Could not retrieve email from Google': 'email_required',
+  'Failed to fetch Google user': 'fetch_user_failed',
+  'Failed to fetch Google user (timeout)': 'fetch_user_failed',
+  'Google OAuth redirect is not configured': 'oauth_not_configured',
   'GitHub OAuth is not configured': 'oauth_not_configured',
   'Facebook OAuth is not configured': 'oauth_not_configured',
   'Twitter OAuth is not configured': 'oauth_not_configured',
@@ -33,6 +37,7 @@ const messageToKey: Record<string, string> = {
   'GitHub sign-in failed': 'oauth_failed',
   'Facebook sign-in failed': 'oauth_failed',
   'Twitter sign-in failed': 'oauth_failed',
+  'Google sign-in failed': 'oauth_failed',
 }
 
 const authErrorMessages: Record<string, string> = {

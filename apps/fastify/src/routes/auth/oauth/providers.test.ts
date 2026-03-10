@@ -11,11 +11,13 @@ describe('GET /auth/oauth/providers', () => {
     const body = res.json() as {
       github: boolean
       google: boolean
+      googleRedirect: boolean
       facebook: boolean
       twitter: boolean
     }
     expect(typeof body.github).toBe('boolean')
     expect(typeof body.google).toBe('boolean')
+    expect(typeof body.googleRedirect).toBe('boolean')
     expect(typeof body.facebook).toBe('boolean')
     expect(typeof body.twitter).toBe('boolean')
   })

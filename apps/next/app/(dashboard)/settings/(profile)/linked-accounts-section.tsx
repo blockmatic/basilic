@@ -138,7 +138,7 @@ function UnlinkButton({
   )
 }
 
-const linkableProviders = ['github', 'facebook', 'twitter'] as const
+const linkableProviders = ['github', 'google', 'facebook', 'twitter'] as const
 
 function LinkProviderButton({ providerId, label }: { providerId: string; label: string }) {
   const canLink = linkableProviders.includes(providerId as (typeof linkableProviders)[number])

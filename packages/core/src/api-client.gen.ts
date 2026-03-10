@@ -71,6 +71,12 @@ import type {
   OauthGithubExchangeResponse,
   OauthGithubLinkAuthorizeUrlData,
   OauthGithubLinkAuthorizeUrlResponse,
+  OauthGoogleAuthorizeUrlData,
+  OauthGoogleAuthorizeUrlResponse,
+  OauthGoogleExchangeData,
+  OauthGoogleExchangeResponse,
+  OauthGoogleLinkAuthorizeUrlData,
+  OauthGoogleLinkAuthorizeUrlResponse,
   OauthGoogleVerifyIdTokenData,
   OauthGoogleVerifyIdTokenResponse,
   OauthProvidersData,
@@ -159,6 +165,9 @@ export type CoreApiClient = {
         linkAuthorizeUrl: (opts?: Options<OauthGithubLinkAuthorizeUrlData>) => Promise<OauthGithubLinkAuthorizeUrlResponse>
       };
       google: {
+        authorizeUrl: (opts?: Options<OauthGoogleAuthorizeUrlData>) => Promise<OauthGoogleAuthorizeUrlResponse>;
+        exchange: (opts: Options<OauthGoogleExchangeData>) => Promise<OauthGoogleExchangeResponse>;
+        linkAuthorizeUrl: (opts?: Options<OauthGoogleLinkAuthorizeUrlData>) => Promise<OauthGoogleLinkAuthorizeUrlResponse>;
         verifyIdToken: (opts: Options<OauthGoogleVerifyIdTokenData>) => Promise<OauthGoogleVerifyIdTokenResponse>
       };
       twitter: {

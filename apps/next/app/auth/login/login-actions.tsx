@@ -12,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
 import { Button } from '@repo/ui/components/button'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
@@ -26,11 +26,10 @@ type LoginActionsProps = { initialError?: string }
 type OAuthButtonsProps = {
   anyPending: boolean
   setLastAuthMethod: (m: 'oauth' | 'passkey') => void
-  startOAuthLogin: (p: 'github' | 'facebook' | 'twitter') => void
-  promptGoogle: () => void
+  startOAuthLogin: (p: 'github' | 'google' | 'facebook' | 'twitter') => void
+  onGoogleClick: () => void
   isGithubConfigured: boolean
   isGoogleConfigured: boolean
-  isGoogleReady: boolean
   isFacebookConfigured: boolean
   isTwitterConfigured: boolean
   isOAuthPending: boolean
@@ -44,10 +43,9 @@ function OAuthButtons({
   anyPending,
   setLastAuthMethod,
   startOAuthLogin,
-  promptGoogle,
+  onGoogleClick,
   isGithubConfigured,
   isGoogleConfigured,
-  isGoogleReady,
   isFacebookConfigured,
   isTwitterConfigured,
   isOAuthPending,
@@ -88,12 +86,12 @@ function OAuthButtons({
       </button>
       <button
         type="button"
-        disabled={anyPending || !isGoogleConfigured || !isGoogleReady}
+        disabled={anyPending || !isGoogleConfigured}
         onClick={() => {
           setLastAuthMethod('oauth')
-          if (isGoogleConfigured && isGoogleReady) promptGoogle()
+          onGoogleClick()
         }}
-        aria-label={isGooglePending ? 'Signing in…' : 'Continue with Google'}
+        aria-label={isGooglePending || isOAuthPending ? 'Signing in…' : 'Continue with Google'}
         className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Google className="size-5" aria-hidden />
@@ -151,6 +149,7 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
   const [optedOutEmails, setOptedOutEmails] = useState<Set<string>>(() => new Set())
+  const [oneTapSkipped, setOneTapSkipped] = useState(false)
   const {
     mutate: startOAuthLogin,
     error: oauthError,
@@ -164,6 +163,7 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
   const {
     github: isGithubConfigured,
     google: isGoogleConfigured,
+    googleRedirect: isGoogleRedirectConfigured,
     facebook: isFacebookConfigured,
     twitter: isTwitterConfigured,
   } = useOAuthProviders()
@@ -171,7 +171,10 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
     prompt: promptGoogle,
     isPending: isGooglePending,
     isReady: isGoogleReady,
-  } = useGoogleOneTap({ enabled: isGoogleConfigured })
+  } = useGoogleOneTap({
+    enabled: isGoogleConfigured,
+    onSkipped: useCallback(() => setOneTapSkipped(true), []),
+  })
   const {
     mutate: startPasskeyAuth,
     error: passkeyError,
@@ -187,6 +190,19 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
         ? (oauthError?.message ?? passkeyError?.message ?? initialError)
         : (oauthError?.message ?? passkeyError?.message ?? initialError)
   const showBanner = displayError && displayError !== dismissedForError
+
+  const handleGoogleClick = useCallback(() => {
+    const useRedirect = (oneTapSkipped || !isGoogleReady) && isGoogleRedirectConfigured
+    if (useRedirect) {
+      startOAuthLogin('google')
+      return
+    }
+    if (!isGoogleReady && !isGoogleRedirectConfigured) {
+      toast.error(getAuthErrorMessage('oauth_not_configured'))
+      return
+    }
+    promptGoogle()
+  }, [oneTapSkipped, isGoogleReady, isGoogleRedirectConfigured, startOAuthLogin, promptGoogle])
 
   const showPasskeyShortcut =
     webauthnAvailable && discoveryEmail && !optedOutEmails.has(discoveryEmail)
@@ -234,10 +250,9 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
             anyPending={anyPending}
             setLastAuthMethod={setLastAuthMethod}
             startOAuthLogin={startOAuthLogin}
-            promptGoogle={promptGoogle}
+            onGoogleClick={handleGoogleClick}
             isGithubConfigured={isGithubConfigured}
             isGoogleConfigured={isGoogleConfigured}
-            isGoogleReady={isGoogleReady}
             isFacebookConfigured={isFacebookConfigured}
             isTwitterConfigured={isTwitterConfigured}
             isOAuthPending={isOAuthPending}
