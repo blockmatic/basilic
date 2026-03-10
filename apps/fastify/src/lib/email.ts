@@ -1,3 +1,8 @@
+/** Trim and lowercase email for consistent lookup and storage. */
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase()
+}
+
 export type EmailProvider = {
   emails: {
     send: (options: {

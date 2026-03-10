@@ -93,6 +93,21 @@ Magic link sign-in issues a **6-digit login code** over email, then exchanges it
 3. **Option A (manual):** User types the 6-digit code in the login form → `POST /auth/magiclink/verify` with `{ token: code }` → JWTs returned
 4. **Option B (link):** User clicks the button in email → callback page receives `?token={code}` → verify → cookies set, redirect
 
+### Change email (implemented)
+
+Change email follows the same 6-digit + link pattern as magic link. User requests change, receives code and link in email, verifies via code entry or link click.
+
+**Flow:**
+1. User enters new email → `POST /account/email/change/request` (Bearer, body: `{ email, callbackUrl }`) → rate limited 3/hour per user
+2. Email contains 6-digit code and link; identifier `userId:newEmail`; 15 min TTL
+3. **Code entry:** `POST /account/email/change/verify` with `{ token, email }` (Bearer)
+4. **Link click:** User hits `/auth/callback/change-email?token=&verificationId=` → callback verifies with Bearer, sets cookies, redirects `/settings?email_changed=ok`
+5. On success: `users.email` updated, session rotated, old-email notification sent (fire-and-forget)
+
+**Verify payload modes:** Exactly one of `{ token, email }` or `{ token, verificationId }`. Auth attempts type `change_email` (5 fail → 15 min lock).
+
+**Callback without session:** Redirect to `/auth/login?redirect=...`; after login, user returns to callback with session and verifies.
+
 ### OAuth (GitHub)
 
 OAuth sign-in uses provider authorization + callback flows and issues access + refresh JWTs. Provider accounts are stored in `account` (provider id, account id, and encrypted tokens at rest).
@@ -115,6 +130,17 @@ OAuth sign-in uses provider authorization + callback flows and issues access + r
 **Twitter (X):** OAuth 2.0 with PKCE. `GET /auth/oauth/twitter/authorize-url` (includes `code_challenge`) → `POST /auth/oauth/twitter/exchange` (includes `code_verifier` from verification `meta`). Callback: `/auth/callback/oauth/twitter`. **Setup:** `TWITTER_CLIENT_ID`, `TWITTER_CLIENT_SECRET`, `OAUTH_TWITTER_CALLBACK_URL`.
 
 When a provider is not configured (503 `OAUTH_NOT_CONFIGURED`), the client shows a Sonner toast instead of redirecting.
+
+### OAuth account linking (implemented)
+
+Logged-in users can link additional OAuth providers from Profile (Settings). Flow: `GET /auth/oauth/{provider}/link-authorize-url` (Bearer) → redirect to provider → callback → exchange with `oauth_link_state` → link account, return `{ token, refreshToken, redirectTo: "/settings?linked=ok" }`.
+
+- **Link-authorize-url:** Bearer required, rate limit 10/hour per user. Stores `oauth_link_state` with `meta.userId`.
+- **Exchange:** State lookup branches on `oauth_link_state` vs `oauth_state`. Link mode uses `meta.userId`; if provider already linked to another user → 409 `PROVIDER_ALREADY_LINKED`.
+- **Unlink:** `DELETE /account/link/oauth/:providerId` (Bearer). Guardrail: cannot unlink if it would leave no sign-in method (400 `LAST_SIGN_IN_METHOD`).
+- **Session user:** `GET /auth/session/user` returns `linkedAccounts: [{ providerId }]`.
+
+See [Account linking](/docs/architecture/account-linking) for change email vs link email, provider trust, and guardrails.
 
 ### Web3 (SIWE / SIWS)
 
@@ -290,13 +316,18 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `GET /auth/web3/nonce` → `{ nonce }` (query: `chain`, `address`)
   - `POST /auth/web3/:chain/verify` → `{ token, refreshToken }`
   - `:chain` is `eip155` or `solana`
+- **Change email** (Bearer required)
+  - `POST /account/email/change/request` → `{ ok }` (body: `email`, `callbackUrl`), rate limit 3/hour
+  - `POST /account/email/change/verify` → `{ token, refreshToken }` (body: `{ token, email }` or `{ token, verificationId }`)
 - **Account linking** (Bearer required — JWT or API key)
   - `POST /account/link/wallet/verify` → `{ ok }` (body: `chain`, `message`, `signature`)
   - `DELETE /account/link/wallet/:id` → `204` (unlink wallet by id from `linkedWallets`)
   - `POST /account/link/email/request` → `{ ok }` (body: `email`, `callbackUrl`)
   - `POST /account/link/email/verify` → `{ token, refreshToken }` (body: `token`)
+  - `GET /auth/oauth/{github,facebook,twitter}/link-authorize-url` → `{ redirectUrl }` (Bearer), rate limit 10/hour
+  - `DELETE /account/link/oauth/:providerId` → `204` (unlink OAuth provider)
 
-**Account link error codes**: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`
+**Account link error codes**: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `PROVIDER_ALREADY_LINKED`, `LAST_SIGN_IN_METHOD`
 
 - **API keys** (Bearer required — JWT or API key)
   - `POST /account/apikeys` → `{ id, name, key, prefix, createdAt }` (key shown once)
@@ -321,13 +352,13 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `POST /auth/passkey/exchange` → `{ token, refreshToken }` (body: `{ code }`)
 
 - **Session**
-  - `GET /auth/session/user` (Bearer) → `{ user }` (includes optional `wallet`, `linkedWallets` with `{ id, chain, address }` for unlink, `totpEnabled`, `passkeys` with `{ id, name, createdAt }`)
+  - `GET /auth/session/user` (Bearer) → `{ user }` (includes optional `wallet`, `linkedWallets`, `linkedAccounts` with `{ providerId }`, `totpEnabled`, `passkeys` with `{ id, name, createdAt }`)
   - `POST /auth/session/logout` (Bearer) → `204`
   - `POST /auth/session/refresh` → `{ token, refreshToken }`
 
 ## Next.js Auth (web)
 
-**Callback pages** (`/auth/callback/magiclink`, `/auth/callback/oauth/github`, `/auth/callback/web3`, `/auth/callback/passkey`) exchange credentials with Fastify, set cookies, and redirect. **Logout** (`/auth/logout`) calls Fastify to revoke the session and clears cookies.
+**Callback pages** (`/auth/callback/magiclink`, `/auth/callback/change-email`, `/auth/callback/oauth/github`, `/auth/callback/web3`, `/auth/callback/passkey`) exchange credentials with Fastify, set cookies, and redirect. **Logout** (`/auth/logout`) calls Fastify to revoke the session and clears cookies.
 
 **API routes** (cookie updates only):
 - `POST /api/auth/update-tokens`: accepts `{ token, refreshToken }`, sets single cookie. Used after 401 refresh (core's `onTokensRefreshed`) and after link email or profile edit.
@@ -443,7 +474,7 @@ sequenceDiagram
 The auth system relies on these tables:
 
 - **`users`**: user identity (email-based for magic link)
-- **`verification`**: single-use tokens (stored hashed, with TTL); `type` = `magic_link` | `link_email` | `oauth_state` (link_email reserved for Phase 1b)
+- **`verification`**: single-use tokens (stored hashed, with TTL); `type` = `magic_link` | `link_email` | `oauth_state` | `change_email` | `oauth_link_state`
 - **`sessions`**: server-side session state (stores hashed refresh `jti`, expiry, optional `wallet_chain`/`wallet_address` for wallet sessions)
 - **`account`**: OAuth provider accounts (provider id + encrypted tokens at rest)
 - **`wallet_identities`**: Web3 identities (`eip155`/`solana` + normalized address)

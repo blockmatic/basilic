@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkPasskeyDeleteData, AccountLinkPasskeyDeleteErrors, AccountLinkPasskeyDeleteResponses, AccountLinkPasskeyFinishData, AccountLinkPasskeyFinishErrors, AccountLinkPasskeyFinishResponses, AccountLinkPasskeyStartData, AccountLinkPasskeyStartErrors, AccountLinkPasskeyStartResponses, AccountLinkTotpSetupData, AccountLinkTotpSetupErrors, AccountLinkTotpSetupResponses, AccountLinkTotpUnlinkData, AccountLinkTotpUnlinkErrors, AccountLinkTotpUnlinkResponses, AccountLinkTotpVerifyData, AccountLinkTotpVerifyErrors, AccountLinkTotpVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, AccountPasskeysListData, AccountPasskeysListErrors, AccountPasskeysListResponses, AccountProfileUpdateData, AccountProfileUpdateErrors, AccountProfileUpdateResponses, AuthPasskeyExchangeData, AuthPasskeyExchangeErrors, AuthPasskeyExchangeResponses, AuthPasskeyResolveUserData, AuthPasskeyResolveUserErrors, AuthPasskeyResolveUserResponses, AuthPasskeyStartData, AuthPasskeyStartErrors, AuthPasskeyStartResponses, AuthPasskeyVerifyData, AuthPasskeyVerifyErrors, AuthPasskeyVerifyResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthFacebookAuthorizeUrlData, OauthFacebookAuthorizeUrlErrors, OauthFacebookAuthorizeUrlResponses, OauthFacebookExchangeData, OauthFacebookExchangeErrors, OauthFacebookExchangeResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, OauthGoogleVerifyIdTokenData, OauthGoogleVerifyIdTokenErrors, OauthGoogleVerifyIdTokenResponses, OauthProvidersData, OauthProvidersResponses, OauthTwitterAuthorizeUrlData, OauthTwitterAuthorizeUrlErrors, OauthTwitterAuthorizeUrlResponses, OauthTwitterExchangeData, OauthTwitterExchangeErrors, OauthTwitterExchangeResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3ExchangeData, Web3ExchangeErrors, Web3ExchangeResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
+import type { AccountApikeysCreateData, AccountApikeysCreateErrors, AccountApikeysCreateResponses, AccountApikeysListData, AccountApikeysListErrors, AccountApikeysListResponses, AccountApikeysRevokeData, AccountApikeysRevokeErrors, AccountApikeysRevokeResponses, AccountEmailChangeRequestData, AccountEmailChangeRequestErrors, AccountEmailChangeRequestResponses, AccountEmailChangeVerifyData, AccountEmailChangeVerifyErrors, AccountEmailChangeVerifyResponses, AccountLinkEmailRequestData, AccountLinkEmailRequestErrors, AccountLinkEmailRequestResponses, AccountLinkEmailVerifyData, AccountLinkEmailVerifyErrors, AccountLinkEmailVerifyResponses, AccountLinkOauthUnlinkData, AccountLinkOauthUnlinkErrors, AccountLinkOauthUnlinkResponses, AccountLinkPasskeyDeleteData, AccountLinkPasskeyDeleteErrors, AccountLinkPasskeyDeleteResponses, AccountLinkPasskeyFinishData, AccountLinkPasskeyFinishErrors, AccountLinkPasskeyFinishResponses, AccountLinkPasskeyStartData, AccountLinkPasskeyStartErrors, AccountLinkPasskeyStartResponses, AccountLinkTotpSetupData, AccountLinkTotpSetupErrors, AccountLinkTotpSetupResponses, AccountLinkTotpUnlinkData, AccountLinkTotpUnlinkErrors, AccountLinkTotpUnlinkResponses, AccountLinkTotpVerifyData, AccountLinkTotpVerifyErrors, AccountLinkTotpVerifyResponses, AccountLinkWalletUnlinkData, AccountLinkWalletUnlinkErrors, AccountLinkWalletUnlinkResponses, AccountLinkWalletVerifyData, AccountLinkWalletVerifyErrors, AccountLinkWalletVerifyResponses, AccountPasskeysListData, AccountPasskeysListErrors, AccountPasskeysListResponses, AccountProfileUpdateData, AccountProfileUpdateErrors, AccountProfileUpdateResponses, AuthPasskeyExchangeData, AuthPasskeyExchangeErrors, AuthPasskeyExchangeResponses, AuthPasskeyResolveUserData, AuthPasskeyResolveUserErrors, AuthPasskeyResolveUserResponses, AuthPasskeyStartData, AuthPasskeyStartErrors, AuthPasskeyStartResponses, AuthPasskeyVerifyData, AuthPasskeyVerifyErrors, AuthPasskeyVerifyResponses, ChatData, ChatErrors, ChatResponses, GetUserData, GetUserErrors, GetUserResponses, HealthCheckData, HealthCheckResponses, LogoutData, LogoutErrors, LogoutResponses, MagiclinkRequestData, MagiclinkRequestErrors, MagiclinkRequestResponses, MagiclinkVerifyData, MagiclinkVerifyErrors, MagiclinkVerifyResponses, OauthFacebookAuthorizeUrlData, OauthFacebookAuthorizeUrlErrors, OauthFacebookAuthorizeUrlResponses, OauthFacebookExchangeData, OauthFacebookExchangeErrors, OauthFacebookExchangeResponses, OauthFacebookLinkAuthorizeUrlData, OauthFacebookLinkAuthorizeUrlErrors, OauthFacebookLinkAuthorizeUrlResponses, OauthGithubAuthorizeData, OauthGithubAuthorizeErrors, OauthGithubAuthorizeUrlData, OauthGithubAuthorizeUrlErrors, OauthGithubAuthorizeUrlResponses, OauthGithubExchangeData, OauthGithubExchangeErrors, OauthGithubExchangeResponses, OauthGithubLinkAuthorizeUrlData, OauthGithubLinkAuthorizeUrlErrors, OauthGithubLinkAuthorizeUrlResponses, OauthGoogleVerifyIdTokenData, OauthGoogleVerifyIdTokenErrors, OauthGoogleVerifyIdTokenResponses, OauthProvidersData, OauthProvidersResponses, OauthTwitterAuthorizeUrlData, OauthTwitterAuthorizeUrlErrors, OauthTwitterAuthorizeUrlResponses, OauthTwitterExchangeData, OauthTwitterExchangeErrors, OauthTwitterExchangeResponses, OauthTwitterLinkAuthorizeUrlData, OauthTwitterLinkAuthorizeUrlErrors, OauthTwitterLinkAuthorizeUrlResponses, RefreshData, RefreshErrors, RefreshResponses, Web3Eip155NonceData, Web3Eip155NonceErrors, Web3Eip155NonceResponses, Web3Eip155VerifyData, Web3Eip155VerifyErrors, Web3Eip155VerifyResponses, Web3ExchangeData, Web3ExchangeErrors, Web3ExchangeResponses, Web3NonceData, Web3NonceErrors, Web3NonceResponses, Web3SolanaNonceData, Web3SolanaNonceErrors, Web3SolanaNonceResponses, Web3SolanaVerifyData, Web3SolanaVerifyErrors, Web3SolanaVerifyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -63,6 +63,36 @@ export const accountApikeysRevoke = <ThrowOnError extends boolean = false>(optio
 });
 
 /**
+ * Change email request
+ *
+ * Request change of email for authenticated user
+ */
+export const accountEmailChangeRequest = <ThrowOnError extends boolean = false>(options: Options<AccountEmailChangeRequestData, ThrowOnError>) => (options.client ?? client).post<AccountEmailChangeRequestResponses, AccountEmailChangeRequestErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/email/change/request',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Change email verify
+ *
+ * Verify change email token (6-digit code) and update user email
+ */
+export const accountEmailChangeVerify = <ThrowOnError extends boolean = false>(options: Options<AccountEmailChangeVerifyData, ThrowOnError>) => (options.client ?? client).post<AccountEmailChangeVerifyResponses, AccountEmailChangeVerifyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/email/change/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Link email request
  *
  * Request email to link to authenticated user
@@ -90,6 +120,17 @@ export const accountLinkEmailVerify = <ThrowOnError extends boolean = false>(opt
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * OAuth unlink
+ *
+ * Unlink OAuth provider from authenticated user
+ */
+export const accountLinkOauthUnlink = <ThrowOnError extends boolean = false>(options: Options<AccountLinkOauthUnlinkData, ThrowOnError>) => (options.client ?? client).delete<AccountLinkOauthUnlinkResponses, AccountLinkOauthUnlinkErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/account/link/oauth/{providerId}',
+    ...options
 });
 
 /**
@@ -290,6 +331,17 @@ export const oauthFacebookExchange = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
+ * Facebook OAuth link authorize URL
+ *
+ * Return Facebook OAuth URL for linking account (Bearer required)
+ */
+export const oauthFacebookLinkAuthorizeUrl = <ThrowOnError extends boolean = false>(options?: Options<OauthFacebookLinkAuthorizeUrlData, ThrowOnError>) => (options?.client ?? client).get<OauthFacebookLinkAuthorizeUrlResponses, OauthFacebookLinkAuthorizeUrlErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/auth/oauth/facebook/link-authorize-url',
+    ...options
+});
+
+/**
  * GitHub OAuth authorize URL
  *
  * Return GitHub OAuth authorization URL for client-side redirect
@@ -315,6 +367,17 @@ export const oauthGithubExchange = <ThrowOnError extends boolean = false>(option
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * GitHub OAuth link authorize URL
+ *
+ * Return GitHub OAuth URL for linking account (Bearer required)
+ */
+export const oauthGithubLinkAuthorizeUrl = <ThrowOnError extends boolean = false>(options?: Options<OauthGithubLinkAuthorizeUrlData, ThrowOnError>) => (options?.client ?? client).get<OauthGithubLinkAuthorizeUrlResponses, OauthGithubLinkAuthorizeUrlErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/auth/oauth/github/link-authorize-url',
+    ...options
 });
 
 /**
@@ -350,6 +413,17 @@ export const oauthTwitterExchange = <ThrowOnError extends boolean = false>(optio
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Twitter OAuth link authorize URL
+ *
+ * Return Twitter/X OAuth URL for linking account (Bearer required, PKCE)
+ */
+export const oauthTwitterLinkAuthorizeUrl = <ThrowOnError extends boolean = false>(options?: Options<OauthTwitterLinkAuthorizeUrlData, ThrowOnError>) => (options?.client ?? client).get<OauthTwitterLinkAuthorizeUrlResponses, OauthTwitterLinkAuthorizeUrlErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/auth/oauth/twitter/link-authorize-url',
+    ...options
 });
 
 /**

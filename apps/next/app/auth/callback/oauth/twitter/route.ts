@@ -2,7 +2,7 @@ import { createClient } from '@repo/core'
 import { redirect, unstable_rethrow } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
-import { extractTokens } from '@/lib/auth/callback-utils'
+import { extractTokens, getOAuthRedirectTarget } from '@/lib/auth/callback-utils'
 import { env } from '@/lib/env'
 
 const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
@@ -33,7 +33,10 @@ export async function GET(request: Request) {
     const tokens = extractTokens(response)
     if (!tokens) return redirect(`/auth/login?message=${encodeURIComponent('oauth_failed')}`)
 
-    const redirectResponse = NextResponse.redirect(new URL('/', request.url), 303)
+    const redirectResponse = NextResponse.redirect(
+      new URL(getOAuthRedirectTarget(response), request.url),
+      303,
+    )
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {

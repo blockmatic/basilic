@@ -1,7 +1,7 @@
 import { createClient } from '@repo/core'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
-import { extractTokens } from '@/lib/auth/callback-utils'
+import { extractTokens, getOAuthRedirectTarget } from '@/lib/auth/callback-utils'
 import { env } from '@/lib/env'
 
 const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
@@ -39,7 +39,10 @@ export async function GET(request: Request) {
         303,
       )
 
-    const redirectResponse = NextResponse.redirect(new URL('/', request.url), 303)
+    const redirectResponse = NextResponse.redirect(
+      new URL(getOAuthRedirectTarget(response), request.url),
+      303,
+    )
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {

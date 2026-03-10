@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
-import { account, sessions, verification } from '../../../../db/schema/index.js'
+import { account, sessions, users, verification } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,
@@ -24,6 +24,7 @@ const ExchangeSchema = Type.Object({
 const ExchangeResponseSchema = Type.Object({
   token: Type.String(),
   refreshToken: Type.String(),
+  redirectTo: Type.Optional(Type.String()),
 })
 
 type FacebookTokenResponse = {
@@ -49,6 +50,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           200: ExchangeResponseSchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          409: ErrorResponseSchema,
           500: ErrorResponseSchema,
           503: ErrorResponseSchema,
           504: ErrorResponseSchema,
@@ -72,7 +74,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const [stateRecord] = await db
         .select()
         .from(verification)
-        .where(and(eq(verification.value, stateHash), eq(verification.type, 'oauth_state')))
+        .where(
+          and(
+            eq(verification.value, stateHash),
+            inArray(verification.type, ['oauth_state', 'oauth_link_state']),
+          ),
+        )
 
       if (!stateRecord)
         return reply.code(401).send({
@@ -88,6 +95,8 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
+      const isLinkMode = stateRecord.type === 'oauth_link_state'
+      const linkUserId = stateRecord.meta?.userId
       await db.delete(verification).where(eq(verification.id, stateRecord.id))
 
       const tokenUrl = new URL('https://graph.facebook.com/v21.0/oauth/access_token')
@@ -166,21 +175,50 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Could not retrieve email from Facebook',
         })
 
-      const user = await findOrCreateUserByEmail(db, {
-        email,
-        name,
-        emailVerified: true,
-      })
-      if (!user)
-        return reply.code(500).send({
-          code: 'USER_CREATE_FAILED',
-          message: 'Failed to create or find user',
-        })
-
       const [existingAccount] = await db
         .select()
         .from(account)
         .where(and(eq(account.providerId, 'facebook'), eq(account.accountId, accountId)))
+
+      if (isLinkMode) {
+        if (!linkUserId)
+          return reply.code(401).send({
+            code: 'INVALID_STATE',
+            message: 'Invalid link state',
+          })
+        if (existingAccount && existingAccount.userId !== linkUserId)
+          return reply.code(409).send({
+            code: 'PROVIDER_ALREADY_LINKED',
+            message: 'This Facebook account is already linked to another user',
+          })
+      }
+
+      let user: { id: string }
+      if (isLinkMode && linkUserId) {
+        const [u] = await db.select().from(users).where(eq(users.id, linkUserId))
+        if (!u)
+          return reply.code(401).send({
+            code: 'INVALID_STATE',
+            message: 'User not found for link',
+          })
+        user = u
+      } else if (existingAccount) {
+        const [u] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
+        if (!u)
+          return reply.code(500).send({
+            code: 'USER_NOT_FOUND',
+            message: 'Account references missing user',
+          })
+        user = u
+      } else {
+        const u = await findOrCreateUserByEmail(db, { email, name, emailVerified: true })
+        if (!u)
+          return reply.code(500).send({
+            code: 'USER_CREATE_FAILED',
+            message: 'Failed to create or find user',
+          })
+        user = u
+      }
 
       const accountData = {
         id: existingAccount?.id ?? randomUUID(),
@@ -249,10 +287,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
       })
 
-      return reply.code(200).send({
+      const payload: { token: string; refreshToken: string; redirectTo?: string } = {
         token: jwtAccess,
         refreshToken: jwtRefresh,
-      })
+      }
+      if (isLinkMode) payload.redirectTo = '/settings?linked=ok'
+      return reply.code(200).send(payload)
     },
   )
 }

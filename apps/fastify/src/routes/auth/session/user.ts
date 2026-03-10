@@ -3,7 +3,13 @@ import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
-import { passkeyCredentials, totp, users, walletIdentities } from '../../../db/schema/index.js'
+import {
+  account,
+  passkeyCredentials,
+  totp,
+  users,
+  walletIdentities,
+} from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const LinkedWalletSchema = Type.Object({
@@ -18,6 +24,10 @@ const PasskeySchema = Type.Object({
   createdAt: Type.String({ format: 'date-time' }),
 })
 
+const LinkedAccountSchema = Type.Object({
+  providerId: Type.String(),
+})
+
 const UserResponseSchema = Type.Object({
   user: Type.Object({
     id: Type.String(),
@@ -27,6 +37,7 @@ const UserResponseSchema = Type.Object({
     emailVerified: Type.Union([Type.Boolean(), Type.Null()]),
     wallet: Type.Optional(Type.Object({ chain: Type.String(), address: Type.String() })),
     linkedWallets: Type.Array(LinkedWalletSchema),
+    linkedAccounts: Type.Array(LinkedAccountSchema),
     totpEnabled: Type.Boolean(),
     passkeys: Type.Array(PasskeySchema),
   }),
@@ -58,6 +69,7 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
 
       const userId = request.session.user.id
       let linkedWallets: { id: string; chain: string; address: string }[] = []
+      let linkedAccounts: { providerId: string }[] = []
       let totpEnabled = false
       let passkeys: { id: string; name: string; createdAt: string }[] = []
       let userRow: { name?: string | null; username?: string | null } | undefined
@@ -72,6 +84,12 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           })
           .from(walletIdentities)
           .where(eq(walletIdentities.userId, userId))
+
+        const accountRows = await db
+          .select({ providerId: account.providerId })
+          .from(account)
+          .where(eq(account.userId, userId))
+        linkedAccounts = accountRows.map(a => ({ providerId: a.providerId }))
 
         const [totpRow] = await db.select().from(totp).where(eq(totp.userId, userId))
         totpEnabled = !!totpRow
@@ -111,6 +129,7 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           emailVerified: null,
           ...(request.session.user.wallet && { wallet: request.session.user.wallet }),
           linkedWallets,
+          linkedAccounts,
           totpEnabled,
           passkeys,
         },
