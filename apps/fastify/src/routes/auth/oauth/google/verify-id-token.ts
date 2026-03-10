@@ -8,6 +8,7 @@ import { getDb } from '../../../../db/index.js'
 import { account, users } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
+import { generateFunnyUsername } from '../../../../lib/username.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const VerifyIdTokenSchema = Type.Object({
@@ -101,11 +102,13 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
           if (byEmail) user = byEmail
           if (!user) {
             const userId = randomUUID()
+            const username = await generateFunnyUsername(db)
             await tx.insert(users).values({
               id: userId,
               email,
               emailVerified: true,
               name,
+              username,
             })
             ;[user] = await tx.select().from(users).where(eq(users.id, userId))
             if (!user) throw new Error('Failed to create user')

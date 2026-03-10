@@ -13,6 +13,7 @@ import {
   generateJti,
   hashToken,
 } from '../../../../lib/jwt.js'
+import { generateFunnyUsername } from '../../../../lib/username.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -217,11 +218,13 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           }
           if (!user) {
             const userId = randomUUID()
+            const username = await generateFunnyUsername(db)
             await tx.insert(users).values({
               id: userId,
               email: null,
               emailVerified: false,
               name,
+              username,
             })
             ;[user] = await tx.select().from(users).where(eq(users.id, userId))
             if (!user) throw new Error('USER_CREATE_FAILED')

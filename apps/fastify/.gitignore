@@ -52,8 +52,9 @@ profile-*
 .vscode
 *code-workspace
 
-# clinic
+# clinic (profile-*.json etc; exclude account profile route)
 profile*
+!src/routes/account/profile/
 *clinic*
 *flamegraph*
 

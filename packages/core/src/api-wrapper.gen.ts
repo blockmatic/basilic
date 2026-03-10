@@ -31,6 +31,7 @@ account: {
     },
   },
   passkeys: gen.accountPasskeysList,
+  profile: gen.accountProfileUpdate,
 },
 ai: {
   chat: gen.chat,

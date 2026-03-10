@@ -11,6 +11,7 @@ import { users, verification } from '../../../db/schema/index.js'
 import { env } from '../../../lib/env.js'
 import { generateLoginCode, hashToken } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
+import { generateFunnyUsername } from '../../../lib/username.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const RequestSchema = Type.Object({
@@ -56,11 +57,13 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       if (!user) {
         const userId = randomUUID()
         const funnyName = `${faker.word.adjective()} ${faker.animal.type()}`
+        const username = await generateFunnyUsername(db)
         await db.insert(users).values({
           id: userId,
           email,
           emailVerified: false,
           name: funnyName,
+          username,
         })
         ;[user] = await db.select().from(users).where(eq(users.id, userId))
         if (!user) throw new Error('Failed to create user')

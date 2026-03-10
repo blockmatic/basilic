@@ -13,6 +13,7 @@ import {
   generateJti,
   hashToken,
 } from '../../../../lib/jwt.js'
+import { generateFunnyUsername } from '../../../../lib/username.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -165,6 +166,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Could not retrieve email from Facebook',
         })
 
+      const username = await generateFunnyUsername(db)
       await db
         .insert(users)
         .values({
@@ -172,6 +174,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           email,
           emailVerified: true,
           name,
+          username,
         })
         .onConflictDoNothing({ target: users.email })
       const [user] = await db.select().from(users).where(eq(users.email, email))

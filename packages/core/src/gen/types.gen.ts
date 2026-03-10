@@ -623,6 +623,51 @@ export type AccountPasskeysListResponses = {
 
 export type AccountPasskeysListResponse = AccountPasskeysListResponses[keyof AccountPasskeysListResponses];
 
+export type AccountProfileUpdateData = {
+    body: {
+        name?: string;
+        username?: string | unknown;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/profile/';
+};
+
+export type AccountProfileUpdateErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountProfileUpdateError = AccountProfileUpdateErrors[keyof AccountProfileUpdateErrors];
+
+export type AccountProfileUpdateResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        user: {
+            id: string;
+            email: string | unknown;
+            name: string | unknown;
+            username: string | unknown;
+        };
+    };
+};
+
+export type AccountProfileUpdateResponse = AccountProfileUpdateResponses[keyof AccountProfileUpdateResponses];
+
 export type ChatData = {
     body: {
         messages: Array<{
@@ -1396,6 +1441,7 @@ export type GetUserResponses = {
             id: string;
             email: string | unknown;
             name: string | unknown;
+            username: string | unknown;
             emailVerified: boolean | unknown;
             wallet?: {
                 chain: string;

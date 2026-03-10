@@ -30,6 +30,8 @@ import type {
   AccountLinkWalletVerifyResponse,
   AccountPasskeysListData,
   AccountPasskeysListResponse,
+  AccountProfileUpdateData,
+  AccountProfileUpdateResponse,
   AuthPasskeyExchangeData,
   AuthPasskeyExchangeResponse,
   AuthPasskeyResolveUserData,
@@ -111,7 +113,8 @@ export type CoreApiClient = {
         verify: (opts: Options<AccountLinkWalletVerifyData>) => Promise<AccountLinkWalletVerifyResponse>
       }
     };
-    passkeys: (opts?: Options<AccountPasskeysListData>) => Promise<AccountPasskeysListResponse>
+    passkeys: (opts?: Options<AccountPasskeysListData>) => Promise<AccountPasskeysListResponse>;
+    profile: (opts: Options<AccountProfileUpdateData>) => Promise<AccountProfileUpdateResponse>
   };
   ai: {
     chat: (opts: Options<ChatData>) => Promise<ChatResponse>

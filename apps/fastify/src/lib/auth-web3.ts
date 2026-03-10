@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { and, eq } from 'drizzle-orm'
 import { getDb } from '../db/index.js'
 import { users, walletIdentities, web3Nonce } from '../db/schema/index.js'
+import { generateFunnyUsername } from './username.js'
 
 type ParsedMessage = { address: string; nonce: string; domain: string }
 
@@ -81,11 +82,13 @@ export async function verifyWeb3Auth({
 
   if (!user) {
     const userId = randomUUID()
+    const username = await generateFunnyUsername(db)
     await db.transaction(async tx => {
       await tx.insert(users).values({
         id: userId,
         email: null,
         emailVerified: false,
+        username,
       })
       await tx.insert(walletIdentities).values({
         id: randomUUID(),
