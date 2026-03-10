@@ -37,22 +37,28 @@ export function useOAuthLogin(
     mutationFn: async input => {
       const provider = typeof input === 'string' ? input : input.provider
       const redirectUri = typeof input === 'object' ? input.redirectUri : undefined
-      const data =
-        provider === 'google' && redirectUri
-          ? await client.auth.oauth.google.authorizeUrl({
+      if (redirectUri !== undefined && redirectUri.trim() === '')
+        throw new Error('redirectUri cannot be blank')
+      const authorizeUrl = {
+        github: (opts?: Parameters<typeof client.auth.oauth.github.authorizeUrl>[0]) =>
+          client.auth.oauth.github.authorizeUrl(opts),
+        google: (opts?: Parameters<typeof client.auth.oauth.google.authorizeUrl>[0]) =>
+          client.auth.oauth.google.authorizeUrl(opts),
+        facebook: (opts?: Parameters<typeof client.auth.oauth.facebook.authorizeUrl>[0]) =>
+          client.auth.oauth.facebook.authorizeUrl(opts),
+        twitter: (opts?: Parameters<typeof client.auth.oauth.twitter.authorizeUrl>[0]) =>
+          client.auth.oauth.twitter.authorizeUrl(opts),
+      } as const
+      const data = await authorizeUrl[provider](
+        redirectUri !== undefined
+          ? {
               query: {
                 // biome-ignore lint/style/useNamingConvention: OAuth API expects redirect_uri
                 redirect_uri: redirectUri,
               },
-            })
-          : await (
-              {
-                github: client.auth.oauth.github.authorizeUrl,
-                google: client.auth.oauth.google.authorizeUrl,
-                facebook: client.auth.oauth.facebook.authorizeUrl,
-                twitter: client.auth.oauth.twitter.authorizeUrl,
-              } as const
-            )[provider]()
+            }
+          : undefined,
+      )
       const url = data?.redirectUrl
       if (typeof url !== 'string' || !url.trim())
         throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)

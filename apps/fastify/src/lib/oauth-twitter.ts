@@ -142,12 +142,11 @@ async function runTwitterExchangeTxForUser(params: {
 export async function fetchTwitterOAuthData(input: {
   code: string
   codeVerifier: string
-  oauthTwitterCallbackUrl: string
+  redirectUri: string
   twitterClientId: string
   twitterClientSecret: string
 }): Promise<{ accountId: string; name: string; accountData: TwitterAccountData }> {
-  const { code, codeVerifier, oauthTwitterCallbackUrl, twitterClientId, twitterClientSecret } =
-    input
+  const { code, codeVerifier, redirectUri, twitterClientId, twitterClientSecret } = input
   const fetchTimeoutMs = 15_000
   const tokenBody = new URLSearchParams({
     /* biome-ignore lint/style/useNamingConvention: OAuth spec uses snake_case */
@@ -156,7 +155,7 @@ export async function fetchTwitterOAuthData(input: {
     /* biome-ignore lint/style/useNamingConvention: OAuth spec uses snake_case */
     code_verifier: codeVerifier,
     /* biome-ignore lint/style/useNamingConvention: OAuth spec uses snake_case */
-    redirect_uri: oauthTwitterCallbackUrl,
+    redirect_uri: redirectUri,
   })
   const basicAuth = Buffer.from(`${twitterClientId}:${twitterClientSecret}`).toString('base64')
   const tokenRes = await fetch('https://api.x.com/2/oauth2/token', {

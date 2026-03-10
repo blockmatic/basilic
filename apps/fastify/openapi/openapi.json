@@ -2708,25 +2708,37 @@
                   "type": "object",
                   "required": [
                     "github",
+                    "githubHasRedirectConfig",
                     "google",
-                    "googleRedirect",
+                    "googleHasRedirectConfig",
                     "facebook",
-                    "twitter"
+                    "facebookHasRedirectConfig",
+                    "twitter",
+                    "twitterHasRedirectConfig"
                   ],
                   "properties": {
                     "github": {
                       "type": "boolean"
                     },
+                    "githubHasRedirectConfig": {
+                      "type": "boolean"
+                    },
                     "google": {
                       "type": "boolean"
                     },
-                    "googleRedirect": {
+                    "googleHasRedirectConfig": {
                       "type": "boolean"
                     },
                     "facebook": {
                       "type": "boolean"
                     },
+                    "facebookHasRedirectConfig": {
+                      "type": "boolean"
+                    },
                     "twitter": {
+                      "type": "boolean"
+                    },
+                    "twitterHasRedirectConfig": {
                       "type": "boolean"
                     }
                   }
@@ -2745,6 +2757,16 @@
           "auth"
         ],
         "description": "Return Facebook OAuth authorization URL for client-side redirect",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "redirect_uri",
+            "required": false
+          }
+        ],
         "security": [],
         "responses": {
           "200": {
@@ -2758,6 +2780,28 @@
                   ],
                   "properties": {
                     "redirectUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
                       "type": "string"
                     }
                   }
@@ -2990,6 +3034,16 @@
           "auth"
         ],
         "description": "Return Facebook OAuth URL for linking account (Bearer required)",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "redirect_uri",
+            "required": false
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -3007,6 +3061,28 @@
                   ],
                   "properties": {
                     "redirectUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
                       "type": "string"
                     }
                   }
@@ -3091,6 +3167,16 @@
           "auth"
         ],
         "description": "Return GitHub OAuth authorization URL for client-side redirect",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "redirect_uri",
+            "required": false
+          }
+        ],
         "security": [],
         "responses": {
           "200": {
@@ -3104,6 +3190,28 @@
                   ],
                   "properties": {
                     "redirectUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
                       "type": "string"
                     }
                   }
@@ -3144,6 +3252,16 @@
           "auth"
         ],
         "description": "Redirect to GitHub OAuth authorization",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "redirect_uri",
+            "required": false
+          }
+        ],
         "security": [],
         "responses": {
           "302": {
@@ -3153,6 +3271,28 @@
                 "schema": {
                   "type": "string",
                   "description": "Redirect to GitHub"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -3360,6 +3500,16 @@
           "auth"
         ],
         "description": "Return GitHub OAuth URL for linking account (Bearer required)",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "redirect_uri",
+            "required": false
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -3377,6 +3527,28 @@
                   ],
                   "properties": {
                     "redirectUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
                       "type": "string"
                     }
                   }
@@ -3990,6 +4162,16 @@
           "auth"
         ],
         "description": "Return Twitter/X OAuth authorization URL for client-side redirect (PKCE)",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "redirect_uri",
+            "required": false
+          }
+        ],
         "security": [],
         "responses": {
           "200": {
@@ -4003,6 +4185,28 @@
                   ],
                   "properties": {
                     "redirectUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
                       "type": "string"
                     }
                   }
@@ -4257,6 +4461,16 @@
           "auth"
         ],
         "description": "Return Twitter/X OAuth URL for linking account (Bearer required, PKCE)",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "redirect_uri",
+            "required": false
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -4274,6 +4488,28 @@
                   ],
                   "properties": {
                     "redirectUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
                       "type": "string"
                     }
                   }

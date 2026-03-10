@@ -6,6 +6,10 @@ import { getDb } from '../../../../db/index.js'
 import { verification } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
+import {
+  getOAuthAllowedCallbackUrls,
+  resolveOAuthCallbackUrl,
+} from '../../../../lib/oauth-shared.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const AuthorizeUrlResponseSchema = Type.Object({
@@ -45,27 +49,29 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const googleClientId = env.GOOGLE_CLIENT_ID
       const googleClientSecret = env.GOOGLE_CLIENT_SECRET
-      const allowedUrls =
-        env.OAUTH_GOOGLE_CALLBACK_URLS ??
-        (env.OAUTH_GOOGLE_CALLBACK_URL ? [env.OAUTH_GOOGLE_CALLBACK_URL] : [])
-      const defaultUrl = allowedUrls[0]
-      if (!googleClientId || !googleClientSecret || !defaultUrl)
+      const allowedUrls = getOAuthAllowedCallbackUrls({
+        urls: env.OAUTH_GOOGLE_CALLBACK_URLS,
+        singleUrl: env.OAUTH_GOOGLE_CALLBACK_URL,
+      })
+      const resolved = resolveOAuthCallbackUrl({
+        allowedUrls,
+        requestedRedirectUri: (request.query as { redirect_uri?: string })?.redirect_uri,
+      })
+      if (!resolved.ok)
+        return reply.status(resolved.error === 'NOT_CONFIGURED' ? 503 : 400).send({
+          code:
+            resolved.error === 'NOT_CONFIGURED' ? 'OAUTH_NOT_CONFIGURED' : 'INVALID_REDIRECT_URI',
+          message:
+            resolved.error === 'NOT_CONFIGURED'
+              ? 'Google OAuth redirect is not configured'
+              : 'redirect_uri must be one of the configured callback URLs',
+        })
+      if (!googleClientId || !googleClientSecret)
         return reply.status(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'Google OAuth redirect is not configured',
         })
-
-      const requested = (request.query as { redirect_uri?: string })?.redirect_uri
-      const redirectUri = requested
-        ? allowedUrls.includes(requested)
-          ? requested
-          : null
-        : defaultUrl
-      if (!redirectUri)
-        return reply.status(400).send({
-          code: 'INVALID_REDIRECT_URI',
-          message: 'redirect_uri must be one of the configured callback URLs',
-        })
+      const { redirectUri } = resolved
 
       const state = randomUUID() + randomUUID().replace(/-/g, '')
       const stateHash = hashToken(state)

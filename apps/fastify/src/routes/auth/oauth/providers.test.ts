@@ -10,15 +10,21 @@ describe('GET /auth/oauth/providers', () => {
     expect(res.statusCode).toBe(200)
     const body = res.json() as {
       github: boolean
+      githubHasRedirectConfig: boolean
       google: boolean
-      googleRedirect: boolean
+      googleHasRedirectConfig: boolean
       facebook: boolean
+      facebookHasRedirectConfig: boolean
       twitter: boolean
+      twitterHasRedirectConfig: boolean
     }
     expect(typeof body.github).toBe('boolean')
+    expect(typeof body.githubHasRedirectConfig).toBe('boolean')
     expect(typeof body.google).toBe('boolean')
-    expect(typeof body.googleRedirect).toBe('boolean')
+    expect(typeof body.googleHasRedirectConfig).toBe('boolean')
     expect(typeof body.facebook).toBe('boolean')
+    expect(typeof body.facebookHasRedirectConfig).toBe('boolean')
     expect(typeof body.twitter).toBe('boolean')
+    expect(typeof body.twitterHasRedirectConfig).toBe('boolean')
   })
 })

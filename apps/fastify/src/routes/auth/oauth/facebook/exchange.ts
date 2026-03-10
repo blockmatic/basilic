@@ -14,6 +14,7 @@ import {
   hashToken,
 } from '../../../../lib/jwt.js'
 import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
+import { getOAuthAllowedCallbackUrls, type OAuthStateMeta } from '../../../../lib/oauth-shared.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
@@ -61,8 +62,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const facebookClientId = env.FACEBOOK_CLIENT_ID
       const facebookClientSecret = env.FACEBOOK_CLIENT_SECRET
-      const oauthFacebookCallbackUrl = env.OAUTH_FACEBOOK_CALLBACK_URL
-      if (!facebookClientId || !facebookClientSecret || !oauthFacebookCallbackUrl)
+      const allowedUrls = getOAuthAllowedCallbackUrls({
+        urls: env.OAUTH_FACEBOOK_CALLBACK_URLS,
+        singleUrl: env.OAUTH_FACEBOOK_CALLBACK_URL,
+      })
+      const defaultUrl = allowedUrls[0]
+      if (!facebookClientId || !facebookClientSecret || !defaultUrl)
         return reply.code(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'Facebook OAuth is not configured',
@@ -74,12 +79,19 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const db = await getDb()
       const validated = await validateAndConsumeOAuthState({ db, stateHash, request, reply })
       if (!validated.ok) return
-      const { isLinkMode, linkUserId } = validated
+      const { isLinkMode, linkUserId, stateRecord } = validated
+      const meta = stateRecord.meta as OAuthStateMeta | undefined
+      const redirectUri = meta?.redirectUri ?? defaultUrl
+      if (!allowedUrls.includes(redirectUri))
+        return reply.code(401).send({
+          code: 'INVALID_STATE',
+          message: 'Invalid or tampered redirect URI',
+        })
 
       const tokenUrl = new URL('https://graph.facebook.com/v21.0/oauth/access_token')
       tokenUrl.searchParams.set('client_id', facebookClientId)
       tokenUrl.searchParams.set('client_secret', facebookClientSecret)
-      tokenUrl.searchParams.set('redirect_uri', oauthFacebookCallbackUrl)
+      tokenUrl.searchParams.set('redirect_uri', redirectUri)
       tokenUrl.searchParams.set('code', code)
 
       const fetchTimeoutMs = 15_000

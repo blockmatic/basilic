@@ -28,6 +28,8 @@ type OAuthButtonsProps = {
   onGoogleClick: () => void
   isGithubConfigured: boolean
   isGoogleConfigured: boolean
+  isGoogleRedirectConfigured: boolean
+  isGoogleReady: boolean
   isFacebookConfigured: boolean
   isTwitterConfigured: boolean
   isOAuthPending: boolean
@@ -44,6 +46,8 @@ function OAuthButtons({
   onGoogleClick,
   isGithubConfigured,
   isGoogleConfigured,
+  isGoogleRedirectConfigured,
+  isGoogleReady,
   isFacebookConfigured,
   isTwitterConfigured,
   isOAuthPending,
@@ -84,7 +88,9 @@ function OAuthButtons({
       </button>
       <button
         type="button"
-        disabled={anyPending || !isGoogleConfigured}
+        disabled={
+          anyPending || !isGoogleConfigured || (!isGoogleRedirectConfigured && !isGoogleReady)
+        }
         onClick={() => {
           setLastAuthMethod('oauth')
           onGoogleClick()
@@ -152,7 +158,7 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
   const {
     github: isGithubConfigured,
     google: isGoogleConfigured,
-    googleRedirect: isGoogleRedirectConfigured,
+    googleHasRedirectConfig: isGoogleRedirectConfigured,
     facebook: isFacebookConfigured,
     twitter: isTwitterConfigured,
   } = useOAuthProviders()
@@ -239,6 +245,8 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
             onGoogleClick={handleGoogleClick}
             isGithubConfigured={isGithubConfigured}
             isGoogleConfigured={isGoogleConfigured}
+            isGoogleRedirectConfigured={isGoogleRedirectConfigured}
+            isGoogleReady={isGoogleReady}
             isFacebookConfigured={isFacebookConfigured}
             isTwitterConfigured={isTwitterConfigured}
             isOAuthPending={isOAuthPending}

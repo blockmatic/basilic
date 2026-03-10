@@ -19,6 +19,7 @@ import {
   fetchGoogleUserInfo,
   type GoogleTokenResponse,
 } from '../../../../lib/oauth-google.js'
+import { getOAuthAllowedCallbackUrls, type OAuthStateMeta } from '../../../../lib/oauth-shared.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { buildTokenExchangeError, buildUserInfoError, toAllowedStatus } from './exchange-helpers.js'
@@ -60,9 +61,10 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const googleClientId = env.GOOGLE_CLIENT_ID
       const googleClientSecret = env.GOOGLE_CLIENT_SECRET
-      const allowedUrls =
-        env.OAUTH_GOOGLE_CALLBACK_URLS ??
-        (env.OAUTH_GOOGLE_CALLBACK_URL ? [env.OAUTH_GOOGLE_CALLBACK_URL] : [])
+      const allowedUrls = getOAuthAllowedCallbackUrls({
+        urls: env.OAUTH_GOOGLE_CALLBACK_URLS,
+        singleUrl: env.OAUTH_GOOGLE_CALLBACK_URL,
+      })
       const defaultUrl = allowedUrls[0]
       if (!googleClientId || !googleClientSecret || !defaultUrl)
         return reply.code(503).send({
@@ -91,13 +93,15 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           code: 'INVALID_STATE',
           message: 'Link mode requires user ID',
         })
-      const redirectUri = stateRecord.meta?.redirectUri ?? defaultUrl
+      const meta = stateRecord.meta as OAuthStateMeta | undefined
+      const redirectUri = meta?.redirectUri ?? defaultUrl
       if (!allowedUrls.includes(redirectUri))
         return reply.code(401).send({
           code: 'INVALID_STATE',
           message: 'Invalid or tampered redirect URI',
         })
-      const codeVerifier = stateRecord.meta?.codeVerifier
+      // preConsumeCheck guarantees codeVerifier; this check narrows the type for TS
+      const codeVerifier = meta?.codeVerifier
       if (!codeVerifier)
         return reply.code(401).send({
           code: 'INVALID_STATE',

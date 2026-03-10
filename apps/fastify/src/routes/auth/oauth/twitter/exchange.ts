@@ -6,6 +6,7 @@ import { isUniqueViolation } from '../../../../lib/db-errors.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
 import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
+import { getOAuthAllowedCallbackUrls, type OAuthStateMeta } from '../../../../lib/oauth-shared.js'
 import {
   fetchTwitterOAuthData,
   OAuthUpstreamError,
@@ -52,8 +53,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const twitterClientId = env.TWITTER_CLIENT_ID
       const twitterClientSecret = env.TWITTER_CLIENT_SECRET
-      const oauthTwitterCallbackUrl = env.OAUTH_TWITTER_CALLBACK_URL
-      if (!twitterClientId || !twitterClientSecret || !oauthTwitterCallbackUrl)
+      const allowedUrls = getOAuthAllowedCallbackUrls({
+        urls: env.OAUTH_TWITTER_CALLBACK_URLS,
+        singleUrl: env.OAUTH_TWITTER_CALLBACK_URL,
+      })
+      const defaultUrl = allowedUrls[0]
+      if (!twitterClientId || !twitterClientSecret || !defaultUrl)
         return reply.code(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'Twitter OAuth is not configured',
@@ -75,7 +80,14 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       })
       if (!validated.ok) return
       const { isLinkMode, linkUserId, stateRecord } = validated
-      const codeVerifier = stateRecord.meta?.codeVerifier
+      const meta = stateRecord.meta as OAuthStateMeta | undefined
+      const redirectUri = meta?.redirectUri ?? defaultUrl
+      if (!allowedUrls.includes(redirectUri))
+        return reply.code(401).send({
+          code: 'INVALID_STATE',
+          message: 'Invalid or tampered redirect URI',
+        })
+      const codeVerifier = meta?.codeVerifier
       if (!codeVerifier)
         return reply.code(401).send({
           code: 'INVALID_STATE',
@@ -89,7 +101,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         const oauthData = await fetchTwitterOAuthData({
           code,
           codeVerifier,
-          oauthTwitterCallbackUrl,
+          redirectUri,
           twitterClientId,
           twitterClientSecret,
         })
