@@ -1,6 +1,5 @@
 'use client'
 
-import { ApiError } from '@repo/core'
 import {
   useOAuthLogin,
   useOAuthProviders,
@@ -16,7 +15,6 @@ import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
-import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
 import { LoginForm } from './login-form'
 import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
@@ -150,16 +148,7 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
   const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
   const [optedOutEmails, setOptedOutEmails] = useState<Set<string>>(() => new Set())
   const [oneTapSkipped, setOneTapSkipped] = useState(false)
-  const {
-    mutate: startOAuthLogin,
-    error: oauthError,
-    isPending: isOAuthPending,
-  } = useOAuthLogin({
-    onError: err => {
-      if (err instanceof ApiError && err.status === 503)
-        toast.error(getAuthErrorMessage('oauth_not_configured'))
-    },
-  })
+  const { mutate: startOAuthLogin, error: oauthError, isPending: isOAuthPending } = useOAuthLogin()
   const {
     github: isGithubConfigured,
     google: isGoogleConfigured,

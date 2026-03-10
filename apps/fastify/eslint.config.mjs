@@ -11,11 +11,4 @@ export default [
     ],
     rules: { complexity: 'off' },
   },
-  {
-    files: ['src/routes/reference/template.ts'],
-    rules: {
-      'max-lines': ['error', { max: 350, skipBlankLines: true, skipComments: true }],
-      'max-params': 'off',
-    },
-  },
 ]

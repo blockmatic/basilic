@@ -21,6 +21,7 @@ import {
 } from '../../../../lib/oauth-google.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
+import { buildTokenExchangeError, buildUserInfoError } from './exchange-helpers.js'
 
 const ExchangeSchema = Type.Object({
   code: Type.String(),
@@ -102,18 +103,9 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           clientSecret: googleClientSecret,
         })
       } catch (err) {
-        if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
-          return reply.code(504).send({
-            code: 'TOKEN_EXCHANGE_FAILED',
-            message: 'Token exchange timed out',
-          })
-        if (err && typeof err === 'object' && 'tokenData' in err) {
-          const e = err as { status: number; tokenData: { error?: string } }
-          return reply.code(400).send({
-            code: 'TOKEN_EXCHANGE_FAILED',
-            message: e.tokenData.error ?? 'Failed to exchange code for token',
-          })
-        }
+        const tokenErr = buildTokenExchangeError(err)
+        if (tokenErr)
+          return reply.code(tokenErr.message.includes('timeout') ? 504 : 400).send(tokenErr)
         throw err
       }
 
@@ -121,17 +113,9 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       try {
         gUser = await fetchGoogleUserInfo(tokenData.access_token)
       } catch (err) {
-        if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
-          return reply.code(504).send({
-            code: 'USER_INFO_FAILED',
-            message: 'Failed to fetch Google user (timeout)',
-          })
-        if (err && typeof err === 'object' && 'gUser' in err) {
-          return reply.code(400).send({
-            code: 'USER_INFO_FAILED',
-            message: 'Failed to fetch Google user',
-          })
-        }
+        const userErr = buildUserInfoError(err)
+        if (userErr)
+          return reply.code(userErr.message.includes('timeout') ? 504 : 400).send(userErr)
         throw err
       }
       const accountId = gUser.id

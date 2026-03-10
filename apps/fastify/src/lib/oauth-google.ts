@@ -51,8 +51,24 @@ export async function fetchGoogleTokens(input: {
     signal: AbortSignal.timeout(fetchTimeoutMs),
   })
   const tokenData = (await tokenRes.json()) as GoogleTokenResponse
-  if (!tokenRes.ok) throw { status: tokenRes.status, tokenData }
-  if (tokenData.error || !tokenData.access_token) throw { status: 400, tokenData }
+  if (!tokenRes.ok) {
+    const err = new Error('Token exchange failed') as Error & {
+      status: number
+      tokenData: GoogleTokenResponse
+    }
+    err.status = tokenRes.status
+    err.tokenData = tokenData
+    throw err
+  }
+  if (tokenData.error || !tokenData.access_token) {
+    const err = new Error('Token exchange failed') as Error & {
+      status: number
+      tokenData: GoogleTokenResponse
+    }
+    err.status = 400
+    err.tokenData = tokenData
+    throw err
+  }
   return tokenData
 }
 
@@ -63,7 +79,17 @@ export async function fetchGoogleUserInfo(accessToken: string): Promise<GoogleUs
     signal: AbortSignal.timeout(fetchTimeoutMs),
   })
   const gUser = (await userRes.json()) as GoogleUser
-  if (!userRes.ok) throw { status: userRes.status, gUser }
-  if (!gUser?.id) throw { status: 400, gUser }
+  if (!userRes.ok) {
+    const err = new Error('User info fetch failed') as Error & { status: number; gUser: GoogleUser }
+    err.status = userRes.status
+    err.gUser = gUser
+    throw err
+  }
+  if (!gUser?.id) {
+    const err = new Error('Invalid user response') as Error & { status: number; gUser: GoogleUser }
+    err.status = 400
+    err.gUser = gUser
+    throw err
+  }
   return gUser
 }

@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     const tokens = extractTokens(response)
     if (!tokens)
       return NextResponse.redirect(
-        new URL(`/auth/login?message=${encodeURIComponent('oauth_failed')}`, request.url),
+        new URL(`/auth/login?message=${encodeURIComponent('oauth_failed_google')}`, request.url),
         303,
       )
 
