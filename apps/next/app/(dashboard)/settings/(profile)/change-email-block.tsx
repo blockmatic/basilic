@@ -48,12 +48,14 @@ export function ChangeEmailBlock({ email }: { email: string | null }) {
         <p className="text-muted-foreground text-sm">Check your inbox for the verification code.</p>
         <div className="flex gap-2">
           <Input
+            id="verification-code"
             type="text"
             inputMode="numeric"
             placeholder="6-digit code"
             maxLength={6}
             value={code}
             onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
+            aria-label="Verification code (6 digits)"
           />
           <Button
             onClick={handleVerify}
@@ -80,10 +82,12 @@ export function ChangeEmailBlock({ email }: { email: string | null }) {
     <div className="space-y-2">
       <div className="flex gap-2">
         <Input
+          id="new-email"
           type="email"
           placeholder="New email"
           value={newEmail}
           onChange={e => setNewEmail(e.target.value)}
+          aria-label="New email address"
         />
         <Button onClick={handleRequest} disabled={!newEmail.trim() || changeEmail.isRequestPending}>
           {changeEmail.isRequestPending ? 'Sending…' : 'Send code'}

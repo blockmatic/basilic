@@ -1,4 +1,4 @@
-import { and, eq, inArray } from 'drizzle-orm'
+import { and, eq, inArray, isNull } from 'drizzle-orm'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { Verification } from '../db/schema/index.js'
 import { verification } from '../db/schema/index.js'
@@ -29,6 +29,7 @@ export async function validateAndConsumeOAuthState({
       and(
         eq(verification.value, stateHash),
         inArray(verification.type, ['oauth_state', 'oauth_link_state']),
+        isNull(verification.consumedAt),
       ),
     )
 
@@ -68,12 +69,15 @@ export async function validateAndConsumeOAuthState({
     }
   }
 
-  if (isLinkMode)
-    await db
-      .update(verification)
-      .set({ consumedAt: new Date() })
-      .where(eq(verification.id, stateRecord.id))
-  else await db.delete(verification).where(eq(verification.id, stateRecord.id))
+  const consumed = await db
+    .update(verification)
+    .set({ consumedAt: new Date() })
+    .where(and(eq(verification.id, stateRecord.id), isNull(verification.consumedAt)))
+    .returning()
+  if (consumed.length === 0) {
+    reply.code(401).send({ code: 'INVALID_STATE', message: 'Invalid or expired state' })
+    return { ok: false }
+  }
 
   return {
     ok: true,

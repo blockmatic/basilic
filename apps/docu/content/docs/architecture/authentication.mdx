@@ -133,9 +133,9 @@ When a provider is not configured (503 `OAUTH_NOT_CONFIGURED`), the client shows
 
 ### OAuth account linking (implemented)
 
-Logged-in users can link additional OAuth providers from Profile (Settings). Flow: `GET /auth/oauth/{provider}/link-authorize-url` (Bearer) → redirect to provider → callback → exchange with `oauth_link_state` → link account, return `{ token, refreshToken, redirectTo: "/settings?linked=ok" }`.
+Logged-in users can link additional OAuth providers from Profile (Settings). Flow: `GET /auth/oauth/{provider}/link-authorize-url` (session/JWT required, no API key) → redirect to provider → callback → exchange with `oauth_link_state` → link account, return `{ token, refreshToken, redirectTo: "/settings?linked=ok" }`.
 
-- **Link-authorize-url:** Bearer required, rate limit 10/hour per user. Stores `oauth_link_state` with `meta.userId`.
+- **Link-authorize-url:** Session/JWT required, no API key; rate limit 10/hour per user. Stores `oauth_link_state` with `meta.userId`.
 - **Exchange:** State lookup branches on `oauth_link_state` vs `oauth_state`. Link mode uses `meta.userId`; if provider already linked to another user → 409 `PROVIDER_ALREADY_LINKED`.
 - **Unlink:** `DELETE /account/link/oauth/:providerId` (Bearer). Guardrail: cannot unlink if it would leave no sign-in method (400 `LAST_SIGN_IN_METHOD`).
 - **Session user:** `GET /auth/session/user` returns `linkedAccounts: [{ providerId }]`.

@@ -14,7 +14,7 @@ import {
   hashToken,
 } from '../../../../lib/jwt.js'
 import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
-import { generateFunnyUsername } from '../../../../lib/username.js'
+import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -184,20 +184,16 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           })
         user = u
       } else {
-        let [u] = await db.select().from(users).where(eq(users.email, email))
-        if (!u) {
-          const newUserId = randomUUID()
-          const username = await generateFunnyUsername(db)
-          await db.insert(users).values({
-            id: newUserId,
-            email,
-            emailVerified: true,
-            name: ghUser.name ?? ghUser.login,
-            username,
+        const u = await findOrCreateUserByEmail(db, {
+          email,
+          name: ghUser.name ?? ghUser.login,
+          emailVerified: true,
+        })
+        if (!u)
+          return reply.code(500).send({
+            code: 'USER_CREATE_FAILED',
+            message: 'Failed to create or find user',
           })
-          ;[u] = await db.select().from(users).where(eq(users.id, newUserId))
-          if (!u) throw new Error('Failed to create user')
-        }
         user = u
       }
 

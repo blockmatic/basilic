@@ -84,6 +84,11 @@ const changeEmailRequestRoute: FastifyPluginAsync = async fastify => {
         .select()
         .from(users)
         .where(eq(users.email, normalizedEmail))
+      if (existingByEmail && existingByEmail.id === userId)
+        return reply.code(400).send({
+          code: 'EMAIL_NOT_CHANGED',
+          message: 'New email is the same as current email',
+        })
       if (existingByEmail && existingByEmail.id !== userId)
         return reply.code(409).send({
           code: 'EMAIL_ALREADY_IN_USE',
