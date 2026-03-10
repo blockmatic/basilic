@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { env } from '../lib/env.js'
+import { verifyMagicLinkAndIssueToken } from './auth/magiclink/verify.js'
 import { getReferenceHtml } from './reference/template.js'
 
 const referenceRoutes: FastifyPluginAsync = async fastify => {
@@ -36,16 +37,24 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
       const openApiUrl = `${apiUrl}/reference/openapi.json`
       const callbackUrl = `${apiUrl}/reference`
 
-      // Magic link callback: verificationId in URL requires code entry (handled client-side in template)
-      const jwtToken: string | null = null
-      const verificationId = (request.query as { verificationId?: string })?.verificationId
+      // Magic link callback: token+verificationId in URL → verify server-side; verificationId only → code form (client-side)
+      const query = request.query as { token?: string; verificationId?: string }
+      const { token: urlToken, verificationId } = query
+      let jwtToken: string | null = null
+      if (urlToken && verificationId) {
+        const result = await verifyMagicLinkAndIssueToken(fastify, request, {
+          token: urlToken,
+          verificationId,
+        })
+        jwtToken = result?.accessToken ?? null
+      }
 
       const html = getReferenceHtml({
         apiUrl,
         openApiUrl,
         callbackUrl,
         jwtToken,
-        verificationId: verificationId ?? undefined,
+        verificationId: jwtToken ? undefined : (verificationId ?? undefined),
       })
       return reply.type('text/html').send(html)
     },

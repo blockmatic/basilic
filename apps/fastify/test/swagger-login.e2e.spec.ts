@@ -4,15 +4,19 @@ const testEmail = 'test@test.ai'
 const apiUrl = process.env.PLAYWRIGHT_API_URL || 'http://localhost:3001'
 
 /**
- * Helper function to extract magic link token from test endpoint
+ * Extract magic link token and verificationId from test endpoint for callback URL
  */
-async function extractToken(page: ReturnType<typeof test>['page']): Promise<string | null> {
+async function extractMagicLinkData(
+  page: ReturnType<typeof test>['page'],
+): Promise<{ token: string; verificationId: string } | null> {
   try {
     const response = await page.request.get(`${apiUrl}/test/magic-link/last`)
     if (!response.ok()) return null
 
-    const data = await response.json()
-    return data.token || null
+    const data = (await response.json()) as { token?: string; verificationId?: string }
+    if (data.token && data.verificationId)
+      return { token: data.token, verificationId: data.verificationId }
+    return null
   } catch {
     return null
   }
@@ -53,21 +57,18 @@ test.describe('Scalar UI Login Flow', () => {
     await expect(successMessage).toBeVisible({ timeout: 10000 })
     await expect(successMessage).toHaveText('Check your email for the magic link')
 
-    // Step 8: Extract token from test endpoint
-    const token = await extractToken(page)
-    expect(token).toBeTruthy()
-    expect(typeof token).toBe('string')
+    // Step 8: Extract token and verificationId from test endpoint
+    const magicLink = await extractMagicLinkData(page)
+    expect(magicLink).toBeTruthy()
+    if (!magicLink) throw new Error('Failed to extract magic link token and verificationId')
 
-    if (!token) throw new Error('Failed to extract magic link token')
-
-    // Step 9: Open callback URL in same window (for E2E testing)
-    const callbackUrl = `${apiUrl}/reference?token=${token}`
+    // Step 9: Open callback URL with token+verificationId (server verifies and returns HTML with JWT)
+    const callbackUrl = `${apiUrl}/reference?token=${magicLink.token}&verificationId=${magicLink.verificationId}`
     await page.goto(callbackUrl)
     await page.waitForLoadState('networkidle')
 
-    // Step 10: Wait for callback page to process and clean URL
-    // The callback verifies token, sets JWT in Scalar state, and cleans URL to /reference
-    await page.waitForURL(/\/reference$/, { timeout: 5000 })
+    // Step 10: Wait for callback page to process and clean URL (template does history.replaceState)
+    await page.waitForURL(/\/reference$/, { timeout: 15000 })
 
     // Step 11: Check that token is stored in localStorage
     const tokenInStorage = await page.evaluate(() => localStorage.getItem('scalar-token'))
@@ -115,12 +116,12 @@ test.describe('Scalar UI Login Flow', () => {
     await expect(successMessage).toBeVisible({ timeout: 10000 })
     await expect(successMessage).toHaveText('Check your email for the magic link')
 
-    const token = await extractToken(page)
-    if (!token) throw new Error('Failed to extract token')
+    const magicLink = await extractMagicLinkData(page)
+    if (!magicLink) throw new Error('Failed to extract magic link token and verificationId')
 
-    const callbackUrl = `${apiUrl}/reference?token=${token}`
+    const callbackUrl = `${apiUrl}/reference?token=${magicLink.token}&verificationId=${magicLink.verificationId}`
     await page.goto(callbackUrl)
-    await page.waitForURL(/\/reference$/, { timeout: 5000 })
+    await page.waitForURL(/\/reference$/, { timeout: 15000 })
     await page.waitForLoadState('networkidle')
 
     // Verify logged in state

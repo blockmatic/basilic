@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import { and, eq, sql } from 'drizzle-orm'
-import type { FastifyPluginAsync } from 'fastify'
+import type { FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { authAttempts, users, verification } from '../../../db/schema/index.js'
 import { hashToken } from '../../../lib/jwt.js'
@@ -12,6 +12,83 @@ import { ErrorResponseSchema } from '../../schemas.js'
 
 const magicLinkMaxAttempts = 5
 const magicLinkLockMinutes = 15
+
+/** Verify magic link token and return access JWT. Used by reference route callback and POST /verify. */
+export async function verifyMagicLinkAndIssueToken(
+  fastify: FastifyInstance,
+  request: FastifyRequest,
+  { token, verificationId }: { token: string; verificationId: string },
+): Promise<{ accessToken: string } | null> {
+  const tokenHash = hashToken(token)
+  const db = await getDb()
+  const ip = getTrustedClientIp(request)
+
+  const [attemptRow] = await db
+    .select()
+    .from(authAttempts)
+    .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, 'magic_link')))
+
+  if (attemptRow?.lockedUntil && attemptRow.lockedUntil > new Date()) return null
+
+  const [verificationRecord] = await db
+    .select()
+    .from(verification)
+    .where(
+      and(
+        eq(verification.id, verificationId),
+        eq(verification.value, tokenHash),
+        eq(verification.type, 'magic_link'),
+      ),
+    )
+
+  async function recordFailedAttempt() {
+    const now = new Date()
+    const lockedUntilNew = new Date(now.getTime() + magicLinkLockMinutes * 60 * 1000)
+    await db
+      .insert(authAttempts)
+      .values({
+        id: randomUUID(),
+        key: ip,
+        type: 'magic_link',
+        failedAttempts: 1,
+        firstFailureAt: now,
+        lockedUntil: null,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: [authAttempts.key, authAttempts.type],
+        set: {
+          failedAttempts: sql`${authAttempts.failedAttempts} + 1`,
+          firstFailureAt: sql`COALESCE(${authAttempts.firstFailureAt}, ${now})`,
+          lockedUntil: sql`CASE WHEN (${authAttempts.failedAttempts} + 1) >= ${magicLinkMaxAttempts} THEN ${lockedUntilNew}::timestamptz ELSE NULL END`,
+          updatedAt: now,
+        },
+      })
+  }
+
+  if (!verificationRecord) {
+    await recordFailedAttempt()
+    return null
+  }
+
+  if (verificationRecord.expiresAt < new Date()) {
+    await db.delete(verification).where(eq(verification.id, verificationRecord.id))
+    await recordFailedAttempt()
+    return null
+  }
+
+  const [user] = await db.select().from(users).where(eq(users.email, verificationRecord.identifier))
+
+  if (!user) return null
+
+  await db
+    .delete(authAttempts)
+    .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, 'magic_link')))
+  await db.delete(verification).where(eq(verification.id, verificationRecord.id))
+
+  const { accessToken } = await createSessionAndIssueTokens({ fastify, db, userId: user.id })
+  return { accessToken }
+}
 
 const VerifySchema = Type.Object({
   token: Type.String({ pattern: '^\\d{6}$', description: '6-digit code' }),
