@@ -78,7 +78,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 
 ## Environment Variables
 
-- **Chat E2E** (chat-assistant.spec.ts): Requires a real AI provider. Use `OLLAMA_BASE_URL` (e.g. `http://localhost:11434`) or valid `OPEN_ROUTER_API_KEY`. Local: add to `apps/fastify/.env.test`. CI: add `OLLAMA_BASE_URL` or `OPEN_ROUTER_API_KEY` to GitHub secrets to enable (otherwise skipped; workflow uses dummy key when secret unset). Uses `authenticatedPage` fixture.
+- **Chat E2E** (chat-assistant.spec.ts): Uses Ollama only (`OLLAMA_BASE_URL` secret). CI and `test:e2e:local` force `AI_PROVIDER=ollama` and omit OpenRouter. Uses `authenticatedPage` fixture.
 - **E2E CI**: Uses local servers only; no Vercel URLs. For manual testing against previews, pass `--app`/`--api` URLs.
 
 ## ALLOW_TEST
@@ -94,7 +94,7 @@ See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/d
 | Spec | Coverage |
 |------|----------|
 | `magic-link-auth.spec.ts` | Magic link login, invalid/expired token errors, email validation, protected route, JWT session |
-| `chat-assistant.spec.ts` | Chat UI with authenticatedPage; Who am I? prompt (skipped until AI provider secret in CI) |
+| `chat-assistant.spec.ts` | Chat UI with authenticatedPage; Who am I? prompt |
 | `security/api-keys.spec.ts` | API keys CRUD: create, revoke, empty state |
 | `security/authenticator.spec.ts` | TOTP setup/unlink via extractSessionToken + test endpoint |
 | `security/passkeys.spec.ts` | Passkeys add/remove with CDP virtual authenticator |

@@ -88,9 +88,11 @@ async function main() {
     PGLITE: 'true',
     NODE_ENV: 'test',
     NEXT_PUBLIC_API_URL: 'http://localhost:3001',
+    AI_PROVIDER: 'ollama',
     JWT_SECRET:
       loaded.JWT_SECRET ?? process.env.JWT_SECRET ?? 'e2e-jwt-secret-min-32-chars-for-tests',
   }
+  delete env.OPEN_ROUTER_API_KEY
 
   const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
     cwd: join(repoRoot, 'apps/fastify'),
