@@ -60,6 +60,9 @@ __dev__dev
 # TypeScript build info
 *.tsbuildinfo
 
+# tsup temp config (bundled during build)
+tsup.config.bundled_*.mjs
+
 # Package publish temp files
 .package-originals.json
 
