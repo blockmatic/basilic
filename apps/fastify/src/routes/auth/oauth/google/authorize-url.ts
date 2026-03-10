@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto'
+import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
@@ -15,6 +15,14 @@ const AuthorizeUrlResponseSchema = Type.Object({
 const AuthorizeUrlQuerystringSchema = Type.Object({
   redirect_uri: Type.Optional(Type.String()),
 })
+
+function generateCodeVerifier(): string {
+  return randomBytes(32).toString('base64url')
+}
+
+function generateCodeChallenge(verifier: string): string {
+  return createHash('sha256').update(verifier).digest('base64url')
+}
 
 const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().get(
@@ -61,6 +69,8 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
 
       const state = randomUUID() + randomUUID().replace(/-/g, '')
       const stateHash = hashToken(state)
+      const codeVerifier = generateCodeVerifier()
+      const codeChallenge = generateCodeChallenge(codeVerifier)
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
 
       const db = await getDb()
@@ -69,7 +79,7 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
         type: 'oauth_state',
         identifier: stateHash,
         value: stateHash,
-        meta: { redirectUri },
+        meta: { redirectUri, codeVerifier },
         expiresAt,
       })
 
@@ -78,6 +88,8 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
       redirectUrl.searchParams.set('redirect_uri', redirectUri)
       redirectUrl.searchParams.set('response_type', 'code')
       redirectUrl.searchParams.set('scope', 'openid email profile')
+      redirectUrl.searchParams.set('code_challenge', codeChallenge)
+      redirectUrl.searchParams.set('code_challenge_method', 'S256')
       redirectUrl.searchParams.set('state', state)
 
       return reply.status(200).send({ redirectUrl: redirectUrl.toString() })

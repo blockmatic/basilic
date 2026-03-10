@@ -1,6 +1,6 @@
 'use client'
 
-import { useOAuthLink, useOAuthUnlink, useUser } from '@repo/react'
+import { useOAuthLink, useOAuthProviders, useOAuthUnlink, useUser } from '@repo/react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +26,12 @@ const providerLabels: Record<string, string> = {
 
 export function LinkedAccountsSection() {
   const { data } = useUser()
+  const {
+    github: githubEnabled,
+    googleRedirect,
+    facebook: facebookEnabled,
+    twitter: twitterEnabled,
+  } = useOAuthProviders()
   const unlinkMutation = useOAuthUnlink()
   const [confirmUnlink, setConfirmUnlink] = useSetState<{ providerId: string | null }>({
     providerId: null,
@@ -87,7 +93,16 @@ export function LinkedAccountsSection() {
                   isOpen={confirmUnlink.providerId === providerId}
                 />
               ) : (
-                <LinkProviderButton providerId={providerId} label={label} />
+                <LinkProviderButton
+                  providerId={providerId}
+                  label={label}
+                  providersEnabled={{
+                    github: githubEnabled,
+                    google: googleRedirect,
+                    facebook: facebookEnabled,
+                    twitter: twitterEnabled,
+                  }}
+                />
               )}
             </div>
           )
@@ -138,12 +153,22 @@ function UnlinkButton({
   )
 }
 
-const linkableProviders = ['github', 'google', 'facebook', 'twitter'] as const
+const linkProviderIds = ['github', 'google', 'facebook', 'twitter'] as const
 
-function LinkProviderButton({ providerId, label }: { providerId: string; label: string }) {
-  const canLink = linkableProviders.includes(providerId as (typeof linkableProviders)[number])
+function LinkProviderButton({
+  providerId,
+  label,
+  providersEnabled,
+}: {
+  providerId: string
+  label: string
+  providersEnabled: { github: boolean; google: boolean; facebook: boolean; twitter: boolean }
+}) {
+  const canLink =
+    linkProviderIds.includes(providerId as (typeof linkProviderIds)[number]) &&
+    (providersEnabled[providerId as keyof typeof providersEnabled] ?? false)
   const linkMutation = useOAuthLink(
-    canLink ? (providerId as (typeof linkableProviders)[number]) : 'github',
+    canLink ? (providerId as (typeof linkProviderIds)[number]) : 'github',
   )
 
   const handleLink = useCallback(() => {

@@ -9,7 +9,10 @@ export default [
       'src/routes/auth/oauth/facebook/exchange.ts',
       'src/routes/auth/oauth/google/exchange.ts',
     ],
-    rules: { complexity: 'off' },
+    rules: {
+      complexity: 'off',
+      'max-lines': ['error', { max: 350, skipBlankLines: true, skipComments: true }],
+    },
   },
   {
     files: ['src/routes/reference/template.ts'],

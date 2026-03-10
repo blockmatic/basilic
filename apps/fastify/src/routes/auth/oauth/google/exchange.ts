@@ -33,6 +33,9 @@ type GoogleTokenResponse = {
   token_type: string
   expires_in?: number
   scope?: string
+  refresh_token?: string
+  id_token?: string
+  error?: string
 }
 
 type GoogleUser = { id: string; email?: string; name?: string; verified_email?: boolean }
@@ -76,10 +79,25 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const stateHash = hashToken(state)
 
       const db = await getDb()
-      const validated = await validateAndConsumeOAuthState({ db, stateHash, request, reply })
+      const validated = await validateAndConsumeOAuthState({
+        db,
+        stateHash,
+        request,
+        reply,
+        preConsumeCheck: r =>
+          !r.meta?.codeVerifier
+            ? { code: 'INVALID_STATE', message: 'Missing code verifier for Google PKCE' }
+            : null,
+      })
       if (!validated.ok) return
       const { isLinkMode, linkUserId, stateRecord } = validated
       const redirectUri = stateRecord.meta?.redirectUri ?? defaultUrl
+      const codeVerifier = stateRecord.meta?.codeVerifier
+      if (!codeVerifier)
+        return reply.code(401).send({
+          code: 'INVALID_STATE',
+          message: 'Missing code verifier for Google PKCE',
+        })
 
       const tokenBody = new URLSearchParams({
         code,
@@ -87,6 +105,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         client_secret: googleClientSecret,
         redirect_uri: redirectUri,
         grant_type: 'authorization_code',
+        code_verifier: codeVerifier,
       })
 
       const fetchTimeoutMs = 15_000
@@ -112,7 +131,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Failed to exchange code for token',
         })
 
-      const tokenData = (await tokenRes.json()) as GoogleTokenResponse & { error?: string }
+      const tokenData = (await tokenRes.json()) as GoogleTokenResponse
       if (tokenData.error)
         return reply.code(400).send({
           code: 'TOKEN_EXCHANGE_FAILED',
@@ -203,23 +222,29 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         accountId,
         providerId: 'google',
         accessToken,
-        refreshToken: null as string | null,
-        idToken: null as string | null,
+        refreshToken: tokenData.refresh_token ?? null,
+        idToken: tokenData.id_token ?? null,
         accessTokenExpiresAt: new Date(Date.now() + (tokenData.expires_in ?? 3600) * 1000),
         refreshTokenExpiresAt: null as Date | null,
-        scope: 'openid email profile',
+        scope: tokenData.scope ?? 'openid email profile',
       }
 
       if (existingAccount) {
         const encrypted = encryptAccountTokens({
           accessToken: accountData.accessToken,
+          refreshToken: accountData.refreshToken,
+          idToken: accountData.idToken,
           updatedAt: new Date(),
         })
         await db
           .update(account)
           .set({
             accessToken: encrypted.accessToken,
+            refreshToken: encrypted.refreshToken ?? null,
+            idToken: encrypted.idToken ?? null,
             updatedAt: encrypted.updatedAt ?? new Date(),
+            accessTokenExpiresAt: accountData.accessTokenExpiresAt,
+            scope: accountData.scope,
           })
           .where(eq(account.id, existingAccount.id))
       } else {

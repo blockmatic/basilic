@@ -197,13 +197,18 @@ export function useGoogleOneTap({
   }, [clientId, enabled, handleCredential, handleMoment])
 
   const prompt = useCallback(() => {
+    if (loadError) {
+      onSkipped?.()
+      toast.error(getAuthErrorMessage('oauth_not_configured'))
+      return
+    }
     if (window.google?.accounts?.id && clientId) {
       handledRef.current = false
       window.google.accounts.id.prompt(handleMoment)
     } else if (!clientId) {
       toast.error(getAuthErrorMessage('oauth_not_configured'))
     }
-  }, [clientId, handleMoment])
+  }, [clientId, handleMoment, loadError, onSkipped])
 
   return {
     isReady: !!clientId && isReady && !loadError,
