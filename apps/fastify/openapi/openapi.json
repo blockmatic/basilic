@@ -2178,6 +2178,16 @@
                     "pattern": "^\\d{6}$",
                     "description": "6-digit code",
                     "type": "string"
+                  },
+                  "verificationId": {
+                    "format": "uuid",
+                    "description": "Verification row id (from magic link URL)",
+                    "type": "string"
+                  },
+                  "email": {
+                    "format": "email",
+                    "description": "Email (for code entry on login page)",
+                    "type": "string"
                   }
                 }
               }

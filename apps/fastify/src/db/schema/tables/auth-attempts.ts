@@ -1,4 +1,4 @@
-import { index, integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { index, integer, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
 
 export const authAttempts = pgTable(
   'auth_attempts',
@@ -14,7 +14,10 @@ export const authAttempts = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
-  table => [index('auth_attempts_key_type_idx').on(table.key, table.type)],
+  table => [
+    index('auth_attempts_key_type_idx').on(table.key, table.type),
+    uniqueIndex('auth_attempts_key_type_unique').on(table.key, table.type),
+  ],
 )
 
 export type AuthAttempt = typeof authAttempts.$inferSelect

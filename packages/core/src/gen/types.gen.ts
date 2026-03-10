@@ -764,6 +764,14 @@ export type MagiclinkVerifyData = {
          * 6-digit code
          */
         token: string;
+        /**
+         * Verification row id (from magic link URL)
+         */
+        verificationId?: string;
+        /**
+         * Email (for code entry on login page)
+         */
+        email?: string;
     };
     path?: never;
     query?: never;

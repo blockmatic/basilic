@@ -24,9 +24,7 @@ describe('POST /auth/magiclink/verify', () => {
     const verifyResponse = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: {
-        token,
-      },
+      payload: { email, token },
     })
 
     expect(verifyResponse.statusCode).toBe(200)
@@ -44,9 +42,7 @@ describe('POST /auth/magiclink/verify', () => {
     const response = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: {
-        token: '000000',
-      },
+      payload: { email: 'nonexistent@example.com', token: '000000' },
     })
 
     expect([400, 401, 404]).toContain(response.statusCode)
@@ -80,9 +76,7 @@ describe('POST /auth/magiclink/verify', () => {
     const verifyResponse = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: {
-        token,
-      },
+      payload: { email, token },
     })
 
     expect(verifyResponse.statusCode).toBe(200)
@@ -130,9 +124,7 @@ describe('POST /auth/magiclink/verify', () => {
     const verifyResponse = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: {
-        token,
-      },
+      payload: { email, token },
     })
     expect(verifyResponse.statusCode).toBe(200)
     const { token: jwtToken } = JSON.parse(verifyResponse.body)

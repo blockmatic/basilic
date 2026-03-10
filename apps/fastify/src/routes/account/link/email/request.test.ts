@@ -59,7 +59,7 @@ describe('POST /account/link/email/request', () => {
     await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: { token: otherToken },
+      payload: { email: 'other@test.ai', token: otherToken },
     })
 
     const jwt = await getSessionToken(fastify, 'user@test.ai')

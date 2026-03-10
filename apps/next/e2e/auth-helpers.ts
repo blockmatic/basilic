@@ -50,9 +50,9 @@ export const authHelpers = {
     return response
   },
 
-  async extractToken(page: Page): Promise<string | null> {
-    // Stabilize e2e auth flows: 500ms delay and 12 retries chosen empirically for async
-    // backend/session propagation and flaky CI timing. Adjust if tests are stabilized.
+  async extractMagicLinkData(
+    page: Page,
+  ): Promise<{ token: string; verificationId: string } | null> {
     await new Promise(r => setTimeout(r, 500))
     const maxRetries = 12
     const delayMs = 500
@@ -66,8 +66,12 @@ export const authHelpers = {
           }
           return null
         }
-        const data = await response.json()
-        if (data.token) return data.token
+        const data = (await response.json()) as {
+          token?: string
+          verificationId?: string
+        }
+        if (data.token && data.verificationId)
+          return data as { token: string; verificationId: string }
         if (attempt < maxRetries - 1) {
           await new Promise(r => setTimeout(r, delayMs))
           continue
@@ -80,8 +84,12 @@ export const authHelpers = {
         }
         return null
       }
-
     return null
+  },
+
+  async extractToken(page: Page): Promise<string | null> {
+    const data = await this.extractMagicLinkData(page)
+    return data?.token ?? null
   },
 
   async enterLoginCodeAndSubmit(page: Page, code: string) {
@@ -89,9 +97,20 @@ export const authHelpers = {
     await page.getByTestId('submit-login-code').click()
   },
 
-  async verifyMagicLink(page: Page, token: string) {
-    const verifyUrl = `/auth/callback/magiclink?token=${encodeURIComponent(token)}&callbackURL=/`
+  async verifyMagicLink(page: Page, code: string, verificationIdParam?: string) {
+    let verificationId = verificationIdParam
+    if (!verificationId) {
+      const data = await this.extractMagicLinkData(page)
+      verificationId = data?.verificationId ?? undefined
+    }
+    if (!verificationId) throw new Error('Need verificationId for link-click flow')
+    const verifyUrl = `/auth/callback/magiclink?verificationId=${encodeURIComponent(verificationId)}&callbackURL=/`
     await page.goto(verifyUrl)
+    await page
+      .getByRole('heading', { name: 'Enter your code' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.getByLabel('Code').fill(code)
+    await page.getByRole('button', { name: 'Verify' }).click()
     await page.waitForURL(
       url => {
         const path = new URL(url).pathname

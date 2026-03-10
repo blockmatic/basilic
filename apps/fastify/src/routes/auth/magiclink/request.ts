@@ -15,6 +15,41 @@ import { isAllowedUrl } from '../../../lib/url.js'
 import { generateFunnyUsername } from '../../../lib/username.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
+async function findOrCreateUserForMagicLink(
+  db: Awaited<ReturnType<typeof getDb>>,
+  email: string,
+): Promise<typeof users.$inferSelect | undefined> {
+  const userId = randomUUID()
+  const funnyName = `${faker.word.adjective()} ${faker.animal.type()}`
+  const maxRetries = 5
+  for (let attempt = 0; attempt < maxRetries; attempt++)
+    try {
+      const [created] = await db.transaction(async tx => {
+        const username = await generateFunnyUsername(tx)
+        await tx.insert(users).values({
+          id: userId,
+          email,
+          emailVerified: false,
+          name: funnyName,
+          username,
+        })
+        const [c] = await tx.select().from(users).where(eq(users.id, userId))
+        if (!c) throw new Error('Failed to create user')
+        return [c]
+      })
+      return created
+    } catch (err) {
+      if (isUniqueViolation(err) && attempt < maxRetries - 1) {
+        const [existing] = await db.select().from(users).where(eq(users.email, email))
+        if (existing) return existing
+        continue
+      }
+      throw err
+    }
+
+  return undefined
+}
+
 const RequestSchema = Type.Object({
   email: Type.String({ format: 'email' }),
   callbackUrl: Type.String({ format: 'uri' }),
@@ -56,37 +91,16 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       // Find or create user
       let [user] = await db.select().from(users).where(eq(users.email, email))
       if (!user) {
-        const userId = randomUUID()
-        const funnyName = `${faker.word.adjective()} ${faker.animal.type()}`
-        const maxRetries = 5
-        for (let attempt = 0; attempt < maxRetries; attempt++)
-          try {
-            ;[user] = await db.transaction(async tx => {
-              const username = await generateFunnyUsername(tx)
-              await tx.insert(users).values({
-                id: userId,
-                email,
-                emailVerified: false,
-                name: funnyName,
-                username,
-              })
-              const [created] = await tx.select().from(users).where(eq(users.id, userId))
-              if (!created) throw new Error('Failed to create user')
-              return [created]
-            })
-            if (user) break
-          } catch (err) {
-            if (isUniqueViolation(err) && attempt < maxRetries - 1) continue
-            throw err
-          }
-
-        if (!user) throw new Error('Failed to create user')
+        const created = await findOrCreateUserForMagicLink(db, email)
+        if (!created) throw new Error('Failed to create user')
+        user = created
       }
 
-      // Generate 6-digit login code
+      // Generate 6-digit login code (delivered only in email body, never in URL)
       const code = generateLoginCode()
       const tokenHash = hashToken(code)
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+      const verificationId = randomUUID()
 
       const storePlain =
         env.NODE_ENV !== 'production' &&
@@ -94,7 +108,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         typeof email === 'string' &&
         email.endsWith('@test.ai')
       await db.insert(verification).values({
-        id: randomUUID(),
+        id: verificationId,
         type: 'magic_link',
         identifier: email,
         value: tokenHash,
@@ -103,7 +117,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       })
 
       const magicLinkUrl = new URL(callbackUrl)
-      magicLinkUrl.searchParams.set('token', code)
+      magicLinkUrl.searchParams.set('verificationId', verificationId)
 
       // Send email
       const html = await render(

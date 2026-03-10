@@ -9,7 +9,8 @@ export function getTrustedClientIp(request: FastifyRequest): string {
   const forwarded = request.headers['x-forwarded-for']
   if (forwarded) {
     const ips = Array.isArray(forwarded) ? forwarded[0] : forwarded
-    return ips.split(',')[0].trim() ?? request.ip ?? 'unknown'
+    const first = ips.split(',')[0]?.trim()
+    return first && first.length > 0 ? first : (request.ip ?? 'unknown')
   }
   return request.ip ?? 'unknown'
 }

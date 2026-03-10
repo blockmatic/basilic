@@ -9,20 +9,62 @@ const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const token = searchParams.get('token')
-  const callbackURL = searchParams.get('callbackURL')?.startsWith('/')
-    ? searchParams.get('callbackURL')
-    : null
+  const verificationId = searchParams.get('verificationId')
+  const callbackURL =
+    (searchParams.get('callbackURL')?.startsWith('/') ? searchParams.get('callbackURL') : null) ??
+    '/'
 
-  if (!token) redirect(`/auth/login?message=${encodeURIComponent('INVALID_TOKEN')}`)
+  if (verificationId) {
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Enter code - Acme</title>
+<style>body{font-family:system-ui,sans-serif;max-width:24rem;margin:2rem auto;padding:0 1rem}
+input{padding:0.5rem;font-size:1rem;width:100%;box-sizing:border-box}
+button{width:100%;padding:0.5rem 1rem;margin-top:0.5rem;cursor:pointer}
+.error{color:#dc2626;font-size:0.875rem;margin-top:0.25rem}
+a{color:inherit}
+</style></head>
+<body>
+  <h1>Enter your code</h1>
+  <p>Enter the 6-digit code from your email to sign in.</p>
+  <form method="POST" action="/auth/callback/magiclink">
+    <input type="hidden" name="verificationId" value="${verificationId.replace(/"/g, '&quot;')}"/>
+    <input type="hidden" name="callbackURL" value="${callbackURL.replace(/"/g, '&quot;')}"/>
+    <label for="token">Code</label>
+    <input id="token" name="token" type="text" inputmode="numeric" pattern="\\d*" maxlength="6" autocomplete="one-time-code" placeholder="000000" required/>
+    <button type="submit">Verify</button>
+  </form>
+  <p style="margin-top:1rem"><a href="/auth/login">Back to login</a></p>
+</body>
+</html>`
+    return new NextResponse(html, {
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    })
+  }
+
+  redirect(`/auth/login?message=${encodeURIComponent('INVALID_TOKEN')}`)
+}
+
+export async function POST(request: Request) {
+  const formData = await request.formData()
+  const verificationId = formData.get('verificationId')?.toString()
+  const token = formData.get('token')?.toString()
+  const callbackURL = formData.get('callbackURL')?.toString()?.startsWith('/')
+    ? formData.get('callbackURL')?.toString()
+    : '/'
+
+  if (!verificationId || !token)
+    redirect(`/auth/login?message=${encodeURIComponent('INVALID_TOKEN')}`)
 
   try {
-    const response = await client.auth.magiclink.verify({ body: { token } })
+    const response = await client.auth.magiclink.verify({
+      body: { verificationId, token },
+    })
     const tokens = extractTokens(response)
     if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
 
-    const redirectUrl = callbackURL ?? '/'
-    const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url), 303)
+    const redirectResponse = NextResponse.redirect(new URL(callbackURL ?? '/', request.url), 303)
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {

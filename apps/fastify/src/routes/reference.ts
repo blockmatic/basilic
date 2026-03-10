@@ -36,27 +36,17 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
       const openApiUrl = `${apiUrl}/reference/openapi.json`
       const callbackUrl = `${apiUrl}/reference`
 
-      // Handle magic link callback: verify token and get JWT
-      let jwtToken: string | null = null
-      const token = (request.query as { token?: string })?.token
+      // Magic link callback: verificationId in URL requires code entry (handled client-side in template)
+      const jwtToken: string | null = null
+      const verificationId = (request.query as { verificationId?: string })?.verificationId
 
-      if (token)
-        try {
-          const verifyResponse = await fastify.inject({
-            method: 'POST',
-            url: '/auth/magiclink/verify',
-            payload: { token },
-          })
-
-          if (verifyResponse.statusCode === 200) {
-            const verifyData = verifyResponse.json() as { token: string; refreshToken: string }
-            jwtToken = verifyData.token
-          }
-        } catch (error) {
-          fastify.log.error({ err: error }, 'Failed to verify magic link token')
-        }
-
-      const html = getReferenceHtml(apiUrl, openApiUrl, callbackUrl, jwtToken)
+      const html = getReferenceHtml({
+        apiUrl,
+        openApiUrl,
+        callbackUrl,
+        jwtToken,
+        verificationId: verificationId ?? undefined,
+      })
       return reply.type('text/html').send(html)
     },
   )

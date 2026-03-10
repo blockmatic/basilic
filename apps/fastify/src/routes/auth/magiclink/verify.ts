@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { authAttempts, users, verification } from '../../../db/schema/index.js'
@@ -15,6 +15,12 @@ const magicLinkLockMinutes = 15
 
 const VerifySchema = Type.Object({
   token: Type.String({ pattern: '^\\d{6}$', description: '6-digit code' }),
+  verificationId: Type.Optional(
+    Type.String({ format: 'uuid', description: 'Verification row id (from magic link URL)' }),
+  ),
+  email: Type.Optional(
+    Type.String({ format: 'email', description: 'Email (for code entry on login page)' }),
+  ),
 })
 
 const VerifyResponseSchema = Type.Object({
@@ -43,9 +49,16 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      const { token } = request.body
-      const tokenHash = hashToken(token)
+      const { token, verificationId, email } = request.body
+      const hasVerificationId = Boolean(verificationId)
+      const hasEmail = Boolean(email)
+      if (hasVerificationId === hasEmail)
+        return reply.code(400).send({
+          code: 'INVALID_INPUT',
+          message: 'Provide exactly one of verificationId (from link) or email (for code entry)',
+        })
 
+      const tokenHash = hashToken(token)
       const db = await getDb()
       const ip = getTrustedClientIp(request)
 
@@ -60,37 +73,42 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
           message: 'Too many failed attempts. Try again later.',
         })
 
-      const [verificationRecord] = await db
-        .select()
-        .from(verification)
-        .where(and(eq(verification.value, tokenHash), eq(verification.type, 'magic_link')))
+      const idOrEmail = (hasVerificationId ? verificationId : email) ?? ''
+      const verificationWhere = hasVerificationId
+        ? and(
+            eq(verification.id, idOrEmail),
+            eq(verification.value, tokenHash),
+            eq(verification.type, 'magic_link'),
+          )
+        : and(
+            eq(verification.identifier, idOrEmail),
+            eq(verification.value, tokenHash),
+            eq(verification.type, 'magic_link'),
+          )
+      const [verificationRecord] = await db.select().from(verification).where(verificationWhere)
 
       async function recordFailedAttempt() {
         const now = new Date()
-        const failedAttempts = (attemptRow?.failedAttempts ?? 0) + 1
-        const lockedUntil =
-          failedAttempts >= magicLinkMaxAttempts
-            ? new Date(now.getTime() + magicLinkLockMinutes * 60 * 1000)
-            : null
-
-        if (attemptRow)
-          await db
-            .update(authAttempts)
-            .set({
-              failedAttempts,
-              firstFailureAt: attemptRow.firstFailureAt ?? now,
-              lockedUntil,
-              updatedAt: now,
-            })
-            .where(eq(authAttempts.id, attemptRow.id))
-        else
-          await db.insert(authAttempts).values({
+        const lockedUntilNew = new Date(now.getTime() + magicLinkLockMinutes * 60 * 1000)
+        await db
+          .insert(authAttempts)
+          .values({
             id: randomUUID(),
             key: ip,
             type: 'magic_link',
-            failedAttempts,
+            failedAttempts: 1,
             firstFailureAt: now,
-            lockedUntil,
+            lockedUntil: null,
+            updatedAt: now,
+          })
+          .onConflictDoUpdate({
+            target: [authAttempts.key, authAttempts.type],
+            set: {
+              failedAttempts: sql`${authAttempts.failedAttempts} + 1`,
+              firstFailureAt: sql`COALESCE(${authAttempts.firstFailureAt}, ${now})`,
+              lockedUntil: sql`CASE WHEN (${authAttempts.failedAttempts} + 1) >= ${magicLinkMaxAttempts} THEN ${lockedUntilNew}::timestamptz ELSE NULL END`,
+              updatedAt: now,
+            },
           })
       }
 
@@ -122,7 +140,9 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
           message: 'User not found',
         })
 
-      if (attemptRow) await db.delete(authAttempts).where(eq(authAttempts.id, attemptRow.id))
+      await db
+        .delete(authAttempts)
+        .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, 'magic_link')))
 
       await db.delete(verification).where(eq(verification.id, verificationRecord.id))
 

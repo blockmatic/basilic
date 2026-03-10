@@ -5,11 +5,10 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import { OAuth2Client } from 'google-auth-library'
 import { getDb } from '../../../../db/index.js'
-import { account, users } from '../../../../db/schema/index.js'
-import { isUniqueViolation } from '../../../../lib/db-errors.js'
+import { account } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
+import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
-import { generateFunnyUsername } from '../../../../lib/username.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const VerifyIdTokenSchema = Type.Object({
@@ -29,37 +28,23 @@ async function runGoogleVerifyIdTokenTx(input: {
   name: string
 }): Promise<{ token: string; refreshToken: string }> {
   const { fastify, db, accountId, email, name } = input
+  const user = await findOrCreateUserByEmail(db, {
+    email,
+    name,
+    emailVerified: true,
+  })
+  if (!user) throw new Error('Failed to create or find user')
+
   return db.transaction(async tx => {
     const [existingAccount] = await tx
       .select()
       .from(account)
       .where(and(eq(account.providerId, 'google'), eq(account.accountId, accountId)))
 
-    let user: typeof users.$inferSelect | undefined
-    if (existingAccount) {
-      ;[user] = await tx.select().from(users).where(eq(users.id, existingAccount.userId))
-    }
-    if (!user) {
-      const [byEmail] = await tx.select().from(users).where(eq(users.email, email))
-      if (byEmail) user = byEmail
-      if (!user) {
-        const userId = randomUUID()
-        const username = await generateFunnyUsername(tx)
-        await tx.insert(users).values({
-          id: userId,
-          email,
-          emailVerified: true,
-          name,
-          username,
-        })
-        ;[user] = await tx.select().from(users).where(eq(users.id, userId))
-        if (!user) throw new Error('Failed to create user')
-      }
-    }
-
+    const linkedUserId = existingAccount?.userId ?? user.id
     const accountData = {
       id: existingAccount?.id ?? randomUUID(),
-      userId: user.id,
+      userId: linkedUserId,
       accountId,
       providerId: 'google' as const,
       accessToken: null as string | null,
@@ -87,7 +72,7 @@ async function runGoogleVerifyIdTokenTx(input: {
     const { accessToken, refreshToken } = await createSessionAndIssueTokens({
       fastify,
       db: tx,
-      userId: user.id,
+      userId: linkedUserId,
     })
     return { token: accessToken, refreshToken }
   })
@@ -160,17 +145,7 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
 
       const db = await getDb()
       const name = payload.name ?? email
-      const maxRetries = 5
-      let result!: { token: string; refreshToken: string }
-      for (let attempt = 0; attempt < maxRetries; attempt++)
-        try {
-          result = await runGoogleVerifyIdTokenTx({ fastify, db, accountId, email, name })
-          break
-        } catch (err) {
-          if (isUniqueViolation(err) && attempt < maxRetries - 1) continue
-          throw err
-        }
-
+      const result = await runGoogleVerifyIdTokenTx({ fastify, db, accountId, email, name })
       return reply.code(200).send({ token: result.token, refreshToken: result.refreshToken })
     },
   )

@@ -24,9 +24,7 @@ describe('POST /auth/session/refresh', () => {
     const verifyResponse = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: {
-        token,
-      },
+      payload: { email, token },
     })
 
     const { token: jwtToken, refreshToken } = JSON.parse(verifyResponse.body)

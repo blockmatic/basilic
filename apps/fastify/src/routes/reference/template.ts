@@ -130,13 +130,16 @@ function getButtonInjectionScript(): string {
   }`
 }
 
-function getInitScript(
-  apiUrl: string,
-  openApiUrl: string,
-  callbackUrl: string,
-  jwtToken: string | null,
-): string {
+function getInitScript(opts: {
+  apiUrl: string
+  openApiUrl: string
+  callbackUrl: string
+  jwtToken: string | null
+  verificationId?: string
+}): string {
+  const { apiUrl, openApiUrl, callbackUrl, jwtToken, verificationId } = opts
   const jwtJson = jwtToken ? JSON.stringify(jwtToken) : 'null'
+  const verificationIdJson = verificationId ? JSON.stringify(verificationId) : 'null'
   const buttonScript = getButtonInjectionScript()
 
   return `
@@ -145,6 +148,7 @@ function getInitScript(
   const callbackUrl = ${JSON.stringify(callbackUrl)};
   const openApiUrl = ${JSON.stringify(openApiUrl)};
   const jwtFromServer = ${jwtJson};
+  const verificationIdFromUrl = ${verificationIdJson};
   
   function updateScalarAuth(scalarApiReference, token) {
     const authConfig = {
@@ -179,6 +183,33 @@ function getInitScript(
     localStorage.setItem('scalar-token', jwtFromServer);
     history.replaceState({}, '', '/reference');
     updateScalarAuth(scalarApiReference, jwtFromServer);
+  } else if (verificationIdFromUrl) {
+    const banner = document.createElement('div');
+    banner.id = 'verify-banner';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;padding:12px 16px;background:#1e3a5f;color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;z-index:10000;font-size:14px;';
+    banner.innerHTML = '<span>Enter the 6-digit code from your email:</span><form style="display:inline-flex;gap:8px;"><input type="text" inputmode="numeric" pattern="\\\\d*" maxlength="6" placeholder="000000" style="width:80px;padding:6px;font-size:14px;border-radius:4px;"/><button type="submit" style="padding:6px 12px;background:#667eea;color:#fff;border:none;border-radius:4px;cursor:pointer;">Verify</button></form>';
+    document.body.prepend(banner);
+    banner.querySelector('form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = banner.querySelector('input');
+      const code = input?.value?.trim();
+      if (!code || code.length !== 6) return;
+      try {
+        const res = await fetch(apiUrl + '/auth/magiclink/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ verificationId: verificationIdFromUrl, token: code }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('scalar-token', data.token);
+          history.replaceState({}, '', '/reference');
+          updateScalarAuth(scalarApiReference, data.token);
+          banner.remove();
+          if (window.updateLoginButton) window.updateLoginButton();
+        }
+      } catch (err) { console.error(err); }
+    });
   }
   
   window.scalarApiReference = scalarApiReference;
@@ -240,12 +271,14 @@ function getInitScript(
 `
 }
 
-export function getReferenceHtml(
-  apiUrl: string,
-  openApiUrl: string,
-  callbackUrl: string,
-  jwtToken: string | null = null,
-): string {
+export function getReferenceHtml(opts: {
+  apiUrl: string
+  openApiUrl: string
+  callbackUrl: string
+  jwtToken?: string | null
+  verificationId?: string
+}): string {
+  const { apiUrl, openApiUrl, callbackUrl, jwtToken = null, verificationId } = opts
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -275,7 +308,7 @@ export function getReferenceHtml(
       </form>
     </div>
   </div>
-  <script>${getInitScript(apiUrl, openApiUrl, callbackUrl, jwtToken)}</script>
+  <script>${getInitScript({ apiUrl, openApiUrl, callbackUrl, jwtToken, verificationId })}</script>
 </body>
 </html>`
 }

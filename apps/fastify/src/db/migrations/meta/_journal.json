@@ -99,6 +99,13 @@
       "when": 1773105082451,
       "tag": "0013_familiar_master_chief",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1773109695714,
+      "tag": "0014_slippery_puff_adder",
+      "breakpoints": true
     }
   ]
 }

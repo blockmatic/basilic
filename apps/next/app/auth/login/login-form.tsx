@@ -159,7 +159,7 @@ export function LoginForm({
       return
     }
     setCodeError(null)
-    verifyCode({ token: code })
+    verifyCode({ email, token: code })
   }
 
   const handleBackToEmail = () => {

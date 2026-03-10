@@ -85,31 +85,49 @@ export class FakeEmailProvider implements EmailProvider {
       if (textLink) return textLink
     }
 
-    // Fallback: look for any URL with token parameter (more flexible regex)
-    // Handles both ?token= and &token= patterns, and various quote styles
-    const urlMatch = decodedHtml.match(/href\s*=\s*["']([^"']*[?&]token=[^"'&]*)["']/i)
+    // Fallback: look for any URL with verificationId parameter (magic link)
+    const urlMatch = decodedHtml.match(/href\s*=\s*["']([^"']*[?&]verificationId=[^"'&]*)["']/i)
     const urlLink = urlMatch?.[1]
     if (urlLink) return urlLink
 
-    // Additional fallback: look for token parameter anywhere in HTML (not just in href)
-    const tokenMatch = decodedHtml.match(/(https?:\/\/[^\s"']*[?&]token=[^\s"']*)/i)
-    const tokenLink = tokenMatch?.[1]
-    if (tokenLink) return tokenLink
+    // Legacy: token parameter (deprecated)
+    const tokenUrlMatch = decodedHtml.match(/href\s*=\s*["']([^"']*[?&]token=[^"'&]*)["']/i)
+    if (tokenUrlMatch?.[1]) return tokenUrlMatch[1]
 
     return null
   }
 
-  extractToken(email?: Email): string | null {
+  extractVerificationId(email?: Email): string | null {
     const magicLink = this.extractMagicLink(email)
     if (!magicLink) return null
-
     try {
       const url = new URL(magicLink)
-      return url.searchParams.get('token')
+      return url.searchParams.get('verificationId') ?? url.searchParams.get('token')
     } catch {
-      // If URL parsing fails, try regex extraction
-      const tokenMatch = magicLink.match(/[?&]token=([^&]+)/)
-      return tokenMatch ? tokenMatch[1] : null
+      const match = magicLink.match(/[?&](?:verificationId|token)=([^&]+)/)
+      return match ? match[1] : null
     }
+  }
+
+  /** Extract 6-digit code from email body (magic link). For @test.ai, prefer tokenPlain from DB. */
+  extractToken(email?: Email): string | null {
+    const targetEmail = email ?? this.last()
+    if (!targetEmail) return null
+    const decodedHtml = decodeHtmlEntities(targetEmail.html)
+    const monoMatch = decodedHtml.match(/font-mono[^>]*>\s*(\d{6})\s*</i)
+    if (monoMatch) return monoMatch[1]
+    const codeMatch = decodedHtml.match(/>\s*(\d{6})\s*</)
+    if (codeMatch) return codeMatch[1]
+    const magicLink = this.extractMagicLink(targetEmail)
+    if (magicLink)
+      try {
+        const url = new URL(magicLink)
+        const tokenParam = url.searchParams.get('token')
+        if (tokenParam) return tokenParam
+      } catch {
+        //
+      }
+
+    return null
   }
 }

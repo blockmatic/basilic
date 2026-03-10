@@ -53,7 +53,7 @@ export async function getSessionToken(
   const verifyRes = await app.inject({
     method: 'POST',
     url: '/auth/magiclink/verify',
-    payload: { token },
+    payload: { email, token },
   })
   if (verifyRes.statusCode < 200 || verifyRes.statusCode >= 300)
     throw new Error(
