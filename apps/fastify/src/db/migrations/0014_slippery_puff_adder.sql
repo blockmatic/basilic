@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "auth_attempts_key_type_unique" ON "auth_attempts" USING btree ("key","type");

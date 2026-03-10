@@ -2,6 +2,7 @@ import rateLimit from '@fastify/rate-limit'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import { env } from '../lib/env.js'
+import { getTrustedClientIp } from '../lib/request.js'
 
 type RateLimitPluginOptions = Record<string, never>
 
@@ -17,16 +18,7 @@ const rateLimitPlugin: FastifyPluginAsync<RateLimitPluginOptions> = async fastif
       'x-ratelimit-remaining': true,
       'x-ratelimit-reset': true,
     },
-    // Custom key generator to use real IP from proxy
-    keyGenerator: request => {
-      // Get real IP from proxy headers
-      const forwarded = request.headers['x-forwarded-for']
-      if (forwarded) {
-        const ips = Array.isArray(forwarded) ? forwarded[0] : forwarded
-        return ips.split(',')[0].trim()
-      }
-      return request.ip
-    },
+    keyGenerator: request => getTrustedClientIp(request),
     // Custom error handler
     errorResponseBuilder: (_request, context) => {
       const timeWindowSeconds = Math.round(env.RATE_LIMIT_TIME_WINDOW / 1000)

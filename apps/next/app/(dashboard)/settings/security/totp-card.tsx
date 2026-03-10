@@ -181,7 +181,7 @@ export function TotpCard() {
         ) : !setupRequested ? (
           <div className="space-y-4 py-4">
             <Button onClick={() => setSetupRequested(true)} disabled={setupMutation.isPending}>
-              Start setup
+              Start again
             </Button>
           </div>
         ) : setupData ? (

@@ -85,7 +85,13 @@ Passkeys use WebAuthn for passwordless registration and sign-in. Registration cr
 
 ### Magic link (implemented)
 
-Magic link sign-in issues a **single-use token** over email, then exchanges it for JWTs.
+Magic link sign-in issues a **6-digit login code** over email, then exchanges it for JWTs. Users can either type the code into the login form or click the magic link button in the email.
+
+**Flow:**
+1. User enters email → `POST /auth/magiclink/request` → email sent with subject `{code} - {APP_NAME} verification code`
+2. Email contains the 6-digit code prominently and a "Sign in" button (magic link)
+3. **Option A (manual):** User types the 6-digit code in the login form → `POST /auth/magiclink/verify` with `{ token: code }` → JWTs returned
+4. **Option B (link):** User clicks the button in email → callback page receives `?token={code}` → verify → cookies set, redirect
 
 ### OAuth (GitHub)
 
@@ -393,26 +399,35 @@ sequenceDiagram
 
 ## Magic link flow (web)
 
-The email link points to the callback page, which exchanges the token for JWTs and sets cookies.
+A 6-digit code is sent by email. Users can enter the code on the login page or click the magic link in the email. Both paths exchange the code for JWTs.
 
 ```mermaid
 sequenceDiagram
   participant Browser
+  participant LoginForm
   participant CallbackPage as /auth/callback/magiclink
   participant FastifyAPI as Fastify API
   participant DB as PostgreSQL
   participant Email as Email provider
 
   Browser->>FastifyAPI: POST /auth/magiclink/request (email, callbackUrl)
-  FastifyAPI->>DB: upsert user + store verification token
-  FastifyAPI->>Email: send email with callbackUrl?token=...
-  Email-->>Browser: magic link
+  FastifyAPI->>DB: upsert user + store hash(6-digit code)
+  FastifyAPI->>Email: send email (code + magic link button)
+  Email-->>Browser: email with code and link
 
-  Browser->>CallbackPage: GET /auth/callback/magiclink?token=...&callbackURL=...
-  CallbackPage->>FastifyAPI: POST /auth/magiclink/verify (token)
-  FastifyAPI->>DB: consume token, create session
-  FastifyAPI-->>CallbackPage: { token, refreshToken }
-  CallbackPage->>CallbackPage: set cookies, redirect to callbackURL
+  alt Manual code entry
+    Browser->>LoginForm: User enters 6-digit code
+    LoginForm->>FastifyAPI: POST /auth/magiclink/verify (token: code)
+    FastifyAPI->>DB: consume code, create session
+    FastifyAPI-->>LoginForm: { token, refreshToken }
+    LoginForm->>LoginForm: updateAuthTokens, redirect
+  else Link click
+    Browser->>CallbackPage: GET /auth/callback/magiclink?token={code}&callbackUrl=...
+    CallbackPage->>FastifyAPI: POST /auth/magiclink/verify (token)
+    FastifyAPI->>DB: consume code, create session
+    FastifyAPI-->>CallbackPage: { token, refreshToken }
+    CallbackPage->>CallbackPage: set cookies, redirect to callbackUrl
+  end
 
   Browser->>FastifyAPI: GET /auth/session/user (Bearer from cookie)
   FastifyAPI-->>Browser: { user }

@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { env } from '../lib/env.js'
+import { verifyMagicLinkAndIssueToken } from './auth/magiclink/verify.js'
 import { getReferenceHtml } from './reference/template.js'
 
 const referenceRoutes: FastifyPluginAsync = async fastify => {
@@ -36,27 +37,25 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
       const openApiUrl = `${apiUrl}/reference/openapi.json`
       const callbackUrl = `${apiUrl}/reference`
 
-      // Handle magic link callback: verify token and get JWT
+      // Magic link callback: token+verificationId in URL → verify server-side; verificationId only → code form (client-side)
+      const query = request.query as { token?: string; verificationId?: string }
+      const { token: urlToken, verificationId } = query
       let jwtToken: string | null = null
-      const token = (request.query as { token?: string })?.token
+      if (urlToken && verificationId) {
+        const result = await verifyMagicLinkAndIssueToken(fastify, request, {
+          token: urlToken,
+          verificationId,
+        })
+        jwtToken = result?.accessToken ?? null
+      }
 
-      if (token)
-        try {
-          const verifyResponse = await fastify.inject({
-            method: 'POST',
-            url: '/auth/magiclink/verify',
-            payload: { token },
-          })
-
-          if (verifyResponse.statusCode === 200) {
-            const verifyData = verifyResponse.json() as { token: string; refreshToken: string }
-            jwtToken = verifyData.token
-          }
-        } catch (error) {
-          fastify.log.error({ err: error }, 'Failed to verify magic link token')
-        }
-
-      const html = getReferenceHtml(apiUrl, openApiUrl, callbackUrl, jwtToken)
+      const html = getReferenceHtml({
+        apiUrl,
+        openApiUrl,
+        callbackUrl,
+        jwtToken,
+        verificationId: jwtToken ? undefined : (verificationId ?? undefined),
+      })
       return reply.type('text/html').send(html)
     },
   )

@@ -4,7 +4,7 @@ test.describe('Passkey sign-in', () => {
   test.describe.configure({ mode: 'serial' })
 
   test('should sign in with passkey after adding one', async ({ authenticatedPage }) => {
-    await authenticatedPage.goto('/settings/security?section=passkeys')
+    await authenticatedPage.goto('/settings/security/passkeys')
     await expect(authenticatedPage.getByRole('button', { name: /add passkey/i })).toBeVisible({
       timeout: 10000,
     })

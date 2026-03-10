@@ -8,7 +8,7 @@ Core technology choices and patterns for frontend apps. See [Frontend Architectu
 ## Data fetching & async state
 
 - **`@tanstack/react-query`**: default choice for async data and server state (caching, dedupe, retries)
-- **`@repo/react`**: generated React Query hooks and integration for the OpenAPI client surface
+- **`@repo/react`**: React Query hooks and helpers only (no UI components). Route-specific UI (e.g. login form) lives in apps, collocated by route
 - **`@repo/core`**: generated, runtime-agnostic API client and types
 - **`@lukemorales/query-key-factory`**: centralized query key factories (for hand-written queries)
 

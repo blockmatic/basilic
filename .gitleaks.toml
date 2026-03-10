@@ -15,6 +15,7 @@ paths = [
   '''\.env\.example$''',
   '''\.env\.test\.example$''',
   '''\.env-sample$''',
+  '''^apps/next/\.env\.local\.example$''',
   '''\.env\.sample$''',
   '''\.env\.schema$''',
   '''\.env\.test$''',

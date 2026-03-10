@@ -56,8 +56,13 @@ export async function proxy(request: NextRequest) {
   const allowedImagePaths = ['/images/auth-login-hero.webp'] as const
   const isAllowedImage = (allowedImagePaths as readonly string[]).includes(pathname)
 
-  // Allow callbacks, logout, and explicitly listed image assets without auth
-  if (pathname.startsWith('/auth/callback') || pathname === '/auth/logout' || isAllowedImage)
+  // Allow callbacks, logout, legal pages, and explicitly listed image assets without auth
+  const publicPaths = ['/auth/logout', '/terms', '/privacy'] as const
+  if (
+    pathname.startsWith('/auth/callback') ||
+    (publicPaths as readonly string[]).includes(pathname) ||
+    isAllowedImage
+  )
     return NextResponse.next()
 
   const authCheck = await checkAuthStatus(request)

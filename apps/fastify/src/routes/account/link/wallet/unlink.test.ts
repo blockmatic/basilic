@@ -60,11 +60,12 @@ describe('DELETE /account/link/wallet/:id', () => {
 
   it('should return 404 for non-existent wallet', async () => {
     const jwt = await (async () => {
+      const email = 'test@test.ai'
       const token = await getMagicLinkTokenRaw(fastify)
       const verifyRes = await fastify.inject({
         method: 'POST',
         url: '/auth/magiclink/verify',
-        payload: { token },
+        payload: { email, token },
       })
       return (JSON.parse(verifyRes.body) as { token: string }).token
     })()
@@ -80,11 +81,12 @@ describe('DELETE /account/link/wallet/:id', () => {
   })
 
   it('should return 204 when unlink succeeds with JWT', async () => {
+    const email = 'test@test.ai'
     const token = await getMagicLinkTokenRaw(fastify)
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: { token },
+      payload: { email, token },
     })
     const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
 
@@ -101,11 +103,12 @@ describe('DELETE /account/link/wallet/:id', () => {
   it('should return 204 when unlink succeeds with API key', async () => {
     const apiKey = await getApiKeyToken(fastify, 'unlink-apikey@test.ai')
     const jwt = await (async () => {
-      const token = await getMagicLinkTokenRaw(fastify, 'unlink-apikey@test.ai')
+      const email = 'unlink-apikey@test.ai'
+      const token = await getMagicLinkTokenRaw(fastify, email)
       const verifyRes = await fastify.inject({
         method: 'POST',
         url: '/auth/magiclink/verify',
-        payload: { token },
+        payload: { email, token },
       })
       return (JSON.parse(verifyRes.body) as { token: string }).token
     })()

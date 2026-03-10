@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@repo/ui/components/button'
+import { ScrollArea } from '@repo/ui/components/scroll-area'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@repo/ui/components/sidebar'
 import { Toaster } from '@repo/ui/components/sonner'
 import { useQueryClient } from '@tanstack/react-query'
@@ -10,7 +11,6 @@ import { AuthBadge } from 'components/shared/auth-badge'
 import { LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 import { authSessionJwtQueryKey, authSessionUserQueryKey } from '@/lib/query-keys'
-
 import { PageTitle } from './page-title'
 import { DashboardSidebar } from './sidebar'
 
@@ -32,7 +32,7 @@ export function DashboardShell({
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-dvh min-h-0 overflow-hidden">
       <DashboardSidebar />
       <div className="flex min-w-0 flex-1">
         <SidebarInset className="flex min-w-0 flex-1 flex-col">
@@ -59,7 +59,9 @@ export function DashboardShell({
             </div>
           </header>
           <div className="flex min-h-0 flex-1" style={{ height: 'calc(100dvh - 3.5rem)' }}>
-            <main className="min-w-0 w-0 flex-1 overflow-auto p-4 md:p-6">{children}</main>
+            <ScrollArea orientation="vertical" className="min-h-0 min-w-0 w-0 flex-1">
+              <main className="block p-4 md:p-6">{children}</main>
+            </ScrollArea>
             <AssistantSidebar />
           </div>
         </SidebarInset>

@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
-import { passkeyCredentials, totp, walletIdentities } from '../../../db/schema/index.js'
+import { passkeyCredentials, totp, users, walletIdentities } from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const LinkedWalletSchema = Type.Object({
@@ -23,6 +23,7 @@ const UserResponseSchema = Type.Object({
     id: Type.String(),
     email: Type.Union([Type.String(), Type.Null()]),
     name: Type.Union([Type.String(), Type.Null()]),
+    username: Type.Union([Type.String(), Type.Null()]),
     emailVerified: Type.Union([Type.Boolean(), Type.Null()]),
     wallet: Type.Optional(Type.Object({ chain: Type.String(), address: Type.String() })),
     linkedWallets: Type.Array(LinkedWalletSchema),
@@ -56,9 +57,10 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         })
 
       const userId = request.session.user.id
-      let linkedWallets: { id: string; chain: string; address: string }[]
+      let linkedWallets: { id: string; chain: string; address: string }[] = []
       let totpEnabled = false
       let passkeys: { id: string; name: string; createdAt: string }[] = []
+      let userRow: { name?: string | null; username?: string | null } | undefined
 
       try {
         const db = await getDb()
@@ -87,6 +89,11 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           name: p.name,
           createdAt: p.createdAt.toISOString(),
         }))
+
+        ;[userRow] = await db
+          .select({ name: users.name, username: users.username })
+          .from(users)
+          .where(eq(users.id, userId))
       } catch (err) {
         logger.error({ err }, 'Failed to fetch user data')
         return reply.code(500).send({
@@ -99,7 +106,8 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         user: {
           id: request.session.user.id,
           email: request.session.user.email,
-          name: null,
+          name: userRow?.name ?? request.session.user.name ?? null,
+          username: userRow?.username ?? request.session.user.username ?? null,
           emailVerified: null,
           ...(request.session.user.wallet && { wallet: request.session.user.wallet }),
           linkedWallets,

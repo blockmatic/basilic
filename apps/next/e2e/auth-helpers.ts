@@ -50,9 +50,9 @@ export const authHelpers = {
     return response
   },
 
-  async extractToken(page: Page): Promise<string | null> {
-    // Stabilize e2e auth flows: 500ms delay and 12 retries chosen empirically for async
-    // backend/session propagation and flaky CI timing. Adjust if tests are stabilized.
+  async extractMagicLinkData(
+    page: Page,
+  ): Promise<{ token: string; verificationId: string } | null> {
     await new Promise(r => setTimeout(r, 500))
     const maxRetries = 12
     const delayMs = 500
@@ -66,7 +66,42 @@ export const authHelpers = {
           }
           return null
         }
-        const data = await response.json()
+        const data = (await response.json()) as {
+          token?: string
+          verificationId?: string
+        }
+        if (data.token && data.verificationId)
+          return data as { token: string; verificationId: string }
+        if (attempt < maxRetries - 1) {
+          await new Promise(r => setTimeout(r, delayMs))
+          continue
+        }
+        return null
+      } catch {
+        if (attempt < maxRetries - 1) {
+          await new Promise(r => setTimeout(r, delayMs))
+          continue
+        }
+        return null
+      }
+    return null
+  },
+
+  async extractToken(page: Page): Promise<string | null> {
+    await new Promise(r => setTimeout(r, 500))
+    const maxRetries = 12
+    const delayMs = 500
+    for (let attempt = 0; attempt < maxRetries; attempt++)
+      try {
+        const response = await page.request.get(`${apiUrl}/test/magic-link/last`)
+        if (!response.ok()) {
+          if (attempt < maxRetries - 1) {
+            await new Promise(r => setTimeout(r, delayMs))
+            continue
+          }
+          return null
+        }
+        const data = (await response.json()) as { token?: string }
         if (data.token) return data.token
         if (attempt < maxRetries - 1) {
           await new Promise(r => setTimeout(r, delayMs))
@@ -80,13 +115,28 @@ export const authHelpers = {
         }
         return null
       }
-
     return null
   },
 
-  async verifyMagicLink(page: Page, token: string) {
-    const verifyUrl = `/auth/callback/magiclink?token=${encodeURIComponent(token)}&callbackURL=/`
+  async enterLoginCodeAndSubmit(page: Page, code: string) {
+    await page.getByTestId('login-code-input').fill(code)
+    await page.getByTestId('submit-login-code').click()
+  },
+
+  async verifyMagicLink(page: Page, code: string, verificationIdParam?: string) {
+    let verificationId = verificationIdParam
+    if (!verificationId) {
+      const data = await this.extractMagicLinkData(page)
+      verificationId = data?.verificationId ?? undefined
+    }
+    if (!verificationId) throw new Error('Need verificationId for link-click flow')
+    const verifyUrl = `/auth/callback/magiclink?verificationId=${encodeURIComponent(verificationId)}&callbackURL=/`
     await page.goto(verifyUrl)
+    await page
+      .getByRole('heading', { name: 'Enter your code' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.getByLabel('Code').fill(code)
+    await page.getByRole('button', { name: 'Verify' }).click()
     await page.waitForURL(
       url => {
         const path = new URL(url).pathname
@@ -118,11 +168,18 @@ export const authHelpers = {
   async loginAsTestUser(page: Page) {
     const response = await this.sendMagicLink(page)
     if (response.status() !== 200) throw new Error('Magic link request failed')
-    const successMessage = page.getByText(/check your email for the magic link/i)
+    const successMessage = page.getByRole('heading', { name: 'Check your email' })
     await successMessage.waitFor({ state: 'visible', timeout: 10000 })
     await new Promise(r => setTimeout(r, 200))
     const token = await this.extractToken(page)
     if (!token) throw new Error('Failed to extract magic link token')
-    await this.verifyMagicLink(page, token)
+    await this.enterLoginCodeAndSubmit(page, token)
+    await page.waitForURL(
+      url => {
+        const path = new URL(url).pathname
+        return path === '/' || path === ''
+      },
+      { timeout: 10000 },
+    )
   },
 }

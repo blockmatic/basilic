@@ -2,7 +2,6 @@
 
 import { ApiError } from '@repo/core'
 import {
-  LoginForm,
   useOAuthLogin,
   useOAuthProviders,
   usePasskeyAuth,
@@ -18,10 +17,11 @@ import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
+import { LoginForm } from './login-form'
 import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
 
-type LoginActionsProps = { initialError?: string; defaultEmail?: string }
+type LoginActionsProps = { initialError?: string }
 
 type OAuthButtonsProps = {
   anyPending: boolean
@@ -146,7 +146,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
   )
 }
 
-export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) {
+export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Element {
   const router = useRouter()
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
   const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
@@ -220,7 +220,15 @@ export function LoginActions({ initialError, defaultEmail }: LoginActionsProps) 
         />
       )}
       <LoginForm
-        defaultEmail={defaultEmail}
+        initialError={initialError}
+        onVerifySuccess={async ({ token, refreshToken }) => {
+          try {
+            await updateAuthTokens({ token, refreshToken })
+            router.push('/')
+          } catch (err) {
+            toast.error(err instanceof Error ? err.message : 'Failed to complete sign-in')
+          }
+        }}
         extraActions={
           <OAuthButtons
             anyPending={anyPending}

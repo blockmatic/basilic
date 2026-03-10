@@ -24,9 +24,7 @@ describe('POST /auth/link/verify', () => {
     const verifyResponse = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: {
-        token,
-      },
+      payload: { email, token },
     })
 
     expect(verifyResponse.statusCode).toBe(200)
@@ -42,11 +40,11 @@ describe('POST /auth/link/verify', () => {
     const response = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: {
-        token: 'invalid-token-12345',
-      },
+      payload: { email: 'nonexistent@example.com', token: '000000' },
     })
 
-    expect([400, 401, 404]).toContain(response.statusCode)
+    expect(response.statusCode).toBe(401)
+    const body = JSON.parse(response.body)
+    expect(body.code).toBe('INVALID_TOKEN')
   })
 })

@@ -29,10 +29,11 @@ describe('POST /account/link/wallet/verify', () => {
   })
 
   it('should return 401 for invalid signature', async () => {
+    const email = 'test@test.ai'
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: { token: await getMagicLinkTokenRaw(fastify) },
+      payload: { email, token: await getMagicLinkTokenRaw(fastify) },
     })
     const { token } = JSON.parse(verifyRes.body)
 
@@ -67,10 +68,11 @@ describe('POST /account/link/wallet/verify', () => {
   })
 
   it('should link wallet on valid signature', async () => {
+    const email = 'test@test.ai'
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: { token: await getMagicLinkTokenRaw(fastify) },
+      payload: { email, token: await getMagicLinkTokenRaw(fastify) },
     })
     const { token } = JSON.parse(verifyRes.body)
     const userId = JSON.parse(
@@ -178,11 +180,12 @@ describe('POST /account/link/wallet/verify', () => {
   })
 
   it('should return WALLET_ALREADY_LINKED when wallet belongs to another user', async () => {
+    const email1 = 'test@test.ai'
     const token1 = await getMagicLinkTokenRaw(fastify)
     const verifyRes1 = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: { token: token1 },
+      payload: { email: email1, token: token1 },
     })
     const { token: jwt1 } = JSON.parse(verifyRes1.body)
 
@@ -209,11 +212,12 @@ describe('POST /account/link/wallet/verify', () => {
       payload: { chain: 'eip155', message: messageToSign, signature },
     })
 
-    const token2 = await getMagicLinkTokenRaw(fastify, 'other@test.ai')
+    const email2 = 'other@test.ai'
+    const token2 = await getMagicLinkTokenRaw(fastify, email2)
     const verifyRes2 = await fastify.inject({
       method: 'POST',
       url: '/auth/magiclink/verify',
-      payload: { token: token2 },
+      payload: { email: email2, token: token2 },
     })
     const { token: jwt2 } = JSON.parse(verifyRes2.body)
 

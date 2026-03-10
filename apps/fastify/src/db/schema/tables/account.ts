@@ -1,4 +1,4 @@
-import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { index, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
 import { users } from './users.js'
 
 // Account table for OAuth providers (future use)
@@ -26,6 +26,7 @@ export const account = pgTable(
   table => [
     index('account_user_id_idx').on(table.userId),
     index('account_account_id_idx').on(table.accountId),
+    unique('account_provider_account_unique').on(table.providerId, table.accountId),
   ],
 )
 

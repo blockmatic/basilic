@@ -19,7 +19,7 @@ describe('GET /test/magic-link/last', () => {
 
     expect(response.statusCode).toBe(200)
     const body = response.json()
-    expect(body).toEqual({ token: null })
+    expect(body).toEqual({ token: null, verificationId: null })
   })
 
   it('should return token after magic link is sent', async () => {
@@ -44,5 +44,7 @@ describe('GET /test/magic-link/last', () => {
     const body = response.json()
     expect(body.token).toBeTruthy()
     expect(typeof body.token).toBe('string')
+    expect(body.verificationId).toBeTruthy()
+    expect(typeof body.verificationId).toBe('string')
   })
 })

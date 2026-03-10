@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { faker } from '@faker-js/faker'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import MagicLinkLoginEmail from '@repo/email/emails/magic-link-login'
 import { render } from '@repo/email/render'
@@ -7,10 +8,47 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { users, verification } from '../../../db/schema/index.js'
+import { isUniqueViolation } from '../../../lib/db-errors.js'
 import { env } from '../../../lib/env.js'
-import { generateToken, hashToken } from '../../../lib/jwt.js'
+import { generateLoginCode, hashToken } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
+import { generateFunnyUsername } from '../../../lib/username.js'
 import { ErrorResponseSchema } from '../../schemas.js'
+
+async function findOrCreateUserForMagicLink(
+  db: Awaited<ReturnType<typeof getDb>>,
+  email: string,
+): Promise<typeof users.$inferSelect | undefined> {
+  const userId = randomUUID()
+  const funnyName = `${faker.word.adjective()} ${faker.animal.type()}`
+  const maxRetries = 5
+  for (let attempt = 0; attempt < maxRetries; attempt++)
+    try {
+      const [created] = await db.transaction(async tx => {
+        const username = await generateFunnyUsername(tx)
+        await tx.insert(users).values({
+          id: userId,
+          email,
+          emailVerified: false,
+          name: funnyName,
+          username,
+        })
+        const [c] = await tx.select().from(users).where(eq(users.id, userId))
+        if (!c) throw new Error('Failed to create user')
+        return [c]
+      })
+      return created
+    } catch (err) {
+      if (isUniqueViolation(err)) {
+        const [existing] = await db.select().from(users).where(eq(users.email, email))
+        if (existing) return existing
+        if (attempt < maxRetries - 1) continue
+      }
+      throw err
+    }
+
+  return undefined
+}
 
 const RequestSchema = Type.Object({
   email: Type.String({ format: 'email' }),
@@ -53,20 +91,16 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       // Find or create user
       let [user] = await db.select().from(users).where(eq(users.email, email))
       if (!user) {
-        const userId = randomUUID()
-        await db.insert(users).values({
-          id: userId,
-          email,
-          emailVerified: false,
-        })
-        ;[user] = await db.select().from(users).where(eq(users.id, userId))
-        if (!user) throw new Error('Failed to create user')
+        const created = await findOrCreateUserForMagicLink(db, email)
+        if (!created) throw new Error('Failed to create user')
+        user = created
       }
 
-      // Generate verification token
-      const token = generateToken()
-      const tokenHash = hashToken(token)
+      // Generate 6-digit login code (delivered only in email body, never in URL)
+      const code = generateLoginCode()
+      const tokenHash = hashToken(code)
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+      const verificationId = randomUUID()
 
       const storePlain =
         env.NODE_ENV !== 'production' &&
@@ -74,25 +108,29 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         typeof email === 'string' &&
         email.endsWith('@test.ai')
       await db.insert(verification).values({
-        id: randomUUID(),
+        id: verificationId,
         type: 'magic_link',
         identifier: email,
         value: tokenHash,
-        ...(storePlain && { tokenPlain: token }),
+        ...(storePlain && { tokenPlain: code }),
         expiresAt,
       })
 
       const magicLinkUrl = new URL(callbackUrl)
-      magicLinkUrl.searchParams.set('token', token)
+      magicLinkUrl.searchParams.set('verificationId', verificationId)
 
       // Send email
       const html = await render(
-        MagicLinkLoginEmail({ magicLink: magicLinkUrl.toString(), expirationMinutes: 15 }),
+        MagicLinkLoginEmail({
+          magicLink: magicLinkUrl.toString(),
+          loginCode: code,
+          expirationMinutes: 15,
+        }),
       )
       const emailResponse = await fastify.emailProvider.emails.send({
         from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
         to: email,
-        subject: 'Sign in to your account',
+        subject: `${code} - ${env.APP_NAME} verification code`,
         html,
       })
 

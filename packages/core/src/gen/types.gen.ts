@@ -623,6 +623,51 @@ export type AccountPasskeysListResponses = {
 
 export type AccountPasskeysListResponse = AccountPasskeysListResponses[keyof AccountPasskeysListResponses];
 
+export type AccountProfileUpdateData = {
+    body: {
+        name?: string;
+        username?: string | unknown;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/profile/';
+};
+
+export type AccountProfileUpdateErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountProfileUpdateError = AccountProfileUpdateErrors[keyof AccountProfileUpdateErrors];
+
+export type AccountProfileUpdateResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        user: {
+            id: string;
+            email: string | unknown;
+            name: string | unknown;
+            username: string | unknown;
+        };
+    };
+};
+
+export type AccountProfileUpdateResponse = AccountProfileUpdateResponses[keyof AccountProfileUpdateResponses];
+
 export type ChatData = {
     body: {
         messages: Array<{
@@ -715,7 +760,18 @@ export type MagiclinkRequestResponse = MagiclinkRequestResponses[keyof Magiclink
 
 export type MagiclinkVerifyData = {
     body: {
+        /**
+         * 6-digit code
+         */
         token: string;
+        /**
+         * Verification row id (from magic link URL)
+         */
+        verificationId?: string;
+        /**
+         * Email (for code entry on login page)
+         */
+        email?: string;
     };
     path?: never;
     query?: never;
@@ -723,6 +779,13 @@ export type MagiclinkVerifyData = {
 };
 
 export type MagiclinkVerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
     /**
      * Default Response
      */
@@ -734,6 +797,13 @@ export type MagiclinkVerifyErrors = {
      * Default Response
      */
     404: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
         code: string;
         message: string;
     };
@@ -1389,6 +1459,7 @@ export type GetUserResponses = {
             id: string;
             email: string | unknown;
             name: string | unknown;
+            username: string | unknown;
             emailVerified: boolean | unknown;
             wallet?: {
                 chain: string;

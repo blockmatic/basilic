@@ -7,8 +7,10 @@ const userResponseSchema = z
   .object({
     user: z
       .object({
+        id: z.string(),
         email: z.string().nullable().optional(),
         name: z.string().nullable().optional(),
+        username: z.string().nullable().optional(),
         emailVerified: z.boolean().nullable().optional(),
       })
       .passthrough()
@@ -40,8 +42,10 @@ export async function getAuthStatus(): Promise<{
 }
 
 export async function getUserInfo(): Promise<{
+  id?: string
   email?: string | null
   name?: string | null
+  username?: string | null
   emailVerified?: boolean | null
 } | null> {
   const { token } = await getServerAuthToken()

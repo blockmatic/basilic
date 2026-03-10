@@ -30,6 +30,8 @@ export const env = createEnv({
     // Logging configuration
     NEXT_PUBLIC_LOG_ENABLED: z.coerce.boolean().optional(),
     NEXT_PUBLIC_LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).optional(),
+    // Policy pages (privacy, terms)
+    NEXT_PUBLIC_LEGAL_EMAIL: z.string().email().default('legal@example.com'),
   },
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
@@ -48,6 +50,7 @@ export const env = createEnv({
     ERROR_REPORTING_ENVIRONMENT: process.env.ERROR_REPORTING_ENVIRONMENT,
     NEXT_PUBLIC_LOG_ENABLED: process.env.NEXT_PUBLIC_LOG_ENABLED,
     NEXT_PUBLIC_LOG_LEVEL: process.env.NEXT_PUBLIC_LOG_LEVEL,
+    NEXT_PUBLIC_LEGAL_EMAIL: process.env.NEXT_PUBLIC_LEGAL_EMAIL,
   },
   emptyStringAsUndefined: true,
 })

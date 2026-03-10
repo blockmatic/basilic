@@ -1,13 +1,14 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, desc, isNotNull, like } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, like } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../db/index.js'
 import { verification } from '../../db/schema/index.js'
 import { env } from '../../lib/env.js'
 
-const MagicLinkTokenResponseSchema = Type.Object({
+const MagicLinkLastResponseSchema = Type.Object({
   token: Type.Union([Type.String(), Type.Null()]),
+  verificationId: Type.Union([Type.String(), Type.Null()]),
 })
 
 const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
@@ -21,27 +22,31 @@ const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
         tags: ['test'],
         security: [],
         response: {
-          200: MagicLinkTokenResponseSchema,
+          200: MagicLinkLastResponseSchema,
         },
       },
     },
     async (request, reply) => {
       if (!env.ALLOW_TEST || env.NODE_ENV === 'production')
-        return reply.code(200).send({ token: null })
+        return reply.code(200).send({ token: null, verificationId: null })
 
       const db = await getDb()
       const [row] = await db
-        .select({ tokenPlain: verification.tokenPlain })
+        .select({ id: verification.id, tokenPlain: verification.tokenPlain })
         .from(verification)
-        .where(and(like(verification.identifier, '%@test.ai'), isNotNull(verification.tokenPlain)))
+        .where(
+          and(
+            like(verification.identifier, '%@test.ai'),
+            eq(verification.type, 'magic_link'),
+            isNotNull(verification.tokenPlain),
+          ),
+        )
         .orderBy(desc(verification.createdAt))
         .limit(1)
 
-      const fromDb = row?.tokenPlain ?? null
-      if (fromDb) return reply.code(200).send({ token: fromDb })
-
-      const fromFake = request.server.fakeEmail?.extractToken()
-      return reply.code(200).send({ token: fromFake ?? null })
+      const verificationId = row?.id ?? request.server.fakeEmail?.extractVerificationId() ?? null
+      const token = row?.tokenPlain ?? request.server.fakeEmail?.extractToken() ?? null
+      return reply.code(200).send({ token, verificationId })
     },
   )
 }

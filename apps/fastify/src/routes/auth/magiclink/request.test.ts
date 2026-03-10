@@ -87,10 +87,12 @@ describe('POST /auth/magiclink/request', () => {
       const sentEmail = fastify.fakeEmail?.last()
       expect(sentEmail).toBeDefined()
       expect(sentEmail?.to).toBe(email)
-      expect(sentEmail?.subject).toBe('Sign in to your account')
+      const subjectMatch = sentEmail?.subject.match(/^(\d{6}) - .* verification code$/)
+      const tokenFromEmail = fastify.fakeEmail?.extractToken(sentEmail)
+      expect(subjectMatch?.[1]).toBe(tokenFromEmail)
       const magicLink = fastify.fakeEmail?.extractMagicLink(sentEmail)
       expect(magicLink).toBeTruthy()
-      expect(magicLink).toContain('token=')
+      expect(magicLink).toContain('verificationId=')
     })
 
     it('should extract magic link URL from email', async () => {
@@ -111,10 +113,10 @@ describe('POST /auth/magiclink/request', () => {
       const magicLink = fastify.fakeEmail?.extractMagicLink(sentEmail)
       expect(magicLink).toBeTruthy()
       expect(magicLink).toContain('callback')
-      expect(magicLink).toContain('token=')
+      expect(magicLink).toContain('verificationId=')
     })
 
-    it('should extract token from magic link URL', async () => {
+    it('should extract code from email body and verificationId from link', async () => {
       const email = 'test@example.com'
 
       await fastify.inject({
@@ -126,10 +128,17 @@ describe('POST /auth/magiclink/request', () => {
         },
       })
 
-      const token = fastify.fakeEmail?.extractToken()
+      const sentEmail = fastify.fakeEmail?.last()
+      expect(sentEmail).toBeDefined()
+      const subjectMatch = sentEmail?.subject.match(/^(\d{6}) - .* verification code$/)
+      const token = fastify.fakeEmail?.extractToken(sentEmail)
+      const verificationId = fastify.fakeEmail?.extractVerificationId(sentEmail)
+      expect(subjectMatch?.[1]).toBe(token)
       expect(token).toBeTruthy()
       expect(typeof token).toBe('string')
-      expect(token?.length).toBeGreaterThan(0)
+      expect(token).toMatch(/^\d{6}$/)
+      expect(verificationId).toBeTruthy()
+      expect(typeof verificationId).toBe('string')
     })
   })
 })

@@ -24,23 +24,50 @@ test.describe('Magic Link Authentication', () => {
   test.describe('Valid Magic Link Flow', () => {
     test.describe.configure({ mode: 'serial' })
 
-    test('should complete full magic link authentication flow', async ({ page }) => {
+    test('should complete full magic link authentication flow (code entry)', async ({ page }) => {
       const response = await authHelpers.sendMagicLink(page)
       expect(response.status()).toBe(200)
       expect(response.ok()).toBe(true)
 
       await page
-        .getByText(/check your email for the magic link/i)
+        .getByRole('heading', { name: 'Check your email' })
+        .waitFor({ state: 'visible', timeout: 10000 })
+      await page.getByTestId('login-code-input').waitFor({ state: 'visible', timeout: 5000 })
+      await new Promise(r => setTimeout(r, 500))
+
+      const code = await authHelpers.extractToken(page)
+      expect(code).toBeTruthy()
+      expect(typeof code).toBe('string')
+      expect(code).toMatch(/^\d{6}$/)
+
+      if (!code) throw new Error('Failed to extract login code')
+
+      await authHelpers.enterLoginCodeAndSubmit(page, code)
+      await page.waitForURL(
+        url => {
+          const path = new URL(url).pathname
+          return path === '/' || path === ''
+        },
+        { timeout: 10000 },
+      )
+      await checkAuthenticated(page).run()
+    })
+
+    test('should complete magic link authentication flow (link click)', async ({ page }) => {
+      const response = await authHelpers.sendMagicLink(page)
+      expect(response.status()).toBe(200)
+      expect(response.ok()).toBe(true)
+
+      await page
+        .getByRole('heading', { name: 'Check your email' })
         .waitFor({ state: 'visible', timeout: 10000 })
       await new Promise(r => setTimeout(r, 500))
 
-      const token = await authHelpers.extractToken(page)
-      expect(token).toBeTruthy()
-      expect(typeof token).toBe('string')
+      const code = await authHelpers.extractToken(page)
+      expect(code).toBeTruthy()
+      if (!code) throw new Error('Failed to extract login code')
 
-      if (!token) throw new Error('Failed to extract magic link token')
-
-      await authHelpers.verifyMagicLink(page, token)
+      await authHelpers.verifyMagicLink(page, code)
       await checkAuthenticated(page).run()
     })
   })
@@ -49,7 +76,7 @@ test.describe('Magic Link Authentication', () => {
     test('should redirect to login with error message for invalid token displayed below input', async ({
       page,
     }) => {
-      await page.goto('/auth/callback/magiclink?token=invalid-token-12345')
+      await page.goto('/auth/callback/magiclink?token=000000')
       await page.waitForURL(/\/auth\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')
@@ -85,7 +112,7 @@ test.describe('Magic Link Authentication', () => {
     test('should redirect to login with error message for expired token displayed below input', async ({
       page,
     }) => {
-      await page.goto('/auth/callback/magiclink?token=expired-token-abc123')
+      await page.goto('/auth/callback/magiclink?token=999999')
       await page.waitForURL(/\/auth\/login\?.*(message|error)=/, { timeout: 5000 })
 
       const emailInput = page.locator('input[type="email"]')

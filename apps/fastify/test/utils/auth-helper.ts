@@ -48,12 +48,18 @@ export async function getSessionToken(
       `auth/magiclink/request failed: url=/auth/magiclink/request status=${requestRes.statusCode} body=${requestRes.body}`,
     )
 
-  const token = app.fakeEmail?.extractToken()
+  const lastForEmail = app.fakeEmail
+    ?.all()
+    .filter(e => e.to === email)
+    .at(-1)
+  const token = lastForEmail
+    ? app.fakeEmail?.extractToken(lastForEmail)
+    : app.fakeEmail?.extractToken()
   if (!token) throw new Error('No token in fake email')
   const verifyRes = await app.inject({
     method: 'POST',
     url: '/auth/magiclink/verify',
-    payload: { token },
+    payload: { email, token },
   })
   if (verifyRes.statusCode < 200 || verifyRes.statusCode >= 300)
     throw new Error(
