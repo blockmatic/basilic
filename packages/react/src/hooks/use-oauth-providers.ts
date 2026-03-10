@@ -15,6 +15,7 @@ export function useOAuthProviders() {
   return {
     github: data?.github ?? false,
     google: data?.google ?? false,
+    googleRedirect: data?.googleRedirect ?? false,
     facebook: data?.facebook ?? false,
     twitter: data?.twitter ?? false,
     isPending,

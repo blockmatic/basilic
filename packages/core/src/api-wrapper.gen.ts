@@ -64,6 +64,9 @@ auth: {
       linkAuthorizeUrl: gen.oauthGithubLinkAuthorizeUrl,
     },
     google: {
+      authorizeUrl: gen.oauthGoogleAuthorizeUrl,
+      exchange: gen.oauthGoogleExchange,
+      linkAuthorizeUrl: gen.oauthGoogleLinkAuthorizeUrl,
       verifyIdToken: gen.oauthGoogleVerifyIdToken,
     },
     twitter: {

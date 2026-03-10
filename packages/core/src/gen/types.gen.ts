@@ -986,6 +986,7 @@ export type OauthProvidersResponses = {
     200: {
         github: boolean;
         google: boolean;
+        googleRedirect: boolean;
         facebook: boolean;
         twitter: boolean;
     };
@@ -1292,6 +1293,175 @@ export type OauthGithubLinkAuthorizeUrlResponses = {
 };
 
 export type OauthGithubLinkAuthorizeUrlResponse = OauthGithubLinkAuthorizeUrlResponses[keyof OauthGithubLinkAuthorizeUrlResponses];
+
+export type OauthGoogleAuthorizeUrlData = {
+    body?: never;
+    path?: never;
+    query?: {
+        redirect_uri?: string;
+    };
+    url: '/auth/oauth/google/authorize-url';
+};
+
+export type OauthGoogleAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthGoogleAuthorizeUrlError = OauthGoogleAuthorizeUrlErrors[keyof OauthGoogleAuthorizeUrlErrors];
+
+export type OauthGoogleAuthorizeUrlResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    };
+};
+
+export type OauthGoogleAuthorizeUrlResponse = OauthGoogleAuthorizeUrlResponses[keyof OauthGoogleAuthorizeUrlResponses];
+
+export type OauthGoogleExchangeData = {
+    body: {
+        code: string;
+        state: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/google/exchange';
+};
+
+export type OauthGoogleExchangeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    504: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthGoogleExchangeError = OauthGoogleExchangeErrors[keyof OauthGoogleExchangeErrors];
+
+export type OauthGoogleExchangeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+        redirectTo?: string;
+    };
+};
+
+export type OauthGoogleExchangeResponse = OauthGoogleExchangeResponses[keyof OauthGoogleExchangeResponses];
+
+export type OauthGoogleLinkAuthorizeUrlData = {
+    body?: never;
+    path?: never;
+    query?: {
+        redirect_uri?: string;
+    };
+    url: '/auth/oauth/google/link-authorize-url';
+};
+
+export type OauthGoogleLinkAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthGoogleLinkAuthorizeUrlError = OauthGoogleLinkAuthorizeUrlErrors[keyof OauthGoogleLinkAuthorizeUrlErrors];
+
+export type OauthGoogleLinkAuthorizeUrlResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    };
+};
+
+export type OauthGoogleLinkAuthorizeUrlResponse = OauthGoogleLinkAuthorizeUrlResponses[keyof OauthGoogleLinkAuthorizeUrlResponses];
 
 export type OauthGoogleVerifyIdTokenData = {
     body: {

@@ -23,8 +23,11 @@ Logged-in users can link additional OAuth providers from Profile (Settings). The
 
 - Uses `oauth_link_state` (distinct from `oauth_state` for sign-in)
 - Binds the link to `meta.userId` so the exchange attaches to the correct account
+- Stores `meta.redirectUri` for Google (from `redirect_uri` query) when multiple callback URLs are configured (web + mobile)
 - Returns 409 `PROVIDER_ALREADY_LINKED` when the provider is linked to another user
 - Returns `redirectTo` so the client can return the user to the settings page after success
+
+For Google, when using multiple callback URLs (e.g. web + mobile app), the client passes `redirect_uri` in the link-authorize-url request. It must be in the allowlist (`OAUTH_GOOGLE_CALLBACK_URLS`). See [Authentication](/docs/architecture/authentication) for full Google OAuth setup.
 
 ## Provider trust
 

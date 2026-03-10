@@ -123,7 +123,7 @@ OAuth sign-in uses provider authorization + callback flows and issues access + r
 
 ### OAuth (Google, Facebook, Twitter)
 
-**Google One Tap:** Uses [Google Identity Services](https://developers.google.com/identity/gsi/web) (GIS). Load GIS script, call `google.accounts.id.prompt()` — popup appears in top-right when user is logged into Google. Client POSTs `{ credential }` to `POST /auth/oauth/google/verify-id-token`. Backend verifies JWT with `google-auth-library`, creates session. **Setup:** `GOOGLE_CLIENT_ID` (Fastify), `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (Next.js).
+**Google:** Two flows. **(1) One Tap (primary):** Uses [Google Identity Services](https://developers.google.com/identity/gsi/web) (GIS). Popup in top-right when user is logged into Google. Client POSTs `{ credential }` to `POST /auth/oauth/google/verify-id-token`. **(2) Redirect (fallback + linking):** When One Tap is blocked/dismissed or for account linking. `GET /auth/oauth/google/authorize-url?redirect_uri=` (optional) → callback → `POST /auth/oauth/google/exchange`. Client can send `redirect_uri` to choose which callback URL to use (must be in allowlist). **Setup:** One Tap: `GOOGLE_CLIENT_ID`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. Redirect/linking: add `GOOGLE_CLIENT_SECRET`, and either `OAUTH_GOOGLE_CALLBACK_URL` (single) or `OAUTH_GOOGLE_CALLBACK_URLS` (comma-separated for web + mobile).
 
 **Facebook:** Redirect flow like GitHub. `GET /auth/oauth/facebook/authorize-url` → `POST /auth/oauth/facebook/exchange`. Callback: `/auth/callback/oauth/facebook`. **Setup:** `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET`, `OAUTH_FACEBOOK_CALLBACK_URL`.
 
@@ -135,7 +135,7 @@ When a provider is not configured (503 `OAUTH_NOT_CONFIGURED`), the client shows
 
 Logged-in users can link additional OAuth providers from Profile (Settings). Flow: `GET /auth/oauth/{provider}/link-authorize-url` (session/JWT required, no API key) → redirect to provider → callback → exchange with `oauth_link_state` → link account, return `{ token, refreshToken, redirectTo: "/settings?linked=ok" }`.
 
-- **Link-authorize-url:** Session/JWT required, no API key; rate limit 10/hour per user. Stores `oauth_link_state` with `meta.userId`.
+- **Link-authorize-url:** Session/JWT required, no API key; rate limit 10/hour per user. Stores `oauth_link_state` with `meta.userId`. Google accepts optional query `redirect_uri` for mobile (must be in `OAUTH_GOOGLE_CALLBACK_URLS`).
 - **Exchange:** State lookup branches on `oauth_link_state` vs `oauth_state`. Link mode uses `meta.userId`; if provider already linked to another user → 409 `PROVIDER_ALREADY_LINKED`.
 - **Unlink:** `DELETE /account/link/oauth/:providerId` (Bearer). Guardrail: cannot unlink if it would leave no sign-in method (400 `LAST_SIGN_IN_METHOD`).
 - **Session user:** `GET /auth/session/user` returns `linkedAccounts: [{ providerId }]`.
@@ -306,6 +306,9 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `POST /auth/oauth/github/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
 - **OAuth (Google One Tap)**
   - `POST /auth/oauth/google/verify-id-token` → `{ token, refreshToken }` (body: `{ credential }`)
+- **OAuth (Google redirect)** — fallback + linking
+  - `GET /auth/oauth/google/authorize-url` → `{ redirectUrl }` (optional query: `redirect_uri` — must be in allowlist)
+  - `POST /auth/oauth/google/exchange` → `{ token, refreshToken, redirectTo? }` (body: `{ code, state }`)
 - **OAuth (Facebook)**
   - `GET /auth/oauth/facebook/authorize-url` → `{ redirectUrl }`
   - `POST /auth/oauth/facebook/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
@@ -324,7 +327,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `DELETE /account/link/wallet/:id` → `204` (unlink wallet by id from `linkedWallets`)
   - `POST /account/link/email/request` → `{ ok }` (body: `email`, `callbackUrl`)
   - `POST /account/link/email/verify` → `{ token, refreshToken }` (body: `token`)
-  - `GET /auth/oauth/{github,facebook,twitter}/link-authorize-url` → `{ redirectUrl }` (Session required — cookie/JWT session, no API key; rate limit 10/hour)
+  - `GET /auth/oauth/{github,google,facebook,twitter}/link-authorize-url` → `{ redirectUrl }` (Session required; Google accepts optional query `redirect_uri` for mobile; rate limit 10/hour)
   - `DELETE /account/link/oauth/:providerId` → `204` (unlink OAuth provider)
 
 **Account link error codes**: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `PROVIDER_ALREADY_LINKED`, `LAST_SIGN_IN_METHOD`
@@ -358,7 +361,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
 
 ## Next.js Auth (web)
 
-**Callback pages** (`/auth/callback/magiclink`, `/auth/callback/change-email`, `/auth/callback/oauth/github`, `/auth/callback/oauth/facebook`, `/auth/callback/oauth/twitter`, `/auth/callback/web3`, `/auth/callback/passkey`) exchange credentials with Fastify, set cookies, and redirect. **Logout** (`/auth/logout`) calls Fastify to revoke the session and clears cookies.
+**Callback pages** (`/auth/callback/magiclink`, `/auth/callback/change-email`, `/auth/callback/oauth/github`, `/auth/callback/oauth/google`, `/auth/callback/oauth/facebook`, `/auth/callback/oauth/twitter`, `/auth/callback/web3`, `/auth/callback/passkey`) exchange credentials with Fastify, set cookies, and redirect. **Logout** (`/auth/logout`) calls Fastify to revoke the session and clears cookies.
 
 **API routes** (cookie updates only):
 - `POST /api/auth/update-tokens`: accepts `{ token, refreshToken }`, sets single cookie. Used after 401 refresh (core's `onTokensRefreshed`) and after link email or profile edit.

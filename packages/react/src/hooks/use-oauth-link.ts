@@ -3,20 +3,30 @@
 import { useMutation } from '@tanstack/react-query'
 import { useReactApiConfig } from '../context'
 
-const linkProviders = ['github', 'facebook', 'twitter'] as const
+const linkProviders = ['github', 'google', 'facebook', 'twitter'] as const
 export type OAuthLinkProvider = (typeof linkProviders)[number]
 
-export function useOAuthLink(provider: OAuthLinkProvider) {
+export function useOAuthLink(provider: OAuthLinkProvider, redirectUri?: string) {
   const { client } = useReactApiConfig()
 
   return useMutation({
     mutationFn: async () => {
-      const endpoints = {
-        github: client.auth.oauth.github.linkAuthorizeUrl,
-        facebook: client.auth.oauth.facebook.linkAuthorizeUrl,
-        twitter: client.auth.oauth.twitter.linkAuthorizeUrl,
-      }
-      const data = await endpoints[provider]({ throwOnError: true })
+      const linkAuthorizeUrl = {
+        github: () => client.auth.oauth.github.linkAuthorizeUrl({ throwOnError: true }),
+        google: () =>
+          client.auth.oauth.google.linkAuthorizeUrl({
+            throwOnError: true,
+            ...(redirectUri
+              ? {
+                  // biome-ignore lint/style/useNamingConvention: OAuth API expects redirect_uri
+                  query: { redirect_uri: redirectUri },
+                }
+              : {}),
+          }),
+        facebook: () => client.auth.oauth.facebook.linkAuthorizeUrl({ throwOnError: true }),
+        twitter: () => client.auth.oauth.twitter.linkAuthorizeUrl({ throwOnError: true }),
+      }[provider]
+      const data = await linkAuthorizeUrl()
       const url = data?.redirectUrl
       if (typeof url !== 'string' || !url.trim())
         throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)

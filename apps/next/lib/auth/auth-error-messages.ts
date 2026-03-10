@@ -4,10 +4,15 @@ const knownOAuthCodes = new Set([
   'invalid_state',
   'expired_state',
   'token_exchange_failed',
+  'google_token_exchange_failed',
   'fetch_user_failed',
+  'google_fetch_user_failed',
+  'user_info_failed',
   'email_required',
+  'google_email_required',
   'oauth_not_configured',
   'oauth_failed',
+  'oauth_failed_google',
 ])
 
 /** Fallback: map raw backend message strings to auth-error-messages keys. Provider-agnostic. */
@@ -26,6 +31,9 @@ const messageToKey: Record<string, string> = {
   'Could not retrieve email from Facebook': 'email_required',
   'Could not retrieve email from Twitter': 'email_required',
   'Could not retrieve verified email from Google': 'email_required',
+  'Failed to fetch Google user': 'google_fetch_user_failed',
+  'Failed to fetch Google user (timeout)': 'google_fetch_user_failed',
+  'Google OAuth redirect is not configured': 'oauth_not_configured',
   'GitHub OAuth is not configured': 'oauth_not_configured',
   'Facebook OAuth is not configured': 'oauth_not_configured',
   'Twitter OAuth is not configured': 'oauth_not_configured',
@@ -33,6 +41,7 @@ const messageToKey: Record<string, string> = {
   'GitHub sign-in failed': 'oauth_failed',
   'Facebook sign-in failed': 'oauth_failed',
   'Twitter sign-in failed': 'oauth_failed',
+  'Google sign-in failed': 'oauth_failed_google',
 }
 
 const authErrorMessages: Record<string, string> = {
@@ -44,8 +53,12 @@ const authErrorMessages: Record<string, string> = {
   invalid_state: 'Invalid or expired sign-in session. Please try again.',
   expired_state: 'Sign-in session expired. Please try again.',
   token_exchange_failed: 'GitHub sign-in failed. Please try again.',
+  google_token_exchange_failed: 'Google sign-in failed. Please try again.',
   fetch_user_failed: 'Could not load your GitHub profile. Please try again.',
+  google_fetch_user_failed: 'Could not load your Google profile. Please try again.',
   email_required: 'No verified email found. Please add a verified email to your GitHub account.',
+  google_email_required:
+    'No verified email found. Please add a verified email to your Google account.',
   oauth_not_configured: 'Sign-in is temporarily unavailable.',
   oauth_failed: 'GitHub sign-in failed. Please try again.',
   oauth_failed_google: 'Google sign-in failed. Please try again.',
@@ -66,8 +79,21 @@ export function getAuthErrorMessage(errorCode: string | undefined): string | und
   return authErrorMessages[key] ?? 'An error occurred'
 }
 
+/** Base keys that are overridden to Google-specific variants when provider is 'google'. */
+const googleOverrides: Record<string, string> = {
+  token_exchange_failed: 'google_token_exchange_failed',
+  user_info_failed: 'google_fetch_user_failed',
+  fetch_user_failed: 'google_fetch_user_failed',
+  email_required: 'google_email_required',
+  oauth_failed: 'oauth_failed_google',
+}
+
 /** Map API error (code or message) to auth-error-messages key for redirect. */
-export function translateOAuthError(raw: string, body?: unknown): string {
+export function translateOAuthError(
+  raw: string,
+  body?: unknown,
+  provider?: 'google' | 'github' | 'facebook' | 'twitter',
+): string {
   const code =
     body &&
     typeof body === 'object' &&
@@ -75,6 +101,7 @@ export function translateOAuthError(raw: string, body?: unknown): string {
     typeof (body as { code: string }).code === 'string'
       ? (body as { code: string }).code.toLowerCase().trim()
       : null
-  if (code && knownOAuthCodes.has(code)) return code
-  return messageToKey[raw] ?? 'oauth_failed'
+  const baseKey = (code && knownOAuthCodes.has(code) ? code : null) ?? messageToKey[raw] ?? null
+  if (!baseKey) return provider === 'google' ? 'oauth_failed_google' : 'oauth_failed'
+  return (provider === 'google' ? googleOverrides[baseKey] : null) ?? baseKey
 }

@@ -1,11 +1,18 @@
 'use client'
 
+import { logger } from '@repo/utils/logger/client'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
 import { env } from '@/lib/env'
+
+type MomentNotification = {
+  isDisplayed: () => boolean
+  isSkippedMoment: () => boolean
+  isNotDisplayed?: () => boolean
+}
 
 declare global {
   interface Window {
@@ -17,12 +24,7 @@ declare global {
             callback: (response: { credential: string }) => void
             context?: string
           }) => void
-          prompt: (
-            momentListener?: (notification: {
-              isDisplayed: () => boolean
-              isSkippedMoment: () => boolean
-            }) => void,
-          ) => void
+          prompt: (momentListener?: (notification: MomentNotification) => void) => void
         }
       }
     }
@@ -73,18 +75,39 @@ function loadScript(src: string): Promise<void> {
   return promise
 }
 
+function shouldFallbackToRedirect(notification: MomentNotification | undefined): boolean {
+  if (!notification) return false
+  if (notification.isSkippedMoment?.()) return true
+  if (typeof notification.isNotDisplayed === 'function' && notification.isNotDisplayed())
+    return true
+  return false
+}
+
 export function useGoogleOneTap({
   onCredential,
+  onSkipped,
   enabled = true,
 }: {
   onCredential?: (credential: string) => Promise<void>
+  onSkipped?: () => void
   enabled?: boolean
 } = {}) {
   const router = useRouter()
   const clientId = env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
   const [isReady, setIsReady] = useState(false)
   const [isPending, setIsPending] = useState(false)
+  const [loadError, setLoadError] = useState(false)
   const handledRef = useRef(false)
+
+  const handleMoment = useCallback(
+    (notification: MomentNotification | undefined) => {
+      if (shouldFallbackToRedirect(notification)) {
+        handledRef.current = false
+        onSkipped?.()
+      }
+    },
+    [onSkipped],
+  )
 
   const handleCredential = useCallback(
     async (credential: string) => {
@@ -158,27 +181,39 @@ export function useGoogleOneTap({
         window.google.accounts.id.initialize({
           client_id: clientId,
           callback: response => handleCredential(response.credential),
+          context: 'signin',
         })
-        window.google.accounts.id.prompt(notification => {
-          if (notification?.isSkippedMoment?.()) handledRef.current = false
-        })
+        window.google.accounts.id.prompt(handleMoment)
         if (!cancelled) setIsReady(true)
       })
-      .catch(() => {})
+      .catch(err => {
+        if (!cancelled) setLoadError(true)
+        logger.warn({ err }, 'Google Identity Services failed to load')
+      })
 
     return () => {
       cancelled = true
     }
-  }, [clientId, enabled, handleCredential])
+  }, [clientId, enabled, handleCredential, handleMoment])
 
   const prompt = useCallback(() => {
+    if (loadError) {
+      onSkipped?.()
+      toast.error(getAuthErrorMessage('oauth_not_configured'))
+      return
+    }
     if (window.google?.accounts?.id && clientId) {
       handledRef.current = false
-      window.google.accounts.id.prompt()
+      window.google.accounts.id.prompt(handleMoment)
     } else if (!clientId) {
       toast.error(getAuthErrorMessage('oauth_not_configured'))
     }
-  }, [clientId])
+  }, [clientId, handleMoment, loadError, onSkipped])
 
-  return { isReady: !!clientId && isReady, isPending, prompt, isConfigured: !!clientId }
+  return {
+    isReady: !!clientId && isReady && !loadError,
+    isPending,
+    prompt,
+    isConfigured: !!clientId,
+  }
 }
