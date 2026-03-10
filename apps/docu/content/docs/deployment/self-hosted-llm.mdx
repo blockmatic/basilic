@@ -257,7 +257,11 @@ The Fastify chat route (`/ai/chat`) uses **Ollama as the default** AI provider w
 
 ### Tool Support Caveat
 
-Small Ollama models (e.g. `qwen2.5:3b`) may not reliably support tool/function-calling. For better tool use (e.g. `getAccountInfo`), use 7B+ models such as `llama3.1:8b` or `mistral:7b`.
+Small Ollama models (e.g. `qwen2.5:3b`) may not reliably support tool/function-calling. For better tool use (e.g. `getAccountInfo`, `braveSearch`), use 7B+ models such as `llama3.1:8b` or `mistral:7b`.
+
+### Optional: Brave Search (Web Search Tool)
+
+Set `BRAVE_SEARCH_API_KEY` to enable the web search tool. The assistant can then search the web when users ask for current or recent information. Free tier: 2,000 queries/month. See [Brave Search API](https://api.search.brave.com/).
 
 ---
 

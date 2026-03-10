@@ -19,6 +19,7 @@ import { getDb } from '../../db/index.js'
 import { users } from '../../db/schema/index.js'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
+import { createBraveSearchTool } from './brave-search.js'
 
 const ChatMessageItemSchema = Type.Union([
   Type.Object({
@@ -237,6 +238,9 @@ const chatRoute: FastifyPluginAsync = async fastify => {
 
       const mergedTools: ToolSet = {
         getAccountInfo: createAccountInfoTool(request.session.user.id),
+        ...(env.BRAVE_SEARCH_API_KEY && {
+          braveSearch: createBraveSearchTool(env.BRAVE_SEARCH_API_KEY, request.log),
+        }),
       }
 
       let messages: Awaited<ReturnType<typeof resolveMessages>>

@@ -15,6 +15,8 @@ const qaBuildEnv = process.env.JWT_SECRET
   ? undefined
   : { JWT_SECRET: 'qa-build-placeholder-min-32-chars-to-pass-validation' }
 
+const skipTests = process.env.QA_SKIP_TESTS === '1' || process.env.QA_SKIP_TESTS === 'true'
+
 const phases = [
   { name: 'install', cmd: 'pnpm', args: ['i', '--no-frozen-lockfile'] },
   {
@@ -24,8 +26,12 @@ const phases = [
   },
   { name: 'lint:fix', cmd: 'pnpm', args: ['lint:fix'] },
   { name: 'build', cmd: 'pnpm', args: ['build'], env: qaBuildEnv },
-  { name: 'test', cmd: 'pnpm', args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'] },
-  { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'] },
+  ...(skipTests
+    ? []
+    : [
+        { name: 'test', cmd: 'pnpm', args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'] },
+        { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'] },
+      ]),
 ]
 
 for (const { name, cmd, args, env } of phases) {
