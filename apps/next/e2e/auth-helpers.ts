@@ -130,13 +130,8 @@ export const authHelpers = {
       verificationId = data?.verificationId ?? undefined
     }
     if (!verificationId) throw new Error('Need verificationId for link-click flow')
-    const verifyUrl = `/auth/callback/magiclink?verificationId=${encodeURIComponent(verificationId)}&callbackURL=/`
+    const verifyUrl = `/auth/callback/magiclink?verificationId=${encodeURIComponent(verificationId)}&token=${encodeURIComponent(code)}&callbackURL=/`
     await page.goto(verifyUrl)
-    await page
-      .getByRole('heading', { name: 'Enter your code' })
-      .waitFor({ state: 'visible', timeout: 5000 })
-    await page.getByLabel('Code').fill(code)
-    await page.getByRole('button', { name: 'Verify' }).click()
     await page.waitForURL(
       url => {
         const path = new URL(url).pathname

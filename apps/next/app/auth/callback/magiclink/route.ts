@@ -22,14 +22,8 @@ function isSafeCallbackUrl(raw: string | null, requestUrl: string): string {
   }
 }
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const verificationId = searchParams.get('verificationId')
-  const rawCallback = searchParams.get('callbackURL')
-  const callbackURL = isSafeCallbackUrl(rawCallback, request.url)
-
-  if (verificationId && uuidLike.test(verificationId)) {
-    const html = `<!DOCTYPE html>
+function renderCodeEntryForm(verificationId: string, callbackURL: string): NextResponse {
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Enter code - Acme</title>
@@ -52,10 +46,51 @@ a{color:inherit}
   <p style="margin-top:1rem"><a href="/auth/login">Back to login</a></p>
 </body>
 </html>`
-    return new NextResponse(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
-    })
-  }
+  return new NextResponse(html, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  })
+}
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const verificationId = searchParams.get('verificationId')
+  const token = searchParams.get('token')
+  const rawCallback = searchParams.get('callbackURL')
+  const callbackURL = isSafeCallbackUrl(rawCallback, request.url)
+
+  const hasValidVerificationId = Boolean(verificationId && uuidLike.test(verificationId))
+  const hasValidToken = Boolean(token && sixDigitCode.test(token))
+
+  if (hasValidVerificationId && hasValidToken && verificationId && token)
+    try {
+      const response = await client.auth.magiclink.verify({
+        body: { verificationId, token },
+      })
+      const tokens = extractTokens(response)
+      if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
+
+      const redirectResponse = NextResponse.redirect(new URL(callbackURL ?? '/', request.url), 303)
+      setAuthCookiesOnResponse(redirectResponse, tokens)
+      return redirectResponse
+    } catch (error) {
+      const body =
+        error instanceof ApiError ? (error.body as { code?: string } | undefined) : undefined
+      const code =
+        error instanceof ApiError
+          ? error.status === 401
+            ? body?.code === 'EXPIRED_TOKEN'
+              ? 'EXPIRED_TOKEN'
+              : 'INVALID_TOKEN'
+            : 'FAILED_VERIFY'
+          : 'FAILED_VERIFY'
+      return NextResponse.redirect(
+        new URL(`/auth/login?message=${encodeURIComponent(code)}`, request.url),
+        303,
+      )
+    }
+
+  if (hasValidVerificationId && verificationId)
+    return renderCodeEntryForm(verificationId, callbackURL)
 
   redirect(`/auth/login?message=${encodeURIComponent('INVALID_TOKEN')}`)
 }
