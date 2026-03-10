@@ -41,17 +41,31 @@ export type TwitterAccountData = {
   scope: string
 }
 
+export type RunTwitterExchangeOptions = {
+  db: Awaited<ReturnType<typeof getDb>>
+  accountId: string
+  name: string
+  accountData: TwitterAccountData
+  linkUserId?: string
+}
+
 export async function runTwitterExchangeTx(
-  db: Awaited<ReturnType<typeof getDb>>,
-  accountId: string,
-  name: string,
-  accountData: TwitterAccountData,
+  opts: RunTwitterExchangeOptions,
 ): Promise<{ userId: string }> {
+  const { db, accountId, name, accountData, linkUserId } = opts
   return db.transaction(async tx => {
     const [existingAccount] = await tx
       .select()
       .from(account)
       .where(and(eq(account.providerId, 'twitter'), eq(account.accountId, accountId)))
+
+    if (linkUserId) {
+      if (existingAccount && existingAccount.userId !== linkUserId)
+        throw new Error('PROVIDER_ALREADY_LINKED')
+      const [u] = await tx.select().from(users).where(eq(users.id, linkUserId))
+      if (!u) throw new Error('USER_NOT_FOUND')
+      return runTwitterExchangeTxForUser({ tx, existingAccount, user: u, accountId, accountData })
+    }
 
     let user: typeof users.$inferSelect | undefined
     if (existingAccount) {
@@ -71,45 +85,58 @@ export async function runTwitterExchangeTx(
       if (!user) throw new Error('USER_CREATE_FAILED')
     }
 
-    const accountRow = {
-      id: existingAccount?.id ?? randomUUID(),
-      userId: user.id,
-      accountId,
-      providerId: 'twitter' as const,
-    }
+    return runTwitterExchangeTxForUser({ tx, existingAccount, user, accountId, accountData })
+  })
+}
 
-    if (existingAccount) {
-      const encrypted = encryptAccountTokens({
-        accessToken: accountData.accessToken,
-        refreshToken: accountData.refreshToken,
-        updatedAt: new Date(),
-      })
-      await tx
-        .update(account)
-        .set({
-          accessToken: encrypted.accessToken,
-          refreshToken: encrypted.refreshToken,
-          accessTokenExpiresAt: accountData.accessTokenExpiresAt,
-          refreshTokenExpiresAt: accountData.refreshTokenExpiresAt,
-          scope: accountData.scope,
-          updatedAt: encrypted.updatedAt ?? new Date(),
-        })
-        .where(eq(account.id, existingAccount.id))
-    } else {
-      const toInsert = encryptAccountTokens({
-        ...accountRow,
-        accessToken: accountData.accessToken,
-        refreshToken: accountData.refreshToken,
-        idToken: null as string | null,
+type TxType = Parameters<Parameters<Awaited<ReturnType<typeof getDb>>['transaction']>[0]>[0]
+
+async function runTwitterExchangeTxForUser(params: {
+  tx: TxType
+  existingAccount: typeof account.$inferSelect | undefined
+  user: typeof users.$inferSelect
+  accountId: string
+  accountData: TwitterAccountData
+}): Promise<{ userId: string }> {
+  const { tx, existingAccount, user, accountId, accountData } = params
+  const accountRow = {
+    id: existingAccount?.id ?? randomUUID(),
+    userId: user.id,
+    accountId,
+    providerId: 'twitter' as const,
+  }
+
+  if (existingAccount) {
+    const encrypted = encryptAccountTokens({
+      accessToken: accountData.accessToken,
+      refreshToken: accountData.refreshToken,
+      updatedAt: new Date(),
+    })
+    await tx
+      .update(account)
+      .set({
+        accessToken: encrypted.accessToken,
+        refreshToken: encrypted.refreshToken,
         accessTokenExpiresAt: accountData.accessTokenExpiresAt,
         refreshTokenExpiresAt: accountData.refreshTokenExpiresAt,
         scope: accountData.scope,
+        updatedAt: encrypted.updatedAt ?? new Date(),
       })
-      await tx.insert(account).values(toInsert)
-    }
+      .where(eq(account.id, existingAccount.id))
+  } else {
+    const toInsert = encryptAccountTokens({
+      ...accountRow,
+      accessToken: accountData.accessToken,
+      refreshToken: accountData.refreshToken,
+      idToken: null as string | null,
+      accessTokenExpiresAt: accountData.accessTokenExpiresAt,
+      refreshTokenExpiresAt: accountData.refreshTokenExpiresAt,
+      scope: accountData.scope,
+    })
+    await tx.insert(account).values(toInsert)
+  }
 
-    return { userId: user.id }
-  })
+  return { userId: user.id }
 }
 
 export async function fetchTwitterOAuthData(input: {

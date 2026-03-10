@@ -5,7 +5,7 @@ export const authAttempts = pgTable(
   {
     id: text('id').primaryKey(),
     key: text('key').notNull(), // IP or identifier for rate limiting
-    type: text('type', { enum: ['magic_link'] })
+    type: text('type', { enum: ['magic_link', 'change_email'] })
       .notNull()
       .default('magic_link'),
     failedAttempts: integer('failed_attempts').notNull().default(0),

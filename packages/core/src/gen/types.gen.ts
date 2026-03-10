@@ -133,6 +133,118 @@ export type AccountApikeysRevokeResponses = {
 
 export type AccountApikeysRevokeResponse = AccountApikeysRevokeResponses[keyof AccountApikeysRevokeResponses];
 
+export type AccountEmailChangeRequestData = {
+    body: {
+        email: string;
+        callbackUrl: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/email/change/request';
+};
+
+export type AccountEmailChangeRequestErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountEmailChangeRequestError = AccountEmailChangeRequestErrors[keyof AccountEmailChangeRequestErrors];
+
+export type AccountEmailChangeRequestResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        ok: boolean;
+    };
+};
+
+export type AccountEmailChangeRequestResponse = AccountEmailChangeRequestResponses[keyof AccountEmailChangeRequestResponses];
+
+export type AccountEmailChangeVerifyData = {
+    body: {
+        /**
+         * 6-digit code
+         */
+        token: string;
+        /**
+         * For code entry (must match request)
+         */
+        email?: string;
+        /**
+         * For link click
+         */
+        verificationId?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/account/email/change/verify';
+};
+
+export type AccountEmailChangeVerifyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountEmailChangeVerifyError = AccountEmailChangeVerifyErrors[keyof AccountEmailChangeVerifyErrors];
+
+export type AccountEmailChangeVerifyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        token: string;
+        refreshToken: string;
+    };
+};
+
+export type AccountEmailChangeVerifyResponse = AccountEmailChangeVerifyResponses[keyof AccountEmailChangeVerifyResponses];
+
 export type AccountLinkEmailRequestData = {
     body: {
         email: string;
@@ -219,6 +331,43 @@ export type AccountLinkEmailVerifyResponses = {
 };
 
 export type AccountLinkEmailVerifyResponse = AccountLinkEmailVerifyResponses[keyof AccountLinkEmailVerifyResponses];
+
+export type AccountLinkOauthUnlinkData = {
+    body?: never;
+    path: {
+        providerId: 'github' | 'facebook' | 'twitter' | 'google';
+    };
+    query?: never;
+    url: '/account/link/oauth/{providerId}';
+};
+
+export type AccountLinkOauthUnlinkErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+};
+
+export type AccountLinkOauthUnlinkError = AccountLinkOauthUnlinkErrors[keyof AccountLinkOauthUnlinkErrors];
+
+export type AccountLinkOauthUnlinkResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type AccountLinkOauthUnlinkResponse = AccountLinkOauthUnlinkResponses[keyof AccountLinkOauthUnlinkResponses];
 
 export type AccountLinkPasskeyDeleteData = {
     body?: never;
@@ -902,6 +1051,13 @@ export type OauthFacebookExchangeErrors = {
     /**
      * Default Response
      */
+    409: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     500: {
         code: string;
         message: string;
@@ -931,10 +1087,55 @@ export type OauthFacebookExchangeResponses = {
     200: {
         token: string;
         refreshToken: string;
+        redirectTo?: string;
     };
 };
 
 export type OauthFacebookExchangeResponse = OauthFacebookExchangeResponses[keyof OauthFacebookExchangeResponses];
+
+export type OauthFacebookLinkAuthorizeUrlData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/facebook/link-authorize-url';
+};
+
+export type OauthFacebookLinkAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthFacebookLinkAuthorizeUrlError = OauthFacebookLinkAuthorizeUrlErrors[keyof OauthFacebookLinkAuthorizeUrlErrors];
+
+export type OauthFacebookLinkAuthorizeUrlResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    };
+};
+
+export type OauthFacebookLinkAuthorizeUrlResponse = OauthFacebookLinkAuthorizeUrlResponses[keyof OauthFacebookLinkAuthorizeUrlResponses];
 
 export type OauthGithubAuthorizeUrlData = {
     body?: never;
@@ -1013,6 +1214,20 @@ export type OauthGithubExchangeErrors = {
     /**
      * Default Response
      */
+    409: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    500: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     503: {
         code: string;
         message: string;
@@ -1028,10 +1243,55 @@ export type OauthGithubExchangeResponses = {
     200: {
         token: string;
         refreshToken: string;
+        redirectTo?: string;
     };
 };
 
 export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof OauthGithubExchangeResponses];
+
+export type OauthGithubLinkAuthorizeUrlData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/github/link-authorize-url';
+};
+
+export type OauthGithubLinkAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthGithubLinkAuthorizeUrlError = OauthGithubLinkAuthorizeUrlErrors[keyof OauthGithubLinkAuthorizeUrlErrors];
+
+export type OauthGithubLinkAuthorizeUrlResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    };
+};
+
+export type OauthGithubLinkAuthorizeUrlResponse = OauthGithubLinkAuthorizeUrlResponses[keyof OauthGithubLinkAuthorizeUrlResponses];
 
 export type OauthGoogleVerifyIdTokenData = {
     body: {
@@ -1131,6 +1391,13 @@ export type OauthTwitterExchangeErrors = {
     /**
      * Default Response
      */
+    409: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     500: {
         code: string;
         message: string;
@@ -1167,10 +1434,55 @@ export type OauthTwitterExchangeResponses = {
     200: {
         token: string;
         refreshToken: string;
+        redirectTo?: string;
     };
 };
 
 export type OauthTwitterExchangeResponse = OauthTwitterExchangeResponses[keyof OauthTwitterExchangeResponses];
+
+export type OauthTwitterLinkAuthorizeUrlData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/oauth/twitter/link-authorize-url';
+};
+
+export type OauthTwitterLinkAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        code: string;
+        message: string;
+    };
+};
+
+export type OauthTwitterLinkAuthorizeUrlError = OauthTwitterLinkAuthorizeUrlErrors[keyof OauthTwitterLinkAuthorizeUrlErrors];
+
+export type OauthTwitterLinkAuthorizeUrlResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        redirectUrl: string;
+    };
+};
+
+export type OauthTwitterLinkAuthorizeUrlResponse = OauthTwitterLinkAuthorizeUrlResponses[keyof OauthTwitterLinkAuthorizeUrlResponses];
 
 export type AuthPasskeyExchangeData = {
     body: {
@@ -1469,6 +1781,9 @@ export type GetUserResponses = {
                 id: string;
                 chain: string;
                 address: string;
+            }>;
+            linkedAccounts: Array<{
+                providerId: string;
             }>;
             totpEnabled: boolean;
             passkeys: Array<{

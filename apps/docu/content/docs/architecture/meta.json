@@ -5,6 +5,7 @@
     "monorepo",
     "api",
     "authentication",
+    "account-linking",
     "frontend",
     "portability",
     "esm-strategy",

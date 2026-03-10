@@ -1,0 +1,44 @@
+---
+title: Account linking
+description: Change email vs link email, OAuth provider linking, provider trust, and guardrails.
+---
+
+## Overview
+
+Account linking lets users attach additional sign-in methods (email, OAuth providers, wallets) to an existing account. Two primary patterns exist: **change email** (replace primary email) and **link email / OAuth** (add methods without removing existing ones).
+
+## Change email vs link email
+
+| Capability | Change email | Link email |
+|------------|--------------|------------|
+| Effect | Replaces `users.email` | Adds a linked method; primary email unchanged |
+| Flow | Request → verify code/link → update | Request → verify link → link account |
+| Use case | User changes email address | User adds email sign-in to OAuth-only account |
+
+Change email uses `change_email` verification type; link email uses `link_email`. Both use the same 6-digit + link UX and 15-minute TTL.
+
+## OAuth provider linking
+
+Logged-in users can link additional OAuth providers from Profile (Settings). The backend:
+
+- Uses `oauth_link_state` (distinct from `oauth_state` for sign-in)
+- Binds the link to `meta.userId` so the exchange attaches to the correct account
+- Returns 409 `PROVIDER_ALREADY_LINKED` when the provider is linked to another user
+- Returns `redirectTo` so the client can return the user to the settings page after success
+
+## Provider trust
+
+OAuth providers are trusted for identity on first link. Subsequent links require re-authorization; existing tokens are replaced on each successful link.
+
+## Guardrail: last sign-in method
+
+Users must keep at least one sign-in method. Unlinking (wallet, OAuth, or other methods) fails with 400 `LAST_SIGN_IN_METHOD` if it would leave no way to sign in.
+
+## Verify modes (change email)
+
+Verification accepts exactly one of:
+
+- `{ token, email }` — code entry flow; email used as identifier
+- `{ token, verificationId }` — link-click flow; verificationId from callback URL
+
+See [Authentication](/docs/architecture/authentication#change-email-implemented) for full flow details.

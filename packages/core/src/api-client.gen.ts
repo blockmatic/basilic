@@ -8,10 +8,16 @@ import type {
   AccountApikeysListResponse,
   AccountApikeysRevokeData,
   AccountApikeysRevokeResponse,
+  AccountEmailChangeRequestData,
+  AccountEmailChangeRequestResponse,
+  AccountEmailChangeVerifyData,
+  AccountEmailChangeVerifyResponse,
   AccountLinkEmailRequestData,
   AccountLinkEmailRequestResponse,
   AccountLinkEmailVerifyData,
   AccountLinkEmailVerifyResponse,
+  AccountLinkOauthUnlinkData,
+  AccountLinkOauthUnlinkResponse,
   AccountLinkPasskeyDeleteData,
   AccountLinkPasskeyDeleteResponse,
   AccountLinkPasskeyFinishData,
@@ -56,11 +62,15 @@ import type {
   OauthFacebookAuthorizeUrlResponse,
   OauthFacebookExchangeData,
   OauthFacebookExchangeResponse,
+  OauthFacebookLinkAuthorizeUrlData,
+  OauthFacebookLinkAuthorizeUrlResponse,
   OauthGithubAuthorizeData,
   OauthGithubAuthorizeUrlData,
   OauthGithubAuthorizeUrlResponse,
   OauthGithubExchangeData,
   OauthGithubExchangeResponse,
+  OauthGithubLinkAuthorizeUrlData,
+  OauthGithubLinkAuthorizeUrlResponse,
   OauthGoogleVerifyIdTokenData,
   OauthGoogleVerifyIdTokenResponse,
   OauthProvidersData,
@@ -69,6 +79,8 @@ import type {
   OauthTwitterAuthorizeUrlResponse,
   OauthTwitterExchangeData,
   OauthTwitterExchangeResponse,
+  OauthTwitterLinkAuthorizeUrlData,
+  OauthTwitterLinkAuthorizeUrlResponse,
   RefreshData,
   RefreshResponse,
   Web3Eip155NonceData,
@@ -93,10 +105,19 @@ export type CoreApiClient = {
       list: (opts?: Options<AccountApikeysListData>) => Promise<AccountApikeysListResponse>;
       id: (opts: Options<AccountApikeysRevokeData>) => Promise<AccountApikeysRevokeResponse>
     };
+    email: {
+      change: {
+        request: (opts: Options<AccountEmailChangeRequestData>) => Promise<AccountEmailChangeRequestResponse>;
+        verify: (opts: Options<AccountEmailChangeVerifyData>) => Promise<AccountEmailChangeVerifyResponse>
+      }
+    };
     link: {
       email: {
         request: (opts: Options<AccountLinkEmailRequestData>) => Promise<AccountLinkEmailRequestResponse>;
         verify: (opts: Options<AccountLinkEmailVerifyData>) => Promise<AccountLinkEmailVerifyResponse>
+      };
+      oauth: {
+        providerId: (opts: Options<AccountLinkOauthUnlinkData>) => Promise<AccountLinkOauthUnlinkResponse>
       };
       passkey: {
         id: (opts: Options<AccountLinkPasskeyDeleteData>) => Promise<AccountLinkPasskeyDeleteResponse>;
@@ -128,19 +149,22 @@ export type CoreApiClient = {
       providers: (opts?: Options<OauthProvidersData>) => Promise<OauthProvidersResponse>;
       facebook: {
         authorizeUrl: (opts?: Options<OauthFacebookAuthorizeUrlData>) => Promise<OauthFacebookAuthorizeUrlResponse>;
-        exchange: (opts: Options<OauthFacebookExchangeData>) => Promise<OauthFacebookExchangeResponse>
+        exchange: (opts: Options<OauthFacebookExchangeData>) => Promise<OauthFacebookExchangeResponse>;
+        linkAuthorizeUrl: (opts?: Options<OauthFacebookLinkAuthorizeUrlData>) => Promise<OauthFacebookLinkAuthorizeUrlResponse>
       };
       github: {
         authorizeUrl: (opts?: Options<OauthGithubAuthorizeUrlData>) => Promise<OauthGithubAuthorizeUrlResponse>;
         authorize: (opts?: Options<OauthGithubAuthorizeData>) => Promise<unknown>;
-        exchange: (opts: Options<OauthGithubExchangeData>) => Promise<OauthGithubExchangeResponse>
+        exchange: (opts: Options<OauthGithubExchangeData>) => Promise<OauthGithubExchangeResponse>;
+        linkAuthorizeUrl: (opts?: Options<OauthGithubLinkAuthorizeUrlData>) => Promise<OauthGithubLinkAuthorizeUrlResponse>
       };
       google: {
         verifyIdToken: (opts: Options<OauthGoogleVerifyIdTokenData>) => Promise<OauthGoogleVerifyIdTokenResponse>
       };
       twitter: {
         authorizeUrl: (opts?: Options<OauthTwitterAuthorizeUrlData>) => Promise<OauthTwitterAuthorizeUrlResponse>;
-        exchange: (opts: Options<OauthTwitterExchangeData>) => Promise<OauthTwitterExchangeResponse>
+        exchange: (opts: Options<OauthTwitterExchangeData>) => Promise<OauthTwitterExchangeResponse>;
+        linkAuthorizeUrl: (opts?: Options<OauthTwitterLinkAuthorizeUrlData>) => Promise<OauthTwitterLinkAuthorizeUrlResponse>
       }
     };
     passkey: {

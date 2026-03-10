@@ -1,12 +1,11 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
-import { verification } from '../../../../db/schema/index.js'
 import { isUniqueViolation } from '../../../../lib/db-errors.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
+import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
 import {
   fetchTwitterOAuthData,
   OAuthUpstreamError,
@@ -24,6 +23,7 @@ const ExchangeSchema = Type.Object({
 const ExchangeResponseSchema = Type.Object({
   token: Type.String(),
   refreshToken: Type.String(),
+  redirectTo: Type.Optional(Type.String()),
 })
 
 const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
@@ -41,6 +41,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           200: ExchangeResponseSchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          409: ErrorResponseSchema,
           500: ErrorResponseSchema,
           502: ErrorResponseSchema,
           503: ErrorResponseSchema,
@@ -62,33 +63,24 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const stateHash = hashToken(state)
 
       const db = await getDb()
-      const [stateRecord] = await db
-        .select()
-        .from(verification)
-        .where(and(eq(verification.value, stateHash), eq(verification.type, 'oauth_state')))
-
-      if (!stateRecord)
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Invalid or expired state',
-        })
-
-      if (stateRecord.expiresAt < new Date()) {
-        await db.delete(verification).where(eq(verification.id, stateRecord.id))
-        return reply.code(401).send({
-          code: 'EXPIRED_STATE',
-          message: 'State has expired',
-        })
-      }
-
+      const validated = await validateAndConsumeOAuthState({
+        db,
+        stateHash,
+        request,
+        reply,
+        preConsumeCheck: r =>
+          !r.meta?.codeVerifier
+            ? { code: 'INVALID_STATE', message: 'Missing code verifier for Twitter PKCE' }
+            : null,
+      })
+      if (!validated.ok) return
+      const { isLinkMode, linkUserId, stateRecord } = validated
       const codeVerifier = stateRecord.meta?.codeVerifier
       if (!codeVerifier)
         return reply.code(401).send({
           code: 'INVALID_STATE',
           message: 'Missing code verifier for Twitter PKCE',
         })
-
-      await db.delete(verification).where(eq(verification.id, stateRecord.id))
 
       let accountId: string
       let name: string
@@ -134,9 +126,25 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       let txResult!: { userId: string }
       for (let attempt = 0; attempt < maxRetries; attempt++)
         try {
-          txResult = await runTwitterExchangeTx(db, accountId, name, accountData)
+          txResult = await runTwitterExchangeTx({
+            db,
+            accountId,
+            name,
+            accountData,
+            ...(isLinkMode && linkUserId && { linkUserId }),
+          })
           break
         } catch (err) {
+          if (err instanceof Error && err.message === 'PROVIDER_ALREADY_LINKED')
+            return reply.code(409).send({
+              code: 'PROVIDER_ALREADY_LINKED',
+              message: 'This Twitter account is already linked to another user',
+            })
+          if (err instanceof Error && err.message === 'USER_NOT_FOUND')
+            return reply.code(401).send({
+              code: 'INVALID_STATE',
+              message: 'User not found for link',
+            })
           if (err instanceof Error && err.message === 'USER_CREATE_FAILED')
             return reply.code(500).send({
               code: 'USER_CREATE_FAILED',
@@ -152,10 +160,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         userId: txResult.userId,
       })
 
-      return reply.code(200).send({
+      const payload: { token: string; refreshToken: string; redirectTo?: string } = {
         token: accessToken,
         refreshToken,
-      })
+      }
+      if (isLinkMode) payload.redirectTo = '/settings?linked=ok'
+      return reply.code(200).send(payload)
     },
   )
 }

@@ -1,11 +1,11 @@
 import { ApiError, createClient } from '@repo/core'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { translateOAuthError } from '@/lib/auth/auth-error-messages'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
-import { extractTokens } from '@/lib/auth/callback-utils'
+import { extractTokens, getOAuthRedirectTarget } from '@/lib/auth/callback-utils'
+import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
 import { env } from '@/lib/env'
-
-const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -18,8 +18,22 @@ export async function GET(request: Request) {
       303,
     )
 
+  const cookieStore = await cookies()
+  const { token } = parseAuthCookie(cookieStore.get(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)?.value)
+  const client = createClient({
+    baseUrl: env.NEXT_PUBLIC_API_URL,
+    ...(token && {
+      getAuthToken: () => token,
+      getRefreshToken: () => null,
+      onTokensRefreshed: async () => {},
+    }),
+  })
+
   try {
-    const response = await client.auth.oauth.github.exchange({ body: { code, state } })
+    const response = await client.auth.oauth.github.exchange({
+      body: { code, state },
+      throwOnError: true,
+    })
     const tokens = extractTokens(response)
     if (!tokens)
       return NextResponse.redirect(
@@ -27,7 +41,10 @@ export async function GET(request: Request) {
         303,
       )
 
-    const redirectResponse = NextResponse.redirect(new URL('/', request.url), 303)
+    const redirectResponse = NextResponse.redirect(
+      new URL(getOAuthRedirectTarget(response), request.url),
+      303,
+    )
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {

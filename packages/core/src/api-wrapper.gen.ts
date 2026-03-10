@@ -10,10 +10,19 @@ account: {
     list: gen.accountApikeysList,
     id: gen.accountApikeysRevoke,
   },
+  email: {
+    change: {
+      request: gen.accountEmailChangeRequest,
+      verify: gen.accountEmailChangeVerify,
+    },
+  },
   link: {
     email: {
       request: gen.accountLinkEmailRequest,
       verify: gen.accountLinkEmailVerify,
+    },
+    oauth: {
+      providerId: gen.accountLinkOauthUnlink,
     },
     passkey: {
       id: gen.accountLinkPasskeyDelete,
@@ -46,11 +55,13 @@ auth: {
     facebook: {
       authorizeUrl: gen.oauthFacebookAuthorizeUrl,
       exchange: gen.oauthFacebookExchange,
+      linkAuthorizeUrl: gen.oauthFacebookLinkAuthorizeUrl,
     },
     github: {
       authorizeUrl: gen.oauthGithubAuthorizeUrl,
       authorize: gen.oauthGithubAuthorize,
       exchange: gen.oauthGithubExchange,
+      linkAuthorizeUrl: gen.oauthGithubLinkAuthorizeUrl,
     },
     google: {
       verifyIdToken: gen.oauthGoogleVerifyIdToken,
@@ -58,6 +69,7 @@ auth: {
     twitter: {
       authorizeUrl: gen.oauthTwitterAuthorizeUrl,
       exchange: gen.oauthTwitterExchange,
+      linkAuthorizeUrl: gen.oauthTwitterLinkAuthorizeUrl,
     },
   },
   passkey: {
