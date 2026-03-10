@@ -36,7 +36,10 @@
         "VERCEL_ENV",
         "VERCEL_GIT_COMMIT_REF",
         "AUTH_COOKIE_NAME",
-        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "SENTRY_AUTH_TOKEN"
       ]
     },
     "lint": {},
@@ -70,11 +73,13 @@
         "DEBUG_TEST",
         "APP_URL",
         "EMAIL_ASSETS_URL",
-        "ERROR_REPORTING_DSN",
-        "ERROR_REPORTING_ENVIRONMENT",
-        "NEXT_PUBLIC_ERROR_REPORTING_DSN",
+        "SENTRY_DSN",
+        "SENTRY_ENVIRONMENT",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
         "SENTRY_ORG",
-        "SENTRY_PROJECT"
+        "SENTRY_PROJECT",
+        "SENTRY_AUTH_TOKEN"
       ]
     },
     "lint:eslint:fix": {
@@ -108,11 +113,13 @@
         "DEBUG_TEST",
         "APP_URL",
         "EMAIL_ASSETS_URL",
-        "ERROR_REPORTING_DSN",
-        "ERROR_REPORTING_ENVIRONMENT",
-        "NEXT_PUBLIC_ERROR_REPORTING_DSN",
+        "SENTRY_DSN",
+        "SENTRY_ENVIRONMENT",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
         "SENTRY_ORG",
-        "SENTRY_PROJECT"
+        "SENTRY_PROJECT",
+        "SENTRY_AUTH_TOKEN"
       ]
     },
     "checktypes": { "env": ["NODE_ENV"] },

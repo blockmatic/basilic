@@ -14,8 +14,8 @@ if (env.NODE_ENV === 'production' && env.ALLOW_TEST) {
 }
 
 initErrorReporting({
-  dsn: env.ERROR_REPORTING_DSN,
-  environment: env.ERROR_REPORTING_ENVIRONMENT ?? env.NODE_ENV,
+  dsn: env.SENTRY_DSN,
+  environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
 })
 
 const isTestOrCi = env.NODE_ENV === 'test' || env.CI

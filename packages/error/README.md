@@ -16,7 +16,7 @@ Error reporting and utilities for the monorepo. Use **`captureError`** for consi
 
 ## Error reporting backend
 
-**GlitchTip** (open source) is recommended. Sentry (open source or cloud) also works—same DSN format and SDK. Set `ERROR_REPORTING_DSN` (server) and `NEXT_PUBLIC_ERROR_REPORTING_DSN` (client) to enable.
+**GlitchTip** (open source) is recommended. Sentry (open source or cloud) also works—same DSN format and SDK. Set `SENTRY_DSN` (server) and `NEXT_PUBLIC_SENTRY_DSN` (client) to enable.
 
 ## Quick start
 
@@ -52,8 +52,8 @@ Use `initErrorReporting` from the platform path. **Do NOT call it from `instrume
 import { initErrorReporting } from '@repo/error/node'
 
 initErrorReporting({
-  dsn: env.ERROR_REPORTING_DSN,
-  environment: env.ERROR_REPORTING_ENVIRONMENT ?? env.NODE_ENV,
+  dsn: env.SENTRY_DSN,
+  environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
 })
 ```
 
@@ -65,7 +65,7 @@ Do **not** call `initErrorReporting` inside `instrumentation.ts` `register()`. I
 
 ## No-DSN fallback
 
-When no DSN is configured, errors are logged via the provided or default logger instead of being dropped. Set `ERROR_REPORTING_DSN` to enable full reporting.
+When no DSN is configured, errors are logged via the provided or default logger instead of being dropped. Set `SENTRY_DSN` to enable full reporting.
 
 ## Scripts
 
