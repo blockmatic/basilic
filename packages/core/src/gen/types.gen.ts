@@ -985,10 +985,13 @@ export type OauthProvidersResponses = {
      */
     200: {
         github: boolean;
+        githubHasRedirectConfig: boolean;
         google: boolean;
-        googleRedirect: boolean;
+        googleHasRedirectConfig: boolean;
         facebook: boolean;
+        facebookHasRedirectConfig: boolean;
         twitter: boolean;
+        twitterHasRedirectConfig: boolean;
     };
 };
 
@@ -997,11 +1000,20 @@ export type OauthProvidersResponse = OauthProvidersResponses[keyof OauthProvider
 export type OauthFacebookAuthorizeUrlData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        redirect_uri?: string;
+    };
     url: '/auth/oauth/facebook/authorize-url';
 };
 
 export type OauthFacebookAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
     /**
      * Default Response
      */
@@ -1097,11 +1109,20 @@ export type OauthFacebookExchangeResponse = OauthFacebookExchangeResponses[keyof
 export type OauthFacebookLinkAuthorizeUrlData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        redirect_uri?: string;
+    };
     url: '/auth/oauth/facebook/link-authorize-url';
 };
 
 export type OauthFacebookLinkAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
     /**
      * Default Response
      */
@@ -1141,11 +1162,20 @@ export type OauthFacebookLinkAuthorizeUrlResponse = OauthFacebookLinkAuthorizeUr
 export type OauthGithubAuthorizeUrlData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        redirect_uri?: string;
+    };
     url: '/auth/oauth/github/authorize-url';
 };
 
 export type OauthGithubAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
     /**
      * Default Response
      */
@@ -1171,11 +1201,20 @@ export type OauthGithubAuthorizeUrlResponse = OauthGithubAuthorizeUrlResponses[k
 export type OauthGithubAuthorizeData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        redirect_uri?: string;
+    };
     url: '/auth/oauth/github/authorize';
 };
 
 export type OauthGithubAuthorizeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
     /**
      * Default Response
      */
@@ -1253,11 +1292,20 @@ export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof Oau
 export type OauthGithubLinkAuthorizeUrlData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        redirect_uri?: string;
+    };
     url: '/auth/oauth/github/link-authorize-url';
 };
 
 export type OauthGithubLinkAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
     /**
      * Default Response
      */
@@ -1506,11 +1554,20 @@ export type OauthGoogleVerifyIdTokenResponse = OauthGoogleVerifyIdTokenResponses
 export type OauthTwitterAuthorizeUrlData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        redirect_uri?: string;
+    };
     url: '/auth/oauth/twitter/authorize-url';
 };
 
 export type OauthTwitterAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
     /**
      * Default Response
      */
@@ -1613,11 +1670,20 @@ export type OauthTwitterExchangeResponse = OauthTwitterExchangeResponses[keyof O
 export type OauthTwitterLinkAuthorizeUrlData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        redirect_uri?: string;
+    };
     url: '/auth/oauth/twitter/link-authorize-url';
 };
 
 export type OauthTwitterLinkAuthorizeUrlErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        code: string;
+        message: string;
+    };
     /**
      * Default Response
      */

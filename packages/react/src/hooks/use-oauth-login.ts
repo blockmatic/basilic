@@ -37,22 +37,22 @@ export function useOAuthLogin(
     mutationFn: async input => {
       const provider = typeof input === 'string' ? input : input.provider
       const redirectUri = typeof input === 'object' ? input.redirectUri : undefined
-      const data =
-        provider === 'google' && redirectUri
-          ? await client.auth.oauth.google.authorizeUrl({
+      const authorizeUrl = {
+        github: client.auth.oauth.github.authorizeUrl,
+        google: client.auth.oauth.google.authorizeUrl,
+        facebook: client.auth.oauth.facebook.authorizeUrl,
+        twitter: client.auth.oauth.twitter.authorizeUrl,
+      } as const
+      const data = await authorizeUrl[provider](
+        redirectUri
+          ? {
               query: {
                 // biome-ignore lint/style/useNamingConvention: OAuth API expects redirect_uri
                 redirect_uri: redirectUri,
               },
-            })
-          : await (
-              {
-                github: client.auth.oauth.github.authorizeUrl,
-                google: client.auth.oauth.google.authorizeUrl,
-                facebook: client.auth.oauth.facebook.authorizeUrl,
-                twitter: client.auth.oauth.twitter.authorizeUrl,
-              } as const
-            )[provider]()
+            }
+          : undefined,
+      )
       const url = data?.redirectUrl
       if (typeof url !== 'string' || !url.trim())
         throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)

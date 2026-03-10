@@ -7,6 +7,10 @@ import { getDb } from '../../../../db/index.js'
 import { verification } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
+import {
+  getOAuthAllowedCallbackUrls,
+  resolveOAuthCallbackUrl,
+} from '../../../../lib/oauth-shared.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const linkAuthorizeUrlPerUserPerHour = 10
@@ -23,6 +27,10 @@ const AuthorizeUrlResponseSchema = Type.Object({
   redirectUrl: Type.String(),
 })
 
+const LinkAuthorizeUrlQuerystringSchema = Type.Object({
+  redirect_uri: Type.Optional(Type.String()),
+})
+
 const oauthLinkAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().get(
     '/link-authorize-url',
@@ -33,9 +41,11 @@ const oauthLinkAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
         summary: 'Twitter OAuth link authorize URL',
         tags: ['auth'],
         security: [{ bearerAuth: [] }],
+        querystring: LinkAuthorizeUrlQuerystringSchema,
         response: {
           200: AuthorizeUrlResponseSchema,
           401: ErrorResponseSchema,
+          400: ErrorResponseSchema,
           429: ErrorResponseSchema,
           503: ErrorResponseSchema,
         },
@@ -49,12 +59,29 @@ const oauthLinkAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
         })
 
       const twitterClientId = env.TWITTER_CLIENT_ID
-      const oauthTwitterCallbackUrl = env.OAUTH_TWITTER_CALLBACK_URL
-      if (!twitterClientId || !oauthTwitterCallbackUrl)
+      const allowedUrls = getOAuthAllowedCallbackUrls({
+        urls: env.OAUTH_TWITTER_CALLBACK_URLS,
+        singleUrl: env.OAUTH_TWITTER_CALLBACK_URL,
+      })
+      const resolved = resolveOAuthCallbackUrl({
+        allowedUrls,
+        requestedRedirectUri: (request.query as { redirect_uri?: string })?.redirect_uri,
+      })
+      if (!resolved.ok)
+        return reply.status(resolved.error === 'NOT_CONFIGURED' ? 503 : 400).send({
+          code:
+            resolved.error === 'NOT_CONFIGURED' ? 'OAUTH_NOT_CONFIGURED' : 'INVALID_REDIRECT_URI',
+          message:
+            resolved.error === 'NOT_CONFIGURED'
+              ? 'Twitter OAuth is not configured'
+              : 'redirect_uri must be one of the configured callback URLs',
+        })
+      if (!twitterClientId)
         return reply.status(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'Twitter OAuth is not configured',
         })
+      const { redirectUri } = resolved
 
       const userId = request.session.user.id
       const db = await getDb()
@@ -86,13 +113,13 @@ const oauthLinkAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
         type: 'oauth_link_state',
         identifier: `link:${userId}`,
         value: stateHash,
-        meta: { userId, codeVerifier },
+        meta: { userId, codeVerifier, redirectUri },
         expiresAt,
       })
 
       const redirectUrl = new URL('https://x.com/i/oauth2/authorize')
       redirectUrl.searchParams.set('client_id', twitterClientId)
-      redirectUrl.searchParams.set('redirect_uri', oauthTwitterCallbackUrl)
+      redirectUrl.searchParams.set('redirect_uri', redirectUri)
       redirectUrl.searchParams.set('scope', 'tweet.read users.read offline.access')
       redirectUrl.searchParams.set('code_challenge', codeChallenge)
       redirectUrl.searchParams.set('code_challenge_method', 'S256')

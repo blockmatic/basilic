@@ -14,6 +14,7 @@ import {
   hashToken,
 } from '../../../../lib/jwt.js'
 import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
+import { getOAuthAllowedCallbackUrls, type OAuthStateMeta } from '../../../../lib/oauth-shared.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
@@ -61,8 +62,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const githubClientId = env.GITHUB_CLIENT_ID
       const githubClientSecret = env.GITHUB_CLIENT_SECRET
-      const oauthGithubCallbackUrl = env.OAUTH_GITHUB_CALLBACK_URL
-      if (!githubClientId || !githubClientSecret || !oauthGithubCallbackUrl)
+      const allowedUrls = getOAuthAllowedCallbackUrls({
+        urls: env.OAUTH_GITHUB_CALLBACK_URLS,
+        singleUrl: env.OAUTH_GITHUB_CALLBACK_URL,
+      })
+      const defaultUrl = allowedUrls[0]
+      if (!githubClientId || !githubClientSecret || !defaultUrl)
         return reply.code(503).send({
           code: 'OAUTH_NOT_CONFIGURED',
           message: 'GitHub OAuth is not configured',
@@ -74,7 +79,14 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const db = await getDb()
       const validated = await validateAndConsumeOAuthState({ db, stateHash, request, reply })
       if (!validated.ok) return
-      const { isLinkMode, linkUserId } = validated
+      const { isLinkMode, linkUserId, stateRecord } = validated
+      const meta = stateRecord.meta as OAuthStateMeta | undefined
+      const redirectUri = meta?.redirectUri ?? defaultUrl
+      if (!allowedUrls.includes(redirectUri))
+        return reply.code(401).send({
+          code: 'INVALID_STATE',
+          message: 'Invalid or tampered redirect URI',
+        })
 
       const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',
@@ -86,7 +98,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           client_id: githubClientId,
           client_secret: githubClientSecret,
           code,
-          redirect_uri: oauthGithubCallbackUrl,
+          redirect_uri: redirectUri,
         }),
       })
 

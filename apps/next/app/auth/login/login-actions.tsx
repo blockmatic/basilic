@@ -152,7 +152,7 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
   const {
     github: isGithubConfigured,
     google: isGoogleConfigured,
-    googleRedirect: isGoogleRedirectConfigured,
+    googleHasRedirectConfig: isGoogleRedirectConfigured,
     facebook: isFacebookConfigured,
     twitter: isTwitterConfigured,
   } = useOAuthProviders()

@@ -28,7 +28,7 @@ export function LinkedAccountsSection() {
   const { data } = useUser()
   const {
     github: githubEnabled,
-    googleRedirect,
+    googleHasRedirectConfig: googleEnabled,
     facebook: facebookEnabled,
     twitter: twitterEnabled,
   } = useOAuthProviders()
@@ -98,7 +98,7 @@ export function LinkedAccountsSection() {
                   label={label}
                   providersEnabled={{
                     github: githubEnabled,
-                    google: googleRedirect,
+                    google: googleEnabled,
                     facebook: facebookEnabled,
                     twitter: twitterEnabled,
                   }}

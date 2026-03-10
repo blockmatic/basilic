@@ -12,21 +12,20 @@ export function useOAuthLink(provider: OAuthLinkProvider, redirectUri?: string) 
   return useMutation({
     mutationFn: async () => {
       const linkAuthorizeUrl = {
-        github: () => client.auth.oauth.github.linkAuthorizeUrl({ throwOnError: true }),
-        google: () =>
-          client.auth.oauth.google.linkAuthorizeUrl({
-            throwOnError: true,
-            ...(redirectUri
-              ? {
-                  // biome-ignore lint/style/useNamingConvention: OAuth API expects redirect_uri
-                  query: { redirect_uri: redirectUri },
-                }
-              : {}),
-          }),
-        facebook: () => client.auth.oauth.facebook.linkAuthorizeUrl({ throwOnError: true }),
-        twitter: () => client.auth.oauth.twitter.linkAuthorizeUrl({ throwOnError: true }),
+        github: client.auth.oauth.github.linkAuthorizeUrl,
+        google: client.auth.oauth.google.linkAuthorizeUrl,
+        facebook: client.auth.oauth.facebook.linkAuthorizeUrl,
+        twitter: client.auth.oauth.twitter.linkAuthorizeUrl,
       }[provider]
-      const data = await linkAuthorizeUrl()
+      const data = await linkAuthorizeUrl({
+        throwOnError: true,
+        ...(redirectUri
+          ? {
+              // biome-ignore lint/style/useNamingConvention: OAuth API expects redirect_uri
+              query: { redirect_uri: redirectUri },
+            }
+          : {}),
+      })
       const url = data?.redirectUrl
       if (typeof url !== 'string' || !url.trim())
         throw new Error(`OAuth redirectUrl missing or invalid for provider: ${provider}`)

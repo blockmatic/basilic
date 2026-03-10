@@ -115,19 +115,23 @@ OAuth sign-in uses provider authorization + callback flows and issues access + r
 **GitHub OAuth flow:**
 
 1. User clicks "Continue with GitHub" → client calls `useOAuthLogin` → `GET /auth/oauth/github/authorize-url` (direct to Fastify) → receives `{ redirectUrl }` → redirects to GitHub
-2. User authorizes on GitHub → GitHub redirects to `OAUTH_GITHUB_CALLBACK_URL` with `?code=&state=`
+2. User authorizes on GitHub → GitHub redirects to callback URL with `?code=&state=`
 3. Callback page (`/auth/callback/oauth/github`) calls `POST /auth/oauth/github/exchange` with `{ code, state }` → Fastify returns `{ token, refreshToken }`
 4. Callback page sets cookies and redirects to `/`
 
-**Setup:** Create a [GitHub OAuth App](https://github.com/settings/applications/new). Set callback URL to `http://localhost:3000/auth/callback/oauth/github` (dev) or your production URL. Add `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `OAUTH_GITHUB_CALLBACK_URL` to Fastify env.
+**Setup:** Create a [GitHub OAuth App](https://github.com/settings/applications/new). Set callback URL(s) to match your env. Add `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and either `OAUTH_GITHUB_CALLBACK_URL` (single) or `OAUTH_GITHUB_CALLBACK_URLS` (comma-separated) to Fastify env.
 
 ### OAuth (Google, Facebook, Twitter)
 
-**Google:** Two flows. **(1) One Tap (primary):** Uses [Google Identity Services](https://developers.google.com/identity/gsi/web) (GIS). Popup in top-right when user is logged into Google. Client POSTs `{ credential }` to `POST /auth/oauth/google/verify-id-token`. **(2) Redirect (fallback + linking):** When One Tap is blocked/dismissed or for account linking. `GET /auth/oauth/google/authorize-url?redirect_uri=` (optional) → callback → `POST /auth/oauth/google/exchange`. Client can send `redirect_uri` to choose which callback URL to use (must be in allowlist). **Setup:** One Tap: `GOOGLE_CLIENT_ID`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. Redirect/linking: add `GOOGLE_CLIENT_SECRET`, and either `OAUTH_GOOGLE_CALLBACK_URL` (single) or `OAUTH_GOOGLE_CALLBACK_URLS` (comma-separated for web + mobile).
+All OAuth providers support optional `redirect_uri` on authorize-url and link-authorize-url. When provided, it must exactly match one of the configured callback URLs. Default = first URL in the list. Use `OAUTH_*_CALLBACK_URLS` (comma-separated) for web + mobile; `OAUTH_*_CALLBACK_URL` (single) for backward compatibility.
 
-**Facebook:** Redirect flow like GitHub. `GET /auth/oauth/facebook/authorize-url` → `POST /auth/oauth/facebook/exchange`. Callback: `/auth/callback/oauth/facebook`. **Setup:** `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET`, `OAUTH_FACEBOOK_CALLBACK_URL`.
+**Google:** Two flows. **(1) One Tap (primary):** Uses [Google Identity Services](https://developers.google.com/identity/gsi/web) (GIS). Popup in top-right when user is logged into Google. Client POSTs `{ credential }` to `POST /auth/oauth/google/verify-id-token`. **(2) Redirect (fallback + linking):** When One Tap is blocked/dismissed or for account linking. `GET /auth/oauth/google/authorize-url?redirect_uri=` (optional) → callback → `POST /auth/oauth/google/exchange`. **Setup:** One Tap: `GOOGLE_CLIENT_ID`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. Redirect/linking: add `GOOGLE_CLIENT_SECRET`, and either `OAUTH_GOOGLE_CALLBACK_URL` (single) or `OAUTH_GOOGLE_CALLBACK_URLS` (comma-separated).
 
-**Twitter (X):** OAuth 2.0 with PKCE. `GET /auth/oauth/twitter/authorize-url` (includes `code_challenge`) → `POST /auth/oauth/twitter/exchange` (includes `code_verifier` from verification `meta`). Callback: `/auth/callback/oauth/twitter`. **Setup:** `TWITTER_CLIENT_ID`, `TWITTER_CLIENT_SECRET`, `OAUTH_TWITTER_CALLBACK_URL`.
+**Facebook:** Redirect flow. `GET /auth/oauth/facebook/authorize-url?redirect_uri=` (optional) → `POST /auth/oauth/facebook/exchange`. Callback: `/auth/callback/oauth/facebook`. **Setup:** `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET`, `OAUTH_FACEBOOK_CALLBACK_URL` or `OAUTH_FACEBOOK_CALLBACK_URLS`.
+
+**Twitter (X):** OAuth 2.0 with PKCE. `GET /auth/oauth/twitter/authorize-url?redirect_uri=` (optional) → `POST /auth/oauth/twitter/exchange`. Callback: `/auth/callback/oauth/twitter`. **Setup:** `TWITTER_CLIENT_ID`, `TWITTER_CLIENT_SECRET`, `OAUTH_TWITTER_CALLBACK_URL` or `OAUTH_TWITTER_CALLBACK_URLS`.
+
+**Provider console pitfalls:** Redirect URI must match exactly (no prefix, partial, or wildcard). Watch for trailing slash, HTTPS vs HTTP, and mobile scheme restrictions. Add each URL to the provider's allowed callback list.
 
 When a provider is not configured (503 `OAUTH_NOT_CONFIGURED`), the client shows a Sonner toast instead of redirecting.
 
@@ -135,7 +139,7 @@ When a provider is not configured (503 `OAUTH_NOT_CONFIGURED`), the client shows
 
 Logged-in users can link additional OAuth providers from Profile (Settings). Flow: `GET /auth/oauth/{provider}/link-authorize-url` (session/JWT required, no API key) → redirect to provider → callback → exchange with `oauth_link_state` → link account, return `{ token, refreshToken, redirectTo: "/settings?linked=ok" }`.
 
-- **Link-authorize-url:** Session/JWT required, no API key; rate limit 10/hour per user. Stores `oauth_link_state` with `meta.userId`. Google accepts optional query `redirect_uri` for mobile (must be in `OAUTH_GOOGLE_CALLBACK_URLS`).
+- **Link-authorize-url:** Session/JWT required, no API key; rate limit 10/hour per user. Stores `oauth_link_state` with `meta.userId`, `meta.redirectUri`. All providers accept optional query `redirect_uri` (must be in configured callback URLs).
 - **Exchange:** State lookup branches on `oauth_link_state` vs `oauth_state`. Link mode uses `meta.userId`; if provider already linked to another user → 409 `PROVIDER_ALREADY_LINKED`.
 - **Unlink:** `DELETE /account/link/oauth/:providerId` (Bearer). Guardrail: cannot unlink if it would leave no sign-in method (400 `LAST_SIGN_IN_METHOD`).
 - **Session user:** `GET /auth/session/user` returns `linkedAccounts: [{ providerId }]`.
@@ -301,8 +305,8 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `POST /auth/magiclink/request` → `{ ok }`
   - `POST /auth/magiclink/verify` → `{ token, refreshToken }`
 - **OAuth (GitHub)**
-  - `GET /auth/oauth/github/authorize-url` → `{ redirectUrl }` (for client-side redirect; preferred)
-  - `GET /auth/oauth/github/authorize` → 302 redirect to GitHub (legacy)
+  - `GET /auth/oauth/github/authorize-url` → `{ redirectUrl }` (optional query: `redirect_uri`)
+  - `GET /auth/oauth/github/authorize` → 302 redirect to GitHub (legacy; optional query: `redirect_uri`)
   - `POST /auth/oauth/github/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
 - **OAuth (Google One Tap)**
   - `POST /auth/oauth/google/verify-id-token` → `{ token, refreshToken }` (body: `{ credential }`)
@@ -310,10 +314,10 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `GET /auth/oauth/google/authorize-url` → `{ redirectUrl }` (optional query: `redirect_uri` — must be in allowlist)
   - `POST /auth/oauth/google/exchange` → `{ token, refreshToken, redirectTo? }` (body: `{ code, state }`)
 - **OAuth (Facebook)**
-  - `GET /auth/oauth/facebook/authorize-url` → `{ redirectUrl }`
+  - `GET /auth/oauth/facebook/authorize-url` → `{ redirectUrl }` (optional query: `redirect_uri`)
   - `POST /auth/oauth/facebook/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
 - **OAuth (Twitter)**
-  - `GET /auth/oauth/twitter/authorize-url` → `{ redirectUrl }` (PKCE)
+  - `GET /auth/oauth/twitter/authorize-url` → `{ redirectUrl }` (PKCE; optional query: `redirect_uri`)
   - `POST /auth/oauth/twitter/exchange` → `{ token, refreshToken }` (body: `{ code, state }`)
 - **Web3**
   - `GET /auth/web3/nonce` → `{ nonce }` (query: `chain`, `address`)
@@ -327,7 +331,7 @@ All endpoints below are served by `apps/fastify`. The API does not set cookies; 
   - `DELETE /account/link/wallet/:id` → `204` (unlink wallet by id from `linkedWallets`)
   - `POST /account/link/email/request` → `{ ok }` (body: `email`, `callbackUrl`)
   - `POST /account/link/email/verify` → `{ token, refreshToken }` (body: `token`)
-  - `GET /auth/oauth/{github,google,facebook,twitter}/link-authorize-url` → `{ redirectUrl }` (Session required; Google accepts optional query `redirect_uri` for mobile; rate limit 10/hour)
+  - `GET /auth/oauth/{github,google,facebook,twitter}/link-authorize-url` → `{ redirectUrl }` (Session required; optional query `redirect_uri` for all providers; rate limit 10/hour)
   - `DELETE /account/link/oauth/:providerId` → `204` (unlink OAuth provider)
 
 **Account link error codes**: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `PROVIDER_ALREADY_LINKED`, `LAST_SIGN_IN_METHOD`

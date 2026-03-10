@@ -14,10 +14,13 @@ export function useOAuthProviders() {
   })
   return {
     github: data?.github ?? false,
+    githubHasRedirectConfig: data?.githubHasRedirectConfig ?? false,
     google: data?.google ?? false,
-    googleRedirect: data?.googleRedirect ?? false,
+    googleHasRedirectConfig: data?.googleHasRedirectConfig ?? false,
     facebook: data?.facebook ?? false,
+    facebookHasRedirectConfig: data?.facebookHasRedirectConfig ?? false,
     twitter: data?.twitter ?? false,
+    twitterHasRedirectConfig: data?.twitterHasRedirectConfig ?? false,
     isPending,
     isError,
     error,

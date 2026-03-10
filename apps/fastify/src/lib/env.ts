@@ -89,6 +89,17 @@ export const env = createEnv({
     GITHUB_CLIENT_ID: z.string().min(1).optional(),
     GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
     OAUTH_GITHUB_CALLBACK_URL: z.string().url().optional(),
+    OAUTH_GITHUB_CALLBACK_URLS: z
+      .string()
+      .optional()
+      .transform(val =>
+        val
+          ? val
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean)
+          : undefined,
+      ),
     // Google OAuth (optional - One Tap + redirect fallback)
     GOOGLE_CLIENT_ID: z.string().min(1).optional(),
     GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
@@ -108,10 +119,32 @@ export const env = createEnv({
     FACEBOOK_CLIENT_ID: z.string().min(1).optional(),
     FACEBOOK_CLIENT_SECRET: z.string().min(1).optional(),
     OAUTH_FACEBOOK_CALLBACK_URL: z.string().url().optional(),
+    OAUTH_FACEBOOK_CALLBACK_URLS: z
+      .string()
+      .optional()
+      .transform(val =>
+        val
+          ? val
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean)
+          : undefined,
+      ),
     // Twitter OAuth (optional, PKCE)
     TWITTER_CLIENT_ID: z.string().min(1).optional(),
     TWITTER_CLIENT_SECRET: z.string().min(1).optional(),
     OAUTH_TWITTER_CALLBACK_URL: z.string().url().optional(),
+    OAUTH_TWITTER_CALLBACK_URLS: z
+      .string()
+      .optional()
+      .transform(val =>
+        val
+          ? val
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean)
+          : undefined,
+      ),
     ALLOWED_ORIGINS: z
       .string()
       .default('*')
