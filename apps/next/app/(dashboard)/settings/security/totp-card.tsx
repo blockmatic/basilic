@@ -26,7 +26,7 @@ export function TotpCard() {
 
   const [code, setCode] = useState('')
   const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false)
-  const [setupRequested, setSetupRequested] = useState(false)
+  const [setupRequested, setSetupRequested] = useState(true)
 
   const userLoaded = !isLoading && data !== undefined
   const totpEnabled = data?.user?.totpEnabled ?? false
@@ -181,7 +181,7 @@ export function TotpCard() {
         ) : !setupRequested ? (
           <div className="space-y-4 py-4">
             <Button onClick={() => setSetupRequested(true)} disabled={setupMutation.isPending}>
-              Start setup
+              Start again
             </Button>
           </div>
         ) : setupData ? (
