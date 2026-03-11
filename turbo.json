@@ -81,7 +81,8 @@
         "SENTRY_AUTH_TOKEN",
         "WEBAUTHN_RP_NAME",
         "TOTP_ISSUER",
-        "RATE_LIMIT_MAX"
+        "RATE_LIMIT_MAX",
+        "TEST_LOG_LEVEL"
       ]
     },
     "lint:eslint:fix": {
@@ -123,7 +124,8 @@
         "SENTRY_AUTH_TOKEN",
         "WEBAUTHN_RP_NAME",
         "TOTP_ISSUER",
-        "RATE_LIMIT_MAX"
+        "RATE_LIMIT_MAX",
+        "TEST_LOG_LEVEL"
       ]
     },
     "checktypes": { "env": ["NODE_ENV"] },

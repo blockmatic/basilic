@@ -51,7 +51,7 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should return EXPIRED_TOKEN for expired token', async () => {
-    const jwt = await getOrCreateSession(fastify, 'user@test.ai', { clearBefore: true })
+    const jwt = await getOrCreateSession(fastify, 'expired-token@test.ai', { clearBefore: true })
     const db = await (await import('../../../../db/index.js')).getDb()
     const { verification } = await import('../../../../db/schema/index.js')
     const { hashToken } = await import('../../../../lib/jwt.js')

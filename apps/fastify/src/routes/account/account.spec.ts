@@ -1,5 +1,5 @@
 import { clearSessionPool } from '@test/utils/auth-helper.js'
-import { afterAll, beforeAll, beforeEach } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest'
 import { cleanupGroupDatabase, setupGroupDatabase } from '../../../test/utils/db-setup.js'
 import type { TestApp } from '../../../test/utils/fastify.js'
 import { buildTestApp } from '../../../test/utils/fastify.js'
@@ -13,6 +13,10 @@ beforeAll(async () => {
 })
 
 beforeEach(() => {
+  fastify.fakeEmail?.clear()
+})
+
+afterEach(() => {
   fastify.fakeEmail?.clear()
 })
 

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { getOrCreateSession } from '@test/utils/auth-helper.js'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { getDb } from '../../../../db/index.js'
 import { account } from '../../../../db/schema/index.js'
@@ -8,6 +8,7 @@ import { fastify } from '../../account.spec.js'
 
 describe('DELETE /account/link/oauth/:providerId', () => {
   let jwt: string
+  let userId: string
 
   beforeAll(async () => {
     jwt = await getOrCreateSession(fastify, 'phase2-oauth@test.ai')
@@ -17,7 +18,7 @@ describe('DELETE /account/link/oauth/:providerId', () => {
       headers: { Authorization: `Bearer ${jwt}` },
       payload: {},
     })
-    const userId = (JSON.parse(profileRes.body) as { user: { id: string } }).user?.id
+    userId = (JSON.parse(profileRes.body) as { user: { id: string } }).user?.id
     if (!userId) throw new Error('No user id')
     const db = await getDb()
     await db.insert(account).values({
@@ -56,16 +57,11 @@ describe('DELETE /account/link/oauth/:providerId', () => {
       headers: { Authorization: `Bearer ${jwt}` },
     })
     expect(res.statusCode).toBe(204)
-    const profileRes = await fastify.inject({
-      method: 'PATCH',
-      url: '/account/profile',
-      headers: { Authorization: `Bearer ${jwt}` },
-      payload: {},
-    })
-    const userId = (JSON.parse(profileRes.body) as { user: { id: string } }).user?.id
-    if (!userId) throw new Error('No user id')
     const db = await getDb()
-    const remaining = await db.select().from(account).where(eq(account.userId, userId))
+    const remaining = await db
+      .select()
+      .from(account)
+      .where(and(eq(account.userId, userId), eq(account.providerId, 'github')))
     expect(remaining).toHaveLength(0)
   })
 })

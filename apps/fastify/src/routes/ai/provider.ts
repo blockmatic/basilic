@@ -36,12 +36,7 @@ export function getProvider(provider: ResolvedProvider, modelParam?: string): La
     const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOllamaModel
     const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
     const useDefault =
-      m === undefined ||
-      m === defaultOllamaModel ||
-      m === 'aurora-alpha' ||
-      m === 'default' ||
-      m === 'qwen2.5:3b' ||
-      m === 'qwen3:8b'
+      m === undefined || m === defaultOllamaModel || m === 'aurora-alpha' || m === 'default'
     const modelId = useDefault ? defaultModel : (m ?? defaultModel)
     const ollama = createOllama({
       baseURL: env.OLLAMA_BASE_URL,

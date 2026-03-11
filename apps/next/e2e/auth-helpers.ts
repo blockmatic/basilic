@@ -72,6 +72,7 @@ export const authHelpers = {
         }
         if (data.token && data.verificationId)
           return data as { token: string; verificationId: string }
+        if (data.token) return { token: data.token, verificationId: data.verificationId ?? '' }
         if (attempt < maxRetries - 1) {
           await new Promise(r => setTimeout(r, delayMs))
           continue

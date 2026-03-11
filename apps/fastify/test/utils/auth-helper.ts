@@ -12,6 +12,7 @@ export async function getOrCreateSession(
   email: string,
   options?: { clearBefore?: boolean },
 ): Promise<string> {
+  if (options?.clearBefore) sessionPool.delete(email)
   const cached = sessionPool.get(email)
   if (cached) return cached
   const jwt = await getSessionToken(app, email, options)
@@ -118,15 +119,14 @@ export async function insertTestPasskey(
   jwt: string,
   name = 'To Delete',
 ): Promise<string> {
-  const profileRes = await app.inject({
-    method: 'PATCH',
-    url: '/account/profile',
+  const userRes = await app.inject({
+    method: 'GET',
+    url: '/auth/session/user',
     headers: { Authorization: `Bearer ${jwt}` },
-    payload: {},
   })
-  if (profileRes.statusCode !== 200)
-    throw new Error(`Profile failed: ${profileRes.statusCode} ${profileRes.body}`)
-  const body = JSON.parse(profileRes.body) as { user?: { id: string } }
+  if (userRes.statusCode !== 200)
+    throw new Error(`auth/session/user failed: ${userRes.statusCode} ${userRes.body}`)
+  const body = JSON.parse(userRes.body) as { user?: { id: string } }
   const userId = body.user?.id
   if (!userId) throw new Error('No user id in profile response')
   const db = await getDb()

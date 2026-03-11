@@ -1,5 +1,14 @@
-export const isInsufficientCredits = (res: { statusCode: number; body: string }) =>
-  res.statusCode === 402 || /insufficient|credits/i.test(res.body)
+/** Only treat as insufficient credits when 402 and provider-indicative error (avoids masking real failures) */
+export const isInsufficientCredits = (res: { statusCode: number; body: string }) => {
+  if (res.statusCode !== 402) return false
+  try {
+    const data = JSON.parse(res.body) as { code?: string; message?: string; error?: string }
+    const combined = `${data.code ?? ''} ${data.message ?? ''} ${data.error ?? ''}`
+    return /insufficient_quota|insufficient_credits|quota_exceeded|credits_exceeded/i.test(combined)
+  } catch {
+    return /insufficient_quota|insufficient_credits|quota_exceeded/i.test(res.body)
+  }
+}
 
 export const skipIfInsufficientCredits = (
   res: { statusCode: number; body: string },

@@ -120,6 +120,12 @@ export class FakeEmailProvider implements EmailProvider {
     if (monoMatch) return monoMatch[1]
     const codeMatch = decodedHtml.match(/>\s*(\d{6})\s*</)
     if (codeMatch) return codeMatch[1]
+    if (targetEmail.text) {
+      const textUrlMatch = targetEmail.text.match(/[?&](?:token|verificationId)=([^&\s]+)/i)
+      if (textUrlMatch) return textUrlMatch[1]
+      const textCodeMatch = targetEmail.text.match(/(\d{6})/)
+      if (textCodeMatch) return textCodeMatch[1]
+    }
     return null
   }
 

@@ -6,7 +6,7 @@ describe('POST /account/link/totp/verify', () => {
   let jwt: string
 
   beforeAll(async () => {
-    jwt = await getOrCreateSession(fastify, 'phase2-totp@test.ai')
+    jwt = await getOrCreateSession(fastify, 'phase2-totp-verify@test.ai')
     await fastify.inject({
       method: 'POST',
       url: '/account/link/totp/setup',

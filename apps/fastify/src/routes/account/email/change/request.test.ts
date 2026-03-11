@@ -33,6 +33,7 @@ describe('POST /account/email/change/request', () => {
       },
     })
     expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).code).toBe('INVALID_INPUT')
   })
 
   it('should return 200 and send verification email', async () => {

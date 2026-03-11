@@ -2,6 +2,7 @@ import { expect, test } from './fixtures'
 
 test.describe('Chat Assistant', () => {
   test.use({ viewport: { width: 375, height: 667 } })
+  test.setTimeout(60_000)
 
   test('should send message via Who am I? and show assistant response', async ({
     authenticatedPage: page,
@@ -21,8 +22,12 @@ test.describe('Chat Assistant', () => {
     })
 
     const chatError = sheet.getByTestId('chat-error')
-    const errorVisible = await chatError.isVisible().catch(() => false)
-    if (errorVisible) {
+    const assistantLoc = sheet.locator('[data-role="assistant"]')
+    const winner = await Promise.race([
+      assistantLoc.waitFor({ state: 'visible', timeout: 60_000 }).then(() => 'assistant' as const),
+      chatError.waitFor({ state: 'visible', timeout: 60_000 }).then(() => 'error' as const),
+    ])
+    if (winner === 'error') {
       const errorText = (await chatError.textContent()) ?? ''
       if (/402|insufficient|credits/i.test(errorText)) {
         test.skip(true, 'OpenRouter 402 insufficient credits')
@@ -34,7 +39,7 @@ test.describe('Chat Assistant', () => {
       }
     }
     await expect(chatError).not.toBeVisible()
-    await expect(sheet.locator('[data-role="assistant"]')).toBeVisible({ timeout: 60000 })
-    await expect(sheet.getByTestId('user-info-card')).toBeVisible({ timeout: 60000 })
+    await expect(assistantLoc).toBeVisible({ timeout: 60_000 })
+    await expect(sheet.getByTestId('user-info-card')).toBeVisible({ timeout: 60_000 })
   })
 })
