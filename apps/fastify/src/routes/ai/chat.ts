@@ -272,11 +272,14 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         )
         return reply.code(200).send({ text: result.text })
       } catch (err) {
-        request.log.warn(
+        const errObj = err instanceof Error ? err : new Error(String(err))
+        request.log.error(
           {
             route: '/ai/chat',
             provider,
-            error: err instanceof Error ? err.message : String(err),
+            error: errObj.message,
+            cause: errObj.cause != null ? String(errObj.cause) : undefined,
+            stack: errObj.stack,
             durationMs: Date.now() - startMs,
           },
           'Chat upstream error',

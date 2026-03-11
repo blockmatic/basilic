@@ -97,12 +97,12 @@ async function main() {
   const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
     cwd: join(repoRoot, 'apps/fastify'),
     env,
-    stdio: 'ignore',
+    stdio: 'inherit',
   })
   const next = spawn('pnpm', ['exec', 'next', 'start'], {
     cwd: nextDir,
     env: { ...env, PORT: '3000' },
-    stdio: 'ignore',
+    stdio: 'inherit',
   })
 
   const killAll = (signal = 'SIGTERM') => {

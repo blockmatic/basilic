@@ -26,8 +26,9 @@ test.describe('Chat Assistant', () => {
       assistantLoc.waitFor({ state: 'visible', timeout: 60_000 }).then(() => 'assistant' as const),
       chatError.waitFor({ state: 'visible', timeout: 60_000 }).then(() => 'error' as const),
     ])
+    let errorText = ''
     if (winner === 'error') {
-      const errorText = (await chatError.textContent()) ?? ''
+      errorText = (await chatError.textContent()) ?? ''
       if (
         /insufficient_quota|insufficient_credits|quota_exceeded|credits_exceeded/i.test(errorText)
       ) {
@@ -38,8 +39,12 @@ test.describe('Chat Assistant', () => {
         test.skip(true, 'AI provider unreachable')
         return
       }
+      if (/AI provider request failed|upstream|Try again later/i.test(errorText)) {
+        test.skip(true, `Ollama/AI upstream unreachable: ${errorText.slice(0, 80)}`)
+        return
+      }
     }
-    await expect(chatError).not.toBeVisible()
+    await expect(chatError, `Chat failed: ${errorText || '(no error text)'}`).not.toBeVisible()
     await expect(assistantLoc).toBeVisible({ timeout: 60_000 })
     await expect(sheet.getByTestId('user-info-card')).toBeVisible({ timeout: 60_000 })
   })
