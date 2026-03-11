@@ -8,8 +8,15 @@ export const defaultOllamaModel = 'qwen3:8b'
 export const defaultOpenRouterModel = 'anthropic/claude-sonnet-4'
 export const defaultAnthropicModel = 'claude-sonnet-4-20250514'
 
+/** Default provider when AI_PROVIDER is unset; Anthropic direct API is preferred. */
+export const defaultProvider: ResolvedProvider = 'anthropic'
+
 export type ResolvedProvider = 'ollama' | 'openrouter' | 'anthropic'
 
+/**
+ * Resolve AI provider from env. When AI_PROVIDER is unset, uses Anthropic → Open Router → Ollama.
+ * Anthropic AI SDK (direct API) is the default; Open Router is fallback.
+ */
 export function getResolvedProvider(): ResolvedProvider | null {
   if (env.AI_PROVIDER === 'anthropic') {
     if (env.ANTHROPIC_API_KEY) return 'anthropic'
@@ -23,7 +30,8 @@ export function getResolvedProvider(): ResolvedProvider | null {
     if (env.OLLAMA_BASE_URL) return 'ollama'
     return null
   }
-  if (env.ANTHROPIC_API_KEY) return 'anthropic'
+  // Default: Anthropic direct API first, then Open Router, then Ollama
+  if (env.ANTHROPIC_API_KEY) return defaultProvider
   if (env.OPEN_ROUTER_API_KEY) return 'openrouter'
   if (env.OLLAMA_BASE_URL) return 'ollama'
   return null

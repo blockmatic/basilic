@@ -3,7 +3,7 @@ title: "Self-Hosted LLM (Ollama)"
 description: "Run local LLMs for data privacy. Recommended when prompts must stay on your infrastructure."
 ---
 
-By default, the app uses **Anthropic** (Claude Sonnet 4) when `ANTHROPIC_API_KEY` is set, otherwise **Open Router** (Claude Sonnet 4) or **Ollama**. Use `AI_DEFAULT_MODEL=openrouter/free` for OpenRouter's free tier. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
+By default, the app uses **Anthropic** (direct API, Claude Sonnet 4) when `ANTHROPIC_API_KEY` is set. Otherwise it falls back to **Open Router** or **Ollama**. Prefer the Anthropic provider for best integration; use Open Router only when an Anthropic key is unavailable. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
 
 This guide covers [Ollama](https://ollama.com)—a local inference runtime with an OpenAI-compatible API—for both development and production.
 
@@ -237,7 +237,7 @@ curl -s https://ollama.example.com/api/generate -d '{"model":"qwen2.5:3b","promp
 
 ## AI Provider in Fastify
 
-The Fastify API supports **Anthropic**, **Open Router**, and **Ollama**. Provider precedence (when `AI_PROVIDER` is unset): Anthropic → Open Router → Ollama. Privacy-first routing with Ollama requires `AI_PROVIDER=ollama` when other keys exist. See `getResolvedProvider()` for the exact logic.
+The Fastify API supports **Anthropic** (default), **Open Router**, and **Ollama**. Provider precedence (when `AI_PROVIDER` is unset): Anthropic direct API → Open Router → Ollama. Use Anthropic when possible; Open Router is a fallback. Privacy-first routing with Ollama requires `AI_PROVIDER=ollama` when other keys exist. See `getResolvedProvider()` for the exact logic.
 
 ### Routes
 
@@ -254,8 +254,8 @@ At least one of `ANTHROPIC_API_KEY`, `OPEN_ROUTER_API_KEY`, or `OLLAMA_BASE_URL`
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `ANTHROPIC_API_KEY` | Conditional | — | Anthropic API key; Claude Sonnet 4 (`claude-sonnet-4-20250514`) as default |
-| `OPEN_ROUTER_API_KEY` | Conditional | — | Open Router API key (get at openrouter.ai); Claude Sonnet 4 as default |
+| `ANTHROPIC_API_KEY` | Conditional (default) | — | Anthropic API key (preferred); Claude Sonnet 4 via direct API |
+| `OPEN_ROUTER_API_KEY` | Conditional (fallback) | — | Open Router API key when Anthropic unavailable |
 | `OLLAMA_BASE_URL` | Conditional | `http://localhost:11434` | Ollama server URL when self-hosting |
 | `AI_PROVIDER` | Conditional | Inferred | `anthropic`, `openrouter`, or `ollama` — inferred when only one provider configured; must be set when multiple vars present |
 | `AI_DEFAULT_MODEL` | No | Varies by provider | Anthropic/OpenRouter: Claude Sonnet 4; Ollama: `qwen3:8b`; use `openrouter/free` for OpenRouter free tier |

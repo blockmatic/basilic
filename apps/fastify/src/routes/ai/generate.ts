@@ -59,7 +59,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
         return reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
           message:
-            'No AI provider configured. Set ANTHROPIC_API_KEY, OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL.',
+            'No AI provider configured. Set ANTHROPIC_API_KEY (default), OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL.',
         })
 
       const { prompt: rawPrompt, stream, model, temperature } = request.body
