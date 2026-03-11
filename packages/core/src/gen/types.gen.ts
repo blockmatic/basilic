@@ -859,6 +859,13 @@ export type ChatErrors = {
         code: string;
         message: string;
     };
+    /**
+     * Default Response
+     */
+    502: {
+        code: string;
+        message: string;
+    };
 };
 
 export type ChatError = ChatErrors[keyof ChatErrors];

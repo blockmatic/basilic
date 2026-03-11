@@ -1,40 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
+import {
+  skipIfInsufficientCredits,
+  skipIfProviderUnavailable,
+} from '../../../test/utils/ai-remote.js'
 import { createAuthenticatedUser, getApiKeyToken } from '../../../test/utils/auth-helper.js'
 import { fastify } from './ai.spec.js'
-
-const isInsufficientCredits = (res: { statusCode: number; body: string }) =>
-  res.statusCode === 402 || /insufficient|credits/i.test(res.body)
-
-const skipIfInsufficientCredits = (
-  res: { statusCode: number; body: string },
-  name: string,
-): boolean => {
-  if (isInsufficientCredits(res)) {
-    process.stderr.write(
-      `[AI test] ${name}: OpenRouter 402 insufficient credits - passing without validation\n`,
-    )
-    return true
-  }
-  return false
-}
-
-const isProviderUnavailable = (res: { statusCode: number; body: string }) =>
-  res.statusCode >= 500 ||
-  /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET|network/i.test(res.body)
-
-const skipIfProviderUnavailable = (
-  res: { statusCode: number; body: string },
-  name: string,
-): boolean => {
-  if (isProviderUnavailable(res)) {
-    process.stderr.write(
-      `[AI test] ${name}: AI provider unreachable - passing without validation\n`,
-    )
-    return true
-  }
-  return false
-}
 
 const GenerateResponseSchema = z.object({
   text: z.string(),
@@ -112,7 +83,7 @@ describe('POST /ai/generate', () => {
     })
   })
 
-  describe.skipIf(!process.env.OLLAMA_REMOTE_TESTS)('POST /ai/generate — remote', () => {
+  describe('POST /ai/generate — remote', () => {
     it('should return 200 non-streaming with text', async () => {
       const response = await fastify.inject({
         method: 'POST',
@@ -142,7 +113,7 @@ describe('POST /ai/generate', () => {
       })
 
       if (skipIfInsufficientCredits(response, 'streaming')) return
-      if (skipIfProviderUnavailable(response, 'streaming')) return
+      if (skipIfProviderUnavailable(response, 'streaming', { expectStream: true })) return
       expect(response.statusCode).toBe(200)
       const contentType = response.headers['content-type']
       expect(contentType).toBeDefined()

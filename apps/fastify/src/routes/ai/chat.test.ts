@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
+import {
+  skipIfInsufficientCredits,
+  skipIfProviderUnavailable,
+} from '../../../test/utils/ai-remote.js'
 import { createAuthenticatedUser, getApiKeyToken } from '../../../test/utils/auth-helper.js'
 import { fastify } from './ai.spec.js'
 
@@ -7,39 +11,6 @@ vi.setConfig({
   testTimeout: 30000,
   hookTimeout: 30000,
 })
-
-const isInsufficientCredits = (res: { statusCode: number; body: string }) =>
-  res.statusCode === 402 || /insufficient|credits/i.test(res.body)
-
-const skipIfInsufficientCredits = (
-  res: { statusCode: number; body: string },
-  name: string,
-): boolean => {
-  if (isInsufficientCredits(res)) {
-    process.stderr.write(
-      `[AI test] ${name}: OpenRouter 402 insufficient credits - passing without validation\n`,
-    )
-    return true
-  }
-  return false
-}
-
-const isProviderUnavailable = (res: { statusCode: number; body: string }) =>
-  res.statusCode >= 500 ||
-  /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET|network/i.test(res.body)
-
-const skipIfProviderUnavailable = (
-  res: { statusCode: number; body: string },
-  name: string,
-): boolean => {
-  if (isProviderUnavailable(res)) {
-    process.stderr.write(
-      `[AI test] ${name}: AI provider unreachable - passing without validation\n`,
-    )
-    return true
-  }
-  return false
-}
 
 const ChatResponseSchema = z.object({
   text: z.string(),
@@ -133,7 +104,7 @@ describe('POST /ai/chat', () => {
     })
   })
 
-  describe.skipIf(!process.env.OLLAMA_REMOTE_TESTS)('POST /ai/chat — remote', () => {
+  describe('POST /ai/chat — remote', () => {
     it('should return 200 with stream (SSE data stream protocol)', async () => {
       const response = await fastify.inject({
         method: 'POST',
@@ -149,7 +120,7 @@ describe('POST /ai/chat', () => {
       })
 
       if (skipIfInsufficientCredits(response, 'stream')) return
-      if (skipIfProviderUnavailable(response, 'stream')) return
+      if (skipIfProviderUnavailable(response, 'stream', { expectStream: true })) return
       expect(response.statusCode).toBe(200)
       const contentType = response.headers['content-type']
       expect(contentType).toBeDefined()

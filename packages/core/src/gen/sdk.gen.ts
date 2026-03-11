@@ -262,7 +262,7 @@ export const accountProfileUpdate = <ThrowOnError extends boolean = false>(optio
 /**
  * Generate AI chat response
  *
- * Chat with AI via Ollama (default) or Open Router. Set OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.
+ * Chat with AI via Open Router (default) or Ollama. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.
  */
 export const chat = <ThrowOnError extends boolean = false>(options: Options<ChatData, ThrowOnError>) => (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

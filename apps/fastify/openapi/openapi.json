@@ -2287,7 +2287,7 @@
         "tags": [
           "ai"
         ],
-        "description": "Chat with AI via Ollama (default) or Open Router. Set OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.",
+        "description": "Chat with AI via Open Router (default) or Ollama. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2345,7 +2345,7 @@
                     "type": "boolean"
                   },
                   "model": {
-                    "default": "qwen2.5:14b",
+                    "default": "meta-llama/llama-3.3-70b-instruct:free",
                     "type": "string"
                   },
                   "temperature": {
@@ -2456,6 +2456,28 @@
                 }
               }
             }
+          },
+          "502": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2487,7 +2509,7 @@
                     "type": "boolean"
                   },
                   "model": {
-                    "default": "qwen2.5:14b",
+                    "default": "meta-llama/llama-3.3-70b-instruct:free",
                     "type": "string"
                   },
                   "temperature": {

@@ -7,10 +7,17 @@ import {
   smoothStream,
   streamText,
   type ToolSet,
+  tool,
 } from 'ai'
+import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
+import { z } from 'zod'
+import { getDb } from '../../db/index.js'
+import { users } from '../../db/schema/index.js'
+import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
-import { defaultOllamaModel, getProvider, getResolvedProvider } from './provider.js'
+import { createBraveSearchTool } from './brave-search.js'
+import { defaultOpenRouterModel, getProvider, getResolvedProvider } from './provider.js'
 
 const ChatMessageItemSchema = Type.Union([
   Type.Object({
@@ -27,7 +34,7 @@ const ChatMessageItemSchema = Type.Union([
 const ChatRequestSchema = Type.Object({
   messages: Type.Array(ChatMessageItemSchema, { minItems: 1, maxItems: 50 }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(Type.String({ default: defaultOllamaModel })),
+  model: Type.Optional(Type.String({ default: defaultOpenRouterModel })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
   tools: Type.Optional(Type.Any()),
 })
@@ -77,9 +84,68 @@ async function resolveMessages(rawMessages: unknown[], tools: ToolSet): Promise<
   )
 }
 
-/** Phase 1: plain chat only (no tools). Phase 3 re-enables tools. */
-function getMergedTools(): ToolSet {
-  return {}
+const userInfoSpecRoot = 'user-info-1'
+
+function buildUserInfoSpec(user: {
+  name: string | null
+  email: string | null
+  image: string | null
+  username: string | null
+  createdAt: Date
+}) {
+  const joinedAt = new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(user.createdAt)
+  return {
+    root: userInfoSpecRoot,
+    elements: {
+      [userInfoSpecRoot]: {
+        type: 'UserInfo',
+        props: {
+          name: user.name ?? null,
+          email: user.email ?? null,
+          image: user.image ?? null,
+          username: user.username ?? null,
+          joinedAt,
+        },
+        children: [],
+      },
+    },
+  } as const
+}
+
+function createAccountInfoTool(userId: string) {
+  return tool({
+    description:
+      'Returns information about the current authenticated account. Use when the user asks who they are, their account details, when they joined, or similar.',
+    inputSchema: z.object({}),
+    execute: async () => {
+      const db = await getDb()
+      const [user] = await db.select().from(users).where(eq(users.id, userId))
+      if (!user) return 'Account not found.'
+      const spec = buildUserInfoSpec(user)
+      const summaryParts = [`You joined in ${spec.elements[userInfoSpecRoot].props.joinedAt}`]
+      if (user.email) summaryParts.push(`Email: ${user.email}`)
+      if (user.name) summaryParts.push(`Name: ${user.name}`)
+      if (user.username) summaryParts.push(`Username: ${user.username}`)
+      return {
+        __render: 'user-info',
+        spec,
+        summary: summaryParts.join('. '),
+      }
+    },
+  })
+}
+
+function getMergedTools(userId: string, log: import('fastify').FastifyBaseLogger): ToolSet {
+  return {
+    getAccountInfo: createAccountInfoTool(userId),
+    ...(env.BRAVE_SEARCH_API_KEY && {
+      braveSearch: createBraveSearchTool(env.BRAVE_SEARCH_API_KEY, log),
+    }),
+  }
 }
 
 const chatRoute: FastifyPluginAsync = async fastify => {
@@ -89,7 +155,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'chat',
         description:
-          'Chat with AI via Ollama (default) or Open Router. Set OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.',
+          'Chat with AI via Open Router (default) or Ollama. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.',
         summary: 'Generate AI chat response',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],
@@ -102,6 +168,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           500: ErrorResponseSchema,
+          502: ErrorResponseSchema,
         },
       },
     },
@@ -116,7 +183,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       if (!provider)
         return reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'No AI provider configured. Set OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY.',
+          message: 'No AI provider configured. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL.',
         })
 
       const { messages: rawMessages, stream, model, temperature } = request.body
@@ -125,7 +192,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
       const shouldStream = stream === true || acceptHeader.includes('text/event-stream')
 
-      const mergedTools = getMergedTools()
+      const mergedTools = getMergedTools(request.session!.user.id, request.log)
 
       let messages: Awaited<ReturnType<typeof resolveMessages>>
       try {
@@ -137,34 +204,75 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
+      const startMs = Date.now()
       request.log.debug(
         { messages: messages.length, model, stream: shouldStream, temperature },
         'Processing chat request',
       )
 
+      const abortSignal = AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS)
       const baseOptions = {
         model: resolvedModel,
         messages,
         tools: mergedTools,
+        abortSignal,
         ...(temperature !== undefined && { temperature }),
       }
 
-      if (shouldStream) {
-        const result = streamText({
-          ...baseOptions,
-          experimental_transform: smoothStream({
-            delayInMs: 15,
-            chunking: 'word',
-          }),
-        })
-        const response = result.toUIMessageStreamResponse()
-        for (const [k, v] of response.headers) reply.raw.setHeader(k, v)
-        reply.raw.statusCode = response.status
-        return reply.send(response.body as never)
-      }
+      try {
+        if (shouldStream) {
+          const result = streamText({
+            ...baseOptions,
+            experimental_transform: smoothStream({
+              delayInMs: 15,
+              chunking: 'word',
+            }),
+          })
+          const response = result.toUIMessageStreamResponse()
+          for (const [k, v] of response.headers) reply.raw.setHeader(k, v)
+          reply.raw.statusCode = response.status
+          request.log.info(
+            {
+              route: '/ai/chat',
+              provider,
+              model: request.body.model ?? 'default',
+              stream: true,
+              durationMs: Date.now() - startMs,
+              userId: request.session.user.id.slice(0, 8),
+            },
+            'Chat stream started',
+          )
+          return reply.send(response.body as never)
+        }
 
-      const result = await generateText(baseOptions)
-      return reply.code(200).send({ text: result.text })
+        const result = await generateText(baseOptions)
+        request.log.info(
+          {
+            route: '/ai/chat',
+            provider,
+            model: request.body.model ?? 'default',
+            stream: false,
+            durationMs: Date.now() - startMs,
+            userId: request.session.user.id.slice(0, 8),
+          },
+          'Chat completed',
+        )
+        return reply.code(200).send({ text: result.text })
+      } catch (err) {
+        request.log.warn(
+          {
+            route: '/ai/chat',
+            provider,
+            error: err instanceof Error ? err.message : String(err),
+            durationMs: Date.now() - startMs,
+          },
+          'Chat upstream error',
+        )
+        return reply.code(502).send({
+          code: 'UPSTREAM_SERVICE_ERROR',
+          message: 'AI provider request failed. Try again later.',
+        })
+      }
     },
   )
 }

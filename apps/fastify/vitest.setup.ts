@@ -15,7 +15,8 @@
  * Overrides here: AI_PROVIDER=ollama, OPEN_ROUTER_API_KEY unset (tests use Ollama only).
  * Tests use the default model only; do not set AI_DEFAULT_MODEL.
  * When OpenRouter returns 402 (insufficient credits), tests warn and pass without full validation.
- * When the AI provider is unreachable (5xx, ECONNREFUSED, etc.), tests skip with clear message.
+ * When the AI provider is unreachable (5xx, ECONNREFUSED, etc.), tests pass gracefully via
+ * skipIfProviderUnavailable. Use OLLAMA_BASE_URL in .env.test or CI env.
  */
 
 // Enforce Ollama for AI tests (OLLAMA_BASE_URL from .env.test or CI env)

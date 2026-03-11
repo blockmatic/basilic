@@ -2,15 +2,16 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import { generateText, streamText } from 'ai'
 import type { FastifyPluginAsync } from 'fastify'
+import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
-import { defaultOllamaModel, getProvider, getResolvedProvider } from './provider.js'
+import { defaultOpenRouterModel, getProvider, getResolvedProvider } from './provider.js'
 
 const maxPromptLength = 32_000
 
 const GenerateRequestSchema = Type.Object({
   prompt: Type.String({ minLength: 1, maxLength: maxPromptLength }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(Type.String({ default: defaultOllamaModel })),
+  model: Type.Optional(Type.String({ default: defaultOpenRouterModel })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
 })
 
@@ -53,7 +54,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       if (!provider)
         return reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'No AI provider configured. Set OLLAMA_BASE_URL or OPEN_ROUTER_API_KEY.',
+          message: 'No AI provider configured. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL.',
         })
 
       const { prompt: rawPrompt, stream, model, temperature } = request.body
@@ -69,27 +70,66 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
       const shouldStream = stream === true || acceptHeader.includes('text/event-stream')
 
+      const startMs = Date.now()
       request.log.debug(
         { promptLength: prompt.length, model, stream: shouldStream, temperature },
         'Processing generate request',
       )
 
+      const abortSignal = AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS)
       const baseOptions = {
         model: resolvedModel,
         prompt,
+        abortSignal,
         ...(temperature !== undefined && { temperature }),
       }
 
-      if (shouldStream) {
-        const result = streamText(baseOptions)
-        const response = result.toTextStreamResponse()
-        for (const [k, v] of response.headers) reply.raw.setHeader(k, v)
-        reply.raw.statusCode = response.status
-        return reply.send(response.body as never)
-      }
+      try {
+        if (shouldStream) {
+          const result = streamText(baseOptions)
+          const response = result.toTextStreamResponse()
+          for (const [k, v] of response.headers) reply.raw.setHeader(k, v)
+          reply.raw.statusCode = response.status
+          request.log.info(
+            {
+              route: '/ai/generate',
+              provider,
+              model,
+              stream: true,
+              durationMs: Date.now() - startMs,
+            },
+            'Generate stream started',
+          )
+          return reply.send(response.body as never)
+        }
 
-      const result = await generateText(baseOptions)
-      return reply.code(200).send({ text: result.text })
+        const result = await generateText(baseOptions)
+        request.log.info(
+          {
+            route: '/ai/generate',
+            provider,
+            model,
+            stream: false,
+            durationMs: Date.now() - startMs,
+          },
+          'Generate completed',
+        )
+        return reply.code(200).send({ text: result.text })
+      } catch (err) {
+        request.log.warn(
+          {
+            route: '/ai/generate',
+            provider,
+            error: err instanceof Error ? err.message : String(err),
+            durationMs: Date.now() - startMs,
+          },
+          'Generate upstream error',
+        )
+        return reply.code(502).send({
+          code: 'UPSTREAM_SERVICE_ERROR',
+          message: 'AI provider request failed. Try again later.',
+        })
+      }
     },
   )
 }

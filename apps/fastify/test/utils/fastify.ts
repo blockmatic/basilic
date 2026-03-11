@@ -13,7 +13,7 @@ export async function buildTestApp(): Promise<FastifyInstance> {
   setTestEmailProvider(fakeEmailProvider)
 
   const fastify = Fastify({
-    logger: { level: process.env.DEBUG_TEST ? 'info' : 'silent' },
+    logger: { level: 'silent' },
   }).withTypeProvider<TypeBoxTypeProvider>()
 
   await fastify.register(app)

@@ -3,8 +3,8 @@ import type { LanguageModel } from 'ai'
 import { createOllama } from 'ai-sdk-ollama'
 import { env } from '../../lib/env.js'
 
-export const defaultOllamaModel = 'qwen2.5:14b'
-export const defaultOpenRouterModel = 'openrouter/free'
+export const defaultOllamaModel = 'qwen3:8b'
+export const defaultOpenRouterModel = 'meta-llama/llama-3.3-70b-instruct:free'
 
 export type ResolvedProvider = 'ollama' | 'openrouter'
 
@@ -17,13 +17,14 @@ export function getResolvedProvider(): ResolvedProvider | null {
     if (env.OLLAMA_BASE_URL) return 'ollama'
     return null
   }
-  if (env.OLLAMA_BASE_URL) return 'ollama'
   if (env.OPEN_ROUTER_API_KEY) return 'openrouter'
+  if (env.OLLAMA_BASE_URL) return 'ollama'
   return null
 }
 
 const openRouterModelAliases: Record<string, string> = {
   'aurora-alpha': defaultOpenRouterModel,
+  'openrouter/free': defaultOpenRouterModel,
   grok: 'x-ai/grok-3-mini',
   'grok-3-mini': 'x-ai/grok-3-mini',
   sonnet: 'anthropic/claude-3-5-sonnet',
@@ -39,7 +40,8 @@ export function getProvider(provider: ResolvedProvider, modelParam?: string): La
       m === defaultOllamaModel ||
       m === 'aurora-alpha' ||
       m === 'default' ||
-      m === 'qwen2.5:3b'
+      m === 'qwen2.5:3b' ||
+      m === 'qwen3:8b'
     const modelId = useDefault ? defaultModel : (m ?? defaultModel)
     const ollama = createOllama({
       baseURL: env.OLLAMA_BASE_URL,
@@ -48,7 +50,12 @@ export function getProvider(provider: ResolvedProvider, modelParam?: string): La
   }
   const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
   const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOpenRouterModel
-  const useRuntimeDefault = m === undefined || m === defaultOpenRouterModel || m === 'aurora-alpha'
+  const useRuntimeDefault =
+    m === undefined ||
+    m === defaultOpenRouterModel ||
+    m === 'aurora-alpha' ||
+    m === 'default' ||
+    m === 'openrouter/free'
   const effective = useRuntimeDefault ? defaultModel : (m ?? defaultModel)
   const modelId =
     openRouterModelAliases[effective] ??
