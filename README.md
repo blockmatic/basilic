@@ -36,6 +36,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 ## Packages
 
 - **[@repo/core](packages/core/README.md)** — Runtime-agnostic API client and types generated from OpenAPI specs
+- **[@repo/cli](packages/cli/README.md)** — TypeScript CLI for API (API key auth; ideal for agentic integrations)
 - **[@repo/react](packages/react/README.md)** — React Query hooks for `@repo/core` API functions
 - **[@repo/ui](packages/ui/README.md)** — Shared UI component library (Shadcn/ui, Tailwind)
 - **[@repo/utils](packages/utils/README.md)** — Shared utilities (async, data, debug, error, logger, web3)

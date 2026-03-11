@@ -1,0 +1,44 @@
+---
+title: "CLI Package"
+description: "TypeScript CLI to interact with the Basilic API via API key. Ideal for agentic integrations."
+---
+
+The `@repo/cli` package provides a command-line interface to the Basilic Fastify API. It uses `@repo/core` for all requests and supports only API key auth. Auth endpoints (magic link, OAuth, passkey, etc.) are excluded.
+
+## Auth
+
+1. Env var: `API_KEY` or `BASILIC_API_KEY`
+2. Config file: `~/.config/basilic/config.json`
+3. Interactive prompt (saves to config)
+
+```bash
+basilic config set-api-key bask_xxx_yyy
+```
+
+## Commands
+
+Commands mirror core API nesting: `health-check`, `account apikeys create`, `account apikeys list`, `ai chat`, etc. Use `--help` for OpenAPI-derived descriptions.
+
+```bash
+basilic health-check
+basilic account apikeys list
+basilic ai chat --body '{"messages":[{"role":"user","content":"Hello"}]}'
+```
+
+## Local testing
+
+1. Start API: `pnpm dev`
+2. Create API key via dashboard or `POST /account/apikeys/` with JWT
+3. Run: `API_KEY=bask_xxx node packages/cli/dist/cli.js health-check`
+
+See [packages/cli/README.md](https://github.com/your-org/basilic/blob/main/packages/cli/README.md) for full instructions.
+
+## Agentic integrations
+
+The CLI is suited for AI agents (OpenClaw, Cursor Composer, etc.) as a simpler alternative to MCP:
+
+- Standard stdout/JSON
+- No server setup
+- Easy to wrap in scripts: `result=$(basilic ai chat --body '...')`
+
+Agents can shell out to the CLI and parse JSON output without running an MCP server.
