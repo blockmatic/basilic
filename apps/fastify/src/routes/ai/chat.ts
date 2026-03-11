@@ -173,7 +173,8 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session)
+      const session = request.session
+      if (!session)
         return reply.code(401).send({
           code: 'UNAUTHORIZED',
           message: 'Authentication required',
@@ -192,7 +193,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
       const shouldStream = stream === true || acceptHeader.includes('text/event-stream')
 
-      const mergedTools = getMergedTools(request.session!.user.id, request.log)
+      const mergedTools = getMergedTools(session.user.id, request.log)
 
       let messages: Awaited<ReturnType<typeof resolveMessages>>
       try {
@@ -238,7 +239,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
               model: request.body.model ?? 'default',
               stream: true,
               durationMs: Date.now() - startMs,
-              userId: request.session.user.id.slice(0, 8),
+              userId: session.user.id.slice(0, 8),
             },
             'Chat stream started',
           )
@@ -253,7 +254,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
             model: request.body.model ?? 'default',
             stream: false,
             durationMs: Date.now() - startMs,
-            userId: request.session.user.id.slice(0, 8),
+            userId: session.user.id.slice(0, 8),
           },
           'Chat completed',
         )
