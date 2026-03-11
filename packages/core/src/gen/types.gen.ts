@@ -855,6 +855,13 @@ export type ChatErrors = {
     /**
      * Default Response
      */
+    402: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
     500: {
         code: string;
         message: string;
@@ -905,6 +912,13 @@ export type GenerateErrors = {
      * Default Response
      */
     401: {
+        code: string;
+        message: string;
+    };
+    /**
+     * Default Response
+     */
+    402: {
         code: string;
         message: string;
     };
