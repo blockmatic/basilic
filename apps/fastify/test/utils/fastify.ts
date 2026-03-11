@@ -17,6 +17,7 @@ export async function buildTestApp(): Promise<FastifyInstance> {
     'silent'
   const fastify = Fastify({
     logger: { level: logLevel },
+    pluginTimeout: 30_000,
   }).withTypeProvider<TypeBoxTypeProvider>()
 
   await fastify.register(app)

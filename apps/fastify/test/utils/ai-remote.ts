@@ -26,7 +26,7 @@ export const skipIfInsufficientCredits = (
 type ResponseLike = {
   statusCode: number
   body: string
-  headers?: Record<string, string | string[] | undefined>
+  headers?: Record<string, string | string[] | number | undefined>
 }
 
 export const isProviderUnavailable = (res: ResponseLike) =>
