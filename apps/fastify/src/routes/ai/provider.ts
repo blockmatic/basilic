@@ -5,8 +5,8 @@ import { createOllama } from 'ai-sdk-ollama'
 import { env } from '../../lib/env.js'
 
 export const defaultOllamaModel = 'qwen3:8b'
-export const defaultOpenRouterModel = 'meta-llama/llama-3.3-70b-instruct:free'
-export const defaultAnthropicModel = 'claude-3-5-sonnet-20241022'
+export const defaultOpenRouterModel = 'anthropic/claude-sonnet-4'
+export const defaultAnthropicModel = 'claude-sonnet-4-20250514'
 
 export type ResolvedProvider = 'ollama' | 'openrouter' | 'anthropic'
 
@@ -29,18 +29,20 @@ export function getResolvedProvider(): ResolvedProvider | null {
   return null
 }
 
+const openRouterFreeModel = 'meta-llama/llama-3.3-70b-instruct:free'
 const openRouterModelAliases: Record<string, string> = {
   'aurora-alpha': defaultOpenRouterModel,
-  'openrouter/free': defaultOpenRouterModel,
+  'openrouter/free': openRouterFreeModel,
   grok: 'x-ai/grok-3-mini',
   'grok-3-mini': 'x-ai/grok-3-mini',
-  sonnet: 'anthropic/claude-3-5-sonnet',
+  sonnet: defaultOpenRouterModel,
   opus: 'anthropic/claude-3-opus',
 }
 
 const anthropicModelAliases: Record<string, string> = {
   sonnet: defaultAnthropicModel,
   'claude-3-5-sonnet': defaultAnthropicModel,
+  'claude-sonnet-4': defaultAnthropicModel,
 }
 
 function resolveAnthropicModel(modelParam?: string): string {
@@ -67,11 +69,7 @@ function resolveOpenRouterModel(modelParam?: string): string {
   const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOpenRouterModel
   const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
   const useRuntimeDefault =
-    m === undefined ||
-    m === defaultOpenRouterModel ||
-    m === 'aurora-alpha' ||
-    m === 'default' ||
-    m === 'openrouter/free'
+    m === undefined || m === defaultOpenRouterModel || m === 'aurora-alpha' || m === 'default'
   const effective = useRuntimeDefault ? defaultModel : (m ?? defaultModel)
   return (
     openRouterModelAliases[effective] ??

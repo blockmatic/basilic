@@ -3,7 +3,7 @@ title: "Self-Hosted LLM (Ollama)"
 description: "Run local LLMs for data privacy. Recommended when prompts must stay on your infrastructure."
 ---
 
-By default, the app uses **Anthropic** (Claude 3.5 Sonnet) when `ANTHROPIC_API_KEY` is set, otherwise **Open Router** (`meta-llama/llama-3.3-70b-instruct:free`) or **Ollama**. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
+By default, the app uses **Anthropic** (Claude Sonnet 4) when `ANTHROPIC_API_KEY` is set, otherwise **Open Router** (Claude Sonnet 4) or **Ollama**. Use `AI_DEFAULT_MODEL=openrouter/free` for OpenRouter's free tier. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
 
 This guide covers [Ollama](https://ollama.com)—a local inference runtime with an OpenAI-compatible API—for both development and production.
 
@@ -254,11 +254,11 @@ At least one of `ANTHROPIC_API_KEY`, `OPEN_ROUTER_API_KEY`, or `OLLAMA_BASE_URL`
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `ANTHROPIC_API_KEY` | Conditional | — | Anthropic API key; Claude 3.5 Sonnet (`claude-3-5-sonnet-20241022`) as default |
-| `OPEN_ROUTER_API_KEY` | Conditional | — | Open Router API key (get at openrouter.ai) |
+| `ANTHROPIC_API_KEY` | Conditional | — | Anthropic API key; Claude Sonnet 4 (`claude-sonnet-4-20250514`) as default |
+| `OPEN_ROUTER_API_KEY` | Conditional | — | Open Router API key (get at openrouter.ai); Claude Sonnet 4 as default |
 | `OLLAMA_BASE_URL` | Conditional | `http://localhost:11434` | Ollama server URL when self-hosting |
 | `AI_PROVIDER` | Conditional | Inferred | `anthropic`, `openrouter`, or `ollama` — inferred when only one provider configured; must be set when multiple vars present |
-| `AI_DEFAULT_MODEL` | No | Varies by provider | Anthropic: `claude-3-5-sonnet-20241022`; Open Router: `meta-llama/llama-3.3-70b-instruct:free`; Ollama: `qwen3:8b` |
+| `AI_DEFAULT_MODEL` | No | Varies by provider | Anthropic/OpenRouter: Claude Sonnet 4; Ollama: `qwen3:8b`; use `openrouter/free` for OpenRouter free tier |
 
 ### Provider Selection
 

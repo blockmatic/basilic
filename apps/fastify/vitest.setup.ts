@@ -12,8 +12,8 @@
  * ## AI Tests
  *
  * Chat tests call real AI API. Use OLLAMA_BASE_URL in .env.test (or CI env).
- * Overrides here: AI_PROVIDER=ollama, OPEN_ROUTER_API_KEY unset (tests use Ollama only).
- * Tests use the default model only; do not set AI_DEFAULT_MODEL.
+ * Overrides here: AI_PROVIDER=ollama, keys unset (tests use Ollama only).
+ * App default model (when not Ollama): Claude Sonnet 4. Tests use default model only; do not set AI_DEFAULT_MODEL.
  * When OpenRouter returns 402 (insufficient credits), tests warn and pass without full validation.
  * When the AI provider is unreachable (5xx, ECONNREFUSED, etc.), tests pass gracefully via
  * skipIfProviderUnavailable. Use OLLAMA_BASE_URL in .env.test or CI env.
