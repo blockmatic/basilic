@@ -46,6 +46,16 @@ describe('GET /users/:id', () => {
 - Clean up after tests
 - **PGLite linear execution**: Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false` to avoid PGLite/WASM instability with parallel workers
 
+### Test Utilities
+
+Import from `@test/utils/auth-helper.js`:
+
+- **getOrCreateSession(app, email)** — Cached JWT by email; reduces magic-link requests when tests share users
+- **createAuthenticatedUser(app)** — Returns `{ token, email }` using the session pool
+- **insertTestPasskey(app, jwt)** — Inserts a passkey for the authenticated user, returns passkey id (for delete/ownership tests)
+- **getApiKeyToken(app, email)** — Creates an API key for the user and returns the raw key
+- **clearSessionPool()** — Clears the session cache (called in `account.spec.ts` afterAll)
+
 ## Frontend Testing
 
 Frontend apps use **Playwright E2E only** — no unit or integration test suites. See [Frontend Testing](/docs/testing/frontend-testing) and [E2E Testing](/docs/testing/e2e-testing).

@@ -15,6 +15,12 @@ const envTestFile = resolve(projectRoot, '.env.test')
 if (existsSync(envTestFile)) config({ path: envTestFile })
 // Ensure tests run against the default model only (no AI_DEFAULT_MODEL override)
 Reflect.deleteProperty(process.env, 'AI_DEFAULT_MODEL')
+const testEnvDefaults: [string, string][] = [
+  ['WEBAUTHN_RP_NAME', 'Test App'],
+  ['TOTP_ISSUER', 'Test App'],
+  ['RATE_LIMIT_MAX', '10000'],
+]
+for (const [k, v] of testEnvDefaults) process.env[k] = process.env[k] ?? v
 
 function toTsPath(id: string, importer?: string): string | null {
   if (!id.endsWith('.js') || id.includes('node_modules')) return null
@@ -124,6 +130,10 @@ export default defineConfig({
     // Order matters: try .ts first, then .js
     extensions: ['.ts', '.mts', '.tsx', '.js', '.mjs', '.jsx', '.json'],
     alias: [
+      {
+        find: '@test/utils',
+        replacement: resolve(projectRoot, 'test/utils'),
+      },
       {
         // Strip .js extension from relative imports to allow .ts resolution
         // This handles imports like '../lib/env.js' -> '../lib/env' -> '../lib/env.ts'

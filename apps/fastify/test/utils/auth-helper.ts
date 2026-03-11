@@ -1,8 +1,27 @@
 import { randomUUID } from 'node:crypto'
 import { getDb } from '../../src/db/index.js'
-import { apiKeys } from '../../src/db/schema/index.js'
+import { apiKeys, passkeyCredentials } from '../../src/db/schema/index.js'
 import { generateApiKey } from '../../src/lib/api-keys.js'
 import type { TestApp } from './fastify.js'
+
+const sessionPool = new Map<string, string>()
+
+/** Cached JWT by email - reduces magic-link requests when tests share users */
+export async function getOrCreateSession(
+  app: TestApp,
+  email: string,
+  options?: { clearBefore?: boolean },
+): Promise<string> {
+  const cached = sessionPool.get(email)
+  if (cached) return cached
+  const jwt = await getSessionToken(app, email, options)
+  sessionPool.set(email, jwt)
+  return jwt
+}
+
+export function clearSessionPool(): void {
+  sessionPool.clear()
+}
 
 export async function createApiKey(
   _app: TestApp,
@@ -71,7 +90,7 @@ export async function getSessionToken(
 }
 
 export async function getApiKeyToken(app: TestApp, email: string): Promise<string> {
-  const jwt = await getSessionToken(app, email)
+  const jwt = await getOrCreateSession(app, email)
   const res = await app.inject({
     method: 'POST',
     url: '/account/apikeys',
@@ -89,7 +108,36 @@ export async function createAuthenticatedUser(
   app: TestApp,
   overrides?: { email?: string },
 ): Promise<{ token: string; email: string }> {
-  const email = overrides?.email ?? 'test@example.com'
-  const token = await getSessionToken(app, email)
+  const email = overrides?.email ?? 'test@test.ai'
+  const token = await getOrCreateSession(app, email)
   return { token, email }
+}
+
+export async function insertTestPasskey(
+  app: TestApp,
+  jwt: string,
+  name = 'To Delete',
+): Promise<string> {
+  const profileRes = await app.inject({
+    method: 'PATCH',
+    url: '/account/profile',
+    headers: { Authorization: `Bearer ${jwt}` },
+    payload: {},
+  })
+  if (profileRes.statusCode !== 200)
+    throw new Error(`Profile failed: ${profileRes.statusCode} ${profileRes.body}`)
+  const body = JSON.parse(profileRes.body) as { user?: { id: string } }
+  const userId = body.user?.id
+  if (!userId) throw new Error('No user id in profile response')
+  const db = await getDb()
+  const passkeyId = randomUUID()
+  await db.insert(passkeyCredentials).values({
+    id: passkeyId,
+    userId,
+    credentialId: `cred-${randomUUID()}`,
+    publicKey: 'dGVzdC1wdWJsaWMta2V5',
+    counter: 0,
+    name,
+  })
+  return passkeyId
 }

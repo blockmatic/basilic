@@ -1,10 +1,10 @@
+import { createAuthenticatedUser, getApiKeyToken } from '@test/utils/auth-helper.js'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 import {
   skipIfInsufficientCredits,
   skipIfProviderUnavailable,
 } from '../../../test/utils/ai-remote.js'
-import { createAuthenticatedUser, getApiKeyToken } from '../../../test/utils/auth-helper.js'
 import { fastify } from './ai.spec.js'
 
 const GenerateResponseSchema = z.object({

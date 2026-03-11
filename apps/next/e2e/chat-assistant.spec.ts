@@ -25,9 +25,11 @@ test.describe('Chat Assistant', () => {
     if (errorVisible) {
       const errorText = (await chatError.textContent()) ?? ''
       if (/402|insufficient|credits/i.test(errorText)) {
-        process.stderr.write(
-          '[E2E Chat] OpenRouter 402 insufficient credits - passing without validation\n',
-        )
+        test.skip(true, 'OpenRouter 402 insufficient credits')
+        return
+      }
+      if (/fetch failed|ENOTFOUND|unreachable|connection|ECONNREFUSED|ETIMEDOUT/i.test(errorText)) {
+        test.skip(true, 'AI provider unreachable')
         return
       }
     }
