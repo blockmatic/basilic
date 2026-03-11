@@ -12,7 +12,8 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["./src/*"],
-      "@repo/email/*": ["../../packages/email/*"]
+      "@repo/email/*": ["../../packages/email/*"],
+      "@test/utils": ["./test/utils"]
     }
   },
   "include": ["server.ts", "src/**/*.ts", "api/**/*.ts"],

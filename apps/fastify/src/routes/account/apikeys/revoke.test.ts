@@ -1,17 +1,12 @@
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { getSessionToken } from '../../../../test/utils/auth-helper.js'
+import { getOrCreateSession } from '@test/utils/auth-helper.js'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { fastify } from '../account.spec.js'
 
 let sharedJwt: string
 
 describe('DELETE /account/apikeys/:id', () => {
   beforeAll(async () => {
-    fastify.fakeEmail?.clear()
-    sharedJwt = await getSessionToken(fastify, 'apikeys-revoke@test.ai')
-  })
-
-  beforeEach(() => {
-    fastify.fakeEmail?.clear()
+    sharedJwt = await getOrCreateSession(fastify, 'apikeys-revoke@test.ai')
   })
 
   it('should return 401 without Bearer token', async () => {

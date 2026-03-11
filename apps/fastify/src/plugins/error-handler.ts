@@ -111,9 +111,11 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
       }
 
     // Return SAFE catalog error with type-safe status code
+    const message = catalogError.message
+
     reply.status(statusCode).send({
       code: catalogError.code,
-      message: catalogError.message,
+      message,
     })
   })
 })

@@ -1,12 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken, getSessionToken } from '../../../../test/utils/auth-helper.js'
+import { getApiKeyToken, getOrCreateSession } from '@test/utils/auth-helper.js'
+import { describe, expect, it } from 'vitest'
 import { fastify } from '../account.spec.js'
 
 describe('GET /account/apikeys', () => {
-  beforeEach(() => {
-    fastify.fakeEmail?.clear()
-  })
-
   it('should return 401 without Bearer token', async () => {
     const response = await fastify.inject({
       method: 'GET',
@@ -16,7 +12,7 @@ describe('GET /account/apikeys', () => {
   })
 
   it('should return empty keys for user with no keys', async () => {
-    const jwt = await getSessionToken(fastify, 'apikeys-list@test.ai')
+    const jwt = await getOrCreateSession(fastify, 'apikeys-list@test.ai')
 
     const response = await fastify.inject({
       method: 'GET',
@@ -29,7 +25,7 @@ describe('GET /account/apikeys', () => {
   })
 
   it('should list created keys without secret', async () => {
-    const jwt = await getSessionToken(fastify, 'apikeys-list@test.ai')
+    const jwt = await getOrCreateSession(fastify, 'apikeys-list@test.ai')
 
     const createRes = await fastify.inject({
       method: 'POST',
@@ -58,7 +54,6 @@ describe('GET /account/apikeys', () => {
   })
 
   it('should list keys when authenticated via API key', async () => {
-    fastify.fakeEmail?.clear()
     const apiKey = await getApiKeyToken(fastify, 'apikeys-list-apikey@test.ai')
 
     const listRes = await fastify.inject({

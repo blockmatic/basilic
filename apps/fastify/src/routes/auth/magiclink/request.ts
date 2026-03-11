@@ -12,7 +12,7 @@ import { isUniqueViolation } from '../../../lib/db-errors.js'
 import { env } from '../../../lib/env.js'
 import { generateLoginCode, hashToken } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
-import { generateFunnyUsername } from '../../../lib/username.js'
+import { generateUsernameForMagicLink } from '../../../lib/username.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 async function findOrCreateUserForMagicLink(
@@ -25,7 +25,7 @@ async function findOrCreateUserForMagicLink(
   for (let attempt = 0; attempt < maxRetries; attempt++)
     try {
       const [created] = await db.transaction(async tx => {
-        const username = await generateFunnyUsername(tx)
+        const username = await generateUsernameForMagicLink(tx, email)
         await tx.insert(users).values({
           id: userId,
           email,

@@ -1,5 +1,5 @@
+import { createAuthenticatedUser } from '@test/utils/auth-helper.js'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { createAuthenticatedUser } from '../../../../test/utils/auth-helper.js'
 import { fastify } from '../session.spec.js'
 
 describe('GET /auth/session/user', () => {

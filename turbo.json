@@ -78,7 +78,10 @@
         "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
-        "SENTRY_AUTH_TOKEN"
+        "SENTRY_AUTH_TOKEN",
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX"
       ]
     },
     "lint:eslint:fix": {
@@ -117,7 +120,10 @@
         "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
-        "SENTRY_AUTH_TOKEN"
+        "SENTRY_AUTH_TOKEN",
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX"
       ]
     },
     "checktypes": { "env": ["NODE_ENV"] },
@@ -172,7 +178,10 @@
         "ALLOW_TEST",
         "VITEST",
         "AUTH_COOKIE_NAME",
-        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX"
       ]
     },
     "test:e2e": {

@@ -1,5 +1,5 @@
+import { createApiKey, createAuthenticatedUser } from '@test/utils/auth-helper.js'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { createApiKey, createAuthenticatedUser } from '../../../test/utils/auth-helper.js'
 import { fastify } from './test.spec.js'
 
 describe('GET /test/authed', () => {
