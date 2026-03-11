@@ -19,6 +19,7 @@ import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 import { createBraveSearchTool } from './brave-search.js'
 import { getProvider, getResolvedProvider } from './provider.js'
+import { isInsufficientCreditsError } from './upstream-error.js'
 
 const ChatMessageItemSchema = Type.Union([
   Type.Object({
@@ -173,6 +174,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
           },
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          402: ErrorResponseSchema,
           500: ErrorResponseSchema,
           502: ErrorResponseSchema,
         },
@@ -284,6 +286,11 @@ const chatRoute: FastifyPluginAsync = async fastify => {
           },
           'Chat upstream error',
         )
+        if (isInsufficientCreditsError(err))
+          return reply.code(402).send({
+            code: 'INSUFFICIENT_CREDITS',
+            message: errObj.message.slice(0, 256) || 'Insufficient credits',
+          })
         return reply.code(502).send({
           code: 'UPSTREAM_SERVICE_ERROR',
           message: 'AI provider request failed. Try again later.',

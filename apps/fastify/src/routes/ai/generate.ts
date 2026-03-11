@@ -5,6 +5,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 import { defaultOpenRouterModel, getProvider, getResolvedProvider } from './provider.js'
+import { isInsufficientCreditsError } from './upstream-error.js'
 
 const maxPromptLength = 32_000
 
@@ -40,6 +41,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
           ]),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          402: ErrorResponseSchema,
           500: ErrorResponseSchema,
           502: ErrorResponseSchema,
         },
@@ -118,15 +120,21 @@ const generateRoute: FastifyPluginAsync = async fastify => {
         )
         return reply.code(200).send({ text: result.text })
       } catch (err) {
+        const errObj = err instanceof Error ? err : new Error(String(err))
         request.log.warn(
           {
             route: '/ai/generate',
             provider,
-            error: err instanceof Error ? err.message : String(err),
+            error: errObj.message,
             durationMs: Date.now() - startMs,
           },
           'Generate upstream error',
         )
+        if (isInsufficientCreditsError(err))
+          return reply.code(402).send({
+            code: 'INSUFFICIENT_CREDITS',
+            message: errObj.message.slice(0, 256) || 'Insufficient credits',
+          })
         return reply.code(502).send({
           code: 'UPSTREAM_SERVICE_ERROR',
           message: 'AI provider request failed. Try again later.',
