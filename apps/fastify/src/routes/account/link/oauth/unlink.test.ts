@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
-import { getOrCreateSession } from '@test/utils/auth-helper.js'
 import { and, eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { getOrCreateSession } from '../../../../../test/utils/auth-helper.js'
 import { getDb } from '../../../../db/index.js'
 import { account } from '../../../../db/schema/index.js'
 import { fastify } from '../../account.spec.js'

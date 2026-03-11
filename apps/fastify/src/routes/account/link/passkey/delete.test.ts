@@ -1,6 +1,6 @@
-import { getOrCreateSession, insertTestPasskey } from '@test/utils/auth-helper.js'
 import { eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { getOrCreateSession, insertTestPasskey } from '../../../../../test/utils/auth-helper.js'
 import { getDb } from '../../../../db/index.js'
 import { passkeyCredentials } from '../../../../db/schema/index.js'
 import { fastify } from '../../account.spec.js'

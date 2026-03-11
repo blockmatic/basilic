@@ -35,8 +35,12 @@ test.describe('Chat Assistant', () => {
         test.skip(true, 'OpenRouter 402 insufficient credits')
         return
       }
-      if (/ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET/i.test(errorText)) {
-        test.skip(true, 'AI provider unreachable')
+      if (
+        /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET|Connection timed out|Error code 522|status_code: 522/i.test(
+          errorText,
+        )
+      ) {
+        test.skip(true, 'AI provider unreachable (network/timeout/522)')
         return
       }
       if (/AI provider request failed|upstream|Try again later/i.test(errorText)) {

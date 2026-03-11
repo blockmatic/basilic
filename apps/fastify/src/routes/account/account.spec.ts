@@ -1,5 +1,5 @@
-import { clearSessionPool } from '@test/utils/auth-helper.js'
 import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest'
+import { clearSessionPool } from '../../../test/utils/auth-helper.js'
 import { cleanupGroupDatabase, setupGroupDatabase } from '../../../test/utils/db-setup.js'
 import type { TestApp } from '../../../test/utils/fastify.js'
 import { buildTestApp } from '../../../test/utils/fastify.js'

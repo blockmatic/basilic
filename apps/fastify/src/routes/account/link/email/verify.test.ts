@@ -1,5 +1,5 @@
-import { getApiKeyToken, getOrCreateSession } from '@test/utils/auth-helper.js'
 import { describe, expect, it } from 'vitest'
+import { getApiKeyToken, getOrCreateSession } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 describe('POST /account/link/email/verify', () => {

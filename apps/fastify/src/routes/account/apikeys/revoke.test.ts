@@ -1,5 +1,5 @@
-import { getOrCreateSession } from '@test/utils/auth-helper.js'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { getOrCreateSession } from '../../../../test/utils/auth-helper.js'
 import { fastify } from '../account.spec.js'
 
 let sharedJwt: string
