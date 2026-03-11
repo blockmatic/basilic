@@ -88,7 +88,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'chat',
         description:
-          'Chat with AI via Open Router (default) or Ollama. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.',
+          'Chat with AI via Anthropic, Open Router, or Ollama. Set ANTHROPIC_API_KEY, OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.',
         summary: 'Generate AI chat response',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],
@@ -123,7 +123,8 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       if (!provider)
         return reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'No AI provider configured. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL.',
+          message:
+            'No AI provider configured. Set ANTHROPIC_API_KEY, OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL.',
         })
 
       const { messages: rawMessages, stream, model, temperature } = request.body

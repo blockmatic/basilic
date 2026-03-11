@@ -21,4 +21,5 @@
 
 // Enforce Ollama for AI tests (OLLAMA_BASE_URL from .env.test or CI env)
 process.env.AI_PROVIDER = 'ollama'
+Reflect.deleteProperty(process.env, 'ANTHROPIC_API_KEY')
 Reflect.deleteProperty(process.env, 'OPEN_ROUTER_API_KEY')

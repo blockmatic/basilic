@@ -2287,7 +2287,7 @@
         "tags": [
           "ai"
         ],
-        "description": "Chat with AI via Open Router (default) or Ollama. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.",
+        "description": "Chat with AI via Anthropic, Open Router, or Ollama. Set ANTHROPIC_API_KEY, OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2508,7 +2508,7 @@
         "tags": [
           "ai"
         ],
-        "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Ollama or Open Router. Returns SSE (text/event-stream) when streaming.",
+        "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic, Open Router, or Ollama. Returns SSE (text/event-stream) when streaming.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2528,7 +2528,7 @@
                     "type": "boolean"
                   },
                   "model": {
-                    "default": "meta-llama/llama-3.3-70b-instruct:free",
+                    "default": "default",
                     "type": "string"
                   },
                   "temperature": {

@@ -4,7 +4,7 @@ import { generateText, streamText } from 'ai'
 import type { FastifyPluginAsync } from 'fastify'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
-import { defaultOpenRouterModel, getProvider, getResolvedProvider } from './provider.js'
+import { getProvider, getResolvedProvider } from './provider.js'
 import { isInsufficientCreditsError } from './upstream-error.js'
 
 const maxPromptLength = 32_000
@@ -12,7 +12,7 @@ const maxPromptLength = 32_000
 const GenerateRequestSchema = Type.Object({
   prompt: Type.String({ minLength: 1, maxLength: maxPromptLength }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(Type.String({ default: defaultOpenRouterModel })),
+  model: Type.Optional(Type.String({ default: 'default' })),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
 })
 
@@ -27,7 +27,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'generate',
         description:
-          'Generate text from a single prompt (CLI, scripts, pipelines). Uses Ollama or Open Router. Returns SSE (text/event-stream) when streaming.',
+          'Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic, Open Router, or Ollama. Returns SSE (text/event-stream) when streaming.',
         summary: 'Generate text from prompt',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],
@@ -58,7 +58,8 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       if (!provider)
         return reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'No AI provider configured. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL.',
+          message:
+            'No AI provider configured. Set ANTHROPIC_API_KEY, OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL.',
         })
 
       const { prompt: rawPrompt, stream, model, temperature } = request.body

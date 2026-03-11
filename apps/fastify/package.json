@@ -46,8 +46,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.58",
     "@ai-sdk/openai": "^3.0.0",
-    "ai-sdk-ollama": "^3.8.0",
+    "@faker-js/faker": "^9.4.0",
     "@fastify/autoload": "^6.3.1",
     "@fastify/cors": "^11.2.0",
     "@fastify/jwt": "^10.0.0",
@@ -66,6 +67,7 @@
     "@solana/web3.js": "^1.98.4",
     "@t3-oss/env-core": "^0.13.10",
     "ai": "^6.0.86",
+    "ai-sdk-ollama": "^3.8.0",
     "bs58": "^6.0.0",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
@@ -80,11 +82,9 @@
     "siwe": "^3.0.0",
     "tweetnacl": "^1.0.3",
     "viem": "^2.45.3",
-    "zod": "^4.3.6",
-    "@faker-js/faker": "^9.4.0"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
     "@electric-sql/pglite": "^0.3.15",
     "@playwright/test": "^1.58.2",
     "@repo/eslint-config": "workspace:*",
@@ -106,6 +106,7 @@
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
     "undici-types": "^7.22.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18"

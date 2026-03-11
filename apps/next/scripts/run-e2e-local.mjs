@@ -92,6 +92,7 @@ async function main() {
     JWT_SECRET:
       loaded.JWT_SECRET ?? process.env.JWT_SECRET ?? 'e2e-jwt-secret-min-32-chars-for-tests',
   }
+  delete env.ANTHROPIC_API_KEY
   delete env.OPEN_ROUTER_API_KEY
 
   const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {

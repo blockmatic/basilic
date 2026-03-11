@@ -3,7 +3,7 @@ title: "Self-Hosted LLM (Ollama)"
 description: "Run local LLMs for data privacy. Recommended when prompts must stay on your infrastructure."
 ---
 
-By default, the app uses **Open Router** with `meta-llama/llama-3.3-70b-instruct:free`. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
+By default, the app uses **Anthropic** (Claude 3.5 Sonnet) when `ANTHROPIC_API_KEY` is set, otherwise **Open Router** (`meta-llama/llama-3.3-70b-instruct:free`) or **Ollama**. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
 
 This guide covers [Ollama](https://ollama.com)—a local inference runtime with an OpenAI-compatible API—for both development and production.
 
@@ -237,7 +237,7 @@ curl -s https://ollama.example.com/api/generate -d '{"model":"qwen2.5:3b","promp
 
 ## AI Provider in Fastify
 
-The Fastify API uses **Open Router** as the default when `OPEN_ROUTER_API_KEY` is set (`meta-llama/llama-3.3-70b-instruct:free`). Privacy-first routing with Ollama requires both `OLLAMA_BASE_URL` and `AI_PROVIDER=ollama` when `OPEN_ROUTER_API_KEY` exists—otherwise `getResolvedProvider()` prefers Open Router. See the provider selection logic in `getResolvedProvider()` for the exact precedence.
+The Fastify API supports **Anthropic**, **Open Router**, and **Ollama**. Provider precedence (when `AI_PROVIDER` is unset): Anthropic → Open Router → Ollama. Privacy-first routing with Ollama requires `AI_PROVIDER=ollama` when other keys exist. See `getResolvedProvider()` for the exact logic.
 
 ### Routes
 
@@ -250,21 +250,23 @@ Both routes use the same provider; clients call the Fastify API.
 
 ### Environment Variables
 
-At least one of `OPEN_ROUTER_API_KEY` or `OLLAMA_BASE_URL` must be set; `OLLAMA_BASE_URL` is used for self-hosted/private setups.
+At least one of `ANTHROPIC_API_KEY`, `OPEN_ROUTER_API_KEY`, or `OLLAMA_BASE_URL` must be set; `OLLAMA_BASE_URL` is used for self-hosted/private setups.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
+| `ANTHROPIC_API_KEY` | Conditional | — | Anthropic API key; Claude 3.5 Sonnet (`claude-3-5-sonnet-20241022`) as default |
 | `OPEN_ROUTER_API_KEY` | Conditional | — | Open Router API key (get at openrouter.ai) |
 | `OLLAMA_BASE_URL` | Conditional | `http://localhost:11434` | Ollama server URL when self-hosting |
-| `AI_PROVIDER` | Conditional | Inferred | `openrouter` or `ollama` — inferred when only one provider configured; must be set when both vars present |
-| `AI_DEFAULT_MODEL` | No | `meta-llama/llama-3.3-70b-instruct:free` (OR) / `qwen3:8b` (Ollama) | Default model |
+| `AI_PROVIDER` | Conditional | Inferred | `anthropic`, `openrouter`, or `ollama` — inferred when only one provider configured; must be set when multiple vars present |
+| `AI_DEFAULT_MODEL` | No | Varies by provider | Anthropic: `claude-3-5-sonnet-20241022`; Open Router: `meta-llama/llama-3.3-70b-instruct:free`; Ollama: `qwen3:8b` |
 
 ### Provider Selection
 
 1. If `AI_PROVIDER` is set, use it (requires the corresponding env var).
-2. Else if `OPEN_ROUTER_API_KEY` is set, use Open Router.
-3. Else if `OLLAMA_BASE_URL` is set, use Ollama.
-4. Else the server returns 500 with "No AI provider configured".
+2. Else if `ANTHROPIC_API_KEY` is set, use Anthropic.
+3. Else if `OPEN_ROUTER_API_KEY` is set, use Open Router.
+4. Else if `OLLAMA_BASE_URL` is set, use Ollama.
+5. Else the server returns 500 with "No AI provider configured".
 
 ### Tool Support
 

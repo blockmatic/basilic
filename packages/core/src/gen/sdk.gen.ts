@@ -262,7 +262,7 @@ export const accountProfileUpdate = <ThrowOnError extends boolean = false>(optio
 /**
  * Generate AI chat response
  *
- * Chat with AI via Open Router (default) or Ollama. Set OPEN_ROUTER_API_KEY or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.
+ * Chat with AI via Anthropic, Open Router, or Ollama. Set ANTHROPIC_API_KEY, OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.
  */
 export const chat = <ThrowOnError extends boolean = false>(options: Options<ChatData, ThrowOnError>) => (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -277,7 +277,7 @@ export const chat = <ThrowOnError extends boolean = false>(options: Options<Chat
 /**
  * Generate text from prompt
  *
- * Generate text from a single prompt (CLI, scripts, pipelines). Uses Ollama or Open Router. Returns SSE (text/event-stream) when streaming.
+ * Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic, Open Router, or Ollama. Returns SSE (text/event-stream) when streaming.
  */
 export const generate = <ThrowOnError extends boolean = false>(options: Options<GenerateData, ThrowOnError>) => (options.client ?? client).post<GenerateResponses, GenerateErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

@@ -12,7 +12,13 @@
       "dependsOn": ["@repo/utils#build", "@repo/error#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
-      "env": ["NODE_ENV", "OLLAMA_BASE_URL", "OPEN_ROUTER_API_KEY", "AI_PROVIDER"]
+      "env": [
+        "NODE_ENV",
+        "ANTHROPIC_API_KEY",
+        "OLLAMA_BASE_URL",
+        "OPEN_ROUTER_API_KEY",
+        "AI_PROVIDER"
+      ]
     },
     "@repo/core#generate": {
       "dependsOn": ["@repo/fastify#generate:openapi"],
@@ -28,6 +34,7 @@
         "NODE_ENV",
         "JWT_SECRET",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "DATABASE_URL",
@@ -48,6 +55,7 @@
         "AUTH_COOKIE_NAME",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
@@ -90,6 +98,7 @@
       "env": [
         "AUTH_COOKIE_NAME",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
@@ -137,6 +146,7 @@
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "CI",
@@ -155,6 +165,7 @@
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "CI",
@@ -173,6 +184,7 @@
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "CI",
@@ -197,6 +209,7 @@
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "NEXT_PUBLIC_API_URL",
@@ -221,6 +234,7 @@
         "PGLITE",
         "RUN_PG_MIGRATE",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "NEXT_PUBLIC_API_URL",
