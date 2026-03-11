@@ -1,12 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken, getSessionToken } from '../../../../../test/utils/auth-helper.js'
+import { describe, expect, it } from 'vitest'
+import { getApiKeyToken, getOrCreateSession } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 describe('POST /account/link/email/verify', () => {
-  beforeEach(() => {
-    fastify.fakeEmail?.clear()
-  })
-
   it('should return 401 without Bearer token', async () => {
     const response = await fastify.inject({
       method: 'POST',
@@ -17,7 +13,7 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should verify link token and return new JWTs', async () => {
-    const jwt = await getSessionToken(fastify, 'user@test.ai', { clearBefore: true })
+    const jwt = await getOrCreateSession(fastify, 'user@test.ai', { clearBefore: true })
     fastify.fakeEmail?.clear()
 
     await fastify.inject({
@@ -55,7 +51,7 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should return EXPIRED_TOKEN for expired token', async () => {
-    const jwt = await getSessionToken(fastify, 'user@test.ai', { clearBefore: true })
+    const jwt = await getOrCreateSession(fastify, 'expired-token@test.ai', { clearBefore: true })
     const db = await (await import('../../../../db/index.js')).getDb()
     const { verification } = await import('../../../../db/schema/index.js')
     const { hashToken } = await import('../../../../lib/jwt.js')
@@ -86,7 +82,7 @@ describe('POST /account/link/email/verify', () => {
   })
 
   it('should verify link when authenticated via API key', async () => {
-    const jwt = await getSessionToken(fastify, 'verify-apikey@test.ai', {
+    const jwt = await getOrCreateSession(fastify, 'verify-apikey@test.ai', {
       clearBefore: true,
     })
     fastify.fakeEmail?.clear()

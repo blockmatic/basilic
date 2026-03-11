@@ -17,14 +17,24 @@ test.describe('Security - Authenticator', () => {
     await expect(authenticatedPage.getByRole('tab', { name: /passkeys/i })).toBeVisible()
     await expect(authenticatedPage.getByRole('tab', { name: /authenticator/i })).toBeVisible()
     await expect(authenticatedPage.getByRole('tab', { name: /api keys/i })).toBeVisible()
-    await expect(authenticatedPage.getByText('Authenticator app')).toBeVisible()
+    await expect(
+      authenticatedPage
+        .locator('[data-slot="card-title"]')
+        .filter({ hasText: 'Authenticator app' })
+        .first(),
+    ).toBeVisible({ timeout: 15000 })
   })
 
   test('should show setup flow with QR and InputOTP when TOTP not configured', async ({
     authenticatedPage,
   }) => {
     await authenticatedPage.goto('/settings/security/totp')
-    await expect(authenticatedPage.getByText('Authenticator app')).toBeVisible({ timeout: 10000 })
+    await expect(
+      authenticatedPage
+        .locator('[data-slot="card-title"]')
+        .filter({ hasText: 'Authenticator app' })
+        .first(),
+    ).toBeVisible({ timeout: 10000 })
     await expect(authenticatedPage.getByText(/scan qr code/i)).toBeVisible({ timeout: 15000 })
     await expect(authenticatedPage.locator('[data-slot="input-otp-group"]')).toBeVisible({
       timeout: 5000,
@@ -35,7 +45,12 @@ test.describe('Security - Authenticator', () => {
 
   test('should complete full TOTP setup and unlink', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/settings/security/totp')
-    await expect(authenticatedPage.getByText('Authenticator app')).toBeVisible({ timeout: 10000 })
+    await expect(
+      authenticatedPage
+        .locator('[data-slot="card-title"]')
+        .filter({ hasText: 'Authenticator app' })
+        .first(),
+    ).toBeVisible({ timeout: 10000 })
     await expect(authenticatedPage.getByText(/scan qr code/i)).toBeVisible({ timeout: 15000 })
 
     const token = await authHelpers.extractSessionToken(authenticatedPage)

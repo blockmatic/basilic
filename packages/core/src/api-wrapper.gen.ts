@@ -44,6 +44,7 @@ account: {
 },
 ai: {
   chat: gen.chat,
+  generate: gen.generate,
 },
 auth: {
   magiclink: {

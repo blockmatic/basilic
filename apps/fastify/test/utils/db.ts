@@ -99,7 +99,7 @@ export async function truncateAllTables() {
   try {
     await pgLiteInstance.exec(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY CASCADE`)
   } catch {
-    // Tables may not exist (e.g. db.spec runs without migrations)
+    // Tables may not exist yet (early initialization)
   }
 }
 

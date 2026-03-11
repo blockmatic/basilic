@@ -110,7 +110,6 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
         message: 'An unexpected error occurred',
       }
 
-    // Return SAFE catalog error with type-safe status code
     reply.status(statusCode).send({
       code: catalogError.code,
       message: catalogError.message,

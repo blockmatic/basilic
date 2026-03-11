@@ -1,12 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken, getSessionToken } from '../../../../test/utils/auth-helper.js'
+import { describe, expect, it } from 'vitest'
+import { getApiKeyToken, getOrCreateSession } from '../../../../test/utils/auth-helper.js'
 import { fastify } from '../account.spec.js'
 
 describe('POST /account/apikeys', () => {
-  beforeEach(() => {
-    fastify.fakeEmail?.clear()
-  })
-
   it('should return 401 without Bearer token', async () => {
     const response = await fastify.inject({
       method: 'POST',
@@ -17,7 +13,7 @@ describe('POST /account/apikeys', () => {
   })
 
   it('should create API key and return it once', async () => {
-    const jwt = await getSessionToken(fastify, 'apikeys-create@test.ai')
+    const jwt = await getOrCreateSession(fastify, 'apikeys-shared@test.ai')
 
     const response = await fastify.inject({
       method: 'POST',
@@ -35,8 +31,7 @@ describe('POST /account/apikeys', () => {
   })
 
   it('should create API key when authenticated via API key', async () => {
-    fastify.fakeEmail?.clear()
-    const apiKey = await getApiKeyToken(fastify, 'apikeys-create-apikey@test.ai')
+    const apiKey = await getApiKeyToken(fastify, 'apikeys-shared@test.ai')
 
     const response = await fastify.inject({
       method: 'POST',

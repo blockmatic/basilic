@@ -48,6 +48,8 @@ import type {
   AuthPasskeyVerifyResponse,
   ChatData,
   ChatResponse,
+  GenerateData,
+  GenerateResponse,
   GetUserData,
   GetUserResponse,
   HealthCheckData,
@@ -144,7 +146,8 @@ export type CoreApiClient = {
     profile: (opts: Options<AccountProfileUpdateData>) => Promise<AccountProfileUpdateResponse>
   };
   ai: {
-    chat: (opts: Options<ChatData>) => Promise<ChatResponse>
+    chat: (opts: Options<ChatData>) => Promise<ChatResponse>;
+    generate: (opts: Options<GenerateData>) => Promise<GenerateResponse>
   };
   auth: {
     magiclink: {

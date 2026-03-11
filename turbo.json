@@ -12,7 +12,13 @@
       "dependsOn": ["@repo/utils#build", "@repo/error#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
-      "env": ["NODE_ENV", "OLLAMA_BASE_URL", "OPEN_ROUTER_API_KEY", "AI_PROVIDER"]
+      "env": [
+        "NODE_ENV",
+        "ANTHROPIC_API_KEY",
+        "OLLAMA_BASE_URL",
+        "OPEN_ROUTER_API_KEY",
+        "AI_PROVIDER"
+      ]
     },
     "@repo/core#generate": {
       "dependsOn": ["@repo/fastify#generate:openapi"],
@@ -28,6 +34,7 @@
         "NODE_ENV",
         "JWT_SECRET",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "DATABASE_URL",
@@ -48,6 +55,7 @@
         "AUTH_COOKIE_NAME",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
@@ -70,7 +78,6 @@
         "PLAYWRIGHT_APP_URL",
         "VERCEL_AUTOMATION_BYPASS_SECRET",
         "NEXT_RUNTIME",
-        "DEBUG_TEST",
         "APP_URL",
         "EMAIL_ASSETS_URL",
         "SENTRY_DSN",
@@ -79,7 +86,11 @@
         "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
-        "SENTRY_AUTH_TOKEN"
+        "SENTRY_AUTH_TOKEN",
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX",
+        "TEST_LOG_LEVEL"
       ]
     },
     "lint:eslint:fix": {
@@ -87,6 +98,7 @@
       "env": [
         "AUTH_COOKIE_NAME",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
@@ -110,7 +122,6 @@
         "PLAYWRIGHT_APP_URL",
         "VERCEL_AUTOMATION_BYPASS_SECRET",
         "NEXT_RUNTIME",
-        "DEBUG_TEST",
         "APP_URL",
         "EMAIL_ASSETS_URL",
         "SENTRY_DSN",
@@ -119,7 +130,11 @@
         "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
-        "SENTRY_AUTH_TOKEN"
+        "SENTRY_AUTH_TOKEN",
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX",
+        "TEST_LOG_LEVEL"
       ]
     },
     "checktypes": { "env": ["NODE_ENV"] },
@@ -131,6 +146,7 @@
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "CI",
@@ -149,6 +165,7 @@
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "CI",
@@ -167,6 +184,7 @@
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "CI",
@@ -174,7 +192,10 @@
         "ALLOW_TEST",
         "VITEST",
         "AUTH_COOKIE_NAME",
-        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX"
       ]
     },
     "test:e2e": {
@@ -188,6 +209,7 @@
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "NEXT_PUBLIC_API_URL",
@@ -212,6 +234,7 @@
         "PGLITE",
         "RUN_PG_MIGRATE",
         "AI_PROVIDER",
+        "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
         "NEXT_PUBLIC_API_URL",

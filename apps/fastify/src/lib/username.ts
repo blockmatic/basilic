@@ -1,7 +1,12 @@
-import { randomBytes } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import { faker } from '@faker-js/faker'
 import { eq } from 'drizzle-orm'
+import type { getDb } from '../db/index.js'
 import { users } from '../db/schema/index.js'
+import { env } from '../lib/env.js'
+
+type Db = Awaited<ReturnType<typeof getDb>>
+type Tx = Parameters<Parameters<NonNullable<Db>['transaction']>[0]>[0]
 
 function slugify(str: string) {
   return str
@@ -11,44 +16,56 @@ function slugify(str: string) {
     .slice(0, 48)
 }
 
-import type { getDb } from '../db/index.js'
+async function isUsernameTaken(client: Db | Tx, username: string): Promise<boolean> {
+  const [row] = await client
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.username, username))
+  return !!row
+}
 
-type Db = Awaited<ReturnType<typeof getDb>>
-type Tx = Parameters<Parameters<NonNullable<Db>['transaction']>[0]>[0]
+/** Returns hex suffix; when maxLen <= 0 yields 4-char default. */
+function randomSuffix(maxLen: number): string {
+  const hex = randomBytes(4).toString('hex')
+  return maxLen > 0 ? hex.slice(0, maxLen) : hex.slice(0, 4)
+}
+
+/** Deterministic username for @test.ai when ALLOW_TEST - avoids faker collisions under load */
+export function generateTestUsername(email: string): string {
+  const hash = createHash('sha256').update(email).digest('hex').slice(0, 16)
+  return `user_${hash}`
+}
 
 export async function generateFunnyUsername(client: Db | Tx): Promise<string> {
   const base = slugify(`${faker.word.adjective()}_${faker.animal.type()}`)
   if (!base) return `user_${randomBytes(4).toString('hex')}`
+  if (!(await isUsernameTaken(client, base))) return base
 
-  const [existing] = await client
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.username, base))
-  if (!existing) return base
-
-  const suffix = randomBytes(4).toString('hex')
+  const suf = randomSuffix(8)
   const candidate =
-    base.length + suffix.length + 1 <= 48 ? `${base}_${suffix}` : `${base.slice(0, 39)}_${suffix}`
-
-  const [existing2] = await client
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.username, candidate))
-  if (!existing2) return candidate
+    base.length + suf.length + 1 <= 48 ? `${base}_${suf}` : `${base.slice(0, 39)}_${suf}`
+  if (!(await isUsernameTaken(client, candidate))) return candidate
 
   for (let i = 0; i < 10; i++) {
-    const maxSuffixLen = Math.max(0, 48 - candidate.length)
-    const suffix =
-      maxSuffixLen > 0
-        ? randomBytes(2).toString('hex').slice(0, maxSuffixLen)
-        : randomBytes(2).toString('hex').slice(0, 4)
-    const base = candidate.length + suffix.length > 48 ? candidate.slice(0, 44) : candidate
-    const newCandidate = `${base}${suffix}`.slice(0, 48)
-    const [existing3] = await client
-      .select({ id: users.id })
-      .from(users)
-      .where(eq(users.username, newCandidate))
-    if (!existing3) return newCandidate
+    const maxLen = Math.max(0, 48 - candidate.length)
+    const s = randomSuffix(maxLen)
+    const next =
+      candidate.length + s.length > 48 ? `${candidate.slice(0, 44)}${s}` : `${candidate}${s}`
+    const trimmed = next.slice(0, 48)
+    if (!(await isUsernameTaken(client, trimmed))) return trimmed
   }
-  return `${candidate.slice(0, 41)}_${randomBytes(3).toString('hex')}`
+  for (let i = 0; i < 100; i++) {
+    const fallback = `${candidate.slice(0, 41)}_${randomBytes(3).toString('hex')}`
+    if (!(await isUsernameTaken(client, fallback))) return fallback
+  }
+  throw new Error('generateFunnyUsername: could not find available username after retries')
+}
+
+/** Username for magic link user creation - deterministic for @test.ai in test mode */
+export async function generateUsernameForMagicLink(
+  client: Db | Tx,
+  email: string,
+): Promise<string> {
+  if (env.ALLOW_TEST === true && email.endsWith('@test.ai')) return generateTestUsername(email)
+  return generateFunnyUsername(client)
 }

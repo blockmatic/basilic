@@ -39,7 +39,27 @@ test.describe('API Keys', () => {
 
   test('should revoke API key', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/settings/security/apikeys')
-    await expect(authenticatedPage.getByRole('button', { name: /create key/i })).toBeVisible()
+    await expect(authenticatedPage.getByRole('button', { name: /create key/i })).toBeVisible({
+      timeout: 5000,
+    })
+    // Revoke any keys from previous tests so we end with empty state
+    let revokeBtn = authenticatedPage.getByRole('button', { name: /revoke e2e test key/i })
+    while (await revokeBtn.isVisible().catch(() => false)) {
+      await revokeBtn.click()
+      await expect(authenticatedPage.getByRole('alertdialog')).toBeVisible({ timeout: 3000 })
+      await authenticatedPage.getByRole('button', { name: 'Revoke' }).click()
+      await expect(authenticatedPage.getByRole('alertdialog')).not.toBeVisible({ timeout: 3000 })
+      revokeBtn = authenticatedPage.getByRole('button', { name: /revoke e2e test key/i })
+    }
+    revokeBtn = authenticatedPage.getByRole('button', { name: /revoke e2e revoke test key/i })
+    while (await revokeBtn.isVisible().catch(() => false)) {
+      await revokeBtn.click()
+      await expect(authenticatedPage.getByRole('alertdialog')).toBeVisible({ timeout: 3000 })
+      await authenticatedPage.getByRole('button', { name: 'Revoke' }).click()
+      await expect(authenticatedPage.getByRole('alertdialog')).not.toBeVisible({ timeout: 3000 })
+      revokeBtn = authenticatedPage.getByRole('button', { name: /revoke e2e revoke test key/i })
+    }
+    // Create and revoke our test key
     await authenticatedPage.getByRole('button', { name: /create key/i }).click()
     await expect(authenticatedPage.getByRole('dialog')).toBeVisible({ timeout: 3000 })
     await authenticatedPage.getByLabel('Name').fill('E2E Revoke Test Key')

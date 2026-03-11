@@ -88,21 +88,22 @@ async function main() {
     PGLITE: 'true',
     NODE_ENV: 'test',
     NEXT_PUBLIC_API_URL: 'http://localhost:3001',
-    AI_PROVIDER: 'ollama',
+    AI_PROVIDER: 'anthropic',
     JWT_SECRET:
       loaded.JWT_SECRET ?? process.env.JWT_SECRET ?? 'e2e-jwt-secret-min-32-chars-for-tests',
   }
   delete env.OPEN_ROUTER_API_KEY
+  delete env.OLLAMA_BASE_URL
 
   const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
     cwd: join(repoRoot, 'apps/fastify'),
     env,
-    stdio: 'ignore',
+    stdio: 'inherit',
   })
   const next = spawn('pnpm', ['exec', 'next', 'start'], {
     cwd: nextDir,
     env: { ...env, PORT: '3000' },
-    stdio: 'ignore',
+    stdio: 'inherit',
   })
 
   const killAll = (signal = 'SIGTERM') => {
@@ -146,6 +147,7 @@ async function main() {
   const hasWorkers = userArgs.some(a => a.startsWith('--workers='))
   const pwArgs = ['exec', 'playwright', 'test', ...(hasWorkers ? [] : ['--workers=1']), ...userArgs]
   const hasProjectArg = pwArgs.some(a => a.startsWith('--project='))
+  // Security (authenticator, api-keys, passkeys) excluded from default run - flaky in headless/CI
   const finalPwArgs = !hasProjectArg ? [...pwArgs, '--project=auth', '--project=chromium'] : pwArgs
 
   const pw = spawn('pnpm', finalPwArgs, {

@@ -1,12 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken, getSessionToken } from '../../../../../test/utils/auth-helper.js'
+import { describe, expect, it } from 'vitest'
+import { getApiKeyToken, getOrCreateSession } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 describe('POST /account/link/email/request', () => {
-  beforeEach(() => {
-    fastify.fakeEmail?.clear()
-  })
-
   it('should return 401 without Bearer token', async () => {
     const response = await fastify.inject({
       method: 'POST',
@@ -20,7 +16,7 @@ describe('POST /account/link/email/request', () => {
   })
 
   it('should send link email and return 200', async () => {
-    const jwt = await getSessionToken(fastify, 'user@test.ai')
+    const jwt = await getOrCreateSession(fastify, 'link-email-user@test.ai')
     fastify.fakeEmail?.clear()
 
     const response = await fastify.inject({
@@ -62,7 +58,7 @@ describe('POST /account/link/email/request', () => {
       payload: { email: 'other@test.ai', token: otherToken },
     })
 
-    const jwt = await getSessionToken(fastify, 'user@test.ai')
+    const jwt = await getOrCreateSession(fastify, 'link-email-user@test.ai')
 
     const response = await fastify.inject({
       method: 'POST',

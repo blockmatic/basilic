@@ -109,25 +109,32 @@ export class FakeEmailProvider implements EmailProvider {
     }
   }
 
-  /** Extract 6-digit code from email body (magic link). For @test.ai, prefer tokenPlain from DB. */
+  /** Extract token from email. Prefer URL params (?token=, ?verificationId=) then regex fallbacks. */
   extractToken(email?: Email): string | null {
     const targetEmail = email ?? this.last()
     if (!targetEmail) return null
     const decodedHtml = decodeHtmlEntities(targetEmail.html)
+    const urlToken = this.extractTokenFromUrls(decodedHtml)
+    if (urlToken) return urlToken
     const monoMatch = decodedHtml.match(/font-mono[^>]*>\s*(\d{6})\s*</i)
     if (monoMatch) return monoMatch[1]
     const codeMatch = decodedHtml.match(/>\s*(\d{6})\s*</)
     if (codeMatch) return codeMatch[1]
-    const magicLink = this.extractMagicLink(targetEmail)
-    if (magicLink)
-      try {
-        const url = new URL(magicLink)
-        const tokenParam = url.searchParams.get('token')
-        if (tokenParam) return tokenParam
-      } catch {
-        //
-      }
-
+    if (targetEmail.text) {
+      const textUrlMatch = targetEmail.text.match(/[?&](?:token|verificationId)=([^&\s]+)/i)
+      if (textUrlMatch) return textUrlMatch[1]
+      const textCodeMatch = targetEmail.text.match(/(\d{6})/)
+      if (textCodeMatch) return textCodeMatch[1]
+    }
     return null
+  }
+
+  private extractTokenFromUrls(html: string): string | null {
+    const tokenMatch = html.match(/href\s*=\s*["']([^"']*[?&]token=([^"'&]+)[^"']*["'])/i)
+    if (tokenMatch) return tokenMatch[2]
+    const verificationIdMatch = html.match(
+      /href\s*=\s*["']([^"']*[?&]verificationId=([^"'&]+)[^"']*["'])/i,
+    )
+    return verificationIdMatch?.[2] ?? null
   }
 }

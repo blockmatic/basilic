@@ -1,9 +1,9 @@
 ---
 title: "Self-Hosted LLM (Ollama)"
-description: "Run local LLMs for data privacy. Simple dev setup and production deployment with recommended hardware."
+description: "Run local LLMs for data privacy. Recommended when prompts must stay on your infrastructure."
 ---
 
-We recommend **self-hosting** an LLM when data privacy is a priority. Prompts and responses stay on your infrastructure—no third-party API calls, no data retention by vendors, and full control over model choice and updates.
+By default, the app uses **Anthropic** (direct API, Claude Sonnet 4) when `ANTHROPIC_API_KEY` is set. Otherwise it falls back to **Open Router** or **Ollama**. Prefer the Anthropic provider for best integration; use Open Router only when an Anthropic key is unavailable. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
 
 This guide covers [Ollama](https://ollama.com)—a local inference runtime with an OpenAI-compatible API—for both development and production.
 
@@ -235,29 +235,42 @@ curl -s https://ollama.example.com/api/generate -d '{"model":"qwen2.5:3b","promp
 
 ---
 
-## Using Ollama as Default in Fastify
+## AI Provider in Fastify
 
-The Fastify chat route (`/ai/chat`) uses **Ollama as the default** AI provider when `OLLAMA_BASE_URL` is set. Open Router is an optional alternative when `OPEN_ROUTER_API_KEY` is configured.
+The Fastify API supports **Anthropic** (default), **Open Router**, and **Ollama**. Provider precedence (when `AI_PROVIDER` is unset): Anthropic direct API → Open Router → Ollama. Use Anthropic when possible; Open Router is a fallback. Privacy-first routing with Ollama requires `AI_PROVIDER=ollama` when other keys exist. See `getResolvedProvider()` for the exact logic.
+
+### Routes
+
+| Route | Use case |
+|-------|----------|
+| `POST /ai/chat` | Chat UI, messages, tools (getAccountInfo, braveSearch) |
+| `POST /ai/generate` | CLI, scripts, pipelines—single prompt, plain text SSE |
+
+Both routes use the same provider; clients call the Fastify API.
 
 ### Environment Variables
 
+At least one of `ANTHROPIC_API_KEY`, `OPEN_ROUTER_API_KEY`, or `OLLAMA_BASE_URL` must be set; `OLLAMA_BASE_URL` is used for self-hosted/private setups.
+
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `OLLAMA_BASE_URL` | No (one of OLLAMA/OPEN_ROUTER required) | `https://ollama.example.com` | Ollama server URL (OpenAI-compatible `/v1` API) |
-| `AI_PROVIDER` | No | Inferred | `ollama` or `openrouter` — force provider when both are configured |
-| `AI_DEFAULT_MODEL` | No | `qwen2.5:3b` (Ollama) / `openrouter/free` (Open Router) | Default model for chat |
-| `OPEN_ROUTER_API_KEY` | No | — | Required only when using Open Router |
+| `ANTHROPIC_API_KEY` | Conditional (default) | — | Anthropic API key (preferred); Claude Sonnet 4 via direct API |
+| `OPEN_ROUTER_API_KEY` | Conditional (fallback) | — | Open Router API key when Anthropic unavailable |
+| `OLLAMA_BASE_URL` | Conditional | `http://localhost:11434` | Ollama server URL when self-hosting |
+| `AI_PROVIDER` | Conditional | Inferred | `anthropic`, `openrouter`, or `ollama` — inferred when only one provider configured; must be set when multiple vars present |
+| `AI_DEFAULT_MODEL` | No | Varies by provider | Anthropic/OpenRouter: Claude Sonnet 4; Ollama: `qwen3:8b`; use `openrouter/free` for OpenRouter free tier |
 
 ### Provider Selection
 
 1. If `AI_PROVIDER` is set, use it (requires the corresponding env var).
-2. Else if `OLLAMA_BASE_URL` is set, use Ollama.
+2. Else if `ANTHROPIC_API_KEY` is set, use Anthropic.
 3. Else if `OPEN_ROUTER_API_KEY` is set, use Open Router.
-4. Else the server returns 500 with "No AI provider configured".
+4. Else if `OLLAMA_BASE_URL` is set, use Ollama.
+5. Else the server returns 500 with "No AI provider configured".
 
-### Tool Support Caveat
+### Tool Support
 
-Small Ollama models (e.g. `qwen2.5:3b`) may not reliably support tool/function-calling. For better tool use (e.g. `getAccountInfo`, `braveSearch`), use 7B+ models such as `llama3.1:8b` or `mistral:7b`.
+Open Router models support tools (getAccountInfo, braveSearch). Small Ollama models (e.g. `qwen2.5:3b`) may not; use 7B+ such as `llama3.1:8b` or `mistral:7b` for reliable tool calling.
 
 ### Optional: Brave Search (Web Search Tool)
 

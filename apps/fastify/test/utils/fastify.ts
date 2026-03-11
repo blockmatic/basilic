@@ -12,8 +12,12 @@ export async function buildTestApp(): Promise<FastifyInstance> {
   // Set test email provider BEFORE creating Fastify instance
   setTestEmailProvider(fakeEmailProvider)
 
+  const logLevel =
+    (process.env.TEST_LOG_LEVEL as 'silent' | 'fatal' | 'error' | 'warn' | 'info' | 'debug') ??
+    'silent'
   const fastify = Fastify({
-    logger: { level: process.env.DEBUG_TEST ? 'info' : 'silent' },
+    logger: { level: logLevel },
+    pluginTimeout: 30_000,
   }).withTypeProvider<TypeBoxTypeProvider>()
 
   await fastify.register(app)

@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import type { getDb } from '../db/index.js'
 import { users } from '../db/schema/index.js'
 import { isUniqueViolation } from './db-errors.js'
-import { generateFunnyUsername } from './username.js'
+import { generateUsernameForMagicLink } from './username.js'
 
 type Db = Awaited<ReturnType<typeof getDb>>
 
@@ -18,7 +18,7 @@ export async function findOrCreateUserByEmail(
   if (existing) return existing
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const username = await generateFunnyUsername(db)
+    const username = await generateUsernameForMagicLink(db, input.email)
     try {
       await db
         .insert(users)

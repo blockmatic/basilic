@@ -11,13 +11,13 @@
  *
  * ## AI Tests
  *
- * Chat tests call real AI API. Use OLLAMA_BASE_URL in .env.test (or CI env).
- * Overrides here: AI_PROVIDER=ollama, OPEN_ROUTER_API_KEY unset (tests use Ollama only).
- * Tests use the default model only; do not set AI_DEFAULT_MODEL.
- * When OpenRouter returns 402 (insufficient credits), tests warn and pass without full validation.
- * When the AI provider is unreachable (5xx, ECONNREFUSED, etc.), tests skip with clear message.
+ * Chat tests call real AI API. Use ANTHROPIC_API_KEY in .env.test or CI secrets.
+ * Overrides here: AI_PROVIDER=anthropic, Ollama/OpenRouter unset (tests use Anthropic Sonnet only).
+ * When the AI provider is unreachable (5xx, ECONNREFUSED, etc.), tests pass gracefully via
+ * skipIfProviderUnavailable. Set ANTHROPIC_API_KEY in .env.test or GitHub secrets for CI.
  */
 
-// Enforce Ollama for AI tests (OLLAMA_BASE_URL from .env.test or CI env)
-process.env.AI_PROVIDER = 'ollama'
+// Enforce Anthropic for AI tests (ANTHROPIC_API_KEY from .env.test or CI env)
+process.env.AI_PROVIDER = 'anthropic'
 Reflect.deleteProperty(process.env, 'OPEN_ROUTER_API_KEY')
+Reflect.deleteProperty(process.env, 'OLLAMA_BASE_URL')
