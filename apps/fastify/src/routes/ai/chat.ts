@@ -1,6 +1,7 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import {
+  consumeStream,
   convertToModelMessages,
   generateText,
   type ModelMessage,
@@ -17,7 +18,7 @@ import { users } from '../../db/schema/index.js'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 import { createBraveSearchTool } from './brave-search.js'
-import { defaultOpenRouterModel, getProvider, getResolvedProvider } from './provider.js'
+import { getProvider, getResolvedProvider } from './provider.js'
 
 const ChatMessageItemSchema = Type.Union([
   Type.Object({
@@ -34,7 +35,7 @@ const ChatMessageItemSchema = Type.Union([
 const ChatRequestSchema = Type.Object({
   messages: Type.Array(ChatMessageItemSchema, { minItems: 1, maxItems: 50 }),
   stream: Type.Optional(Type.Boolean()),
-  model: Type.Optional(Type.String({ default: defaultOpenRouterModel })),
+  model: Type.Optional(Type.String()),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
   tools: Type.Optional(Type.Any()),
 })
@@ -161,10 +162,15 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         security: [{ bearerAuth: [] }],
         body: ChatRequestSchema,
         response: {
-          200: Type.Union([
-            ChatResponseSchema,
-            Type.String({ description: 'Streaming text response' }),
-          ]),
+          200: {
+            description: 'Chat response (JSON) or streaming (SSE)',
+            content: {
+              'application/json': { schema: ChatResponseSchema },
+              'text/event-stream': {
+                schema: Type.String({ description: 'Streaming SSE response' }),
+              },
+            },
+          },
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           500: ErrorResponseSchema,
@@ -211,7 +217,13 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         'Processing chat request',
       )
 
-      const abortSignal = AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS)
+      const requestAbortController = new AbortController()
+      request.raw.once('aborted', () => requestAbortController.abort())
+      request.raw.once('close', () => requestAbortController.abort())
+      const abortSignal = AbortSignal.any([
+        requestAbortController.signal,
+        AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),
+      ])
       const baseOptions = {
         model: resolvedModel,
         messages,
@@ -229,7 +241,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
               chunking: 'word',
             }),
           })
-          const response = result.toUIMessageStreamResponse()
+          const response = result.toUIMessageStreamResponse({ consumeSseStream: consumeStream })
           for (const [k, v] of response.headers) reply.raw.setHeader(k, v)
           reply.raw.statusCode = response.status
           request.log.info(
@@ -239,7 +251,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
               model: request.body.model ?? 'default',
               stream: true,
               durationMs: Date.now() - startMs,
-              userId: session.user.id.slice(0, 8),
+              authenticated: true,
             },
             'Chat stream started',
           )
@@ -254,7 +266,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
             model: request.body.model ?? 'default',
             stream: false,
             durationMs: Date.now() - startMs,
-            userId: session.user.id.slice(0, 8),
+            authenticated: true,
           },
           'Chat completed',
         )

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@repo/email/*": ["../../packages/email/*"]
+    }
+  },
+  "include": ["server.ts", "src/**/*.ts", "api/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "test"]
+}

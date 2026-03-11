@@ -26,7 +26,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'generate',
         description:
-          'Generate text from a single prompt (CLI, scripts, pipelines). Uses Ollama or Open Router. Returns plain text SSE when streaming.',
+          'Generate text from a single prompt (CLI, scripts, pipelines). Uses Ollama or Open Router. Returns SSE (text/event-stream) when streaming.',
         summary: 'Generate text from prompt',
         tags: ['ai'],
         security: [{ bearerAuth: [] }],
@@ -34,7 +34,9 @@ const generateRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: Type.Union([
             GenerateResponseSchema,
-            Type.String({ description: 'Streaming plain text SSE' }),
+            Type.String({
+              description: 'Streaming SSE (text/event-stream) with JSON event objects',
+            }),
           ]),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
@@ -87,7 +89,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       try {
         if (shouldStream) {
           const result = streamText(baseOptions)
-          const response = result.toTextStreamResponse()
+          const response = result.toUIMessageStreamResponse()
           for (const [k, v] of response.headers) reply.raw.setHeader(k, v)
           reply.raw.statusCode = response.status
           request.log.info(

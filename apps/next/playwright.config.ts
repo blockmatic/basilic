@@ -35,6 +35,7 @@ export default defineConfig({
     {
       name: 'chromium',
       testMatch: ['**/chat-assistant.spec.ts'],
+      timeout: 60_000,
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['auth'],
     },

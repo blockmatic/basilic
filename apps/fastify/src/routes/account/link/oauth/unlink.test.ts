@@ -12,13 +12,12 @@ describe('DELETE /account/link/oauth/:providerId', () => {
 
   beforeAll(async () => {
     jwt = await getOrCreateSession(fastify, 'phase2-oauth@test.ai')
-    const profileRes = await fastify.inject({
-      method: 'PATCH',
-      url: '/account/profile',
+    const userRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
       headers: { Authorization: `Bearer ${jwt}` },
-      payload: {},
     })
-    userId = (JSON.parse(profileRes.body) as { user: { id: string } }).user?.id
+    userId = (JSON.parse(userRes.body) as { user: { id: string } }).user?.id
     if (!userId) throw new Error('No user id')
     const db = await getDb()
     await db.insert(account).values({

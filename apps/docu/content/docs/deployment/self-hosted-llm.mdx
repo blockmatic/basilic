@@ -237,7 +237,7 @@ curl -s https://ollama.example.com/api/generate -d '{"model":"qwen2.5:3b","promp
 
 ## AI Provider in Fastify
 
-The Fastify API uses **Open Router** as the default when `OPEN_ROUTER_API_KEY` is set (`meta-llama/llama-3.3-70b-instruct:free`). For privacy-first routing with Ollama, set `OLLAMA_BASE_URL` and, when both Open Router and Ollama are configured, you must set `AI_PROVIDER=ollama` because `getResolvedProvider()` prefers Open Router when `OPEN_ROUTER_API_KEY` exists.
+The Fastify API uses **Open Router** as the default when `OPEN_ROUTER_API_KEY` is set (`meta-llama/llama-3.3-70b-instruct:free`). Privacy-first routing with Ollama requires both `OLLAMA_BASE_URL` and `AI_PROVIDER=ollama` when `OPEN_ROUTER_API_KEY` exists—otherwise `getResolvedProvider()` prefers Open Router. See the provider selection logic in `getResolvedProvider()` for the exact precedence.
 
 ### Routes
 

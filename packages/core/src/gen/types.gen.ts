@@ -872,11 +872,11 @@ export type ChatError = ChatErrors[keyof ChatErrors];
 
 export type ChatResponses = {
     /**
-     * Default Response
+     * Chat response (JSON) or streaming (SSE)
      */
     200: {
         text: string;
-    } | string;
+    };
 };
 
 export type ChatResponse = ChatResponses[keyof ChatResponses];

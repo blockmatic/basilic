@@ -53,11 +53,11 @@ export async function generateFunnyUsername(client: Db | Tx): Promise<string> {
     const trimmed = next.slice(0, 48)
     if (!(await isUsernameTaken(client, trimmed))) return trimmed
   }
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 100; i++) {
     const fallback = `${candidate.slice(0, 41)}_${randomBytes(3).toString('hex')}`
     if (!(await isUsernameTaken(client, fallback))) return fallback
   }
-  return `${candidate.slice(0, 41)}_${randomBytes(3).toString('hex')}`
+  throw new Error('generateFunnyUsername: could not find available username after retries')
 }
 
 /** Username for magic link user creation - deterministic for @test.ai in test mode */

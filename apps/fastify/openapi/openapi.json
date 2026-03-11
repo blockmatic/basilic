@@ -2345,7 +2345,6 @@
                     "type": "boolean"
                   },
                   "model": {
-                    "default": "meta-llama/llama-3.3-70b-instruct:free",
                     "type": "string"
                   },
                   "temperature": {
@@ -2366,27 +2365,25 @@
         ],
         "responses": {
           "200": {
-            "description": "Default Response",
+            "description": "Chat response (JSON) or streaming (SSE)",
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "required": [
-                        "text"
-                      ],
-                      "properties": {
-                        "text": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    {
-                      "description": "Streaming text response",
+                  "type": "object",
+                  "required": [
+                    "text"
+                  ],
+                  "properties": {
+                    "text": {
                       "type": "string"
                     }
-                  ]
+                  }
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "description": "Streaming SSE response",
+                  "type": "string"
                 }
               }
             }
@@ -2489,7 +2486,7 @@
         "tags": [
           "ai"
         ],
-        "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Ollama or Open Router. Returns plain text SSE when streaming.",
+        "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Ollama or Open Router. Returns SSE (text/event-stream) when streaming.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2546,7 +2543,7 @@
                       }
                     },
                     {
-                      "description": "Streaming plain text SSE",
+                      "description": "Streaming SSE (text/event-stream) with JSON event objects",
                       "type": "string"
                     }
                   ]

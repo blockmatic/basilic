@@ -3,7 +3,7 @@
   "name": "@repo/fastify",
   "version": "1.0.0",
   "description": "This project was bootstrapped with Fastify-CLI.",
-  "main": "app.ts",
+  "main": "dist/server.js",
   "engines": {
     "node": "22.x"
   },
@@ -22,8 +22,8 @@
     "start": "pnpm build && node dist/server.js",
     "start:ci": "NODE_ENV=test ALLOW_TEST=true node --import tsx server.ts",
     "build": "pnpm generate:openapi && pnpm db:migrate && pnpm build:ts",
-    "build:ts": "tsgo && tsc-alias -p tsconfig.json",
-    "watch:ts": "pnpm build:ts && concurrently 'tsgo -w' 'tsc-alias -p tsconfig.json -w'",
+    "build:ts": "tsgo -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "watch:ts": "pnpm build:ts && concurrently 'tsgo -p tsconfig.build.json -w' 'tsc-alias -p tsconfig.build.json -w'",
     "dev": "pnpm generate:openapi && concurrently -n server,openapi 'node --watch --import tsx server.ts' 'chokidar \"src/routes/**/*.ts\" \"src/plugins/**/*.ts\" -c \"pnpm generate:openapi\"'",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "lint:biome": "biome check .",
@@ -84,6 +84,7 @@
     "@faker-js/faker": "^9.4.0"
   },
   "devDependencies": {
+    "typescript": "^5.9.3",
     "@electric-sql/pglite": "^0.3.15",
     "@playwright/test": "^1.58.2",
     "@repo/eslint-config": "workspace:*",
