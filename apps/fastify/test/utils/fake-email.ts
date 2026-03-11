@@ -130,7 +130,11 @@ export class FakeEmailProvider implements EmailProvider {
   }
 
   private extractTokenFromUrls(html: string): string | null {
-    const urlMatch = html.match(/href\s*=\s*["']([^"']*[?&]token=([^"'&]+)[^"']*["'])/i)
-    return urlMatch?.[2] ?? null
+    const tokenMatch = html.match(/href\s*=\s*["']([^"']*[?&]token=([^"'&]+)[^"']*["'])/i)
+    if (tokenMatch) return tokenMatch[2]
+    const verificationIdMatch = html.match(
+      /href\s*=\s*["']([^"']*[?&]verificationId=([^"'&]+)[^"']*["'])/i,
+    )
+    return verificationIdMatch?.[2] ?? null
   }
 }

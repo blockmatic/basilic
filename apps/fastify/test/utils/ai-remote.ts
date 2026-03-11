@@ -30,8 +30,10 @@ type ResponseLike = {
 }
 
 export const isProviderUnavailable = (res: ResponseLike) =>
-  res.statusCode >= 500 ||
-  /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET|network|ollama/i.test(res.body)
+  res.statusCode === 502 ||
+  res.statusCode === 503 ||
+  res.statusCode === 504 ||
+  /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET/i.test(res.body)
 
 export const skipIfProviderUnavailable = (
   res: ResponseLike,
@@ -44,14 +46,24 @@ export const skipIfProviderUnavailable = (
     )
     return true
   }
-  // Streaming requests may return 200 with text/plain when upstream fails mid-stream
   if (opts?.expectStream) {
     const ct = String(res.headers?.['content-type'] ?? '').toLowerCase()
     if (!ct.includes('text/event-stream')) {
+      const hasUpstreamFailure =
+        res.statusCode === 502 ||
+        res.statusCode === 503 ||
+        res.statusCode === 504 ||
+        /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET/i.test(res.body)
+      if (hasUpstreamFailure) {
+        process.stderr.write(
+          `[AI test] ${name}: Expected event-stream, got ${ct || 'unknown'} - upstream failure, passing\n`,
+        )
+        return true
+      }
       process.stderr.write(
-        `[AI test] ${name}: Expected event-stream, got ${ct || 'unknown'} - passing without validation\n`,
+        `[AI test] ${name}: Expected event-stream, got ${ct || 'unknown'} - route bug, failing\n`,
       )
-      return true
+      return false
     }
   }
   return false

@@ -24,6 +24,7 @@ async function isUsernameTaken(client: Db | Tx, username: string): Promise<boole
   return !!row
 }
 
+/** Returns hex suffix; when maxLen <= 0 yields 4-char default. */
 function randomSuffix(maxLen: number): string {
   const hex = randomBytes(4).toString('hex')
   return maxLen > 0 ? hex.slice(0, maxLen) : hex.slice(0, 4)
@@ -31,7 +32,7 @@ function randomSuffix(maxLen: number): string {
 
 /** Deterministic username for @test.ai when ALLOW_TEST - avoids faker collisions under load */
 export function generateTestUsername(email: string): string {
-  const hash = createHash('sha256').update(email).digest('hex').slice(0, 12)
+  const hash = createHash('sha256').update(email).digest('hex').slice(0, 16)
   return `user_${hash}`
 }
 
@@ -65,7 +66,6 @@ export async function generateUsernameForMagicLink(
   client: Db | Tx,
   email: string,
 ): Promise<string> {
-  if (env.ALLOW_TEST === true && typeof email === 'string' && email.endsWith('@test.ai'))
-    return generateTestUsername(email)
+  if (env.ALLOW_TEST === true && email.endsWith('@test.ai')) return generateTestUsername(email)
   return generateFunnyUsername(client)
 }

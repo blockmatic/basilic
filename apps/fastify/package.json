@@ -31,7 +31,7 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
-    "checktypes": "tsgo --noEmit",
+    "checktypes": "tsgo --noEmit -p tsconfig.build.json",
     "generate:openapi": "node --import tsx scripts/generate-openapi.ts",
     "db:start": "supabase start",
     "db:stop": "supabase stop",

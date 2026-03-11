@@ -17,23 +17,24 @@ test.describe('Chat Assistant', () => {
     await expect(sheet.getByPlaceholder('Type a message...')).toBeVisible({ timeout: 5000 })
     await sheet.getByRole('button', { name: 'Who am I?' }).click()
 
-    await expect(sheet.locator('[data-role="user"]').filter({ hasText: 'Who am I?' })).toBeVisible({
-      timeout: 10000,
-    })
+    const userTurn = sheet.locator('[data-role="user"]').filter({ hasText: 'Who am I?' })
+    await expect(userTurn).toBeVisible({ timeout: 10000 })
 
     const chatError = sheet.getByTestId('chat-error')
-    const assistantLoc = sheet.locator('[data-role="assistant"]')
+    const assistantLoc = sheet.locator('[data-role="assistant"]').last()
     const winner = await Promise.race([
       assistantLoc.waitFor({ state: 'visible', timeout: 60_000 }).then(() => 'assistant' as const),
       chatError.waitFor({ state: 'visible', timeout: 60_000 }).then(() => 'error' as const),
     ])
     if (winner === 'error') {
       const errorText = (await chatError.textContent()) ?? ''
-      if (/402|insufficient|credits/i.test(errorText)) {
+      if (
+        /insufficient_quota|insufficient_credits|quota_exceeded|credits_exceeded/i.test(errorText)
+      ) {
         test.skip(true, 'OpenRouter 402 insufficient credits')
         return
       }
-      if (/fetch failed|ENOTFOUND|unreachable|connection|ECONNREFUSED|ETIMEDOUT/i.test(errorText)) {
+      if (/ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET/i.test(errorText)) {
         test.skip(true, 'AI provider unreachable')
         return
       }

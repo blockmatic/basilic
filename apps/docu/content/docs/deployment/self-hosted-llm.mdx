@@ -250,11 +250,13 @@ Both routes use the same provider; clients call the Fastify API.
 
 ### Environment Variables
 
+At least one of `OPEN_ROUTER_API_KEY` or `OLLAMA_BASE_URL` must be set; `OLLAMA_BASE_URL` is used for self-hosted/private setups.
+
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `OPEN_ROUTER_API_KEY` | No (one required) | — | Open Router API key (get at openrouter.ai) |
-| `OLLAMA_BASE_URL` | No (for privacy) | `http://localhost:11434` | Ollama server URL when self-hosting |
-| `AI_PROVIDER` | No | Inferred | `openrouter` or `ollama` — force when both configured |
+| `OPEN_ROUTER_API_KEY` | Conditional | — | Open Router API key (get at openrouter.ai) |
+| `OLLAMA_BASE_URL` | Conditional | `http://localhost:11434` | Ollama server URL when self-hosting |
+| `AI_PROVIDER` | Conditional | Inferred | `openrouter` or `ollama` — inferred when only one provider configured; must be set when both vars present |
 | `AI_DEFAULT_MODEL` | No | `meta-llama/llama-3.3-70b-instruct:free` (OR) / `qwen3:8b` (Ollama) | Default model |
 
 ### Provider Selection
