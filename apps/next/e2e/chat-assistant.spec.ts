@@ -35,6 +35,10 @@ test.describe('Chat Assistant', () => {
         test.skip(true, 'OpenRouter 402 insufficient credits')
         return
       }
+      if (/invalid x-api-key|authentication_error|invalid.*api.*key|401/i.test(errorText)) {
+        test.skip(true, 'AI provider auth invalid (401/invalid API key)')
+        return
+      }
       if (
         /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET|Connection timed out|Error code 522|status_code: 522/i.test(
           errorText,

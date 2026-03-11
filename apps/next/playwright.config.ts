@@ -49,6 +49,7 @@ export default defineConfig({
       ],
       timeout: 60_000,
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['auth'],
     },
   ],
 })

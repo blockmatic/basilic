@@ -23,8 +23,7 @@ env:
   PGLITE: true
   DATABASE_URL: postgresql://localhost/test
   JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
-  OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
-  OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY != '' && secrets.OPEN_ROUTER_API_KEY || 'sk-or-v1-dummy-key-for-unit-tests' }}
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
 jobs:
   build-and-test:
