@@ -9,15 +9,13 @@ import { ThemedView } from '@/components/themed-view'
 import { Collapsible } from '@/components/ui/collapsible'
 import { WebBadge } from '@/components/web-badge'
 import { MaxContentWidth, Spacing } from '@/constants/theme'
-import { useBottomTabInset } from '@/hooks/use-bottom-tab-inset'
 import { useTheme } from '@/hooks/use-theme'
 
 export default function TabTwoScreen() {
   const safeAreaInsets = useSafeAreaInsets()
-  const { full: bottomTabInset } = useBottomTabInset()
   const insets = {
     ...safeAreaInsets,
-    bottom: bottomTabInset + Spacing.three,
+    bottom: safeAreaInsets.bottom + Spacing.three,
   }
   const theme = useTheme()
 
