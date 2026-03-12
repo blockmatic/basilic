@@ -147,6 +147,15 @@
       }
     },
     {
+      "includes": ["**/packages/cli/src/cli.ts", "**/packages/cli/src/gen/**"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noConsole": "off" },
+          "style": { "noNonNullAssertion": "off" }
+        }
+      }
+    },
+    {
       "includes": [
         "**/mdx-components.tsx",
         "**/lib/catalogs/**",

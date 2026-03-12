@@ -1,0 +1,36 @@
+{
+  "name": "@repo/cli",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "description": "TypeScript CLI to interact with Basilic Fastify API via API key",
+  "bin": {
+    "basilic": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/cli.ts",
+      "import": "./dist/cli.js",
+      "default": "./dist/cli.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "checktypes": "tsgo --noEmit",
+    "generate": "node --import tsx scripts/generate-cli.mjs",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "lint:biome": "biome check .",
+    "lint:biome:fix": "biome check . --write"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0"
+  }
+}
