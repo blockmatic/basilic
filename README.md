@@ -69,7 +69,7 @@ Run with `pnpm <script>`.
   - `test` — Run unit tests (packages + apps)
   - `test:e2e` — E2E (Fastify + Next)
 **CI**
-  - Lint and security run on every PR. App E2E (`web-e2e`, `api-e2e`) and package tests (`packages-test`) run only when relevant code changes. See [GitHub Actions](https://basilic-docs.vercel.app/docs/deployment/github-actions).
+  - Lint and security run on every PR. App E2E (`web-e2e`, `api-e2e`) and package tests (`packages-test`) run only when relevant code changes. Mobile: EAS build, preview on main, PR OTA—see [GitHub Actions](https://basilic-docs.vercel.app/docs/deployment/github-actions) and [Mobile CI/CD](https://basilic-docs.vercel.app/docs/deployment/mobile-cicd).
 **Security**
   - `security:block-files` — Block sensitive file patterns
   - `security:secrets` — Scan staged files for secrets

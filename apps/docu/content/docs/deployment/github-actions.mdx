@@ -31,6 +31,16 @@ See [E2E Testing](/docs/testing/e2e-testing) for details.
 
 Linting and type checking on every PR. Supports `workflow_dispatch` for manual runs.
 
+### Mobile (`mobile-build.yml`, `mobile-preview.yml`, `mobile-pr-preview.yml`)
+
+EAS builds and PR OTA previews for the Expo app. Requires `EXPO_TOKEN` in GitHub Secrets. v1: Android-only, no store submission.
+
+- **mobile-build**: Manual trigger. Builds Android preview or development profile.
+- **mobile-preview**: Push to `main` (paths: `apps/mobile/**`, `packages/ui/**`). Builds Android preview; refreshes baseline for OTA.
+- **mobile-pr-preview**: Pull request (paths: `apps/mobile/**`, `packages/ui/**`). Publishes EAS Update, comments QR code. Reviewers must install baseline preview APK first; then scan QR to load PR update.
+
+See [Mobile CI/CD](/docs/deployment/mobile-cicd) for setup, reviewer bootstrap, and JS-only OTA limits.
+
 ### Security (`security.yml`)
 
 Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main.
@@ -90,6 +100,9 @@ All workflows are in `.github/workflows/`:
 - `web-e2e.yml` - Next: unit → E2E (local servers, path-filtered)
 - `api-e2e.yml` - API: unit → E2E (local servers, path-filtered)
 - `packages-test.yml` - Packages: unit tests (path-filtered)
+- `mobile-build.yml` - Mobile: manual EAS build (Android)
+- `mobile-preview.yml` - Mobile: EAS build on push to main (path-filtered)
+- `mobile-pr-preview.yml` - Mobile: EAS Update, QR comment on PR (path-filtered)
 - `lint.yml` - Linting checks (every PR)
 - `security.yml` - Security scans (every PR and push to main)
 

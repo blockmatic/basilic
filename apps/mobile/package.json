@@ -17,7 +17,8 @@
     "lint:biome:fix": "biome check . --write",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
-    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix"
+    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
+    "test:e2e": "maestro test .maestro/flows/home.yml"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.7.3",

@@ -63,6 +63,18 @@ Test workflows run on pull requests (path-filtered):
 
 Lint and security run on every PR. See [GitHub Actions](/docs/deployment/github-actions).
 
+## Mobile E2E (Maestro)
+
+The Expo app uses **Maestro** for E2E flows. Flow at `apps/mobile/.maestro/flows/home.yml`: launch app, assert home screen content.
+
+**Run locally** (app must be installed on emulator/simulator):
+
+```bash
+cd apps/mobile && maestro test .maestro/flows/home.yml
+```
+
+An optional `mobile-e2e` workflow (EAS Workflows + Maestro) can be added to run in CI; v1 defers this. See [Mobile CI/CD](/docs/deployment/mobile-cicd).
+
 ## Vercel Deployment Protection (Manual Testing)
 
 To run E2E manually against Vercel preview deployments with Deployment Protection enabled:

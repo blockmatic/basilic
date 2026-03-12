@@ -61,6 +61,10 @@ Global styles live in `src/global.css`. Use StyleSheet for complex cases. See `.
 
 Configure `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` for API reachability. When Fastify runs on a remote VPC and Cursor forwards port 3001, use `EXPO_PUBLIC_API_URL=http://localhost:3001` so the simulator hits the tunneled API.
 
+## EAS Builds & PR Preview
+
+CI builds Android preview via EAS. **EXPO_TOKEN** required in GitHub Secrets. Reviewers install the baseline APK once, then scan QR codes on PRs to load OTA updates. See [Mobile CI/CD](https://basilic-docs.vercel.app/docs/deployment/mobile-cicd) for setup and reviewer bootstrap.
+
 ## Scripts
 
 | Script | Command | Use |
@@ -71,6 +75,7 @@ Configure `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` for API reachability. When
 | `checktypes` | `tsgo --noEmit` | Type-check |
 | `lint` | Biome + ESLint | Lint |
 | `lint:fix` | — | Auto-fix lint |
+| `test:e2e` | `maestro test .maestro/flows/home.yml` | Maestro E2E (app on emulator/simulator) |
 
 ## Troubleshooting
 
@@ -85,4 +90,5 @@ Configure `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` for API reachability. When
 ## Related
 
 - [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments)
+- [Mobile CI/CD](https://basilic-docs.vercel.app/docs/deployment/mobile-cicd) — EAS builds, PR OTA previews
 - [Expo documentation](https://docs.expo.dev/)
