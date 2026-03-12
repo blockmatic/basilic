@@ -48,8 +48,8 @@ Or use environment variables:
 
 ```bash
 EXPO_ASC_API_KEY_PATH=./AuthKey.p8
-EXPO_ASC_API_KEY_ISSUER_ID=xxxxx-xxxx-xxxx-xxxx-xxxxx
-EXPO_ASC_API_KEY_ID=XXXXXXXXXX
+EXPO_ASC_ISSUER_ID=xxxxx-xxxx-xxxx-xxxx-xxxxx
+EXPO_ASC_KEY_ID=XXXXXXXXXX
 ```
 
 ### Apple ID Authentication (Alternative)
@@ -213,12 +213,15 @@ With `autoIncrement: true`, EAS handles build numbers automatically.
 
 ## Release Options
 
+These `apple.release` keys belong in `store.config.json` (or the file referenced by `submit.ios.metadataPath` in `eas.json`).
+
 ### Automatic Release
 
 Release immediately when approved:
 
 ```json
 {
+  "configVersion": 0,
   "apple": {
     "release": {
       "automaticRelease": true
@@ -229,8 +232,11 @@ Release immediately when approved:
 
 ### Scheduled Release
 
+In `store.config.json`:
+
 ```json
 {
+  "configVersion": 0,
   "apple": {
     "release": {
       "automaticRelease": "YYYY-MM-DDTHH:mm:ssZ"
@@ -241,10 +247,11 @@ Release immediately when approved:
 
 ### Phased Release
 
-Gradual rollout over 7 days:
+In `store.config.json`. Gradual rollout over 7 days:
 
 ```json
 {
+  "configVersion": 0,
   "apple": {
     "release": {
       "phasedRelease": true
@@ -353,7 +360,6 @@ jobs:
     needs: [build]
     params:
       build_id: ${{ needs.build.outputs.build_id }}
-      platform: ios
       profile: production
 ```
 

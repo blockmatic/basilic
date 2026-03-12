@@ -89,14 +89,14 @@ jobs:
     type: submit
     needs: [build-ios]
     params:
-      platform: ios
+      build_id: ${{ needs.build-ios.outputs.build_id }}
       profile: production
 
   submit-android:
     type: submit
     needs: [build-android]
     params:
-      platform: android
+      build_id: ${{ needs.build-android.outputs.build_id }}
       profile: production
 ```
 
@@ -189,7 +189,8 @@ jobs:
     type: submit
     needs: [first]  # Runs after 'first' completes
     params:
-      platform: ios
+      build_id: ${{ needs.first.outputs.build_id }}
+      profile: production
 ```
 
 ## Tips

@@ -435,7 +435,7 @@ importers:
         specifier: 7.0.0-dev.20260213.1
         version: 7.0.0-dev.20260213.1
       babel-plugin-react-compiler:
-        specifier: beta
+        specifier: 19.0.0-beta-af1b7da-20250417
         version: 19.0.0-beta-af1b7da-20250417
       eslint:
         specifier: ^9.0.0

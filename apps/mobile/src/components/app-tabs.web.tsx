@@ -25,9 +25,15 @@ export default function AppTabs() {
   )
 }
 
-export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
+export function TabButton({ children, isFocused, style, ...props }: TabTriggerSlotProps) {
   return (
-    <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
+    <Pressable
+      {...props}
+      style={state => [
+        typeof style === 'function' ? style(state) : style,
+        state.pressed && styles.pressed,
+      ]}
+    >
       <ThemedView
         type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
         style={styles.tabButtonView}
@@ -44,25 +50,30 @@ export function CustomTabList(props: TabListProps) {
   const scheme = useColorScheme()
   const colors = Colors[scheme === 'dark' ? 'dark' : 'light']
 
+  const { style, ...rest } = props
   return (
-    <View {...props} style={styles.tabListContainer}>
+    <View {...rest} style={[styles.tabListContainer, style]}>
       <ThemedView type="backgroundElement" style={styles.innerContainer}>
-        <ThemedText type="smallBold" style={styles.brandText}>
-          Expo Starter
-        </ThemedText>
+        {__DEV__ && (
+          <ThemedText type="smallBold" style={styles.brandText}>
+            Expo Starter
+          </ThemedText>
+        )}
 
         {props.children}
 
-        <ExternalLink href="https://docs.expo.dev" asChild>
-          <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Docs</ThemedText>
-            <SymbolView
-              tintColor={colors.text}
-              name={{ ios: 'arrow.up.right.square', web: 'link' }}
-              size={12}
-            />
-          </Pressable>
-        </ExternalLink>
+        {__DEV__ && (
+          <ExternalLink href="https://docs.expo.dev" asChild>
+            <Pressable style={styles.externalPressable}>
+              <ThemedText type="link">Docs</ThemedText>
+              <SymbolView
+                tintColor={colors.text}
+                name={{ ios: 'arrow.up.right.square', web: 'link' }}
+                size={12}
+              />
+            </Pressable>
+          </ExternalLink>
+        )}
       </ThemedView>
     </View>
   )

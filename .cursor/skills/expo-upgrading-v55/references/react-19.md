@@ -1,12 +1,12 @@
 # React 19
 
-React 19 is included in Expo SDK 53 and later. This release simplifies several common patterns.
+React 19 is included in Expo SDK 53 and later. This release simplifies several common patterns. The following are optional improvements; existing patterns remain supported.
 
 ## Context Changes
 
-### useContext → use
+### useContext → use (optional)
 
-The `use` hook replaces `useContext`:
+`useContext` remains supported. The `use` hook is an alternative that can also read promises:
 
 ```tsx
 // Before (React 18)
@@ -21,9 +21,9 @@ const value = use(MyContext);
 - The `use` hook can also read promises, enabling Suspense-based data fetching.
 - `use` can be called conditionally, which simplifies components that consume multiple contexts.
 
-### Context.Provider → Context
+### Context.Provider → Context (optional)
 
-Context providers no longer need the `.Provider` suffix:
+`Context.Provider` continues to work. The new shorthand is a modernization option:
 
 ```tsx
 // Before (React 18)
@@ -39,9 +39,9 @@ Context providers no longer need the `.Provider` suffix:
 
 ## ref as a Prop
 
-### Removing forwardRef
+### Optional: Modernizing away forwardRef
 
-Components can now receive `ref` as a regular prop. `forwardRef` is no longer needed:
+`forwardRef` remains supported in React 19 (but is deprecated). You can pass `ref` as a regular prop instead:
 
 ```tsx
 // Before (React 18)
@@ -57,7 +57,7 @@ function Input({ ref, ...props }: Props & { ref?: React.Ref<TextInput> }) {
 }
 ```
 
-### Migration Steps
+### Optional migration steps
 
 1. Remove `forwardRef` wrapper
 2. Add `ref` to the props destructuring
@@ -72,8 +72,8 @@ function Input({ ref, ...props }: Props & { ref?: React.Ref<TextInput> }) {
 
 ## Cleanup Checklist
 
-When upgrading to SDK 55:
+When upgrading to SDK 55 (all optional):
 
-- [ ] Replace `useContext` with `use`
-- [ ] Remove `.Provider` from Context components
-- [ ] Remove `forwardRef` wrappers, use `ref` prop instead
+- [ ] Optional: Replace `useContext` with `use`
+- [ ] Optional: Replace `Context.Provider` with `Context` shorthand
+- [ ] Optional: Remove `forwardRef` wrappers, use `ref` prop instead

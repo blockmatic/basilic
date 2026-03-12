@@ -58,10 +58,10 @@ npx eas-cli@latest build --profile production
 npx eas-cli@latest build -p ios --profile production --auto-submit
 
 # Android: Build and submit to Play Store
-npx eas-cli@latest build -p android --profile production --submit
+npx eas-cli@latest build -p android --profile production --auto-submit
 
-# Shortcut for iOS TestFlight
-npx testflight
+# Submit latest iOS build to TestFlight
+eas submit -p ios --latest
 ```
 
 ## Web Deployment
@@ -84,7 +84,7 @@ Standard `eas.json` for production deployments:
 ```json
 {
   "cli": {
-    "version": ">= 18.0.5",
+    "version": ">= 18.3.0",
     "appVersionSource": "remote"
   },
   "build": {
@@ -158,7 +158,7 @@ jobs:
     type: submit
     needs: [build-ios]
     params:
-      platform: ios
+      build_id: ${{ needs.build-ios.outputs.build_id }}
       profile: production
 ```
 

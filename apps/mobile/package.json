@@ -52,7 +52,7 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "babel-plugin-react-compiler": "beta",
+    "babel-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",

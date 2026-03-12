@@ -20,6 +20,8 @@ This setup uses:
 
 ## Installation
 
+> **Note:** `react-native-css@0.0.0-nightly.5ce6396` and `nativewind@5.0.0-preview.2` are pre-release/experimental and may be unstable. Check for newer stable releases before using.
+
 ```bash
 # Install dependencies
 npx expo install tailwindcss@^4 nativewind@5.0.0-preview.2 react-native-css@0.0.0-nightly.5ce6396 @tailwindcss/postcss tailwind-merge clsx
@@ -79,9 +81,7 @@ export default {
 Create `src/global.css`:
 
 ```css
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
-@import "tailwindcss/utilities.css";
+@import "tailwindcss";
 
 /* Platform-specific font families */
 @media android {
@@ -102,6 +102,8 @@ Create `src/global.css`:
   }
 }
 ```
+
+> Use granular imports (`@import "tailwindcss/theme.css" layer(theme);`, etc.) only when deliberately omitting or customizing Preflight or other layers.
 
 ## IMPORTANT: No Babel Config Needed
 
@@ -230,7 +232,7 @@ export const AnimatedScrollView = (
 };
 
 // TouchableHighlight with underlayColor extraction
-function XXTouchableHighlight(
+function BaseTouchableHighlight(
   props: React.ComponentProps<typeof RNTouchableHighlight>
 ) {
   const { underlayColor, ...style } = StyleSheet.flatten(props.style) || {};
@@ -246,7 +248,7 @@ function XXTouchableHighlight(
 export const TouchableHighlight = (
   props: React.ComponentProps<typeof RNTouchableHighlight>
 ) => {
-  return useCssElement(XXTouchableHighlight, props, { className: "style" });
+  return useCssElement(BaseTouchableHighlight, props, { className: "style" });
 };
 TouchableHighlight.displayName = "CSS(TouchableHighlight)";
 
@@ -307,6 +309,8 @@ export const Animated = {
 ```
 
 ## Usage
+
+See also: [@expo-deployment-v55](/skills/expo-deployment-v55), [@expo-cicd-workflows-v55](/skills/expo-cicd-workflows-v55).
 
 Import CSS-wrapped components from your tw directory:
 
@@ -384,22 +388,28 @@ Create a CSS file for Apple semantic colors:
 }
 
 :root {
-  /* Accent colors with light/dark mode */
-  --sf-blue: light-dark(rgb(0 122 255), rgb(10 132 255));
-  --sf-green: light-dark(rgb(52 199 89), rgb(48 209 89));
-  --sf-red: light-dark(rgb(255 59 48), rgb(255 69 58));
+  --sf-blue: rgb(0 122 255);
+  --sf-green: rgb(52 199 89);
+  --sf-red: rgb(255 59 48);
+  --sf-gray: rgb(142 142 147);
+  --sf-gray-2: rgb(174 174 178);
+  --sf-text: rgb(0 0 0);
+  --sf-text-2: rgb(60 60 67 / 0.6);
+  --sf-bg: rgb(255 255 255);
+  --sf-bg-2: rgb(242 242 247);
+}
 
-  /* Gray scales */
-  --sf-gray: light-dark(rgb(142 142 147), rgb(142 142 147));
-  --sf-gray-2: light-dark(rgb(174 174 178), rgb(99 99 102));
-
-  /* Text colors */
-  --sf-text: light-dark(rgb(0 0 0), rgb(255 255 255));
-  --sf-text-2: light-dark(rgb(60 60 67 / 0.6), rgb(235 235 245 / 0.6));
-
-  /* Background colors */
-  --sf-bg: light-dark(rgb(255 255 255), rgb(0 0 0));
-  --sf-bg-2: light-dark(rgb(242 242 247), rgb(28 28 30));
+.dark,
+[data-theme="dark"] {
+  --sf-blue: rgb(10 132 255);
+  --sf-green: rgb(48 209 89);
+  --sf-red: rgb(255 69 58);
+  --sf-gray: rgb(142 142 147);
+  --sf-gray-2: rgb(99 99 102);
+  --sf-text: rgb(255 255 255);
+  --sf-text-2: rgb(235 235 245 / 0.6);
+  --sf-bg: rgb(0 0 0);
+  --sf-bg-2: rgb(28 28 30);
 }
 
 /* iOS native colors via platformColor */
@@ -455,6 +465,8 @@ function MyComponent() {
 
 ## Key Differences from NativeWind v4 / Tailwind v3
 
+See also: [@expo-deployment-v55](/skills/expo-deployment-v55), [@expo-cicd-workflows-v55](/skills/expo-cicd-workflows-v55).
+
 1. **No babel.config.js** - Configuration is now CSS-first
 2. **PostCSS plugin** - Uses `@tailwindcss/postcss` instead of `tailwindcss`
 3. **CSS imports** - Use `@import "tailwindcss/..."` instead of `@tailwind` directives
@@ -463,6 +475,8 @@ function MyComponent() {
 6. **Metro config** - Use `withNativewind` with different options (`inlineVariables: false`)
 
 ## Troubleshooting
+
+See also: [@expo-deployment-v55](/skills/expo-deployment-v55), [@expo-cicd-workflows-v55](/skills/expo-cicd-workflows-v55).
 
 ### Styles not applying
 
@@ -473,7 +487,7 @@ function MyComponent() {
 ### Platform colors not working
 
 1. Use `platformColor()` in `@media ios` blocks
-2. Fall back to `light-dark()` for web/Android
+2. For web/Android, use explicit `:root` (light) and `.dark` / `[data-theme="dark"]` (dark) overrides; react-native-css does not support `light-dark()`
 
 ### TypeScript errors
 

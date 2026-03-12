@@ -114,7 +114,7 @@
   },
   "overrides": [
     {
-      "includes": ["apps/mobile/**"],
+      "includes": ["**/apps/mobile/**"],
       "linter": {
         "rules": {
           "style": {

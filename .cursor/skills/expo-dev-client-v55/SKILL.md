@@ -54,7 +54,7 @@ Key settings:
 Build iOS dev client and submit to TestFlight in one command:
 
 ```bash
-eas build -p ios --profile development --submit
+eas build -p ios --profile development --auto-submit
 ```
 
 This will:
@@ -80,8 +80,8 @@ eas build -p android --profile development --local
 ```
 
 Local builds output:
-- iOS: `.ipa` file
-- Android: `.apk` or `.aab` file
+- iOS simulator: `.tar.gz` archive; iOS device (with signing): `.ipa` file
+- Android: `.apk` file
 
 ## Installing Local Builds
 
