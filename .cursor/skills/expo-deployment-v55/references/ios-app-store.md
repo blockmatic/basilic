@@ -370,6 +370,6 @@ jobs:
 - Submit to TestFlight early and often for feedback
 - Use beta app review for external testers to catch issues before App Store review
 - Respond to reviewer questions promptly in App Store Connect
-- Keep demo account credentials up to date
+- Keep demo account credentials up-to-date
 - Monitor App Store Connect notifications for review updates
 - Use phased release for major updates to catch issues early

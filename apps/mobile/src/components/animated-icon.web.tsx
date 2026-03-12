@@ -40,26 +40,33 @@ const logoKeyframe = new Keyframe({
   },
 })
 
-const glowKeyframe = new Keyframe({
+const glowEntranceKeyframe = new Keyframe({
   0: {
     transform: [{ rotateZ: '-180deg' }, { scale: 0.8 }],
     opacity: 0,
   },
-  30: {
+  100: {
     transform: [{ rotateZ: '0deg' }, { scale: 1 }],
     opacity: 1,
     easing: Easing.elastic(0.7),
   },
-  100: {
-    transform: [{ rotateZ: '7200deg' }],
-  },
+})
+
+const longRunningRotationKeyframe = new Keyframe({
+  0: { transform: [{ rotateZ: '0deg' }] },
+  100: { transform: [{ rotateZ: '7200deg' }] },
 })
 
 export function AnimatedIcon() {
   return (
     <View style={styles.iconContainer}>
-      <Animated.View entering={glowKeyframe.duration(60 * 1000 * 4)} style={styles.glow}>
-        <Image style={styles.glow} source={require('@/assets/images/logo-glow.png')} />
+      <Animated.View
+        entering={longRunningRotationKeyframe.duration(60 * 1000 * 4)}
+        style={styles.glow}
+      >
+        <Animated.View entering={glowEntranceKeyframe.duration(duration)} style={styles.glow}>
+          <Image style={styles.glow} source={require('@/assets/images/logo-glow.png')} />
+        </Animated.View>
       </Animated.View>
 
       <Animated.View style={styles.background} entering={keyframe.duration(duration)}>
