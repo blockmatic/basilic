@@ -1,3 +1,8 @@
+---
+title: "Native Tabs Migration (SDK 55)"
+description: "Migration guide for expo-router native tabs from SDK 53/54 to SDK 55"
+---
+
 # Native Tabs Migration (SDK 55)
 
 In SDK 55, `Label`, `Icon`, `Badge`, and `VectorIcon` are now accessed as static properties on `NativeTabs.Trigger` rather than separate imports.

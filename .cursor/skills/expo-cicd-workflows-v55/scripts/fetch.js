@@ -20,6 +20,7 @@ export async function fetchCached(url) {
   // Make request, with conditional If-None-Match if we have an ETag.
   // Cache-Control: max-age=0 overrides Node's default 'no-cache' to allow 304 responses.
   const response = await fetch(url, {
+    signal: AbortSignal.timeout(30_000),
     headers: {
       'Cache-Control': 'max-age=0',
       ...(cached?.etag && { 'If-None-Match': cached.etag }),

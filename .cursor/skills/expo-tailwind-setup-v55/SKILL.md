@@ -147,16 +147,18 @@ import {
 } from "react-native";
 
 // CSS-enabled Link
-export const Link = (
+const LinkBase = (
   props: React.ComponentProps<typeof RouterLink> & { className?: string }
 ) => {
   return useCssElement(RouterLink, props, { className: "style" });
 };
 
-Link.Trigger = RouterLink.Trigger;
-Link.Menu = RouterLink.Menu;
-Link.MenuAction = RouterLink.MenuAction;
-Link.Preview = RouterLink.Preview;
+export const Link = Object.assign(LinkBase, {
+  Trigger: RouterLink.Trigger,
+  Menu: RouterLink.Menu,
+  MenuAction: RouterLink.MenuAction,
+  Preview: RouterLink.Preview,
+});
 
 // CSS Variable hook
 export const useCSSVariable =
@@ -247,6 +249,8 @@ export const TouchableHighlight = (
   return useCssElement(XXTouchableHighlight, props, { className: "style" });
 };
 TouchableHighlight.displayName = "CSS(TouchableHighlight)";
+
+export { Image } from "./image";
 ```
 
 ### Image Component (`src/tw/image.tsx`)

@@ -1,3 +1,8 @@
+---
+title: "React Compiler"
+description: "Guide to enabling and using React Compiler in Expo SDK 54+"
+---
+
 # React Compiler
 
 React Compiler is stable in Expo SDK 54 and later. It automatically memoizes components and hooks, eliminating the need for manual `useMemo`, `useCallback`, and `React.memo`.
@@ -42,7 +47,6 @@ const callback = () => doSomething(a);
 ## Requirements
 
 - Expo SDK 54 or later
-- New Architecture enabled (default in SDK 54+)
 
 ## Verifying It's Working
 

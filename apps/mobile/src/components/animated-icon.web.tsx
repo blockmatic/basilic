@@ -45,7 +45,7 @@ const glowKeyframe = new Keyframe({
     transform: [{ rotateZ: '-180deg' }, { scale: 0.8 }],
     opacity: 0,
   },
-  [DURATION / 1000]: {
+  30: {
     transform: [{ rotateZ: '0deg' }, { scale: 1 }],
     opacity: 1,
     easing: Easing.elastic(0.7),

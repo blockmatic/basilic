@@ -1,6 +1,6 @@
 # React 19
 
-React 19 is included in Expo SDK 54. This release simplifies several common patterns.
+React 19 is included in Expo SDK 53 and later. This release simplifies several common patterns.
 
 ## Context Changes
 
@@ -19,7 +19,7 @@ const value = use(MyContext);
 ```
 
 - The `use` hook can also read promises, enabling Suspense-based data fetching.
-- `use` can be called conditionally, this simplifies components that consume multiple contexts.
+- `use` can be called conditionally, which simplifies components that consume multiple contexts.
 
 ### Context.Provider → Context
 
@@ -72,7 +72,7 @@ function Input({ ref, ...props }: Props & { ref?: React.Ref<TextInput> }) {
 
 ## Cleanup Checklist
 
-When upgrading to SDK 54:
+When upgrading to SDK 55:
 
 - [ ] Replace `useContext` with `use`
 - [ ] Remove `.Provider` from Context components

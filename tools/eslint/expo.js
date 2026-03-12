@@ -119,14 +119,22 @@ export const config = [
       ],
     },
   },
-  // Allow default export for Expo Router layouts and screens
+  // Allow default export for Expo Router layouts, screens, and tab components
   {
     files: [
       '**/app/**/_layout.tsx',
       '**/app/**/*.tsx',
       '**/src/app/**/_layout.tsx',
       '**/src/app/**/*.tsx',
+      '**/components/app-tabs*.tsx',
     ],
+    rules: {
+      'import/no-default-export': 'off',
+    },
+  },
+  // Allow default export for ambient module declarations
+  {
+    files: ['**/declarations.d.ts'],
     rules: {
       'import/no-default-export': 'off',
     },
@@ -172,7 +180,7 @@ export const config = [
   },
   // Node scripts (run from apps/mobile, paths like scripts/**)
   {
-    files: ['scripts/**/*.js'],
+    files: ['scripts/**/*.js', 'scripts/**/*.cjs'],
     languageOptions: { globals: { ...globals.node } },
     rules: {
       'no-restricted-globals': 'off',
@@ -181,13 +189,12 @@ export const config = [
       'no-undef': 'off',
     },
   },
-  // RN/Expo: require() for assets, process.env, default exports, naming (INITIAL_SCALE_FACTOR, experimental_*)
+  // RN/Expo: require() for assets, process.env, naming (INITIAL_SCALE_FACTOR, experimental_*)
   {
     files: ['**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
       'no-restricted-properties': 'off',
-      'import/no-default-export': 'off',
       '@typescript-eslint/naming-convention': 'off',
     },
   },

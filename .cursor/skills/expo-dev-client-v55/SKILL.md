@@ -25,7 +25,7 @@ Ensure `eas.json` has a development profile:
 ```json
 {
   "cli": {
-    "version": ">= 16.0.1",
+    "version": ">= 18.0.5",
     "appVersionSource": "remote"
   },
   "build": {
@@ -160,5 +160,5 @@ eas build -p ios --profile development --clear-cache
 **Check EAS CLI version:**
 ```bash
 eas --version
-eas update
+npm install -g eas-cli@latest
 ```

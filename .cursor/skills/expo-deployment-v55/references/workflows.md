@@ -138,7 +138,7 @@ jobs:
     params:
       command: |
         if git diff --name-only HEAD~1 | grep -q "^src/"; then
-          echo "has_changes=true" >> $GITHUB_OUTPUT
+          set-output has_changes true
         fi
 
   build:

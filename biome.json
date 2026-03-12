@@ -146,8 +146,10 @@
       "includes": [
         "scripts/**/*.mjs",
         "scripts/**/*.js",
+        "scripts/**/*.cjs",
         "**/scripts/**/*.ts",
         "**/scripts/**/*.js",
+        "**/scripts/**/*.cjs",
         ".cursor/skills/**/*.js"
       ],
       "linter": {

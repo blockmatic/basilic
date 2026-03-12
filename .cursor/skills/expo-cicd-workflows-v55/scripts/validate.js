@@ -25,7 +25,12 @@ function createValidator(schema) {
 }
 
 async function validateFile(validator, filePath) {
-  const content = await readFile(filePath, 'utf-8')
+  let content
+  try {
+    content = await readFile(filePath, 'utf-8')
+  } catch (e) {
+    return { valid: false, error: `Unable to read file: ${e.message}` }
+  }
 
   let doc
   try {
@@ -63,8 +68,13 @@ Validates EAS workflow YAML files against the official schema.`)
     process.exit(files.length === 0 ? 1 : 0)
   }
 
-  const schema = await fetchSchema()
-  const validator = createValidator(schema)
+  let validator
+  try {
+    validator = createValidator(await fetchSchema())
+  } catch (e) {
+    console.error(`✗ Failed to load workflow schema\n${e.message}`)
+    process.exit(1)
+  }
 
   let hasErrors = false
 

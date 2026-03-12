@@ -65,7 +65,7 @@ const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 async function startRecording() {
   await AudioModule.requestRecordingPermissionsAsync();
   await recorder.prepareToRecordAsync();
-  recorder.record();
+  recorder.record({ forDuration: 60 });
 }
 
 async function stopRecording() {

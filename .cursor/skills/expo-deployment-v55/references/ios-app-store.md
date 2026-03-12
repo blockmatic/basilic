@@ -54,20 +54,31 @@ EXPO_ASC_API_KEY_ID=XXXXXXXXXX
 
 ### Apple ID Authentication (Alternative)
 
-For manual submissions, you can use Apple ID:
+For non-API-key submissions, configure `appleId` in `eas.json` and provide an app-specific password:
 
-```bash
-EXPO_APPLE_ID=your@email.com
-EXPO_APPLE_TEAM_ID=XXXXXXXXXX
+```json
+{
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "your@email.com"
+      }
+    }
+  }
+}
 ```
 
-Note: Requires app-specific password for accounts with 2FA.
+```bash
+EXPO_APPLE_APP_SPECIFIC_PASSWORD=xxxx-xxxx-xxxx-xxxx
+```
+
+Note: This fallback requires an app-specific password for accounts with 2FA.
 
 ## Submission Commands
 
 ```bash
 # Build and submit to App Store Connect
-eas build -p ios --profile production --submit
+eas build -p ios --profile production --auto-submit
 
 # Submit latest build
 eas submit -p ios --latest
@@ -108,7 +119,7 @@ Before submitting, complete in App Store Connect:
 ```json
 {
   "cli": {
-    "version": ">= 16.0.1",
+    "version": ">= 18.0.5",
     "appVersionSource": "remote"
   },
   "build": {
@@ -222,7 +233,7 @@ Release immediately when approved:
 {
   "apple": {
     "release": {
-      "automaticRelease": "2025-03-01T10:00:00Z"
+      "automaticRelease": "YYYY-MM-DDTHH:mm:ssZ"
     }
   }
 }
@@ -249,7 +260,7 @@ Rollout: Day 1 (1%) → Day 2 (2%) → Day 3 (5%) → Day 4 (10%) → Day 5 (20%
 ### Distribution Certificate
 
 - Required for App Store submissions
-- Limited to 3 per Apple Developer account
+- Team-level credential; only one of each distribution certificate type allowed per team
 - Valid for 1 year
 - EAS manages automatically
 
@@ -280,7 +291,7 @@ eas metadata:pull
 eas metadata:push
 ```
 
-See ./app-store-metadata.md for detailed configuration.
+See @.cursor/skills/expo-deployment-v55/references/app-store-metadata.md for detailed configuration.
 
 ## Troubleshooting
 
@@ -341,6 +352,7 @@ jobs:
     type: submit
     needs: [build]
     params:
+      build_id: ${{ needs.build.outputs.build_id }}
       platform: ios
       profile: production
 ```
