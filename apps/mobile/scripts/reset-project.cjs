@@ -61,6 +61,11 @@ const moveDirectories = async userInput => {
       if (fs.existsSync(oldDirPath))
         if (userInput === 'y') {
           const newDirPath = path.join(root, exampleDir, dir)
+          if (fs.existsSync(newDirPath))
+            throw new Error(
+              `Target collision: ${newDirPath} already exists. Cannot move ${oldDirPath}. Remove or rename the target first.`,
+            )
+
           await fs.promises.rename(oldDirPath, newDirPath)
           console.log(`➡️ /${dir} moved to /${exampleDir}/${dir}.`)
         } else {
@@ -107,6 +112,7 @@ rl.question(
       moveDirectories(userInput).finally(() => rl.close())
     } else {
       console.log("❌ Invalid input. Please enter 'Y' or 'N'.")
+      process.exitCode = 1
       rl.close()
     }
   },
