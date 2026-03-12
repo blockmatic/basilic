@@ -101,7 +101,7 @@ sudo systemctl enable ollama
 
 ### 3. CI / Parallel Workflows
 
-When Ollama is used as the CI AI provider (e.g. `OLLAMA_BASE_URL` secret in GitHub Actions), `api-e2e` and `next-e2e` can run in parallel and both hit the same server. With `OLLAMA_NUM_PARALLEL=1`, requests serialize and tests may time out.
+When Ollama is used as the CI AI provider (e.g. `OLLAMA_BASE_URL` secret in GitHub Actions), `api-e2e` and `web-e2e` can run in parallel and both hit the same server. With `OLLAMA_NUM_PARALLEL=1`, requests serialize and tests may time out.
 
 For CI hosts, increase parallelism if the machine has enough RAM:
 

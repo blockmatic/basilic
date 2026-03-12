@@ -1,10 +1,10 @@
 ---
 description: Playwright E2E patterns for Next.js and Fastify API
-glob: "apps/next/e2e/**/*, apps/next/playwright.config.ts, apps/fastify/test/**/*, apps/fastify/playwright.config.ts"
+glob: "apps/web/e2e/**/*, apps/web/playwright.config.ts, apps/api/test/**/*, apps/api/playwright.config.ts"
 ---
 
 ## Config
-- Frontend apps (`apps/next`) use **Playwright E2E only** — no Vitest/Testing Library unit or integration tests
+- Frontend apps (`apps/web`) use **Playwright E2E only** — no Vitest/Testing Library unit or integration tests
 - No webServer; URLs from `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL` (env or `--app` / `--api` params)
 - Fastify: only `--api` param; `test:e2e` = URL-based, `test:e2e:local` = spawn API, poll, run, cleanup
 - Param format: `--app=URL` or `--app URL`, `--api=URL` or `--api URL`

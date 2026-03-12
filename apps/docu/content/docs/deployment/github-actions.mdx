@@ -9,17 +9,17 @@ GitHub Actions workflows automate quality checks on pull requests (opened and up
 
 Path filters are used only for test workflows (app E2E and package unit tests) so they run when relevant code changes. Lint and security run on every PR. Path patterns are defined in each workflow file.
 
-### Next (`next-e2e.yml`)
+### Web (`web-e2e.yml`)
 
-Build → Unit → E2E. Triggers on pull request when `apps/next/**`, shared packages, or openapi change. Single job: build (with localhost API URL), unit tests, E2E via `test:e2e:local` (spawns Fastify + Next locally).
+Build → Unit → E2E. Triggers on pull request when `apps/web/**`, shared packages, or openapi change. Single job: build (with localhost API URL), unit tests, E2E via `test:e2e:local` (spawns Fastify + Next locally).
 
 ### API (`api-e2e.yml`)
 
-Build → Unit → E2E. Triggers on pull request when `apps/fastify/**` or shared packages change. Single job: build, unit tests, E2E via `test:e2e:local` (spawns API locally, runs Scalar login E2E).
+Build → Unit → E2E. Triggers on pull request when `apps/api/**` or shared packages change. Single job: build, unit tests, E2E via `test:e2e:local` (spawns API locally, runs Scalar login E2E).
 
 ### Packages (`packages-test.yml`)
 
-Unit tests for shared packages (core, react, sentry, etc.). Triggers on pull request when `packages/**` or `tools/**` change. Excludes app tests (handled by api-e2e, next-e2e).
+Unit tests for shared packages (core, react, sentry, etc.). Triggers on pull request when `packages/**` or `tools/**` change. Excludes app tests (handled by api-e2e, web-e2e).
 
 ### Docu (Vercel)
 
@@ -87,7 +87,7 @@ Pre-commit hooks check:
 ## Workflow Files
 
 All workflows are in `.github/workflows/`:
-- `next-e2e.yml` - Next: unit → E2E (local servers, path-filtered)
+- `web-e2e.yml` - Next: unit → E2E (local servers, path-filtered)
 - `api-e2e.yml` - API: unit → E2E (local servers, path-filtered)
 - `packages-test.yml` - Packages: unit tests (path-filtered)
 - `lint.yml` - Linting checks (every PR)

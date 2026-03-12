@@ -14,7 +14,7 @@ const nextDir = dirname(scriptDir)
 const repoRoot = dirname(dirname(nextDir))
 
 function loadEnvTest() {
-  const path = join(repoRoot, 'apps/fastify/.env.test')
+  const path = join(repoRoot, 'apps/api/.env.test')
   if (!existsSync(path)) return {}
   const lines = readFileSync(path, 'utf8').split('\n')
   const out = {}
@@ -71,7 +71,7 @@ async function main() {
         process.env.JWT_SECRET ??
         'e2e-jwt-secret-min-32-chars-for-tests',
     }
-    const build = spawn('pnpm', ['-F', '@repo/next', 'run', 'build:e2e'], {
+    const build = spawn('pnpm', ['-F', '@repo/web', 'run', 'build:e2e'], {
       cwd: repoRoot,
       stdio: 'inherit',
       env: buildEnv,
@@ -95,27 +95,24 @@ async function main() {
   delete env.OPEN_ROUTER_API_KEY
   delete env.OLLAMA_BASE_URL
 
-  const fastify = spawn('node', ['--import', 'tsx', 'server.ts'], {
-    cwd: join(repoRoot, 'apps/fastify'),
+  const api = spawn('node', ['--import', 'tsx', 'server.ts'], {
+    cwd: join(repoRoot, 'apps/api'),
     env,
     stdio: 'inherit',
   })
-  const next = spawn('pnpm', ['exec', 'next', 'start'], {
+  const web = spawn('pnpm', ['exec', 'next', 'start'], {
     cwd: nextDir,
     env: { ...env, PORT: '3000' },
     stdio: 'inherit',
   })
 
   const killAll = (signal = 'SIGTERM') => {
-    fastify.kill(signal)
-    next.kill(signal)
+    api.kill(signal)
+    web.kill(signal)
   }
   const waitForExits = (timeoutMs = 2000) =>
     Promise.race([
-      Promise.all([
-        new Promise(r => fastify.once('exit', r)),
-        new Promise(r => next.once('exit', r)),
-      ]),
+      Promise.all([new Promise(r => api.once('exit', r)), new Promise(r => web.once('exit', r))]),
       new Promise(r => setTimeout(r, timeoutMs)),
     ])
 
@@ -163,8 +160,8 @@ async function main() {
   await new Promise(r => pw.on('exit', r))
   cleanup()
   await waitForExits(5000)
-  if (fastify.exitCode == null) fastify.kill('SIGKILL')
-  if (next.exitCode == null) next.kill('SIGKILL')
+  if (api.exitCode == null) api.kill('SIGKILL')
+  if (web.exitCode == null) web.kill('SIGKILL')
   process.exit(exitCode)
 }
 

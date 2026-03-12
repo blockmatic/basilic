@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Run E2E tests locally: Fastify API E2E, then Next app E2E.
+ * Run E2E tests locally: API E2E, then Web app E2E.
  * Spawns servers locally (no external URLs). Used by pnpm qa.
  * Kills processes on ports 3000/3001 before starting (unless SKIP_KILL_PORTS=1).
  */
@@ -32,12 +32,12 @@ function run(cmd, args, opts = {}) {
 
 async function main() {
   killPorts()
-  await run('pnpm', ['-F', '@repo/fastify', 'test:e2e:local'])
+  await run('pnpm', ['-F', '@repo/api', 'test:e2e:local'])
   killPorts()
   // Allow server shutdown and port release before starting Next e2e; 2s is conservative;
   // shorten if CI is stable.
   await new Promise(r => setTimeout(r, 2000))
-  await run('pnpm', ['-F', '@repo/next', 'test:e2e:local'])
+  await run('pnpm', ['-F', '@repo/web', 'test:e2e:local'])
 }
 
 main().catch(err => {

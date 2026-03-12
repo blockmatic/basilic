@@ -73,14 +73,14 @@ To run the docs site: `pnpm --filter @repo/docu dev` (e.g. http://localhost:3002
 
 ### 4. Understand the Structure
 
-**Apps:** `apps/fastify/` (Fastify backend), `apps/next/` (Next.js frontend), `apps/docu/` (documentation)
+**Apps:** `apps/api/` (Fastify backend), `apps/web/` (Next.js frontend), `apps/docu/` (documentation)
 
 **Packages:** `core/` (generated API client + types), `react/` (React Query hooks), `ui/` (components), `sentry/` (Sentry integration), `utils/` (utilities)
 
 ```mermaid
 flowchart TB
   subgraph Apps["Applications"]
-    API["apps/fastify<br/>Fastify backend"]
+    API["apps/api<br/>Fastify backend"]
     Docs["apps/docu<br/>Documentation"]
   end
 

@@ -3,7 +3,7 @@ title: "Frontend Testing"
 description: "E2E-only testing strategy for frontend (Next.js) applications using Playwright."
 ---
 
-Frontend apps (for example `apps/next`) use **Playwright E2E tests only**. We do not maintain separate unit or integration test suites for frontend components.
+Frontend apps (for example `apps/web`) use **Playwright E2E tests only**. We do not maintain separate unit or integration test suites for frontend components.
 
 ## Testing Philosophy
 
@@ -24,7 +24,7 @@ We intentionally invest in a smaller number of high-signal E2E tests instead of 
 - **Pattern**: Test full user flows with real infrastructure
 - **Real APIs**: All tests use real APIs and infrastructure
 - **Tools**: Playwright
-- **Commands**: Next: `pnpm --filter @repo/next test:e2e:local` (spawn servers) or `pnpm test:e2e` (URLs from env/params). Root: `pnpm test:e2e` runs Fastify + Next E2E.
+- **Commands**: Next: `pnpm --filter @repo/web test:e2e:local` (spawn servers) or `pnpm test:e2e` (URLs from env/params). Root: `pnpm test:e2e` runs Fastify + Next E2E.
 
 See [E2E Testing](/docs/testing/e2e-testing) for full documentation.
 
@@ -116,11 +116,11 @@ Tests require these environment variables:
 
 ### Test Utilities
 
-Create/maintain Playwright helpers in `apps/next/e2e` for common flows (auth, navigation, fixtures). Prefer shared fixtures over ad-hoc login logic inside individual specs.
+Create/maintain Playwright helpers in `apps/web/e2e` for common flows (auth, navigation, fixtures). Prefer shared fixtures over ad-hoc login logic inside individual specs.
 
 ## Running Tests
 
-See [apps/next/README.md](../../../../apps/next/README.md) and [E2E Testing](/docs/testing/e2e-testing) for E2E scripts (`test:e2e`, `test:e2e:local`, `test:e2e:ui`, `test:e2e:debug`).
+See [apps/web/README.md](../../../../apps/web/README.md) and [E2E Testing](/docs/testing/e2e-testing) for E2E scripts (`test:e2e`, `test:e2e:local`, `test:e2e:ui`, `test:e2e:debug`).
 
 ## Related Documentation
 

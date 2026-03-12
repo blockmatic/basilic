@@ -136,7 +136,7 @@ We will use **Fastify REST API** with **OpenAPI spec generation from routes** an
 
 ### OpenAPI Specification
 
-OpenAPI specs are generated in `apps/fastify/openapi/openapi.json` from Fastify routes via `generate-openapi.ts`:
+OpenAPI specs are generated in `apps/api/openapi/openapi.json` from Fastify routes via `generate-openapi.ts`:
 
 ```json
 {
@@ -188,7 +188,7 @@ TypeScript clients are generated using `@hey-api/openapi-ts`:
 
 Fastify routes are the source of truth:
 
-- Routes implemented in `apps/fastify/src/routes/` with TypeBox schemas (native JSON Schema)
+- Routes implemented in `apps/api/src/routes/` with TypeBox schemas (native JSON Schema)
 - OpenAPI spec automatically generated from route definitions via `generate-openapi.ts`
 - Type-safe request/response handling via route schemas with TypeBox type provider
 - Validation uses TypeBox schemas defined in routes (no conversion overhead)

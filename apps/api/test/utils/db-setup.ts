@@ -38,8 +38,8 @@ import { getTestDatabase, truncateAllTables } from './db.js'
 
 const setupFile = fileURLToPath(import.meta.url)
 const setupDir = dirname(setupFile)
-// setupDir is apps/fastify/test/utils
-// projectRoot is apps/fastify
+// setupDir is apps/api/test/utils
+// projectRoot is apps/api
 const projectRoot = dirname(dirname(setupDir))
 
 // Track if migrations have been run in this worker

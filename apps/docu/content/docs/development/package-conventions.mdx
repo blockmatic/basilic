@@ -91,8 +91,8 @@ The **HTTP boundary** is defined by Fastify route schemas (TypeBox). The OpenAPI
 
 **What goes here**
 
-* Route schemas + handlers in `apps/fastify/src/routes/`
-* Generated OpenAPI 3.0 file at `apps/fastify/openapi/openapi.json` (do not hand-edit)
+* Route schemas + handlers in `apps/api/src/routes/`
+* Generated OpenAPI 3.0 file at `apps/api/openapi/openapi.json` (do not hand-edit)
 * Served OpenAPI JSON at `/reference/openapi.json` and Scalar UI at `/reference`
 
 See **[OpenAPI Generation](/docs/development/openapi-generation)** for the exact workflow.
@@ -132,10 +132,10 @@ React-only helpers using **TanStack Query**.
 
 ## Server implementation generates OpenAPI
 
-The server app (`apps/fastify`) should treat **Fastify routes + TypeBox schemas** as the source of truth.
+The server app (`apps/api`) should treat **Fastify routes + TypeBox schemas** as the source of truth.
 
 1. Define request/response schemas in the route (TypeBox)
-2. Generate OpenAPI from routes into `apps/fastify/openapi/openapi.json`
+2. Generate OpenAPI from routes into `apps/api/openapi/openapi.json`
 3. Expose OpenAPI JSON at `/reference/openapi.json`
 4. Mount Scalar UI at `/reference`
 
@@ -177,8 +177,8 @@ Also: list peer deps in `devDependencies` too so the package type-checks and tes
 
 When you add or change an endpoint:
 
-1. Add/update the Fastify route + TypeBox schemas in `apps/fastify/src/routes/**`
-2. Regenerate OpenAPI: `pnpm --filter @repo/fastify generate:openapi`
+1. Add/update the Fastify route + TypeBox schemas in `apps/api/src/routes/**`
+2. Regenerate OpenAPI: `pnpm --filter @repo/api generate:openapi`
 3. Regenerate the core client: `pnpm --filter @repo/core generate`
 4. If you want a React Query wrapper, add/update a hook in `packages/react/src/hooks/`
 5. Consume the types from `@repo/core` (single source of truth)

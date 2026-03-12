@@ -27,14 +27,14 @@ Core technology choices and patterns for frontend apps. See [Frontend Architectu
 
 ## Web3 & wallet auth
 
-Wallet hooks live in `apps/next` (`@/hooks/`, `@/wallet/`). `@repo/react` exposes only verify hooks (`useVerifyWeb3Auth`, `useVerifyLinkWallet`).
+Wallet hooks live in `apps/web` (`@/hooks/`, `@/wallet/`). `@repo/react` exposes only verify hooks (`useVerifyWeb3Auth`, `useVerifyLinkWallet`).
 
 - **`useWallet`** (`@/hooks/use-wallet`): returns adapter for a chain from WalletProvider context
 - **`useWalletAuth`** (`@/hooks/use-wallet-auth`): wallet sign-in via SIWE/SIWS
 - **`useLinkWallet`** (`@/hooks/use-link-wallet`): link connected wallet to account (Bearer required)
 - **`useLinkEmail`** (`@repo/react`): request link email + verify from token
 
-**WalletProvider** and adapters: In `apps/next`, `WalletAdaptersInjector` bridges wagmi + Solana into adapters, enforces single-wallet mode, and triggers sign-out on wallet disconnect when session was created by wallet.
+**WalletProvider** and adapters: In `apps/web`, `WalletAdaptersInjector` bridges wagmi + Solana into adapters, enforces single-wallet mode, and triggers sign-out on wallet disconnect when session was created by wallet.
 
 **Post-login home:** After auth (magic link or wallet), users are redirected to `/`. The home page renders merged dashboard content including Link wallet, Link email (formerly on `/dashboard`).
 
@@ -49,7 +49,7 @@ flowchart TB
     Login[Login page]
   end
 
-  subgraph AppHooks [apps/next @/hooks @/wallet]
+  subgraph AppHooks [apps/web @/hooks @/wallet]
     useWalletAuth[useWalletAuth]
     useLinkWallet[useLinkWallet]
     useWallet[useWallet]

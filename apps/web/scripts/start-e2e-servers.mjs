@@ -20,20 +20,20 @@ const env = {
   NEXT_PUBLIC_API_URL: 'http://localhost:3001',
 }
 
-const fastify = spawn('pnpm', ['--filter', '@repo/fastify', 'start:ci'], {
+const api = spawn('pnpm', ['--filter', '@repo/api', 'start:ci'], {
   cwd: repoRoot,
   env,
   stdio: 'inherit',
 })
-const next = spawn('pnpm', ['--filter', '@repo/next', 'start:e2e:server'], {
+const web = spawn('pnpm', ['--filter', '@repo/web', 'start:e2e:server'], {
   cwd: repoRoot,
   env: { ...env, PORT: '3000' },
   stdio: 'inherit',
 })
 
 function killAll(signal = 'SIGTERM') {
-  fastify.kill(signal)
-  next.kill(signal)
+  api.kill(signal)
+  web.kill(signal)
 }
 process.on('SIGINT', () => {
   killAll()
@@ -44,7 +44,7 @@ process.on('SIGTERM', () => {
   process.exit(0)
 })
 
-for (const proc of [fastify, next])
+for (const proc of [api, web])
   proc.on('exit', code => {
     killAll('SIGKILL')
     process.exit(code ?? 1)

@@ -6,7 +6,7 @@ import { logger } from '@repo/utils/logger/server'
 
 const scriptFile = fileURLToPath(import.meta.url)
 const scriptDir = dirname(scriptFile)
-const openapiPath = join(scriptDir, '../../../apps/fastify/openapi/openapi.json')
+const openapiPath = join(scriptDir, '../../../apps/api/openapi/openapi.json')
 
 function waitForFile() {
   if (existsSync(openapiPath)) {

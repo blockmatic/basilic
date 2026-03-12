@@ -25,7 +25,7 @@ flowchart LR
 TypeBox schemas are native JSON Schema definitions for Fastify routes:
 
 ```typescript
-// apps/fastify/src/routes/users.ts
+// apps/api/src/routes/users.ts
 import { Type } from '@sinclair/typebox'
 
 const UserSchema = Type.Object({
@@ -57,13 +57,13 @@ fastify.get('/users/:id', {
 The OpenAPI specification is automatically generated from Fastify routes:
 
 ```bash
-pnpm --filter @repo/fastify generate:openapi
+pnpm --filter @repo/api generate:openapi
 ```
 
 This runs `generate-openapi.ts` which:
 1. Scans Fastify route definitions
 2. Extracts TypeBox schemas
-3. Generates OpenAPI 3.0 spec at `apps/fastify/openapi/openapi.json`
+3. Generates OpenAPI 3.0 spec at `apps/api/openapi/openapi.json`
 
 **Key benefits:**
 - No manual OpenAPI writing
@@ -128,14 +128,14 @@ const { data, isLoading, error } = useUser()
 When adding a new endpoint:
 
 1. **Implement route** - Define TypeBox schemas and implement Fastify route
-2. **Generate OpenAPI** - Run `pnpm --filter @repo/fastify generate:openapi`
+2. **Generate OpenAPI** - Run `pnpm --filter @repo/api generate:openapi`
 3. **Generate clients** - Run `pnpm --filter @repo/core generate` (generates client and types; `@repo/react` consumes `@repo/core`)
 4. **Use typed client** - Import and use in frontend with full type safety
 
 ## OpenAPI Spec Location
 
 The generated OpenAPI spec is available at:
-- **File**: `apps/fastify/openapi/openapi.json`
+- **File**: `apps/api/openapi/openapi.json`
 - **Endpoint**: `/reference/openapi.json` (programmatic access)
 - **Interactive docs**: `/reference` (Scalar UI)
 

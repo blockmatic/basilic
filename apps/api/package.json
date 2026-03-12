@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "@repo/fastify",
+  "name": "@repo/api",
   "version": "1.0.0",
   "description": "This project was bootstrapped with Fastify-CLI.",
   "main": "dist/server.js",

@@ -57,7 +57,7 @@ export default nextConfig
 
 #### Setup Provider
 
-Create a client component provider (e.g., `app/providers.tsx`). For JWT mode with automatic refresh on 401, provide `getAuthToken`, `getRefreshToken`, and `onTokensRefreshed` (all three required). In `apps/next`, use `getAuthToken`, `getRefreshToken`, and `updateAuthTokens` from `lib/auth/auth-client` (reads single cookie `api.session`):
+Create a client component provider (e.g., `app/providers.tsx`). For JWT mode with automatic refresh on 401, provide `getAuthToken`, `getRefreshToken`, and `onTokensRefreshed` (all three required). In `apps/web`, use `getAuthToken`, `getRefreshToken`, and `updateAuthTokens` from `lib/auth/auth-client` (reads single cookie `api.session`):
 
 ```tsx
 'use client'

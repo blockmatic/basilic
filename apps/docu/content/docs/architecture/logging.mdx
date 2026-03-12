@@ -39,7 +39,7 @@ logger.error({ error }, 'Request failed')
 **Fastify routes**: prefer `request.log` for automatic request context.
 
 ```ts
-// apps/fastify/src/routes/users.ts
+// apps/api/src/routes/users.ts
 import type { FastifyInstance } from 'fastify'
 
 export async function userRoutes(fastify: FastifyInstance) {
@@ -215,7 +215,7 @@ try {
 }
 ```
 
-**5. Integration with `@repo/error`** - When using `captureError` in Fastify, pass `request.log` to use Fastify's native logger. The catalog and response are built in the app (e.g. from `apps/fastify/src/lib/catalogs/`):
+**5. Integration with `@repo/error`** - When using `captureError` in Fastify, pass `request.log` to use Fastify's native logger. The catalog and response are built in the app (e.g. from `apps/api/src/lib/catalogs/`):
 
 ```typescript
 import { captureError } from '@repo/error/node'

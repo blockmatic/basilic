@@ -132,8 +132,8 @@ Tasks are configured in `turbo.json` with:
 - **`@repo/react`** - Watches OpenAPI spec and regenerates React hooks, watches TypeScript for rebuilds
 - **`@repo/error`** - Watches TypeScript for rebuilds
 - **`@repo/utils`** - Watches TypeScript for rebuilds
-- **`@repo/fastify`** - Starts Fastify API server with OpenAPI generation watcher
-- **`@repo/next`** - Starts Next.js development server
+- **`@repo/api`** - Starts Fastify API server with OpenAPI generation watcher
+- **`@repo/web`** - Starts Next.js development server
 
 **Key Features:**
 - Watch mode for automatic rebuilds
@@ -159,6 +159,6 @@ You can run apps directly, but build dependencies first:
 pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/utils
 
 # Then run the app
-cd apps/next
+cd apps/web
 pnpm dev
 ```

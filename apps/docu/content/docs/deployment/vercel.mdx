@@ -30,7 +30,7 @@ Vercel provides:
 
 Set environment variables in Vercel project settings:
 
-**For API (`apps/fastify`):**
+**For API (`apps/api`):**
 ```bash
 DATABASE_URL=postgresql://user:pass@host:5432/dbname
 ENCRYPTION_KEY=<64-char-hex>
@@ -45,7 +45,7 @@ SENTRY_DSN=https://...
 # Optional: OAuth — see [Authentication](/docs/architecture/authentication) for GITHUB_*, GOOGLE_*, OAUTH_*_CALLBACK_URL(S).
 ```
 
-**For Web (`apps/next`):**
+**For Web (`apps/web`):**
 ```bash
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com
 NEXT_PUBLIC_SENTRY_DSN=https://...
@@ -58,26 +58,26 @@ NEXT_PUBLIC_SITE_URL=https://docs.yourdomain.com
 
 ### 3. Deploy
 
-Git deployments are enabled. Vercel automatically builds and deploys on push: preview environments for PRs and branches, production for main/develop. CI workflows (next-e2e, api-e2e, packages-test) run tests locally; they do not trigger deploys.
+Git deployments are enabled. Vercel automatically builds and deploys on push: preview environments for PRs and branches, production for main/develop. CI workflows (web-e2e, api-e2e, packages-test) run tests locally; they do not trigger deploys.
 
 ## Deployment Configuration
 
 ### `vercel.json` (Optional)
 
-Monorepo apps use custom configs. Example for `apps/next`:
+Monorepo apps use custom configs. Example for `apps/web`:
 
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "ignoreCommand": "npx turbo-ignore @repo/next --fallback=HEAD^1",
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/next...",
+  "ignoreCommand": "npx turbo-ignore @repo/web --fallback=HEAD^1",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/web...",
   "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",
   "outputDirectory": ".next"
 }
 ```
 
-Root Directory must be set in Vercel project settings (e.g. `apps/next`).
+Root Directory must be set in Vercel project settings (e.g. `apps/web`).
 
 ## Environment-Specific Configuration
 
@@ -93,18 +93,18 @@ Root Directory must be set in Vercel project settings (e.g. `apps/next`).
 
 ## Path-Based Deploys
 
-Each app uses `ignoreCommand` in `vercel.json` (e.g. `turbo-ignore @repo/next --fallback=HEAD^1`) so Vercel skips builds when the app and its dependencies are unchanged. The build command uses `--filter=@repo/<app>...` to include dependencies. Vercel also has built-in [skipping unaffected projects](https://vercel.com/docs/monorepos#skipping-unaffected-projects) for monorepos; turbo-ignore provides explicit control when Vercel cannot compare against a previous deployment (e.g. new branches).
+Each app uses `ignoreCommand` in `vercel.json` (e.g. `turbo-ignore @repo/web --fallback=HEAD^1`) so Vercel skips builds when the app and its dependencies are unchanged. The build command uses `--filter=@repo/<app>...` to include dependencies. Vercel also has built-in [skipping unaffected projects](https://vercel.com/docs/monorepos#skipping-unaffected-projects) for monorepos; turbo-ignore provides explicit control when Vercel cannot compare against a previous deployment (e.g. new branches).
 
 ## Branch Preview Coupling
 
-Next's `apps/next/next.config.mjs` derives `NEXT_PUBLIC_API_URL` for preview branches as `basilic-fastify-git-{branch}-*.vercel.app`. Ensure Fastify and Next projects are connected to the same Git repo so both get preview deploys on PR branches.
+Next's `apps/web/next.config.mjs` derives `NEXT_PUBLIC_API_URL` for preview branches as `basilic-fastify-git-{branch}-*.vercel.app`. Ensure Fastify and Next projects are connected to the same Git repo so both get preview deploys on PR branches.
 
 ## Monorepo Configuration
 
 For monorepo apps, Vercel needs to know the root directory:
 
 1. Go to Vercel project settings
-2. Set "Root Directory" to `apps/next` (or `apps/docu`, `apps/fastify`)
+2. Set "Root Directory" to `apps/web` (or `apps/docu`, `apps/api`)
 3. Vercel automatically detects package dependencies
 
 **Fork or different project names**: Next's `next.config.mjs` uses `API_PROJECT_NAME` and `TEAM_SLUG` to compute preview API URLs. Update these constants to match your Fastify Vercel project name and team slug.

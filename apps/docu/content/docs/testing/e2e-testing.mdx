@@ -3,7 +3,7 @@ title: "E2E Testing"
 description: "Playwright E2E tests for Next.js app and Fastify API (Scalar login)."
 ---
 
-End-to-end tests run full user flows using Playwright. Two suites: **Next E2E** (apps/next) tests the web app + auth; **Fastify E2E** (apps/fastify) tests Scalar UI login. Both use `test@test.ai` for magic-link when `ALLOW_TEST=true`.
+End-to-end tests run full user flows using Playwright. Two suites: **Web E2E** (apps/web) tests the web app + auth; **Fastify E2E** (apps/api) tests Scalar UI login. Both use `test@test.ai` for magic-link when `ALLOW_TEST=true`.
 
 **Root QA**: `pnpm qa` runs the full pipeline (install → checktypes → lint → build → test) and ends with `pnpm test:e2e`, which runs Fastify E2E then Next E2E via `scripts/run-e2e.mjs` (both use `test:e2e:local` to spawn servers). The E2E script kills any processes on ports 3000 and 3001 before starting (unless `SKIP_KILL_PORTS=1`).
 
@@ -12,12 +12,12 @@ End-to-end tests run full user flows using Playwright. Two suites: **Next E2E** 
 | Command | Description |
 |---------|-------------|
 | `pnpm test:e2e` (root) | Run Fastify API E2E, then Next E2E (spawns local servers) |
-| `pnpm test:e2e` (in apps/next) | Run E2E; expects URLs via env or `--app`/`--api` params |
-| `pnpm test:e2e:local` (in apps/next) | Build (unless `SKIP_BUILD=1`), spawn Fastify + Next, poll until healthy, run tests, cleanup |
-| `pnpm test:e2e` (in apps/fastify) | Run E2E; expects API URL via env or `--api` param |
-| `pnpm test:e2e:local` (in apps/fastify) | Spawn API, poll until healthy, run tests, cleanup |
-| `pnpm test:e2e:ui` (in apps/next or apps/fastify) | Run with Playwright UI |
-| `pnpm test:e2e:debug` (in apps/next or apps/fastify) | Run in debug mode |
+| `pnpm test:e2e` (in apps/web) | Run E2E; expects URLs via env or `--app`/`--api` params |
+| `pnpm test:e2e:local` (in apps/web) | Build (unless `SKIP_BUILD=1`), spawn Fastify + Next, poll until healthy, run tests, cleanup |
+| `pnpm test:e2e` (in apps/api) | Run E2E; expects API URL via env or `--api` param |
+| `pnpm test:e2e:local` (in apps/api) | Spawn API, poll until healthy, run tests, cleanup |
+| `pnpm test:e2e:ui` (in apps/web or apps/api) | Run with Playwright UI |
+| `pnpm test:e2e:debug` (in apps/web or apps/api) | Run in debug mode |
 
 ## URL Configuration
 
@@ -41,9 +41,9 @@ Defaults: Next `NEXT_PUBLIC_APP_URL` or `http://localhost:3000`; API `NEXT_PUBLI
 ## Local Development
 
 1. **Full suite** (root): `pnpm test:e2e` — runs Fastify E2E then Next E2E (both spawn servers, poll, run, cleanup).
-2. **Next only**: `pnpm --filter @repo/next test:e2e:local` — builds, spawns Fastify + Next, runs Next E2E, cleanup.
-3. **Fastify only**: `pnpm --filter @repo/fastify test:e2e:local` — spawns API, runs Scalar login E2E, cleanup.
-4. **Manual** (two terminals): Build with `pnpm --filter @repo/next build:e2e`, run `pnpm --filter @repo/next start:e2e:servers` in one terminal and `pnpm --filter @repo/next test:e2e` in another.
+2. **Next only**: `pnpm --filter @repo/web test:e2e:local` — builds, spawns Fastify + Next, runs Next E2E, cleanup.
+3. **Fastify only**: `pnpm --filter @repo/api test:e2e:local` — spawns API, runs Scalar login E2E, cleanup.
+4. **Manual** (two terminals): Build with `pnpm --filter @repo/web build:e2e`, run `pnpm --filter @repo/web start:e2e:servers` in one terminal and `pnpm --filter @repo/web test:e2e` in another.
 5. **External URLs**: Use `--app` and `--api` (Next) or `--api` (Fastify) to target already-running servers or Vercel previews.
 
 ## Test Email (test@test.ai)
@@ -57,8 +57,8 @@ Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is sto
 
 Test workflows run on pull requests (path-filtered):
 
-- **API E2E** (`api-e2e.yml`) — Runs when `apps/fastify` or its deps change. Spawns Fastify locally, runs Playwright.
-- **Next E2E** (`next-e2e.yml`) — Runs when `apps/next` or its deps change. Spawns Fastify + Next locally, runs Playwright.
+- **API E2E** (`api-e2e.yml`) — Runs when `apps/api` or its deps change. Spawns Fastify locally, runs Playwright.
+- **Web E2E** (`web-e2e.yml`) — Runs when `apps/web` or its deps change. Spawns Fastify + Next locally, runs Playwright.
 - **Packages** (`packages-test.yml`) — Runs when `packages` or `tools` change. Unit tests only; excludes app E2E.
 
 Lint and security run on every PR. See [GitHub Actions](/docs/deployment/github-actions).

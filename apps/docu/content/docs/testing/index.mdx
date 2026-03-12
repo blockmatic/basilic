@@ -17,7 +17,7 @@ Testing patterns using Vitest for backend and Playwright E2E for frontend.
 ### Setup
 
 ```typescript
-// apps/fastify/src/routes/users.test.ts
+// apps/api/src/routes/users.test.ts
 import { describe, it, expect } from 'vitest'
 import { createApp } from '../app'
 
@@ -63,7 +63,7 @@ Frontend apps use **Playwright E2E only** — no unit or integration test suites
 ### E2E Example
 
 ```typescript
-// apps/next/e2e/magic-link-auth.spec.ts
+// apps/web/e2e/magic-link-auth.spec.ts
 import { expect, test } from '@playwright/test'
 import { authHelpers } from './auth-helpers'
 

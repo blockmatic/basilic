@@ -4,11 +4,11 @@
   "tasks": {
     "generate": {
       "dependsOn": [],
-      "inputs": ["$TURBO_DEFAULT$", "../../apps/fastify/openapi/openapi.json"],
+      "inputs": ["$TURBO_DEFAULT$", "../../apps/api/openapi/openapi.json"],
       "outputs": ["src/gen/**"],
       "env": ["NODE_ENV"]
     },
-    "@repo/fastify#generate:openapi": {
+    "@repo/api#generate:openapi": {
       "dependsOn": ["@repo/utils#build", "@repo/error#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
@@ -21,8 +21,8 @@
       ]
     },
     "@repo/core#generate": {
-      "dependsOn": ["@repo/fastify#generate:openapi"],
-      "inputs": ["$TURBO_DEFAULT$", "../../apps/fastify/openapi/openapi.json"],
+      "dependsOn": ["@repo/api#generate:openapi"],
+      "inputs": ["$TURBO_DEFAULT$", "../../apps/api/openapi/openapi.json"],
       "outputs": ["src/gen/**"],
       "env": ["NODE_ENV"]
     },
@@ -167,7 +167,7 @@
         "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
     },
-    "@repo/next#test": {
+    "@repo/web#test": {
       "env": [
         "NODE_ENV",
         "DATABASE_URL",

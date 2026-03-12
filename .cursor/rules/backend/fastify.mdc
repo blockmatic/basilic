@@ -1,6 +1,6 @@
 ---
 description: Fastify backend development standards and patterns
-glob: "apps/fastify/**/*"
+glob: "apps/api/**/*"
 alwaysApply: true
 ---
 
