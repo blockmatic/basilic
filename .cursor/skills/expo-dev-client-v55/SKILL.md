@@ -35,11 +35,17 @@ Ensure `eas.json` has a development profile:
     "development": {
       "autoIncrement": true,
       "developmentClient": true
+    },
+    "testflight": {
+      "autoIncrement": true,
+      "developmentClient": true,
+      "distribution": "store"
     }
   },
   "submit": {
     "production": {},
-    "development": {}
+    "development": {},
+    "testflight": {}
   }
 }
 ```
@@ -51,10 +57,10 @@ Key settings:
 
 ## Building for TestFlight
 
-Build iOS dev client and submit to TestFlight in one command:
+Build iOS dev client and submit to TestFlight in one command (use the `testflight` profile for App Store–signed builds; `development` is for local Metro/dev-client testing):
 
 ```bash
-eas build -p ios --profile development --auto-submit
+eas build -p ios --profile testflight --auto-submit
 ```
 
 This will:

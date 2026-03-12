@@ -4,7 +4,7 @@ import Animated, { Easing, Keyframe } from 'react-native-reanimated'
 
 import classes from './animated-icon.module.css'
 
-const DURATION = 300
+const duration = 300
 
 export function AnimatedSplashOverlay() {
   return null
@@ -62,11 +62,11 @@ export function AnimatedIcon() {
         <Image style={styles.glow} source={require('@/assets/images/logo-glow.png')} />
       </Animated.View>
 
-      <Animated.View style={styles.background} entering={keyframe.duration(DURATION)}>
+      <Animated.View style={styles.background} entering={keyframe.duration(duration)}>
         <div className={classes.expoLogoBackground} />
       </Animated.View>
 
-      <Animated.View style={styles.imageContainer} entering={logoKeyframe.duration(DURATION)}>
+      <Animated.View style={styles.imageContainer} entering={logoKeyframe.duration(duration)}>
         <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />
       </Animated.View>
     </View>

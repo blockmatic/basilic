@@ -114,10 +114,16 @@ on:
       - release/*
 
 jobs:
-  build:
+  build-ios:
     type: build
     params:
-      platform: all
+      platform: ios
+      profile: production
+
+  build-android:
+    type: build
+    params:
+      platform: android
       profile: production
 ```
 
@@ -134,19 +140,32 @@ on:
 
 jobs:
   check-changes:
-    type: run
-    params:
-      command: |
-        if git diff --name-only HEAD~1 | grep -q "^src/"; then
-          set-output has_changes true
-        fi
+    outputs:
+      has_changes: ${{ steps.check.outputs.has_changes }}
+    steps:
+      - uses: eas/checkout
+      - id: check
+        run: |
+          if git diff --name-only HEAD~1 | grep -q "^src/"; then
+            set-output has_changes "true"
+          else
+            set-output has_changes "false"
+          fi
 
-  build:
+  build-ios:
     type: build
     needs: [check-changes]
     if: needs.check-changes.outputs.has_changes == 'true'
     params:
-      platform: all
+      platform: ios
+      profile: production
+
+  build-android:
+    type: build
+    needs: [check-changes]
+    if: needs.check-changes.outputs.has_changes == 'true'
+    params:
+      platform: android
       profile: production
 ```
 

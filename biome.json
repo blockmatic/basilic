@@ -114,7 +114,7 @@
   },
   "overrides": [
     {
-      "includes": ["**/apps/mobile/**"],
+      "includes": ["**/apps/mobile/src/**"],
       "linter": {
         "rules": {
           "style": {
@@ -188,7 +188,7 @@
         "**/next.config.mjs",
         "**/packages/email/**",
         "**/packages/notif/**",
-        "**/apps/mobile/**"
+        "**/apps/mobile/**/app/**/*.tsx"
       ],
       "linter": {
         "rules": {

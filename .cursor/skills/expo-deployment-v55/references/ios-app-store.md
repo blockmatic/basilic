@@ -35,6 +35,7 @@ Configure in `eas.json`:
   "submit": {
     "production": {
       "ios": {
+        "ascAppId": "1234567890",
         "ascApiKeyPath": "./AuthKey_XXXXX.p8",
         "ascApiKeyIssuerId": "xxxxx-xxxx-xxxx-xxxx-xxxxx",
         "ascApiKeyId": "XXXXXXXXXX"
@@ -61,6 +62,7 @@ For non-API-key submissions, configure `appleId` in `eas.json` and provide an ap
   "submit": {
     "production": {
       "ios": {
+        "ascAppId": "1234567890",
         "appleId": "your@email.com"
       }
     }

@@ -4,8 +4,8 @@ import { Dimensions, StyleSheet, View } from 'react-native'
 import Animated, { Easing, Keyframe } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
 
-const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90
-const DURATION = 600
+const initialScaleFactor = Dimensions.get('screen').height / 90
+const duration = 600
 
 export function AnimatedSplashOverlay() {
   const [visible, setVisible] = useState(true)
@@ -14,7 +14,7 @@ export function AnimatedSplashOverlay() {
 
   const splashKeyframe = new Keyframe({
     0: {
-      transform: [{ scale: INITIAL_SCALE_FACTOR }],
+      transform: [{ scale: initialScaleFactor }],
       opacity: 1,
     },
     20: {
@@ -33,7 +33,7 @@ export function AnimatedSplashOverlay() {
 
   return (
     <Animated.View
-      entering={splashKeyframe.duration(DURATION).withCallback(finished => {
+      entering={splashKeyframe.duration(duration).withCallback(finished => {
         'worklet'
         if (finished) scheduleOnRN(setVisible, false)
       })}
@@ -44,7 +44,7 @@ export function AnimatedSplashOverlay() {
 
 const keyframe = new Keyframe({
   0: {
-    transform: [{ scale: INITIAL_SCALE_FACTOR }],
+    transform: [{ scale: initialScaleFactor }],
   },
   100: {
     transform: [{ scale: 1 }],
@@ -85,8 +85,8 @@ export function AnimatedIcon() {
         <Image style={styles.glow} source={require('@/assets/images/logo-glow.png')} />
       </Animated.View>
 
-      <Animated.View entering={keyframe.duration(DURATION)} style={styles.background} />
-      <Animated.View style={styles.imageContainer} entering={logoKeyframe.duration(DURATION)}>
+      <Animated.View entering={keyframe.duration(duration)} style={styles.background} />
+      <Animated.View style={styles.imageContainer} entering={logoKeyframe.duration(duration)}>
         <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />
       </Animated.View>
     </View>
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
   },
   background: {
     borderRadius: 40,
+    // biome-ignore lint/style/useNamingConvention: React Native web style property
     experimental_backgroundImage: 'linear-gradient(180deg, #3C9FFE, #0274DF)',
     width: 128,
     height: 128,

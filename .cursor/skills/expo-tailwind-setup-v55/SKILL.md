@@ -27,12 +27,12 @@ This setup uses:
 npx expo install tailwindcss@^4 nativewind@5.0.0-preview.2 react-native-css@0.0.0-nightly.5ce6396 @tailwindcss/postcss tailwind-merge clsx
 ```
 
-Add resolutions for lightningcss compatibility:
+Add pnpm overrides for lightningcss compatibility:
 
 ```json
 // package.json
 {
-  "resolutions": {
+  "overrides": {
     "lightningcss": "1.30.1"
   }
 }
@@ -310,7 +310,7 @@ export const Animated = {
 
 ## Usage
 
-See also: [@expo-deployment-v55](/skills/expo-deployment-v55), [@expo-cicd-workflows-v55](/skills/expo-cicd-workflows-v55).
+See also: @expo-deployment-v55, @expo-cicd-workflows-v55.
 
 Import CSS-wrapped components from your tw directory:
 
@@ -465,18 +465,18 @@ function MyComponent() {
 
 ## Key Differences from NativeWind v4 / Tailwind v3
 
-See also: [@expo-deployment-v55](/skills/expo-deployment-v55), [@expo-cicd-workflows-v55](/skills/expo-cicd-workflows-v55).
+See also: @expo-deployment-v55, @expo-cicd-workflows-v55.
 
 1. **No babel.config.js** - Configuration is now CSS-first
 2. **PostCSS plugin** - Uses `@tailwindcss/postcss` instead of `tailwindcss`
-3. **CSS imports** - Use `@import "tailwindcss/..."` instead of `@tailwind` directives
+3. **CSS imports** - Use single `@import "tailwindcss";` (granular imports like `@import "tailwindcss/components";` only as an explicit exception)
 4. **Theme config** - Use `@theme` in CSS instead of `tailwind.config.js`
 5. **Component wrappers** - Must wrap components with `useCssElement` for className support
 6. **Metro config** - Use `withNativewind` with different options (`inlineVariables: false`)
 
 ## Troubleshooting
 
-See also: [@expo-deployment-v55](/skills/expo-deployment-v55), [@expo-cicd-workflows-v55](/skills/expo-cicd-workflows-v55).
+See also: @expo-deployment-v55, @expo-cicd-workflows-v55.
 
 ### Styles not applying
 
