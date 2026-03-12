@@ -147,7 +147,7 @@
       }
     },
     {
-      "includes": ["**/packages/cli/**"],
+      "includes": ["**/packages/cli/src/cli.ts", "**/packages/cli/src/gen/**"],
       "linter": {
         "rules": {
           "suspicious": { "noConsole": "off" },

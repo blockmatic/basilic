@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { createInterface } from 'node:readline'
+import { Writable } from 'node:stream'
 import { createClient } from '@repo/core'
 import { Command } from 'commander'
 import { loadConfig, resolveApiKey, resolveBaseUrl, saveConfig } from './config.js'
@@ -8,11 +9,23 @@ import { commandSpecs, operationMeta } from './gen/commands.gen.js'
 import { runCommand } from './run-command.js'
 
 async function promptApiKey(): Promise<string> {
-  const rl = createInterface({ input: process.stdin, output: process.stdout })
-  return new Promise(resolve => {
+  const mutedStdout = new Writable({
+    write(chunk, _encoding, callback) {
+      if (!(mutedStdout as Writable & { muted?: boolean }).muted) process.stdout.write(chunk)
+      callback()
+    },
+  }) as Writable & { muted?: boolean }
+  mutedStdout.muted = true
+  const rl = createInterface({ input: process.stdin, output: mutedStdout, terminal: true })
+  return new Promise((resolve, reject) => {
     rl.question('API key: ', answer => {
       rl.close()
+      mutedStdout.muted = false
       resolve(answer.trim())
+    })
+    rl.once('error', err => {
+      mutedStdout.muted = false
+      reject(err)
     })
   })
 }
@@ -126,8 +139,9 @@ function registerApiCommand(cmd: Command, spec: CommandSpec, meta: OperationMeta
   for (const p of meta.bodyParams) cmd.option(`--${p.name} <value>`, `body.${p.name}`)
   cmd.option('--body <json>', 'raw JSON body (overrides individual body opts)')
   cmd.action(async function (this: Command, ...positionalArgs: unknown[]) {
-    const baseUrl = (this.parent?.opts().baseUrl as string) ?? resolveBaseUrl()
-    const optsFromCmd = (this.opts?.() ?? {}) as Record<string, unknown>
+    const merged = this.optsWithGlobals() as Record<string, unknown>
+    const baseUrl = (merged.baseUrl as string) ?? resolveBaseUrl()
+    const optsFromCmd = merged
     const pathParamValues: Record<string, string> = {}
     meta.pathParams.forEach((p, i) => {
       const val = positionalArgs[i]

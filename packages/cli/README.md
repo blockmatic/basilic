@@ -5,10 +5,6 @@ TypeScript CLI to interact with the Basilic Fastify API via `@repo/core`. API ke
 ## Usage
 
 ```bash
-# Install
-pnpm add -g @repo/cli
-
-# Or run from monorepo
 pnpm --filter @repo/cli build
 node packages/cli/dist/cli.js --help
 ```
@@ -18,7 +14,7 @@ node packages/cli/dist/cli.js --help
 Requires an API key. Resolved in order:
 
 1. `API_KEY` or `BASILIC_API_KEY` env var
-2. Config file (`~/.config/basilic/config.json` or `XDG_CONFIG_HOME/basilic/config.json`)
+2. Config file (`~/.config/basilic/config.json` or `$XDG_CONFIG_HOME/basilic/config.json`)
 3. Interactive prompt (saves to config)
 
 ```bash

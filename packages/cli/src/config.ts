@@ -38,14 +38,14 @@ export function loadConfig(): Config {
 export function saveConfig({ apiKey, baseUrl }: Partial<Config>): void {
   const path = getConfigPath()
   const dir = join(path, '..')
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true, mode: 0o700 })
   const current = loadConfig()
   const next: Config = {
     ...current,
     ...(apiKey !== undefined && { apiKey }),
     ...(baseUrl !== undefined && { baseUrl }),
   }
-  writeFileSync(path, JSON.stringify(next, null, 2), 'utf-8')
+  writeFileSync(path, JSON.stringify(next, null, 2), { encoding: 'utf-8', mode: 0o600 })
 }
 
 export function resolveApiKey(): string | undefined {

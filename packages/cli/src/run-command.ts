@@ -55,14 +55,24 @@ export async function runCommand({
         } catch {
           bodyParams[p.name] = [{ role: 'user', content: v }]
         }
-      else if (p.name === 'stream' && (v === 'true' || v === '1')) bodyParams[p.name] = true
+      else if (p.name === 'stream')
+        if (v === 'true' || v === '1') bodyParams[p.name] = true
+        else if (v === 'false' || v === '0') bodyParams[p.name] = false
+        else throw new Error(`Invalid --stream value: ${v}. Use true, 1, false, or 0`)
       else if ((p.name === 'temperature' || p.name === 'model') && v)
-        bodyParams[p.name] = p.name === 'temperature' ? Number.parseFloat(v) : v
+        if (p.name === 'temperature') {
+          const n = Number.parseFloat(v)
+          if (!Number.isFinite(n))
+            throw new Error(`Invalid --temperature value: ${v}. Must be a finite number`)
+          bodyParams[p.name] = n
+        } else {
+          bodyParams[p.name] = v
+        }
       else if (p.name === 'tools' && typeof v === 'string')
         try {
           bodyParams[p.name] = JSON.parse(v) as unknown
         } catch {
-          bodyParams[p.name] = undefined
+          throw new Error(`Invalid --tools JSON: ${v}`)
         }
       else bodyParams[p.name] = v
   }
