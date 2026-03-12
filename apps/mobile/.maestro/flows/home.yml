@@ -1,0 +1,8 @@
+# Basic E2E flow: launch app and assert home screen content
+# Run: maestro test .maestro/flows/home.yml (app must be installed on emulator/simulator)
+appId: com.blockmatic.basilic
+---
+- launchApp:
+    clearState: true
+- assertVisible: 'Welcome to Expo'
+- assertVisible: 'get started'

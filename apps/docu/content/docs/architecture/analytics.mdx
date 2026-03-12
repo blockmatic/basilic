@@ -1,0 +1,67 @@
+---
+title: "Product Analytics"
+description: "Recommended approach for tracking product usage across web and mobile apps using PostHog."
+---
+
+We recommend **PostHog** for product analytics across web and mobile applications. PostHog provides event tracking, funnels, retention, cohorts, session replay, feature flags, and experiments in one platform.
+
+## Why PostHog
+
+- **Multi-platform**: Official SDKs for Next.js (web) and Expo (React Native)
+- **Generous free tier**: 1M events, 5K recordings, 1M feature-flag requests per month at no cost
+- **Full product analytics**: Funnels, retention, cohorts, user paths, A/B testing
+- **Cloud or self-hosted**: Start with PostHog Cloud; self-host when required
+- **Open source**: MIT license, transparency, no vendor lock-in
+
+## PostHog Cloud Pricing
+
+### Free Tier (No Credit Card)
+
+| Product           | Free monthly allowance |
+| ----------------- | ---------------------- |
+| Product analytics | 1M events              |
+| Session replay    | 5K recordings          |
+| Feature flags     | 1M requests            |
+| Surveys           | 1,500 responses        |
+| Error tracking    | 100K exceptions        |
+
+The free tier resets every month. Most companies stay within these limits. See [PostHog pricing](https://posthog.com/pricing) for full details.
+
+### Usage-Based (Beyond Free Tier)
+
+Pay only when you exceed free limits. You can set billing limits per product to avoid unexpected costs. Rates start at roughly $0.00005/event for product analytics.
+
+## Integration
+
+### Web (Next.js)
+
+- Use `posthog-js` (or `posthog-node` for server-side events)
+- Defer loading with `next/dynamic` so analytics do not block the UI
+- See Vercel React skill: load analytics after hydration
+
+### Mobile (Expo)
+
+- Use `posthog-react-native`
+- Peer deps: `expo-file-system`, `expo-application`, `expo-device`, `expo-localization`
+- Wrap the app with `PostHogProvider`
+
+### Events to Track
+
+- Page/screen views (often auto-captured)
+- Key actions: signup, feature usage, conversions
+- Custom properties for segmentation (e.g. plan, source)
+
+## Self-Hosting
+
+When data must stay on your infrastructure:
+
+- **Hardware**: ~4 vCPU, 16 GB RAM, 30+ GB storage (e.g. Hetzner VM)
+- **Stack**: Docker Compose (PostHog, ClickHouse, Kafka, Redis, PostgreSQL, MinIO, Caddy)
+- **Domain**: A record for Let's Encrypt SSL
+
+See [PostHog self-host docs](https://posthog.com/docs/self-host) for setup. Note: paid-plan features (e.g. advanced experiments) are Cloud-only.
+
+## Related Documentation
+
+- [ADR 011: Product Analytics](/docs/adrs/011-product-analytics) - Decision record and alternatives considered
+- [Logging](/docs/architecture/logging) - Server and client logging (distinct from product analytics)

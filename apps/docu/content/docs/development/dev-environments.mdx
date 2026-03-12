@@ -1,0 +1,195 @@
+---
+title: "Dev Environments"
+description: "Local vs remote VPC development, port requirements, and Expo workflow across IDEs."
+---
+
+Strategy for supporting all IDEs, local PC development, and remote VPC development across the basilic monorepo.
+
+## Quick Reference
+
+| Context | Web + API | Mobile (Expo) |
+|---------|-----------|---------------|
+| Local | `pnpm dev` | `pnpm --filter @repo/mobile start` |
+| Remote + Cursor | `pnpm dev` (ports auto-tunnel) | `pnpm --filter @repo/mobile start:localhost` |
+| Remote + other IDE | Forward 3000, 3001; run `pnpm dev` | Forward 8081 + `start:localhost`, or use `start:tunnel` |
+| Physical device (remote Metro) | — | Use `start:tunnel` (port forwarding does not help devices) |
+
+## Overview
+
+The monorepo must work consistently whether you develop locally (macOS, Linux, Windows) or on a remote VPC. This document defines port requirements, app-specific behavior, and environment-agnostic patterns so any IDE (Cursor, VS Code, Neovim, JetBrains, etc.) can be used.
+
+## Core Principles
+
+1. **IDE-agnostic** – No assumptions about Cursor, VS Code Remote, or other tools. Docs and scripts work for any setup.
+2. **Port transparency** – All required ports are documented. **Cursor automatically tunnels ports** when connected to a remote host; VS Code Remote-SSH can auto-forward. Other IDEs rely on manual port forwarding or `--tunnel` for mobile.
+3. **Environment detection** – Commands and env vars support both local and remote contexts; docs explain both paths.
+
+## Required Ports
+
+| Port | App/Service | Purpose |
+|------|-------------|---------|
+| 3000 | Next.js (web) | Web dev server |
+| 3001 | Fastify (api) | API dev server |
+| 8081 | Expo (mobile) | Metro bundler |
+| 19000 | Expo | Expo DevTools / manifest |
+| 19001 | Expo | Expo DevTools (alt) |
+
+**Cursor** automatically tunnels these ports when connected to a remote host; no manual config needed. VS Code Remote-SSH can auto-forward when servers start. With other IDEs, manually forward these ports or use Expo `--tunnel` for mobile.
+
+## Local PC Development
+
+Standard workflow: run everything on the same machine where the IDE and simulators live.
+
+### Web + API
+
+```bash
+pnpm dev
+```
+
+Starts Turborepo `dev` pipeline: Fastify, Next.js, and dependent packages. Uses LAN addresses by default.
+
+### Mobile (Expo)
+
+```bash
+pnpm --filter @repo/mobile start
+# or: cd apps/mobile && pnpm start
+```
+
+- **Default** – Expo uses LAN; simulator/device connects via your machine's IP.
+- **iOS Simulator** – Requires macOS + Xcode; runs locally.
+- **Android Emulator** – Runs locally (Linux/macOS/Windows).
+
+## Remote VPC Development
+
+When the repo and dev servers run on a remote VPC, the simulator and browser run on your local machine and must reach Metro/API/Next over the network. **Note**: If the VPC runs Linux, you cannot run the iOS Simulator there (Xcode is macOS-only). Use a local Mac for iOS or rely on Expo Go on a physical device + tunnel.
+
+### Port Forwarding (Cursor, VS Code Remote-SSH)
+
+**Cursor** automatically tunnels ports from remote to local when you connect to a VPC. No setup required—run Expo and the simulator will reach Metro via `localhost` once forwarded.
+
+If your IDE forwards ports from remote to local:
+
+1. Ensure ports `3000`, `3001`, `8081` (and optionally `19000`, `19001`) are forwarded. Cursor does this automatically; in VS Code, check the Ports view.
+2. Run Expo with `--localhost` so it advertises `localhost:8081` instead of the VPC's LAN IP:
+
+   ```bash
+   pnpm --filter @repo/mobile start:localhost
+   ```
+
+3. The simulator on your local machine connects to `localhost:8081`, which is tunneled to the remote Metro server.
+
+### Tunnel Mode (No Port Forwarding)
+
+When port forwarding is unavailable or unreliable:
+
+```bash
+pnpm --filter @repo/mobile start:tunnel
+```
+
+Expo creates a public URL (via ngrok). Simulators and physical devices can connect regardless of network. Expect higher latency. **Physical devices** (real phones/tablets) cannot use `localhost`—they run on a different machine. Port forwarding only helps simulators on your dev machine. For physical devices with remote Metro, always use `--tunnel`.
+
+### Network / VPN
+
+If the VPC is reachable from your machine (VPN or shared network):
+
+- Use `--lan` (or default). Expo will advertise the VPC's IP.
+- Ensure your local machine can reach the VPC IP on ports `3000`, `3001`, `8081`.
+
+## App-Specific Notes
+
+### Expo (apps/mobile)
+
+| Scenario | Command | Simulator connects via |
+|----------|---------|------------------------|
+| Local dev | `pnpm --filter @repo/mobile start` | LAN IP (default) |
+| Remote + port forwarding | `pnpm --filter @repo/mobile start:localhost` | `localhost:8081` (tunneled) |
+| Remote + no forwarding | `pnpm --filter @repo/mobile start:tunnel` | Public ngrok URL |
+| Remote + VPN / same LAN | `pnpm --filter @repo/mobile start` | VPC IP:8081 |
+
+Scripts `start:localhost` and `start:tunnel` are available in `apps/mobile` for convenience.
+
+#### Expo Setup Details
+
+**Prerequisites**
+
+- **iOS Simulator**: macOS with Xcode. Run `xcode-select --install` if needed. Simulator is in Xcode → Open Developer Tool → Simulator.
+- **Android Emulator**: Android Studio with an AVD. Create a virtual device in AVD Manager.
+- **Expo Go** (physical device): Install from App Store / Play Store. Connects via QR code or LAN/tunnel URL.
+
+**Expo Go vs development builds**
+
+- **Expo Go** – Default. No native build needed. `pnpm start` → scan QR or press `i` / `a` to open simulator. Use when the app has no custom native code.
+- **Development builds** – Required for custom native modules (e.g. `expo-dev-client`). Build locally with `eas build` or `npx expo run:ios` / `run:android`. Simulator builds run on the machine where the simulator lives (e.g. your Mac for iOS).
+
+**Workflow: remote VPC + Cursor**
+
+1. Connect Cursor to the remote VPC (SSH).
+2. Open terminal in Cursor, run: `pnpm --filter @repo/mobile start:localhost`.
+3. Cursor auto-tunnels port 8081. Press `i` (iOS) or `a` (Android) in the Expo CLI.
+4. Simulator launches locally and loads the bundle from `localhost:8081` (forwarded to remote Metro).
+
+**Hot reload / Fast Refresh** works over tunnels and port forwarding, but may feel slightly slower than local due to network latency.
+
+**API / env for mobile**
+
+- The app runs in the simulator on your local machine. API requests must reach wherever your backend is.
+- If Fastify runs on the remote VPC and Cursor forwards 3001: configure `EXPO_PUBLIC_API_URL=http://localhost:3001` (or equivalent) in `apps/mobile/.env`. The simulator will hit localhost:3001, which Cursor tunnels to the remote API.
+- If using tunnel for Expo, the API must be reachable from the device—use a public URL or ensure the device is on the same network.
+
+**Troubleshooting Expo**
+
+| Issue | Fix |
+|-------|-----|
+| "Unable to resolve module" / red box | Run `pnpm install` at repo root; restart Metro with `pnpm start` (clear cache: `expo start -c`). |
+| Simulator can't connect to Metro (remote) | Use `--localhost` when Cursor forwards ports; or `--tunnel` if not. Ensure 8081 is in the Ports panel (Cursor/VS Code). |
+| "Network response timed out" | API unreachable. Check `EXPO_PUBLIC_API_URL` and that the API host is reachable from the simulator. |
+| iOS Simulator not found | Open Xcode Simulator first, or run `open -a Simulator` before pressing `i`. |
+| Android emulator not found | Start an AVD from Android Studio; ensure `adb devices` lists it. |
+
+### Next.js / Fastify
+
+These run where you execute `pnpm dev`. Browsers reach them via `localhost` (when forwarded) or VPC IP (when on VPN). Database (PGLite/Postgres) runs alongside the API on the same host.
+
+## Scripts (apps/mobile)
+
+| Script | Command | Use case |
+|--------|---------|----------|
+| `start` | `expo start` | Local dev, default LAN |
+| `start:localhost` | `expo start --localhost` | Remote + port forwarding (Cursor, VS Code) |
+| `start:tunnel` | `expo start --tunnel` | Remote without forwarding, or physical device |
+
+## IDE Support Matrix
+
+| IDE | Port forwarding | Remote (VPC) workflow |
+|-----|-----------------|----------------------|
+| Cursor | **Automatic** – tunnels ports | Use `--localhost`; 8081 auto-fwd |
+| VS Code | Remote-SSH (Ports view) | Same as Cursor |
+| Neovim | Manual / `ssh -L` | Use `--tunnel` or SSH port fwd |
+| JetBrains | Remote Dev | Forward ports or use `--tunnel` |
+| Other | Varies | Prefer `--tunnel` for mobile |
+
+## Common Gotchas
+
+- **Remote + simulator won't connect** – Forgot `--localhost`? Without it, Expo advertises the VPC IP, which your laptop may not reach. Use `start:localhost` when using port forwarding.
+- **Physical device + remote Metro** – Port forwarding does not help. The device runs the app; its `localhost` is the device itself. Use `start:tunnel`.
+- **iOS Simulator on Linux VPC** – Impossible. Xcode is macOS-only. Use a local Mac or a physical iPhone + tunnel.
+- **API unreachable from app** – Set `EXPO_PUBLIC_API_URL` (or equivalent) to a URL the simulator can reach: `http://localhost:3001` when 3001 is forwarded.
+
+## Environment Variables
+
+No special env vars are required to distinguish local vs remote. The same `.env` files work in both contexts. Ensure:
+
+- `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_*` (and `EXPO_PUBLIC_*` for mobile) must point to a host your browser/simulator can reach: `localhost` when ports are forwarded, or VPC/public URL when on VPN or tunnel.
+
+## Checklist: New Developer Setup
+
+1. Clone repo, run `pnpm setup`.
+2. Decide: local only, or remote VPC?
+3. If remote with Cursor: ports are auto-tunneled; use `pnpm --filter @repo/mobile start:localhost` for Expo. With other IDEs: configure port forwarding or use `start:tunnel` for mobile.
+4. Run `pnpm dev` (web/api) and `pnpm --filter @repo/mobile start` (or `start:localhost` / `start:tunnel` for remote) from repo root.
+5. Verify simulator/device can load the app and reach the API.
+
+## Related
+
+- [Dev Tooling](/docs/development/dev-tooling) – pnpm, Biome, ESLint, Turborepo
+- [Onboard new developer](../../../../../.cursor/commands/onboard-new-developer.md) – Full onboarding process

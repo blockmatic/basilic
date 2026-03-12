@@ -82,6 +82,7 @@
   },
   "exports": {
     "./globals.css": "./src/styles/globals.css",
+    "./tokens.css": "./src/styles/tokens.css",
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",

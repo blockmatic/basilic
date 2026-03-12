@@ -67,6 +67,40 @@ TypeScript configuration for React component libraries. Extends the base configu
 }
 ```
 
+### Expo Configuration (`expo.json`)
+
+TypeScript configuration for Expo/React Native applications. Extends `expo/tsconfig.base` for Metro compatibility.
+
+**Features:**
+
+- Expo/Metro-compatible base (from expo/tsconfig.base)
+- Strict mode enabled
+- ts-reset integration via reset.d.ts
+
+**Usage:**
+
+```json
+// apps/mobile/tsconfig.json
+{
+  "extends": "@repo/typescript-config/expo.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "../../tools/typescript/reset.d.ts"
+  ]
+}
+```
+
+**Note:** Consumers must add `../../tools/typescript/reset.d.ts` to their `include` array since TypeScript replaces (does not merge) `include` when extending.
+
 ## Installation
 
 This package is part of the monorepo and is automatically available to all packages and apps. No separate installation needed.

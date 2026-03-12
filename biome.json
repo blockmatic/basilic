@@ -30,6 +30,8 @@
       "!*.pem",
       "!**/.react-email",
       "!**/__dev",
+      "!**/.expo",
+      "!**/expo-env.d.ts",
       "!**/next-env.d.ts",
       "!**/openapi/*.json"
     ],
@@ -112,6 +114,16 @@
   },
   "overrides": [
     {
+      "includes": ["**/apps/mobile/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNodejsImportProtocol": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/lib/env.ts", "**/env.ts", "**/load-env.ts"],
       "linter": {
         "rules": {
@@ -134,8 +146,10 @@
       "includes": [
         "scripts/**/*.mjs",
         "scripts/**/*.js",
+        "scripts/**/*.cjs",
         "**/scripts/**/*.ts",
         "**/scripts/**/*.js",
+        "**/scripts/**/*.cjs",
         ".cursor/skills/**/*.js"
       ],
       "linter": {
@@ -173,7 +187,8 @@
         "**/lib/auth/**",
         "**/next.config.mjs",
         "**/packages/email/**",
-        "**/packages/notif/**"
+        "**/packages/notif/**",
+        "**/apps/mobile/**/app/**/*.tsx"
       ],
       "linter": {
         "rules": {

@@ -1,0 +1,70 @@
+---
+title: "Mobile CI/CD"
+description: "EAS builds, preview distribution, and PR OTA updates for the Expo app. Android-only v1."
+---
+
+Mobile CI/CD uses GitHub Actions and EAS (Expo Application Services) for builds and PR previews. v1 is **Android-only**; no Apple/Google developer accounts required. Store submission is deferred.
+
+## v1 Flow: Install Once, Review Many PRs
+
+1. **Bootstrap (one-time)**: Build Android preview (manual or from main) → share Expo internal distribution link with reviewers.
+2. **Reviewers**: Install the APK on their devices (one time).
+3. **Per PR**: `mobile-pr-preview` publishes an EAS Update and comments a QR code on the PR.
+4. **Reviewers**: Open the installed app, scan the QR → load that PR's update.
+
+**Without steps 1–2, OTA updates have nothing to attach to.** Reviewers cannot use QR-only previews without a baseline build installed first.
+
+## EAS Update: JS-Only
+
+EAS Update delivers **JS/TS changes only**. A new build is required for:
+
+- Native dependencies (new packages with native code)
+- Config plugins, app.json/native config changes
+- Permissions (camera, location, etc. in app.json)
+- Splash, icon, adaptive icon changes
+- Any change that affects the native binary
+
+When such a change lands, run a manual build or merge to main so `mobile-preview` produces a fresh baseline. PR OTA will then work again.
+
+## Workflows
+
+| Workflow | Trigger | Use |
+|----------|---------|-----|
+| `mobile-build` | Manual | One-off Android preview or development build |
+| `mobile-preview` | Push to `main` | Auto-build baseline when mobile or UI changes |
+| `mobile-pr-preview` | Pull request | Publish OTA update, comment QR (app-facing PRs only) |
+
+Path filters for `mobile-preview` and `mobile-pr-preview`: `apps/mobile/**`, `packages/ui/**` — avoids running on unrelated PRs.
+
+## Setup
+
+### 1. EAS and EXPO_TOKEN
+
+1. Run `cd apps/mobile && npx eas-cli@latest init` (requires Expo account login).
+2. Create a [robot user](https://docs.expo.dev/accounts/programmatic-access/#robot-users-and-access-tokens) and access token.
+3. Add `EXPO_TOKEN` to GitHub repo: Settings → Secrets and variables → Actions.
+
+**EXPO_TOKEN is required.** Workflows fail without it for configured repos.
+
+### 2. Bootstrap Build
+
+Run `mobile-build` manually (profile: preview, platform: android). Share the Expo build link with reviewers so they can install the baseline APK.
+
+### 3. First PR Preview
+
+Create a PR that touches `apps/mobile/` or `packages/ui/`. `mobile-pr-preview` will publish an update and comment with a QR code. Reviewers scan the QR in the installed app to load the PR's update.
+
+## eas.json
+
+Build profiles (v1): `preview`, `development`, `e2e-test`. No `submit` block until Apple/Google exist. See [When You Add Apple/Google](#when-you-add-applegoogle) below.
+
+## When You Add Apple/Google
+
+1. **Apple**: Enroll in Apple Developer Program; run `eas credentials` from `apps/mobile`. Add `submit` block to `eas.json`.
+2. **Google**: Create Play Console app, add service account JSON to EAS or GitHub Secrets. Extend `submit` block.
+3. **Workflows**: Add `mobile-release` (tag trigger) and `mobile-submit` (manual). Change `mobile-preview` and `mobile-build` to `--platform all` when iOS credentials exist.
+
+## Related Documentation
+
+- [GitHub Actions](/docs/deployment/github-actions) - All CI workflows
+- [E2E Testing](/docs/testing/e2e-testing) - Maestro flows for mobile

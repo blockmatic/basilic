@@ -1,0 +1,127 @@
+---
+title: "ADR 010: Expo CI/CD"
+description: "Decision to use EAS (Expo Application Services) with GitHub Actions for mobile builds, preview distribution, and PR OTA updates. Android-only v1; store submission deferred."
+---
+
+## Context
+
+The monorepo includes an Expo app (`apps/mobile`) targeting Android, iOS, and web. We need CI/CD that:
+
+- Enables **PR previews** so reviewers can test changes without building locally
+- Requires **no Apple or Google developer accounts** for initial setup (lower barrier)
+- Integrates with **GitHub Actions** (our existing CI platform)
+- Supports **OTA updates** for fast iteration on JS/TS-only changes
+- Uses **path filters** so mobile workflows run only when `apps/mobile/` or `packages/ui/` change
+- Aligns with our monorepo (Turborepo, pnpm) and deployment practices
+
+## Considered Options
+
+### Option A – EAS + GitHub Actions (Chosen)
+
+EAS Build for native binaries, EAS Update for OTA, GitHub Actions for orchestration.
+
+**Pros**
+
+- **Install once, review many PRs**: Build baseline APK → reviewers install → each PR ships OTA with QR code
+- **No store accounts for v1**: Internal distribution link for preview builds; no Apple/Google enrollment
+- **OTA for JS-only changes**: Fast PR feedback without rebuilds; EAS Update handles channel-based delivery
+- **Path-filtered workflows**: `mobile-preview` and `mobile-pr-preview` run only when mobile/UI changes
+- **Fits existing stack**: GitHub Actions, EXPO_TOKEN, familiar YAML workflow format
+- **Maestro-ready**: `e2e-test` profile for simulator/emulator builds; optional mobile-e2e workflow later
+
+**Cons**
+
+- Requires Expo account and `EXPO_TOKEN` in GitHub Secrets
+- EAS Update is JS-only; native changes (deps, config plugins, permissions) need new builds
+- Reviewers must install baseline APK before PR OTA works
+
+### Option B – Local Builds Only
+
+Developers build and share artifacts manually (e.g., `eas build`, adb install).
+
+**Pros**
+
+- No CI setup, no cloud dependency
+- Full control over build environment
+
+**Cons**
+
+- No automated PR previews; slows review cycles
+- Inconsistent environments across developers
+- Does not scale for team collaboration
+
+### Option C – Codemagic / Bitrise / Other Mobile CI
+
+Third-party mobile CI services with native build support.
+
+**Pros**
+
+- Purpose-built for mobile, often simpler UI
+- Can handle iOS signing and provisioning
+
+**Cons**
+
+- Additional service and vendor to manage
+- Less integration with our GitHub-centric workflow
+- Often requires store accounts sooner
+- EAS is the canonical Expo build service; better alignment
+
+### Option D – Full Build Per PR
+
+Trigger a full native build for every PR instead of OTA.
+
+**Pros**
+
+- Always delivers a complete binary; no baseline dependency
+
+**Cons**
+
+- Slow (10–20+ min per build); expensive on EAS
+- Unnecessary when only JS/TS changed
+- OTA is sufficient for most PR review scenarios; full build reserved for native changes or main
+
+## Decision
+
+We adopt **EAS (Expo Application Services) + GitHub Actions** for mobile CI/CD.
+
+### TLDR: Comparison Table
+
+| Feature | EAS + GitHub Actions ✅ | Local Only | Third-Party CI | Full Build Per PR |
+|---------|-------------------------|------------|---------------|-------------------|
+| **PR preview** | ✅ OTA + QR comment | ❌ Manual | ✅ Often supported | ⚠️ Slow |
+| **v1 no store accounts** | ✅ Internal dist | ✅ N/A | ⚠️ Varies | ✅ Possible |
+| **Path filtering** | ✅ apps/mobile, packages/ui | N/A | ⚠️ Varies | ✅ Possible |
+| **JS-only speed** | ✅ OTA fast | N/A | ⚠️ Varies | ❌ Full rebuild |
+| **Expo native fit** | ✅ First-party | N/A | ⚠️ Plugin required | ✅ Possible |
+
+**Main reasons:**
+
+- Install-once + OTA per PR maximizes review speed without full rebuilds
+- Android-only v1 keeps setup simple; no Apple/Google accounts required
+- Path filters avoid unnecessary workflow runs on unrelated PRs
+- EAS is the official Expo build and update service; best alignment with Expo SDK
+
+### Workflows (v1)
+
+| Workflow | Trigger | Use |
+|----------|---------|-----|
+| `mobile-build` | Manual | One-off Android preview or development build |
+| `mobile-preview` | Push to `main` | Auto-build baseline when mobile or UI changes |
+| `mobile-pr-preview` | Pull request | Publish EAS Update, comment QR (app-facing PRs only) |
+
+Path filters: `apps/mobile/**`, `packages/ui/**`.
+
+### EAS Update: JS-Only
+
+EAS Update delivers **JS/TS changes only**. A new build is required for native dependencies, config plugins, permissions, splash/icon changes, or any change affecting the native binary. When such changes land, run a manual build or merge to main so `mobile-preview` produces a fresh baseline.
+
+### eas.json Profiles
+
+v1 profiles: `preview`, `development`, `e2e-test`. No `submit` block until Apple/Google accounts exist.
+
+## Related Documentation
+
+- [Mobile CI/CD](/docs/deployment/mobile-cicd) - Setup, bootstrap, and OTA limits
+- [GitHub Actions](/docs/deployment/github-actions) - All CI workflow configuration
+- [E2E Testing](/docs/testing/e2e-testing) - Maestro flows for mobile
+- [ADR 001: Monorepo](/docs/adrs/001-monorepo-vs-standalone) - Turborepo and unified CI/CD

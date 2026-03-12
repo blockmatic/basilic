@@ -1,0 +1,126 @@
+---
+title: "ADR 011: Product Analytics"
+description: "Decision to use PostHog for product analytics across web and mobile apps. Cloud-first with self-host option; open source, multi-platform, generous free tier."
+---
+
+## Context
+
+The monorepo includes a Next.js web app (`apps/web`) and an Expo mobile app (`apps/mobile`). We need product analytics to:
+
+- **Track usage** across web and mobile (events, page views, feature adoption)
+- **Analyze behavior** via funnels, retention, cohorts, user paths
+- **Support product decisions** with data-driven insights
+- **Optionally** use session replay, feature flags, and experiments
+- **Respect privacy** with EU/US regions and optional self-hosting
+- **Stay within budget** with a generous free tier or predictable costs
+
+We currently use `@vercel/analytics` for basic web analytics only; it does not provide product-level metrics or cross-app coverage.
+
+## Considered Options
+
+### Option A – PostHog (Chosen)
+
+Full product analytics platform with web and mobile SDKs. Cloud or self-hosted.
+
+**Pros**
+
+- **Multi-platform**: Official SDKs for Next.js and Expo/React Native
+- **Generous free tier**: 1M events, 5K recordings, 1M feature-flag requests per month
+- **All-in-one**: Product analytics, session replay, feature flags, experiments, surveys
+- **Open source**: MIT license, transparent, no vendor lock-in
+- **Cloud or self-host**: Start free on Cloud; self-host when needed
+- **Large ecosystem**: 30k+ GitHub stars, active development, strong docs
+- **Usage-based pricing**: Pay only beyond free limits; billing caps available
+
+**Cons**
+
+- Heavier SDK (~52 KB) vs lightweight alternatives
+- Self-hosting requires multiple services (ClickHouse, Kafka, Redis, PostgreSQL)
+- Paid-plan features (e.g. advanced experiments) are Cloud-only when self-hosting
+
+### Option B – OpenPanel
+
+Lightweight, analytics-focused open source alternative to Mixpanel.
+
+**Pros**
+
+- **Lightweight SDK**: ~2.3 KB vs PostHog’s ~52 KB
+- **Simpler self-host**: Single Docker container
+- **Cookie-free by default**: No consent banners needed
+- **Focused analytics**: Funnels, cohorts, retention, user profiles
+
+**Cons**
+
+- Newer, smaller community and ecosystem
+- No feature flags, session replay, or experiments
+- Less mature mobile support than PostHog
+
+### Option C – Trench
+
+Infrastructure for custom analytics dashboards (ClickHouse, Kafka, Node.js).
+
+**Pros**
+
+- Flexible pipeline for custom dashboards
+- Full control over storage and processing
+
+**Cons**
+
+- No out-of-the-box product analytics; requires significant build work
+- Not suited for rapid adoption
+
+### Option D – Google Analytics / Mixpanel (Proprietary)
+
+Third-party hosted analytics.
+
+**Pros**
+
+- Widely used, mature tooling
+
+**Cons**
+
+- Vendor lock-in, privacy concerns, opaque pricing
+- Does not align with our preference for open source and portability
+
+## Decision
+
+We adopt **PostHog** for product analytics across web and mobile.
+
+### TLDR: Comparison Table
+
+| Feature          | PostHog ✅      | OpenPanel   | Trench   | Proprietary |
+| ---------------- | --------------- | ----------- | -------- | ----------- |
+| **Web + mobile** | ✅ Both         | ⚠️ Varies   | Custom   | Varies      |
+| **Expo SDK**     | ✅ Official     | ⚠️ Limited | N/A      | Varies      |
+| **Free tier**    | ✅ 1M events    | ⚠️ Varies   | N/A      | ⚠️ Limited  |
+| **Session replay** | ✅             | ✅          | Custom   | Varies      |
+| **Feature flags** | ✅             | ❌          | Custom   | Varies      |
+| **Self-host**    | ✅ Docker       | ✅ Simple   | ✅       | ❌          |
+| **Open source**  | ✅ MIT          | ✅          | ✅       | ❌          |
+| **Ecosystem**    | ✅ Large        | ⚠️ Growing  | ⚠️ Small | Varies      |
+
+**Main reasons:**
+
+- Multi-platform coverage (Next.js + Expo) with first-class SDKs
+- Generous free tier; most teams stay at $0
+- All-in-one: analytics, replay, flags, experiments in one place
+- Open source and self-hostable when needed
+- Strong community and documentation
+
+### Cloud vs Self-Host
+
+- **Start with PostHog Cloud**: No setup, free tier, US/EU regions, GDPR support
+- **Self-host when required**: Data residency, compliance, or cost at high scale
+- **Self-host requirements**: ~4 vCPU, 16 GB RAM, 30+ GB storage; Docker Compose stack (PostHog, ClickHouse, Kafka, Redis, PostgreSQL, MinIO, Caddy)
+
+### Integration Approach
+
+- **Web**: `posthog-js` (or `posthog-node`), deferred load via `next/dynamic`
+- **Mobile**: `posthog-react-native` with `PostHogProvider`
+- **Events**: Page/screen views (auto), key actions (signup, feature usage), custom properties for segmentation
+
+## Related Documentation
+
+- [Product Analytics](/docs/architecture/analytics) - Setup, pricing, and integration details
+- [ADR 001: Monorepo](/docs/adrs/001-monorepo-vs-standalone) - Turborepo and multi-app structure
+- [Logging](/docs/architecture/logging) - Server/client logging (distinct from product analytics)

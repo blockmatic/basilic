@@ -1,15 +1,17 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
-  - 'tools/*'
+  - apps/*
+  - packages/*
+  - tools/*
+
+nodeLinker: hoisted
 
 overrides:
-  axios: '1.13.5'
-  webrtc-adapter: '9.0.3'
-  glob: '10.5.0'
-  ws: '8.17.1'
-  esbuild: '0.25.10'
-  lodash: '4.17.23'
-  lodash-es: '4.17.23'
-  vercel>@vercel/blob: '2.2.0'
-  path-to-regexp: '6.3.0'
+  axios: 1.13.5
+  esbuild: 0.25.10
+  glob: 10.5.0
+  lodash: 4.17.23
+  lodash-es: 4.17.23
+  path-to-regexp: 6.3.0
+  vercel>@vercel/blob: 2.2.0
+  webrtc-adapter: 9.0.3
+  ws: 8.17.1
