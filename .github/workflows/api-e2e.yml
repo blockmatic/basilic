@@ -3,7 +3,7 @@ name: API (E2E)
 on:
   pull_request:
     paths:
-      - 'apps/fastify/**'
+      - 'apps/api/**'
       - 'packages/email/**'
       - 'packages/sentry/**'
       - 'packages/utils/**'
@@ -48,17 +48,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build
-        run: pnpm turbo run build --filter=@repo/fastify...
+        run: pnpm turbo run build --filter=@repo/api...
       - name: Unit tests
-        run: pnpm turbo run test --filter=@repo/fastify
+        run: pnpm turbo run test --filter=@repo/api
       - name: Install Playwright
-        run: pnpm --filter @repo/fastify exec playwright install chromium --with-deps
+        run: pnpm --filter @repo/api exec playwright install chromium --with-deps
       - name: E2E tests (local)
-        run: pnpm --filter @repo/fastify test:e2e:local
+        run: pnpm --filter @repo/api test:e2e:local
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-fastify
-          path: apps/fastify/playwright-report/
+          name: playwright-report-api
+          path: apps/api/playwright-report/
           retention-days: 30

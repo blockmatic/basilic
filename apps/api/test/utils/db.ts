@@ -20,7 +20,7 @@
  * ## Important Notes
  *
  * - Per-worker pattern: Each Vitest worker gets its own database directory
- * - Database directory: `/tmp/basilic-fastify-test-db-{workerId}`
+ * - Database directory: `/tmp/basilic-api-test-db-{workerId}`
  * - Instance created once per worker before tests in that worker execute
  * - Instance deleted once per worker after all tests in that worker complete
  * - Workers are isolated - no shared state/data across workers
@@ -52,7 +52,7 @@ export const TEST_DATABASE_URL = 'postgresql://localhost/test'
 function getWorkerDbDir(): string {
   // Vitest sets VITEST_WORKER_ID for each worker thread
   const workerId = process.env.VITEST_WORKER_ID || process.pid.toString()
-  return join(tmpdir(), `basilic-fastify-test-db-${workerId}`)
+  return join(tmpdir(), `basilic-api-test-db-${workerId}`)
 }
 
 /**

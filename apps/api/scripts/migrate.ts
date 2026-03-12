@@ -162,7 +162,7 @@ try {
     } else if (isTableExistsError) {
       logger.warn(
         { context: 'migrate', err: migrationError },
-        'Migration failed due to existing tables. Tables appear to match schema. For clean state, run: pnpm --filter @repo/fastify db:reset',
+        'Migration failed due to existing tables. Tables appear to match schema. For clean state, run: pnpm --filter @repo/api db:reset',
       )
       // In development/build, allow this to pass if tables exist and match schema
       // In production, this should fail to ensure proper migration tracking

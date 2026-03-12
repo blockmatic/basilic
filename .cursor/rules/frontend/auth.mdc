@@ -1,6 +1,6 @@
 ---
 description: Next.js auth patterns—single cookie, core client modes, refresh flow
-glob: "apps/next/**/*,packages/core/**/*,packages/react/**/*"
+glob: "apps/web/**/*,packages/core/**/*,packages/react/**/*"
 alwaysApply: false
 ---
 

@@ -3,14 +3,14 @@ title: "Frontend Architecture"
 description: "Next.js (App Router, RSC-first) with shadcn/ui + Tailwind CSS in @repo/ui and type-safe API consumption via @repo/core + @repo/react."
 ---
 
-Frontend apps (for example `apps/next` and `apps/docu`) are built on **Next.js** and share UI, data access, and utilities through monorepo packages.
+Frontend apps (for example `apps/web` and `apps/docu`) are built on **Next.js** and share UI, data access, and utilities through monorepo packages.
 
 ## Architecture at a glance
 
 ```mermaid
 flowchart TB
   subgraph Apps["Applications (Next.js)"]
-    Web["apps/next<br/>(product web app)"]
+    Web["apps/web<br/>(product web app)"]
     Docs["apps/docu<br/>(docs site)"]
   end
 

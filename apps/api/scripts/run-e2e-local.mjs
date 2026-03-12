@@ -13,7 +13,7 @@ const fastifyDir = dirname(scriptDir)
 const repoRoot = dirname(dirname(fastifyDir))
 
 function loadEnvTest() {
-  const path = join(repoRoot, 'apps/fastify/.env.test')
+  const path = join(repoRoot, 'apps/api/.env.test')
   if (!existsSync(path)) return {}
   const lines = readFileSync(path, 'utf8').split('\n')
   const out = {}

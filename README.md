@@ -29,8 +29,8 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 
 ## Apps
 
-- **[API](apps/fastify/README.md)** — Type-safe REST API built with Fastify & OpenAPI
-- **[Web App](apps/next/README.md)** — Next.js app with monorepo integration
+- **[API](apps/api/README.md)** — Type-safe REST API built with Fastify & OpenAPI
+- **[Web App](apps/web/README.md)** — Next.js app with monorepo integration
 - **[Documentation](apps/docu/README.md)** — Fumadocs-based docs site for architecture, ADRs, and development workflows
 
 ## Packages
@@ -55,7 +55,7 @@ Run with `pnpm <script>`.
   - `setup:database` — Database tools
 **Primary**
   - `build` — Build packages and apps
-  - `dev` — Start dev (core, react, error, utils, fastify, next)
+  - `dev` — Start dev (core, react, error, utils, api, web)
   - `qa` — Full check: install → checktypes → lint → build → test (unit) → test:e2e (Fastify + Next, local spawn)
 **Format / Lint**
   - `checktypes` — Type-check all packages
@@ -68,7 +68,7 @@ Run with `pnpm <script>`.
   - `test` — Run unit tests (packages + apps)
   - `test:e2e` — E2E (Fastify + Next)
 **CI**
-  - Lint and security run on every PR. App E2E (`next-e2e`, `api-e2e`) and package tests (`packages-test`) run only when relevant code changes. See [GitHub Actions](https://basilic-docs.vercel.app/docs/deployment/github-actions).
+  - Lint and security run on every PR. App E2E (`web-e2e`, `api-e2e`) and package tests (`packages-test`) run only when relevant code changes. See [GitHub Actions](https://basilic-docs.vercel.app/docs/deployment/github-actions).
 **Security**
   - `security:block-files` — Block sensitive file patterns
   - `security:secrets` — Scan staged files for secrets

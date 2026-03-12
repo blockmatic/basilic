@@ -3,7 +3,7 @@ name: Next (E2E)
 on:
   pull_request:
     paths:
-      - 'apps/next/**'
+      - 'apps/web/**'
       - 'scripts/**'
       - 'packages/core/**'
       - 'packages/react/**'
@@ -11,13 +11,13 @@ on:
       - 'packages/utils/**'
       - 'packages/eslint-config/**'
       - 'packages/typescript-config/**'
-      - 'apps/fastify/openapi/**'
+      - 'apps/api/openapi/**'
       - 'pnpm-lock.yaml'
       - 'package.json'
       - 'turbo.json'
 
 concurrency:
-  group: next-e2e-${{ github.ref }}
+  group: web-e2e-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -52,19 +52,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build
-        run: pnpm turbo run build --filter=@repo/next...
+        run: pnpm turbo run build --filter=@repo/web...
       - name: Unit tests
-        run: pnpm turbo run test --filter=@repo/next
+        run: pnpm turbo run test --filter=@repo/web
       - name: Install Playwright
-        run: pnpm --filter @repo/next exec playwright install chromium --with-deps
+        run: pnpm --filter @repo/web exec playwright install chromium --with-deps
       - name: E2E tests (local)
         env:
           SKIP_BUILD: '1'
-        run: pnpm --filter @repo/next test:e2e:local
+        run: pnpm --filter @repo/web test:e2e:local
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-next
-          path: apps/next/playwright-report/
+          name: playwright-report-web
+          path: apps/web/playwright-report/
           retention-days: 30

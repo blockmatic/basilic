@@ -12,7 +12,7 @@ Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as t
 
 **OPTIONS Allowlist (CORS preflight):** When Deployment Protection is enabled on preview deployments, add `/` (or `/auth`) to **Project Settings > Deployment Protection > OPTIONS Allowlist**. Otherwise, preflight OPTIONS requests are blocked before reaching Fastify and CORS fails for cross-origin clients.
 
-**CI & Builds** (`api-e2e.yml`): Unit tests and E2E run on PR when `apps/fastify` or its dependencies change. Spawns API locally via `test:e2e:local`; no Vercel deploy required.
+**CI & Builds** (`api-e2e.yml`): Unit tests and E2E run on PR when `apps/api` or its dependencies change. Spawns API locally via `test:e2e:local`; no Vercel deploy required.
 
 ## Testing
 

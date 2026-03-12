@@ -57,7 +57,7 @@ This starts all development servers including:
 pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/utils
 
 # Then run from this directory
-cd apps/next
+cd apps/web
 pnpm dev
 ```
 
@@ -72,7 +72,7 @@ The application will be available at `http://localhost:3000` (or the next availa
 pnpm build
 
 # Or build just this app
-cd apps/next
+cd apps/web
 pnpm build
 ```
 
@@ -84,7 +84,7 @@ pnpm build
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
-- `pnpm test` - No-op (E2E only; apps/next has no unit tests)
+- `pnpm test` - No-op (E2E only; apps/web has no unit tests)
 - `pnpm test:e2e` - Run E2E tests (Playwright; expects URLs via env or `--app`/`--api` params)
 - `pnpm test:e2e:local` - Build, spawn servers, run E2E, cleanup (recommended for local/CI)
 - `pnpm start:e2e:servers` - Start Fastify + Next for manual E2E; run `pnpm test:e2e` in another terminal (run `pnpm build:e2e` first)
@@ -100,7 +100,7 @@ Optional environment variables (see `.env-example`):
 ## Project Structure
 
 ```
-apps/next/
+apps/web/
 ├── app/                    # Next.js app directory
 │   ├── api/auth/          # Cookie update routes (update-tokens)
 │   ├── auth/              # Callbacks (magiclink, oauth, web3), logout
@@ -146,15 +146,15 @@ See [Frontend Testing Documentation](@apps/docu/content/docs/testing/frontend-te
 
 This app includes a `vercel.json` configuration file. If deploying to Vercel:
 
-1. **Root Directory**: Set the root directory to `apps/next` in Vercel project settings
-2. **Build Command**: Should be `cd ../.. && pnpm build --filter=@repo/next` (configured in `vercel.json`)
+1. **Root Directory**: Set the root directory to `apps/web` in Vercel project settings
+2. **Build Command**: Should be `cd ../.. && pnpm build --filter=@repo/web` (configured in `vercel.json`)
 3. **Install Command**: Should be `cd ../.. && pnpm install` (configured in `vercel.json`)
 
 **Important**: If you see build errors about a package named "mathler" or any other incorrect filter, check your Vercel project settings and ensure they match the `vercel.json` configuration. Vercel project settings override `vercel.json`, so make sure they're aligned.
 
 ## CI & Builds
 
-- **E2E tests** (`next-e2e.yml`) — Run on PR when `apps/next` or its dependencies change. Spawns Fastify + Next locally via `test:e2e:local`
+- **E2E tests** (`web-e2e.yml`) — Run on PR when `apps/web` or its dependencies change. Spawns Fastify + Next locally via `test:e2e:local`
 - **Package tests** (`packages-test.yml`) — Run on PR when `packages` or `tools` change
 
 ## Related Documentation

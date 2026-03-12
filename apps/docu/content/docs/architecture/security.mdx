@@ -289,7 +289,7 @@ The API automatically sets security headers on all responses:
 - **Content-Security-Policy** - Restricts resource loading to prevent XSS
 - **Strict-Transport-Security** - Enforces HTTPS in production (HSTS)
 
-Security headers are configured in `apps/fastify/src/plugins/security.ts` and can be disabled via the `SECURITY_HEADERS_ENABLED` environment variable.
+Security headers are configured in `apps/api/src/plugins/security.ts` and can be disabled via the `SECURITY_HEADERS_ENABLED` environment variable.
 
 ### CORS Configuration
 
@@ -300,7 +300,7 @@ Cross-Origin Resource Sharing (CORS) allows all origins. Security is enforced vi
 - **Allowed Headers**: Content-Type, Authorization, X-Requested-With
 - **Credentials**: Disabled (JWT-only auth, no cookies required)
 
-CORS configuration is in `apps/fastify/src/plugins/cors.ts`.
+CORS configuration is in `apps/api/src/plugins/cors.ts`.
 
 ### Rate Limiting
 
@@ -312,7 +312,7 @@ Rate limiting protects against abuse and brute force attacks:
 - **Response Headers**: Includes rate limit information (`x-ratelimit-limit`, `x-ratelimit-remaining`, `x-ratelimit-reset`)
 - **Error Response**: Returns 429 status with retry information
 
-Rate limiting is configured in `apps/fastify/src/plugins/rate-limit.ts`.
+Rate limiting is configured in `apps/api/src/plugins/rate-limit.ts`.
 
 ### Trust Proxy Configuration
 
@@ -331,7 +331,7 @@ All API requests are validated using Zod schemas:
 
 - **Schema Validation**: Defined in route handlers using Fastify's schema option
 - **Type Safety**: End-to-end type safety from OpenAPI spec to runtime validation
-- **Input Sanitization**: Additional sanitization layer in `apps/fastify/src/lib/security.ts`
+- **Input Sanitization**: Additional sanitization layer in `apps/api/src/lib/security.ts`
 - **Error Messages**: Sanitized in production to prevent information leakage
 
 ### Security Event Logging
@@ -343,7 +343,7 @@ Security events are automatically logged:
 - **Authentication Failures**: Logs 401/403 errors
 - **Request Logging**: All requests logged in production with security context
 
-Security logging is implemented in `apps/fastify/src/plugins/security.ts` and `apps/fastify/src/lib/security.ts`.
+Security logging is implemented in `apps/api/src/plugins/security.ts` and `apps/api/src/lib/security.ts`.
 
 ### Environment Variables
 
@@ -382,7 +382,7 @@ API keys are stored hashed (SHA-256) and never in plaintext. Use timing-safe com
 
 If a security incident is detected:
 
-1. **Review security logs** - Check `apps/fastify/src/plugins/security.ts` logs
+1. **Review security logs** - Check `apps/api/src/plugins/security.ts` logs
 2. **Identify affected endpoints** - Review request patterns
 3. **Block malicious IPs** - Add to blocklist if needed (requires custom implementation)
 4. **Rotate secrets** - If credentials are compromised

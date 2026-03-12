@@ -12,7 +12,7 @@ description: JWT-based auth with access + refresh tokens. Supports magic links, 
 
 ## Overview
 
-Authentication is implemented in `apps/fastify` as a **JWT Bearer** system backed by **Drizzle + PostgreSQL/PGLite** session state.
+Authentication is implemented in `apps/api` as a **JWT Bearer** system backed by **Drizzle + PostgreSQL/PGLite** session state.
 
 We use JWTs to support **all client types** (web, mobile, desktop, servers, CLIs) with a single, standard `Authorization: Bearer` integration.
 
@@ -155,13 +155,13 @@ Web3 sign-in follows a **nonce → sign → verify** flow and returns access + r
 
 **Flow:** Client fetches nonce → builds message → signs with wallet → POSTs verify to Fastify with optional `callbackUrl`. When `callbackUrl` is set: Fastify returns 302 to callback with one-time `code` → callback page exchanges code via `POST /auth/web3/exchange` → sets cookies and redirects. When absent: Fastify returns JSON `{ token, refreshToken }` (mobile/CLI).
 
-**Framework support:** Wallet integration lives in `apps/next` (`@/hooks/`, `@/wallet/`). `@repo/react` exposes verify hooks: `useVerifyWeb3Auth`, `useVerifyLinkWallet`. Pass `callbackUrl` to `useVerifyWeb3Auth().mutate()` for redirect flow.
+**Framework support:** Wallet integration lives in `apps/web` (`@/hooks/`, `@/wallet/`). `@repo/react` exposes verify hooks: `useVerifyWeb3Auth`, `useVerifyLinkWallet`. Pass `callbackUrl` to `useVerifyWeb3Auth().mutate()` for redirect flow.
 
-**WalletAdaptersInjector:** In `apps/next`, mount `WalletAdaptersInjector` inside providers. Triggers sign-out on wallet disconnect (redirects to `/auth/logout`).
+**WalletAdaptersInjector:** In `apps/web`, mount `WalletAdaptersInjector` inside providers. Triggers sign-out on wallet disconnect (redirects to `/auth/logout`).
 
 **Error codes:** `INVALID_NONCE`, `EXPIRED_NONCE`, `INVALID_SIGNATURE` for consistent UI handling. Wallet rejection (e.g. user denies signing) is surfaced as a non-fatal error. Account link: `WALLET_ALREADY_LINKED`, `EMAIL_ALREADY_IN_USE`, `EXPIRED_TOKEN`.
 
-**JWT cookie refresh:** After link email or profile edit, the client receives `{ token, refreshToken }` from the verify endpoint. Call `POST /api/auth/update-tokens` with those values to update cookies. In `apps/next`, use `updateAuthTokens` from `@/lib/auth-client`.
+**JWT cookie refresh:** After link email or profile edit, the client receives `{ token, refreshToken }` from the verify endpoint. Call `POST /api/auth/update-tokens` with those values to update cookies. In `apps/web`, use `updateAuthTokens` from `@/lib/auth-client`.
 
 **Data model:** Nonces are stored in `web3_nonce` (5-min TTL); identities in `wallet_identities`.
 
@@ -198,7 +198,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart TB
-  subgraph App [apps/next]
+  subgraph App [apps/web]
     WAI[WalletAdaptersInjector]
     Providers[providers.tsx]
   end
@@ -212,7 +212,7 @@ flowchart TB
     useWallet
   end
 
-  subgraph AppHooks [apps/next @/hooks @/wallet]
+  subgraph AppHooks [apps/web @/hooks @/wallet]
     WalletProvider
     useWalletAuth
     useLinkWallet
@@ -299,7 +299,7 @@ stateDiagram-v2
 
 ## Endpoints
 
-All endpoints below are served by `apps/fastify`. The API does not set cookies; tokens are returned as JSON.
+All endpoints below are served by `apps/api`. The API does not set cookies; tokens are returned as JSON.
 
 - **Magic link**
   - `POST /auth/magiclink/request` → `{ ok }`

@@ -1,6 +1,6 @@
 ---
 description: Web3 integration patterns using Wagmi v3
-glob: "apps/next/**/*.{ts,tsx}"
+glob: "apps/web/**/*.{ts,tsx}"
 alwaysApply: false
 ---
 

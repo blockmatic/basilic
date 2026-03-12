@@ -28,7 +28,7 @@ Data flow: TypeBox (backend) → OpenAPI spec → generated types & Zod schemas 
 
 ## How it works
 
-1. **Author routes** with TypeBox schemas (in `apps/fastify/src/routes/`; Fastify uses them for validation)
+1. **Author routes** with TypeBox schemas (in `apps/api/src/routes/`; Fastify uses them for validation)
 2. **Generate OpenAPI** from route definitions
 3. **Generate SDKs** from OpenAPI (TypeScript client + Zod schemas + React Query hooks)
 
@@ -60,10 +60,10 @@ fastify.get('/health', {
 
 ### Generate OpenAPI
 
-The OpenAPI spec is generated from route definitions and written to `apps/fastify/openapi/openapi.json`.
+The OpenAPI spec is generated from route definitions and written to `apps/api/openapi/openapi.json`.
 
 ```bash
-pnpm --filter @repo/fastify generate:openapi
+pnpm --filter @repo/api generate:openapi
 ```
 
 ### Generate TypeScript client
@@ -110,7 +110,7 @@ const { data } = useHealthCheck()
 
 ## OpenAPI Integration
 
-- **Generation**: `apps/fastify/openapi/openapi.json` (generated from routes via `generate-openapi.ts`)
+- **Generation**: `apps/api/openapi/openapi.json` (generated from routes via `generate-openapi.ts`)
 - **Serving**: `/reference/openapi.json` (programmatic access)
 - **Docs UI**: `/reference` (Scalar)
 - **AI tooling**: MCP integration can consume the spec for agent workflows

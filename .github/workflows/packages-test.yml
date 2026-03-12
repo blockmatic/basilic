@@ -43,8 +43,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Generate OpenAPI (for @repo/core)
-        run: pnpm turbo run generate:openapi --filter=@repo/fastify
+        run: pnpm turbo run generate:openapi --filter=@repo/api
       - name: Build packages
-        run: pnpm turbo run build --filter='!@repo/next' --filter='!@repo/fastify' --filter='!@repo/docu'
+        run: pnpm turbo run build --filter='!@repo/web' --filter='!@repo/api' --filter='!@repo/docu'
       - name: Unit tests (packages only)
-        run: pnpm turbo run test --filter='!@repo/next' --filter='!@repo/fastify' --filter='!@repo/docu'
+        run: pnpm turbo run test --filter='!@repo/web' --filter='!@repo/api' --filter='!@repo/docu'

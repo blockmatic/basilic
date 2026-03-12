@@ -10,7 +10,7 @@ Complete guide for error handling across the monorepo: **`@repo/error`** for err
 - **`@repo/error`** – `captureError(options)` sends errors to the reporting backend (void; does not return a catalog). Use platform subpaths: `node`, `nextjs`, `browser`, `react`.
 - **`@repo/error`** – `getErrorMessage(error)` and related utilities for type-safe message extraction (base export or `@repo/error/nextjs`).
 - **Initialization** – Use `initErrorReporting` from `@repo/error/node` or `@repo/error/nextjs`. [GlitchTip](https://glitchtip.com/sdkdocs/javascript/) is recommended; Sentry also works (same DSN format).
-- **Error catalogs and safe responses** – Implemented in each app (e.g. Fastify’s `apps/fastify/src/lib/catalogs/` with `getError`, `mapHttpStatusToErrorCode`). Apps build the safe `{ code, message }` response themselves.
+- **Error catalogs and safe responses** – Implemented in each app (e.g. Fastify’s `apps/api/src/lib/catalogs/` with `getError`, `mapHttpStatusToErrorCode`). Apps build the safe `{ code, message }` response themselves.
 
 **Key principles:**
 - Two-track: Sentry gets real errors (debugging); API returns safe catalog errors (users), built by the app.
@@ -96,9 +96,9 @@ reply.status(500).send(catalogError)
 
 ### App-level error catalogs
 
-Error catalogs and safe responses are implemented **per app**, not in `@repo/error`. For example, the Fastify app defines catalogs in `apps/fastify/src/lib/catalogs/` (e.g. `server.ts`, `client.ts`, `common.ts`) and exposes `getError(code)`, `mapHttpStatusToErrorCode(statusCode)`. The error handler calls `captureError` from `@repo/error/node` then builds the response using the app’s `getError`.
+Error catalogs and safe responses are implemented **per app**, not in `@repo/error`. For example, the Fastify app defines catalogs in `apps/api/src/lib/catalogs/` (e.g. `server.ts`, `client.ts`, `common.ts`) and exposes `getError(code)`, `mapHttpStatusToErrorCode(statusCode)`. The error handler calls `captureError` from `@repo/error/node` then builds the response using the app’s `getError`.
 
-**Adding new error codes:** Add them to your app’s catalog (e.g. `apps/fastify/src/lib/catalogs/`), then use `getError(yourCode)` when building responses. Use `UPPER_SNAKE_CASE` (e.g. `NETWORK_ERROR`, `USER_NOT_FOUND`).
+**Adding new error codes:** Add them to your app’s catalog (e.g. `apps/api/src/lib/catalogs/`), then use `getError(yourCode)` when building responses. Use `UPPER_SNAKE_CASE` (e.g. `NETWORK_ERROR`, `USER_NOT_FOUND`).
 
 ### Security
 
@@ -121,10 +121,10 @@ Error catalogs and safe responses are implemented **per app**, not in `@repo/err
 
 #### Global Error Handler Plugin
 
-Use `captureError` from `@repo/error/node` (void); build the response from the app’s catalog (`getError`, `mapHttpStatusToErrorCode` from `apps/fastify/src/lib/catalogs/`):
+Use `captureError` from `@repo/error/node` (void); build the response from the app’s catalog (`getError`, `mapHttpStatusToErrorCode` from `apps/api/src/lib/catalogs/`):
 
 ```typescript
-// apps/fastify/src/plugins/error-handler.ts
+// apps/api/src/plugins/error-handler.ts
 import { captureError } from '@repo/error/node'
 import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
 // ... route extraction, redaction ...
@@ -155,7 +155,7 @@ fastify.setErrorHandler((error, request, reply) => {
 **Recommended: Use AppErrorBoundary**
 
 ```typescript
-// apps/next/app/layout.tsx
+// apps/web/app/layout.tsx
 'use client'
 
 import { AppErrorBoundary } from '@repo/error/react'
@@ -302,7 +302,7 @@ const message = getErrorMessage(error) // Type-safe extraction from unknown
 
 ### App-level: `getError`, `mapHttpStatusToErrorCode`
 
-These live in each app (e.g. Fastify’s `apps/fastify/src/lib/catalogs/mapper.ts`). `mapHttpStatusToErrorCode(statusCode)` maps HTTP status to a catalog code; `getError(code)` returns `{ code, message }` for the response. Not part of `@repo/error`.
+These live in each app (e.g. Fastify’s `apps/api/src/lib/catalogs/mapper.ts`). `mapHttpStatusToErrorCode(statusCode)` maps HTTP status to a catalog code; `getError(code)` returns `{ code, message }` for the response. Not part of `@repo/error`.
 
 ## Best Practices
 
