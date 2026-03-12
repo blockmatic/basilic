@@ -10,6 +10,7 @@
     "006-linters",
     "007-backend-orm",
     "008-database",
-    "009-api-architecture"
+    "009-api-architecture",
+    "010-expo-cicd"
   ]
 }
