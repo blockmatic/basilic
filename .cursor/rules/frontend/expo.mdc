@@ -1,0 +1,28 @@
+---
+description: Expo/React Native standards
+glob: "apps/mobile/**/*"
+---
+
+## Expo Router
+File-based routing: `src/app/`, `_layout.tsx`, route groups `(group)`. `_layout` cannot be DOM component—see @.cursor/skills/expo-use-dom
+
+## NativeTabs (SDK 55+)
+Use `NativeTabs.Trigger.Icon`, `NativeTabs.Trigger.Label`, `NativeTabs.Trigger.Badge` (not separate imports). See @.cursor/skills/expo-upgrading/references/native-tabs.md
+
+## React Native
+Primitives only: View, Text, Pressable, ScrollView—no HTML elements
+
+## Styling
+Tailwind via NativeWind v5 + react-native-css. Use `className` on View, Text, Pressable, etc. StyleSheet for complex cases. See @.cursor/skills/expo-tailwind-setup-v55
+
+## Platform extensions
+Use `.web.tsx`, `.native.tsx` for platform-specific code
+
+## Path aliases
+`@/*` → `src/`, `@/assets/*` → `assets/`
+
+## Hooks
+Kebab-case filenames, collocated in `hooks/`. See @.cursor/rules/frontend/react-hooks.mdc
+
+## React Compiler
+Enabled in app.json—no manual `useMemo`/`useCallback`. Aligns with @.cursor/rules/frontend/react-hooks.mdc

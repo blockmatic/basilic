@@ -1,6 +1,6 @@
 ---
-description: Mobile-first responsive design patterns and best practices
-glob: "**/*.{tsx,css}"
+description: Mobile-first responsive design patterns and best practices (Tailwind breakpoints)
+glob: "apps/web/**/*.{tsx,css}"
 alwaysApply: true
 ---
 

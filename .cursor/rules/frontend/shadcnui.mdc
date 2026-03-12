@@ -1,6 +1,6 @@
 ---
 description: ShadcnUI component guidelines and patterns
-glob: "**/*.{tsx,css}"
+glob: "apps/web/**/*.{tsx,css},packages/ui/**/*.{tsx,css}"
 alwaysApply: true
 ---
 

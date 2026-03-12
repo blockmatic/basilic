@@ -30,7 +30,7 @@
       "dependsOn": ["@repo/core#generate"],
       "inputs": [
         "$TURBO_DEFAULT$",
-        "../../apps/fastify/openapi/openapi.json",
+        "../../apps/api/openapi/openapi.json",
         "scripts/generate-cli.mjs"
       ],
       "outputs": ["src/gen/**"],
@@ -62,6 +62,8 @@
     "lint": {},
     "lint:eslint": {
       "env": [
+        "EXPO_OS",
+        "EXPO_PUBLIC_API_URL",
         "AUTH_COOKIE_NAME",
         "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
@@ -106,6 +108,8 @@
     "lint:eslint:fix": {
       "cache": false,
       "env": [
+        "EXPO_OS",
+        "EXPO_PUBLIC_API_URL",
         "AUTH_COOKIE_NAME",
         "AI_PROVIDER",
         "ANTHROPIC_API_KEY",

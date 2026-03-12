@@ -1,5 +1,5 @@
 ---
-glob: "**/*.{tsx,css}"
+glob: "apps/web/**/*.{tsx,css}"
 alwaysApply: true
 ---
 

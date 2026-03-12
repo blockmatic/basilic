@@ -31,6 +31,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 
 - **[API](apps/api/README.md)** — Type-safe REST API built with Fastify & OpenAPI
 - **[Web App](apps/web/README.md)** — Next.js app with monorepo integration
+- **[Mobile App](apps/mobile/README.md)** — Expo app (Android, iOS, Web)
 - **[Documentation](apps/docu/README.md)** — Fumadocs-based docs site for architecture, ADRs, and development workflows
 
 ## Packages
@@ -85,4 +86,6 @@ Run with `pnpm <script>`.
 ## Documentation
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
+
+- [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Local vs remote (ports 3000, 3001, 8081; `start:localhost`, `start:tunnel`)
 

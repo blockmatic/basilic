@@ -27,7 +27,7 @@ We use **pnpm** for package management and a **hybrid Biome + ESLint** setup. Bi
 We use a **hybrid approach** that combines the best of both tools:
 
 - **Biome** - Fast formatting and stylistic rules (Rust-based)
-- **ESLint** - Correctness rules for TypeScript, React, Next.js
+- **ESLint** - Correctness rules for TypeScript, React, Next.js, Expo
 
 ### Clear Separation of Concerns
 
@@ -55,7 +55,8 @@ flowchart LR
 
 - ✅ **TypeScript rules** - Type safety and correctness
 - ✅ **React rules** - React and React Hooks best practices
-- ✅ **Next.js rules** - Framework-specific rules via `@next/eslint-plugin-next`
+- ✅ **Next.js rules** - Framework-specific rules via `@next/eslint-plugin-next` (web app)
+- ✅ **Expo rules** - React + React Hooks for mobile app (no Next.js)
 - ✅ **Fastify rules** - Backend code quality
 
 ### Workflow
@@ -158,7 +159,11 @@ You can run apps directly, but build dependencies first:
 # Build required packages
 pnpm build --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/utils
 
-# Then run the app
-cd apps/web
-pnpm dev
+# Web app
+cd apps/web && pnpm dev
+
+# Mobile app (Expo)
+pnpm --filter @repo/mobile start
 ```
+
+For local vs remote development (ports, tunneling, physical devices), see [Dev Environments](/docs/development/dev-environments).
