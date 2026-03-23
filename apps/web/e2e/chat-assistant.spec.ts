@@ -32,7 +32,7 @@ test.describe('Chat Assistant', () => {
       if (
         /insufficient_quota|insufficient_credits|quota_exceeded|credits_exceeded/i.test(errorText)
       ) {
-        test.skip(true, 'OpenRouter 402 insufficient credits')
+        test.skip(true, 'AI provider quota/credits (402)')
         return
       }
       if (/invalid x-api-key|authentication_error|invalid.*api.*key|401/i.test(errorText)) {
