@@ -68,6 +68,13 @@ async function main() {
     )
     process.exit(1)
   }
+  const anthropicApiKey = loaded.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY
+  if (!anthropicApiKey) {
+    process.stderr.write(
+      'E2E local: ANTHROPIC_API_KEY must be set in .env.test or process.env when AI_PROVIDER is anthropic. Refusing to run without it.\n',
+    )
+    process.exit(1)
+  }
   const env = {
     ...process.env,
     ...loaded,
@@ -76,6 +83,7 @@ async function main() {
     NODE_ENV: 'test',
     JWT_SECRET: jwtSecret,
     AI_PROVIDER: 'anthropic',
+    ANTHROPIC_API_KEY: anthropicApiKey,
   }
   delete env.OPEN_ROUTER_API_KEY
   delete env.OLLAMA_BASE_URL

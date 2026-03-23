@@ -54,6 +54,16 @@ jobs:
         run: pnpm turbo run test --filter=@repo/api
       - name: Install Playwright
         run: pnpm --filter @repo/api exec playwright install chromium --with-deps
+      - name: Verify ANTHROPIC_API_KEY for E2E (AI_PROVIDER=anthropic)
+        shell: bash
+        env:
+          AI_PROVIDER: ${{ env.AI_PROVIDER }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+        run: |
+          if [[ "${AI_PROVIDER}" == "anthropic" && -z "${ANTHROPIC_API_KEY}" ]]; then
+            echo "::error::AI_PROVIDER is anthropic but ANTHROPIC_API_KEY is empty or unset. Set the ANTHROPIC_API_KEY repository secret; required before E2E tests (local)." >&2
+            exit 1
+          fi
       - name: E2E tests (local)
         run: pnpm --filter @repo/api test:e2e:local
       - name: Upload Playwright report

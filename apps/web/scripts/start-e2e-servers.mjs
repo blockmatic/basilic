@@ -21,6 +21,12 @@ const env = {
   NEXT_PUBLIC_API_URL: 'http://localhost:3001',
   AI_PROVIDER: 'anthropic',
 }
+if (env.AI_PROVIDER === 'anthropic' && !String(env.ANTHROPIC_API_KEY ?? '').trim()) {
+  process.stderr.write(
+    'start-e2e-servers: ANTHROPIC_API_KEY is required when AI_PROVIDER is anthropic. Set it in the environment (e.g. .env.local) before starting E2E servers.\n',
+  )
+  process.exit(1)
+}
 delete env.OPEN_ROUTER_API_KEY
 delete env.OLLAMA_BASE_URL
 delete env.AI_DEFAULT_MODEL
