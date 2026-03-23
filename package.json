@@ -29,6 +29,7 @@
     "setup:gitleaks": "node scripts/setup-gitleaks.mjs",
     "setup:osv": "node scripts/setup-osv-scanner.mjs",
     "setup:database": "node scripts/setup-database.mjs",
+    "reset": "pnpm --filter @repo/api reset",
     "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },
   "devDependencies": {
@@ -61,6 +62,13 @@
     ],
     "overrides": {
       "lightningcss": "1.30.1",
+      "flatted@<3.4.2": "3.4.2",
+      "h3@<1.15.9": "1.15.9",
+      "socket.io-parser@4.2.5": "4.2.6",
+      "undici@5.28.4": "6.24.0",
+      "undici@6.23.0": "6.24.0",
+      "undici@7.22.0": "7.24.0",
+      "next@16.1.6": "16.1.7",
       "tar@<7.5.11": "7.5.11",
       "basic-ftp@<5.2.0": "5.2.0",
       "bn.js@4.12.2": "4.12.3",

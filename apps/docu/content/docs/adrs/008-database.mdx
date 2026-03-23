@@ -190,7 +190,17 @@ All platforms use the same build command pattern:
 
 - **Docker**: `RUN pnpm build` (runs migrations)
 - **Railway/Fly.io/Render**: `build: pnpm build` (runs migrations)
-- **Local dev**: PostgreSQL migrations run at build time (via `pnpm dev` → `pnpm db:migrate`), PGLite migrations run at runtime
+- **Local dev (PostgreSQL)**: Migrations run when you **build** the API (`pnpm build` / `pnpm --filter @repo/api build`), not when you run `pnpm dev` alone. To wipe local Supabase and re-apply schema + seed, use **`pnpm reset`** (repo root) or **`pnpm reset`** in `apps/api`. **PGLite**: migrations still run at runtime
+
+### Local database reset (Supabase + Drizzle)
+
+For local Postgres via Supabase CLI (`project_id: basilic-api` in `apps/api/supabase/config.toml`), use **`pnpm reset`** from the repo root (runs `pnpm --filter @repo/api reset`) or **`pnpm reset`** from `apps/api`. One command does:
+
+1. **`supabase db reset`** — Drops and recreates the database. `[db.seed]` is off; no `seed.sql`.
+2. **Drizzle migrations** — `scripts/migrate.ts` via `pnpm db:migrate` with `RUN_PG_MIGRATE=true` and the local Supabase `DATABASE_URL`.
+3. **Data seed** — `scripts/seed.ts` (`runSeed`). Add idempotent inserts as needed. Runs only as part of **`pnpm reset`**, not on `pnpm db:migrate` or `pnpm build` alone. See `apps/api/README.md`.
+
+Run `pnpm db:stop` before switching to another project's Supabase instance (e.g. different repo); only one Supabase runs per host.
 
 ### Key Benefits
 

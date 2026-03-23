@@ -43,6 +43,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.14",
     "@typescript/native-preview": "7.0.0-dev.20260213.1",
+    "@vitejs/plugin-react": "^5.1.2",
     "eslint": "^9.0.0",
     "jsdom": "^28.0.0",
     "react": "^19.2.4",

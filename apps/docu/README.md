@@ -21,6 +21,8 @@ Starts docs site at [http://localhost:3002](http://localhost:3002).
 - `pnpm start` - Production server
 - `pnpm checktypes` - Type check MDX and TypeScript
 
+Monorepo root (for local API database): `pnpm reset` — see `apps/api/README.md`.
+
 ## Content
 
 Documentation content in `content/docs/`:

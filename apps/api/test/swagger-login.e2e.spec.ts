@@ -22,6 +22,27 @@ async function extractMagicLinkData(
   }
 }
 
+/** Magic-link callback: replaceState clears token query; Scalar may add a hash — avoid strict full-URL match. */
+async function waitForReferenceAuthSettled(
+  page: ReturnType<typeof test>['page'],
+  { timeoutMs = 20_000 } = {},
+) {
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(() => {
+          const u = new URL(window.location.href)
+          return (
+            Boolean(localStorage.getItem('scalar-token')) &&
+            u.pathname === '/reference' &&
+            !u.searchParams.has('token')
+          )
+        }),
+      { timeout: timeoutMs },
+    )
+    .toBe(true)
+}
+
 test.describe('Scalar UI Login Flow', () => {
   test.describe.configure({ mode: 'serial' })
 
@@ -63,12 +84,14 @@ test.describe('Scalar UI Login Flow', () => {
     if (!magicLink) throw new Error('Failed to extract magic link token and verificationId')
 
     // Step 9: Open callback URL with token+verificationId (server verifies and returns HTML with JWT)
-    const callbackUrl = `${apiUrl}/reference?token=${magicLink.token}&verificationId=${magicLink.verificationId}`
-    await page.goto(callbackUrl)
+    const callbackUrl = new URL(`${apiUrl}/reference`)
+    callbackUrl.searchParams.set('token', magicLink.token)
+    callbackUrl.searchParams.set('verificationId', magicLink.verificationId)
+    await page.goto(callbackUrl.toString())
     await page.waitForLoadState('networkidle')
 
-    // Step 10: Wait for callback page to process and clean URL (template does history.replaceState)
-    await page.waitForURL(/\/reference$/, { timeout: 15000 })
+    // Step 10: Wait for callback script (replaceState + localStorage); allow Scalar hash on URL
+    await waitForReferenceAuthSettled(page)
 
     // Step 11: Check that token is stored in localStorage
     const tokenInStorage = await page.evaluate(() => localStorage.getItem('scalar-token'))
@@ -119,9 +142,11 @@ test.describe('Scalar UI Login Flow', () => {
     const magicLink = await extractMagicLinkData(page)
     if (!magicLink) throw new Error('Failed to extract magic link token and verificationId')
 
-    const callbackUrl = `${apiUrl}/reference?token=${magicLink.token}&verificationId=${magicLink.verificationId}`
-    await page.goto(callbackUrl)
-    await page.waitForURL(/\/reference$/, { timeout: 15000 })
+    const callbackUrl = new URL(`${apiUrl}/reference`)
+    callbackUrl.searchParams.set('token', magicLink.token)
+    callbackUrl.searchParams.set('verificationId', magicLink.verificationId)
+    await page.goto(callbackUrl.toString())
+    await waitForReferenceAuthSettled(page)
     await page.waitForLoadState('networkidle')
 
     // Verify logged in state

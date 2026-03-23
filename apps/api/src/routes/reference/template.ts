@@ -15,7 +15,8 @@ export function getReferenceHtml(opts: {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>API Reference - Basilic</title>
-  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest/dist/browser/standalone.js"></script>
+  <!-- Pin matches @scalar/fastify-api-reference; avoids @latest hash/URL drift in E2E -->
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.44.18/dist/browser/standalone.js"></script>
   <style>${scalarStyles}
   </style>
 </head>

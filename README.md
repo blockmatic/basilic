@@ -53,7 +53,9 @@ Run with `pnpm <script>`.
 **Setup**
   - `setup` — Full setup (install, hooks, gitleaks, osv, database)
   - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
-  - `setup:database` — Database tools
+  - `setup:database` — Database tools (Docker, Supabase CLI)
+  - `reset` — Local API database: Supabase reset + Drizzle migrations + seed (`pnpm --filter @repo/api reset`). See [apps/api/README.md](apps/api/README.md)
+
 **Primary**
   - `build` — Build packages and apps
   - `dev` — Start dev (core, react, error, utils, api, web)
