@@ -10,8 +10,7 @@
 # Example and sample files
 .*\.example$
 .*\.sample$
-.*\.env-example$
-.*\.env\.example$
+.*\.env\.[^/]+\.example$
 .*\.env\.schema$
 .*\.env\.test$
 

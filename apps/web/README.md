@@ -95,7 +95,7 @@ See [E2E Testing](@apps/docu/content/docs/testing/e2e-testing.mdx) for full deta
 
 ### Environment Variables
 
-Optional environment variables (see `.env-example`):
+Optional environment variables (see `.env.local.example`):
 
 ## Project Structure
 
