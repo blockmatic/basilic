@@ -27,6 +27,7 @@ env:
   DATABASE_URL: postgresql://localhost/test
   JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
   NEXT_PUBLIC_API_URL: http://localhost:3001
+  AI_PROVIDER: anthropic
   ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
 jobs:

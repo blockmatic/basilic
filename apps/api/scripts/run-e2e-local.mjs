@@ -2,6 +2,7 @@
 /**
  * E2E local: spawn Fastify API, poll until healthy, run Playwright, cleanup on exit.
  * No wait-on. Uses ALLOW_TEST, PGLITE, NODE_ENV=test.
+ * Forces AI_PROVIDER=anthropic and strips Open Router/Ollama/AI_DEFAULT_MODEL (parity with Vitest + web E2E).
  */
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -74,7 +75,11 @@ async function main() {
     PGLITE: 'true',
     NODE_ENV: 'test',
     JWT_SECRET: jwtSecret,
+    AI_PROVIDER: 'anthropic',
   }
+  delete env.OPEN_ROUTER_API_KEY
+  delete env.OLLAMA_BASE_URL
+  delete env.AI_DEFAULT_MODEL
 
   const fastify = spawn(process.execPath, ['--import', 'tsx', 'server.ts'], {
     cwd: fastifyDir,
