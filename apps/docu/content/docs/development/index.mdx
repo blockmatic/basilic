@@ -111,4 +111,4 @@ flowchart TB
 
 **Optional Setup:**
 
-For database features, you'll need PostgreSQL. See [Installation](/docs/development).
+For database features, use local PostgreSQL via Supabase: `pnpm --filter @repo/api db:start`, configure `apps/api/.env`, then apply schema and optional seed with **`pnpm reset`** from the repo root (Supabase reset + Drizzle migrate + `scripts/seed.ts`). See [ADR 008: Database](/docs/adrs/008-database) and `apps/api/README.md` in the monorepo.

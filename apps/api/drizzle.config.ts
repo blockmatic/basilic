@@ -1,3 +1,4 @@
+/** Migrations + schema. Local data seed: `scripts/seed.ts` (via `pnpm reset` in apps/api). */
 import 'dotenv/config'
 import { defineConfig } from 'drizzle-kit'
 

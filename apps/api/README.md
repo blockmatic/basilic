@@ -33,12 +33,13 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 - `pnpm checktypes` — Type-check
 - `pnpm db:start` — Start Supabase (local)
 - `pnpm db:stop` — Stop Supabase (run before switching to another project’s Supabase)
-- `pnpm db:reset` — Reset Supabase database (drops and recreates; no Supabase seed.sql)
-- `pnpm db:reset-and-migrate` — Reset DB, then run Drizzle migrations. Seeding via Drizzle (no Supabase seed.sql)
+- `pnpm reset` — From repo root: `pnpm --filter @repo/api reset`. From `apps/api`: Supabase DB reset, then Drizzle migrations (`scripts/migrate.ts`), then seed (`scripts/seed.ts`) with local `DATABASE_URL` + `RUN_PG_MIGRATE=true`. `[db.seed]` / `seed.sql` unused (`supabase/config.toml`)
 - `pnpm db:migrate` — Run migrations (skips when PGLITE=true; use `RUN_PG_MIGRATE=true` to force PostgreSQL)
 - `pnpm db:generate` — Generate migrations from schema
 - `pnpm db:push` — Push schema (dev only)
 - `pnpm generate:openapi` — Regenerate OpenAPI spec
+
+**Database:** `drizzle.config.ts` defines schema glob (`src/db/schema/tables/*.ts`) and migration output (`src/db/migrations`). `scripts/migrate.ts` runs the Drizzle migrator against PostgreSQL (or skips at build time when using PGLite—see `src/db/migrate.ts` at runtime). `pnpm reset` runs `scripts/seed.ts` (`runSeed`) after migrations; `pnpm db:migrate` alone does not.
 
 ## Links
 

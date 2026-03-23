@@ -58,7 +58,7 @@ async function initMigrationsTrackingWhenTablesExist(
 
 try {
   // --- PGLite vs PostgreSQL ---
-  // Allow explicit override: RUN_PG_MIGRATE=true forces PostgreSQL path (e.g. after db:reset)
+  // Allow explicit override: RUN_PG_MIGRATE=true forces PostgreSQL path (e.g. after pnpm reset)
   const forcePg = process.env.RUN_PG_MIGRATE === 'true'
   const shouldUsePGLite = !forcePg && (env.PGLITE === true || env.NODE_ENV === 'test')
 
@@ -102,7 +102,7 @@ try {
     migrationsTableExists = migrationsTableCheck.rows[0]?.exists ?? false
 
     if (!migrationsTableExists) {
-      // Tables that must exist to consider this a "seeded" DB (matches initial schema)
+      // Tables that must exist to treat the DB as already matching the initial schema (migration bootstrap)
       const requiredTables = ['users', 'sessions', 'verification', 'account', 'wallet_identities']
       const tableCheckPromises = requiredTables.map(tableName =>
         pool.query(
@@ -162,7 +162,7 @@ try {
     } else if (isTableExistsError) {
       logger.warn(
         { context: 'migrate', err: migrationError },
-        'Migration failed due to existing tables. Tables appear to match schema. For clean state, run: pnpm --filter @repo/api db:reset',
+        'Migration failed due to existing tables. Tables appear to match schema. For clean state, run: pnpm --filter @repo/api reset',
       )
       // In development/build, allow this to pass if tables exist and match schema
       // In production, this should fail to ensure proper migration tracking
@@ -170,7 +170,7 @@ try {
 
       logger.info(
         { context: 'migrate' },
-        'Allowing build to continue - tables exist and appear to match expected schema. Consider running db:reset for clean migration state.',
+        'Allowing build to continue - tables exist and appear to match expected schema. Consider running pnpm reset for clean migration state.',
       )
     } else {
       logger.error({ context: 'migrate', err: migrationError }, 'Migration failed')

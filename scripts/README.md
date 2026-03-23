@@ -222,6 +222,8 @@ node scripts/setup-database.mjs
 
 **Note**: Docker and Docker Compose are required for Supabase CLI to function. Supabase CLI is optional. Used for local PostgreSQL development with Supabase. Database features will skip if Supabase CLI is not available.
 
+After Supabase is running, a full local wipe + migrations + data seed is **`pnpm reset`** from the repository root (`pnpm --filter @repo/api reset`). See `apps/api/README.md`.
+
 ## Notes
 
 - Publishing scripts use `process.cwd()` to find the package's `package.json` (they run from within each package directory)

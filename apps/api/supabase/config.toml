@@ -59,7 +59,7 @@ schema_paths = []
 
 [db.seed]
 # If enabled, seeds the database after migrations during a db reset.
-# Disabled — seeding via Drizzle (db:reset-and-migrate, seed script)
+# Disabled — schema from Drizzle (scripts/migrate.ts); optional data rows from scripts/seed.ts via pnpm reset (apps/api)
 enabled = false
 
 [db.network_restrictions]
