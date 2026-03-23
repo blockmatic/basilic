@@ -69,7 +69,7 @@ All security-related pnpm scripts are organized under the `security:` namespace:
 Prevents committing sensitive file types in pre-commit hooks.
 
 **What gets blocked**:
-- `.env` (but `.env.<qualifier>.example`, `.env.schema`, `.env.{development,staging,production,test}` are allowed)
+- `.env` and related sensitive paths (see `block-secret-files.mjs`); allowed committed templates — `.env.<qualifier>.example`, `.env.schema`, `.env.{development,staging,production,test}` — use the same patterns in `.trufflehogignore` for TruffleHog
 - `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`
 - `id_rsa*` (SSH private keys)
 - Certificate files: `*.crt`, `*.cer`, `*.der`, `*.p7b`, `*.p7c`, `*.p7m`, `*.p7s`

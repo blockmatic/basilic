@@ -7,12 +7,10 @@
 ^\.cursor/skills/.*
 ^packages/.*/README\.md$
 
-# Example and sample files
-.*\.example$
-.*\.sample$
+# Committed env templates and defaults (match scripts/block-secret-files.mjs allowlist)
 .*\.env\.[^/]+\.example$
 .*\.env\.schema$
-.*\.env\.test$
+.*\.env\.(development|staging|production|test)$
 
 # Test files
 .*\.test\.(ts|tsx|js|jsx|mjs)$
