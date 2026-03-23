@@ -6,6 +6,8 @@ Type-safe REST API built with Fastify & OpenAPI. Routes in `src/routes/` are the
 
 Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (gitignored). Start database first (`pnpm db:start`), then `pnpm dev`. Uses Supabase CLI for PostgreSQL, or `PGLITE=true` for in-memory. Dev server at [http://localhost:3000](http://localhost:3000).
 
+**Switching project_id:** If you change `project_id` in `supabase/config.toml` (e.g. after a rebrand), run `pnpm db:stop` before `pnpm db:start`—only one Supabase instance runs per host.
+
 ## Vercel
 
 Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time; PGLite migrations run at runtime.
@@ -30,9 +32,9 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 - `pnpm test:e2e:debug` — Debug E2E tests
 - `pnpm checktypes` — Type-check
 - `pnpm db:start` — Start Supabase (local)
-- `pnpm db:stop` — Stop Supabase
-- `pnpm db:reset` — Reset Supabase database (recreates from scratch)
-- `pnpm db:reset-and-migrate` — Reset DB then run Drizzle migrations
+- `pnpm db:stop` — Stop Supabase (run before switching to another project’s Supabase)
+- `pnpm db:reset` — Reset Supabase database (drops and recreates; no Supabase seed.sql)
+- `pnpm db:reset-and-migrate` — Reset DB, then run Drizzle migrations. Seeding via Drizzle (no Supabase seed.sql)
 - `pnpm db:migrate` — Run migrations (skips when PGLITE=true; use `RUN_PG_MIGRATE=true` to force PostgreSQL)
 - `pnpm db:generate` — Generate migrations from schema
 - `pnpm db:push` — Push schema (dev only)

@@ -192,6 +192,16 @@ All platforms use the same build command pattern:
 - **Railway/Fly.io/Render**: `build: pnpm build` (runs migrations)
 - **Local dev**: PostgreSQL migrations run at build time (via `pnpm dev` → `pnpm db:migrate`), PGLite migrations run at runtime
 
+### Local database reset (Supabase + Drizzle)
+
+For local Postgres via Supabase CLI (`project_id: basilic-api` in `apps/api/supabase/config.toml`):
+
+1. **`pnpm db:reset`** — Drops and recreates the Supabase database. Supabase seeds are disabled; no `seed.sql` is used.
+2. **`pnpm db:reset-and-migrate`** — Reset, then run Drizzle migrations. Use this for a fresh schema.
+3. **Seeding** — Via Drizzle (seed script if configured), not Supabase `seed.sql`.
+
+Run `pnpm db:stop` before switching to another project's Supabase instance (e.g. different repo); only one Supabase runs per host.
+
 ### Key Benefits
 
 - **Host-agnostic**: No platform-specific code, standard npm scripts work everywhere
