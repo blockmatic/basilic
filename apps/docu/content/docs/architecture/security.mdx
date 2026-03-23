@@ -24,7 +24,7 @@ Pre-commit hooks run automatically via `simple-git-hooks` when you attempt to co
 
 The following file patterns are blocked from being committed:
 
-- `.env` (but `.env-example`, `.env.schema`, `.env.development`, `.env.staging`, `.env.production`, `.env.test` are allowed)
+- `.env` (but `.env.<qualifier>.example` templates such as `.env.defaults.example` / `.env.local.example`, `.env.schema`, `.env.development`, `.env.staging`, `.env.production`, `.env.test` are allowed)
 - `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`
 - `id_rsa*` (SSH private keys)
 - Certificate files: `*.crt`, `*.cer`, `*.der`, `*.p7b`, `*.p7c`, `*.p7m`, `*.p7s`
@@ -199,7 +199,7 @@ git reset HEAD~1
 ### 3. Prevent Future Incidents
 
 - Use `.env` files for secrets (never commit them)
-- Use `.env-example` or `.env.schema` for templates
+- Use `.env.<qualifier>.example` (e.g. `.env.defaults.example`, `.env.local.example`) or `.env.schema` for templates
 - Review staged files before committing: `git diff --cached`
 - Run `pnpm security:secrets` before committing
 
@@ -268,7 +268,7 @@ If CI detects secrets:
 ## Best Practices
 
 1. **Never commit secrets** - Use `.env` files and environment variables
-2. **Use `.env-example`** - Provide templates for required environment variables
+2. **Use `.env.<qualifier>.example`** - Provide templates for required environment variables (see `apps/api/.env.defaults.example`, `apps/web/.env.local.example`)
 3. **Review before committing** - Check `git diff --cached` before committing
 4. **Rotate secrets regularly** - Even if not exposed, rotate secrets periodically
 5. **Use secret management** - Consider using tools like HashiCorp Vault, AWS Secrets Manager, etc. for production

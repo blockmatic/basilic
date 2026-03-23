@@ -4,7 +4,7 @@ Type-safe REST API built with Fastify & OpenAPI. Routes in `src/routes/` are the
 
 ## Development
 
-Start database first (`pnpm db:start`), then `pnpm dev`. Uses Supabase CLI for PostgreSQL, or `PGLITE=true` for in-memory. Dev server at [http://localhost:3000](http://localhost:3000).
+Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (gitignored). Start database first (`pnpm db:start`), then `pnpm dev`. Uses Supabase CLI for PostgreSQL, or `PGLITE=true` for in-memory. Dev server at [http://localhost:3000](http://localhost:3000).
 
 ## Vercel
 

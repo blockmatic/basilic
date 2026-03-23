@@ -59,7 +59,7 @@ Global styles live in `src/global.css`. Use StyleSheet for complex cases. See `.
 
 ## API / Environment
 
-Configure `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` for API reachability. When Fastify runs on a remote VPC and Cursor forwards port 3001, use `EXPO_PUBLIC_API_URL=http://localhost:3001` so the simulator hits the tunneled API.
+Configure `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` for API reachability (see `.env.defaults.example`). When Fastify runs on a remote VPC and Cursor forwards port 3001, use `EXPO_PUBLIC_API_URL=http://localhost:3001` so the simulator hits the tunneled API.
 
 ## EAS Builds & PR Preview
 

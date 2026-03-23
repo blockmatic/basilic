@@ -27,8 +27,7 @@ const blockedPatterns = [
 ]
 
 const allowedPatterns = [
-  /\.env-example$/,
-  /\.env\.example$/,
+  /\.env\.[^/]+\.example$/,
   /\.env\.schema$/,
   /\.env\.development$/,
   /\.env\.staging$/,
@@ -79,10 +78,10 @@ if (blockedFiles.length > 0) {
   })
   console.error('\nThese file types contain sensitive data and should not be committed.')
   console.error(
-    'Allowed exceptions: .env-example, .env.example, .env.schema, .env.{development,staging,production,test}',
+    'Allowed exceptions: .env.<qualifier>.example (e.g. .env.defaults.example), .env.schema, .env.{development,staging,production,test}',
   )
   console.error(
-    '\nIf you need to commit a configuration template, use .env-example or .env.schema instead.\n',
+    '\nIf you need to commit a configuration template, use .env.defaults.example (or .env.local.example) or .env.schema.\n',
   )
   exit(1)
 }

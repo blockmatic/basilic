@@ -11,12 +11,7 @@ useDefault = true
 description = "Allowlist for test fixtures and example files"
 paths = [
   '''apps/web/e2e/wallet-setup/.*\.(ts|js|mjs)$''',
-  '''\.env-example$''',
-  '''\.env\.example$''',
-  '''\.env\.test\.example$''',
-  '''\.env-sample$''',
-  '''^apps/web/\.env\.local\.example$''',
-  '''\.env\.sample$''',
+  '''\.env\.[^/]+\.example$''',
   '''\.env\.schema$''',
   '''\.env\.test$''',
   '''\.github/workflows/.*\.yml$''',
