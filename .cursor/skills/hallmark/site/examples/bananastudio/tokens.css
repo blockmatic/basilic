@@ -1,0 +1,96 @@
+/* Hallmark · tokens · genre: atmospheric · theme: Bloom (dark)
+ * Paper band: dark  ·  Display style: italic-serif (Fraunces)  ·  Accent hue: warm amber-bloom 75°
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* — Type ----------------------------------------------------------- */
+  --font-display: "Fraunces", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+  --font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-outlier: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* — Type scale (1.25 ratio · base 16px) ---------------------------- */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 3rem;
+  --text-4xl: 4rem;
+  --text-display: clamp(3rem, 8vw + 0.5rem, 8.5rem);
+  --text-marquee: clamp(2.5rem, 7vw, 6.5rem);
+  --text-figure: clamp(4rem, 12vw + 0.5rem, 11rem);
+
+  /* — Colour (OKLCH; midnight-violet paper · amber-bloom accent) ----- */
+  --color-paper: oklch(10.0% 0.018 285); /* deep midnight violet */
+  --color-paper-2: oklch(13.5% 0.02 285);
+  --color-paper-3: oklch(17.5% 0.024 285);
+  --color-paper-tint: oklch(22.0% 0.028 285);
+  --color-rule: oklch(24.0% 0.02 285);
+  --color-rule-2: oklch(32.0% 0.022 285);
+
+  --color-ink: oklch(98.0% 0.01 80); /* warm bone */
+  --color-ink-2: oklch(80.0% 0.012 80);
+  --color-muted: oklch(60.0% 0.014 80);
+  --color-muted-2: oklch(48.0% 0.014 75);
+
+  --color-accent: oklch(80.0% 0.18 75); /* amber bloom */
+  --color-accent-2: oklch(86.0% 0.14 80); /* lighter bloom */
+  --color-accent-deep: oklch(62.0% 0.18 50); /* deep ember */
+  --color-accent-cool: oklch(70.0% 0.15 250); /* studio cyan, single-use */
+
+  --color-glow: oklch(78% 0.2 70 / 0.3);
+  --color-glow-soft: oklch(80% 0.18 75 / 0.18);
+
+  --color-focus: oklch(82% 0.18 75);
+
+  /* — Spacing (4 pt scale, role-named) ------------------------------- */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 9rem;
+
+  /* — Rules + radii -------------------------------------------------- */
+  --rule-hair: 1px;
+  --rule-thick: 2px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* — Motion --------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-micro: 120ms;
+  --dur-short: 240ms;
+  --dur-mid: 520ms;
+  --dur-long: 760ms;
+  --dur-marquee: 48s;
+  --dur-breath: 6.5s;
+  --dur-aperture: 9s;
+
+  /* — z-index (six-level scale) -------------------------------------- */
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* — Page layout ---------------------------------------------------- */
+  --page-gutter: clamp(1.25rem, 4vw, 4rem);
+  --page-max: 78rem;
+}

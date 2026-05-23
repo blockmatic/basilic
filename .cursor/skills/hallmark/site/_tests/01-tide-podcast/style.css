@@ -1,0 +1,272 @@
+/* Hallmark · macrostructure: Letter · H6 hero knobs: salutation=greeting, body=3 paragraphs, signoff=initials
+ * theme: Salon · accent: warm-amber ~2% · enrichment: none (typography only)
+ * studied: no · context: skipped, inferred (audio domain) · v0.6.0
+ */
+
+:root {
+  --color-paper: oklch(96% 0.01 75);
+  --color-paper-2: oklch(94% 0.012 75);
+  --color-ink: oklch(22% 0.012 60);
+  --color-ink-soft: oklch(38% 0.014 60);
+  --color-rule: oklch(82% 0.014 70);
+  --color-accent: oklch(62% 0.13 55);
+
+  --font-display: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-body: "Cormorant Garamond", "Source Serif 4", "Iowan Old Style", Georgia, serif;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+  --space-4xl: 9rem;
+
+  --measure-prose: 56ch;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-micro: 120ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.55;
+  font-feature-settings: "ss01", "lnum";
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
+}
+
+/* Masthead — small mono row */
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-soft);
+  border-block-end: 1px solid var(--color-rule);
+  padding-block-end: var(--space-sm);
+  margin-block-end: var(--space-2xl);
+}
+
+.masthead__brand {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+.masthead__meta {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Salutation — the letter opens here */
+.salutation {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-xl);
+  color: var(--color-ink);
+}
+
+.salutation__caret {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1em;
+  background: var(--color-accent);
+  vertical-align: -0.1em;
+  margin-inline-start: 0.1em;
+  animation: caret 1.05s steps(2, jump-none) infinite;
+}
+
+@keyframes caret {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .salutation__caret {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
+/* Letter body — generous prose */
+.letter {
+  max-width: var(--measure-prose);
+  font-family: var(--font-body);
+  font-size: 1.4rem;
+  line-height: 1.55;
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+.letter p {
+  margin: 0 0 var(--space-lg);
+}
+
+.letter p:first-child::first-letter {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 4rem;
+  line-height: 0.85;
+  float: inline-start;
+  padding-inline-end: 0.18em;
+  padding-block-start: 0.12em;
+  color: var(--color-accent);
+}
+
+.letter em {
+  font-style: italic;
+  color: var(--color-ink);
+}
+
+/* Sign-off */
+.signoff {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-ink-soft);
+  margin-block-start: var(--space-xl);
+}
+
+.signoff__name {
+  color: var(--color-ink);
+}
+
+/* Listen-where row */
+.listen {
+  margin-block-start: var(--space-3xl);
+  padding-block-start: var(--space-lg);
+  border-block-start: 1px solid var(--color-rule);
+}
+
+.listen__heading {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-ink-soft);
+  margin: 0 0 var(--space-md);
+}
+
+.listen__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-xl);
+}
+
+.listen__item a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5ch;
+  color: var(--color-ink);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  border-block-end: 1px solid transparent;
+  padding-block-end: 2px;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.listen__item a:hover,
+.listen__item a:focus-visible {
+  color: var(--color-accent);
+  border-block-end-color: var(--color-accent);
+}
+
+.listen__item a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.listen__arrow {
+  font-family: var(--font-display);
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+/* Colophon */
+.colophon {
+  margin-block-start: var(--space-3xl);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-soft);
+}
+
+.colophon a {
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  border-block-end: 1px solid transparent;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.colophon a:hover,
+.colophon a:focus-visible {
+  color: var(--color-ink);
+  border-block-end-color: var(--color-rule);
+}
+
+.colophon a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+/* Mobile */
+@media (max-width: 40rem) {
+  .page {
+    padding: var(--space-xl) var(--space-md) var(--space-2xl);
+  }
+  .letter {
+    font-size: 1.2rem;
+  }
+  .salutation {
+    font-size: 1.4rem;
+  }
+  .colophon {
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+}

@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Soroe — Six vessels, Spring 2026.</title>
+<meta name="description" content="A small ceramics studio in Nara. Six vessels per season, then the kiln rests. Each piece signed and dated." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" />
+<style>
+/* Hallmark · macrostructure: Long Document · theme: Studio · enrichment: Tier-A SVG vessels
+ * tone: quiet handmade archival · anchor hue: chromatic-green
+ * studied: no · pre-emit critique: P5 H4 E5 S5 R5 V4
+ */
+
+:root {
+  /* Studio — light · italic-serif · chromatic-green (sage paper · forest accent) */
+  --color-paper:    oklch(96.5% 0.014  95);
+  --color-paper-2:  oklch(94%   0.016  95);
+  --color-paper-3:  oklch(90%   0.020  98);
+  --color-rule:     oklch(76%   0.016  95);
+  --color-rule-2:   oklch(58%   0.020  98);
+  --color-muted:    oklch(42%   0.024  120);
+  --color-ink-2:    oklch(24%   0.030  130);
+  --color-ink:      oklch(15%   0.032  135);
+  --color-accent:   oklch(46%   0.140  145);  /* forest green */
+  --color-focus:    oklch(46%   0.140  145);
+
+  --font-display: "Fraunces", "Tiempos", ui-serif, Georgia, serif;
+  --font-body:    "Geist", "Söhne", ui-sans-serif, system-ui, sans-serif;
+  --font-serif:   "Fraunces", ui-serif, Georgia, serif;
+  --font-label:   "Geist Mono", ui-monospace, monospace;
+  --font-mono:    "Geist Mono", ui-monospace, monospace;
+
+  --text-xs:  0.75rem;
+  --text-sm:  0.875rem;
+  --text-md:  1rem;
+  --text-lg:  1.25rem;
+  --text-xl:  1.75rem;
+  --text-2xl: 2.5rem;
+  --text-display: clamp(3rem, 7vw + 0.5rem, 6.5rem);
+
+  --tracking-display: -0.025em;
+  --tracking-tight:   -0.015em;
+  --tracking-label:   0.16em;
+  --lh-tight:         1;
+  --lh-snug:          1.2;
+  --lh-relaxed:       1.6;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+
+  --rule-hair: 1px;
+  --page-gutter: clamp(1.25rem, 4vw, 3rem);
+  --page-max:    62rem;
+
+  --dur-micro: 80ms;
+  --dur-short: 150ms;
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: var(--lh-relaxed);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding-inline: var(--page-gutter);
+}
+
+main {
+  margin-inline: auto;
+  max-width: var(--page-max);
+}
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, p, ul, ol, dl { margin: 0; }
+
+/* — Masthead ———————————————————————————————————————— */
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-block: var(--space-md);
+  border-block-end: var(--rule-hair) solid var(--color-rule-2);
+}
+
+.masthead__wordmark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.masthead__meta {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* — Salutation hero ———————————————————————————————— */
+.opening {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.opening__eyebrow {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-block-end: var(--space-md);
+}
+
+.opening__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--text-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  max-width: 18ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.opening__sub {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 52ch;
+  margin-block-start: var(--space-md);
+}
+
+.opening__signoff {
+  margin-block-start: var(--space-md);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-md);
+  color: var(--color-ink-2);
+}
+
+/* — Vessel index ———————————————————————————————————— */
+.index {
+  padding-block: var(--space-2xl) var(--space-2xl);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+.index__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-md);
+  align-items: baseline;
+  padding-block-end: var(--space-md);
+  border-block-end: var(--rule-hair) solid var(--color-rule-2);
+}
+
+.index__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.index__count {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.vessels {
+  list-style: none;
+  padding: 0;
+  display: grid;
+}
+
+.vessel {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) 12rem;
+  gap: var(--space-xl);
+  align-items: center;
+  padding-block: var(--space-xl);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+@media (max-width: 56rem) {
+  .vessel {
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--space-md);
+  }
+  .vessel__price { grid-column: 2; justify-self: start; padding-block-start: var(--space-xs); }
+}
+
+.vessel__svg {
+  width: 100%;
+  height: auto;
+  color: var(--color-ink);
+}
+
+.vessel__body {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.vessel__num {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.vessel__name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.vessel__notes {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 42ch;
+}
+
+.vessel__price {
+  display: grid;
+  gap: 0.2rem;
+  justify-self: end;
+  text-align: end;
+}
+
+@media (max-width: 56rem) {
+  .vessel__price { justify-self: start; text-align: start; }
+}
+
+.vessel__price-amount {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-xl);
+  color: var(--color-ink);
+  font-feature-settings: "tnum";
+}
+
+.vessel__price-state {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.vessel__price-state--reserved { color: var(--color-accent); }
+
+.vessel:last-child { border-block-end: 0; }
+
+/* — Visit ————————————————————————————————————————— */
+.visit {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  border-block-start: var(--rule-hair) solid var(--color-rule-2);
+  display: grid;
+  grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr);
+  gap: var(--space-2xl);
+}
+
+@media (max-width: 56rem) {
+  .visit { grid-template-columns: 1fr; gap: var(--space-md); }
+}
+
+.visit__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.visit__body {
+  display: grid;
+  gap: var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 52ch;
+}
+
+.visit__address {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-xl);
+  color: var(--color-ink);
+  line-height: var(--lh-snug);
+}
+
+/* — Colophon ————————————————————————————————————— */
+.colophon {
+  margin-block-start: var(--space-2xl);
+  padding-block: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule-2);
+  display: grid;
+  gap: var(--space-md);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.colophon__row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.colophon strong { color: var(--color-ink); font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<main>
+
+  <header class="masthead">
+    <h1 class="masthead__wordmark">Soroe.</h1>
+    <p class="masthead__meta">Spring 2026 · No. ix</p>
+  </header>
+
+  <section class="opening" aria-labelledby="o-title">
+    <p class="opening__eyebrow">A letter to collectors</p>
+    <h2 class="opening__title" id="o-title">Six vessels, this spring — then the kiln rests until July.</h2>
+    <p class="opening__sub">
+      Each piece is hand-thrown in our studio outside Nara, fired once at 1,260 °C, signed on the foot, and dated. We send the kiln-log with the box. When a piece is reserved, it leaves the index — there are no waitlists.
+    </p>
+    <p class="opening__signoff">— Mariko, the studio.</p>
+  </section>
+
+  <section class="index" aria-labelledby="i-title">
+    <header class="index__head">
+      <h2 class="index__title" id="i-title">The index — six pieces.</h2>
+      <p class="index__count">Updated 14 May · 04 / 06 available</p>
+    </header>
+
+    <ol class="vessels">
+
+      <li class="vessel">
+        <svg class="vessel__svg" viewBox="0 0 80 110" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M 18 18 L 26 12 L 54 12 L 62 18" />
+          <path d="M 22 18 C 14 36 16 78 24 96 C 30 102 50 102 56 96 C 64 78 66 36 58 18" />
+          <path d="M 28 96 L 28 100 L 52 100 L 52 96" />
+        </svg>
+        <div class="vessel__body">
+          <span class="vessel__num">i.</span>
+          <h3 class="vessel__name">Tall pourer, ash glaze.</h3>
+          <p class="vessel__notes">22 cm · stoneware · soft pour spout · holds about 800 ml. Foot-rim shows the wheel's last turn; left unsanded.</p>
+        </div>
+        <p class="vessel__price">
+          <span class="vessel__price-amount">¥ 14,800</span>
+          <span class="vessel__price-state">Available</span>
+        </p>
+      </li>
+
+      <li class="vessel">
+        <svg class="vessel__svg" viewBox="0 0 80 110" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M 12 36 C 18 22 62 22 68 36 C 76 50 70 80 64 90 C 56 102 24 102 16 90 C 10 80 4 50 12 36 Z" />
+          <ellipse cx="40" cy="36" rx="28" ry="6" />
+        </svg>
+        <div class="vessel__body">
+          <span class="vessel__num">ii.</span>
+          <h3 class="vessel__name">Wide bowl, kuro.</h3>
+          <p class="vessel__notes">26 cm across · iron-rich black slip · meant for the centre of the table — one bunch of greens, or one ripe persimmon.</p>
+        </div>
+        <p class="vessel__price">
+          <span class="vessel__price-amount">¥ 21,000</span>
+          <span class="vessel__price-state vessel__price-state--reserved">Reserved</span>
+        </p>
+      </li>
+
+      <li class="vessel">
+        <svg class="vessel__svg" viewBox="0 0 80 110" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M 24 8 L 56 8 L 60 18 L 56 28 L 60 36 C 68 50 64 86 56 96 C 50 102 30 102 24 96 C 16 86 12 50 20 36 L 24 28 L 20 18 Z" />
+          <ellipse cx="40" cy="14" rx="14" ry="3" stroke-opacity="0.5" />
+        </svg>
+        <div class="vessel__body">
+          <span class="vessel__num">iii.</span>
+          <h3 class="vessel__name">Stem vase, narrow.</h3>
+          <p class="vessel__notes">18 cm · for a single branch. The neck pinches because we wanted the stem to lean — not because the throw failed.</p>
+        </div>
+        <p class="vessel__price">
+          <span class="vessel__price-amount">¥ 9,200</span>
+          <span class="vessel__price-state">Available</span>
+        </p>
+      </li>
+
+      <li class="vessel">
+        <svg class="vessel__svg" viewBox="0 0 80 110" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M 14 30 C 14 18 66 18 66 30 L 66 86 C 66 100 14 100 14 86 Z" />
+          <path d="M 14 30 L 66 30" />
+        </svg>
+        <div class="vessel__body">
+          <span class="vessel__num">iv.</span>
+          <h3 class="vessel__name">Cylinder, soft white.</h3>
+          <p class="vessel__notes">14 cm · matte porcelain · two of these were thrown side by side. They are not identical, and that's the point.</p>
+        </div>
+        <p class="vessel__price">
+          <span class="vessel__price-amount">¥ 6,800</span>
+          <span class="vessel__price-state">Available</span>
+        </p>
+      </li>
+
+      <li class="vessel">
+        <svg class="vessel__svg" viewBox="0 0 80 110" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M 8 50 C 8 34 32 24 40 24 C 48 24 72 34 72 50 C 72 76 56 96 40 96 C 24 96 8 76 8 50 Z" />
+          <path d="M 32 24 L 32 12 L 48 12 L 48 24" />
+        </svg>
+        <div class="vessel__body">
+          <span class="vessel__num">v.</span>
+          <h3 class="vessel__name">Round jug, river celadon.</h3>
+          <p class="vessel__notes">19 cm at widest · holds 1.6 L · the small blue cast in the glaze is iron from the local water — we cannot reproduce it.</p>
+        </div>
+        <p class="vessel__price">
+          <span class="vessel__price-amount">¥ 24,000</span>
+          <span class="vessel__price-state vessel__price-state--reserved">Reserved</span>
+        </p>
+      </li>
+
+      <li class="vessel">
+        <svg class="vessel__svg" viewBox="0 0 80 110" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M 22 40 L 22 30 L 30 24 L 50 24 L 58 30 L 58 40 C 64 56 64 80 58 92 C 52 100 28 100 22 92 C 16 80 16 56 22 40 Z" />
+          <path d="M 22 40 L 58 40" stroke-opacity="0.4" />
+        </svg>
+        <div class="vessel__body">
+          <span class="vessel__num">vi.</span>
+          <h3 class="vessel__name">Lidded jar, salt-cure.</h3>
+          <p class="vessel__notes">17 cm · we use one for our kitchen salt. The lid sits with a soft scrape; that's the seal, not a flaw.</p>
+        </div>
+        <p class="vessel__price">
+          <span class="vessel__price-amount">¥ 11,500</span>
+          <span class="vessel__price-state">Available</span>
+        </p>
+      </li>
+
+    </ol>
+  </section>
+
+  <section class="visit" aria-labelledby="v-title">
+    <p class="visit__label">Visit the studio</p>
+    <div class="visit__body">
+      <h2 class="visit__address" id="v-title">Tuesday &amp; Saturday, 14:00–17:00.</h2>
+      <p>The studio is a converted carpenter's workshop ten minutes north of Nara station. Walk up the lane until the persimmon tree, then left. Tea is offered. Pieces marked <em style="color: var(--color-accent);">available</em> can be reserved with a 30% deposit; the balance settles when the piece ships.</p>
+      <p>Soroe Studio · 1-14 Higashi-Hokke, Nara · <a style="color: var(--color-ink); border-bottom: 1px solid var(--color-rule-2);" href="mailto:hello@soroe.studio">hello@soroe.studio</a></p>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <div class="colophon__row">
+      <p>Soroe <strong>· Mariko Iwasaki, ceramicist</strong></p>
+      <p>Spring 2026 · No. ix</p>
+    </div>
+    <div class="colophon__row">
+      <p>Set in <strong>Fraunces italic</strong> &amp; <strong>Geist</strong>.</p>
+      <p>Each piece signed and dated.</p>
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>BananaStudio — studio-grade headshots, in thirty minutes.</title>
+  <meta name="description" content="Upload twelve selfies. Receive one hundred retouched headshots in thirty minutes — your wardrobe, your lighting, your direction." />
+  <meta name="theme-color" content="#0a0712" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="shell nav__inner">
+      <a class="wordmark" href="#" aria-label="BananaStudio — home">BananaStudio</a>
+      <ul class="nav__links">
+        <li><a href="#examples">Work</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a class="btn btn--ghost btn--sm" href="#cta">Start a session<span class="arrow" aria-hidden="true">→</span></a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ─── Hero — Marquee, huge title left, animated aperture right ─── -->
+    <section class="shell hero" aria-labelledby="hero-title">
+      <div class="hero__copy reveal" style="--i:0">
+        <p class="hero__eyebrow">Open beta · v1.0</p>
+        <h1 id="hero-title" class="hero__title">
+          Studio-grade<br/>
+          headshots,<br/>
+          <em>in thirty minutes.</em>
+        </h1>
+        <p class="hero__lede">
+          Upload twelve selfies. Receive one hundred retouched portraits — your wardrobe, your lighting, your direction. No reschedules, no studio lights, no awkward small-talk with a photographer who'd rather be shooting weddings.
+        </p>
+        <div class="hero__cta">
+          <a class="btn" href="#cta">Start a session<span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn--ghost" href="#examples">See examples</a>
+        </div>
+        <div class="hero__meta">
+          <span><span class="dot" aria-hidden="true"></span>4K PNG output</span>
+          <span><span class="dot" aria-hidden="true"></span>30-min turnaround</span>
+          <span><span class="dot" aria-hidden="true"></span>Commercial license</span>
+        </div>
+      </div>
+
+      <!-- Interactive before/after slider -->
+      <div class="hero__aside reveal" style="--i:1">
+        <div class="compare" style="--pos: 50%;">
+          <input class="compare__input" type="range" min="0" max="100" value="50" step="0.1"
+                 aria-label="Drag to compare a phone selfie with the studio result. Use arrow keys to adjust." />
+          <figure class="compare__pane compare__pane--after" aria-label="Studio output">
+            <div class="portrait portrait--after" aria-hidden="true"></div>
+          </figure>
+          <figure class="compare__pane compare__pane--before" aria-label="Phone selfie">
+            <div class="portrait portrait--before" aria-hidden="true"></div>
+          </figure>
+          <span class="compare__label compare__label--before">Selfie</span>
+          <span class="compare__label compare__label--after">Studio</span>
+          <div class="compare__divider" aria-hidden="true">
+            <span class="compare__handle">
+              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                <path d="M9 5 L4 12 L9 19 M15 5 L20 12 L15 19"
+                      fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </div>
+        <p class="compare__caption" aria-hidden="true">
+          <span>Drag to compare</span>
+          <span class="compare__caption-meta">phone-quality input → 4K retouched output</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ─── Marquee strip ────────────────────────────────────────────── -->
+    <section class="marquee" aria-label="Wardrobe samples">
+      <div class="marquee__track" aria-hidden="true">
+        <span class="marquee__word">Boardroom</span>
+        <span class="marquee__word marquee__word--mute">Editorial</span>
+        <span class="marquee__word">Daylight</span>
+        <span class="marquee__word marquee__word--mute">On-set</span>
+        <span class="marquee__word">Noir</span>
+        <span class="marquee__word marquee__word--mute">Press</span>
+        <span class="marquee__word">Boardroom</span>
+        <span class="marquee__word marquee__word--mute">Editorial</span>
+        <span class="marquee__word">Daylight</span>
+        <span class="marquee__word marquee__word--mute">On-set</span>
+        <span class="marquee__word">Noir</span>
+        <span class="marquee__word marquee__word--mute">Press</span>
+      </div>
+    </section>
+
+    <!-- ─── Output gallery (six breathing portraits, wide grid) ─────── -->
+    <section class="shell section" id="examples" aria-labelledby="ex-title">
+      <div class="gallery">
+        <header class="gallery__intro">
+          <div>
+            <p class="section__head">01 · The output</p>
+            <h2 id="ex-title" class="section__title">Looks like a photographer made it. <em>The kind your CMO's husband doesn't.</em></h2>
+          </div>
+          <p class="section__sub">Trained on twelve thousand portrait sessions. Real skin texture, real fall-off, no plastic finish, no extra fingers. 4K PNG and 2048-px social crops, ready for LinkedIn or the back of a book.</p>
+        </header>
+
+        <article class="tile tile--feature reveal" style="--i:0">
+          <p class="meta">06 · Direction</p>
+          <div>
+            <h2>Pick wardrobe, lighting, backdrop, framing. <em>Or write a brief and we'll match it.</em></h2>
+            <p style="margin-top: var(--space-md);">Twelve presets ship in every plan. Custom briefs unlock on Studio Plus — drop a reference image and we'll mirror its colour temperature, depth of field, and posture.</p>
+          </div>
+          <p class="meta">⌗ 4K PNG · 2048 social · retouched</p>
+        </article>
+
+        <article class="tile tile--portrait reveal" style="--i:1" aria-label="Wardrobe sample: boardroom">
+          <div class="portrait portrait--boardroom"></div>
+          <div class="portrait__caption"><span>Boardroom</span><span class="num">02</span></div>
+        </article>
+        <article class="tile tile--portrait reveal" style="--i:2" aria-label="Wardrobe sample: editorial">
+          <div class="portrait portrait--editorial"></div>
+          <div class="portrait__caption"><span>Editorial</span><span class="num">03</span></div>
+        </article>
+        <article class="tile tile--portrait reveal" style="--i:3" aria-label="Wardrobe sample: daylight">
+          <div class="portrait portrait--daylight"></div>
+          <div class="portrait__caption"><span>Daylight</span><span class="num">04</span></div>
+        </article>
+
+        <article class="tile tile--portrait reveal" style="--i:4" aria-label="Wardrobe sample: on-set">
+          <div class="portrait portrait--onset"></div>
+          <div class="portrait__caption"><span>On-set</span><span class="num">05</span></div>
+        </article>
+        <article class="tile tile--portrait reveal" style="--i:5" aria-label="Wardrobe sample: noir">
+          <div class="portrait portrait--noir"></div>
+          <div class="portrait__caption"><span>Noir</span><span class="num">06</span></div>
+        </article>
+        <article class="tile tile--portrait reveal" style="--i:6" aria-label="Wardrobe sample: editorial alt">
+          <div class="portrait portrait--editorial" style="filter: hue-rotate(28deg) saturate(1.1);"></div>
+          <div class="portrait__caption"><span>Press</span><span class="num">07</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ─── Stat counter ─────────────────────────────────────────────── -->
+    <section class="shell" aria-labelledby="stat-title">
+      <div class="stat">
+        <p class="stat__figure" id="stat-figure" aria-hidden="true">
+          <span class="num" data-counter="100000">100,000</span><span class="plus">+</span>
+        </p>
+        <div class="stat__copy">
+          <h2 id="stat-title">Headshots delivered to founders, recruiters, sales teams, and a surprising number of family lawyers.</h2>
+          <p>“100,000 portraits across 11,400 paying customers since beta. Average turnaround: 27 minutes. Re-shoot rate: 4.1%.”</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Process — three steps, workbench-style ─────────────────── -->
+    <section class="shell section" id="howto" aria-labelledby="howto-title">
+      <div class="process">
+        <header class="process__head">
+          <div>
+            <p class="section__head">02 · The process</p>
+            <h2 id="howto-title">Three steps. Thirty minutes. <em>No setup.</em></h2>
+          </div>
+          <p>From the moment you upload to the moment your first edit lands in your inbox.</p>
+        </header>
+
+        <ol class="steps">
+          <li class="step reveal" style="--i:0">
+            <p class="step__num">01</p>
+            <p class="step__stage">Upload</p>
+            <h3>Send twelve selfies.</h3>
+            <p>Front, side, smile, neutral. Phone-quality is fine — the model is trained on phone cameras, not Hasselblads.</p>
+          </li>
+          <li class="step reveal" style="--i:1">
+            <p class="step__num">02</p>
+            <p class="step__stage">Direct</p>
+            <h3>Pick a look, or write a brief.</h3>
+            <p>Choose from twelve wardrobes and four lighting setups. Or write a sentence — “warm office, navy knit, side-light from the left” — and we'll match it.</p>
+          </li>
+          <li class="step reveal" style="--i:2">
+            <p class="step__num">03</p>
+            <p class="step__stage">Receive</p>
+            <h3>One hundred edits, in thirty minutes.</h3>
+            <p>4K PNG, retouched, with commercial license. Delivered to your inbox and your dashboard. Re-shoot any look free.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ─── Pricing ──────────────────────────────────────────────────── -->
+    <section class="shell section" id="pricing" aria-labelledby="pricing-title">
+      <div class="pricing">
+        <header class="pricing__head">
+          <p class="section__head">03 · Pricing</p>
+          <h2 id="pricing-title">Pay by output, <em>not by seat.</em></h2>
+          <p>Re-shoots are always free. Three plans, no annual lock-in, no surprise upcharges for "premium" presets.</p>
+        </header>
+
+        <div class="tiers">
+          <article class="tier reveal" style="--i:0" aria-labelledby="t1">
+            <p class="tier__name" id="t1">Studio</p>
+            <p class="tier__price">$39<span class="unit">one-off</span></p>
+            <p class="tier__sub">For a single round of headshots, on demand.</p>
+            <ul class="tier__list">
+              <li>100 retouched headshots</li>
+              <li>4 wardrobes · 4 lighting presets</li>
+              <li>30-minute turnaround</li>
+              <li>4K PNG · 2048 social crops</li>
+              <li>Commercial license</li>
+            </ul>
+            <a class="btn btn--ghost" href="#cta">Start a session<span class="arrow" aria-hidden="true">→</span></a>
+          </article>
+
+          <article class="tier tier--rec reveal" style="--i:1" aria-labelledby="t2">
+            <p class="tier__name" id="t2">Studio Plus</p>
+            <p class="tier__price">$79<span class="unit">one-off</span></p>
+            <p class="tier__sub">For founders and execs who reshoot every quarter.</p>
+            <ul class="tier__list">
+              <li>300 retouched headshots</li>
+              <li>Unlimited wardrobes &amp; lighting</li>
+              <li>Same-day turnaround, 12 h SLA</li>
+              <li>Custom briefs &amp; reference images</li>
+              <li>Brand kit · 1 round of revisions</li>
+              <li>Commercial license</li>
+            </ul>
+            <a class="btn" href="#cta">Start a session<span class="arrow" aria-hidden="true">→</span></a>
+          </article>
+
+          <article class="tier reveal" style="--i:2" aria-labelledby="t3">
+            <p class="tier__name" id="t3">Editorial</p>
+            <p class="tier__price">$199<span class="unit">per shoot</span></p>
+            <p class="tier__sub">For press, book covers, and brand work that earns the front page.</p>
+            <ul class="tier__list">
+              <li>500 retouched headshots</li>
+              <li>30-minute creative direction call</li>
+              <li>Brand kit upload · LUT match</li>
+              <li>3 rounds of revision</li>
+              <li>Print-ready 6K TIFF</li>
+              <li>Extended commercial license</li>
+            </ul>
+            <a class="btn btn--ghost" href="#cta">Talk to direction<span class="arrow" aria-hidden="true">→</span></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── FAQ ──────────────────────────────────────────────────────── -->
+    <section class="shell section" id="faq" aria-labelledby="faq-title">
+      <div class="faq">
+        <header class="faq__head">
+          <p class="section__head">04 · FAQ</p>
+          <h2 id="faq-title">Questions, <em>answered honestly.</em></h2>
+          <p>Five we get most often. If yours isn't here, the answer is probably yes — write us.</p>
+        </header>
+        <div class="faq__list">
+          <details class="faq__item">
+            <summary class="faq__summary"><span>How long does a session actually take?</span><span class="faq__sign" aria-hidden="true"></span></summary>
+            <div class="faq__answer-wrap"><div class="faq__answer-inner">
+              <p class="faq__answer">Thirty minutes from the moment your last selfie uploads. Studio Plus same-day SLA is 12 hours; we usually clear it in three.</p>
+            </div></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__summary"><span>What do my headshots actually look like?</span><span class="faq__sign" aria-hidden="true"></span></summary>
+            <div class="faq__answer-wrap"><div class="faq__answer-inner">
+              <p class="faq__answer">Studio-grade. Skin texture preserved, freckles intact, real light fall-off. No plastic finish, no over-smoothed faces, no AI fingers. The gallery above is built from real customer outputs — different ethnicity, age, and frame in every wardrobe sample.</p>
+            </div></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__summary"><span>Can I direct the shot?</span><span class="faq__sign" aria-hidden="true"></span></summary>
+            <div class="faq__answer-wrap"><div class="faq__answer-inner">
+              <p class="faq__answer">Yes. Pick wardrobe, lighting, backdrop, and framing in the dashboard. On Studio Plus and Editorial, drop a reference image — we mirror its colour temperature, depth of field, and posture inside three retries.</p>
+            </div></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__summary"><span>Can I use these for LinkedIn, work, or press?</span><span class="faq__sign" aria-hidden="true"></span></summary>
+            <div class="faq__answer-wrap"><div class="faq__answer-inner">
+              <p class="faq__answer">Yes. Every plan ships with a commercial license. Editorial includes the extended license you need for book jackets, magazine covers, or campaign use above 1 M impressions.</p>
+            </div></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__summary"><span>Do you keep my photos?</span><span class="faq__sign" aria-hidden="true"></span></summary>
+            <div class="faq__answer-wrap"><div class="faq__answer-inner">
+              <p class="faq__answer">Selfies and outputs are deleted after thirty days. You can wipe them in one click before that — your dashboard has a "delete everything" button that does exactly what it says.</p>
+            </div></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Final CTA — full-bleed dramatic ─────────────────────────── -->
+    <section class="shell" id="cta">
+      <div class="final">
+        <div>
+          <h2>Your headshot, <em>in thirty minutes.</em></h2>
+          <p class="final__sub">Twelve selfies in. One hundred edits out. Re-shoot any look free, forever.</p>
+        </div>
+        <div class="final__cta">
+          <a class="btn" href="#cta-form">Start a session<span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn--ghost" href="#pricing">See plans</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="shell foot">
+    <div class="foot__row">
+      <a class="wordmark" href="#" aria-label="BananaStudio — home">BananaStudio</a>
+      <p class="foot__tagline">Studio-grade headshots, in thirty minutes. Built in Lisbon and Toronto, since 2025.</p>
+    </div>
+    <ul class="foot__links" aria-label="Footer links">
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#">Privacy</a></li>
+      <li><a href="#">Terms</a></li>
+      <li><a href="#">Imprint</a></li>
+      <li><a href="mailto:hello@bananastudio.com">hello@bananastudio.com</a></li>
+    </ul>
+    <div class="foot__credit">
+      <span>© 2026 BananaStudio · All portraits used on this page are AI-generated.</span>
+      <span>v1.0 · made by hand, finished by machine.</span>
+    </div>
+  </footer>
+
+  <script>
+    // Nav float morph — toggles .is-floating once user scrolls past the masthead.
+    (() => {
+      const nav = document.querySelector(".nav");
+      if (!nav) return;
+      const Threshold = 80;
+      let floating = false;
+      const update = () => {
+        const next = window.scrollY > Threshold;
+        if (next !== floating) {
+          floating = next;
+          nav.classList.toggle("is-floating", floating);
+        }
+      };
+      // rAF-throttled to avoid layout thrash on rapid scroll
+      let ticking = false;
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => { update(); ticking = false; });
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      update();
+    })();
+
+    // Stagger reveal — one-shot, IntersectionObserver only.
+    (() => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const targets = document.querySelectorAll(".reveal");
+      if (reduce || !("IntersectionObserver" in window)) {
+        targets.forEach(el => el.classList.add("is-in"));
+        return;
+      }
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-in");
+            io.unobserve(e.target);
+          }
+        }
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+      targets.forEach(el => io.observe(el));
+    })();
+
+    // Recommended-tier pulse — fires once when the pricing section enters.
+    (() => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const rec = document.querySelector(".tier--rec");
+      if (!rec || reduce || !("IntersectionObserver" in window)) return;
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            rec.classList.add("rec-pulse");
+            io.disconnect();
+          }
+        }
+      }, { threshold: 0.4 });
+      io.observe(rec);
+    })();
+
+    // Before/after slider — pointer-event drag with capture; range input
+    // is hidden but kept in sync for keyboard a11y (Tab + arrows).
+    (() => {
+      const compare = document.querySelector(".compare");
+      if (!compare) return;
+      const input = compare.querySelector(".compare__input");
+
+      const set = (v) => {
+        const clamped = Math.max(0, Math.min(100, v));
+        compare.style.setProperty("--pos", clamped + "%");
+        input.value = clamped;
+      };
+
+      const posFromEvent = (e) => {
+        const r = compare.getBoundingClientRect();
+        return ((e.clientX - r.left) / r.width) * 100;
+      };
+
+      let dragging = false;
+
+      compare.addEventListener("pointerdown", (e) => {
+        dragging = true;
+        compare.setPointerCapture(e.pointerId);
+        compare.classList.add("is-dragging");
+        set(posFromEvent(e));
+        e.preventDefault();
+      });
+
+      compare.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        set(posFromEvent(e));
+      });
+
+      const endDrag = (e) => {
+        if (!dragging) return;
+        dragging = false;
+        compare.classList.remove("is-dragging");
+        try { compare.releasePointerCapture(e.pointerId); } catch {}
+      };
+      compare.addEventListener("pointerup", endDrag);
+      compare.addEventListener("pointercancel", endDrag);
+
+      // Keyboard a11y — input is hidden but Tab-reachable.
+      input.addEventListener("input", (e) =>
+        compare.style.setProperty("--pos", e.target.value + "%")
+      );
+
+      set(parseFloat(input.value));
+    })();
+
+    // Animated counter — one-shot, eases into the final value.
+    (() => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const el = document.querySelector("[data-counter]");
+      if (!el) return;
+      const target = parseInt(el.dataset.counter, 10);
+      if (reduce || !("IntersectionObserver" in window)) {
+        el.textContent = target.toLocaleString("en-US");
+        return;
+      }
+      const fmt = new Intl.NumberFormat("en-US");
+      const easeOut = (t) => 1 - (1 - t) ** 3;
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          io.disconnect();
+          const start = performance.now();
+          const dur = 2000;
+          const tick = (now) => {
+            const t = Math.min(1, (now - start) / dur);
+            const v = Math.round(target * easeOut(t));
+            el.textContent = fmt.format(v);
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      }, { threshold: 0.4 });
+      io.observe(el);
+    })();
+  </script>
+</body>
+</html>

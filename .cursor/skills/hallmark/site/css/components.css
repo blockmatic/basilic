@@ -1,0 +1,5345 @@
+/* Hallmark — components */
+
+/* — Wordmark ——————————————————————————————————————— */
+.wordmark {
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+[data-theme="manifesto"] .wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  font-size: var(--text-md);
+}
+
+[data-theme="terminal"] .wordmark::before {
+  content: "$ ";
+  color: var(--color-accent);
+}
+
+/* — Banner (sticky top, thin, theme picker inline) ————————— */
+/* Uses --z-sticky-nav (above --z-sticky) so in-page sticky elements
+   like Almanac's .section__head dock BELOW the banner instead of
+   bleeding over it. Height stays in sync with --banner-height. */
+.banner {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky-nav);
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: 0 var(--page-gutter);
+  height: var(--banner-height);
+  background: color-mix(in oklch, var(--color-paper) 88%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-label);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+/* Spacer pushes the picker + theme-name to the right */
+.banner__spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.banner__mark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--color-ink);
+}
+
+.banner__ver {
+  font-size: 0.625rem;
+  color: var(--color-muted);
+  letter-spacing: 0.14em;
+}
+
+/* Sticky Install link — sits between the wordmark and the spacer.
+   Becomes the most prominent thing on the banner once the user
+   scrolls past the hero. */
+.banner__install {
+  margin-inline-start: var(--space-md);
+  padding: 0.18rem 0.65rem;
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  text-decoration: none;
+  border: 1px solid var(--color-rule-2);
+  border-radius: var(--radius-pill, 999px);
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+/* Hover scoped to true mouse devices so a tap on touch never sticks
+   the inverted hover state across the rest of the session. */
+@media (hover: hover) and (pointer: fine) {
+  .banner__install:hover {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border-color: var(--color-ink);
+  }
+}
+
+.banner__install:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Released after click — the JS blur handler removes :focus, but we
+   also belt-and-brace via :focus:not(:focus-visible) so any browser
+   that synthesises mouse-focus on click can't keep an inverted look. */
+.banner__install:focus:not(:focus-visible) {
+  background: transparent;
+  color: var(--color-ink);
+  border-color: var(--color-rule-2);
+}
+
+@media (max-width: 50rem) {
+  .banner__install {
+    display: none;
+  }
+  /* Without the Install button to pair with, the star's negative
+     start margin (sized for the install/star pair) pulls it too
+     close to the wordmark. Loosen by +8px so the two CTAs read as
+     bookends, not crowded. */
+  .banner__star {
+    margin-inline-start: -0.25rem;
+  }
+}
+
+/* GitHub star button — sits next to Install in the banner, shows
+   the live star count fetched from the GitHub API on load (cached
+   in localStorage for 1 hour to avoid rate-limit). Click → repo. */
+.banner__star {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  /* Sit close to the Install button — pull back against the banner's
+     flex gap so the two read as a CTA pair. */
+  margin-inline-start: calc(-1 * var(--space-md) + 0.25rem);
+  padding: 0.18rem 0.65rem;
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  color: var(--color-ink);
+  text-decoration: none;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-pill, 999px);
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.banner__star-icon {
+  flex-shrink: 0;
+  display: block;
+  /* GitHub-style golden-yellow star, theme-independent. */
+  color: #f5b300;
+}
+
+.banner__star-count {
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0.04em;
+}
+
+.banner__star:hover {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+/* Star icon stays yellow on hover — it's a brand mark, not a state. */
+
+.banner__star:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 36rem) {
+  .banner__star {
+    padding: 0.18rem 0.5rem;
+    gap: 0.3rem;
+  }
+}
+
+/* Genre label — small text after the theme name in the banner. */
+.banner__theme {
+  display: inline;
+}
+
+.banner__genre {
+  display: inline;
+  margin-inline-start: 0.5em;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--color-muted);
+  font-style: normal;
+  font-weight: 400;
+}
+
+.banner__genre::before {
+  content: "· ";
+  color: var(--color-rule-2);
+  margin-inline-end: 0.1em;
+}
+
+@media (max-width: 38rem) {
+  .banner__genre {
+    display: none;
+  }
+}
+
+/* T-key onboarding tooltip — appears after 5 s idle, dismisses on
+   first T press. Anchored under the shuffle button. */
+.t-tooltip {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: var(--page-gutter);
+  padding: 0.55rem 0.85rem;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.45;
+  box-shadow: 0 8px 24px -8px oklch(20% 0.02 60 / 0.32);
+  z-index: var(--z-sticky);
+  animation: t-tooltip-in 320ms var(--ease-out) both;
+}
+
+.t-tooltip[hidden] {
+  display: none;
+}
+
+.t-tooltip[data-state="closing"] {
+  animation: t-tooltip-out 240ms var(--ease-in) forwards;
+}
+
+@keyframes t-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes t-tooltip-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.t-tooltip__arrow {
+  position: absolute;
+  top: -5px;
+  right: 28px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-ink);
+  transform: rotate(45deg);
+  border-radius: 1px;
+}
+
+.t-tooltip__body kbd {
+  display: inline-block;
+  padding: 0.1em 0.45em;
+  margin-inline: 0.1em;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.t-tooltip__body strong {
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-tooltip {
+    animation: none;
+  }
+}
+
+/* — Theme indicator + dropdown ————————————————————————————
+   Replaces the inline 23-dot strip. The indicator reads "01 / 23 —
+   Specimen" in the active theme's display face; clicking it opens
+   a compact 6×4 grid of color swatches (no theme names, deliberately
+   minimal). Dropdown is position: absolute below the indicator. */
+.banner__theme-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.banner__theme-indicator {
+  appearance: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  height: 28px;
+  padding: 0 0.65rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill, 999px);
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-style: var(--display-style, normal);
+  font-size: 0.95rem;
+  letter-spacing: -0.005em;
+  font-optical-sizing: auto;
+  white-space: nowrap;
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    background var(--dur-micro) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .banner__theme-indicator:hover {
+    border-color: var(--color-rule-2);
+  }
+}
+
+.banner__theme-indicator:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.banner__theme-indicator[aria-expanded="true"] {
+  border-color: var(--color-rule-2);
+  background: var(--color-paper-2);
+}
+
+/* "01 / 23" set in mono for tabular alignment + ledger feel. */
+.banner__ordinal {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  font-feature-settings: "tnum" 1;
+  text-transform: uppercase;
+}
+
+.banner__indicator-sep {
+  color: var(--color-rule-2);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+
+.banner__caret {
+  flex-shrink: 0;
+  align-self: center;
+  color: var(--color-muted);
+  margin-inline-start: 0.1rem;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.banner__theme-indicator[aria-expanded="true"] .banner__caret {
+  transform: rotate(180deg);
+}
+
+/* Theme-aware overrides for the theme-name span (was on .banner__center). */
+[data-theme="manifesto"] .banner__theme-indicator,
+[data-theme="brutal"] .banner__theme-indicator,
+[data-theme="sport"] .banner__theme-indicator {
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="terminal"] .banner__theme::before {
+  content: "$ ";
+  color: var(--color-accent);
+}
+
+[data-theme="terminal"] .banner__theme-indicator {
+  font-family: var(--font-mono);
+}
+
+/* — Banner pill per-theme shape + voice ————————————————————————
+   The banner is the only fixed surface that crosses every theme. If
+   it stays the same shape on all 22 themes, the "switching themes
+   rebuilds the page" claim leaks. Per-theme shape (border-radius) and
+   font choice push the banner into the theme's register too. */
+
+/* HARD EDGES — square pill, no radius. Brutalist / manifesto / print register. */
+[data-theme="brutal"] .banner__install,
+[data-theme="brutal"] .banner__star,
+[data-theme="manifesto"] .banner__install,
+[data-theme="manifesto"] .banner__star,
+[data-theme="newsprint"] .banner__install,
+[data-theme="newsprint"] .banner__star,
+[data-theme="terminal"] .banner__install,
+[data-theme="terminal"] .banner__star,
+[data-theme="editorial"] .banner__install,
+[data-theme="editorial"] .banner__star {
+  border-radius: 0;
+}
+
+/* Brutal / Manifesto — heavier border, display font, uppercase. */
+[data-theme="brutal"] .banner__install,
+[data-theme="manifesto"] .banner__install {
+  border-width: 2px;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+/* Terminal — mono for everything in the banner. */
+[data-theme="terminal"] .banner__install,
+[data-theme="terminal"] .banner__star {
+  font-family: var(--font-mono);
+}
+[data-theme="terminal"] .banner__install {
+  border-color: var(--color-accent);
+}
+
+/* SLIGHT RADIUS — sport / almanac (record card register). */
+[data-theme="sport"] .banner__install,
+[data-theme="sport"] .banner__star,
+[data-theme="almanac"] .banner__install,
+[data-theme="almanac"] .banner__star {
+  border-radius: 4px;
+}
+[data-theme="sport"] .banner__install,
+[data-theme="sport"] .banner__star {
+  font-family: var(--font-mono);
+  font-style: italic;
+}
+
+/* SOFT-CARD RADIUS — garden / halo / violet / studio. */
+[data-theme="garden"] .banner__install,
+[data-theme="garden"] .banner__star,
+[data-theme="halo"] .banner__install,
+[data-theme="halo"] .banner__star,
+[data-theme="violet"] .banner__install,
+[data-theme="violet"] .banner__star,
+[data-theme="studio"] .banner__install,
+[data-theme="studio"] .banner__star {
+  border-radius: 6px;
+}
+[data-theme="halo"] .banner__install {
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-accent) 35%, transparent);
+}
+[data-theme="studio"] .banner__install,
+[data-theme="studio"] .banner__star {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+/* OFF-REGISTER STAMP — riso. 2px radius + duotone offset shadow. */
+[data-theme="riso"] .banner__install,
+[data-theme="riso"] .banner__star {
+  border-radius: 2px;
+  box-shadow: 1px 1px 0 var(--color-accent-2, var(--color-accent));
+}
+
+/* ATELIER / SALON — italic serif label, hairline only (atelier). */
+[data-theme="atelier"] .banner__install {
+  border-color: var(--color-rule);
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+}
+[data-theme="salon"] .banner__install {
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Theme-indicator extra cases — extend the existing uppercase group. */
+[data-theme="almanac"] .banner__theme-indicator,
+[data-theme="newsprint"] .banner__theme-indicator,
+[data-theme="editorial"] .banner__theme-indicator {
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+[data-theme="atelier"] .banner__theme-indicator,
+[data-theme="salon"] .banner__theme-indicator {
+  font-style: italic;
+}
+
+/* Dropdown panel — appears under the indicator. Hidden by default. */
+.theme-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: var(--z-sticky);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  padding: 10px;
+  background: var(--color-paper);
+  border: 1px solid var(--color-rule-2);
+  border-radius: 4px;
+  box-shadow: 0 12px 36px -10px oklch(20% 0.02 60 / 0.22);
+  animation: theme-dropdown-in 140ms var(--ease-out);
+  transform-origin: top right;
+}
+
+.theme-dropdown[hidden] {
+  display: none;
+}
+
+@keyframes theme-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-dropdown {
+    animation: none;
+  }
+}
+
+/* Dot inside the dropdown — same styling as the old .banner__dot. */
+.theme-dropdown__dot {
+  appearance: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: var(--dot, var(--color-paper));
+  border: 1px solid var(--color-rule-2);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 100ms var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out),
+    box-shadow var(--dur-micro) var(--ease-out);
+}
+
+.theme-dropdown__dot::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 4px;
+  background: var(--dot-edge, transparent);
+  z-index: 0;
+}
+
+.theme-dropdown__num {
+  position: relative;
+  z-index: 1;
+  font-family: "Geist Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: color-mix(in oklch, var(--dot-edge, var(--color-ink)) 55%, var(--color-ink));
+  font-feature-settings: "tnum";
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .theme-dropdown__dot:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-ink);
+  }
+}
+
+.theme-dropdown__dot:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.theme-dropdown__dot[aria-pressed="true"] {
+  border-color: var(--color-ink);
+  box-shadow:
+    0 0 0 2px var(--color-paper),
+    0 0 0 3px var(--color-ink);
+}
+
+/* Combined shuffle button: icon + T kbd hint inside a single pill.
+   Click randomises; the T inside reads as a keyboard hint, not a separate
+   pill. Replaces the old .banner__random + .banner__kbd combo. */
+.banner__shuffle {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 26px;
+  padding: 0 0.6rem 0 0.55rem;
+  /* Pull tight to the theme indicator — same math as .banner__star pulls
+     against Install, so the right-side picker↔shuffle gap mirrors the
+     left-side Install↔Star gap. */
+  margin-inline-start: calc(-1 * var(--space-md) + 0.25rem);
+  background: transparent;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-pill, 999px);
+  color: var(--color-muted);
+  cursor: pointer;
+  font-family: var(--font-label);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out),
+    background var(--dur-micro) var(--ease-out),
+    transform 80ms var(--ease-out);
+}
+
+.banner__shuffle svg {
+  flex-shrink: 0;
+  display: block;
+}
+
+.banner__shuffle-key {
+  display: inline-block;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  padding-inline-start: 0.4rem;
+  border-inline-start: 1px solid var(--color-rule);
+  margin-inline-start: 0.05rem;
+  height: 14px;
+  line-height: 14px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .banner__shuffle:hover {
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+  .banner__shuffle:hover .banner__shuffle-key {
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+  .banner__shuffle:hover svg {
+    transform: rotate(15deg);
+    transition: transform 200ms var(--ease-out);
+  }
+}
+
+.banner__shuffle:active {
+  transform: scale(0.96);
+  transition-duration: 60ms;
+}
+
+.banner__shuffle:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 60rem) {
+  .banner {
+    gap: var(--space-md);
+  }
+  .banner__theme-indicator {
+    font-size: 0.85rem;
+    padding: 0 0.5rem;
+  }
+  .banner__ordinal {
+    font-size: 0.625rem;
+  }
+}
+
+@media (max-width: 44rem) {
+  .banner__ver {
+    display: none;
+  }
+  .banner__shuffle-key {
+    display: none;
+  }
+  .banner__shuffle {
+    padding: 0 0.5rem;
+    height: 24px;
+  }
+  /* Hide ordinal on small viewports — keep just the theme name + caret. */
+  .banner__ordinal,
+  .banner__indicator-sep {
+    display: none;
+  }
+}
+
+@media (max-width: 26rem) {
+  .banner__theme-indicator .banner__theme {
+    display: none;
+  }
+}
+
+/* — Section label (01 / FOUNDATIONS) —————————————————— */
+.section-label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.section-label .num {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+.section-label .divider {
+  color: var(--color-rule-2);
+  font-weight: 300;
+}
+
+/* Terminal — vary the prompt prefix per section so the "//" gag doesn't get old.
+   Cycles through > , //, # , -- across the run of sections. */
+[data-theme="terminal"] .section-label::before {
+  content: "> ";
+  color: var(--color-accent);
+}
+[data-theme="terminal"] .section:nth-of-type(4n + 2) .section-label::before {
+  content: "// ";
+}
+[data-theme="terminal"] .section:nth-of-type(4n + 3) .section-label::before {
+  content: "# ";
+}
+[data-theme="terminal"] .section:nth-of-type(4n + 4) .section-label::before {
+  content: "-- ";
+}
+
+[data-theme="manifesto"] .section-label .num {
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-md);
+}
+
+[data-theme="sport"] .section-label .num {
+  color: var(--color-accent);
+  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-style: italic;
+}
+
+[data-theme="almanac"] .section-label {
+  font-family: var(--font-mono);
+}
+
+/* — Button (outlined default) ————————————————————————— */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+  background: transparent;
+  border: var(--rule-fine) solid var(--color-ink);
+  border-radius: var(--radius-pill, 0);
+  min-height: 44px;
+  /* explicit properties — never `transition: all` */
+  transition:
+    transform 100ms var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    transform: translateY(-1px);
+  }
+}
+.btn:active {
+  transform: translateY(1px);
+  transition-duration: 60ms;
+}
+
+/* — Inline link ————————————————————————————————————— */
+.link {
+  color: var(--color-ink);
+  text-decoration: none;
+  background-image: linear-gradient(var(--color-accent), var(--color-accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  padding-bottom: 0.08em;
+  transition: background-size var(--dur-short) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    background-size: 100% 2px;
+  }
+}
+
+[data-theme="terminal"] .link {
+  background: none;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* — Code block ——————————————————————————————————————— */
+.code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-ink);
+  background: var(--color-paper-2);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-input, 0);
+  padding: var(--space-md) var(--space-lg);
+  overflow-x: auto;
+  white-space: nowrap;
+  line-height: 1.7;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  position: relative;
+  box-shadow: var(--shadow-card, none);
+}
+
+.code .prompt {
+  color: var(--color-muted);
+  user-select: none;
+}
+.code--block {
+  white-space: pre;
+  display: block;
+}
+
+/* — Copy-to-clipboard button (silent success pattern) ————— */
+.code__copy {
+  position: absolute;
+  top: 50%;
+  right: var(--space-sm);
+  transform: translateY(-50%);
+  font-family: var(--font-label);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  background: var(--color-paper);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-input, 0);
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--dur-short) var(--ease-out),
+    color var(--dur-short) var(--ease-out),
+    border-color var(--dur-short) var(--ease-out);
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.code:hover .code__copy,
+.code:focus-within .code__copy,
+.code__copy:focus-visible {
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .code__copy {
+    opacity: 1;
+  }
+}
+
+.code__copy:hover {
+  color: var(--color-ink);
+  border-color: var(--color-rule-2);
+}
+
+.code__copy[data-state="copied"] {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  opacity: 1;
+}
+
+.code__copy-default {
+  display: inline;
+}
+.code__copy-done {
+  display: none;
+}
+
+.code__copy[data-state="copied"] .code__copy-default {
+  display: none;
+}
+.code__copy[data-state="copied"] .code__copy-done {
+  display: inline;
+}
+
+/* Mobile · drop the copy button entirely and make the whole pre
+   tap-to-copy. The button at narrow widths overflowed the frame; on
+   coarse-pointer devices a full-width tap target is the right
+   pattern (matches `gh repo clone` / npmjs / Vercel install panes).
+   The pre keeps its flex + center alignment so the command sits
+   vertically centred regardless of frame height. */
+@media (max-width: 45rem) {
+  .code__copy {
+    display: none;
+  }
+
+  .code[data-copy-source] {
+    cursor: pointer;
+  }
+
+  /* Transient "Copied ✓" badge inside the pre, anchored top-right.
+     Replaces the button's label-swap on mobile. Fades automatically
+     when JS removes data-state after 2.2 s. */
+  .code[data-copy-source][data-state="copied"] {
+    position: relative;
+  }
+  .code[data-copy-source][data-state="copied"]::after {
+    content: "Copied ✓";
+    position: absolute;
+    top: 50%;
+    right: var(--space-sm);
+    transform: translateY(-50%);
+    padding: 0.25rem 0.55rem;
+    font-family: var(--font-label);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    background: var(--color-paper);
+    border: var(--rule-hair) solid var(--color-accent);
+    border-radius: var(--radius-input, 0);
+    pointer-events: none;
+    animation: copy-flash var(--dur-short) var(--ease-out);
+  }
+  @keyframes copy-flash {
+    from {
+      opacity: 0;
+      transform: translateY(-50%) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .code[data-copy-source][data-state="copied"]::after {
+      animation: none;
+    }
+  }
+}
+
+[data-theme="terminal"] .code__copy {
+  background: var(--color-paper-2);
+  border-color: var(--color-rule);
+}
+
+[data-theme="manifesto"] .code__copy {
+  background: var(--color-paper);
+  color: var(--color-paper);
+  border-color: var(--color-paper);
+  font-weight: 500;
+}
+
+[data-theme="manifesto"] .code__copy:hover {
+  color: var(--color-paper);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+[data-theme="terminal"] .code {
+  background: var(--color-paper-3);
+  border-color: var(--color-rule-2);
+}
+
+[data-theme="manifesto"] .code {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}
+
+[data-theme="manifesto"] .code .prompt {
+  color: var(--color-accent);
+}
+
+/* — Specimen card ——————————————————————————————————— */
+.spec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-xl) 0;
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.spec__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.spec__name {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  line-height: 1;
+  font-optical-sizing: auto;
+}
+
+.spec__num {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-label);
+}
+
+.spec__rule {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 40ch;
+}
+
+[data-theme="brutal"] .spec__rule,
+[data-theme="manifesto"] .spec__rule,
+[data-theme="terminal"] .spec__rule,
+[data-theme="sport"] .spec__rule,
+[data-theme="almanac"] .spec__rule {
+  font-style: normal;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+[data-theme="manifesto"] .spec__name {
+  text-transform: uppercase;
+}
+
+.spec__body {
+  margin-top: var(--space-xs);
+}
+
+/* — Foundations nav (left column of the spec sheet) ——————————
+   Each item is a clickable label. The active item shows an accent
+   dot, slightly bolder name, and a subtle inset background. */
+.found-nav__btn {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 0.5rem;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0 var(--space-md) var(--space-sm);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    padding-inline-start var(--dur-short) var(--ease-out);
+}
+
+.found-nav__btn:hover {
+  background: var(--color-paper-2);
+}
+
+.found-nav__num {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-muted);
+  font-feature-settings: "tnum";
+}
+
+.found-nav__name {
+  font-family: var(--font-display);
+  font-style: var(--display-style, normal);
+  font-weight: var(--display-weight, 500);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink-2);
+  line-height: 1;
+}
+
+.found-nav__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+  align-self: center;
+  justify-self: end;
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+
+[data-theme="riso"] .found-nav__name {
+  text-transform: lowercase;
+}
+[data-theme="brutal"] .found-nav__name,
+[data-theme="manifesto"] .found-nav__name,
+[data-theme="sport"] .found-nav__name {
+  text-transform: uppercase;
+}
+
+/* Active state — driven by which radio is :checked */
+#f-type:checked ~ .found-grid .found-nav__btn[for="f-type"],
+#f-colour:checked ~ .found-grid .found-nav__btn[for="f-colour"],
+#f-space:checked ~ .found-grid .found-nav__btn[for="f-space"],
+#f-motion:checked ~ .found-grid .found-nav__btn[for="f-motion"],
+#f-voice:checked ~ .found-grid .found-nav__btn[for="f-voice"] {
+  background: color-mix(in oklch, var(--color-accent) 5%, transparent);
+  padding-inline-start: var(--space-md);
+}
+
+#f-type:checked ~ .found-grid .found-nav__btn[for="f-type"] .found-nav__name,
+#f-colour:checked ~ .found-grid .found-nav__btn[for="f-colour"] .found-nav__name,
+#f-space:checked ~ .found-grid .found-nav__btn[for="f-space"] .found-nav__name,
+#f-motion:checked ~ .found-grid .found-nav__btn[for="f-motion"] .found-nav__name,
+#f-voice:checked ~ .found-grid .found-nav__btn[for="f-voice"] .found-nav__name {
+  color: var(--color-ink);
+}
+
+#f-type:checked ~ .found-grid .found-nav__btn[for="f-type"] .found-nav__dot,
+#f-colour:checked ~ .found-grid .found-nav__btn[for="f-colour"] .found-nav__dot,
+#f-space:checked ~ .found-grid .found-nav__btn[for="f-space"] .found-nav__dot,
+#f-motion:checked ~ .found-grid .found-nav__btn[for="f-motion"] .found-nav__dot,
+#f-voice:checked ~ .found-grid .found-nav__btn[for="f-voice"] .found-nav__dot {
+  background: var(--color-accent);
+}
+
+/* Focus-visible outline on the *button* when its corresponding radio
+   is focused (radios are off-screen but keyboard-focusable). */
+#f-type:focus-visible ~ .found-grid .found-nav__btn[for="f-type"],
+#f-colour:focus-visible ~ .found-grid .found-nav__btn[for="f-colour"],
+#f-space:focus-visible ~ .found-grid .found-nav__btn[for="f-space"],
+#f-motion:focus-visible ~ .found-grid .found-nav__btn[for="f-motion"],
+#f-voice:focus-visible ~ .found-grid .found-nav__btn[for="f-voice"] {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+
+/* — Foundations panels (right column) —————————————————————— */
+.found-panels {
+  position: relative;
+  min-height: 24rem;
+}
+
+.found-panel {
+  display: none;
+  padding-inline-start: var(--space-xl);
+  border-inline-start: var(--rule-hair) solid var(--color-rule);
+}
+
+@media (max-width: 60rem) {
+  .found-panel {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    padding-block: var(--space-md) var(--space-xl);
+  }
+}
+
+#f-type:checked ~ .found-grid .found-panels .found-panel[data-panel="type"],
+#f-colour:checked ~ .found-grid .found-panels .found-panel[data-panel="colour"],
+#f-space:checked ~ .found-grid .found-panels .found-panel[data-panel="space"],
+#f-motion:checked ~ .found-grid .found-panels .found-panel[data-panel="motion"],
+#f-voice:checked ~ .found-grid .found-panels .found-panel[data-panel="voice"] {
+  display: grid;
+  gap: var(--space-lg);
+  animation: found-fade-in 280ms var(--ease-out);
+}
+
+@keyframes found-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .found-panel {
+    animation: none !important;
+  }
+}
+
+.found-panel__rule {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  color: var(--color-ink-2);
+  max-width: 56ch;
+}
+
+[data-theme="brutal"] .found-panel__rule,
+[data-theme="manifesto"] .found-panel__rule,
+[data-theme="terminal"] .found-panel__rule,
+[data-theme="sport"] .found-panel__rule,
+[data-theme="almanac"] .found-panel__rule,
+[data-theme="quiet"] .found-panel__rule,
+[data-theme="bloom"] .found-panel__rule,
+[data-theme="aurora"] .found-panel__rule,
+[data-theme="halo"] .found-panel__rule,
+[data-theme="coral"] .found-panel__rule,
+[data-theme="violet"] .found-panel__rule {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+.found-panel__viz {
+  margin-block-start: 0;
+}
+
+/* Mobile accordion — each panel tucks under its corresponding nav row */
+@media (max-width: 60rem) {
+  .found-grid > .found-panels {
+    display: contents;
+  }
+  .found-panel {
+    order: 0;
+  }
+  .found-nav__btn[for="f-type"] {
+    order: 1;
+  }
+  .found-panel[data-panel="type"] {
+    order: 2;
+  }
+  .found-nav__btn[for="f-colour"] {
+    order: 3;
+  }
+  .found-panel[data-panel="colour"] {
+    order: 4;
+  }
+  .found-nav__btn[for="f-space"] {
+    order: 5;
+  }
+  .found-panel[data-panel="space"] {
+    order: 6;
+  }
+  .found-nav__btn[for="f-motion"] {
+    order: 7;
+  }
+  .found-panel[data-panel="motion"] {
+    order: 8;
+  }
+  .found-nav__btn[for="f-voice"] {
+    order: 9;
+  }
+  .found-panel[data-panel="voice"] {
+    order: 10;
+  }
+}
+
+/* — Swatches ——————————————————————————————————————— */
+.swatch-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2xs);
+  height: 3rem;
+}
+
+.swatch {
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-2xs) var(--space-xs);
+  font-family: var(--font-label);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  color: var(--color-paper);
+  text-transform: uppercase;
+}
+
+.swatch--light {
+  color: var(--color-ink);
+}
+
+/* — Type specimen ——————————————————————————————————— */
+.type-spec {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.type-spec__display {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  font-optical-sizing: auto;
+}
+
+.type-spec__body {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  color: var(--color-ink-2);
+  max-width: 32ch;
+}
+
+[data-theme="brutal"] .type-spec__body,
+[data-theme="manifesto"] .type-spec__body,
+[data-theme="terminal"] .type-spec__body,
+[data-theme="sport"] .type-spec__body,
+[data-theme="almanac"] .type-spec__body {
+  font-style: normal;
+  font-family: var(--font-body);
+}
+
+/* — Easing curve SVG ——————————————————————————————— */
+.curve {
+  width: 100%;
+  height: 4.5rem;
+  color: var(--color-ink);
+}
+
+/* — Without / With panels (parity demo) —————————————————
+   Both panels render the same eyebrow + H1 + sub + CTA structure.
+   The `data-variant` attribute drives every visual difference. */
+.vs__panel {
+  display: grid;
+  gap: 0.75rem;
+  padding: var(--space-xl);
+  min-height: 16rem;
+  background: var(--color-paper);
+  border: var(--rule-hair) solid var(--color-rule-2);
+  align-content: start;
+}
+
+.vs__panel-eyebrow {
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.vs__panel-title {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.05;
+}
+
+.vs__panel-sub {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.vs__panel-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* — "Without Hallmark" — the slop stack —————————————————
+   The bg uses theme paper so the panel integrates on dark themes
+   (otherwise a pure-white card looks like a glitch on Manifesto /
+   Midnight / Terminal). The AI-slop tells are still carried by the
+   centred layout, Inter font, gradient title, and gradient pill. */
+.vs__panel[data-variant="slop"] {
+  text-align: center;
+  align-content: center;
+  justify-items: center;
+  background: var(--color-paper);
+  border-color: var(--color-rule);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.vs__panel[data-variant="slop"] .vs__panel-eyebrow {
+  color: var(--color-muted);
+  font-family: inherit;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.vs__panel[data-variant="slop"] .vs__panel-title {
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  background: linear-gradient(95deg, #8b5dff 0%, #c14de0 50%, #e04db4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  max-width: 14ch;
+}
+
+.vs__panel[data-variant="slop"] .vs__panel-sub {
+  color: var(--color-muted);
+  font-family: inherit;
+  max-width: 28ch;
+}
+
+.vs__panel[data-variant="slop"] .vs__panel-cta {
+  justify-self: center;
+  padding: 0.55rem 1.4rem;
+  background: linear-gradient(95deg, #6366f1, #a855f7);
+  color: #fff;
+  border-radius: 9999px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* — "With Hallmark" — the considered version ————————————— */
+.vs__panel[data-variant="hallmark"] {
+  text-align: left;
+  background: var(--color-paper);
+  border-color: var(--color-rule-2);
+  border-left: 2px solid var(--color-accent);
+  padding-left: calc(var(--space-xl) - 2px);
+}
+
+.vs__panel[data-variant="hallmark"] .vs__panel-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  color: var(--color-muted);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.vs__panel[data-variant="hallmark"] .vs__panel-mark {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  display: inline-block;
+}
+
+.vs__panel[data-variant="hallmark"] .vs__panel-title {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  max-width: 14ch;
+  font-optical-sizing: auto;
+}
+
+.vs__panel[data-variant="hallmark"] .vs__panel-title em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+.vs__panel[data-variant="hallmark"] .vs__panel-sub {
+  font-family: var(--font-body);
+  color: var(--color-ink-2);
+  max-width: 32ch;
+}
+
+.vs__panel[data-variant="hallmark"] .vs__panel-cta {
+  margin-top: var(--space-sm);
+  padding: 0.55rem 1.1rem;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  border-radius: 0;
+}
+
+/* Dashboard W/W variant — slop = glass widget, hallmark = considered. */
+.vs__panel--dash {
+  min-height: 18rem;
+}
+
+/* Slop dashboard — glassmorphic, gradient, centered, badged. */
+.vs__panel--dash[data-variant="slop"] {
+  position: relative;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, #6366f1 14%, transparent) 0%,
+      color-mix(in srgb, #c14de0 14%, transparent) 60%,
+      color-mix(in srgb, #f97316 12%, transparent) 100%
+    ),
+    rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-color: rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  text-align: center;
+  align-content: center;
+  justify-items: center;
+  box-shadow: 0 12px 32px -16px rgba(99, 102, 241, 0.35);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.vs__panel--dash[data-variant="slop"] .vs__panel-stat {
+  margin: 0;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: clamp(2.75rem, 4vw + 1rem, 3.75rem);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  background: linear-gradient(95deg, #6366f1, #a855f7 50%, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vs__panel--dash[data-variant="slop"] .vs__panel-stat-label {
+  margin: 0.4rem 0 0;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: #6b6b76;
+}
+
+.vs__panel--dash[data-variant="slop"] .vs__panel-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0.6rem 0 0.4rem;
+  padding: 0.18rem 0.65rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.12);
+  border-radius: 999px;
+  box-shadow: 0 0 12px -2px rgba(34, 197, 94, 0.5);
+}
+
+/* Hallmark dashboard — hairline rule, mono numerals, asymmetric. */
+.vs__panel--dash[data-variant="hallmark"] {
+  text-align: left;
+  padding-top: var(--space-2xl);
+  border-top: 2px solid var(--color-ink);
+  border-left: var(--rule-hair) solid var(--color-rule-2);
+  border-right: var(--rule-hair) solid var(--color-rule-2);
+  border-bottom: var(--rule-hair) solid var(--color-rule-2);
+  background: var(--color-paper);
+  border-radius: 0;
+}
+
+.vs__panel--dash[data-variant="hallmark"] .vs__panel-stat-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  margin: 0;
+}
+
+.vs__panel--dash[data-variant="hallmark"] .vs__panel-stat-num {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.75rem, 4vw + 1rem, 3.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+  line-height: 1;
+}
+
+.vs__panel--dash[data-variant="hallmark"] .vs__panel-stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.vs__panel--dash[data-variant="hallmark"] .vs__panel-stat-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  border-radius: 50%;
+}
+
+.vs__panel--dash[data-variant="hallmark"] .vs__panel-stat-label {
+  margin: var(--space-md) 0 0;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-ink-2);
+  max-width: 32ch;
+}
+
+/* Pricing W/W variant — slop = popular badge + glow + emoji,
+   hallmark = editorial tier card with hairline rule and mono price. */
+.vs__panel--pricing {
+  min-height: 22rem;
+}
+
+.vs__panel--pricing[data-variant="slop"] {
+  position: relative;
+  text-align: center;
+  align-content: start;
+  justify-items: center;
+  padding-top: 2.4rem;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, #6366f1 8%, transparent) 0%,
+      color-mix(in srgb, #ec4899 8%, transparent) 100%
+    ),
+    rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px -16px rgba(99, 102, 241, 0.4);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.vs__panel--pricing[data-variant="slop"] .vs__panel-pop {
+  position: absolute;
+  top: -0.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.85rem;
+  background: linear-gradient(95deg, #6366f1, #a855f7, #ec4899);
+  color: #fff;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px -2px rgba(168, 85, 247, 0.5);
+  white-space: nowrap;
+}
+
+.vs__panel--pricing[data-variant="slop"] .vs__panel-eyebrow {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6366f1;
+  margin: 0;
+}
+
+.vs__panel--pricing[data-variant="slop"] .vs__panel-price {
+  margin: 0.4rem 0;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 2.5rem;
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.vs__panel--pricing[data-variant="slop"] .vs__panel-price-num {
+  background: linear-gradient(95deg, #6366f1, #a855f7 50%, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vs__panel--pricing[data-variant="slop"] .vs__panel-price-unit {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b6b76;
+  letter-spacing: 0;
+  margin-inline-start: 0.25em;
+}
+
+.vs__panel--pricing[data-variant="slop"] .vs__panel-sub {
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: #6b6b76;
+  max-width: 28ch;
+}
+
+.vs__panel--pricing[data-variant="slop"] .vs__panel-bullets {
+  list-style: none;
+  margin: 0.6rem 0 0.3rem;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: #2a2a32;
+  text-align: left;
+}
+
+/* Hallmark pricing — editorial tier card. */
+.vs__panel--pricing[data-variant="hallmark"] {
+  text-align: left;
+  align-content: start;
+}
+
+.vs__panel--pricing[data-variant="hallmark"] .vs__panel-tier {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  padding-block-end: var(--space-sm);
+  border-block-end: var(--rule-hair) solid var(--color-rule-2);
+  font-optical-sizing: auto;
+}
+
+.vs__panel--pricing[data-variant="hallmark"] .vs__panel-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: var(--space-md) 0 0;
+}
+
+.vs__panel--pricing[data-variant="hallmark"] .vs__panel-price-num {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.25rem, 3vw + 1rem, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  line-height: 1;
+}
+
+.vs__panel--pricing[data-variant="hallmark"] .vs__panel-price-unit {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  letter-spacing: 0;
+}
+
+.vs__panel--pricing[data-variant="hallmark"] .vs__panel-sub {
+  margin: var(--space-sm) 0 0;
+  max-width: 30ch;
+}
+
+.vs__panel--pricing[data-variant="hallmark"] .vs__panel-bullets {
+  list-style: none;
+  margin: var(--space-md) 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-ink-2);
+}
+
+.vs__panel--pricing[data-variant="hallmark"] .vs__panel-bullets li {
+  padding-block: var(--space-sm);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.vs__panel--pricing[data-variant="hallmark"] .vs__panel-bullets li:last-child {
+  border-block-end: 0;
+}
+
+/* Personal-site W/W variant — slop = avatar + gradient name + pills,
+   hallmark = letter format with italic name and text links. */
+.vs__panel--personal {
+  min-height: 22rem;
+}
+
+.vs__panel--personal[data-variant="slop"] {
+  text-align: center;
+  align-content: center;
+  justify-items: center;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, #ec4899 6%, transparent) 0%,
+      color-mix(in srgb, #6366f1 8%, transparent) 100%
+    ),
+    rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.vs__panel--personal[data-variant="slop"] .vs__panel-avatar {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  box-shadow: 0 8px 22px -10px rgba(168, 85, 247, 0.5);
+  margin-bottom: 0.6rem;
+}
+
+.vs__panel--personal[data-variant="slop"] .vs__panel-name {
+  margin: 0;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 1.875rem;
+  letter-spacing: -0.025em;
+  background: linear-gradient(95deg, #6366f1, #a855f7 50%, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vs__panel--personal[data-variant="slop"] .vs__panel-sub {
+  margin: 0.4rem 0 0.9rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: #6b6b76;
+  max-width: 28ch;
+}
+
+.vs__panel--personal[data-variant="slop"] .vs__panel-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.vs__panel--personal[data-variant="slop"] .vs__panel-pill {
+  padding: 0.4rem 0.95rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #6366f1;
+  box-shadow: 0 2px 6px -2px rgba(99, 102, 241, 0.2);
+}
+
+/* Hallmark personal — letter format. */
+.vs__panel--personal[data-variant="hallmark"] {
+  text-align: left;
+  align-content: start;
+}
+
+.vs__panel--personal[data-variant="hallmark"] .vs__panel-name {
+  margin: var(--space-sm) 0 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-style: italic;
+  font-size: clamp(2rem, 3vw + 1rem, 2.875rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+}
+
+.vs__panel--personal[data-variant="hallmark"] .vs__panel-name em {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: var(--display-weight, 500);
+}
+
+.vs__panel--personal[data-variant="hallmark"] .vs__panel-bio {
+  margin: var(--space-md) 0 0;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 38ch;
+}
+
+.vs__panel--personal[data-variant="hallmark"] .vs__panel-links {
+  margin: var(--space-lg) 0 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.vs__panel--personal[data-variant="hallmark"] .vs__panel-linkitem {
+  color: var(--color-ink);
+  text-decoration: none;
+  background-image: linear-gradient(var(--color-accent), var(--color-accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size var(--dur-short) var(--ease-out);
+}
+
+.vs__panel--personal[data-variant="hallmark"] .vs__panel-linkitem:hover {
+  background-size: 100% 2px;
+}
+
+/* — Install pane internals ——————————————————————————— */
+
+/* Row label — "I · Run" */
+.install-pane__label {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.install-pane__step {
+  font-family: var(--font-display);
+  font-style: var(--display-style, normal);
+  font-weight: var(--display-weight, 500);
+  font-size: var(--text-md);
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+}
+
+[data-theme="riso"] .install-pane__step,
+[data-theme="brutal"] .install-pane__step,
+[data-theme="manifesto"] .install-pane__step,
+[data-theme="sport"] .install-pane__step {
+  text-transform: uppercase;
+}
+
+[data-theme="riso"] .install-pane__step {
+  text-transform: lowercase;
+}
+
+/* Row I — the install command, presented prominently */
+.install-pane__cmd {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-paper-2);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-input, 0);
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  color: var(--color-ink);
+  line-height: 1.5;
+  position: relative;
+  min-height: 56px;
+  transition: border-color var(--dur-micro) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .install-pane__cmd:hover {
+    border-color: var(--color-ink);
+  }
+}
+
+.install-pane__prompt {
+  color: var(--color-accent);
+  user-select: none;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.install-pane__cmd-text {
+  flex: 1;
+  font-weight: 400;
+  letter-spacing: 0;
+  user-select: all;
+  cursor: text;
+}
+
+.install-pane__copy {
+  flex-shrink: 0;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0.4rem 0.85rem;
+  background: var(--color-paper);
+  border: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-label);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition:
+    color var(--dur-short) var(--ease-out),
+    border-color var(--dur-short) var(--ease-out),
+    background-color var(--dur-short) var(--ease-out);
+}
+
+.install-pane__copy:hover {
+  color: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.install-pane__copy:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.install-pane__copy[data-state="copied"] {
+  color: var(--color-paper);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.install-pane__copy-default {
+  display: inline;
+}
+.install-pane__copy-done {
+  display: none;
+}
+
+.install-pane__copy[data-state="copied"] .install-pane__copy-default {
+  display: none;
+}
+.install-pane__copy[data-state="copied"] .install-pane__copy-done {
+  display: inline;
+}
+
+[data-theme="terminal"] .install-pane__cmd {
+  background: var(--color-paper-3);
+  border-color: var(--color-rule-2);
+}
+
+[data-theme="manifesto"] .install-pane__cmd {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}
+[data-theme="manifesto"] .install-pane__prompt {
+  color: var(--color-accent);
+}
+[data-theme="manifesto"] .install-pane__copy {
+  background: var(--color-accent);
+  color: var(--color-paper);
+  border-color: var(--color-accent);
+  font-weight: 500;
+}
+
+/* Row II — harness list */
+.install-pane__harnesses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-md);
+}
+
+.harness {
+  display: grid;
+  grid-template-columns: 11rem 1fr auto;
+  gap: var(--space-md) var(--space-lg);
+  align-items: baseline;
+  padding-block: var(--space-sm);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.harness:last-child {
+  border-block-end: 0;
+}
+
+@media (max-width: 38rem) {
+  .harness {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding-block: var(--space-md);
+  }
+}
+
+.harness__name {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+}
+
+[data-theme="riso"] .harness__name,
+[data-theme="brutal"] .harness__name,
+[data-theme="manifesto"] .harness__name,
+[data-theme="sport"] .harness__name {
+  text-transform: uppercase;
+}
+
+[data-theme="riso"] .harness__name {
+  text-transform: lowercase;
+}
+
+.harness__path {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  letter-spacing: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.harness__status {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.harness__status--ok {
+  color: var(--color-accent);
+}
+
+.harness__status--ok::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  border-radius: 50%;
+}
+
+/* Row III — the next step */
+.install-pane__next {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  color: var(--color-ink-2);
+  max-width: 56ch;
+}
+
+.install-pane__next code {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.875em;
+  color: var(--color-ink);
+  background: var(--color-paper-2);
+  padding: 0.05em 0.35em;
+  border: var(--rule-hair) solid var(--color-rule);
+}
+
+[data-theme="brutal"] .install-pane__next,
+[data-theme="manifesto"] .install-pane__next,
+[data-theme="terminal"] .install-pane__next,
+[data-theme="sport"] .install-pane__next,
+[data-theme="almanac"] .install-pane__next {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+[data-theme="manifesto"] .install-pane__next {
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* — Per-theme install-pane overrides ———————————————————— */
+[data-theme="terminal"] .install-pane {
+  background: var(--color-paper-2);
+}
+
+[data-theme="brutal"] .install-pane,
+[data-theme="manifesto"] .install-pane {
+  border-width: 2px;
+}
+
+[data-theme="atelier"] .install-pane,
+[data-theme="salon"] .install-pane {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+[data-theme="atelier"] .install-pane__row,
+[data-theme="salon"] .install-pane__row {
+  padding-inline: 0;
+}
+
+[data-theme="atelier"] .install-pane__row + .install-pane__row,
+[data-theme="salon"] .install-pane__row + .install-pane__row {
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+/* — Easter egg overlay ——————————————————————————————————
+   Hidden by default. Revealed when the user spams T faster than the
+   site can keep up — see js/main.js. Pure white full-screen, system
+   mono font, dark text — deliberately decoupled from the active
+   theme so it reads as the page itself stepping in. Auto-dismisses
+   after ~4.2s; while it's open, all keystrokes are swallowed. */
+.easter {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: var(--space-xl);
+  background: #fff;
+  color: #111;
+  font-family:
+    ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  /* Smoother arrival — fade + tiny scale-in. Feels like the page
+     gently steps aside rather than a hard cut. */
+  animation: easter-arrive 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.easter[hidden] {
+  display: none;
+}
+
+.easter[data-state="closing"] {
+  animation: easter-leave 360ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+@keyframes easter-arrive {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+@keyframes easter-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+/* Reduced motion — opacity only, no scale. */
+@media (prefers-reduced-motion: reduce) {
+  .easter {
+    animation: easter-fade-in 200ms ease-out both;
+  }
+  .easter[data-state="closing"] {
+    animation: easter-fade-out 200ms ease-in forwards;
+  }
+  @keyframes easter-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes easter-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+/* Page-shrink under the easter overlay — runs on the <body> while
+   the easter is open. The page recedes slightly, making the easter
+   feel like a brief teleport. */
+body.easter-open > main,
+body.easter-open > header,
+body.easter-open > footer {
+  transform: scale(0.985);
+  filter: blur(2px);
+  transition:
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
+}
+
+body:not(.easter-open) > main,
+body:not(.easter-open) > header,
+body:not(.easter-open) > footer {
+  transition:
+    transform 360ms cubic-bezier(0.7, 0, 0.84, 0),
+    filter 360ms cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.easter-open > main,
+  body.easter-open > header,
+  body.easter-open > footer {
+    transform: none;
+    filter: none;
+  }
+}
+
+.easter__panel {
+  display: grid;
+  gap: 1.4rem;
+  max-width: 38rem;
+  width: 100%;
+}
+
+.easter__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.easter__line {
+  margin: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: easter-line 360ms ease-out forwards;
+}
+
+.easter__line:nth-child(1) {
+  animation-delay: 180ms;
+}
+.easter__line:nth-child(2) {
+  animation-delay: 380ms;
+}
+.easter__line:nth-child(3) {
+  animation-delay: 700ms;
+}
+
+@keyframes easter-line {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.easter__line--cmd {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111;
+  margin-block-end: 0.6rem;
+  letter-spacing: 0;
+}
+
+.easter__prompt,
+.easter__arrow {
+  color: #b0b0b0;
+  user-select: none;
+  margin-inline-end: 0.5rem;
+}
+
+.easter__num {
+  color: #111;
+  font-weight: 600;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+.easter__line--punchline {
+  margin-block-start: 0.8rem;
+  font-size: clamp(1.75rem, 4.5vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  color: #111;
+}
+
+.easter__line--punchline .easter__arrow {
+  font-size: 0.9rem;
+  vertical-align: 0.25em;
+  font-weight: 400;
+}
+
+.easter__cursor {
+  display: inline-block;
+  width: 0.42em;
+  height: 0.95em;
+  background: #111;
+  margin-inline-start: 0.18em;
+  vertical-align: -0.08em;
+  opacity: 0;
+  animation: easter-blink 1.05s steps(2) infinite;
+  animation-delay: 1.15s;
+}
+
+@keyframes easter-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.easter__hint {
+  margin: 0;
+  padding-block-start: 1.2rem;
+  border-block-start: 1px solid #e5e5e5;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #888;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .easter,
+  .easter[data-state="closing"],
+  .easter__line {
+    animation: none;
+  }
+  .easter__line {
+    opacity: 1;
+    transform: none;
+  }
+  .easter__cursor {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* — Reveals (disabled) ——————————————————————————————————
+   Scroll-in animation removed by product decision — landing reads
+   cleaner without staggered fades. Class kept so JS + markup stay
+   stable; element renders in its final state with no transform/fade. */
+.reveal,
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transform: none;
+    animation-duration: 150ms !important;
+  }
+  @keyframes reveal {
+    to {
+      opacity: 1;
+    }
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 150ms !important;
+    transition-duration: 150ms !important;
+  }
+}
+
+/* — View transitions ————————————————————————————————— */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 280ms;
+  animation-timing-function: var(--ease-out);
+}
+
+/* ───────────── STUDIO — Fraunces italic display ───────────── */
+
+[data-theme="studio"] .hero__display,
+[data-theme="studio"] .section__title,
+[data-theme="studio"] .foot__wordmark,
+[data-theme="studio"] .hero__quote p,
+[data-theme="studio"] .hero__salutation,
+[data-theme="studio"] .spec__name,
+[data-theme="studio"] .tell__name {
+  font-style: italic;
+  letter-spacing: -0.02em;
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" 30;
+}
+
+[data-theme="studio"] .banner__center {
+  font-style: italic;
+  letter-spacing: 0;
+  font-variation-settings: "opsz" 24;
+}
+
+[data-theme="studio"] .hero__lede,
+[data-theme="studio"] .hero__letter-body,
+[data-theme="studio"] .spec__rule,
+[data-theme="studio"] .tell__why,
+[data-theme="studio"] .hero__attrib,
+[data-theme="studio"] .foot__tagline {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+[data-theme="studio"] .hero__eyebrow,
+[data-theme="studio"] .label,
+[data-theme="studio"] .section-label {
+  font-feature-settings: "ss01";
+}
+
+/* Portfolio / gallery rhythm — Studio's editorial-magazine register. */
+
+[data-theme="studio"] .ex-card {
+  background: var(--color-paper-2);
+  border-color: var(--color-rule-2);
+}
+
+[data-theme="studio"] .ex-card__name {
+  font-style: italic;
+}
+
+[data-theme="studio"] .hero__quote p {
+  font-size: clamp(2.5rem, 4vw + 1rem, 4.75rem);
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" 50;
+}
+
+/* ───────────── ATELIER — sketchbook / working-archive ─────────────
+   Plate-numeral marginalia beside section heads, old-style figures in
+   body text, an italic display optical-size axis for hand-set feel.
+   Earns the workshop name without slipping into the salon-formal
+   register that Salon owns. */
+
+[data-theme="atelier"] .section-label .num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--text-md);
+  font-variation-settings: "opsz" 96;
+  color: var(--color-ink);
+}
+
+[data-theme="atelier"] .section-label::after {
+  content: " · plate";
+  color: var(--color-muted);
+  font-style: italic;
+  text-transform: lowercase;
+  letter-spacing: 0;
+  margin-inline-start: 0.4em;
+}
+
+[data-theme="atelier"] .section__title {
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" 60;
+}
+
+[data-theme="atelier"] .hero__display,
+[data-theme="atelier"] .hero__quote p,
+[data-theme="atelier"] .hero__salutation {
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" 70;
+}
+
+/* Hero quote uses the upright display face (matching the "Atelier"
+   wordmark in the banner and every section title), not the italic
+   serif default. Atelier's voice is workshop-declarative — the
+   header reads as a statement, not a quotation. */
+[data-theme="atelier"] .hero__quote p {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: var(--display-weight, 900);
+}
+
+/* Old-style figures in body text — reads as hand-set, not synthesised */
+[data-theme="atelier"] .hero__lede,
+[data-theme="atelier"] .hero__letter-body,
+[data-theme="atelier"] .spec__rule,
+[data-theme="atelier"] .found-panel__rule,
+[data-theme="atelier"] .install-pane__next,
+[data-theme="atelier"] .ex-card__brief {
+  font-variant-numeric: oldstyle-nums;
+}
+
+/* Tabular numerals in the example tile counter — reads as catalogue */
+[data-theme="atelier"] .ex-card__num,
+[data-theme="atelier"] .gallery__num,
+[data-theme="atelier"] .found-nav__num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+[data-theme="atelier"] .ex-card {
+  border-style: solid;
+  border-color: var(--color-rule);
+  background: var(--color-paper-2);
+}
+
+/* ───────────── RISO — bold lowercase, off-register print ───────────── */
+
+[data-theme="riso"] .hero__display,
+[data-theme="riso"] .hero__quote p,
+[data-theme="riso"] .hero__salutation,
+[data-theme="riso"] .hero__qualifier,
+[data-theme="riso"] .hero__stat,
+[data-theme="riso"] .section__title,
+[data-theme="riso"] .foot__wordmark,
+[data-theme="riso"] .spec__name,
+[data-theme="riso"] .tell__name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-style: normal;
+  text-transform: lowercase;
+  letter-spacing: -0.04em;
+}
+
+/* The riso off-register effect — a 2px cyan ghost behind the headline.
+   Subtle, not garish. Reduced-motion + browsers without text-shadow are fine. */
+[data-theme="riso"] .hero__display,
+[data-theme="riso"] .hero__quote p,
+[data-theme="riso"] .hero__stat {
+  text-shadow:
+    2px 2px 0 var(--color-accent),
+    -2px 0 0 var(--color-accent-2, oklch(78% 0.18 95));
+}
+
+[data-theme="riso"] .hero__lede,
+[data-theme="riso"] .hero__letter-body,
+[data-theme="riso"] .spec__rule,
+[data-theme="riso"] .tell__why,
+[data-theme="riso"] .foot__tagline {
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+
+[data-theme="riso"] .hero__attrib,
+[data-theme="riso"] .label,
+[data-theme="riso"] .section-label,
+[data-theme="riso"] .banner__center {
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="riso"] .banner__center {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-md);
+}
+
+/* Subtle paper grain — a tiny stipple via repeating radial-gradient.
+   Cheap, no image asset, and disappears under prefers-reduced-data. */
+[data-theme="riso"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle at 1px 1px, oklch(0% 0 0 / 0.045) 1px, transparent 0);
+  background-size: 3px 3px;
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-reduced-data: reduce) {
+  [data-theme="riso"] body::before {
+    display: none;
+  }
+}
+
+/* ───────────── HERO ARCHETYPES ─────────────
+   The hero slot picks one shape per theme, from the cookbook.
+   Each archetype is a different fingerprint — not a re-skin. */
+
+.hero {
+  display: grid;
+}
+
+/* — Hero moment slot —————————————————————————————————————————
+   Marquee / letter / quote / stat archetypes get an optional right-side
+   "moment" — a small per-theme typographic or geometric accent that
+   stops the right column from reading as dead space at desktop. Hidden
+   by default (most themes don't need it); shown via per-theme opt-in. */
+.hero__main {
+  display: contents;
+}
+.hero__moment {
+  display: none;
+}
+
+@media (min-width: 60rem) {
+  /* Themes that opt in: 2-column grid, moment in column 2. */
+  [data-theme="terminal"] .hero--marquee,
+  [data-theme="manifesto"] .hero--marquee,
+  [data-theme="aurora"] .hero--marquee,
+  [data-theme="atelier"] .hero--quote,
+  [data-theme="riso"] .hero--quote,
+  [data-theme="midnight"] .hero--stat,
+  [data-theme="sport"] .hero--stat {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    column-gap: var(--space-2xl);
+    align-items: center;
+  }
+  [data-theme="terminal"] .hero--marquee .hero__main,
+  [data-theme="manifesto"] .hero--marquee .hero__main,
+  [data-theme="aurora"] .hero--marquee .hero__main,
+  [data-theme="atelier"] .hero--quote .hero__main,
+  [data-theme="riso"] .hero--quote .hero__main,
+  [data-theme="midnight"] .hero--stat .hero__main,
+  [data-theme="sport"] .hero--stat .hero__main {
+    display: grid;
+    gap: var(--space-lg);
+    grid-column: 1;
+  }
+  [data-theme="terminal"] .hero__moment,
+  [data-theme="manifesto"] .hero__moment,
+  [data-theme="aurora"] .hero__moment,
+  [data-theme="atelier"] .hero__moment,
+  [data-theme="riso"] .hero__moment,
+  [data-theme="midnight"] .hero__moment,
+  [data-theme="sport"] .hero__moment {
+    display: grid;
+    place-items: center;
+    grid-column: 2;
+    align-self: center;
+    justify-self: end;
+    color: var(--color-ink-2);
+  }
+}
+
+/* Per-theme moment content — a typographic glyph or simple geometric
+   accent. CSS-only (no extra HTML), pure ::before content + a few
+   shapes. Each moment is small + restrained — punctuation, not focus. */
+
+/* TERMINAL — ASCII prompt block in phosphor green. */
+[data-theme="terminal"] .hero__moment::before {
+  content: "[A  █  A]";
+  white-space: pre;
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1.2;
+  color: var(--color-accent);
+  letter-spacing: 0.05em;
+}
+
+/* MANIFESTO — single uppercase declarative phrase. */
+[data-theme="manifesto"] .hero__moment::before {
+  content: "NOASLOP.";
+  white-space: pre;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  color: var(--color-accent);
+}
+
+/* AURORA — soft secondary radial accent. */
+[data-theme="aurora"] .hero__moment {
+  width: clamp(14rem, 24vw, 22rem);
+  aspect-ratio: 1 / 1;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in oklch, var(--color-accent) 28%, transparent) 0%,
+    transparent 65%
+  );
+  filter: blur(4px);
+  opacity: 0.85;
+}
+
+/* ATELIER — italic Roman numeral plate. */
+[data-theme="atelier"] .hero__moment::before {
+  content: "I";
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(6rem, 10vw, 10rem);
+  line-height: 1;
+  color: var(--color-ink);
+  padding: var(--space-2xl) var(--space-3xl);
+  border: 1px solid var(--color-rule);
+  display: block;
+}
+[data-theme="atelier"] .hero__moment::after {
+  content: "Plate I";
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-block-start: var(--space-xs);
+}
+
+/* RISO — two overlapping circles in duotone (off-register). */
+[data-theme="riso"] .hero__moment {
+  position: relative;
+  width: clamp(10rem, 16vw, 16rem);
+  aspect-ratio: 1 / 1;
+}
+[data-theme="riso"] .hero__moment::before,
+[data-theme="riso"] .hero__moment::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+}
+[data-theme="riso"] .hero__moment::before {
+  background: var(--color-accent);
+  transform: translate(-8%, -6%);
+}
+[data-theme="riso"] .hero__moment::after {
+  background: var(--color-accent-2, oklch(78% 0.18 95));
+  transform: translate(8%, 6%);
+}
+
+/* MIDNIGHT — three concentric rings + centre dot. */
+[data-theme="midnight"] .hero__moment {
+  position: relative;
+  width: clamp(10rem, 14vw, 14rem);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklch, var(--color-accent) 35%, transparent);
+  box-shadow:
+    inset 0 0 0 1px transparent,
+    0 0 0 12px transparent,
+    0 0 0 13px color-mix(in oklch, var(--color-accent) 22%, transparent),
+    0 0 0 28px transparent,
+    0 0 0 29px color-mix(in oklch, var(--color-accent) 12%, transparent);
+}
+[data-theme="midnight"] .hero__moment::before {
+  content: "";
+  position: absolute;
+  inset: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 12px 3px color-mix(in oklch, var(--color-accent) 50%, transparent);
+}
+
+/* SPORT — three-bar lap chart (horizontal bars in accent). */
+[data-theme="sport"] .hero__moment {
+  width: clamp(8rem, 12vw, 12rem);
+  display: grid;
+  gap: var(--space-xs);
+}
+[data-theme="sport"] .hero__moment::before,
+[data-theme="sport"] .hero__moment::after {
+  content: "";
+  height: 0.55rem;
+  background: var(--color-accent);
+}
+[data-theme="sport"] .hero__moment::before {
+  width: 90%;
+}
+[data-theme="sport"] .hero__moment::after {
+  width: 55%;
+}
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.hero__eyebrow .mark {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  display: inline-block;
+}
+
+.hero__display {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+  margin: 0;
+}
+
+.hero__display--small {
+  font-size: var(--text-display-s);
+}
+
+.hero__lede {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  color: var(--color-ink-2);
+  max-width: 56ch;
+  margin-block: var(--space-lg) 0;
+}
+
+[data-theme="brutal"] .hero__lede,
+[data-theme="manifesto"] .hero__lede,
+[data-theme="terminal"] .hero__lede,
+[data-theme="sport"] .hero__lede,
+[data-theme="almanac"] .hero__lede {
+  font-style: normal;
+  font-family: var(--font-body);
+}
+
+[data-theme="manifesto"] .hero__display {
+  /* Anton is a tall narrow condensed face — at the default 1.02
+     tight line-height, the words stack with no breathing room.
+     Bump line-height so multi-line headlines have visual rhythm. */
+  line-height: 1.05;
+}
+
+[data-theme="manifesto"] .hero__display,
+[data-theme="brutal"] .hero__display,
+[data-theme="sport"] .hero__display {
+  text-transform: uppercase;
+}
+
+.hero__link {
+  margin-top: var(--space-lg);
+  display: inline-block;
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/* H1 — Marquee. Display fills the fold, install code below. */
+.hero--marquee {
+  padding-block: var(--space-2xl) var(--space-xl);
+  gap: var(--space-lg);
+}
+
+.hero--marquee .hero__display {
+  max-width: 18ch;
+}
+
+.hero--marquee .hero__cta {
+  margin-top: var(--space-xl);
+  display: grid;
+  gap: var(--space-sm);
+  max-width: 30rem;
+}
+
+.hero--marquee .hero__cta .label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* H2 — Split Diptych. Title left, proof right. */
+.hero--split {
+  grid-template-columns: 7fr 5fr;
+  gap: var(--space-2xl);
+  padding-block: var(--space-2xl) var(--space-xl);
+  align-items: end;
+}
+
+@media (max-width: 60rem) {
+  .hero--split {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+}
+
+.hero--split .hero__col {
+  display: grid;
+  gap: 0;
+}
+
+.hero--split .hero__proof {
+  display: grid;
+  gap: var(--space-xs);
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+.hero--split .hero__proof .label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.hero__proof-line {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  line-height: var(--lh-snug);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero--split .hero__proof a {
+  margin-top: var(--space-sm);
+}
+
+/* Editorial: the proof block reads cleaner with just the CTA + a giant
+   Roman numeral set above it as the visual anchor for the right column. */
+[data-theme="editorial"] .hero--split .hero__proof .label,
+[data-theme="editorial"] .hero--split .hero__proof .hero__proof-line {
+  display: none;
+}
+[data-theme="editorial"] .hero--split .hero__proof {
+  padding-block-start: 0;
+  border-block-start: 0;
+  display: grid;
+  gap: var(--space-md);
+  align-content: end;
+}
+[data-theme="editorial"] .hero--split .hero__proof::before {
+  content: "XXIII";
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(5rem, 9vw, 8rem);
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* Quiet: collapse the proof-block down to one italic note + the CTA, so
+   the right column reads as a quiet annotation instead of a sign-up form. */
+[data-theme="quiet"] .hero--split .hero__proof .label,
+[data-theme="quiet"] .hero--split .hero__proof .hero__proof-line:nth-child(3),
+[data-theme="quiet"] .hero--split .hero__proof .hero__proof-line:nth-child(4) {
+  display: none;
+}
+[data-theme="quiet"] .hero--split .hero__proof {
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+[data-theme="quiet"] .hero--split .hero__proof .hero__proof-line {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-muted);
+  max-width: 24ch;
+}
+
+/* H3 — Stat-Led. Giant number + qualifier. */
+.hero--stat {
+  padding-block: var(--space-2xl) var(--space-xl);
+  gap: 0;
+}
+
+.hero__stat {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  font-size: clamp(7rem, 22vw, 16rem);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+  display: block;
+  margin-block: var(--space-md) 0;
+}
+
+.hero__qualifier {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  margin-block: var(--space-md) 0;
+  font-optical-sizing: auto;
+}
+
+[data-theme="manifesto"] .hero__stat,
+[data-theme="sport"] .hero__stat {
+  color: var(--color-accent);
+}
+
+/* H4 — Quote-Led. Pull quote in italic display. */
+.hero--quote {
+  padding-block: var(--space-2xl) var(--space-xl);
+  max-width: 56rem;
+}
+
+.hero__quote {
+  margin: 0;
+  padding: 0;
+}
+
+.hero__quote p {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.25rem, 4vw + 1rem, 4.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.hero__attrib {
+  margin-block-start: var(--space-lg);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+[data-theme="brutal"] .hero__quote p,
+[data-theme="manifesto"] .hero__quote p,
+[data-theme="terminal"] .hero__quote p,
+[data-theme="sport"] .hero__quote p,
+[data-theme="almanac"] .hero__quote p {
+  font-style: normal;
+  font-family: var(--font-display);
+}
+
+/* H5 — Letter. First-person greeting, paragraph body, signoff. */
+.hero--letter {
+  padding-block: var(--space-2xl) var(--space-xl);
+  max-width: 52rem;
+  gap: 0;
+}
+
+.hero__salutation {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: italic;
+  font-size: clamp(2rem, 3vw + 1rem, 3.25rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-block: var(--space-md) var(--space-lg);
+  font-optical-sizing: auto;
+}
+
+.hero__letter-body {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 60ch;
+  margin: 0;
+}
+
+[data-theme="brutal"] .hero__letter-body,
+[data-theme="terminal"] .hero__letter-body,
+[data-theme="sport"] .hero__letter-body,
+[data-theme="almanac"] .hero__letter-body {
+  font-family: var(--font-body);
+}
+
+.hero__signoff {
+  margin-block: var(--space-xl) 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  color: var(--color-ink-2);
+  line-height: var(--lh-snug);
+}
+
+.hero__sign {
+  font-style: normal;
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  letter-spacing: var(--tracking-display);
+}
+
+/* H9 — Bloom hero. Layered watercolor wash + oversized italic
+   wordmark + small geometric accents. Painterly composition for
+   warm-rose / playful themes (Plume). */
+.hero--bloom {
+  display: grid;
+  grid-template-columns: minmax(20rem, 1fr) minmax(0, 1.1fr);
+  gap: var(--space-2xl);
+  padding-block: var(--space-2xl) var(--space-xl);
+  align-items: center;
+}
+
+.hero--bloom .hero__copy {
+  display: grid;
+  gap: 0;
+}
+.hero--bloom .hero__display {
+  max-width: 16ch;
+  margin: 0;
+}
+.hero--bloom .hero__lede {
+  max-width: 42ch;
+}
+
+.hero__bloom-stage {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 5 / 6;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  overflow: visible;
+}
+
+.hero__bloom-wash {
+  position: absolute;
+  inset: -8% -12% -8% -8%;
+  width: auto;
+  height: auto;
+  color: var(--color-accent);
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+.hero__bloom-glyph {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-serif, "Newsreader"), ui-serif, Georgia, serif;
+  font-size: clamp(4rem, 9vw, 7.5rem);
+  line-height: 1;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  user-select: none;
+  font-optical-sizing: auto;
+}
+
+.hero__bloom-glyph em {
+  font-style: italic;
+  font-weight: 500;
+}
+
+.hero__bloom-dot {
+  position: absolute;
+  z-index: 2;
+  bottom: 12%;
+  right: 22%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-ink);
+}
+
+.hero__bloom-line {
+  position: absolute;
+  z-index: 2;
+  top: 18%;
+  right: 8%;
+  width: 1px;
+  height: 38%;
+  background: var(--color-ink);
+  opacity: 0.5;
+}
+
+.hero__bloom-circle {
+  position: absolute;
+  z-index: 2;
+  top: 8%;
+  left: 12%;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--color-ink);
+  opacity: 0.6;
+}
+
+@media (max-width: 60rem) {
+  .hero--bloom {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+  .hero__bloom-stage {
+    aspect-ratio: 4 / 3;
+  }
+  .hero__bloom-glyph {
+    font-size: clamp(3rem, 14vw, 5rem);
+  }
+}
+
+/* H10 — Orbit hero. Concentric rings + glowing centre dot.
+   Atmospheric composition for warm-glow themes (Halo). The rings
+   slow-rotate via @keyframes; reduced-motion stops them. */
+.hero--orbit {
+  display: grid;
+  grid-template-columns: minmax(20rem, 1fr) minmax(0, 0.7fr);
+  gap: var(--space-xl);
+  padding-block: var(--space-2xl) var(--space-xl);
+  align-items: center;
+}
+
+.hero--orbit .hero__copy {
+  display: grid;
+  gap: 0;
+}
+.hero--orbit .hero__display {
+  max-width: 16ch;
+  margin: 0;
+}
+.hero--orbit .hero__lede {
+  max-width: 42ch;
+}
+
+.hero__orbit-stage {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.hero__orbit-rings {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 0;
+  color: var(--color-rule-2);
+  animation: orbit-spin 80s linear infinite;
+}
+
+.hero__orbit-rings svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__orbit-rings {
+    animation: none;
+  }
+}
+
+.hero__orbit-dot {
+  position: relative;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow:
+    0 0 0 4px color-mix(in oklch, var(--color-accent) 18%, transparent),
+    0 0 22px 4px color-mix(in oklch, var(--color-accent) 35%, transparent);
+}
+
+.hero__orbit-rule {
+  position: absolute;
+  z-index: 2;
+  bottom: 7%;
+  left: 18%;
+  right: 18%;
+  height: 1px;
+  background: var(--color-rule-2);
+}
+
+.hero__orbit-spec {
+  position: absolute;
+  z-index: 2;
+  bottom: 2%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  font-feature-settings: "tnum";
+}
+
+@media (max-width: 60rem) {
+  .hero--orbit {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+  .hero__orbit-stage {
+    aspect-ratio: 1.4 / 1;
+    max-width: 24rem;
+    margin: 0 auto;
+  }
+}
+
+/* ───────────── FOOTER — editorial colophon ─────────────
+   The publisher's signature page. Same shape across every theme;
+   theme variation comes from typography rendering, not layout.
+   Composed of three rhythms:
+   1. masthead: oversized wordmark + tiny version stamp on a baseline
+   2. grid:     three meta blocks separated by hairline dividers
+   3. base:     thin centered credit line below a hairline
+   Generous whitespace; type carries the work, not boxes. */
+.foot.foot--colophon {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3xl);
+  /* Bottom padding capped at ~16 px — the credit line should never
+     sit more than ~20 px from the viewport edge regardless of the
+     theme. The page-wrapper no longer adds bottom padding either. */
+  padding-block: var(--space-3xl) var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  border-top-width: var(--rule-hair);
+  margin: 0;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+/* — Masthead row ———————————————————————————————————————— */
+.foot__masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding-block-end: var(--space-xl);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.foot--colophon .foot__wordmark {
+  display: inline-flex;
+  color: var(--color-ink);
+  line-height: 1;
+}
+
+/* The brand mark is locked to Fraunces in every theme — themes still
+   re-render everything else, but the wordmark is brand-locked so the
+   site is always recognisable as "Hallmark" regardless of the theme. */
+.brand-mark {
+  font-family: "Fraunces", "Newsreader", "Playfair Display", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  text-transform: none;
+  display: inline-flex;
+  align-items: baseline;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: inherit;
+}
+
+.brand-mark__slash {
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  display: inline-block;
+}
+
+.brand-mark__name {
+  font-weight: 300;
+  letter-spacing: 0;
+  margin-inline-start: 0.05em;
+}
+
+/* Footer wordmark variant — same proportions, much larger. */
+.brand-mark--lg {
+  font-size: clamp(3rem, 7vw + 0.5rem, 6.5rem);
+  line-height: 0.85;
+}
+
+/* Keep manifesto/brutal/sport from upper-casing the brand mark — the
+   wordmark is locked, theme typography lives elsewhere. */
+[data-theme="manifesto"] .foot--colophon .foot__wordmark,
+[data-theme="brutal"] .foot--colophon .foot__wordmark,
+[data-theme="sport"] .foot--colophon .foot__wordmark {
+  text-transform: none;
+}
+
+.foot__version {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+/* — Three-block grid ——————————————————————————————————— */
+.foot__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3xl);
+}
+
+.foot__block {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  margin: 0;
+  min-width: 0;
+}
+
+.foot__label {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.foot__value {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-xl);
+  line-height: 1;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.foot__value strong {
+  font-weight: inherit;
+}
+
+.foot__hint {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-snug);
+  color: var(--color-muted);
+  max-width: 32ch;
+}
+
+/* Catalog stat list — mono numerals + small caps key. */
+.foot__stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.foot__stats li {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding-block: var(--space-2xs);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.foot__stats li:last-child {
+  border-block-end: 0;
+}
+
+.foot__stat-num {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--color-ink);
+  line-height: 1;
+  font-feature-settings: "tnum";
+  text-align: end;
+}
+
+.foot__stat-key {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  line-height: var(--lh-snug);
+}
+
+/* Resources list — link rows, hairline-divided. */
+.foot__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
+.foot__nav li {
+  padding-block: var(--space-xs);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.foot__nav li:last-child {
+  border-block-end: 0;
+}
+
+.foot__nav .link {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--color-ink);
+  text-decoration: none;
+  border-block-end: 1px solid transparent;
+  transition: border-color var(--dur-micro) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .foot__nav .link:hover {
+    border-block-end-color: var(--color-ink);
+  }
+}
+
+/* — Base credit line ——————————————————————————————————— */
+.foot__base {
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-align: start;
+  width: 100%;
+}
+
+/* Mobile collapse — single column, generous gaps. Bottom padding
+   stays capped at --space-md so the credit line hugs the viewport
+   bottom on phones too. */
+@media (max-width: 60rem) {
+  .foot--colophon {
+    gap: var(--space-2xl);
+    padding-block: var(--space-2xl) var(--space-md);
+  }
+  .foot__masthead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding-block-end: var(--space-lg);
+  }
+  .foot__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+}
+
+/* ───────────── SLOT REVEALS ─────────────
+   The slot fades when its archetype is replaced — supplements the
+   View Transition and gives a graceful enter on first paint. */
+
+.slot[data-populating] > * {
+  animation: slot-in calc(var(--dur-long) * 0.7) var(--ease-out) forwards;
+  opacity: 0;
+}
+
+@keyframes slot-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot[data-populating] > * {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ───────────── QUIET — polished minimalism ─────────────
+   The "modern enterprise" theme: Geist sans, pure white, large
+   confident display, generous space, pill CTAs. Reads like the
+   ElevenLabs / Stripe school of restraint. Reveals stay off — the
+   page is composed, not animated in. */
+
+[data-theme="quiet"] .reveal,
+[data-theme="quiet"] .reveal.is-in,
+[data-theme="quiet"] .slot[data-populating] > * {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+[data-theme="quiet"] .hero__display,
+[data-theme="quiet"] .hero__quote p,
+[data-theme="quiet"] .hero__stat,
+[data-theme="quiet"] .section__title,
+[data-theme="quiet"] .foot__wordmark,
+[data-theme="quiet"] .spec__name,
+[data-theme="quiet"] .ex-card__name,
+[data-theme="quiet"] .harness__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: -0.025em;
+  text-shadow: none;
+}
+
+[data-theme="quiet"] .hero__display {
+  font-weight: 600;
+}
+
+[data-theme="quiet"] .hero__lede,
+[data-theme="quiet"] .hero__letter-body,
+[data-theme="quiet"] .spec__rule,
+[data-theme="quiet"] .foot__tagline,
+[data-theme="quiet"] .install-pane__next {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 400;
+  color: var(--color-neutral);
+}
+
+[data-theme="quiet"] .hero__salutation {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 600;
+  font-size: var(--text-2xl);
+  letter-spacing: -0.02em;
+}
+
+[data-theme="quiet"] .hero__sign,
+[data-theme="quiet"] .hero__signoff {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+[data-theme="quiet"] .hero__attrib,
+[data-theme="quiet"] .section-label,
+[data-theme="quiet"] .label,
+[data-theme="quiet"] .install-pane__label,
+[data-theme="quiet"] .vs__label,
+[data-theme="quiet"] .ex-card__num {
+  font-family: var(--font-label);
+  font-weight: 500;
+}
+
+[data-theme="quiet"] .banner__center {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: -0.005em;
+  text-transform: none;
+}
+
+[data-theme="quiet"] .banner {
+  background: color-mix(in oklch, var(--color-paper) 94%, transparent);
+  border-block-end-color: var(--color-rule);
+}
+
+/* Pill CTAs — Quiet's signature button. Black-filled primary, white-
+   outlined secondary. Applied to anything that reads as a CTA. */
+[data-theme="quiet"] .install-pane__copy {
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+  font-weight: 600;
+}
+[data-theme="quiet"] .install-pane__copy:hover {
+  background: var(--color-ink-2);
+  color: var(--color-paper);
+  border-color: var(--color-ink-2);
+}
+[data-theme="quiet"] .install-pane__copy[data-state="copied"] {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}
+
+/* Quiet's install command bar — refined card surface, clean typography. */
+[data-theme="quiet"] .install-pane {
+  background: var(--color-paper-2);
+  border-color: var(--color-rule);
+}
+[data-theme="quiet"] .install-pane__cmd {
+  background: var(--color-paper);
+  border-color: var(--color-rule);
+}
+[data-theme="quiet"] .install-pane__prompt {
+  color: var(--color-muted);
+}
+
+/* The "without/with" demo on Quiet — soft, monochrome panels. */
+[data-theme="quiet"] .vs__panel[data-variant="hallmark"] {
+  border-left-color: var(--color-rule-2);
+  border-color: var(--color-rule);
+}
+
+/* No reveal animation on Quiet — the page is intentionally still. */
+[data-theme="quiet"] .hero,
+[data-theme="quiet"] .hero > * {
+  animation: none !important;
+}
+
+/* ───────────── BLOOM — atmospheric dark, warm bloom ─────────────
+   Suno-school: dark canvas with two soft radial colour blooms behind
+   the content, confident sans display, single warm accent on small
+   surfaces, pill CTAs. Reads like an AI-creative product page. */
+
+html[data-theme="bloom"] {
+  background: var(--color-paper);
+}
+
+html[data-theme="bloom"] body {
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 90% 0%,
+      color-mix(in oklch, var(--color-accent) 18%, transparent) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 55% at 5% 95%,
+      color-mix(in oklch, var(--color-accent-2) 16%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--color-paper);
+  background-attachment: fixed;
+  min-height: 100dvh;
+}
+
+[data-theme="bloom"] .hero__display,
+[data-theme="bloom"] .hero__quote p,
+[data-theme="bloom"] .hero__stat,
+[data-theme="bloom"] .section__title,
+[data-theme="bloom"] .foot__wordmark,
+[data-theme="bloom"] .spec__name,
+[data-theme="bloom"] .ex-card__name,
+[data-theme="bloom"] .harness__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: -0.03em;
+  text-shadow: none;
+}
+
+/* Bloom — hero centered, every other section left-aligned. */
+[data-theme="bloom"] .hero--marquee {
+  text-align: center;
+  justify-items: center;
+}
+[data-theme="bloom"] .hero--marquee .hero__display,
+[data-theme="bloom"] .hero--marquee .hero__lede {
+  margin-inline: auto;
+}
+[data-theme="bloom"] .hero--marquee .hero__cta {
+  justify-self: center;
+}
+
+[data-theme="bloom"] .hero__lede,
+[data-theme="bloom"] .hero__letter-body,
+[data-theme="bloom"] .spec__rule,
+[data-theme="bloom"] .foot__tagline,
+[data-theme="bloom"] .install-pane__next,
+[data-theme="bloom"] .ex-card__brief {
+  font-family: var(--font-body);
+  font-style: normal;
+  color: var(--color-ink-2);
+}
+
+[data-theme="bloom"] .hero__salutation {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-2xl);
+  letter-spacing: -0.025em;
+  font-style: normal;
+}
+
+/* Bloom's hero — centered, generous, with a glow behind the type. */
+[data-theme="bloom"] .hero--marquee {
+  text-align: center;
+  align-items: center;
+  justify-items: center;
+  padding-block: var(--space-3xl) var(--space-2xl);
+}
+
+[data-theme="bloom"] .hero--marquee .hero__display {
+  margin-inline: auto;
+  max-width: 22ch;
+}
+
+[data-theme="bloom"] .hero--marquee .hero__lede {
+  margin-inline: auto;
+  text-align: center;
+  max-width: 52ch;
+}
+
+[data-theme="bloom"] .hero__eyebrow {
+  margin-inline: auto;
+  justify-content: center;
+}
+
+[data-theme="bloom"] .hero--marquee .hero__cta {
+  margin-inline: auto;
+  justify-self: center;
+}
+
+/* Bloom — left-aligned section heads (hero stays centered above). The
+   atmospheric glow does the centering work — re-centering section heads
+   reads as a templated AI fingerprint. Tag stays above the title in the
+   same column (matches slop-test gate 66). */
+[data-theme="bloom"] .section__head {
+  grid-template-columns: 1fr;
+  text-align: left;
+  border-bottom: 0;
+  padding-bottom: var(--space-md);
+}
+[data-theme="bloom"] .section-label {
+  justify-content: flex-start;
+}
+[data-theme="bloom"] .section__title {
+  margin-inline: 0;
+  max-width: 26ch;
+}
+
+/* Bloom's banner — tinted dark glass over the canvas. */
+[data-theme="bloom"] .banner {
+  background: color-mix(in oklch, var(--color-paper) 70%, transparent);
+  border-block-end-color: var(--color-rule);
+}
+[data-theme="bloom"] .banner__center {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: -0.005em;
+  text-transform: none;
+}
+
+/* Bloom's install command bar — feels like a Suno input field. */
+[data-theme="bloom"] .install-pane {
+  background: var(--color-paper-2);
+  border-color: var(--color-rule);
+}
+[data-theme="bloom"] .install-pane__cmd {
+  background: var(--color-paper-3);
+  border-color: var(--color-rule);
+}
+[data-theme="bloom"] .install-pane__copy {
+  background: var(--color-accent);
+  color: var(--color-paper);
+  border-color: var(--color-accent);
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+[data-theme="bloom"] .install-pane__copy:hover {
+  background: color-mix(in oklch, var(--color-accent) 88%, var(--color-paper));
+  color: var(--color-paper);
+  border-color: transparent;
+}
+
+/* Bloom's example rail tiles — elevated cards floating on the canvas. */
+[data-theme="bloom"] .ex-card {
+  background: var(--color-paper-2);
+  border-color: var(--color-rule);
+}
+
+/* Without/With on Bloom — the slop panel still uses the white-AI
+   look against the dark canvas, which actually demonstrates "the AI
+   reaches for the same generic page even on a dark site." */
+[data-theme="bloom"] .vs__panel[data-variant="hallmark"] {
+  background: var(--color-paper-2);
+  border-left-color: var(--color-accent);
+  border-color: var(--color-rule);
+}
+
+/* Bloom's reveal — fade only, no slide. The atmosphere does the work. */
+[data-theme="bloom"] .reveal {
+  transform: none;
+}
+[data-theme="bloom"] .reveal.is-in {
+  animation: reveal-fade calc(var(--dur-long) * 1.2) var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* ───────────── CORAL — modern-minimal · Stripe-not-Linear ─────────────
+   Inherits the Quiet "polished minimal" structure but with a warm-grey
+   paper and a coral accent on focus rings + small marks. */
+
+[data-theme="coral"] .reveal,
+[data-theme="coral"] .reveal.is-in,
+[data-theme="coral"] .slot[data-populating] > * {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+[data-theme="coral"] .hero__display,
+[data-theme="coral"] .hero__quote p,
+[data-theme="coral"] .hero__stat,
+[data-theme="coral"] .section__title,
+[data-theme="coral"] .foot__wordmark,
+[data-theme="coral"] .spec__name,
+[data-theme="coral"] .ex-card__name,
+[data-theme="coral"] .harness__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: -0.025em;
+}
+
+[data-theme="coral"] .install-pane__copy {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+  border-radius: 999px;
+}
+
+/* ───────────── VIOLET — modern-minimal · Linear voice ─────────────
+   Tighter typographic feel than Coral. Near-white paper, near-black
+   ink, single quiet violet accent on focus + small marks. */
+
+[data-theme="violet"] .reveal,
+[data-theme="violet"] .reveal.is-in,
+[data-theme="violet"] .slot[data-populating] > * {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+[data-theme="violet"] .hero__display,
+[data-theme="violet"] .hero__quote p,
+[data-theme="violet"] .hero__stat,
+[data-theme="violet"] .section__title,
+[data-theme="violet"] .foot__wordmark,
+[data-theme="violet"] .spec__name,
+[data-theme="violet"] .ex-card__name,
+[data-theme="violet"] .harness__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: -0.035em;
+}
+
+[data-theme="violet"] .install-pane__copy {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+  border-radius: 999px;
+}
+
+/* ───────────── AURORA — atmospheric · cool blue-green dark ─────────────
+   Two cool blooms behind the content (cyan top-right, teal-green
+   bottom-left). Sentient body for warmth. */
+
+html[data-theme="aurora"] {
+  background: var(--color-paper);
+}
+
+html[data-theme="aurora"] body {
+  background:
+    radial-gradient(
+      ellipse 75% 55% at 92% 0%,
+      color-mix(in oklch, var(--color-accent) 28%, transparent) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 5% 100%,
+      color-mix(in oklch, var(--color-accent-2) 30%, transparent) 0%,
+      transparent 60%
+    ),
+    var(--color-paper);
+  background-attachment: fixed;
+  min-height: 100dvh;
+}
+
+/* Aurora — soft accent bloom punctuates each section title (not just the
+   hero). Adds rhythm without competing with the hero's bigger glow. */
+[data-theme="aurora"] .section {
+  position: relative;
+}
+[data-theme="aurora"] .section > .section__head::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: -8%;
+  inset-block-start: -2rem;
+  width: 22rem;
+  height: 22rem;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in oklch, var(--color-accent) 14%, transparent) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(6px);
+}
+
+[data-theme="aurora"] .hero__display,
+[data-theme="aurora"] .hero__quote p,
+[data-theme="aurora"] .hero__stat,
+[data-theme="aurora"] .section__title,
+[data-theme="aurora"] .foot__wordmark,
+[data-theme="aurora"] .spec__name,
+[data-theme="aurora"] .ex-card__name,
+[data-theme="aurora"] .harness__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+[data-theme="aurora"] .hero__lede,
+[data-theme="aurora"] .install-pane__next,
+[data-theme="aurora"] .ex-card__brief {
+  font-family: var(--font-body);
+  font-style: normal;
+  color: var(--color-ink-2);
+}
+
+[data-theme="aurora"] .banner {
+  background: color-mix(in oklch, var(--color-paper) 68%, transparent);
+  border-block-end-color: var(--color-rule);
+}
+
+[data-theme="aurora"] .reveal {
+  transform: none;
+}
+[data-theme="aurora"] .reveal.is-in {
+  animation: reveal-fade calc(var(--dur-long) * 1.2) var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+[data-theme="aurora"] .ex-card,
+[data-theme="aurora"] .install-pane,
+[data-theme="aurora"] .vs__panel[data-variant="hallmark"] {
+  background: var(--color-paper-2);
+}
+
+[data-theme="aurora"] .install-pane__copy {
+  background: var(--color-accent);
+  color: var(--color-paper);
+  border-color: var(--color-accent);
+  border-radius: 999px;
+}
+
+/* ───────────── HALO — atmospheric · hero-only amber bloom ─────────────
+   The bloom is a single moment near the top. Below the hero the page
+   is content-led on charcoal — less Suno, more "tool you actually
+   work in." Implemented as a fixed-position pseudo-element clipped
+   to the top ~80vh. */
+
+html[data-theme="halo"] {
+  background: var(--color-paper);
+}
+
+html[data-theme="halo"] body {
+  position: relative;
+  background: var(--color-paper);
+  min-height: 100dvh;
+}
+
+html[data-theme="halo"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 80vh;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 60% 80% at 70% 0%,
+    color-mix(in oklch, var(--color-accent) 22%, transparent) 0%,
+    transparent 60%
+  );
+  opacity: 1;
+}
+
+/* Lift content above the halo body::before glow.
+   Banner is excluded so it keeps its sticky z-index (200) — the
+   theme-dropdown lives inside .banner and needs that elevation
+   to render above the orbit + glow layers below. */
+html[data-theme="halo"] main,
+html[data-theme="halo"] .easter,
+html[data-theme="halo"] aside {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="halo"] .hero__display,
+[data-theme="halo"] .hero__quote p,
+[data-theme="halo"] .hero__stat,
+[data-theme="halo"] .section__title,
+[data-theme="halo"] .foot__wordmark,
+[data-theme="halo"] .spec__name,
+[data-theme="halo"] .ex-card__name,
+[data-theme="halo"] .harness__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+[data-theme="halo"] .banner {
+  background: color-mix(in oklch, var(--color-paper) 72%, transparent);
+  border-block-end-color: var(--color-rule);
+}
+
+[data-theme="halo"] .ex-card,
+[data-theme="halo"] .install-pane,
+[data-theme="halo"] .vs__panel[data-variant="hallmark"] {
+  background: var(--color-paper-2);
+}
+
+[data-theme="halo"] .reveal {
+  transform: none;
+}
+[data-theme="halo"] .reveal.is-in {
+  animation: reveal-fade calc(var(--dur-long) * 1.1) var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* ───────────── PLUME — playful · warm cream + tinted bands ─────────────
+   Alternating section backgrounds (paper vs paper-2), hover-lift on
+   cards, soft drop shadows, friendly motion — the playful canon. */
+
+/* Hero only — drop the right-side bloom stage and centre the copy.
+   The rest of the page keeps its asymmetric rhythm; only the hero
+   reads as a centred lede. */
+[data-theme="plume"] .hero--bloom {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  padding-block: var(--space-3xl) var(--space-2xl);
+}
+[data-theme="plume"] .hero--bloom .hero__bloom-stage {
+  display: none;
+}
+[data-theme="plume"] .hero--bloom .hero__copy {
+  justify-items: center;
+  align-items: center;
+}
+[data-theme="plume"] .hero--bloom .hero__display,
+[data-theme="plume"] .hero--bloom .hero__lede {
+  margin-inline: auto;
+}
+[data-theme="plume"] .hero--bloom .hero__cta-row,
+[data-theme="plume"] .hero--bloom .hero__eyebrow,
+[data-theme="plume"] .hero--bloom .hero__proof {
+  justify-content: center;
+}
+
+[data-theme="plume"] .page > .section:nth-child(even) {
+  background: var(--color-paper-2);
+  margin-inline: calc(-1 * var(--page-gutter));
+  padding-inline: var(--page-gutter);
+  padding-block: var(--space-2xl);
+  border-radius: 0;
+}
+
+[data-theme="plume"] .hero__display,
+[data-theme="plume"] .hero__quote p,
+[data-theme="plume"] .hero__stat,
+[data-theme="plume"] .section__title,
+[data-theme="plume"] .foot__wordmark,
+[data-theme="plume"] .spec__name,
+[data-theme="plume"] .ex-card__name,
+[data-theme="plume"] .harness__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+[data-theme="plume"] .hero__lede,
+[data-theme="plume"] .ex-card__brief,
+[data-theme="plume"] .install-pane__next,
+[data-theme="plume"] .spec__rule,
+[data-theme="plume"] .foot__tagline {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+[data-theme="plume"] .ex-card,
+[data-theme="plume"] .install-pane,
+[data-theme="plume"] .vs__panel[data-variant="hallmark"] {
+  background: var(--color-paper);
+  border-color: var(--color-rule-2);
+}
+
+[data-theme="plume"] .install-pane__copy {
+  background: var(--color-accent);
+  color: var(--color-paper);
+  border-color: var(--color-accent);
+  border-radius: 999px;
+}
+
+/* ───────────── EXAMPLES RAIL — TILES ─────────────
+   Each tile in the horizontal scroll-snap rail. Cards inherit the
+   active theme's --radius-card, --rule-card, and --shadow-card so
+   switching themes restyles them along with everything else. */
+.ex-card {
+  flex: 0 0 clamp(32rem, 60vw, 44rem);
+  scroll-snap-align: start;
+  display: grid;
+  grid-template-rows: auto auto;
+  min-width: 0;
+  color: inherit;
+  /* When the card is rendered as <a>, strip the default link underline so
+     the card surface reads as a card, not as linked text. */
+  text-decoration: none;
+  background: var(--color-paper);
+  border: var(--rule-card, 1px) solid var(--color-rule);
+  border-radius: var(--radius-card, 0);
+  box-shadow: var(--shadow-card, none);
+  overflow: hidden;
+  position: relative;
+}
+
+@media (max-width: 60rem) {
+  .ex-card {
+    flex-basis: 26rem;
+  }
+}
+
+@media (max-width: 36rem) {
+  .ex-card {
+    flex-basis: 84vw;
+  }
+}
+
+.ex-card:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.ex-card__thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--color-paper-2);
+  border-block-end: var(--rule-card, 1px) solid var(--color-rule);
+  overflow: hidden;
+  font-size: 0;
+}
+
+.ex-card__thumb img,
+.ex-card__thumb video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ex-card__thumb video {
+    animation-play-state: paused;
+  }
+  .ex-card__thumb img,
+  .ex-card__thumb video {
+    transition: none;
+  }
+}
+
+/* New card meta — single-line prompt only, mono. The card is the prompt
+   that produced the output above it. */
+.ex-card__prompt {
+  margin: 0;
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-feature-settings: "tnum";
+}
+
+.ex-card__prompt-mark {
+  color: var(--color-accent);
+  margin-inline-end: 0.4em;
+  font-weight: 500;
+}
+
+/* — Study gallery card ————————————————————————————————
+   Each card pairs a video-shaped media tile with a structured DNA
+   panel below it. The video uses poster as the static fallback when
+   no <source> is supplied — drop one in to enable playback. The DNA
+   panel renders as an editorial table: mono numeral key, body value,
+   hairline divider per row. Theme-adaptive throughout. */
+.study-card {
+  display: grid;
+  gap: var(--space-md);
+  background: var(--color-paper);
+  border: var(--rule-card, 1px) solid var(--color-rule);
+  border-radius: var(--radius-card, 0);
+  box-shadow: var(--shadow-card, none);
+  overflow: hidden;
+  transition: border-color var(--dur-micro) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .study-card:hover {
+    border-color: var(--color-rule-2);
+  }
+}
+
+.study-card[data-user-content] {
+  border-style: dashed;
+}
+
+.study-card__media {
+  position: relative;
+  aspect-ratio: 16 / 7;
+  background: var(--color-paper-2);
+  border-block-end: var(--rule-card, 1px) solid var(--color-rule);
+  overflow: hidden;
+}
+
+.study-card__img,
+.study-card__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+  background: var(--color-paper-2);
+}
+
+.study-card__badge {
+  position: absolute;
+  bottom: var(--space-sm);
+  left: var(--space-sm);
+  padding: 0.25rem 0.55rem;
+  font-family: var(--font-label);
+  font-size: 0.625rem;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background: color-mix(in oklch, var(--color-ink) 85%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  font-feature-settings: "tnum";
+}
+
+.study-card[data-user-content] .study-card__badge {
+  background: color-mix(in oklch, var(--color-accent) 80%, transparent);
+}
+
+[data-theme="riso"] .study-card__badge,
+[data-theme="brutal"] .study-card__badge,
+[data-theme="manifesto"] .study-card__badge,
+[data-theme="sport"] .study-card__badge {
+  text-transform: uppercase;
+}
+
+[data-theme="riso"] .study-card__badge {
+  text-transform: lowercase;
+}
+
+/* DNA panel — structured 10-field key/value table. Tightened vertical
+   rhythm so the study card doesn't dominate the page: panel padding
+   one step lighter, per-row padding-block reduced from sm → xs. */
+.study-card__dna {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  display: grid;
+  gap: 0;
+}
+
+.study-card__dna .dna__row {
+  padding-block: var(--space-xs);
+}
+
+.dna__row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: var(--space-sm);
+  align-items: baseline;
+  padding-block: var(--space-sm);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.dna__row:last-child {
+  border-block-end: 0;
+}
+
+@media (max-width: 36rem) {
+  .dna__row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+    padding-block: var(--space-xs);
+  }
+}
+
+.dna__k {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  font-feature-settings: "tnum";
+}
+
+.dna__v {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--color-ink);
+  letter-spacing: 0;
+}
+
+.study-card[data-user-content] .dna__v {
+  color: var(--color-rule-2);
+}
+
+[data-theme="brutal"] .study-card,
+[data-theme="manifesto"] .study-card {
+  border-width: 2px;
+}
+
+[data-theme="atelier"] .study-card,
+[data-theme="salon"] .study-card {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  border-radius: 0;
+}
+
+[data-theme="atelier"] .study-card__media,
+[data-theme="salon"] .study-card__media {
+  border-block-end: 0;
+}
+
+/* ───────────── FOUNDATION VIZ — illustrations ─────────────
+   Eight different visual demos, one per spec card. Each one prefers
+   real demonstration over decoration: real type for F/01, real space
+   ratio for F/02, real motion for F/04, real states for F/05. */
+
+.spec__viz {
+  display: grid;
+  gap: var(--space-md);
+  margin-block-start: var(--space-sm);
+}
+
+/* F/01 Type — three real specimens, baseline-aligned. */
+.spec__viz--type {
+  gap: var(--space-md);
+}
+
+.spec__viz-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-block: var(--space-xs);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  transition: padding-inline-start 220ms var(--ease-out);
+}
+
+.spec__viz-row > span {
+  flex: 0 1 auto;
+  color: var(--color-ink);
+  line-height: 1;
+}
+
+.spec__viz-row--display > span {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  letter-spacing: -0.02em;
+}
+
+.spec__viz-row--body > span {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 1.5rem;
+  letter-spacing: -0.005em;
+}
+
+.spec__viz-row--mono > span {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.2rem;
+  letter-spacing: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .spec__viz-row:hover {
+    padding-inline-start: var(--space-md);
+  }
+}
+
+.spec__viz-tag {
+  font-family: var(--font-label);
+  font-style: normal;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  flex: 0 0 auto;
+}
+
+/* F/02 Colour — accent dot in a paper field, then small swatches. */
+.spec__viz--colour {
+  position: relative;
+  aspect-ratio: 4 / 1;
+  background: var(--color-paper-2);
+  border: var(--rule-hair) solid var(--color-rule);
+  display: block;
+  padding: 0;
+  margin-block-end: var(--space-sm);
+}
+
+.spec__viz-dot {
+  position: absolute;
+  top: 28%;
+  left: 22%;
+  width: 14px;
+  height: 14px;
+  background: var(--color-accent);
+  border-radius: 50%;
+}
+
+.spec__viz-caption {
+  position: absolute;
+  right: var(--space-md);
+  bottom: var(--space-sm);
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  max-width: 22ch;
+  text-align: right;
+  line-height: 1.4;
+}
+
+.spec__viz-swatches {
+  height: 2rem;
+}
+
+/* F/03 Space — symmetric (greyed) vs asymmetric (ink). */
+.spec__viz--space {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  height: 5rem;
+  align-items: end;
+}
+
+.spec__viz-grid {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 100%;
+  padding-inline: var(--space-sm);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.spec__viz-grid--bad .vg-bar {
+  background: var(--color-rule-2);
+}
+.spec__viz-grid--good {
+  justify-content: flex-start;
+  gap: 0.55rem;
+}
+.spec__viz-grid--good .vg-bar {
+  background: var(--color-ink);
+}
+
+.vg-bar {
+  width: 8px;
+}
+.vg-bar--xl {
+  height: 88%;
+}
+.vg-bar--md {
+  height: 56%;
+}
+.vg-bar--sm {
+  height: 30%;
+}
+
+.spec__viz-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+/* F/04 Motion — a real fade+slide on click/hover. */
+.spec__viz--motion {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.spec__viz-play {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  background: transparent;
+  border: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink);
+  cursor: pointer;
+  min-height: 32px;
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.spec__viz-play:hover {
+  border-color: var(--color-ink);
+}
+.spec__viz-play:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.spec__viz-play-icon {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 8px;
+  border-color: transparent transparent transparent currentColor;
+  display: inline-block;
+}
+
+.spec__viz-stage {
+  position: relative;
+  height: 3rem;
+  background: var(--color-paper-2);
+  border: var(--rule-hair) dashed var(--color-rule);
+  overflow: hidden;
+}
+
+.spec__viz-block {
+  position: absolute;
+  top: 50%;
+  left: 12%;
+  width: 32px;
+  height: 32px;
+  background: var(--color-accent);
+  transform: translate(-12px, -50%);
+  opacity: 0;
+}
+
+.spec__viz-block.is-running {
+  animation: spec-motion-demo 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes spec-motion-demo {
+  from {
+    transform: translate(-12px, -50%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(160px, -50%);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spec__viz-block.is-running {
+    animation: none;
+    transform: translate(160px, -50%);
+    opacity: 1;
+  }
+}
+
+/* F/05 States — a real interactive button that reports its own state. */
+.spec__viz--states {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.spec__viz-button {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  background: transparent;
+  border: var(--rule-fine) solid var(--color-ink);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    background-color 120ms var(--ease-out),
+    color 120ms var(--ease-out),
+    transform 80ms var(--ease-out);
+  align-self: start;
+  justify-self: start;
+}
+
+.spec__viz-button:hover {
+  background: var(--color-paper-3);
+}
+.spec__viz-button:active {
+  transform: translateY(1px);
+}
+.spec__viz-button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.spec__viz-button[data-state="loading"] {
+  background: var(--color-paper-2);
+  color: var(--color-muted);
+  cursor: wait;
+}
+
+.spec__viz-state-readout {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
+}
+
+.spec__viz-state-readout::before {
+  content: "→ state: ";
+  color: var(--color-rule-2);
+}
+
+/* F/06 Responsive — three frames showing same content reflowing. */
+.spec__viz--responsive {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 2.4fr;
+  gap: var(--space-md);
+  align-items: end;
+  height: 5rem;
+}
+
+.vg-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--color-paper-2);
+  border: var(--rule-hair) solid var(--color-rule);
+  height: 100%;
+  justify-content: flex-start;
+}
+
+.vg-line {
+  height: 4px;
+  background: var(--color-rule-2);
+  border-radius: 1px;
+  width: 100%;
+}
+
+.vg-line--head {
+  background: var(--color-ink);
+  height: 6px;
+  width: 70%;
+}
+
+.vg-line--short {
+  width: 40%;
+}
+
+/* F/07 Copy — bad vs good column comparison. */
+.spec__viz--copy {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.spec__viz-copy-col {
+  display: grid;
+  gap: 0.4rem;
+  padding: var(--space-sm) var(--space-md);
+  border: var(--rule-hair) solid var(--color-rule);
+  background: var(--color-paper-2);
+}
+
+.spec__viz-copy-col[data-variant="good"] {
+  border-color: var(--color-rule-2);
+  background: var(--color-paper);
+}
+
+.spec__viz-copy-label {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.spec__viz-copy-col[data-variant="good"] .spec__viz-copy-label {
+  color: var(--color-accent);
+}
+
+.spec__viz-copy-line {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.spec__viz-copy-col[data-variant="bad"] .spec__viz-copy-line {
+  color: var(--color-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-rule-2);
+  text-decoration-thickness: 1px;
+}
+
+.spec__viz-copy-col[data-variant="good"] .spec__viz-copy-line {
+  color: var(--color-ink);
+}
+
+/* F/08 Anti-patterns — 9-tile mini-grid of the named tells. */
+.spec__viz--tells {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: var(--space-2xs);
+  height: 4.5rem;
+}
+
+@media (max-width: 50rem) {
+  .spec__viz--tells {
+    grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: 1fr;
+    height: auto;
+  }
+}
+
+.vt {
+  display: block;
+  background: var(--color-paper-2);
+  border: var(--rule-hair) solid var(--color-rule);
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.vt--purple {
+  background: linear-gradient(135deg, #6b4de0, #e04db4);
+}
+
+.vt--gradtext {
+  background: var(--color-paper);
+}
+.vt--gradtext::after {
+  content: "Aa";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  background: linear-gradient(90deg, #8a3fe0, #e03f8a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vt--icontile {
+  background:
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 0 0 / 100% 1px no-repeat,
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 33.33% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 66.66% 0 / 1px 100% no-repeat,
+    var(--color-paper);
+}
+
+.vt--centered {
+  background: var(--color-paper);
+}
+.vt--centered::after {
+  content: "";
+  position: absolute;
+  inset: 25% 30%;
+  background:
+    linear-gradient(var(--color-ink), var(--color-ink)) 0 0 / 100% 30% no-repeat,
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 0 50% / 100% 14% no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) 25% 80% / 50% 14% no-repeat;
+}
+
+.vt--glass {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+  backdrop-filter: blur(2px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.vt--pill {
+  background: var(--color-paper);
+}
+.vt--pill::after {
+  content: "";
+  position: absolute;
+  inset: 38% 18%;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  border-radius: 999px;
+}
+
+.vt--bigfeat {
+  background:
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 50% 30% / 30% 4px no-repeat,
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 50% 50% / 50% 4px no-repeat,
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 50% 70% / 40% 4px no-repeat,
+    var(--color-paper);
+  background-position:
+    center 30%,
+    center 50%,
+    center 70%;
+}
+
+.vt--threecard {
+  background:
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 0 25% / 30% 50% no-repeat,
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 35% 25% / 30% 50% no-repeat,
+    linear-gradient(var(--color-rule-2), var(--color-rule-2)) 70% 25% / 30% 50% no-repeat,
+    var(--color-paper);
+}
+
+.vt--moremore {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  border-color: var(--color-ink);
+}
+
+@media (max-width: 50rem) {
+  .vt {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* ───────────── SPORT — section title fix ─────────────
+   The italic display + tight tracking + uppercase + weight 700
+   produced cramped, almost-touching letterforms. Loosen the
+   tracking just for section titles, give a tiny pad for the
+   italic slant overhang, and bump line-height for breathing room. */
+
+[data-theme="sport"] .section__title {
+  letter-spacing: -0.005em; /* loosened from -0.04em */
+  line-height: 1.12;
+  padding-inline-end: 0.15em; /* slack for italic slant overhang */
+  max-width: 26ch;
+  word-spacing: 0.04em;
+}
+
+[data-theme="sport"] .spec__name,
+[data-theme="sport"] .tell__name {
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+/* Sport — kinetic / scoreboard register.
+   Tabular numerals everywhere a number appears (counter, stat,
+   pricing, plate numbers); a top-bordered "leaderboard cell" treatment
+   on the section numeral; sharper sweep easing on .reveal. */
+
+[data-theme="sport"] .hero__stat,
+[data-theme="sport"] .ex-card__num,
+[data-theme="sport"] .gallery__num,
+[data-theme="sport"] .spec__num,
+[data-theme="sport"] .found-nav__num,
+[data-theme="sport"] .vs-toggle__num,
+[data-theme="sport"] .vs__panel-stat-num,
+[data-theme="sport"] .vs__panel-price-num,
+[data-theme="sport"] .install-pane__step,
+[data-theme="sport"] .dna__v {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Section numeral as a leaderboard-style cell with a thin top rule */
+[data-theme="sport"] .section-label .num {
+  display: inline-block;
+  padding: 0.15em 0.45em 0.05em;
+  border-block-start: 2px solid var(--color-accent);
+  background: color-mix(in oklch, var(--color-accent) 6%, transparent);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Sharper sweep easing on Sport reveals — sportier */
+[data-theme="sport"] .reveal.is-in {
+  animation-timing-function: cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+/* Hero stat-row treatment — "MIN · 47 · LAP 12" register, when present */
+[data-theme="sport"] .hero__qualifier {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: var(--text-md);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* ───────────── SALON — left-aligned, italic title, fleuron divider ───────────── */
+
+[data-theme="salon"] .section__head {
+  gap: var(--space-sm);
+  padding-block-end: var(--space-2xl);
+}
+
+[data-theme="salon"] .section__title {
+  max-width: 32ch;
+  font-style: italic;
+}
+
+[data-theme="salon"] .section__head::after {
+  content: "❦";
+  display: block;
+  color: var(--color-accent);
+  font-size: 1.7rem;
+  margin-block-start: var(--space-xl);
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-serif);
+  line-height: 1;
+  opacity: 0.85;
+}
+
+/* ───────────── NEWSPRINT — justified prose blocks ─────────────
+   Print discipline. Long-form copy gets justified + hyphenated where
+   the column is wide enough to render evenly. Headlines stay
+   left-aligned (only the prose justifies). */
+
+[data-theme="newsprint"] .opening__sub,
+[data-theme="newsprint"] .vs__caption,
+[data-theme="newsprint"] .step__sub {
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* ───────────── BRUTAL / MANIFESTO — heavier card borders ─────────────
+   --rule-card is set to 2px on these themes (in tokens.css). The .tell
+   cards already use --rule-card. For other elements that have hairline
+   borders by default, give Brutal/Manifesto a touch more weight so the
+   theme's voice carries through. */
+
+[data-theme="brutal"] .code,
+[data-theme="manifesto"] .code {
+  border-width: 1.5px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   EDITORIAL THEME — open-design-inspired structural overrides (v0.9.0)
+
+   The 23rd theme. Editorial-premium voice: mixed serif italic
+   inside sans display, Roman-numeral marginalia, hairline rules,
+   asymmetric grids. Inspired by github.com/nexu-io/open-design.
+   ────────────────────────────────────────────────────────────── */
+
+/* Mixed display: italic Playfair word inside Inter Tight headline */
+[data-theme="editorial"] .hero__display em,
+[data-theme="editorial"] .section__title em,
+[data-theme="editorial"] .opening__title em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Roman-numeral section heads — replaces the leading number */
+[data-theme="editorial"] .section-label .num {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+[data-theme="editorial"] .section-label .divider {
+  opacity: 0.55;
+}
+
+/* Quieter rules and accents */
+[data-theme="editorial"] .section__head {
+  border-bottom-color: var(--color-rule);
+  border-bottom-width: 0.5px;
+}
+
+/* Tighten body in editorial — Inter is dense, less line-height needed */
+[data-theme="editorial"] .examples__intro,
+[data-theme="editorial"] .study__intro,
+[data-theme="editorial"] .install-pane__next {
+  font-family: var(--font-body);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   OPEN-DESIGN STEALS — reusable utilities (v0.9.0)
+
+   Six patterns extracted from open-design. NOT theme-only — these
+   are utilities any theme can use. Skill rules cross-reference them
+   in component-cookbook.md and microinteractions.md.
+   ────────────────────────────────────────────────────────────── */
+
+/* — Tabular numerals utility ———————————————————————————————
+   Apply to anything that mixes numbers with text — versions, dates,
+   stats, code stamps — so digit widths align like a ledger. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* — Corner-bracket image annotation —————————————————————————
+   Wrap any image with .fig-corners; four 18px brackets appear at
+   the corners. Lightweight alternative to a full frame. */
+.fig-corners {
+  position: relative;
+  display: block;
+}
+.fig-corners::before,
+.fig-corners::after,
+.fig-corners > .fig-corners__br,
+.fig-corners > .fig-corners__bl {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-rule-2);
+  pointer-events: none;
+}
+.fig-corners::before {
+  top: -4px;
+  left: -4px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.fig-corners::after {
+  top: -4px;
+  right: -4px;
+  border-left: 0;
+  border-bottom: 0;
+}
+.fig-corners > .fig-corners__bl {
+  bottom: -4px;
+  left: -4px;
+  border-right: 0;
+  border-top: 0;
+}
+.fig-corners > .fig-corners__br {
+  bottom: -4px;
+  right: -4px;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* — Pulse animation utility ————————————————————————————————
+   Subtle ambient breathing pulse for status dots / live indicators.
+   2.4s ease-in-out, opacity-only. Reduced-motion fallback is steady. */
+.pulse {
+  animation: pulse-breathe 2.4s var(--ease-in-out, ease-in-out) infinite;
+}
+@keyframes pulse-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    opacity: 0.85;
+  }
+}
+
+/* — Dark-slab section reversal —————————————————————————————
+   Wrap any .section in `.section--invert` to flip paper/ink colours
+   for that one section. Useful for breaking page rhythm. */
+.section--invert {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  margin-inline: calc(-1 * var(--page-gutter));
+  padding-inline: var(--page-gutter);
+  padding-block: var(--space-2xl);
+}
+.section--invert .section__title,
+.section--invert .section-label,
+.section--invert .section__head {
+  color: var(--color-paper);
+}
+.section--invert .section__head {
+  border-bottom-color: oklch(50% 0.02 60 / 0.4);
+}
+
+/* — Asymmetric hero ratio knob ——————————————————————————————
+   Default split-hero ratio is 50/50; this knob swaps it to 0.78/1.22
+   per the open-design move. Apply to `.hero--split[data-ratio="asym"]`. */
+.hero--split[data-ratio="asym"] {
+  grid-template-columns: 0.78fr 1.22fr;
+}
+
+/* — Roman-numeral section-label variant —————————————————————
+   `<span class="num num--roman">XII</span>` rendered in italic serif. */
+.section-label .num--roman {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* — Smart sticky nav (reveal on scroll-up) ———————————————————
+   Apply to .banner with class `banner--smart`. Hidden when scrolling
+   down, slid back in when scrolling up. JS toggles the class on scroll. */
+.banner--smart {
+  transition: transform 220ms var(--ease-out);
+}
+.banner--smart.is-hidden {
+  transform: translateY(-100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .banner--smart {
+    transition: none;
+  }
+}

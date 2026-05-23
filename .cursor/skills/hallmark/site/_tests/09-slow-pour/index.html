@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Slow Pour — One bag, every other Tuesday.</title>
+<meta name="description" content="A small-batch coffee subscription. Roast on Sunday, ship Monday, drink Tuesday." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Geist+Mono:wght@400;500&display=swap" />
+<style>
+/* Hallmark · macrostructure: Marquee Hero · theme: Atelier · enrichment: Tier-A SVG bean
+ * tone: warm hand-set editorial · anchor hue: warm (burnt sienna)
+ * studied: no · pre-emit critique: P5 H4 E4 S4 R5 V4
+ */
+
+:root {
+  /* Atelier — light · italic-serif · warm */
+  --color-paper:    oklch(96%   0.012  75);
+  --color-paper-2:  oklch(94%   0.014  72);
+  --color-paper-3:  oklch(90%   0.020  70);
+  --color-rule:     oklch(74%   0.020  68);
+  --color-rule-2:   oklch(58%   0.025  65);
+  --color-muted:    oklch(46%   0.030  60);
+  --color-ink-2:    oklch(28%   0.040  55);
+  --color-ink:     oklch(18%   0.045  50);
+  --color-accent:   oklch(56%   0.155  42);  /* burnt sienna */
+  --color-focus:    oklch(56%   0.155  42);
+
+  --font-display: "Cormorant Garamond", "Tiempos Headline", ui-serif, Georgia, serif;
+  --font-body:    "Newsreader", "Tiempos", ui-serif, Georgia, serif;
+  --font-label:   "Geist Mono", ui-monospace, monospace;
+  --font-mono:    "Geist Mono", ui-monospace, monospace;
+
+  --text-xs:  0.75rem;
+  --text-sm:  0.875rem;
+  --text-md:  1rem;
+  --text-lg:  1.25rem;
+  --text-xl:  1.75rem;
+  --text-2xl: 2.5rem;
+  --text-display: clamp(3.5rem, 9vw + 1rem, 8rem);
+
+  --tracking-display: -0.02em;
+  --tracking-label:   0.14em;
+  --lh-tight:         1.02;
+  --lh-snug:          1.25;
+  --lh-relaxed:       1.55;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+  --space-4xl: 9rem;
+
+  --rule-hair: 1px;
+  --page-gutter: clamp(1.25rem, 4vw, 3rem);
+  --page-max:    72rem;
+
+  --dur-micro: 80ms;
+  --dur-short: 150ms;
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: var(--lh-relaxed);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding-inline: var(--page-gutter);
+}
+
+main {
+  margin-inline: auto;
+  max-width: var(--page-max);
+}
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, p { margin: 0; }
+
+/* — Masthead nav (N3 editorial) ————————————————————————— */
+.masthead {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding-block: var(--space-md);
+  border-block-end: 1px solid var(--color-ink);
+}
+
+.masthead__issue {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.masthead__wordmark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  text-align: center;
+  line-height: 0.9;
+}
+
+.masthead__date {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-align: end;
+  white-space: nowrap;
+}
+
+@media (max-width: 36rem) {
+  .masthead {
+    grid-template-columns: 1fr;
+    text-align: start;
+  }
+  .masthead__wordmark { text-align: start; }
+  .masthead__date { text-align: start; }
+}
+
+/* — Marquee hero ————————————————————————————————————— */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--space-2xl);
+  padding-block: var(--space-3xl) var(--space-2xl);
+  align-items: end;
+}
+
+@media (max-width: 56rem) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl);
+  }
+}
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-block-end: var(--space-md);
+}
+
+.hero__display {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--text-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  max-width: 14ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  font-optical-sizing: auto;
+}
+
+.hero__lede {
+  margin-block: var(--space-xl) 0;
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 38ch;
+}
+
+.hero__cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: baseline;
+  margin-block-start: var(--space-xl);
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+.cta {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+.cta:hover { background: var(--color-accent); border-color: var(--color-accent); }
+
+.cta--ghost {
+  color: var(--color-ink);
+  background: transparent;
+  border-color: var(--color-rule-2);
+}
+.cta--ghost:hover { color: var(--color-paper); background: var(--color-ink); border-color: var(--color-ink); }
+
+/* Hero plate — bean illustration in a hairline-bordered card */
+.hero__plate {
+  position: relative;
+  padding: var(--space-xl);
+  border: 1px solid var(--color-rule);
+  background: var(--color-paper-2);
+  display: grid;
+  gap: var(--space-md);
+  align-content: end;
+  min-height: 24rem;
+}
+
+.hero__plate-label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.hero__plate-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-xl);
+  line-height: var(--lh-tight);
+  color: var(--color-ink);
+}
+
+.hero__plate-meta {
+  display: grid;
+  gap: 0.35rem;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+.hero__plate-meta-row {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  gap: var(--space-sm);
+}
+
+.hero__plate-meta-key {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.bean {
+  width: 100%;
+  max-width: 11rem;
+  margin-inline: auto;
+  height: auto;
+  color: var(--color-accent);
+}
+
+/* — Three notes (roast / ship / drink) ——————————————————— */
+.notes {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  border-block-start: 4px double var(--color-ink);
+}
+
+.notes__head {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-block-end: var(--space-2xl);
+}
+
+.notes__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.notes__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2rem, 4vw + 0.5rem, 3.5rem);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  max-width: 22ch;
+}
+
+.notes__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  border-inline-start: var(--rule-hair) solid var(--color-rule);
+}
+
+@media (max-width: 56rem) {
+  .notes__list { grid-template-columns: 1fr; }
+}
+
+.note {
+  padding: var(--space-xl);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  border-inline-end: var(--rule-hair) solid var(--color-rule);
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+}
+
+.note__day {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-2xl);
+  line-height: 0.9;
+  color: var(--color-accent);
+  letter-spacing: var(--tracking-display);
+}
+
+.note__num {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.note__body {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 30ch;
+}
+
+/* — Letter from the roaster ————————————————————————————— */
+.letter {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  border-block-start: 1px solid var(--color-ink);
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) minmax(0, 2.4fr);
+  gap: var(--space-2xl);
+}
+
+@media (max-width: 56rem) {
+  .letter {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+.letter__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.letter__body {
+  display: grid;
+  gap: var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 58ch;
+}
+
+.letter__body p:first-of-type::first-letter {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 4rem;
+  line-height: 0.85;
+  float: left;
+  margin-inline-end: 0.6rem;
+  margin-block-start: 0.3rem;
+  color: var(--color-accent);
+}
+
+.letter__sign {
+  margin-block-start: var(--space-md);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-xl);
+  color: var(--color-ink);
+}
+
+/* — Subscribe block ——————————————————————————————————— */
+.subscribe {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  border-block-start: 4px double var(--color-ink);
+  display: grid;
+  gap: var(--space-md);
+  max-width: 38rem;
+}
+
+.subscribe__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2rem, 4vw + 0.5rem, 3rem);
+  line-height: var(--lh-tight);
+  color: var(--color-ink);
+  letter-spacing: var(--tracking-display);
+}
+
+.subscribe__body {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 50ch;
+}
+
+.subscribe__price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  padding-block: var(--space-md);
+  margin-block-start: var(--space-sm);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.subscribe__amount {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-2xl);
+  color: var(--color-ink);
+  font-feature-settings: "tnum";
+}
+
+.subscribe__amount-key {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.subscribe__cta-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-block-start: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* — Colophon (Ft5) ————————————————————————————————————— */
+.colophon {
+  margin-block-start: var(--space-3xl);
+  padding-block: var(--space-xl) var(--space-md);
+  border-block-start: 1px solid var(--color-ink);
+  display: grid;
+  gap: var(--space-md);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.colophon__row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.colophon strong { color: var(--color-ink); font-weight: 500; }
+
+/* — Reduced motion (no motion in this build, but explicit) — */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<main>
+
+  <header class="masthead">
+    <p class="masthead__issue">Vol. I · No. 03</p>
+    <h1 class="masthead__wordmark">Slow Pour.</h1>
+    <p class="masthead__date">Tuesday, the 19th of May</p>
+  </header>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__copy">
+      <p class="hero__eyebrow">A small-batch dispatch</p>
+      <h2 class="hero__display" id="hero-title">One bag, every other Tuesday.</h2>
+      <p class="hero__lede">
+        We roast on Sunday, ship Monday, and arrange for the bag to be on your kitchen counter by Tuesday morning. One curated bag, every two weeks. No flights of cup-tasting flutes. No subscription tier with adjectives.
+      </p>
+      <div class="hero__cta-row">
+        <a class="cta" href="#subscribe">Start the rotation &rarr;</a>
+        <a class="cta cta--ghost" href="#letter">Read the letter</a>
+      </div>
+    </div>
+
+    <aside class="hero__plate" aria-label="This week's bag">
+      <p class="hero__plate-label">No. 03 · This week's bag</p>
+      <p class="hero__plate-name">Estancia el&nbsp;Pino, Tolima</p>
+
+      <svg class="bean" viewBox="0 0 220 220" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+        <ellipse cx="110" cy="110" rx="78" ry="98" transform="rotate(-18 110 110)" />
+        <ellipse cx="110" cy="110" rx="60" ry="90" transform="rotate(-18 110 110)" stroke-opacity="0.55" />
+        <path d="M 80 30 C 96 90 96 130 64 196" stroke-width="1.6" />
+        <path d="M 78 38 C 72 70 86 86 88 110" stroke-opacity="0.45" />
+        <path d="M 86 130 C 80 154 76 168 68 188" stroke-opacity="0.45" />
+      </svg>
+
+      <dl class="hero__plate-meta">
+        <div class="hero__plate-meta-row">
+          <dt class="hero__plate-meta-key">Origin</dt>
+          <dd>Tolima, Colombia</dd>
+        </div>
+        <div class="hero__plate-meta-row">
+          <dt class="hero__plate-meta-key">Process</dt>
+          <dd>Washed, 36 h fermentation</dd>
+        </div>
+        <div class="hero__plate-meta-row">
+          <dt class="hero__plate-meta-key">Notes</dt>
+          <dd>Brown sugar, almond, honeycrisp.</dd>
+        </div>
+        <div class="hero__plate-meta-row">
+          <dt class="hero__plate-meta-key">Roasted</dt>
+          <dd>Sunday, 17 May</dd>
+        </div>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="notes" aria-labelledby="notes-title">
+    <header class="notes__head">
+      <p class="notes__label">03 / The week, ordered</p>
+      <h2 class="notes__title" id="notes-title">Three days. One bag. Done by Wednesday.</h2>
+    </header>
+
+    <ol class="notes__list">
+      <li class="note">
+        <span class="note__num">i.</span>
+        <p class="note__day">Sunday — roast.</p>
+        <p class="note__body">A single batch in a 12 kg drum, pulled at first crack plus 90 seconds. Logged, tasted, dated. If it isn't on the curve, it doesn't ship.</p>
+      </li>
+      <li class="note">
+        <span class="note__num">ii.</span>
+        <p class="note__day">Monday — ship.</p>
+        <p class="note__body">Bagged within 24 h of the roast, posted before noon. Carbon-neutral courier, recyclable kraft, no foil pouch.</p>
+      </li>
+      <li class="note">
+        <span class="note__num">iii.</span>
+        <p class="note__day">Tuesday — drink.</p>
+        <p class="note__body">On your counter Tuesday morning. We send a brewing card on the lid; the rest is up to you.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="letter" id="letter" aria-labelledby="letter-title">
+    <p class="letter__label">A letter from the roaster</p>
+    <div class="letter__body">
+      <h2 class="visually-hidden" id="letter-title" style="position: absolute; left: -9999px;">A letter from the roaster</h2>
+      <p>We are not the cheapest subscription, and we are not interested in being one. The bag we send is the bag we drank that morning — the same roast, the same date, the same notes on the page. Two weeks is not arbitrary; it's how long a 250 g bag holds at its best, and how long we want you to live with one coffee before the next arrives.</p>
+      <p>If a week is wrong for you, you can pause. If two weeks is too often, you can stretch to four. If you change your mind on the bean, the next dispatch is yours to redirect. The point is not the volume; the point is that the coffee that arrives is the coffee we'd brew for ourselves.</p>
+      <p class="letter__sign">— J. &amp; M., the roastery</p>
+    </div>
+  </section>
+
+  <section class="subscribe" id="subscribe" aria-labelledby="sub-title">
+    <h2 class="subscribe__title" id="sub-title">Start the rotation.</h2>
+    <p class="subscribe__body">
+      One 250 g bag, every other Tuesday. Skip a week, double up, or pause whenever you want. Cancel in two clicks; we don't make it a thing.
+    </p>
+    <div class="subscribe__price">
+      <span class="subscribe__amount">$22</span>
+      <span class="subscribe__amount-key">per bag · shipping included</span>
+    </div>
+    <div class="subscribe__cta-row">
+      <a class="cta" href="#">Subscribe &rarr;</a>
+      <a class="cta cta--ghost" href="#">Order one bag instead</a>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <div class="colophon__row">
+      <p>Slow Pour <strong>· Roastery, Brooklyn NY</strong></p>
+      <p>Vol. I · No. 03 · 2026</p>
+    </div>
+    <div class="colophon__row">
+      <p>Set in <strong>Cormorant Garamond</strong> &amp; <strong>Newsreader</strong>.</p>
+      <p>Printed on the internet.</p>
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>

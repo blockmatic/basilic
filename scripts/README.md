@@ -63,6 +63,9 @@ All security-related pnpm scripts are organized under the `security:` namespace:
 - **`pnpm security:osv`** - Scan dependencies for vulnerabilities (OSV Scanner)
 - **`pnpm security:audit`** - Run pnpm audit for dependency vulnerabilities
 - **`pnpm security:check`** - Run all security checks (comprehensive)
+- **`pnpm setup:deepsec`** - Scaffold `.deepsec/` workspace (one-time; also runs in `pnpm setup`)
+- **`pnpm security:deepsec`** - Agentic PR review via deepsec (`process --diff origin/main`)
+- **`pnpm security:deepsec:full`** - Full-repo deepsec scan + process (optional `DEEPSEC_LIMIT`)
 
 ### `block-secret-files.mjs`
 
@@ -138,6 +141,19 @@ node scripts/setup-gitleaks.mjs
 
 **Note**: gitleaks is required. Pre-commit hooks will fail if gitleaks is not installed.
 
+### `setup-deepsec.mjs`
+
+Scaffolds the `.deepsec/` workspace (runs `deepsec init` once) and installs dependencies inside it.
+
+**Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+```bash
+pnpm setup:deepsec
+# or
+node scripts/setup-deepsec.mjs
+```
+
+**Note**: Optional on failure — setup continues. Configure `.deepsec/.env.local` and `data/basilic/INFO.md` before running `pnpm security:deepsec`.
+
 ### `setup-osv-scanner.mjs`
 
 Installs osv-scanner for vulnerability scanning in dependencies.
@@ -188,6 +204,24 @@ node scripts/security-check.mjs
 ```
 
 **Note**: Scripts will skip gracefully if tools are not installed, but will report warnings.
+
+### `run-deepsec.mjs`
+
+Wrapper for [deepsec](https://github.com/vercel-labs/deepsec) agentic code review. Requires a `.deepsec/` workspace and AI credentials in `.deepsec/.env.local` or the environment.
+
+**Modes**:
+- `pr` — `deepsec process --diff origin/main` (default via `pnpm security:deepsec`)
+- `full` — `deepsec scan` then `deepsec process` (`pnpm security:deepsec:full`; honors `DEEPSEC_LIMIT`)
+
+**Usage**:
+```bash
+pnpm setup:deepsec   # once (or via pnpm setup)
+# configure .deepsec/.env.local, fill data/basilic/INFO.md
+pnpm security:deepsec
+DEEPSEC_LIMIT=50 pnpm security:deepsec:full
+```
+
+Not part of pre-commit, `security:check`, `pnpm qa`, or CI.
 
 ## Database Development Scripts
 

@@ -1,0 +1,100 @@
+/* Hallmark · macrostructure: Marquee Hero · genre: modern-minimal · theme: Pastel
+ * paper-band: light · display-style: geometric-sans · accent-hue: cool-indigo
+ * nav: N5 Floating pill · footer: Ft5 Statement
+ */
+
+:root {
+  /* Paper / ink — cool-pastel band */
+  --color-paper-0: oklch(98.4% 0.005 258);
+  /* page paper */
+  --color-paper-1: oklch(96.2% 0.01 258);
+  /* card */
+  --color-paper-2: oklch(93.0% 0.015 258);
+  /* elevated card */
+  --color-paper-3: oklch(89.0% 0.02 258);
+  /* hairline tint */
+  --color-ink-0: oklch(18.0% 0.03 258);
+  /* primary ink */
+  --color-ink-1: oklch(35.0% 0.025 258);
+  /* body */
+  --color-ink-2: oklch(52.0% 0.018 258);
+  /* secondary */
+  --color-ink-3: oklch(70.0% 0.012 258);
+  /* mute */
+
+  /* Accent — indigo with companion lime */
+  --color-accent: oklch(54.0% 0.22 268);
+  /* primary indigo */
+  --color-accent-soft: oklch(72.0% 0.14 268);
+  --color-accent-tint: oklch(94.0% 0.04 268);
+  --color-companion: oklch(82.0% 0.18 130);
+  /* lime — sparingly */
+  --color-warning: oklch(74.0% 0.18 50);
+  /* amber */
+  --color-success: oklch(68.0% 0.15 145);
+  /* green */
+
+  /* Focus ring — distinct from accent so contrast holds */
+  --color-focus: oklch(46.0% 0.22 268);
+
+  /* Typography — Geist + Geist Mono via Google Fonts */
+  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-italic: "Instrument Serif", "Times New Roman", serif;
+  /* italic accent */
+
+  /* Type scale — modular, tight */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.5rem;
+  --text-3xl: 3.5rem;
+  --text-4xl: clamp(2rem, 7vw, 4rem);
+  --text-5xl: clamp(2rem, 10vw, 5rem);
+
+  /* Spacing — 4pt scale */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 5rem;
+  --space-4xl: 8rem;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Lines */
+  --rule-hair: 1px solid color-mix(in oklch, var(--color-ink-0) 8%, transparent);
+  --rule-soft: 1px solid color-mix(in oklch, var(--color-ink-0) 14%, transparent);
+
+  /* Easings + durations */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0.06, 0.68, 0.19);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-fast: 140ms;
+  --dur-mid: 240ms;
+  --dur-slow: 420ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 140ms !important;
+    scroll-behavior: auto !important;
+  }
+}

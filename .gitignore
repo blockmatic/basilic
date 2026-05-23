@@ -68,3 +68,7 @@ tsup.config.bundled_*.mjs
 
 
 .react-email
+
+# deepsec (workspace lives in .deepsec/; ignore stray CI artifacts at repo root)
+comment.md
+.deepsec-findings/

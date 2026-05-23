@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Loafer — Reminders for the plants you actually own.</title>
+<meta name="description" content="A plant-care app that nudges you on the days watering matters. Add a plant by photo. No streaks, no rewards." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" />
+<style>
+/* Hallmark · macrostructure: Bento Grid · theme: Pastel · enrichment: Tier-A SVG leaf + plant card
+ * tone: soft friendly restrained · anchor hue: cool indigo
+ * studied: no · pre-emit critique: P5 H4 E4 S4 R5 V4
+ */
+
+:root {
+  /* Pastel — light · geometric-sans · cool */
+  --color-paper:    oklch(98%   0.008  240);
+  --color-paper-2:  oklch(95.5% 0.012  240);
+  --color-paper-3:  oklch(92%   0.016  245);
+  --color-rule:     oklch(86%   0.014  245);
+  --color-rule-2:   oklch(70%   0.018  250);
+  --color-muted:    oklch(50%   0.020  255);
+  --color-ink-2:    oklch(28%   0.024  260);
+  --color-ink:      oklch(15%   0.020  260);
+  --color-accent:   oklch(54%   0.140  282);  /* indigo */
+  --color-accent-soft: oklch(88% 0.040 282);  /* soft indigo for tile bg */
+  --color-leaf:     oklch(60%   0.130  150);  /* sage green for leaf */
+  --color-focus:    oklch(54%   0.140  282);
+
+  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-label:   "Geist Mono", ui-monospace, monospace;
+  --font-mono:    "Geist Mono", ui-monospace, monospace;
+
+  --text-xs:  0.75rem;
+  --text-sm:  0.875rem;
+  --text-md:  1rem;
+  --text-lg:  1.25rem;
+  --text-xl:  1.75rem;
+  --text-2xl: 2.5rem;
+  --text-display: clamp(2.5rem, 5.5vw + 0.5rem, 4.5rem);
+
+  --tracking-display: -0.03em;
+  --tracking-tight:   -0.015em;
+  --tracking-label:   0.12em;
+  --lh-tight:         1;
+  --lh-snug:          1.2;
+  --lh-relaxed:       1.55;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+
+  --rule-hair: 1px;
+  --radius-tile: 18px;
+  --radius-pill: 999px;
+  --page-gutter: clamp(1.25rem, 4vw, 3rem);
+  --page-max:    78rem;
+
+  --dur-micro: 80ms;
+  --dur-short: 150ms;
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: var(--lh-relaxed);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding-inline: var(--page-gutter);
+  padding-block: var(--space-md);
+}
+
+.page {
+  margin-inline: auto;
+  max-width: var(--page-max);
+}
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, p, ul, ol, dl { margin: 0; }
+
+/* — Floating pill nav (N5) ——————————————————————————— */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-2xs) var(--space-md);
+  background: var(--color-paper);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 6px 24px -16px oklch(20% 0.02 260 / 0.18);
+  margin-block-end: var(--space-xl);
+}
+
+.nav__wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: var(--text-md);
+  color: var(--color-ink);
+  letter-spacing: var(--tracking-tight);
+}
+
+.nav__wordmark-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-leaf);
+}
+
+.nav__links {
+  display: flex;
+  gap: var(--space-md);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.nav__links a:hover { color: var(--color-ink); }
+
+.nav__cta {
+  padding: 0.45rem 1rem;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+.nav__cta:hover { background: var(--color-accent); border-color: var(--color-accent); }
+
+@media (max-width: 36rem) {
+  .nav__links { display: none; }
+}
+
+/* — Bento grid ———————————————————————————————————————— */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: minmax(14rem, auto);
+  gap: var(--space-md);
+}
+
+@media (max-width: 56rem) {
+  .bento { grid-template-columns: 1fr; }
+}
+
+.tile {
+  padding: var(--space-xl);
+  background: var(--color-paper);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-tile);
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.tile__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* HERO TILE — spans 4 columns × 2 rows */
+.tile--hero {
+  grid-column: span 4;
+  grid-row: span 2;
+  background: var(--color-paper-2);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-md);
+}
+
+.tile__display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  max-width: 14ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.tile__display em {
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+.tile__lede {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 36ch;
+}
+
+.tile__cta-row {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tile__cta {
+  padding: 0.6rem 1.1rem;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background: var(--color-ink);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-ink);
+}
+.tile__cta:hover { background: var(--color-accent); border-color: var(--color-accent); }
+
+.tile__cta--ghost {
+  color: var(--color-ink);
+  background: transparent;
+  border-color: var(--color-rule-2);
+}
+.tile__cta--ghost:hover { color: var(--color-paper); background: var(--color-ink); border-color: var(--color-ink); }
+
+.tile__small-print {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+/* PLANT-CARD TILE — spans 2 cols × 2 rows */
+.tile--plant {
+  grid-column: span 2;
+  grid-row: span 2;
+  background: var(--color-accent-soft);
+  border-color: transparent;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.plant-leaf {
+  width: 8rem;
+  height: auto;
+  margin-inline: auto;
+  color: var(--color-leaf);
+}
+
+.tile__plant-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.tile__plant-meta {
+  display: grid;
+  gap: 0.3rem;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  padding-block-start: var(--space-sm);
+  border-block-start: 1px solid color-mix(in oklch, var(--color-ink) 8%, transparent);
+}
+
+.tile__plant-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.tile__plant-meta-key {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* SCHEDULE TILE — spans 3 cols × 1 row */
+.tile--schedule {
+  grid-column: span 3;
+}
+
+.schedule {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-block-start: var(--space-2xs);
+}
+
+.day {
+  display: grid;
+  gap: 0.35rem;
+  padding: var(--space-2xs) 0;
+  text-align: center;
+  background: var(--color-paper-2);
+  border-radius: 8px;
+}
+
+.day__name {
+  font-family: var(--font-label);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.day__num {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-md);
+  color: var(--color-ink);
+  font-feature-settings: "tnum";
+}
+
+.day__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-inline: auto;
+  background: transparent;
+}
+
+.day--water { background: var(--color-accent-soft); }
+.day--water .day__dot { background: var(--color-accent); }
+.day--today { outline: 1.5px solid var(--color-ink); outline-offset: -1.5px; }
+
+/* REFUSAL TILE — spans 3 cols */
+.tile--refusal {
+  grid-column: span 3;
+  background: var(--color-paper-2);
+}
+
+.refusal__list {
+  display: grid;
+  gap: var(--space-sm);
+  list-style: none;
+  padding: 0;
+}
+
+.refusal__item {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: var(--space-sm);
+  align-items: baseline;
+  padding-block: var(--space-2xs);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--color-ink-2);
+  border-block-end: 1px solid var(--color-rule);
+}
+.refusal__item:last-child { border-block-end: 0; }
+.refusal__item-mark {
+  color: var(--color-accent);
+  font-family: var(--font-label);
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+.refusal__item strong { color: var(--color-ink); font-weight: 600; }
+
+/* PRICING TILE — spans 4 cols */
+.tile--pricing {
+  grid-column: span 4;
+}
+
+.pricing__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding-block: var(--space-md);
+  border-block: 1px solid var(--color-rule);
+}
+
+.pricing__amount {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-2xl);
+  color: var(--color-ink);
+  font-feature-settings: "tnum";
+}
+
+.pricing__period {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.pricing__includes {
+  margin-block-start: var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--color-ink-2);
+  line-height: var(--lh-relaxed);
+}
+
+/* CTA TILE — spans 2 cols */
+.tile--cta {
+  grid-column: span 2;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+  display: grid;
+  align-content: space-between;
+}
+
+.tile--cta .tile__label { color: color-mix(in oklch, var(--color-paper) 70%, transparent); }
+
+.tile--cta .tile__cta-pill {
+  padding: 0.6rem 1.1rem;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  border-radius: var(--radius-pill);
+  width: fit-content;
+}
+
+.tile--cta .cta-tile-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-xl);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-paper);
+}
+
+/* — Colophon ——————————————————————————————————————— */
+.colophon {
+  margin-block-start: var(--space-xl);
+  padding-block: var(--space-xl) var(--space-md);
+  display: grid;
+  gap: var(--space-md);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.colophon__row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.colophon strong { color: var(--color-ink); font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="nav" role="banner">
+    <span class="nav__wordmark"><span class="nav__wordmark-dot" aria-hidden="true"></span>Loafer</span>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#install">Get it</a>
+    </nav>
+    <a class="nav__cta" href="#install">Add a plant &rarr;</a>
+  </header>
+
+  <section class="bento" aria-label="Loafer overview">
+
+    <article class="tile tile--hero" id="hero">
+      <p class="tile__label">A plant app for low-key plant people</p>
+      <h1 class="tile__display">Reminders for the plants you <em>actually</em> own.</h1>
+      <p class="tile__lede">
+        Add a plant with a photo. Loafer figures out roughly how often it likes water and nudges you on the right day. There are no streaks, no badges, and no leaderboards. We don't grade your gardening.
+      </p>
+      <div class="tile__cta-row">
+        <a class="tile__cta" href="#install">Get Loafer for iOS &rarr;</a>
+        <a class="tile__cta tile__cta--ghost" href="#how">See the schedule</a>
+      </div>
+    </article>
+
+    <article class="tile tile--plant" aria-labelledby="p-name">
+      <p class="tile__label">Today on your shelf</p>
+      <svg class="plant-leaf" viewBox="0 0 100 130" fill="currentColor" aria-hidden="true">
+        <path d="M 50 8 C 22 22 14 60 22 96 C 28 116 50 124 50 124 C 50 124 72 116 78 96 C 86 60 78 22 50 8 Z" opacity="0.85"/>
+        <path d="M 50 16 L 50 122" stroke="oklch(40% 0.12 145)" stroke-width="1.4" fill="none"/>
+        <path d="M 50 36 L 30 50" stroke="oklch(40% 0.12 145)" stroke-width="1" fill="none" opacity="0.55"/>
+        <path d="M 50 36 L 70 50" stroke="oklch(40% 0.12 145)" stroke-width="1" fill="none" opacity="0.55"/>
+        <path d="M 50 60 L 28 78" stroke="oklch(40% 0.12 145)" stroke-width="1" fill="none" opacity="0.55"/>
+        <path d="M 50 60 L 72 78" stroke="oklch(40% 0.12 145)" stroke-width="1" fill="none" opacity="0.55"/>
+        <path d="M 50 88 L 32 100" stroke="oklch(40% 0.12 145)" stroke-width="1" fill="none" opacity="0.55"/>
+        <path d="M 50 88 L 68 100" stroke="oklch(40% 0.12 145)" stroke-width="1" fill="none" opacity="0.55"/>
+      </svg>
+      <h2 class="tile__plant-name" id="p-name">Mira's monstera.</h2>
+      <dl class="tile__plant-meta">
+        <div class="tile__plant-meta-row">
+          <dt class="tile__plant-meta-key">Light</dt>
+          <dd>Bright, indirect</dd>
+        </div>
+        <div class="tile__plant-meta-row">
+          <dt class="tile__plant-meta-key">Water</dt>
+          <dd>Every 7–9 days</dd>
+        </div>
+        <div class="tile__plant-meta-row">
+          <dt class="tile__plant-meta-key">Last drink</dt>
+          <dd>5 days ago</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="tile tile--schedule" id="how" aria-labelledby="s-title">
+      <p class="tile__label">This week, on your shelf</p>
+      <h3 class="tile__plant-name" id="s-title" style="font-size: var(--text-lg);">Two days that matter, five that don't.</h3>
+      <div class="schedule" aria-hidden="true">
+        <div class="day"><span class="day__name">Mon</span><span class="day__num">12</span><span class="day__dot"></span></div>
+        <div class="day"><span class="day__name">Tue</span><span class="day__num">13</span><span class="day__dot"></span></div>
+        <div class="day day--water"><span class="day__name">Wed</span><span class="day__num">14</span><span class="day__dot"></span></div>
+        <div class="day day--today"><span class="day__name">Thu</span><span class="day__num">15</span><span class="day__dot"></span></div>
+        <div class="day"><span class="day__name">Fri</span><span class="day__num">16</span><span class="day__dot"></span></div>
+        <div class="day"><span class="day__name">Sat</span><span class="day__num">17</span><span class="day__dot"></span></div>
+        <div class="day day--water"><span class="day__name">Sun</span><span class="day__num">18</span><span class="day__dot"></span></div>
+      </div>
+      <p class="tile__small-print">A blue dot means a plant wants you. The outlined day is today. Most days, Loafer says nothing.</p>
+    </article>
+
+    <article class="tile tile--refusal" aria-labelledby="r-title">
+      <p class="tile__label">Things Loafer refuses to do</p>
+      <h3 class="tile__plant-name" id="r-title" style="font-size: var(--text-lg);">No streaks. No grading. No fertiliser ads.</h3>
+      <ul class="refusal__list">
+        <li class="refusal__item"><span class="refusal__item-mark">·</span><span><strong>No streaks.</strong> If you forget for a week the plants forgive you. The app does too.</span></li>
+        <li class="refusal__item"><span class="refusal__item-mark">·</span><span><strong>No notifications</strong> on the days nothing needs doing. Most days, that's most plants.</span></li>
+        <li class="refusal__item"><span class="refusal__item-mark">·</span><span><strong>No marketplace</strong> for fertiliser. We don't sell anything inside the app.</span></li>
+      </ul>
+    </article>
+
+    <article class="tile tile--pricing" id="pricing" aria-labelledby="pr-title">
+      <p class="tile__label">Pricing</p>
+      <h3 class="tile__plant-name" id="pr-title" style="font-size: var(--text-lg);">One plant, free. More than one, $14 a year.</h3>
+      <div class="pricing__row">
+        <span class="pricing__amount">$14</span>
+        <span class="pricing__period">per year · unlimited plants</span>
+      </div>
+      <p class="pricing__includes">First plant is free, forever. There is no trial countdown.</p>
+    </article>
+
+    <article class="tile tile--cta" id="install">
+      <p class="tile__label">Get it</p>
+      <p class="cta-tile-display">Loafer is on iOS today. Android in autumn.</p>
+      <a class="tile__cta-pill" href="#">Open in App Store &rarr;</a>
+    </article>
+
+  </section>
+
+  <footer class="colophon">
+    <div class="colophon__row">
+      <p>Loafer <strong>· iOS · Android (Autumn 2026)</strong></p>
+      <p>v1.0 · 2026</p>
+    </div>
+    <div class="colophon__row">
+      <p>Set in <strong>Geist</strong>.</p>
+      <p>No fertiliser ads. No streak counters.</p>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

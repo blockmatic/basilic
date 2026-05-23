@@ -1,0 +1,219 @@
+/* Hallmark · macrostructure: Specimen · H4 hero knobs: number-column=margin, alignment=left-bias
+ * theme: Specimen · accent: warm-orange ~3% · enrichment: none (typography only)
+ * studied: yes · DNA-source: user reference (Aperture-style portfolio) · paid-fonts: not confirmed (free pairing applied)
+ */
+
+:root {
+  --color-paper: oklch(96% 0.018 80);
+  --color-paper-2: oklch(93% 0.02 80);
+  --color-rule: oklch(82% 0.02 75);
+  --color-ink: oklch(20% 0.014 60);
+  --color-ink-soft: oklch(45% 0.016 60);
+  --color-ink-muted: oklch(64% 0.016 60);
+  --color-accent: oklch(64% 0.13 45);
+
+  --font-display: "Fraunces", "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  --font-body: "Geist", "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+  --space-4xl: 9rem;
+
+  --measure-prose: 60ch;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-micro: 180ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--space-4xl) var(--space-lg) var(--space-2xl);
+}
+
+/* Masthead — italic-serif name in the top-left margin */
+.masthead {
+  margin-block-end: var(--space-4xl);
+}
+
+.masthead__brand {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  font-size: clamp(4rem, 9vw, 7.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  margin: 0 0 var(--space-md);
+  color: var(--color-ink);
+}
+
+.masthead__brand-em {
+  color: var(--color-accent);
+  font-style: italic;
+}
+
+.masthead__sub {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+  text-transform: uppercase;
+  margin: 0;
+  max-width: 60ch;
+}
+
+/* Works — numbered project list */
+.works {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-block-start: 1px solid var(--color-rule);
+}
+
+.work {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  gap: var(--space-lg);
+  align-items: baseline;
+  padding: var(--space-2xl) 0;
+  border-block-end: 1px solid var(--color-rule);
+  position: relative;
+  transition: background var(--dur-micro) var(--ease-out);
+}
+
+.work:hover {
+  background: var(--color-paper-2);
+}
+
+.work__num {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--color-ink-muted);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  align-self: start;
+  padding-block-start: 0.6em;
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.work:hover .work__num {
+  color: var(--color-ink);
+}
+
+/* Active state — the warm-orange accent on one row only */
+.work--active .work__num {
+  color: var(--color-accent);
+}
+
+.work__name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--space-2xs);
+  color: var(--color-ink);
+}
+
+.work__desc {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+  margin: 0;
+  max-width: var(--measure-prose);
+}
+
+/* Colophon — single line, small caps */
+.colophon {
+  margin-block-start: var(--space-3xl);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-xl);
+  font-family: var(--font-body);
+  font-size: 0.8125rem; /* bumped from screenshot's 11px to comfortable 13px */
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.colophon__brand {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink);
+}
+
+.colophon a {
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  border-block-end: 1px solid transparent;
+  padding-block-end: 1px;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.colophon a:hover,
+.colophon a:focus-visible {
+  color: var(--color-accent);
+  border-block-end-color: var(--color-accent);
+}
+
+.colophon a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+@media (max-width: 48rem) {
+  .page {
+    padding: var(--space-2xl) var(--space-md) var(--space-xl);
+  }
+  .work {
+    grid-template-columns: 4rem 1fr;
+    gap: var(--space-md);
+    padding: var(--space-xl) 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work,
+  .work__num,
+  .colophon a {
+    transition: none;
+  }
+}

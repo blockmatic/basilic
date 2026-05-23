@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Streampipe — a small CLI for parsing log and event streams</title>
+  <meta name="description" content="Streampipe is a small, fast, single-binary CLI for parsing log and event streams from stdin. Filter, transform, route." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <span class="masthead__brand">streampipe</span>
+      <span class="masthead__meta">v0.4.1 · MIT · 1.2 MB</span>
+    </header>
+
+    <h1 class="lede">
+      <span class="lede__prompt">$</span>streampipe — a small, fast, single-binary CLI for parsing log and event
+      streams from stdin.<span class="lede__caret" aria-hidden="true"></span>
+    </h1>
+
+    <section class="prose" aria-label="What it does">
+      <p>
+        Streampipe reads newline-delimited records (JSON, logfmt, CSV, raw) from stdin, applies a
+        sequence of filters and transforms, and writes the result to stdout. Composes with anything
+        that emits lines — <strong>tail -f</strong>, <strong>kafkacat</strong>, <strong>journalctl</strong>,
+        <strong>kubectl logs</strong>. No daemon, no config file, no telemetry.
+      </p>
+
+      <pre class="term" aria-label="Sample streampipe command and output"><span class="term__line"><span class="term__prompt">$</span> tail -f access.log | streampipe parse <span class="term__flag">--format</span> nginx <span class="term__flag">--filter</span> 'status >= 500' <span class="term__flag">--out</span> json</span><span class="term__line">    </span><span class="term__line term__line--out">{"ts":"2026-04-30T14:01:18Z","ip":"203.0.113.42","method":"POST","path":"/api/v1/checkout","status":502,"ms":4101}</span><span class="term__line term__line--out">{"ts":"2026-04-30T14:01:21Z","ip":"203.0.113.78","method":"GET","path":"/api/v1/orders/9128","status":503,"ms":12}</span><span class="term__line term__line--out">{"ts":"2026-04-30T14:01:21Z","ip":"203.0.113.42","method":"POST","path":"/api/v1/checkout","status":502,"ms":3998}</span></pre>
+
+      <p>
+        Streampipe is written in Rust, ships as a 1.2 MB static binary, and is designed to be the
+        last process in your pipeline before storage. It does not buffer. It does not retain state.
+        It does one thing per invocation, and you can pipe it into another invocation.
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="install-h">
+      <h2 class="section__head" id="install-h"><span><span class="section__num">01</span> &nbsp; Install</span><span>3 ways</span></h2>
+      <pre class="term"><span class="term__line"><span class="term__comment"># homebrew</span></span><span class="term__line"><span class="term__prompt">$</span> brew install streampipe</span><span class="term__line">    </span><span class="term__line"><span class="term__comment"># cargo</span></span><span class="term__line"><span class="term__prompt">$</span> cargo install streampipe</span><span class="term__line">    </span><span class="term__line"><span class="term__comment"># curl (Linux/macOS, no sudo)</span></span><span class="term__line"><span class="term__prompt">$</span> curl -sSL https://streampipe.dev/install | sh</span></pre>
+    </section>
+
+    <section class="section" aria-labelledby="how-h">
+      <h2 class="section__head" id="how-h"><span><span class="section__num">02</span> &nbsp; How it works</span><span>3 notes</span></h2>
+      <div class="notes">
+        <div class="note">
+          <span class="note__num">1.0</span>
+          <p class="note__body">
+            <strong>Stream in, stream out.</strong> Streampipe reads stdin line by line and writes stdout
+            line by line. Each record is independent. Memory use is bounded by the largest record, not
+            by the size of the stream. You can pipe a 200 GB log file through a 1.2 MB binary.
+          </p>
+        </div>
+        <div class="note">
+          <span class="note__num">2.0</span>
+          <p class="note__body">
+            <strong>Filters are expressions, not config.</strong> The <code>--filter</code> flag takes a
+            CEL-style expression evaluated against each parsed record: <code>status >= 500</code>,
+            <code>ms > 1000 &amp;&amp; path.startsWith('/api')</code>, <code>!has(headers.x-debug)</code>.
+            No filter file. No filter language to learn beyond the expression.
+          </p>
+        </div>
+        <div class="note">
+          <span class="note__num">3.0</span>
+          <p class="note__body">
+            <strong>Transforms are projections, not migrations.</strong> The <code>--map</code> flag
+            rewrites each record into a new shape: <code>--map '{ts: ts, p99: ms, where: path}'</code>.
+            Records are immutable inside Streampipe; transforms produce new records. There is no
+            in-place edit; debugging is therefore a pipe with one extra stage.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="flags-h">
+      <h2 class="section__head" id="flags-h"><span><span class="section__num">03</span> &nbsp; Flags</span><span>full reference at <a href="#">streampipe.dev/docs</a></span></h2>
+      <table class="flags">
+        <thead>
+          <tr><th>Flag</th><th>Type</th><th>What it does</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>--format</td><td>nginx | apache | json | logfmt | csv</td><td>Parse stdin as the named format. Default: auto-detect from first 3 lines.</td></tr>
+          <tr><td>--filter</td><td>expression</td><td>Drop records that don't match. CEL-style. Strings, numbers, booleans, arrays.</td></tr>
+          <tr><td>--map</td><td>expression</td><td>Project records into a new shape. Output keys are the keys of the expression.</td></tr>
+          <tr><td>--out</td><td>json | logfmt | csv | raw</td><td>Encode each record. Default: matches input format.</td></tr>
+          <tr><td>--quiet</td><td>flag</td><td>Suppress parse-error lines on stderr. Errors still set exit code on EOF.</td></tr>
+          <tr><td>--help</td><td>flag</td><td>Print usage and exit. Always exit 0.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="colophon">
+      <span><a href="#">github.com/streampipe-cli</a></span>
+      <span><a href="#">docs</a></span>
+      <span><a href="#">changelog</a></span>
+      <span><a href="#">issues</a></span>
+      <span>MIT · © 2026</span>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maple Street Bread — daily catalogue</title>
+  <meta name="description" content="A small artisan bakery in Lisbon. Sourdough, slow, by hand. Open at seven, thirty loaves, gone by noon, no online orders." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Source+Serif+4:ital,wght@0,400;0,500;1,400&display=swap" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <hr class="masthead__rule" />
+      <h1 class="masthead__brand">Maple Street Bread</h1>
+      <p class="masthead__sub">Lisbon · est. 2026 · n.º 47 · sourdough <strong>by hand</strong></p>
+    </header>
+
+    <section class="todays">
+      <h2 class="todays__head">Today's bake</h2>
+      <p class="todays__date">Saturday — 6:14 a.m. — eight breads, gone by noon</p>
+    </section>
+
+    <ul class="catalogue" role="list" aria-label="Today's breads">
+      <!-- 1 -->
+      <li class="bread">
+        <span class="bread__shape bread__shape--accent" aria-hidden="true">
+          <svg viewBox="0 0 96 96"><ellipse cx="48" cy="52" rx="36" ry="22"/><path d="M22 50 q12 -16 26 -16 t26 16"/><path d="M30 50 q4 -8 18 -8" /></svg>
+        </span>
+        <div class="bread__body">
+          <h3 class="bread__name">Country sourdough</h3>
+          <p class="bread__desc">Wild starter, 80 % white, 20 % wholewheat, twenty-four hour cold proof.</p>
+        </div>
+        <span class="bread__price">€5.50</span>
+      </li>
+      <!-- 2 -->
+      <li class="bread">
+        <span class="bread__shape" aria-hidden="true">
+          <svg viewBox="0 0 96 96"><path d="M14 48 L82 48 M14 48 q4 -10 8 0 M30 48 q4 -10 8 0 M46 48 q4 -10 8 0 M62 48 q4 -10 8 0"/><ellipse cx="48" cy="48" rx="38" ry="6"/></svg>
+        </span>
+        <div class="bread__body">
+          <h3 class="bread__name">Baguette tradition</h3>
+          <p class="bread__desc">T65 flour, four hours bulk, scored deep. Two per customer.</p>
+        </div>
+        <span class="bread__price">€2.80</span>
+      </li>
+      <!-- 3 -->
+      <li class="bread">
+        <span class="bread__shape" aria-hidden="true">
+          <svg viewBox="0 0 96 96"><rect x="20" y="32" width="56" height="32" rx="4"/><circle cx="34" cy="44" r="2"/><circle cx="48" cy="40" r="2"/><circle cx="62" cy="48" r="2"/><circle cx="42" cy="56" r="2"/><circle cx="58" cy="52" r="2"/></svg>
+        </span>
+        <div class="bread__body">
+          <h3 class="bread__name">Focaccia, rosemary</h3>
+          <p class="bread__desc">Twenty-eight squares, olive oil, sea-salt, herb from the garden behind.</p>
+        </div>
+        <span class="bread__price">€4.20</span>
+      </li>
+      <!-- 4 -->
+      <li class="bread">
+        <span class="bread__shape bread__shape--accent" aria-hidden="true">
+          <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="32"/><circle cx="48" cy="48" r="20"/><path d="M48 16 L48 80 M16 48 L80 48"/></svg>
+        </span>
+        <div class="bread__body">
+          <h3 class="bread__name">Boule, miche</h3>
+          <p class="bread__desc">A 2 kg round, kept overnight, eats for three meals. Slice across the grain.</p>
+        </div>
+        <span class="bread__price">€11.00</span>
+      </li>
+      <!-- 5 -->
+      <li class="bread">
+        <span class="bread__shape" aria-hidden="true">
+          <svg viewBox="0 0 96 96"><path d="M16 56 q16 -32 32 -32 t32 32"/><path d="M22 50 L32 50 M40 44 L50 44 M58 48 L68 48"/></svg>
+        </span>
+        <div class="bread__body">
+          <h3 class="bread__name">Rye, dark</h3>
+          <p class="bread__desc">100 % rye, no wheat. Caraway and treacle. Keeps a week, slices thin.</p>
+        </div>
+        <span class="bread__price">€6.20</span>
+      </li>
+      <!-- 6 -->
+      <li class="bread">
+        <span class="bread__shape" aria-hidden="true">
+          <svg viewBox="0 0 96 96"><path d="M20 50 q14 -20 28 -20 t28 20" /><path d="M20 50 q14 18 28 18 t28 -18"/><path d="M48 30 L48 68"/></svg>
+        </span>
+        <div class="bread__body">
+          <h3 class="bread__name">Brioche feuilletée</h3>
+          <p class="bread__desc">Laminated brioche, Friday only. Six per bake.</p>
+        </div>
+        <span class="bread__price bread__price--out">sold out</span>
+      </li>
+      <!-- 7 -->
+      <li class="bread">
+        <span class="bread__shape bread__shape--accent" aria-hidden="true">
+          <svg viewBox="0 0 96 96"><path d="M16 70 L48 24 L80 70 Z"/><path d="M30 70 L48 44 L66 70"/></svg>
+        </span>
+        <div class="bread__body">
+          <h3 class="bread__name">Walnut levain</h3>
+          <p class="bread__desc">Sourdough, eight per cent walnut, baked dark. Cheese-board bread.</p>
+        </div>
+        <span class="bread__price">€7.40</span>
+      </li>
+      <!-- 8 -->
+      <li class="bread">
+        <span class="bread__shape" aria-hidden="true">
+          <svg viewBox="0 0 96 96"><circle cx="32" cy="48" r="14"/><circle cx="64" cy="48" r="14"/><path d="M32 34 L32 62 M64 34 L64 62"/></svg>
+        </span>
+        <div class="bread__body">
+          <h3 class="bread__name">Bola d'óleo, twins</h3>
+          <p class="bread__desc">Two small soft rolls, olive oil, salt-flaked. Sold paired.</p>
+        </div>
+        <span class="bread__price">€3.00</span>
+      </li>
+    </ul>
+
+    <section class="visit">
+      <h2 class="visit__head">Visit</h2>
+      <div class="visit__lines">
+        <span><strong>Rua dos Anjos 92, Lisbon</strong></span>
+        <span><em>Tuesday – Saturday, 7 a.m. until the loaves are gone (usually noon)</em></span>
+        <span><em>No online orders. Bring a bag.</em></span>
+      </div>
+    </section>
+
+    <footer class="colophon">
+      <span>Maple Street · Saturday, May the first · the year twenty twenty-six</span>
+    </footer>
+  </main>
+</body>
+</html>

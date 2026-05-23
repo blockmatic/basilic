@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tally · Bill what your customers actually use</title>
+<meta name="description" content="Tally meters every API call, every minute, every byte — and turns it into invoices your finance team trusts." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<!-- ───────── nav · N5 Floating pill ───────── -->
+<nav class="nav" aria-label="Primary">
+  <a href="#" class="nav__brand" aria-label="Tally home">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="3" width="6" height="18" rx="1.5" fill="currentColor"/>
+      <rect x="11" y="9" width="6" height="12" rx="1.5" fill="currentColor" opacity="0.55"/>
+      <rect x="19" y="14" width="3" height="7" rx="1" fill="currentColor" opacity="0.3"/>
+    </svg>
+    Tally
+  </a>
+  <div class="nav__links">
+    <a class="nav__link" href="#workbench">Product</a>
+    <a class="nav__link" href="#pricing">Pricing</a>
+    <a class="nav__link" href="#">Docs</a>
+    <a class="nav__link" href="#">Changelog</a>
+  </div>
+  <a class="nav__link" href="#">Sign in</a>
+  <button class="nav__cta" type="button">Start free</button>
+</nav>
+
+<!-- ───────── hero · Marquee Hero ───────── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero__live" role="status" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
+      <span>LIVE · METERING <strong id="live-events">12,847</strong> EVENTS / SEC</span>
+    </div>
+
+    <div class="hero__layout">
+      <div>
+        <h1 class="hero__h1">
+          Bill what your customers <span class="italic-accent">actually</span> use.
+        </h1>
+        <p class="hero__sub">
+          Tally meters every API call, every minute, every byte — and turns it
+          into invoices your finance team trusts. No usage spreadsheets,
+          no end-of-month dread, no creative accounting.
+        </p>
+        <div class="hero__ctas">
+          <button class="btn btn--primary" type="button">Start free <span aria-hidden="true">→</span></button>
+          <button class="btn btn--ghost" type="button">Book a demo</button>
+        </div>
+        <div class="hero__fineprint">
+          <span>no credit card</span>
+          <span>5-min setup</span>
+          <span>first 100k events free / mo</span>
+        </div>
+      </div>
+
+      <!-- live invoice card (Tier-A pure-CSS art) -->
+      <aside class="invoice" aria-label="Live invoice preview">
+        <div class="invoice__head">
+          <div>
+            <div class="invoice__title">INV-04212</div>
+            <div style="font-size: var(--text-xs); color: var(--color-ink-2); margin-top: 2px;">Acme Robotics · May 2026</div>
+          </div>
+          <span class="invoice__tag">draft · live</span>
+        </div>
+        <div class="invoice__rows">
+          <div class="invoice__row"><span>API calls</span><strong id="inv-calls">1,284,512</strong></div>
+          <div class="invoice__row"><span>Compute (vCPU·hr)</span><strong>3,847.2</strong></div>
+          <div class="invoice__row"><span>Storage (GB)</span><strong>912.8</strong></div>
+          <div class="invoice__row" style="color: var(--color-success);"><span>Volume discount</span><strong>−$214.20</strong></div>
+        </div>
+        <div class="invoice__total">
+          <span>Total this month</span>
+          <span class="num">$<span id="inv-total">5,142.86</span></span>
+        </div>
+        <div class="invoice__bar" aria-hidden="true"><i></i></div>
+        <div style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-2); margin-top: 8px;">
+          64 % of $8,000 budget · 12 days remaining
+        </div>
+      </aside>
+    </div>
+
+    <!-- marquee strip -->
+    <div class="hero__marquee" aria-hidden="true">
+      <div class="hero__marquee__track">
+        <span>METER · EVERY · CALL</span>
+        <span>PRICE · WITHOUT · GUESSING</span>
+        <span>INVOICE · ON · AUTOPILOT</span>
+        <span>SYNC · TO · STRIPE</span>
+        <span>AUDIT · WITHOUT · PANIC</span>
+        <span>METER · EVERY · CALL</span>
+        <span>PRICE · WITHOUT · GUESSING</span>
+        <span>INVOICE · ON · AUTOPILOT</span>
+        <span>SYNC · TO · STRIPE</span>
+        <span>AUDIT · WITHOUT · PANIC</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── logos ───────── -->
+<section class="logos">
+  <div class="container">
+    <div class="logos__label">Metering revenue for fast-moving teams</div>
+    <div class="logos__row">
+      <div class="l-1">Bramble</div>
+      <div class="l-2">orbit/labs</div>
+      <div class="l-3">FORGE</div>
+      <div class="l-4">Quietly</div>
+      <div class="l-5">Northsky</div>
+      <div class="l-6">Mercer &amp; Co.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── workbench ───────── -->
+<section class="workbench" id="workbench">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">◇ workbench</span>
+        <h2 class="section-head__title">A pricing console that <em>knows</em> your model.</h2>
+      </div>
+      <p class="section-head__desc">
+        Drop in a meter. Tally watches the events flow in, suggests a
+        price model that fits, and shows you what next month's invoice
+        looks like — before you ship a line of pricing code.
+      </p>
+    </div>
+
+    <div class="bench" role="img" aria-label="Tally console preview">
+      <div class="bench__rail">
+        <div class="bench__brand">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <rect x="3" y="3" width="6" height="18" rx="1.5"/>
+            <rect x="11" y="9" width="6" height="12" rx="1.5" opacity="0.55"/>
+            <rect x="19" y="14" width="3" height="7" rx="1" opacity="0.3"/>
+          </svg>
+          Tally
+        </div>
+        <div class="bench__nav">
+          <div class="bench__navitem" aria-current="page">
+            <svg class="glyph" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor"/></svg>
+            Live meters
+          </div>
+          <div class="bench__navitem">
+            <svg class="glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M2 6h12M6 2v12"/></svg>
+            Price models
+          </div>
+          <div class="bench__navitem">
+            <svg class="glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="2" width="10" height="12" rx="1.5"/><path d="M5 5h6M5 8h6M5 11h4"/></svg>
+            Invoices
+          </div>
+          <div class="bench__navitem">
+            <svg class="glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+            Forecasts
+          </div>
+          <div class="bench__navitem">
+            <svg class="glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 13l4-4 3 3 4-6"/><circle cx="13" cy="6" r="0.8" fill="currentColor"/></svg>
+            Audit log
+          </div>
+        </div>
+      </div>
+
+      <div class="bench__main">
+        <div class="bench__statrow">
+          <div class="bench__stat">
+            <div class="label">Events / sec</div>
+            <div class="value"><span id="bench-eps">12,847</span><span class="delta">+8.4%</span></div>
+          </div>
+          <div class="bench__stat">
+            <div class="label">MRR (live)</div>
+            <div class="value">$<span id="bench-mrr">412.6</span><small>K</small><span class="delta">+12.1%</span></div>
+          </div>
+          <div class="bench__stat">
+            <div class="label">Active meters</div>
+            <div class="value">237<span class="delta">+6</span></div>
+          </div>
+        </div>
+
+        <div class="bench__chart">
+          <h4>Revenue · last 30 days <span class="live">live</span></h4>
+          <svg viewBox="0 0 600 200" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="area-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="oklch(54% 0.220 268)" stop-opacity="0.34"/>
+                <stop offset="100%" stop-color="oklch(54% 0.220 268)" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g class="grid">
+              <line x1="0" y1="40"  x2="600" y2="40"/>
+              <line x1="0" y1="80"  x2="600" y2="80"/>
+              <line x1="0" y1="120" x2="600" y2="120"/>
+              <line x1="0" y1="160" x2="600" y2="160"/>
+            </g>
+            <path class="area"
+              d="M0,160 L40,150 L80,140 L120,148 L160,128 L200,134 L240,110 L280,118 L320,96 L360,82 L400,90 L440,68 L480,76 L520,52 L560,44 L600,30 L600,200 L0,200 Z"/>
+            <path class="line"
+              d="M0,160 L40,150 L80,140 L120,148 L160,128 L200,134 L240,110 L280,118 L320,96 L360,82 L400,90 L440,68 L480,76 L520,52 L560,44 L600,30"/>
+            <circle class="dot" cx="600" cy="30" r="6"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── stats triplet ───────── -->
+<section class="stats">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">◇ proof</span>
+        <h2 class="section-head__title">Numbers that <em>don't</em> need a footnote.</h2>
+      </div>
+      <p class="section-head__desc">
+        Tally has metered north of forty billion events for teams shipping
+        to seven-figure customers. The math holds.
+      </p>
+    </div>
+
+    <div class="stats__grid">
+      <div class="stats__card">
+        <div class="stats__num">42<small>B+</small></div>
+        <div class="stats__label">events metered</div>
+        <div class="stats__note">Across 14,000+ meters since 2024 — every one of them auditable.</div>
+      </div>
+      <div class="stats__card">
+        <div class="stats__num">9.2<small>×</small></div>
+        <div class="stats__label">faster month-end close</div>
+        <div class="stats__note">From 4-day spreadsheet hell to 11 minutes of "looks good — send."</div>
+      </div>
+      <div class="stats__card">
+        <div class="stats__num">$0.00</div>
+        <div class="stats__label">in invoice disputes</div>
+        <div class="stats__note">Per-call audit trails. Customers see the same numbers you do.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── three feature cards ───────── -->
+<section class="features">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">◇ how it works</span>
+        <h2 class="section-head__title">Meter, price, invoice — <em>then</em> sleep.</h2>
+      </div>
+      <p class="section-head__desc">
+        Three primitives, one console. Wire one event, configure one model,
+        ship invoices that don't need anyone to "check the math."
+      </p>
+    </div>
+
+    <div class="features__grid">
+      <article class="feature" data-tilt>
+        <div class="feature__art art-meter" aria-hidden="true"></div>
+        <h3 class="feature__title">Meter anything in one line</h3>
+        <p class="feature__desc">
+          Drop a single SDK call wherever the value happens. We handle
+          dedup, ordering, and replay so your meters never lie.
+        </p>
+        <a class="feature__link" href="#">Read the SDK docs</a>
+      </article>
+
+      <article class="feature" data-tilt>
+        <div class="feature__art art-tiers" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <h3 class="feature__title">Price without rebuilding</h3>
+        <p class="feature__desc">
+          Tiered, volume, package, hybrid — pick a model in the console
+          and Tally retro-prices the meter. No deploy required.
+        </p>
+        <a class="feature__link" href="#">See price models</a>
+      </article>
+
+      <article class="feature" data-tilt>
+        <div class="feature__art art-invoice" aria-hidden="true">
+          <div class="sheet"><b>INV-04210</b>Bramble · Apr<br/><em>$3,118.40</em></div>
+          <div class="sheet"><b>INV-04211</b>Forge · Apr<br/><em>$8,940.20</em></div>
+          <div class="sheet"><b>INV-04212</b>Acme · May<br/><em>$5,142.86</em></div>
+        </div>
+        <h3 class="feature__title">Invoices customers don't argue with</h3>
+        <p class="feature__desc">
+          Every line ties back to a metered event. When a customer asks
+          "what's this?", you point at a clickable trail.
+        </p>
+        <a class="feature__link" href="#">Browse invoice templates</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── pricing ───────── -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="pricing__head">
+      <span class="eyebrow">◇ pricing</span>
+      <h2 class="section-head__title" style="text-align:center; margin-inline:auto;">Plans that scale with you, <em>not</em> against you.</h2>
+      <div class="pricing__toggle" role="group" aria-label="Billing period">
+        <button type="button" data-period="monthly" aria-pressed="true">Monthly</button>
+        <button type="button" data-period="annual"  aria-pressed="false">Annual <span class="save">save 20%</span></button>
+      </div>
+    </div>
+
+    <div class="pricing__grid">
+      <article class="tier">
+        <div class="tier__name">Starter</div>
+        <div class="tier__price"><span data-price-monthly="$0" data-price-annual="$0">$0</span></div>
+        <p class="tier__desc">Up to 100k events / month. For weekend builds and side projects.</p>
+        <ul class="tier__features">
+          <li>1 meter, 1 product</li>
+          <li>Stripe sync</li>
+          <li>Basic invoice PDF</li>
+          <li>Community support</li>
+        </ul>
+        <button class="btn btn--ghost" type="button" style="margin-top: auto;">Start free</button>
+      </article>
+
+      <article class="tier tier--featured">
+        <span class="tier__badge">Most teams pick this</span>
+        <div class="tier__name">Scale</div>
+        <div class="tier__price">
+          <span data-price-monthly="$249" data-price-annual="$199">$249</span>
+          <small>/ mo</small>
+        </div>
+        <p class="tier__desc">For teams shipping to real customers with real revenue. No event ceiling.</p>
+        <ul class="tier__features">
+          <li>Unlimited meters &amp; products</li>
+          <li>Hybrid &amp; tiered pricing</li>
+          <li>Net-terms &amp; multi-currency invoicing</li>
+          <li>Audit log &amp; SSO</li>
+          <li>Dedicated solutions engineer</li>
+        </ul>
+        <button class="btn btn--primary" type="button" style="margin-top: auto;">Start 14-day trial</button>
+      </article>
+
+      <article class="tier">
+        <div class="tier__name">Enterprise</div>
+        <div class="tier__price"><span>Custom</span></div>
+        <p class="tier__desc">Self-hosted option, custom SLAs, procurement-friendly contracts.</p>
+        <ul class="tier__features">
+          <li>Self-host or VPC peering</li>
+          <li>SOC 2 Type II + HIPAA</li>
+          <li>Custom data residency</li>
+          <li>White-glove onboarding</li>
+        </ul>
+        <button class="btn btn--ghost" type="button" style="margin-top: auto;">Talk to sales</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── testimonial ───────── -->
+<section class="testimonial">
+  <div class="container">
+    <p class="testimonial__quote">
+      We went from a four-day month-end to closing the books before lunch.
+    </p>
+    <div class="testimonial__byline">
+      <strong>Imani Okafor</strong>
+      <span>VP Finance · Northsky · 1.4M API calls/day</span>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── CTA ───────── -->
+<section class="cta">
+  <div class="container">
+    <div class="cta__panel">
+      <h2 class="cta__title">Ship usage billing this <em>afternoon</em>.</h2>
+      <p class="cta__sub">
+        Wire a meter, pick a model, send your first invoice — all before
+        your standup runs long. We'll be your finance team's favourite tool by Friday.
+      </p>
+      <div style="display:flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap;">
+        <button class="btn btn--primary" type="button">Start free <span aria-hidden="true">→</span></button>
+        <button class="btn btn--ghost" type="button">Book a 20-minute demo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── footer · Ft5 Statement ───────── -->
+<footer class="footer">
+  <div class="container">
+    <p class="footer__statement">
+      Tally is a pricing engine for teams who'd rather <em>build</em> than reconcile.
+    </p>
+    <div class="footer__row">
+      <div class="footer__col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#">Metering</a></li>
+          <li><a href="#">Pricing models</a></li>
+          <li><a href="#">Invoicing</a></li>
+          <li><a href="#">Audit log</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h5>Developers</h5>
+        <ul>
+          <li><a href="#">API reference</a></li>
+          <li><a href="#">SDKs</a></li>
+          <li><a href="#">Quickstarts</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Customers</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Pricing playbook</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__legal">
+      <span class="wordmark">Tally</span>
+      <span>© 2026 Tally Labs · Made in Brooklyn &amp; Lisbon · v0.8.0</span>
+    </div>
+  </div>
+</footer>
+
+<script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+/* Hallmark tokens · custom theme · NAJM
+ * vibe: "hyped Moroccan drop, editorial fashion, sun-warm earth"
+ * axes: light / geometric-sans / warm
+ */
+
+:root {
+  /* ── Color (OKLCH) ──────────────────────────── */
+  --color-paper: oklch(96.5% 0.012 75);
+  --color-paper-soft: oklch(99% 0.006 75);
+  --color-paper-warm: oklch(93% 0.02 70);
+  --color-ink: oklch(20% 0.022 55);
+  --color-ink-soft: oklch(38% 0.018 55);
+  --color-ink-mute: oklch(56% 0.012 60);
+  --color-rule: oklch(86% 0.014 70);
+  --color-rule-soft: oklch(91% 0.01 70);
+
+  --color-accent: oklch(58% 0.18 35);
+  /* terracotta */
+  --color-accent-deep: oklch(48% 0.2 32);
+  --color-accent-soft: oklch(82% 0.08 45);
+  --color-saffron: oklch(78% 0.16 78);
+  /* sparing */
+  --color-marine: oklch(34% 0.09 240);
+  /* sparing */
+
+  --color-overlay-ink: oklch(20% 0.022 55 / 0.55);
+  --color-focus-ring: oklch(48% 0.2 32);
+
+  /* ── Typography ─────────────────────────────── */
+  --font-display: "Bricolage Grotesque", -apple-system, system-ui, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 3.25rem;
+  --text-4xl: clamp(2.75rem, 6vw, 4.5rem);
+  --text-5xl: clamp(3.5rem, 9vw, 7rem);
+  --text-hero: clamp(2.25rem, 7vw, 5.5rem);
+
+  /* Tracking + leading */
+  --track-tight: -0.04em;
+  --track-display: -0.045em;
+  --track-wide: 0.16em;
+  --leading-tight: 0.92;
+  --leading-snug: 1.1;
+  --leading-body: 1.55;
+
+  /* ── Spacing · 4pt scale ─────────────────────── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --space-11: 12rem;
+
+  /* ── Motion ─────────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+
+  /* ── Surface ────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  --rule-thin: 1px;
+  --rule-base: 2px;
+
+  /* Layout */
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --max-w: 1440px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+}

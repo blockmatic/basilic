@@ -1,0 +1,83 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R4 V5
+ * genre: atmospheric · macrostructure: Marquee Hero · theme: Bloom
+ * tokens · paper-band: dark · display-style: weighty-sans · accent-hue: warm-amber
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* === Color: Bloom (atmospheric) ============================== */
+  --color-paper: oklch(13% 0.018 35);
+  --color-paper-2: oklch(17% 0.02 35);
+  --color-paper-3: oklch(22% 0.022 35);
+  --color-paper-4: oklch(28% 0.02 35);
+  --color-ink: oklch(95% 0.01 70);
+  --color-ink-2: oklch(78% 0.015 60);
+  --color-ink-3: oklch(58% 0.015 50);
+  --color-rule: oklch(28% 0.018 40);
+  --color-rule-strong: oklch(40% 0.025 40);
+  --color-accent: oklch(74% 0.18 55);
+  --color-accent-2: oklch(68% 0.22 18);
+  --color-accent-soft: oklch(74% 0.06 55);
+  --color-accent-ink: oklch(15% 0.04 50);
+  --color-focus: oklch(82% 0.18 55);
+  --color-error: oklch(70% 0.22 25);
+  --color-success: oklch(74% 0.16 145);
+  --color-bloom-1: oklch(74% 0.22 50);
+  --color-bloom-2: oklch(60% 0.22 15);
+
+  /* === Typography ============================================== */
+  --font-display: "Inter Tight", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-accent: "Instrument Serif", "Times New Roman", Georgia, serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+  --text-4xl: clamp(2.5rem, 4vw + 1rem, 4.5rem);
+  --text-display: clamp(3rem, 11vw + 0.25rem, 9.5rem);
+
+  --leading-display: 0.92;
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
+  --leading-body: 1.55;
+
+  /* === Spacing (4 pt) ========================================== */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 9rem;
+
+  /* === Motion ================================================== */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 400ms;
+
+  /* === Rules / radii =========================================== */
+  --rule-hair: 1px;
+  --rule-bold: 2px;
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* === Layout ================================================== */
+  --page-gutter: clamp(1rem, 4vw, 3rem);
+  --max-width: 80rem;
+  --measure: 60ch;
+}

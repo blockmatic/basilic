@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wayfare — Trips, set in motion.</title>
+  <meta name="description" content="A small booking studio for slow trips. Six departures every Tuesday, hand-set by a person who has been there." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800;12..96,900&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- ───── Top ticker — IATA marquee ───── -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span><strong>LIS</strong> Lisbon 06:42</span>
+      <span><strong>MEX</strong> Mexico City 09:15</span>
+      <span><strong>RAK</strong> Marrakech 11:30</span>
+      <span><strong>HND</strong> Tokyo 14:08</span>
+      <span><strong>KEF</strong> Reykjavik 17:55</span>
+      <span><strong>EZE</strong> Buenos Aires 21:20</span>
+      <span><strong>CPH</strong> Copenhagen — next week</span>
+      <span><strong>BKK</strong> Bangkok — next week</span>
+      <span><strong>OAX</strong> Oaxaca — week 16</span>
+      <span><strong>FCO</strong> Rome — week 17</span>
+      <!-- duplicated track for seamless loop -->
+      <span><strong>LIS</strong> Lisbon 06:42</span>
+      <span><strong>MEX</strong> Mexico City 09:15</span>
+      <span><strong>RAK</strong> Marrakech 11:30</span>
+      <span><strong>HND</strong> Tokyo 14:08</span>
+      <span><strong>KEF</strong> Reykjavik 17:55</span>
+      <span><strong>EZE</strong> Buenos Aires 21:20</span>
+      <span><strong>CPH</strong> Copenhagen — next week</span>
+      <span><strong>BKK</strong> Bangkok — next week</span>
+      <span><strong>OAX</strong> Oaxaca — week 16</span>
+      <span><strong>FCO</strong> Rome — week 17</span>
+    </div>
+  </div>
+
+  <!-- ───── Nav · N9 edge-aligned minimal ───── -->
+  <header class="shell">
+    <nav class="masthead" aria-label="Primary">
+      <a href="#" class="wordmark" aria-label="Wayfare, home">WAYFARE</a>
+      <span class="masthead-meta">Issue Nº 14 · Spring &rsquo;26</span>
+      <div class="masthead-links">
+        <a href="#picks">Trips</a>
+        <a href="#process">How</a>
+        <a href="#note">About</a>
+        <a href="#book">Sign in</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ───── Hero · Marquee with departure board ───── -->
+  <main>
+    <section class="shell hero" aria-labelledby="hero-title">
+
+      <div class="hero-strip" aria-hidden="false">
+        <span class="live">LIVE &middot; departures board</span>
+        <span>Updated Tue 06:00 UTC</span>
+        <span>06 picks &middot; this week</span>
+      </div>
+
+      <div class="hero-composition">
+        <div>
+          <h1 id="hero-title" class="hero-title">
+            Pick a city.<br />
+            <em>We&rsquo;ll pack the rest.</em><span class="tonk">↗ vol.14</span>
+          </h1>
+          <p class="hero-sub">
+            Wayfare is a small booking studio for slow trips. Every Tuesday we publish a board of six places
+            we&rsquo;d go ourselves &mdash; with the flights, beds, and the one good restaurant already lined up.
+          </p>
+        </div>
+
+        <aside class="hero-stamp" aria-label="Departure stamp">
+          <span class="sm">Departing</span>
+          <span class="lg">TUESDAY</span>
+          <span class="sm">Stamped in Lisbon</span>
+          <span class="num">VOL. 14 &middot; 06.MAY.26</span>
+        </aside>
+      </div>
+
+      <!-- Departure board -->
+      <div class="board" role="table" aria-label="This week's departures">
+        <div class="board-head" role="row">
+          <span role="columnheader" aria-label="Local time of day"></span>
+          <span role="columnheader">Departs</span>
+          <span role="columnheader">Destination</span>
+          <span role="columnheader">Code</span>
+          <span role="columnheader">Status</span>
+          <span role="columnheader" style="text-align:right">Fare from</span>
+        </div>
+
+        <a href="#book" class="board-row" data-status="boarding" role="row">
+          <svg class="board-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="3" />
+            <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M12.8 3.2l-1.4 1.4M4.6 11.4l-1.4 1.4" stroke-linecap="round" />
+          </svg>
+          <span class="board-time" role="cell">06:42</span>
+          <span class="board-dest" role="cell">LISBON <small>&middot; seven days, two coasts</small></span>
+          <span class="board-code" role="cell">LIS</span>
+          <span class="board-status" role="cell">Boarding</span>
+          <span class="board-fare" role="cell">&euro;387 <small>per person</small></span>
+        </a>
+
+        <a href="#book" class="board-row" data-status="ontime" role="row">
+          <svg class="board-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="3" />
+            <path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke-linecap="round" />
+          </svg>
+          <span class="board-time" role="cell">09:15</span>
+          <span class="board-dest" role="cell">MEXICO CITY <small>&middot; markets, mezcal, mole</small></span>
+          <span class="board-code" role="cell">MEX</span>
+          <span class="board-status" role="cell">On time</span>
+          <span class="board-fare" role="cell">$612 <small>per person</small></span>
+        </a>
+
+        <a href="#book" class="board-row" data-status="ontime" role="row">
+          <svg class="board-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="4" fill="currentColor" />
+          </svg>
+          <span class="board-time" role="cell">11:30</span>
+          <span class="board-dest" role="cell">MARRAKECH <small>&middot; five nights in the Medina</small></span>
+          <span class="board-code" role="cell">RAK</span>
+          <span class="board-status" role="cell">On time</span>
+          <span class="board-fare" role="cell">&euro;298 <small>per person</small></span>
+        </a>
+
+        <a href="#book" class="board-row" data-status="ontime" role="row">
+          <svg class="board-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="4" fill="currentColor" />
+            <line x1="2" y1="14" x2="14" y2="14" stroke-linecap="round" />
+          </svg>
+          <span class="board-time" role="cell">14:08</span>
+          <span class="board-dest" role="cell">TOKYO <small>&middot; nine days, late spring</small></span>
+          <span class="board-code" role="cell">HND</span>
+          <span class="board-status" role="cell">On time</span>
+          <span class="board-fare" role="cell">&yen;84,500 <small>per person</small></span>
+        </a>
+
+        <a href="#book" class="board-row" data-status="open" role="row">
+          <svg class="board-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M11 2.5A5.5 5.5 0 1 0 13.5 11 4.5 4.5 0 0 1 11 2.5Z" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="board-time" role="cell">17:55</span>
+          <span class="board-dest" role="cell">REYKJAVIK <small>&middot; glacier week, room with a hot pool</small></span>
+          <span class="board-code" role="cell">KEF</span>
+          <span class="board-status" role="cell">Open</span>
+          <span class="board-fare" role="cell">&euro;445 <small>per person</small></span>
+        </a>
+
+        <a href="#book" class="board-row" data-status="open" role="row">
+          <svg class="board-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M11 2.5A5.5 5.5 0 1 0 13.5 11 4.5 4.5 0 0 1 11 2.5Z" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="board-time" role="cell">21:20</span>
+          <span class="board-dest" role="cell">BUENOS AIRES <small>&middot; tango month, October &rsquo;26</small></span>
+          <span class="board-code" role="cell">EZE</span>
+          <span class="board-status" role="cell">Open</span>
+          <span class="board-fare" role="cell">$898 <small>per person</small></span>
+        </a>
+      </div>
+
+      <p class="board-foot">
+        <span>Fares are placeholders until you tell us your dates and your budget.</span>
+        <span>Press <kbd>/</kbd> to filter.</span>
+      </p>
+
+      <div class="hero-cta">
+        <a href="#book" class="btn">Book a chair &middot; 15 min</a>
+        <a href="#picks" class="btn-ghost">See the next eight weeks</a>
+      </div>
+
+    </section>
+
+    <!-- ───── Pitch ───── -->
+    <section class="shell pitch" aria-labelledby="pitch-label">
+      <div class="pitch-grid">
+        <p id="pitch-label" class="pitch-label">01 &mdash; What this is</p>
+        <div class="pitch-body">
+          <p>
+            Most travel sites ask you what you want and then sell you what they have. We do the opposite.
+            Each Tuesday a board goes up. <em>Six places.</em> Six trips someone here has actually taken
+            in the last twelve months.
+          </p>
+          <p>
+            You pick the row that calls. We do the rest &mdash; flights, the bed, the one restaurant
+            that justifies the flight. No upsells, no loyalty tier, no <em>plus members save</em>.
+            One flat planning fee, paid once you say go.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── Three picks ───── -->
+    <section class="shell picks" id="picks" aria-labelledby="picks-title">
+      <div class="picks-head">
+        <h2 id="picks-title">Recently <em>set in motion.</em></h2>
+        <span class="count">Three of forty &mdash; spring &rsquo;26</span>
+      </div>
+
+      <div class="picks-grid">
+
+        <article class="pick">
+          <p class="pick-num"><span>Nº 037</span><span>4 nights</span></p>
+          <div class="pick-figure pick-figure-1" aria-hidden="true">
+            <svg viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.2">
+              <path d="M20 200 Q60 140 100 180 T180 160" />
+              <path d="M20 220 Q60 170 100 200 T180 190" stroke-dasharray="3 4" />
+              <circle cx="148" cy="172" r="4" fill="currentColor" />
+              <text x="100" y="60" text-anchor="middle" font-family="serif" font-style="italic" font-size="14" fill="currentColor">Bay of</text>
+              <text x="100" y="80" text-anchor="middle" font-family="serif" font-style="italic" font-size="14" fill="currentColor">Cascais</text>
+              <line x1="40" y1="100" x2="160" y2="100" stroke="currentColor" stroke-width="0.5" />
+              <text x="40" y="115" font-family="monospace" font-size="7" fill="currentColor">38&deg;41&prime;N</text>
+              <text x="120" y="115" font-family="monospace" font-size="7" fill="currentColor">9&deg;25&prime;W</text>
+            </svg>
+          </div>
+          <h3 class="pick-title">LISBON <small>+ Cascais</small></h3>
+          <p class="pick-body">A coast-side hotel on a Tuesday, a tram into Alfama on Wednesday, fado on Friday, and a quiet drive west. The room has a kettle.</p>
+          <p class="pick-meta"><span>Apr &mdash; Jun</span><strong>From &euro;387</strong></p>
+        </article>
+
+        <article class="pick">
+          <p class="pick-num"><span>Nº 038</span><span>9 days</span></p>
+          <div class="pick-figure pick-figure-2" aria-hidden="true">
+            <svg viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.2">
+              <rect x="40" y="60" width="120" height="120" stroke-dasharray="2 4" />
+              <circle cx="100" cy="120" r="22" fill="currentColor" opacity="0.85" />
+              <line x1="100" y1="60" x2="100" y2="180" stroke-width="0.5" />
+              <line x1="40" y1="120" x2="160" y2="120" stroke-width="0.5" />
+              <text x="100" y="200" text-anchor="middle" font-family="serif" font-style="italic" font-size="13" fill="currentColor">Late spring,</text>
+              <text x="100" y="218" text-anchor="middle" font-family="serif" font-style="italic" font-size="13" fill="currentColor">cherry season</text>
+              <text x="100" y="40" text-anchor="middle" font-family="monospace" font-size="7" fill="currentColor">35&deg;41&prime;N &middot; 139&deg;41&prime;E</text>
+            </svg>
+          </div>
+          <h3 class="pick-title">TOKYO <small>+ a hot-spring detour</small></h3>
+          <p class="pick-body">Nine days. A small inn in Yanaka, two nights in Hakone with the windows wide open, a bullet train back for one last izakaya.</p>
+          <p class="pick-meta"><span>May &mdash; Jul</span><strong>From &yen;84,500</strong></p>
+        </article>
+
+        <article class="pick">
+          <p class="pick-num"><span>Nº 039</span><span>7 nights</span></p>
+          <div class="pick-figure pick-figure-3" aria-hidden="true">
+            <svg viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.2">
+              <path d="M30 180 L60 130 L90 160 L120 100 L150 150 L180 90" />
+              <path d="M30 180 L180 180" stroke-dasharray="2 3" />
+              <text x="100" y="40" text-anchor="middle" font-family="serif" font-style="italic" font-size="14" fill="currentColor">Volcanic</text>
+              <text x="100" y="60" text-anchor="middle" font-family="serif" font-style="italic" font-size="14" fill="currentColor">interior</text>
+              <text x="100" y="220" text-anchor="middle" font-family="monospace" font-size="7" fill="currentColor">64&deg;08&prime;N &middot; 21&deg;56&prime;W</text>
+              <circle cx="120" cy="100" r="3" fill="currentColor" />
+            </svg>
+          </div>
+          <h3 class="pick-title">REYKJAVIK <small>+ the south coast</small></h3>
+          <p class="pick-body">A car, a glacier, a small wooden cabin with a hot pool around the back. Aurora season runs late but the days are long.</p>
+          <p class="pick-meta"><span>Sep &mdash; Mar</span><strong>From &euro;445</strong></p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ───── How it works ───── -->
+    <section class="process" id="process" aria-labelledby="process-head">
+      <div class="process-shell">
+        <p id="process-head" class="process-head">02 &mdash; How it works</p>
+
+        <div class="process-grid">
+          <div class="stage">
+            <p class="stage-num">01<small>· Tue 06:00</small></p>
+            <h3>The board goes up.</h3>
+            <p>Six rows, six places, one a week. We pick what we&rsquo;d book ourselves, never what pays best.</p>
+          </div>
+          <div class="stage">
+            <p class="stage-num">02<small>· 15 min call</small></p>
+            <h3>You pick the row that calls.</h3>
+            <p>We talk dates, budget, and the one weird thing you want (a kettle, a left-handed surfboard, a quiet room).</p>
+          </div>
+          <div class="stage">
+            <p class="stage-num">03<small>· Within 48h</small></p>
+            <h3>We send the dossier.</h3>
+            <p>Flights, beds, a hand-typed itinerary, restaurants you can ignore. Pay once. Go when you&rsquo;re ready.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── A note ───── -->
+    <section class="shell note" id="note" aria-labelledby="note-label">
+      <p id="note-label" class="note-label">03 &mdash; A note</p>
+      <p class="note-body">
+        We started this because we were tired of <em>filtering</em> our way to a holiday.
+        A good trip is closer to a good record &mdash; someone has to choose the order of the songs.
+        <span class="note-sig">&mdash; Marta &amp; Idris &middot; Lisbon, est. 2024</span>
+      </p>
+    </section>
+
+    <!-- ───── Final CTA ───── -->
+    <section class="shell final-cta" id="book">
+      <h2>
+        Tuesday&rsquo;s board goes up <em>in 47 hours.</em>
+      </h2>
+      <a href="#" class="btn">Book a chair &middot; 15 min</a>
+    </section>
+  </main>
+
+  <!-- ───── Footer · Ft4 dense colophon ───── -->
+  <footer class="shell colophon">
+    <div class="colophon-head">
+      <a href="#" class="wordmark">WAYFARE</a>
+      <em>Trips, set in motion. &mdash; Lisbon &amp; Mexico City.</em>
+    </div>
+
+    <dl class="colophon-grid">
+      <div class="col-block">
+        <dt>The studio</dt>
+        <dd><a href="#">About us</a></dd>
+        <dd><a href="#">The Tuesday letter</a></dd>
+        <dd><a href="#">Working with us</a></dd>
+        <dd><a href="#">Press &amp; archive</a></dd>
+      </div>
+
+      <div class="col-block">
+        <dt>The board</dt>
+        <dd><a href="#">This week (06)</a></dd>
+        <dd><a href="#">Next eight weeks</a></dd>
+        <dd><a href="#">Past trips, archived</a></dd>
+        <dd><a href="#">Submit a city</a></dd>
+      </div>
+
+      <div class="col-block">
+        <dt>The fine print</dt>
+        <dd><a href="#">Booking terms</a></dd>
+        <dd><a href="#">Refund policy</a></dd>
+        <dd><a href="#">Privacy</a></dd>
+        <dd><a href="#">Cookies (we use two)</a></dd>
+      </div>
+
+      <div class="col-block">
+        <dt>Find us</dt>
+        <dd>Rua das Flores 47</dd>
+        <dd>1200&ndash;195 Lisbon</dd>
+        <dd><a href="mailto:hello@wayfare.studio">hello@wayfare.studio</a></dd>
+        <dd><a href="#">@wayfare.studio</a></dd>
+      </div>
+    </dl>
+
+    <div class="colophon-foot">
+      <span class="lead">&copy; 2026 Wayfare Studio, Lda.</span>
+      <span>Set in Bricolage Grotesque &amp; Newsreader. Built by hand.</span>
+      <span>v1.0 &middot; Spring &rsquo;26</span>
+    </div>
+  </footer>
+
+</body>
+</html>

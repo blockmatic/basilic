@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Alma — Two minutes a day. The dark holds the rest.</title>
+<meta name="description" content="A voice journal that takes two minutes a day, transcribes the audio, and forgets the entry after a year unless you save it." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap" />
+<style>
+/* Hallmark · macrostructure: Quote-Led · theme: Halo · enrichment: Tier-A concentric rings SVG
+ * tone: atmospheric intimate austere · anchor hue: warm amber
+ * studied: no · pre-emit critique: P5 H4 E4 S5 R5 V4
+ */
+
+:root {
+  /* Halo — dark · geometric-sans · warm (charcoal + amber) */
+  --color-paper:    oklch(13%   0.005  60);
+  --color-paper-2:  oklch(17%   0.008  60);
+  --color-paper-3:  oklch(22%   0.012  62);
+  --color-rule:     oklch(28%   0.012  60);
+  --color-rule-2:   oklch(38%   0.016  62);
+  --color-muted:    oklch(58%   0.018  65);
+  --color-ink-2:    oklch(82%   0.020  68);
+  --color-ink:      oklch(96%   0.014  70);
+  --color-accent:   oklch(74%   0.16   70);  /* warm amber */
+  --color-focus:    oklch(74%   0.16   70);
+
+  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-serif:   "Newsreader", ui-serif, Georgia, serif;
+  --font-label:   "Geist Mono", ui-monospace, monospace;
+  --font-mono:    "Geist Mono", ui-monospace, monospace;
+
+  --text-xs:  0.75rem;
+  --text-sm:  0.875rem;
+  --text-md:  1.0625rem;
+  --text-lg:  1.375rem;
+  --text-xl:  1.875rem;
+  --text-2xl: 2.5rem;
+  --text-display: clamp(2.75rem, 6.5vw + 0.5rem, 5.5rem);
+
+  --tracking-display: -0.02em;
+  --tracking-tight:   -0.015em;
+  --tracking-label:   0.14em;
+  --lh-tight:         1.05;
+  --lh-snug:          1.25;
+  --lh-relaxed:       1.6;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 7rem;
+
+  --rule-hair: 1px;
+  --radius-pill: 999px;
+  --page-gutter: clamp(1.25rem, 4vw, 3rem);
+  --page-max:    72rem;
+
+  --dur-micro: 80ms;
+  --dur-short: 150ms;
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: var(--lh-relaxed);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding-inline: var(--page-gutter);
+  min-height: 100dvh;
+}
+
+/* Halo glow — fixed warm bloom anchored top-right */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 80vh;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 0%,
+                    color-mix(in oklch, var(--color-accent) 22%, transparent) 0%,
+                    transparent 65%);
+}
+
+main {
+  margin-inline: auto;
+  max-width: var(--page-max);
+  position: relative;
+  z-index: 1;
+}
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, p, ul, ol, dl { margin: 0; }
+
+/* — Masthead ———————————————————————————————————————— */
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-block: var(--space-md);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.masthead__wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-md);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink);
+}
+
+.masthead__nav {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.masthead__nav a:hover { color: var(--color-ink); }
+
+@media (max-width: 36rem) {
+  .masthead__nav { display: none; }
+}
+
+/* — Quote-led hero ————————————————————————————————— */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2xl);
+  padding-block: var(--space-3xl) var(--space-2xl);
+}
+
+@media (max-width: 56rem) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+}
+
+.hero__copy {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.hero__eyebrow {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-block-end: var(--space-sm);
+}
+
+.hero__quote {
+  margin: 0;
+  padding: 0;
+}
+
+.hero__quote p {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--text-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  max-width: 18ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.hero__quote em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+.hero__attrib {
+  margin-block-start: var(--space-md);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.hero__lede {
+  margin-block-start: var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 42ch;
+}
+
+.hero__cta-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-block-start: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.cta {
+  display: inline-block;
+  padding: 0.7rem 1.2rem;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+.cta:hover { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-paper); }
+
+.cta--ghost {
+  color: var(--color-ink);
+  background: transparent;
+  border-color: var(--color-rule-2);
+}
+.cta--ghost:hover { color: var(--color-paper); background: var(--color-ink); border-color: var(--color-ink); }
+
+/* — Concentric rings illustration ——————————————————— */
+.rings {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 24rem;
+  margin-inline: auto;
+  justify-self: end;
+}
+
+.rings__svg {
+  width: 100%;
+  height: 100%;
+  color: var(--color-accent);
+}
+
+.rings__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 24px 6px color-mix(in oklch, var(--color-accent) 60%, transparent);
+  animation: pulse 4s var(--ease-out) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rings__center { animation: none; }
+}
+
+/* — Two-minute section ————————————————————————————— */
+.two-min {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  display: grid;
+  grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+  gap: var(--space-2xl);
+}
+
+@media (max-width: 56rem) {
+  .two-min { grid-template-columns: 1fr; gap: var(--space-md); }
+}
+
+.two-min__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.two-min__body {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.two-min__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.875rem, 3.5vw + 0.5rem, 3rem);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  max-width: 28ch;
+}
+
+.two-min__title em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+.two-min__steps {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  margin-block-start: var(--space-md);
+}
+
+.two-min__step {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: baseline;
+  padding-block: var(--space-md);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.two-min__step-num {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--text-xl);
+  color: var(--color-accent);
+  font-feature-settings: "tnum";
+}
+
+.two-min__step-body {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+}
+
+.two-min__step-body strong { color: var(--color-ink); font-weight: 600; }
+
+/* — Forgetting band ——————————————————————————————— */
+.forget {
+  padding-block: var(--space-3xl);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  text-align: center;
+}
+
+.forget__phrase {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.875rem, 4vw + 0.5rem, 3.25rem);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  max-width: 30ch;
+  margin-inline: auto;
+}
+
+.forget__phrase em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+/* — Privacy ledger ————————————————————————————————— */
+.privacy {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-2xl);
+}
+
+@media (max-width: 56rem) {
+  .privacy { grid-template-columns: 1fr; gap: var(--space-md); }
+}
+
+.privacy__head {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+}
+
+.privacy__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.privacy__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--text-2xl);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  max-width: 18ch;
+}
+
+.privacy__title em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+.privacy__list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+.privacy__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-md);
+  align-items: baseline;
+  padding-block: var(--space-md);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--color-ink-2);
+}
+
+.privacy__row-key { color: var(--color-ink); font-weight: 500; }
+
+.privacy__row-value {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+/* — Colophon ————————————————————————————————————— */
+.colophon {
+  margin-block-start: var(--space-2xl);
+  padding-block: var(--space-xl) var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  display: grid;
+  gap: var(--space-md);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.colophon__row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.colophon strong { color: var(--color-ink); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<main>
+
+  <header class="masthead">
+    <span class="masthead__wordmark">Alma</span>
+    <nav class="masthead__nav" aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#install">Get it</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="h-quote">
+    <div class="hero__copy">
+      <p class="hero__eyebrow">A voice journal</p>
+      <blockquote class="hero__quote">
+        <p id="h-quote">"Two minutes a day. The <em>dark</em> holds the rest."</p>
+      </blockquote>
+      <p class="hero__attrib">— What Alma is</p>
+      <p class="hero__lede">
+        Speak for two minutes on the way home. Alma transcribes the audio, leaves the file in your private library, and forgets the entry after a year — unless you say keep it. There is no feed. No share button. No coach.
+      </p>
+      <div class="hero__cta-row">
+        <a class="cta" href="#install">Open Alma &rarr;</a>
+        <a class="cta cta--ghost" href="#privacy">Read the privacy ledger</a>
+      </div>
+    </div>
+
+    <figure class="rings" aria-hidden="true">
+      <svg class="rings__svg" viewBox="0 0 240 240" fill="none" stroke="currentColor">
+        <circle cx="120" cy="120" r="110" stroke-width="0.6" stroke-opacity="0.5" />
+        <circle cx="120" cy="120" r="86"  stroke-width="0.7" stroke-opacity="0.65" />
+        <circle cx="120" cy="120" r="62"  stroke-width="0.85" stroke-opacity="0.8" />
+        <circle cx="120" cy="120" r="38"  stroke-width="1" stroke-opacity="0.9" />
+        <circle cx="120" cy="120" r="16"  stroke-width="1.2" />
+      </svg>
+      <span class="rings__center"></span>
+    </figure>
+  </section>
+
+  <section class="two-min" id="how" aria-labelledby="t-title">
+    <p class="two-min__label">02 / The two minutes</p>
+    <div class="two-min__body">
+      <h2 class="two-min__title" id="t-title">Speak. Alma <em>writes it down</em>. The session ends on its own.</h2>
+      <ol class="two-min__steps">
+        <li class="two-min__step">
+          <span class="two-min__step-num">i</span>
+          <p class="two-min__step-body"><strong>Open Alma. Tap the dot.</strong> The dot pulses for two minutes, then stops. There is no countdown ring.</p>
+        </li>
+        <li class="two-min__step">
+          <span class="two-min__step-num">ii</span>
+          <p class="two-min__step-body"><strong>Speak.</strong> Whatever's on your mind. The transcription happens on-device — the audio never leaves your phone.</p>
+        </li>
+        <li class="two-min__step">
+          <span class="two-min__step-num">iii</span>
+          <p class="two-min__step-body"><strong>The dot stops.</strong> Alma saves the transcript and the audio to your private library. You can mark "keep" or do nothing — the default is forget.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="forget" aria-hidden="true">
+    <p class="forget__phrase">After 365 days, Alma <em>forgets</em> what you didn't keep.</p>
+  </section>
+
+  <section class="privacy" id="privacy" aria-labelledby="p-title">
+    <header class="privacy__head">
+      <p class="privacy__label">04 / The ledger</p>
+      <h2 class="privacy__title" id="p-title">What stays on your <em>phone</em>. What never leaves.</h2>
+    </header>
+    <ul class="privacy__list">
+      <li class="privacy__row"><span class="privacy__row-key">Audio recording</span><span class="privacy__row-value">on device only</span></li>
+      <li class="privacy__row"><span class="privacy__row-key">Transcription</span><span class="privacy__row-value">on device only</span></li>
+      <li class="privacy__row"><span class="privacy__row-key">Library backup</span><span class="privacy__row-value">end-to-end encrypted</span></li>
+      <li class="privacy__row"><span class="privacy__row-key">Analytics</span><span class="privacy__row-value">none collected</span></li>
+      <li class="privacy__row"><span class="privacy__row-key">Default retention</span><span class="privacy__row-value">365 days, then forget</span></li>
+    </ul>
+  </section>
+
+  <footer class="colophon" id="install">
+    <div class="colophon__row">
+      <p>Alma <strong>· iOS 17+ · Free until summer</strong></p>
+      <p>v0.4 · 2026</p>
+    </div>
+    <div class="colophon__row">
+      <p>Set in <strong>Geist</strong> &amp; <strong>Newsreader italic</strong>.</p>
+      <p>The dark holds the rest.</p>
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>

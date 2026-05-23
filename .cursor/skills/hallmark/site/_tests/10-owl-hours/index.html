@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Owl Hours — A drafting space for fiction, after dark.</title>
+<meta name="description" content="A single-screen drafting space for fiction writers who work between 10pm and 2am. No notifications. No streaks. Just the chapter and the cursor." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap" />
+<style>
+/* Hallmark · macrostructure: Manifesto · theme: Aurora · enrichment: none
+ * tone: atmospheric, austere, after-dark · anchor hue: cool cyan
+ * studied: no · pre-emit critique: P5 H4 E4 S5 R5 V4
+ */
+
+:root {
+  /* Aurora — dark · geometric-sans · cool */
+  --color-paper:    oklch(11%   0.025  200);
+  --color-paper-2:  oklch(15%   0.030  205);
+  --color-paper-3:  oklch(20%   0.035  205);
+  --color-rule:     oklch(28%   0.030  205);
+  --color-rule-2:   oklch(40%   0.035  210);
+  --color-muted:    oklch(58%   0.030  210);
+  --color-ink-2:    oklch(82%   0.020  205);
+  --color-ink:      oklch(96%   0.010  200);
+  --color-accent:   oklch(72%   0.170  200);  /* cyan */
+  --color-accent-2: oklch(74%   0.150  170);  /* secondary teal-green */
+  --color-focus:    oklch(72%   0.170  200);
+
+  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-serif:   "Newsreader", ui-serif, Georgia, serif;
+  --font-label:   "Geist Mono", ui-monospace, monospace;
+  --font-mono:    "Geist Mono", ui-monospace, monospace;
+
+  --text-xs:  0.75rem;
+  --text-sm:  0.875rem;
+  --text-md:  1.0625rem;
+  --text-lg:  1.375rem;
+  --text-xl:  1.875rem;
+  --text-2xl: 2.75rem;
+  --text-display: clamp(3.5rem, 11vw, 9rem);
+
+  --tracking-display: -0.035em;
+  --tracking-tight:   -0.015em;
+  --tracking-label:   0.14em;
+  --lh-tight:         0.94;
+  --lh-snug:          1.2;
+  --lh-relaxed:       1.55;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 7rem;
+
+  --rule-hair: 1px;
+  --page-gutter: clamp(1.25rem, 4vw, 3rem);
+  --page-max:    74rem;
+
+  --dur-micro: 80ms;
+  --dur-short: 150ms;
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: var(--lh-relaxed);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding-inline: var(--page-gutter);
+  background:
+    radial-gradient(ellipse 80% 55% at 92% 0%,
+                    color-mix(in oklch, var(--color-accent) 18%, transparent) 0%,
+                    transparent 55%),
+    radial-gradient(ellipse 70% 60% at 5% 100%,
+                    color-mix(in oklch, var(--color-accent-2) 14%, transparent) 0%,
+                    transparent 60%),
+    var(--color-paper);
+  background-attachment: fixed;
+  min-height: 100dvh;
+}
+
+main {
+  margin-inline: auto;
+  max-width: var(--page-max);
+}
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, p, ul, ol, dl { margin: 0; }
+
+/* — Masthead ———————————————————————————————————————— */
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-block: var(--space-md);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.masthead__wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-md);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink);
+}
+
+.masthead__nav {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.masthead__nav a:hover { color: var(--color-ink); }
+
+@media (max-width: 36rem) {
+  .masthead__nav { display: none; }
+}
+
+/* — Title block ————————————————————————————————————— */
+.title-block {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.title-block__eyebrow {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-block-end: var(--space-md);
+}
+
+.title-block__display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  max-width: 16ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.title-block__display em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+.title-block__lede {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 44ch;
+  margin-block-start: var(--space-md);
+}
+
+.title-block__cta-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-block-start: var(--space-xl);
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  width: fit-content;
+}
+
+.cta {
+  display: inline-block;
+  padding: 0.7rem 1.2rem;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: 999px;
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+.cta:hover { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-paper); }
+
+.cta--ghost {
+  color: var(--color-ink);
+  background: transparent;
+  border-color: var(--color-rule-2);
+}
+.cta--ghost:hover { color: var(--color-paper); background: var(--color-ink); border-color: var(--color-ink); }
+
+/* — Five declarations ——————————————————————————————— */
+.declarations {
+  padding-block: var(--space-3xl) var(--space-2xl);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  display: grid;
+  grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+  gap: var(--space-2xl);
+}
+
+@media (max-width: 56rem) {
+  .declarations {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+}
+
+.declarations__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  align-self: start;
+}
+
+.declarations__list {
+  list-style: none;
+  display: grid;
+  padding: 0;
+  gap: 0;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+.declaration {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: baseline;
+  padding-block: var(--space-md);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.declaration__num {
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  font-feature-settings: "tnum";
+  color: var(--color-muted);
+  letter-spacing: 0.04em;
+}
+
+.declaration__phrase {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.5rem, 3vw + 0.5rem, 2.5rem);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  max-width: 32ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.declaration__phrase em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+/* — Reduce band ——————————————————————————————————— */
+.reduce {
+  padding-block: var(--space-3xl);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+}
+
+.reduce__phrase {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6vw + 0.5rem, 5rem);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  text-align: center;
+  max-width: 22ch;
+  margin-inline: auto;
+}
+
+.reduce__phrase em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+/* — Practice (3-col working rules) ——————————————————— */
+.practice {
+  padding-block: var(--space-3xl) var(--space-2xl);
+}
+
+.practice__head {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-block-end: var(--space-2xl);
+}
+
+.practice__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.practice__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.875rem, 3.5vw + 0.5rem, 3rem);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  max-width: 24ch;
+}
+
+.practice__title em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+.practice__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  border-inline-start: var(--rule-hair) solid var(--color-rule);
+}
+
+@media (max-width: 56rem) {
+  .practice__grid { grid-template-columns: 1fr; }
+}
+
+.practice__item {
+  padding: var(--space-lg);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  border-inline-end: var(--rule-hair) solid var(--color-rule);
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+}
+
+.practice__item-name {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.practice__item-rule {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+}
+
+.practice__item-rule strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* — Colophon (Ft5) ———————————————————————————————— */
+.colophon {
+  margin-block-start: var(--space-3xl);
+  padding-block: var(--space-xl) var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  display: grid;
+  gap: var(--space-md);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.colophon__row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.colophon strong { color: var(--color-ink); font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<main>
+
+  <header class="masthead">
+    <span class="masthead__wordmark">Owl Hours</span>
+    <nav class="masthead__nav" aria-label="Primary">
+      <a href="#declarations">What it does</a>
+      <a href="#practice">How we work</a>
+      <a href="#download">Download</a>
+    </nav>
+  </header>
+
+  <section class="title-block" aria-labelledby="t-title">
+    <p class="title-block__eyebrow">A drafting space, after dark</p>
+    <h1 class="title-block__display" id="t-title">A page that <em>holds</em> the chapter — and nothing else.</h1>
+    <p class="title-block__lede">
+      Owl Hours is a single-screen drafting space for fiction writers who work between 10pm and 2am. No tabs. No streak counters. No "you're on a roll" toasts at midnight. Just the chapter, the cursor, and the kind of dark that doesn't fight your eyes.
+    </p>
+    <div class="title-block__cta-row">
+      <a class="cta" href="#download">Open Owl Hours &rarr;</a>
+      <a class="cta cta--ghost" href="#declarations">Read the rules</a>
+    </div>
+  </section>
+
+  <section class="declarations" id="declarations" aria-labelledby="d-title">
+    <p class="declarations__label">02 / What it refuses</p>
+    <h2 class="declarations__label" id="d-title" style="position: absolute; left: -9999px;">Five things Owl Hours refuses to do</h2>
+    <ol class="declarations__list">
+      <li class="declaration">
+        <span class="declaration__num">01.</span>
+        <p class="declaration__phrase">No <em>streaks</em>. No "you wrote ten days in a row".</p>
+      </li>
+      <li class="declaration">
+        <span class="declaration__num">02.</span>
+        <p class="declaration__phrase">No <em>notifications</em>. Not after 10. Not ever.</p>
+      </li>
+      <li class="declaration">
+        <span class="declaration__num">03.</span>
+        <p class="declaration__phrase">No <em>word counts</em> in the corner of your eye.</p>
+      </li>
+      <li class="declaration">
+        <span class="declaration__num">04.</span>
+        <p class="declaration__phrase">No <em>shared workspaces</em>. No comments. No cursors.</p>
+      </li>
+      <li class="declaration">
+        <span class="declaration__num">05.</span>
+        <p class="declaration__phrase">No <em>AI</em> volunteering the next sentence.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="reduce" aria-hidden="true">
+    <p class="reduce__phrase">The page should <em>get out of the way</em>.</p>
+  </section>
+
+  <section class="practice" id="practice" aria-labelledby="p-title">
+    <header class="practice__head">
+      <p class="practice__label">04 / Practice</p>
+      <h2 class="practice__title" id="p-title">Three working rules — <em>nothing else fits on the screen.</em></h2>
+    </header>
+
+    <ol class="practice__grid">
+      <li class="practice__item">
+        <span class="practice__item-name">i. Type</span>
+        <p class="practice__item-rule">A single serif at a comfortable measure. <strong>No styling toolbar floats</strong> in your peripheral vision.</p>
+      </li>
+      <li class="practice__item">
+        <span class="practice__item-name">ii. Light</span>
+        <p class="practice__item-rule">Dark canvas, low chroma. <strong>The accent is the cursor</strong>; you only see it when you're typing.</p>
+      </li>
+      <li class="practice__item">
+        <span class="practice__item-name">iii. State</span>
+        <p class="practice__item-rule">Autosave is silent. <strong>The status bar appears only when something needs your attention</strong> — almost never.</p>
+      </li>
+    </ol>
+  </section>
+
+  <footer class="colophon" id="download">
+    <div class="colophon__row">
+      <p>Owl Hours <strong>· Mac &amp; iPad · Quiet by design</strong></p>
+      <p>v1.0 · 2026</p>
+    </div>
+    <div class="colophon__row">
+      <p>Set in <strong>Geist</strong> &amp; <strong>Newsreader italic</strong>.</p>
+      <p>Free for personal use.</p>
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,2223 @@
+/* Hallmark — sections (with per-theme structural overrides) */
+
+/* — Page scaffold ——————————————————————————————————— */
+.page {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  display: grid;
+  gap: var(--section-gap);
+  /* No bottom padding — the colophon owns its own end-spacing.
+     A page-level bottom padding stacks on top of the footer's own
+     padding and reads as dead space below "Made by Together AI". */
+  padding-block: var(--space-2xl) 0;
+  padding-inline: var(--page-gutter);
+}
+
+/* — Slot — a region whose component archetype swaps per theme ————— */
+.slot {
+  display: block;
+  min-height: 1px; /* keeps reveal animation valid before populated */
+}
+
+/* — Section container ——————————————————————————————— */
+.section {
+  display: grid;
+  gap: var(--space-xl); /* tightened from 2xl in v0.9 — content sits closer to its head */
+  position: relative; /* anchors absolute children (hidden radios) */
+}
+
+/* Section head — single-column always. Section label stacks ABOVE
+   the title, separated by a small gap. No more 10rem fixed sidebar
+   that forced the section label ("ANTI-PATTERNS") to wrap on
+   themes that needed wider title columns. Section titles can grow
+   bigger now since they have full width. */
+/* Single-column always — label sits ABOVE title across every theme.
+   No theme override should put the label in a left gutter (caused
+   uncomfortable wrapping + alignment drift between sections). */
+.section__head,
+[data-theme] .section__head {
+  display: grid;
+  grid-template-columns: 1fr !important;
+  gap: var(--space-sm);
+  padding-bottom: var(--section-head-gap);
+  border-bottom: var(--rule-hair) solid var(--color-rule-2);
+}
+
+/* Section label — small mono uppercase coordinate above the title.
+   Hard rule: never wrap. White-space: nowrap forces single-line at
+   every viewport. The label is short ("05 / Foundations") so this
+   is safe. */
+.section-label,
+.section__head .section-label {
+  white-space: nowrap;
+}
+
+.section__title {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  font-size: clamp(2rem, 4vw + 0.5rem, 3.5rem);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  max-width: 28ch;
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+  margin: 0;
+}
+
+/* Narrow viewports — let headings wrap freely + cap display sizes so
+   a long title fits at 320–480 px without being clipped by body's
+   overflow-x: hidden. */
+@media (max-width: 30rem) {
+  .opening__title,
+  .hero__display {
+    font-size: clamp(1.75rem, 9vw, 2.75rem) !important;
+    max-width: 12ch;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+  .section__title {
+    font-size: clamp(1.375rem, 5.5vw, 1.875rem) !important;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+  .hero__lede,
+  .opening__sub {
+    font-size: 1rem !important;
+    max-width: 100%;
+  }
+}
+
+/* — 01 · Opening ——————————————————————————————————— */
+.opening {
+  display: grid;
+  grid-template-columns: 8fr 4fr;
+  gap: var(--space-2xl);
+  padding-block: var(--space-xl) var(--space-lg);
+  align-items: end;
+}
+
+@media (max-width: 60rem) {
+  .opening {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+}
+
+.opening__eyebrow {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: var(--space-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+}
+
+.opening__title {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  max-width: 15ch;
+  font-optical-sizing: auto;
+  font-variation-settings:
+    "opsz" var(--display-optical, 144),
+    "SOFT" var(--display-soft, 0);
+}
+
+.opening__title em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+.opening__sub {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  color: var(--color-ink-2);
+  max-width: 42ch;
+  margin-top: var(--space-lg);
+}
+
+.opening__aside {
+  display: grid;
+  gap: var(--space-md);
+  padding-top: var(--space-xl);
+}
+
+.opening__rule {
+  height: 0.5rem;
+  width: 3rem;
+  background: var(--color-accent);
+}
+
+.opening__cta {
+  display: grid;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+/* — 02 · Examples rail (full-bleed) ——————————————————— */
+/* The rail escapes the page gutter on both sides so tiles can flow
+   past the max-width. The header above stays inside the gutter. */
+.examples__intro {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 60ch;
+  margin: 0;
+}
+
+[data-theme="brutal"] .examples__intro,
+[data-theme="manifesto"] .examples__intro,
+[data-theme="terminal"] .examples__intro,
+[data-theme="sport"] .examples__intro,
+[data-theme="almanac"] .examples__intro {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+.examples-rail {
+  display: flex;
+  gap: var(--space-lg);
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  /* Full-bleed: rail spans the full viewport. But the FIRST card
+     starts aligned with the page content (same left edge as the
+     section header), not flush against the viewport. As the user
+     scrolls horizontally, cards travel through the full bleed
+     including the viewport edges — only the initial position
+     respects the page's content gutter. */
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  --rail-edge: max(var(--page-gutter), calc((100vw - var(--page-max)) / 2 + var(--page-gutter)));
+  padding-inline: var(--rail-edge);
+  padding-block: var(--space-md) var(--space-lg);
+  scroll-padding-inline: var(--rail-edge);
+  scrollbar-width: none;
+}
+.examples-rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* Reserve trailing whitespace inside the rail so the last card snaps
+   clean to the same content edge as the first. */
+.examples-rail::after {
+  content: "";
+  flex: 0 0 var(--rail-edge);
+}
+
+/* — 03 · Without / With (parity panels, four pairs) ——————
+   The section holds four W/W pairs that swap based on which toggle
+   radio is :checked. Pure CSS, no JS.
+
+   Scroll-jump fix: the radio inputs sit in normal document flow
+   with zero size + opacity 0 (no position:absolute). When the user
+   clicks a label, the browser focuses the input — but because the
+   input is already in view (right above the toggle), no scroll
+   happens. Earlier versions used position:absolute which positioned
+   the input at top:0 of the viewport; clicking a label far below
+   would scroll the page back to the top. */
+.vs-toggle__input {
+  /* Pulled out of the section's grid (otherwise each hidden radio plus each
+     hidden .vs panel adds a `var(--space-2xl)` phantom gap between the
+     section header and the first visible child). Anchored absolute inside
+     the section (which is position: relative) so focus doesn't scroll the
+     page back to the viewport top. */
+  position: absolute;
+  top: 0;
+  left: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vs-toggle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  padding: 0.25rem;
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-pill, 999px);
+  margin-block-end: var(--space-xl);
+  align-self: start;
+  max-width: 100%;
+}
+
+.vs-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.45rem 0.95rem;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  cursor: pointer;
+  border-radius: var(--radius-pill, 999px);
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.vs-toggle__btn:hover {
+  color: var(--color-ink);
+}
+
+.vs-toggle__num {
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  letter-spacing: 0.04em;
+  color: inherit;
+  opacity: 0.6;
+  font-feature-settings: "tnum";
+}
+
+.vs-toggle__label {
+  font-weight: 500;
+}
+
+/* Focus ring on whichever button corresponds to the focused input. */
+#vs-notes:focus-visible ~ .vs-toggle .vs-toggle__btn[for="vs-notes"],
+#vs-dashboard:focus-visible ~ .vs-toggle .vs-toggle__btn[for="vs-dashboard"],
+#vs-pricing:focus-visible ~ .vs-toggle .vs-toggle__btn[for="vs-pricing"],
+#vs-personal:focus-visible ~ .vs-toggle .vs-toggle__btn[for="vs-personal"] {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+#vs-notes:checked ~ .vs-toggle .vs-toggle__btn[for="vs-notes"],
+#vs-dashboard:checked ~ .vs-toggle .vs-toggle__btn[for="vs-dashboard"],
+#vs-pricing:checked ~ .vs-toggle .vs-toggle__btn[for="vs-pricing"],
+#vs-personal:checked ~ .vs-toggle .vs-toggle__btn[for="vs-personal"] {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+#vs-notes:checked ~ .vs-toggle .vs-toggle__btn[for="vs-notes"] .vs-toggle__num,
+#vs-dashboard:checked ~ .vs-toggle .vs-toggle__btn[for="vs-dashboard"] .vs-toggle__num,
+#vs-pricing:checked ~ .vs-toggle .vs-toggle__btn[for="vs-pricing"] .vs-toggle__num,
+#vs-personal:checked ~ .vs-toggle .vs-toggle__btn[for="vs-personal"] .vs-toggle__num {
+  opacity: 0.85;
+}
+
+.vs-pairs {
+  display: contents;
+}
+
+.vs {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+#vs-notes:checked ~ .vs-pairs .vs--notes,
+#vs-dashboard:checked ~ .vs-pairs .vs--dashboard,
+#vs-pricing:checked ~ .vs-pairs .vs--pricing,
+#vs-personal:checked ~ .vs-pairs .vs--personal {
+  display: grid;
+}
+
+@media (max-width: 50rem) {
+  .vs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vs__col {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-md);
+}
+
+.vs__head {
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.vs__label {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.vs__caption {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-neutral);
+  line-height: var(--lh-normal);
+}
+
+/* — 04 · Foundations mosaic ——————————————————————————
+   Auto-fit grid with feature cards (F/01 Type, F/02 Colour) and the
+   closing strip (F/08 Anti-patterns) spanning the full row for breathing
+   room on their richer illustrations. Other cards pack 2-3 per row
+   depending on viewport. */
+.foundations {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--space-xl) var(--space-2xl);
+}
+
+.spec--feature,
+.spec--strip {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 56rem) {
+  .foundations {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .spec--feature,
+  .spec--strip {
+    grid-column: auto;
+  }
+}
+
+/* — 05 · Foundations as vertical list + active panel ———————
+   Five clickable names on the left; the active card's rule + visual
+   demo on the right. Pure CSS via :checked + sibling selectors —
+   the radios sit absolutely-positioned (out of flow, like the W/W
+   toggle radios). Fits in ~one viewport on desktop. */
+.found-toggle__input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.found-grid {
+  display: grid;
+  grid-template-columns: 14rem 1fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+@media (max-width: 60rem) {
+  .found-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+.found-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+.found-nav li {
+  margin: 0;
+}
+
+@media (max-width: 60rem) {
+  .found-nav {
+    display: contents;
+  }
+}
+
+/* — 05 · How it works ——————————————————————————————— */
+.how {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 3rem 1fr 2fr;
+  gap: var(--space-lg);
+  align-items: start;
+  padding-top: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+@media (max-width: 50rem) {
+  .step {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+}
+
+.step__num {
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: var(--text-md);
+  color: var(--color-ink);
+  letter-spacing: 0.08em;
+}
+
+.step__head {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-lg);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+}
+
+.step__sub {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-neutral);
+  margin-top: var(--space-xs);
+  max-width: 40ch;
+  line-height: var(--lh-normal);
+}
+
+.step__body {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+/* — 03 · Study — DNA extraction gallery —————————————————
+   Four tiles. Each pairs a video-shaped media slot (poster image
+   when no <source> is supplied, otherwise an autoplay-muted-loop
+   screen recording) with the structured 10-field DNA panel. The
+   panel is a tabular key/value layout — mono key, body value. */
+.study__intro {
+  margin: 0 0 var(--space-2xl);
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 60ch;
+}
+
+.study__intro code {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.875em;
+  background: var(--color-paper-2);
+  padding: 0.05em 0.35em;
+  border: var(--rule-hair) solid var(--color-rule);
+  color: var(--color-ink);
+}
+
+[data-theme="brutal"] .study__intro,
+[data-theme="manifesto"] .study__intro,
+[data-theme="terminal"] .study__intro,
+[data-theme="sport"] .study__intro,
+[data-theme="almanac"] .study__intro,
+[data-theme="quiet"] .study__intro,
+[data-theme="bloom"] .study__intro {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+.study-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl) var(--space-xl);
+}
+
+@media (max-width: 60rem) {
+  .study-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+}
+
+/* — 03 · Skills — five things Hallmark does ——————————————————
+   Vertical editorial list, scroll-only. No tabs, no carousel, no JS
+   state. Each row: roman numeral marginalia → title + lede → demo +
+   structured list. Each demo is structurally different from the others
+   on purpose — the section practises what the skill preaches. */
+
+.skills__intro {
+  margin: 0 0 var(--space-2xl);
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 60ch;
+}
+
+[data-theme="brutal"] .skills__intro,
+[data-theme="manifesto"] .skills__intro,
+[data-theme="terminal"] .skills__intro,
+[data-theme="sport"] .skills__intro,
+[data-theme="almanac"] .skills__intro,
+[data-theme="quiet"] .skills__intro,
+[data-theme="bloom"] .skills__intro,
+[data-theme="riso"] .skills__intro {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+.skills-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3xl);
+}
+
+.skill-row {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.skill-row__head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xs);
+  margin-block-end: var(--space-md);
+}
+
+.skill-row__head-body {
+  display: grid;
+  gap: var(--space-sm);
+  max-width: 64ch;
+}
+
+.skill-row__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1.6vw + 0.6rem, 2rem);
+  font-weight: 500;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+
+.skill-row__title-meta {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 0.5em;
+  letter-spacing: 0;
+  color: var(--color-muted);
+}
+
+[data-theme="brutal"] .skill-row__title-meta,
+[data-theme="manifesto"] .skill-row__title-meta,
+[data-theme="terminal"] .skill-row__title-meta,
+[data-theme="sport"] .skill-row__title-meta,
+[data-theme="almanac"] .skill-row__title-meta,
+[data-theme="quiet"] .skill-row__title-meta,
+[data-theme="bloom"] .skill-row__title-meta {
+  font-family: var(--font-mono);
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+[data-theme="manifesto"] .skill-row__title,
+[data-theme="brutal"] .skill-row__title {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Skill-row lede matches the hero lede + examples intro: same role, same
+   typographic treatment per theme. All ledes are roman (no italic) — the
+   curly single-storey italic "a" was unanimously bad to read. */
+.skill-row__lede {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  color: var(--color-ink-2);
+  margin: 0;
+  max-width: 60ch;
+}
+
+[data-theme="brutal"] .skill-row__lede,
+[data-theme="manifesto"] .skill-row__lede,
+[data-theme="terminal"] .skill-row__lede,
+[data-theme="sport"] .skill-row__lede,
+[data-theme="almanac"] .skill-row__lede,
+[data-theme="studio"] .skill-row__lede,
+[data-theme="quiet"] .skill-row__lede,
+[data-theme="bloom"] .skill-row__lede,
+[data-theme="aurora"] .skill-row__lede,
+[data-theme="plume"] .skill-row__lede,
+[data-theme="halo"] .skill-row__lede,
+[data-theme="coral"] .skill-row__lede,
+[data-theme="violet"] .skill-row__lede {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+/* Studio: examples intro stays sans to match hero + verb ledes. */
+[data-theme="studio"] .examples__intro {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+.skill-row__lede strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.skill-row__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+@media (max-width: 60rem) {
+  .skill-row__body {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+}
+
+/* Full-width body — no right info column. Used by Redesign so the
+   before/after diptych takes the whole row width. */
+.skill-row__body--full {
+  grid-template-columns: 1fr;
+}
+
+.skill-row__demo {
+  position: relative;
+  margin: 0;
+  display: block;
+}
+
+.skill-row__demo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--color-paper-2);
+}
+
+/* Structured list to the right of each demo (reuses .dna__row from
+   .study-card__dna). Editorial card-on-paper container. */
+.skill-row__list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-md) var(--space-lg);
+  display: grid;
+  gap: 0;
+  background: var(--color-paper);
+  border: var(--rule-card, 1px) solid var(--color-rule);
+  border-radius: var(--radius-card, 0);
+}
+
+[data-theme="atelier"] .skill-row__list,
+[data-theme="salon"] .skill-row__list {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  border-radius: 0;
+}
+
+[data-theme="brutal"] .skill-row__list,
+[data-theme="manifesto"] .skill-row__list {
+  border-width: 2px;
+}
+
+.skill-row__list code {
+  font-family: var(--font-mono);
+  font-size: 0.8125em;
+  background: var(--color-paper-2);
+  padding: 0.05em 0.35em;
+  border: var(--rule-hair) solid var(--color-rule);
+  color: var(--color-ink);
+}
+
+/* Row I — Build demo: brief pill → arrow → output thumb stacked */
+.skill-row__demo--build {
+  display: grid;
+  gap: var(--space-sm);
+  justify-items: start;
+}
+
+.brief-pill {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-paper-2);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-ink-2);
+  max-width: 100%;
+}
+
+[data-theme="brutal"] .brief-pill,
+[data-theme="manifesto"] .brief-pill,
+[data-theme="terminal"] .brief-pill,
+[data-theme="newsprint"] .brief-pill,
+[data-theme="atelier"] .brief-pill {
+  border-radius: 0;
+  font-style: normal;
+}
+
+.brief-arrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  color: var(--color-rule-2);
+  user-select: none;
+  padding-inline-start: var(--space-md);
+}
+
+.brief-output {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: var(--rule-card, 1px) solid var(--color-rule);
+}
+
+.brief-output img,
+.brief-output video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+/* — Per-theme .brief-output framing —————————————————————————
+   The same demo media reads differently when the FRAME reacts to the
+   theme. Border weight, corner style, optional shadow, optional
+   per-theme caption. Frame, not content. */
+
+/* HARD EDGES + heavier border. */
+[data-theme="brutal"] .brief-output {
+  border: 2px solid var(--color-ink);
+  border-radius: 0;
+}
+[data-theme="manifesto"] .brief-output {
+  border: 3px solid var(--color-ink);
+  border-radius: 0;
+}
+[data-theme="terminal"] .brief-output {
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-accent) 25%, transparent);
+}
+[data-theme="newsprint"] .brief-output {
+  border: 2px double var(--color-ink);
+  border-radius: 0;
+}
+[data-theme="editorial"] .brief-output {
+  border: 0.5px solid var(--color-rule);
+  border-radius: 0;
+}
+
+/* SLIGHT-RADIUS group (4–6px). */
+[data-theme="sport"] .brief-output {
+  border: 1.5px solid var(--color-accent);
+  border-radius: 4px;
+}
+[data-theme="almanac"] .brief-output {
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+}
+[data-theme="garden"] .brief-output {
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+}
+[data-theme="halo"] .brief-output {
+  border: 1px solid var(--color-rule-2);
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--color-accent) 22%, transparent),
+    0 0 32px -8px color-mix(in oklch, var(--color-accent) 28%, transparent);
+}
+[data-theme="violet"] .brief-output {
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+}
+[data-theme="studio"] .brief-output {
+  border: 0.5px solid var(--color-rule-2);
+  border-radius: 6px;
+}
+
+/* SOFT-CARD group (8–14px). */
+[data-theme="quiet"] .brief-output {
+  border-radius: 8px;
+}
+[data-theme="coral"] .brief-output {
+  border-radius: 8px;
+}
+[data-theme="aurora"] .brief-output {
+  border: 1px solid var(--color-rule-2);
+  border-radius: 12px;
+  box-shadow: 0 0 24px -10px color-mix(in oklch, var(--color-accent) 35%, transparent);
+}
+[data-theme="plume"] .brief-output {
+  border: 1px solid var(--color-rule);
+  border-radius: 12px;
+}
+[data-theme="bloom"] .brief-output {
+  border: 1px solid var(--color-rule);
+  border-radius: 14px;
+  box-shadow: 0 6px 24px -14px color-mix(in oklch, var(--color-accent) 22%, transparent);
+}
+
+/* Atelier / Salon / Linen — hairline only, no radius, optional caption. */
+[data-theme="atelier"] .brief-output,
+[data-theme="salon"] .brief-output,
+[data-theme="linen"] .brief-output {
+  border: 1px solid var(--color-rule-2);
+  border-radius: 0;
+}
+
+/* Riso — duotone offset shadow, hard 0 radius. */
+[data-theme="riso"] .brief-output {
+  border: 2px solid var(--color-ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--color-accent-2, var(--color-accent));
+}
+
+/* Midnight — inner glow ring on dark paper. */
+[data-theme="midnight"] .brief-output {
+  border: 1px solid var(--color-rule-2);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-paper) 25%, transparent);
+}
+
+/* Row III — Audit demo: a CSS-only inline slop hero. Built deliberately
+   to LOOK like every default AI hero — purple-pink gradient, centered,
+   Inter, ✨ badge, gradient pill CTA. Lives outside theme tokens
+   intentionally — it's the negative example. The checklist on the
+   right names every tell + its fix. */
+.skill-row__demo--audit {
+  aspect-ratio: 16 / 10;
+}
+
+.audit-slop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 55%, #f59e0b 100%);
+  border-radius: 14px;
+  overflow: hidden;
+  font-family: "Inter", system-ui, sans-serif;
+  color: #ffffff;
+  /* Deliberate AI-hero clichés: gradient corners, centered, Inter. */
+}
+
+.audit-slop::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.audit-slop__inner {
+  position: relative;
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+  padding: var(--space-md);
+  max-width: 28ch;
+}
+
+.audit-slop__badge {
+  display: inline-block;
+  padding: 0.22rem 0.7rem;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.audit-slop__title {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.1rem, 2.4vw + 0.4rem, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.78) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.audit-slop__lede {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.audit-slop__cta {
+  display: inline-block;
+  margin-block-start: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+  color: #6b21a8;
+  border-radius: 999px;
+  user-select: none;
+}
+
+/* Caption above the slop card — frames the gradient as a quoted artifact, not
+   a card competing with the page. Mono caps, theme-coloured. */
+.audit-slop__caption {
+  display: block;
+  margin: 0 0 var(--space-sm) 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Tint the slop card down on dark / charged themes so it stops winning the
+   visual contest against the surrounding theme. The card still reads as AI
+   slop — purpose retained. */
+[data-theme="midnight"] .audit-slop,
+[data-theme="manifesto"] .audit-slop,
+[data-theme="halo"] .audit-slop,
+[data-theme="aurora"] .audit-slop,
+[data-theme="riso"] .audit-slop,
+[data-theme="terminal"] .audit-slop,
+[data-theme="brutal"] .audit-slop {
+  filter: saturate(0.55) brightness(0.82);
+}
+
+/* Audit checklist — replaces the old 4-row info panel. Each row reads:
+   ✗ <problem> → <fix>. Slop is muted; fix is ink. */
+.audit-check {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-md) var(--space-lg);
+  display: grid;
+  gap: 0;
+  background: var(--color-paper);
+  border: var(--rule-card, 1px) solid var(--color-rule);
+}
+
+[data-theme="atelier"] .audit-check,
+[data-theme="salon"] .audit-check {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+[data-theme="brutal"] .audit-check,
+[data-theme="manifesto"] .audit-check {
+  border-width: 2px;
+}
+
+.audit-check__row {
+  display: grid;
+  grid-template-columns: 1.2rem 1fr 1.2rem 1fr;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding-block: var(--space-sm);
+  border-block-end: var(--rule-hair) solid var(--color-rule);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.audit-check__row:last-child {
+  border-block-end: 0;
+}
+
+.audit-check__cross {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-accent);
+  text-align: center;
+}
+
+.audit-check__problem {
+  font-family: var(--font-body);
+  color: var(--color-muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--color-rule-2);
+}
+
+.audit-check__arrow {
+  font-family: var(--font-mono);
+  color: var(--color-rule-2);
+  text-align: center;
+}
+
+.audit-check__fix {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+@media (max-width: 36rem) {
+  .audit-check__row {
+    grid-template-columns: 1.2rem 1fr;
+    gap: 0.4rem 0.6rem;
+  }
+  .audit-check__arrow {
+    display: none;
+  }
+  .audit-check__fix {
+    grid-column: 2;
+    font-size: 0.875rem;
+  }
+}
+
+/* Rows IV & V — Diptych: before / after side-by-side thumbnails */
+.skill-row__demo--diptych {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin: 0;
+}
+
+.diptych__half {
+  margin: 0;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.diptych__half > .fig-corners {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: var(--rule-hair) solid var(--color-rule);
+}
+
+.diptych__half img,
+.diptych__half video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+.diptych__cap {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  font-feature-settings: "tnum";
+}
+
+.diptych__half[data-state="after"] .diptych__cap {
+  color: var(--color-accent);
+}
+
+@media (max-width: 48rem) {
+  .skill-row__demo--diptych {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+/* — 06 · Install pane ——————————————————————————————
+   A single bordered "manual page" card with three numbered rows —
+   I · Run, II · In, III · Then. Replaces the old 4-card grid. The
+   pane uses theme tokens for colour/border/typography so it adapts
+   when T cycles themes. */
+.install-pane {
+  display: grid;
+  border: var(--rule-card, 1px) solid var(--color-rule);
+  border-radius: var(--radius-card, 0);
+  background: var(--color-paper);
+  box-shadow: var(--shadow-card, none);
+  overflow: hidden;
+}
+
+.install-pane__row {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: var(--space-xl);
+  padding: var(--space-xl) var(--space-2xl);
+  align-items: start;
+}
+
+.install-pane__row + .install-pane__row {
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+}
+
+@media (max-width: 50rem) {
+  .install-pane__row {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+  }
+}
+
+/* — Before / After Hallmark ————————————————————————————
+   Two screenshots side by side — the same prompt, run two ways. The
+   "before" panel is what Sonnet 4.6 alone produces; the "after" is
+   the same model with Hallmark loaded. The shared prompt sits above. */
+.ba__prompt {
+  margin: 0 0 var(--space-2xl);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-paper-2);
+  border: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  line-height: 1.4;
+  font-feature-settings: "tnum";
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: var(--radius-input, 0);
+  max-width: 100%;
+}
+.ba__prompt-mark {
+  color: var(--color-accent);
+  font-weight: 500;
+  margin-inline-end: 0.5em;
+}
+
+.ba {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-xl);
+}
+
+@media (max-width: 56rem) {
+  .ba {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+}
+
+.ba__panel {
+  margin: 0;
+  display: grid;
+  gap: var(--space-md);
+}
+
+.ba__panel-label {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.ba__panel-tag {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border: var(--rule-hair) solid var(--color-rule-2);
+  border-radius: 999px;
+  background: var(--color-paper);
+  color: var(--color-ink-2);
+  letter-spacing: var(--tracking-label);
+}
+
+.ba__panel-tag--accent {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}
+
+.ba__frame {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: var(--rule-hair) solid var(--color-rule);
+  background: var(--color-paper-2);
+  border-radius: var(--radius-card, 0);
+}
+
+.ba__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.ba__panel-cap {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 48ch;
+}
+
+[data-theme="brutal"] .ba__panel-cap,
+[data-theme="manifesto"] .ba__panel-cap,
+[data-theme="terminal"] .ba__panel-cap,
+[data-theme="sport"] .ba__panel-cap,
+[data-theme="almanac"] .ba__panel-cap,
+[data-theme="quiet"] .ba__panel-cap,
+[data-theme="bloom"] .ba__panel-cap {
+  font-family: var(--font-body);
+}
+
+/* — 07 · Footer ————————————————————————————————————— */
+/* The "Powered by" accent dot — used by the editorial colophon. */
+.foot__powered-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  color: var(--color-ink);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+}
+
+.foot__powered-mark::before {
+  content: "";
+  width: 0.55em;
+  height: 0.55em;
+  background: var(--color-accent);
+}
+
+/* — Dimension callout ——————————————————————————————— */
+.dim {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* ════════════════════════════════════════════════════════════ */
+/*  STRUCTURAL FINGERPRINTS — per-theme overrides                */
+/*  Each theme picks distinct values across six axes:             */
+/*  heading placement · body composition · divider · button       */
+/*  · image · reveal                                              */
+/* ════════════════════════════════════════════════════════════ */
+
+/* ── ATELIER — generous spacing, narrow measure, left-aligned ─── */
+[data-theme="atelier"] .opening {
+  grid-template-columns: 1fr;
+  padding-block: var(--space-3xl) var(--space-xl);
+}
+[data-theme="atelier"] .opening__title {
+  max-width: 16ch;
+}
+[data-theme="atelier"] .opening__sub {
+  margin-top: var(--space-xl);
+}
+[data-theme="atelier"] .opening__aside {
+  display: none;
+}
+[data-theme="atelier"] .section__head {
+  grid-template-columns: 1fr;
+  border-bottom: 0;
+  padding-bottom: var(--space-2xl);
+}
+/* Negative space carries the rhythm — no rules between sections. */
+[data-theme="atelier"] .section + .section {
+  padding-block-start: var(--space-3xl);
+}
+[data-theme="atelier"] .section__title {
+  max-width: 22ch;
+}
+[data-theme="atelier"] .foundations {
+  grid-template-columns: 1fr;
+  max-width: 38rem;
+}
+[data-theme="atelier"] .spec {
+  border-top: 0;
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  padding: var(--space-2xl) 0;
+}
+[data-theme="atelier"] .spec__head {
+  gap: var(--space-md);
+}
+[data-theme="atelier"] .step {
+  grid-template-columns: 1fr;
+}
+[data-theme="atelier"] .vs {
+  grid-template-columns: 1fr;
+  border: 0;
+}
+[data-theme="atelier"] .vs__col:first-child {
+  border-right: 0;
+  border-bottom: var(--rule-hair) solid var(--color-rule-2);
+}
+
+/* ── NEWSPRINT — bottom-aligned head, multi-column body, double rule, drop cap ── */
+[data-theme="newsprint"] .opening {
+  grid-template-columns: 1fr;
+  border-top: 4px double var(--color-ink);
+  border-bottom: 1px solid var(--color-ink);
+  padding-block: var(--space-md);
+  align-items: start;
+}
+[data-theme="newsprint"] .opening__aside {
+  border-top: var(--rule-hair) solid var(--color-rule);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+}
+[data-theme="newsprint"] .opening__title {
+  max-width: none;
+  font-weight: 700;
+  margin-block: var(--space-md);
+}
+[data-theme="newsprint"] .opening__sub {
+  column-count: 2;
+  column-gap: 2.5rem;
+  column-rule: 0.5px solid var(--color-rule-2);
+  hyphens: auto;
+  text-align: justify;
+  max-width: none;
+  margin-top: var(--space-md);
+}
+/* Signature drop cap — first letter of the lede */
+[data-theme="newsprint"] .opening__sub::first-letter {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 4.2em;
+  line-height: 0.85;
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  color: var(--color-accent);
+}
+@media (max-width: 50rem) {
+  [data-theme="newsprint"] .opening__sub {
+    column-count: 1;
+  }
+}
+[data-theme="newsprint"] .section__head {
+  grid-template-columns: 1fr;
+  border-bottom: 1px solid var(--color-ink);
+  padding-block: 0.5rem;
+  align-items: baseline;
+}
+[data-theme="newsprint"] .foundations {
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: var(--space-xl);
+  row-gap: 0;
+}
+@media (max-width: 70rem) {
+  [data-theme="newsprint"] .foundations {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 50rem) {
+  [data-theme="newsprint"] .foundations {
+    grid-template-columns: 1fr;
+  }
+}
+[data-theme="newsprint"] .spec {
+  border-top: 1px solid var(--color-ink);
+  padding: var(--space-lg) 0;
+}
+
+/* ── TERMINAL — inline `>` headings, mono everywhere ────────── */
+[data-theme="terminal"] .opening {
+  grid-template-columns: 1fr;
+  padding-block: var(--space-xl) var(--space-md);
+}
+[data-theme="terminal"] .opening__aside {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding-top: var(--space-md);
+  border-top: var(--rule-hair) dashed var(--color-rule-2);
+}
+[data-theme="terminal"] .opening__title {
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  max-width: none;
+}
+[data-theme="terminal"] .opening__title::before {
+  content: "$ ";
+  color: var(--color-accent);
+}
+[data-theme="terminal"] .opening__title em {
+  font-family: var(--font-display);
+  font-style: normal;
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 0.15em;
+}
+[data-theme="terminal"] .section__head {
+  grid-template-columns: 1fr;
+  border-bottom: var(--rule-hair) dashed var(--color-rule-2);
+}
+[data-theme="terminal"] .section__title {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+[data-theme="terminal"] .section__title::before {
+  content: "// ";
+  color: var(--color-accent);
+}
+[data-theme="terminal"] .opening__rule {
+  height: 1rem;
+  width: 0.6rem;
+  background: var(--color-accent);
+  animation: blink 1.05s steps(2) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+[data-theme="terminal"] .step__num::before {
+  content: "[ ";
+  color: var(--color-accent);
+}
+[data-theme="terminal"] .step__num::after {
+  content: " ]";
+  color: var(--color-accent);
+}
+
+/* ── MANIFESTO — full-bleed, ALL CAPS, colour blocks ────────── */
+[data-theme="manifesto"] .opening {
+  grid-template-columns: 1fr;
+  padding-block: var(--space-2xl) var(--space-xl);
+}
+[data-theme="manifesto"] .opening__aside {
+  display: none;
+}
+[data-theme="manifesto"] .opening__title {
+  text-transform: uppercase;
+  font-weight: 800;
+  max-width: 11ch;
+  font-style: normal;
+}
+[data-theme="manifesto"] .opening__title em {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 800;
+  background: var(--color-accent);
+  color: var(--color-paper);
+  padding: 0 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+[data-theme="manifesto"] .opening__sub {
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  max-width: 56ch;
+}
+[data-theme="manifesto"] .section__head {
+  grid-template-columns: 1fr;
+  border-bottom: 3px solid var(--color-ink);
+  padding-bottom: var(--space-sm);
+}
+[data-theme="manifesto"] .section__title {
+  text-transform: uppercase;
+  max-width: 18ch;
+  font-weight: 800;
+}
+[data-theme="manifesto"] .step {
+  border-top: 3px solid var(--color-ink);
+}
+
+/* Manifesto — oversized declarative phrases punctuate the rhythm
+   between sections. Cycles through 3 statements via :nth-of-type. */
+[data-theme="manifesto"] .section + .section::before {
+  display: block;
+  margin: var(--space-3xl) 0 var(--space-2xl);
+  padding-block: var(--space-md);
+  border-block: 4px solid var(--color-ink);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  text-align: center;
+}
+[data-theme="manifesto"] .section:nth-of-type(3)::before {
+  content: "WE DO NOT REPEAT.";
+}
+[data-theme="manifesto"] .section:nth-of-type(4)::before {
+  content: "TYPE FIRST.";
+}
+[data-theme="manifesto"] .section:nth-of-type(5)::before {
+  content: "NO GRADIENTS.";
+}
+[data-theme="manifesto"] .section:nth-of-type(6)::before {
+  content: "DEFAULT IS THE ENEMY.";
+}
+[data-theme="manifesto"] .section:nth-of-type(7)::before {
+  content: "EVERY DECISION VISIBLE.";
+}
+[data-theme="manifesto"] .section:nth-of-type(8)::before {
+  content: "THE PAGE IS A POSITION.";
+}
+
+/* ── SALON — italic display, fleuron divider, left-aligned ───── */
+[data-theme="salon"] .opening {
+  grid-template-columns: 1fr;
+  padding-block: var(--space-3xl) var(--space-xl);
+}
+[data-theme="salon"] .opening__title {
+  font-style: italic;
+  font-weight: 400;
+  max-width: 14ch;
+}
+[data-theme="salon"] .opening__title em {
+  font-style: normal;
+  font-family: var(--font-display);
+}
+[data-theme="salon"] .opening__sub {
+  margin-top: var(--space-xl);
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+[data-theme="salon"] .opening__aside {
+  display: none;
+}
+[data-theme="salon"] .section__head {
+  grid-template-columns: 1fr;
+  border-bottom: 0;
+  padding-bottom: var(--space-md);
+}
+[data-theme="salon"] .section__head::after {
+  content: "❦";
+  display: block;
+  color: var(--color-accent);
+  font-size: 1.2rem;
+  margin-top: var(--space-md);
+  font-family: var(--font-serif);
+}
+[data-theme="salon"] .foundations {
+  grid-template-columns: 1fr;
+  max-width: 36rem;
+}
+
+/* ── LINEN — hanging headings, two-column asymmetric, woven texture ─── */
+[data-theme="linen"] .opening {
+  grid-template-columns: 7fr 5fr;
+  gap: var(--space-3xl);
+}
+/* Section heads hang the label in a left gutter, title in the body column.
+   Reads like a printed manuscript margin note + heading. */
+[data-theme="linen"] .section__head {
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+[data-theme="linen"] .section__title {
+  margin-bottom: var(--space-2xl);
+}
+[data-theme="linen"] .section-label {
+  margin-bottom: var(--space-sm);
+}
+[data-theme="linen"] .foundations {
+  grid-template-columns: 5fr 7fr;
+  gap: var(--space-xl) var(--space-2xl);
+}
+@media (max-width: 56rem) {
+  [data-theme="linen"] .foundations {
+    grid-template-columns: 1fr;
+  }
+}
+[data-theme="linen"] .spec {
+  border-top: 0;
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+/* Signature: barely-visible woven texture — checkerboard at 3% opacity */
+html[data-theme="linen"] body {
+  background-image:
+    linear-gradient(
+      45deg,
+      oklch(20% 0.025 90 / 0.018) 25%,
+      transparent 25%,
+      transparent 75%,
+      oklch(20% 0.025 90 / 0.018) 75%
+    ),
+    linear-gradient(
+      45deg,
+      oklch(20% 0.025 90 / 0.018) 25%,
+      transparent 25%,
+      transparent 75%,
+      oklch(20% 0.025 90 / 0.018) 75%
+    );
+  background-size: 6px 6px;
+  background-position:
+    0 0,
+    3px 3px;
+}
+
+/* ── ALMANAC — sticky labels, 3-col equal, dense, faint grid bg ────── */
+/* Signature: faint vertical grid running the full page (graph-paper) */
+html[data-theme="almanac"] body {
+  background-image: linear-gradient(
+    to right,
+    oklch(38% 0.018 240 / 0.05) 0,
+    oklch(38% 0.018 240 / 0.05) 1px,
+    transparent 1px
+  );
+  background-size: calc(100% / 12) 100%;
+  background-attachment: fixed;
+}
+
+[data-theme="almanac"] .section__head {
+  position: sticky;
+  /* Dock BELOW the .banner (sticky top:0, height: var(--banner-height)).
+     Both elements are sticky; without this offset, the section head bleeds
+     over the banner because both start at top:0. */
+  top: var(--banner-height);
+  /* --z-sticky (200) sits beneath --z-sticky-nav (300) so the banner
+     out-paints the section head even when their boxes overlap mid-scroll. */
+  z-index: var(--z-sticky);
+  background: var(--color-paper);
+  /* Solid paper background (no transparency) so the 12-column body grid
+     visible behind doesn't show through during the scroll transition. */
+  padding-block: var(--space-sm);
+  border-bottom: 1px solid var(--color-ink);
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+[data-theme="almanac"] .section__title {
+  font-size: var(--text-xl);
+}
+/* Almanac calls itself indexed — push the §-number into every section label. */
+[data-theme="almanac"] .section-label::before {
+  content: "§ ";
+  color: var(--color-accent);
+  font-feature-settings: "tnum";
+}
+[data-theme="almanac"] .foundations {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-left: var(--rule-hair) solid var(--color-rule);
+}
+@media (max-width: 70rem) {
+  [data-theme="almanac"] .foundations {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 50rem) {
+  [data-theme="almanac"] .foundations {
+    grid-template-columns: 1fr;
+    border-left: 0;
+  }
+}
+[data-theme="almanac"] .spec {
+  border-top: 0;
+  border-right: var(--rule-hair) solid var(--color-rule);
+  padding: var(--space-md) var(--space-md);
+}
+[data-theme="almanac"] .opening {
+  grid-template-columns: 6fr 6fr;
+}
+[data-theme="almanac"] .opening__title {
+  max-width: 18ch;
+}
+
+/* ── SPORT — italic display, asymmetric spans, bleed-colour ── */
+[data-theme="sport"] .opening {
+  grid-template-columns: 9fr 3fr;
+  align-items: end;
+  padding-block: var(--space-2xl) var(--space-xl);
+}
+[data-theme="sport"] .opening__title {
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  max-width: 14ch;
+}
+[data-theme="sport"] .opening__title em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+[data-theme="sport"] .opening__sub {
+  font-weight: 500;
+}
+[data-theme="sport"] .section__head {
+  grid-template-columns: 1fr;
+  border-bottom: 2px solid var(--color-rule-2);
+  padding-bottom: var(--space-md);
+}
+[data-theme="sport"] .section__title {
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+[data-theme="sport"] .foundations {
+  grid-template-columns: 7fr 5fr;
+  gap: var(--space-xl) var(--space-2xl);
+}
+@media (max-width: 56rem) {
+  [data-theme="sport"] .foundations {
+    grid-template-columns: 1fr;
+  }
+}
+[data-theme="sport"] .spec {
+  border-top: var(--rule-hair) solid var(--color-rule-2);
+}
+[data-theme="sport"] .step__num {
+  font-style: italic;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* ── BRUTAL existing — augment with structural overrides ───── */
+[data-theme="brutal"] .opening__title em {
+  font-style: normal;
+  text-decoration: underline;
+  text-decoration-thickness: 4px;
+  text-underline-offset: 0.12em;
+  text-decoration-color: var(--color-accent);
+}
+[data-theme="brutal"] .section__head {
+  border-bottom: 3px solid var(--color-ink);
+}
+
+/* ── GARDEN existing — augment ──────────────────────────────── */
+[data-theme="garden"] .section__head {
+  grid-template-columns: 1fr;
+  border-bottom: 0;
+  padding-bottom: var(--space-lg);
+}
+[data-theme="garden"] .section__title {
+  margin-top: var(--space-md);
+}
+[data-theme="garden"] .foundations {
+  grid-template-columns: 5fr 7fr;
+}
+@media (max-width: 56rem) {
+  [data-theme="garden"] .foundations {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── MIDNIGHT existing — numbered display style ─────────────── */
+[data-theme="midnight"] .section-label .num {
+  color: var(--color-accent);
+}
+[data-theme="midnight"] .opening__title em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+/* — 04 · Anti-patterns — Slop, by name ——————————————————
+   Five-row editorial list: number · slop name (struck-through,
+   muted) · fix label + body (clean, ink). Side-by-side typography
+   so the contrast IS the design. Hairline rules between rows. */
+
+.anti__intro {
+  margin: 0 0 var(--space-2xl);
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 60ch;
+}
+
+[data-theme="brutal"] .anti__intro,
+[data-theme="manifesto"] .anti__intro,
+[data-theme="terminal"] .anti__intro,
+[data-theme="sport"] .anti__intro,
+[data-theme="almanac"] .anti__intro,
+[data-theme="quiet"] .anti__intro,
+[data-theme="bloom"] .anti__intro,
+[data-theme="riso"] .anti__intro {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+.anti__intro code {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.875em;
+  background: var(--color-paper-2);
+  padding: 0.05em 0.35em;
+  border: var(--rule-hair) solid var(--color-rule);
+  color: var(--color-ink);
+}
+
+.anti-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+.anti-row {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: var(--space-xl);
+  padding-block: var(--space-xl);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  align-items: start;
+}
+
+.anti-row:first-child {
+  border-block-start: 0;
+  padding-block-start: 0;
+}
+
+@media (max-width: 60rem) {
+  .anti-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+.anti-row__num {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  padding-block-start: 0.45em;
+  font-feature-settings: "tnum" 1;
+}
+
+.anti-row__name {
+  margin: 0 0 var(--space-sm) 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--display-weight, 500);
+  font-size: clamp(1.25rem, 1.5vw + 0.75rem, 1.75rem);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-rule-2);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--color-rule-2);
+  font-optical-sizing: auto;
+}
+
+[data-theme="brutal"] .anti-row__name,
+[data-theme="manifesto"] .anti-row__name,
+[data-theme="sport"] .anti-row__name {
+  text-transform: uppercase;
+  font-style: normal;
+}
+
+[data-theme="terminal"] .anti-row__name {
+  font-family: var(--font-mono);
+  font-style: normal;
+}
+
+.anti-row__desc {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  line-height: var(--lh-relaxed);
+  color: var(--color-muted);
+  max-width: 50ch;
+}
+
+[data-theme="brutal"] .anti-row__desc,
+[data-theme="manifesto"] .anti-row__desc,
+[data-theme="terminal"] .anti-row__desc,
+[data-theme="sport"] .anti-row__desc,
+[data-theme="almanac"] .anti-row__desc,
+[data-theme="quiet"] .anti-row__desc,
+[data-theme="bloom"] .anti-row__desc {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+.anti-row__fix-label {
+  margin: 0 0 var(--space-2xs) 0;
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-feature-settings: "tnum";
+}
+
+.anti-row__fix-body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink);
+  max-width: 45ch;
+}
+
+/* — 05 · Foundations — eight compact cards in a 4×2 desktop grid.
+   Each card pairs a hand-drawn monoline SVG (currentColor stroke,
+   theme-aware) with a one-word title and a single line of body
+   copy. Stacks cleanly on mobile. */
+
+.found__intro {
+  margin: 0 0 var(--space-2xl);
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--color-ink-2);
+  max-width: 60ch;
+}
+
+[data-theme="brutal"] .found__intro,
+[data-theme="manifesto"] .found__intro,
+[data-theme="terminal"] .found__intro,
+[data-theme="sport"] .found__intro,
+[data-theme="almanac"] .found__intro,
+[data-theme="quiet"] .found__intro,
+[data-theme="bloom"] .found__intro,
+[data-theme="riso"] .found__intro {
+  font-family: var(--font-body);
+  font-style: normal;
+}
+
+/* Foundations cards — explicit per-card right + bottom borders so
+   every column gap renders crisp at every theme + viewport. The
+   prior gap-as-border pattern (gap: 0.5px, parent bg showing
+   through) sub-pixel-rounded inconsistently — col 2/3 gaps
+   sometimes vanished. The new approach uses real 1px borders on
+   each card, parent gives top + left, cards give right + bottom.
+   Result: every divider renders. */
+.found-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-block-start: 1px solid var(--color-rule);
+  border-inline-start: 1px solid var(--color-rule);
+}
+
+.found-card {
+  background: var(--color-paper);
+  padding: var(--space-lg) var(--space-md);
+  display: grid;
+  gap: var(--space-sm);
+  align-content: start;
+  min-height: 12rem;
+  border-block-end: 1px solid var(--color-rule);
+  border-inline-end: 1px solid var(--color-rule);
+}
+
+.found-card__icon {
+  display: block;
+  width: 48px;
+  height: 48px;
+  color: var(--color-ink);
+  margin-block-end: var(--space-xs);
+}
+
+.found-card__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.found-card__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-style: var(--display-style, normal);
+  font-size: var(--text-lg);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+}
+
+[data-theme="manifesto"] .found-card__name,
+[data-theme="brutal"] .found-card__name,
+[data-theme="sport"] .found-card__name {
+  text-transform: uppercase;
+}
+
+[data-theme="terminal"] .found-card__name {
+  font-family: var(--font-mono);
+  font-style: normal;
+}
+
+.found-card__body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: var(--lh-relaxed);
+  color: var(--color-ink-2);
+  max-width: 28ch;
+}
+
+[data-theme="atelier"] .found-card,
+[data-theme="salon"] .found-card {
+  background: transparent;
+  border-inline-end: 0;
+  border-block-end: var(--rule-hair) dashed var(--color-rule);
+}
+
+[data-theme="atelier"] .found-cards,
+[data-theme="salon"] .found-cards {
+  background: transparent;
+  border: 0;
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  padding-block-start: var(--space-md);
+}
+
+@media (max-width: 60rem) {
+  .found-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 36rem) {
+  .found-cards {
+    grid-template-columns: 1fr;
+  }
+  .found-card {
+    min-height: auto;
+  }
+}
+
+/* — Section pull-arrow ————————————————————————————————————
+   Editorial "continued on p. 12" cue at the end of each section.
+   Italic serif label + arrow, biased left or right per section
+   for rhythm. Hover nudges the arrow forward. Pulls the eye into
+   the next section instead of stopping cold. */
+
+/* — Interlude — full-bleed typographic moment between sections —
+   One declarative phrase set in the active theme's display face,
+   centered on a contrasting paper band. Punctuates the scroll;
+   resets attention before the next section. Zero motion, pure type. */
+.interlude {
+  margin-inline: calc(-1 * var(--page-gutter));
+  padding-block: var(--space-3xl);
+  padding-inline: var(--page-gutter);
+  background: var(--color-paper-2);
+  border-block: var(--rule-hair) solid var(--color-rule);
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.interlude__phrase {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-style: var(--display-style, normal);
+  font-size: clamp(2.25rem, 6vw + 1rem, 5rem);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+  font-optical-sizing: auto;
+  max-width: 22ch;
+  /* Long-word safety inherited from base.css */
+}
+
+.interlude__phrase em {
+  font-style: italic;
+  /* Accent itself, not accent-ink: this <em> sits on the paper band,
+     not on an accent fill. --color-accent-ink is "text over accent",
+     which is paper-coloured on most themes and disappears here. */
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+[data-theme="brutal"] .interlude__phrase,
+[data-theme="manifesto"] .interlude__phrase,
+[data-theme="sport"] .interlude__phrase {
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="brutal"] .interlude__phrase em,
+[data-theme="manifesto"] .interlude__phrase em,
+[data-theme="sport"] .interlude__phrase em {
+  font-style: normal;
+  color: var(--color-accent);
+}
+
+[data-theme="terminal"] .interlude__phrase {
+  font-family: var(--font-mono);
+}
+
+[data-theme="terminal"] .interlude__phrase em {
+  font-style: normal;
+  color: var(--color-accent);
+}
+
+@media (max-width: 48rem) {
+  .interlude {
+    padding-block: var(--space-2xl);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Mobile collapse — section-head one-column on narrow viewports.
+   Many themes override `.section__head`'s `grid-template-columns`
+   (e.g. sport: 6rem 1fr · atelier: custom · linen: 6rem 1fr · …).
+   Per-theme overrides have specificity (0, 2, 0); the original
+   mobile collapse rule was (0, 1, 0) and lost the cascade — the
+   fixed-column heads stayed 2-column on mobile, causing the title
+   to overlap the section label (most visible on Sport: italic
+   Anton title wrapped onto the "02 / EXAMPLES" label).
+
+   This rule restores single-column collapse with matching
+   specificity so it wins source-order against every per-theme
+   head override above. Keep this block last in the file. */
+@media (max-width: 48rem) {
+  [data-theme] .section__head {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    align-items: start;
+  }
+}

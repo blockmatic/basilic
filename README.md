@@ -51,8 +51,8 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 Run with `pnpm <script>`.
 
 **Setup**
-  - `setup` — Full setup (install, hooks, gitleaks, osv, database)
-  - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
+  - `setup` — Full setup (install, hooks, gitleaks, osv, deepsec, database)
+  - `setup:gitleaks`, `setup:osv`, `setup:deepsec` — Install Gitleaks, OSV scanner, deepsec workspace
   - `setup:database` — Database tools (Docker, Supabase CLI)
   - `reset` — Local API database: Supabase reset + Drizzle migrations + seed (`pnpm --filter @repo/api reset`). See [apps/api/README.md](apps/api/README.md)
 
@@ -79,6 +79,8 @@ Run with `pnpm <script>`.
   - `security:osv` — OSV vulnerability scan
   - `security:audit` — pnpm audit (high+)
   - `security:check` — Run security check script
+  - `security:deepsec` — Agentic PR review (`process --diff origin/main`)
+  - `security:deepsec:full` — Full-repo deepsec scan + process (expensive; optional `DEEPSEC_LIMIT`)
 **Hooks**
   - `hooks:pre-commit` — Pre-commit: security + Biome staged
   - `hooks:security` — Block files, scan secrets, OSV

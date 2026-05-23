@@ -1,0 +1,302 @@
+/* Hallmark · macrostructure: Long Document · H5 hero knobs: salutation=command, body=2 paragraphs, signoff=mit-license
+ * theme: Terminal · accent: phosphor-green ~6% (functional, not decorative)
+ * enrichment: Tier-A inline CSS-art terminal blocks (no sticky pin, no Lottie)
+ * studied: no · context: explicit · v0.6.0
+ */
+
+:root {
+  --color-paper: oklch(13% 0.02 150);
+  --color-paper-2: oklch(17% 0.022 150);
+  --color-rule: oklch(28% 0.025 150);
+  --color-ink: oklch(86% 0.04 150);
+  --color-ink-soft: oklch(62% 0.04 150);
+  --color-accent: oklch(82% 0.2 150);
+  --color-accent-dim: oklch(58% 0.16 150);
+  --color-amber: oklch(78% 0.18 80);
+
+  --font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+
+  --measure-prose: 64ch;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-micro: 100ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
+}
+
+/* Masthead */
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-block-end: 1px solid var(--color-rule);
+  padding-block-end: var(--space-sm);
+  margin-block-end: var(--space-2xl);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-soft);
+}
+
+.masthead__brand {
+  color: var(--color-accent);
+}
+.masthead__meta {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Lede — the salutation-as-command */
+.lede {
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  line-height: 1.4;
+  margin: 0 0 var(--space-xl);
+  color: var(--color-ink);
+  max-width: var(--measure-prose);
+}
+
+.lede__prompt {
+  color: var(--color-accent);
+  margin-inline-end: 0.5ch;
+}
+
+.lede__caret {
+  display: inline-block;
+  width: 0.55ch;
+  height: 1.15em;
+  background: var(--color-accent);
+  vertical-align: -0.18em;
+  margin-inline-start: 0.15em;
+  animation: caret 1s steps(2, jump-none) infinite;
+}
+
+@keyframes caret {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lede__caret {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
+/* Body prose */
+.prose {
+  max-width: var(--measure-prose);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.prose p {
+  margin: 0 0 var(--space-md);
+  color: var(--color-ink);
+}
+
+.prose strong {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent-dim);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-micro) var(--ease-out);
+}
+
+.prose a:hover,
+.prose a:focus-visible {
+  text-decoration-color: var(--color-accent);
+}
+
+.prose a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Inline terminal blocks */
+.term {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  padding: var(--space-md);
+  margin: var(--space-lg) 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  overflow-x: auto;
+  position: relative;
+}
+
+.term__line {
+  display: block;
+  white-space: pre;
+  color: var(--color-ink);
+}
+.term__line .term__prompt {
+  color: var(--color-accent);
+}
+.term__line .term__flag {
+  color: var(--color-amber);
+}
+.term__line .term__comment {
+  color: var(--color-ink-soft);
+}
+.term__line.term__line--out {
+  color: var(--color-ink-soft);
+}
+
+/* Section headings */
+.section {
+  margin-block-start: var(--space-2xl);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-rule);
+}
+
+.section__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 0 var(--space-md);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-soft);
+}
+
+.section__num {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+/* Numbered note rows (How it works) */
+.notes {
+  display: grid;
+  gap: var(--space-md);
+}
+.note {
+  display: grid;
+  grid-template-columns: 4ch 1fr;
+  gap: var(--space-md);
+  align-items: baseline;
+}
+.note__num {
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+.note__body {
+  color: var(--color-ink);
+  max-width: var(--measure-prose);
+}
+.note__body strong {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+/* Flag spec table */
+.flags {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.flags th,
+.flags td {
+  text-align: start;
+  padding: var(--space-2xs) var(--space-sm) var(--space-2xs) 0;
+  border-block-end: 1px solid var(--color-rule);
+  vertical-align: baseline;
+}
+.flags th {
+  font-weight: 500;
+  color: var(--color-ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.flags td:first-child {
+  color: var(--color-accent);
+  width: 18ch;
+}
+
+/* Colophon */
+.colophon {
+  margin-block-start: var(--space-3xl);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-xl);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-soft);
+}
+
+.colophon a {
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.colophon a:hover,
+.colophon a:focus-visible {
+  color: var(--color-accent);
+}
+
+.colophon a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Mobile */
+@media (max-width: 40rem) {
+  .page {
+    padding: var(--space-xl) var(--space-md) var(--space-2xl);
+  }
+  .lede {
+    font-size: 1.125rem;
+  }
+  .note {
+    grid-template-columns: 3ch 1fr;
+    gap: var(--space-sm);
+  }
+}

@@ -1,0 +1,81 @@
+/* Hallmark · tokens · genre: editorial · macrostructure: Marquee Hero · theme: Manifesto-dark
+ * paper: dark-warm-near-black · display: display-heavy · accent: bleed red 25°
+ */
+
+:root {
+  /* Paper — warm-tinted near-black. Never pure black. */
+  --color-paper: oklch(13% 0.01 60);
+  --color-paper-2: oklch(18% 0.012 60);
+  --color-paper-3: oklch(24% 0.014 60);
+  --color-paper-4: oklch(30% 0.016 60);
+
+  /* Ink — warm off-white. Never pure white. */
+  --color-ink: oklch(96% 0.01 80);
+  --color-ink-2: oklch(80% 0.012 80);
+  --color-ink-mute: oklch(62% 0.014 70);
+  --color-rule: oklch(38% 0.014 60);
+  --color-hairline: oklch(28% 0.012 60);
+
+  /* Accent — bleed red. Used at <5% of the viewport. */
+  --color-accent: oklch(66% 0.235 25);
+  --color-accent-2: oklch(78% 0.18 70);
+  --color-accent-mute: oklch(38% 0.11 28);
+
+  /* Status (departure board) */
+  --color-status-go: oklch(72% 0.15 145);
+  --color-status-wait: oklch(66% 0.235 25);
+  --color-status-hold: oklch(58% 0.02 60);
+
+  /* Focus ring — never animated, ≥3:1 against paper */
+  --color-focus: oklch(78% 0.18 70);
+
+  /* Fonts — display-heavy + editorial italic + mono */
+  --font-display: "Bricolage Grotesque", "Archivo Black", system-ui, sans-serif;
+  --font-body: "Newsreader", "Source Serif 4", Georgia, serif;
+  --font-italic: "Newsreader", "Source Serif 4", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Type scale — fluid, generous */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: clamp(3rem, 6vw, 5rem);
+  --text-board: clamp(2.5rem, 6vw, 5rem);
+  --text-board-headline: clamp(3.25rem, 8vw, 6.5rem);
+  --text-mark: clamp(3rem, 8.5vw, 7.5rem);
+
+  /* 4pt spacing scale */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6.5rem;
+  --space-4xl: 10rem;
+
+  /* Rules */
+  --rule-hair: 1px solid var(--color-hairline);
+  --rule-thick: 2px solid var(--color-ink);
+  --rule-double: 3px double var(--color-ink);
+
+  /* Radius — tight, ticket-like */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* Motion */
+  --dur-fast: 140ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
+  --dur-stagger: 600ms;
+  --dur-ticker: 60s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}

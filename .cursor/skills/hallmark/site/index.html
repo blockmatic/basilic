@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en" data-theme="specimen">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <title>Hallmark — A design skill that refuses to look AI-generated</title>
+  <meta name="description"
+    content="Hallmark is a design skill for AI coding assistants. It encodes the anti-AI-slop consensus — typography, colour, layout, motion, interaction — into one holistic ruleset. Powered by Together AI." />
+
+  <meta property="og:title" content="Hallmark — A design skill that refuses to look AI-generated" />
+  <meta property="og:description"
+    content="A design skill for AI coding assistants. Encodes the anti-slop consensus into one ruleset. Powered by Together AI." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.usehallmark.com/" />
+  <meta property="og:site_name" content="Hallmark" />
+  <meta property="og:image" content="https://www.usehallmark.com/OG-hallmark.png" />
+  <meta property="og:image:secure_url" content="https://www.usehallmark.com/OG-hallmark.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="2400" />
+  <meta property="og:image:height" content="1356" />
+  <meta property="og:image:alt" content="Hallmark — A design skill that refuses to look AI-generated" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Hallmark — A design skill that refuses to look AI-generated" />
+  <meta name="twitter:description"
+    content="A design skill for AI coding assistants. Encodes the anti-slop consensus into one ruleset. Powered by Together AI." />
+  <meta name="twitter:image" content="https://www.usehallmark.com/OG-hallmark.png" />
+  <meta name="twitter:image:alt" content="Hallmark — A design skill that refuses to look AI-generated" />
+
+  <link rel="icon" type="image/svg+xml" href="favicon-light.svg" media="(prefers-color-scheme: light)" />
+  <link rel="icon" type="image/svg+xml" href="favicon-dark.svg" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" type="image/svg+xml" href="favicon-light.svg" />
+
+  <!-- Entrance gate. Hides body until web fonts resolve so the page doesn't
+       flash system fonts then snap to the real faces. Fires once on first
+       load only — the matching script in the pre-paint block at the bottom
+       of <head> sets data-fonts-ready on <html> when document.fonts.ready
+       resolves (or after a 1200 ms safety timeout). Theme switches modify
+       [data-theme], not [data-fonts-ready], so the fade never re-runs. -->
+  <style>
+    html:not([data-fonts-ready]) body { opacity: 0; }
+    body {
+      opacity: 1;
+      transition: opacity 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html:not([data-fonts-ready]) body { opacity: 1; }
+      body { transition: none; }
+    }
+  </style>
+
+  <!-- Google Fonts — Anton, Albert Sans, Fraunces, Geist, Geist Mono, Hanken Grotesk, Inter, Inter Tight, Newsreader, Playfair Display, Public Sans. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=Anton&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,500&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Inter+Tight:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Playfair+Display:ital,wght@1,400;1,500;1,600&family=Public+Sans:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/sections.css" />
+
+  <script>
+    // Load theme before paint to avoid flash. Order: ?theme= → localStorage → default.
+    try {
+      const url = new URL(window.location.href);
+      const q = url.searchParams.get("theme");
+      const t = q || localStorage.getItem("hallmark-theme");
+      if (t) document.documentElement.dataset.theme = t;
+    } catch (e) { }
+
+    // Mark fonts-ready when document.fonts resolves; safety timeout at 1200 ms.
+    // Pairs with the entrance-fade <style> above. Fires once on first load —
+    // theme switches don't reset the attribute, so the fade never re-runs.
+    (() => {
+      var html = document.documentElement;
+      var fired = false;
+      function ready() {
+        if (fired) return;
+        fired = true;
+        html.setAttribute("data-fonts-ready", "");
+      }
+      if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === "function") {
+        document.fonts.ready.then(ready);
+      } else {
+        ready();
+      }
+      setTimeout(ready, 1200);
+    })();
+  </script>
+
+  <!-- Privacy-friendly analytics by Plausible -->
+  <script async src="https://plausible.io/js/pa-C-D0j4RyxujH0xB9vHv0a.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||((i)=> {plausible.o=i||{}});
+    plausible.init()
+  </script>
+</head>
+
+<body>
+
+  <!-- BANNER — sticky top, thin, holds the theme picker -->
+  <header class="banner" role="banner">
+    <a class="banner__mark" href="#top" aria-label="Hallmark — top of page">
+      <span class="brand-mark" aria-hidden="true"><span class="brand-mark__slash">/</span><span class="brand-mark__name">hallmark</span></span>
+      <span class="banner__ver tnum">v1.0</span>
+    </a>
+
+    <a class="banner__install" href="#install" aria-label="Jump to install section">Install</a>
+
+    <a class="banner__star" href="https://github.com/nutlope/hallmark" target="_blank" rel="noopener"
+      aria-label="Star Hallmark on GitHub">
+      <svg class="banner__star-icon" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
+        <path fill="currentColor"
+          d="M8 0.5l2.36 4.78 5.27.77-3.81 3.72.9 5.24L8 12.55 3.28 15.01l.9-5.24L.37 6.05l5.27-.77L8 .5z" />
+      </svg>
+      <span class="banner__star-count tnum" data-star-count>0</span>
+    </a>
+
+    <span class="banner__spacer" aria-hidden="true"></span>
+
+    <div class="banner__theme-wrap" data-theme-wrap>
+      <button class="banner__theme-indicator" type="button" aria-haspopup="listbox" aria-expanded="false"
+        aria-controls="theme-dropdown" data-theme-trigger>
+        <span class="banner__ordinal tnum" data-theme-ordinal>01 / 23</span>
+        <span class="banner__indicator-sep" aria-hidden="true">—</span>
+        <span class="banner__theme" data-theme-current>Specimen</span>
+        <svg class="banner__caret" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+          <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </button>
+
+      <div class="theme-dropdown" id="theme-dropdown" role="listbox" aria-label="Theme picker" hidden>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="specimen" aria-label="01 — Specimen"
+          style="--dot: oklch(96% 0.018 80); --dot-edge: oklch(70% 0.04 75);"><span
+            class="theme-dropdown__num">01</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="midnight" aria-label="02 — Midnight"
+          style="--dot: oklch(15% 0.022 250); --dot-edge: oklch(72% 0.16 220);"><span
+            class="theme-dropdown__num">02</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="brutal" aria-label="03 — Brutal"
+          style="--dot: oklch(98% 0.001 0); --dot-edge: oklch(60% 0.21 27);"><span
+            class="theme-dropdown__num">03</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="garden" aria-label="04 — Garden"
+          style="--dot: oklch(95% 0.030 130); --dot-edge: oklch(54% 0.16 14);"><span
+            class="theme-dropdown__num">04</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="atelier" aria-label="05 — Atelier"
+          style="--dot: oklch(94% 0.005 60); --dot-edge: oklch(45% 0.13 60);"><span
+            class="theme-dropdown__num">05</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="newsprint" aria-label="06 — Newsprint"
+          style="--dot: oklch(92% 0.045 50); --dot-edge: oklch(32% 0.10 28);"><span
+            class="theme-dropdown__num">06</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="terminal" aria-label="07 — Terminal"
+          style="--dot: oklch(11% 0.018 145); --dot-edge: oklch(78% 0.19 138);"><span
+            class="theme-dropdown__num">07</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="manifesto" aria-label="08 — Manifesto"
+          style="--dot: oklch(10% 0.005 60); --dot-edge: oklch(60% 0.22 27);"><span
+            class="theme-dropdown__num">08</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="salon" aria-label="09 — Salon"
+          style="--dot: oklch(94% 0.030 65); --dot-edge: oklch(40% 0.085 50);"><span
+            class="theme-dropdown__num">09</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="linen" aria-label="10 — Linen"
+          style="--dot: oklch(89% 0.022 95); --dot-edge: oklch(46% 0.06 95);"><span
+            class="theme-dropdown__num">10</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="almanac" aria-label="11 — Almanac"
+          style="--dot: oklch(94% 0.008 245); --dot-edge: oklch(38% 0.135 250);"><span
+            class="theme-dropdown__num">11</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="sport" aria-label="12 — Sport"
+          style="--dot: oklch(98% 0.003 250); --dot-edge: oklch(58% 0.190 35);"><span
+            class="theme-dropdown__num">12</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="studio" aria-label="13 — Studio"
+          style="--dot: oklch(96.5% 0.014 95); --dot-edge: oklch(46% 0.140 145);"><span
+            class="theme-dropdown__num">13</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="riso" aria-label="14 — Riso"
+          style="--dot: oklch(91% 0.034 30); --dot-edge: oklch(58% 0.170 220);"><span
+            class="theme-dropdown__num">14</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="quiet" aria-label="15 — Quiet"
+          style="--dot: oklch(100% 0 0); --dot-edge: oklch(15% 0 0);"><span
+            class="theme-dropdown__num">15</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="bloom" aria-label="16 — Bloom"
+          style="--dot: oklch(96% 0.018 35); --dot-edge: oklch(64% 0.180 18);"><span
+            class="theme-dropdown__num">16</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="coral" aria-label="17 — Coral"
+          style="--dot: oklch(96.5% 0.005 50); --dot-edge: oklch(64% 0.165 28);"><span
+            class="theme-dropdown__num">17</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="violet" aria-label="18 — Violet"
+          style="--dot: oklch(99% 0.003 280); --dot-edge: oklch(58% 0.16 285);"><span
+            class="theme-dropdown__num">18</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="aurora" aria-label="19 — Aurora"
+          style="--dot: oklch(11% 0.025 200); --dot-edge: oklch(72% 0.170 200);"><span
+            class="theme-dropdown__num">19</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="halo" aria-label="20 — Halo"
+          style="--dot: oklch(13% 0.005 60); --dot-edge: oklch(74% 0.16 70);"><span
+            class="theme-dropdown__num">20</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="plume" aria-label="21 — Plume"
+          style="--dot: oklch(96% 0.020 70); --dot-edge: oklch(68% 0.130 18);"><span
+            class="theme-dropdown__num">21</span></button>
+        <button class="theme-dropdown__dot" type="button" data-theme-btn="editorial" aria-label="22 — Editorial"
+          style="--dot: oklch(94% 0.020 75); --dot-edge: oklch(60% 0.160 35);"><span
+            class="theme-dropdown__num">22</span></button>
+      </div>
+    </div>
+
+    <button class="banner__shuffle" type="button" aria-label="Random theme · T cycles · R randomises"
+      title="Click → random · T cycles · R randomises">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M16 3h5v5" />
+        <path d="M4 20 21 3" />
+        <path d="M21 16v5h-5" />
+        <path d="m15 15 6 6" />
+        <path d="M4 4l5 5" />
+      </svg>
+      <span class="banner__shuffle-key">T</span>
+    </button>
+
+    <aside class="t-tooltip" data-t-tooltip hidden role="status" aria-live="polite">
+      <span class="t-tooltip__arrow" aria-hidden="true"></span>
+      <span class="t-tooltip__body">
+        Press <kbd>T</kbd> to see this page in <strong>22 shapes</strong>.
+      </span>
+    </aside>
+  </header>
+
+  <main class="page">
+
+    <!-- 01 · HERO SLOT — archetype swaps per theme -->
+    <section class="slot slot--hero reveal" data-slot="hero" id="top" style="--i:0" aria-label="Opening"></section>
+
+    <!-- 02 · EXAMPLES — full-bleed rail, the centerpiece -->
+    <section class="section section--bleed reveal" style="--i:1" id="examples" aria-labelledby="s2">
+      <header class="section__head">
+        <p class="section-label">
+          <span class="num">02</span><span class="divider">⁄</span><span>Examples</span>
+        </p>
+        <h2 class="section__title" id="s2">
+          Worked examples.
+        </h2>
+      </header>
+
+      <p class="examples__intro">One-shotted. No shared theme. No shared layout.</p>
+
+      <div class="examples-rail" role="list" aria-label="Example landing pages">
+
+        <a class="ex-card" role="listitem" href="examples/tally/" target="_blank" rel="noopener" aria-label="Open the Tally example — SaaS product page, modern-minimal — in a new tab">
+          <div class="ex-card__thumb ex-card__thumb--video" aria-hidden="true">
+            <video data-hover-play src="_tests/_thumbs/SaaS-loop.mp4" autoplay loop muted playsinline preload="metadata" width="1784" height="1080"></video>
+          </div>
+          <p class="ex-card__prompt"><span class="ex-card__prompt-mark">$</span> /hallmark build a SaaS product page, modern-minimal</p>
+        </a>
+
+        <a class="ex-card" role="listitem" href="examples/wayfare/" target="_blank" rel="noopener" aria-label="Open the Wayfare example — travel booking site, atmospheric — in a new tab">
+          <div class="ex-card__thumb ex-card__thumb--video" aria-hidden="true">
+            <video data-hover-play src="_tests/_thumbs/wayfare-loop.mp4" autoplay loop muted playsinline preload="metadata" width="1784" height="1080"></video>
+          </div>
+          <p class="ex-card__prompt"><span class="ex-card__prompt-mark">$</span> /hallmark build a travel booking site, atmospheric</p>
+        </a>
+
+        <a class="ex-card" role="listitem" href="_tests/09-slow-pour/" target="_blank" rel="noopener" aria-label="Open the Slow Pour example — small-batch coffee subscription — in a new tab">
+          <div class="ex-card__thumb ex-card__thumb--video" aria-hidden="true">
+            <video data-hover-play src="_tests/_thumbs/slow-pour-loop.mp4" autoplay loop muted playsinline preload="metadata" width="1784" height="1080"></video>
+          </div>
+          <p class="ex-card__prompt"><span class="ex-card__prompt-mark">$</span> /hallmark build a small-batch coffee subscription page</p>
+        </a>
+
+        <a class="ex-card" role="listitem" href="examples/bananastudio/" target="_blank" rel="noopener" aria-label="Open the BananaStudio example — creative studio with playful motion — in a new tab">
+          <div class="ex-card__thumb ex-card__thumb--video" aria-hidden="true">
+            <video data-hover-play src="_tests/_thumbs/BananaStudio-loop.mp4" autoplay loop muted playsinline preload="metadata" width="1784" height="1080"></video>
+          </div>
+          <p class="ex-card__prompt"><span class="ex-card__prompt-mark">$</span> /hallmark build a creative studio with playful motion</p>
+        </a>
+
+        <a class="ex-card" role="listitem" href="_tests/06-anya-portfolio/" target="_blank" rel="noopener" aria-label="Open the Anya Reis example — software architect personal site — in a new tab">
+          <div class="ex-card__thumb ex-card__thumb--video" aria-hidden="true">
+            <video data-hover-play src="_tests/_thumbs/anya-loop.mp4" autoplay loop muted playsinline preload="metadata" width="1784" height="1080"></video>
+          </div>
+          <p class="ex-card__prompt"><span class="ex-card__prompt-mark">$</span> /hallmark build a software architect personal site</p>
+        </a>
+
+        <a class="ex-card" role="listitem" href="examples/najm/" target="_blank" rel="noopener" aria-label="Open the NAJM example — Moroccan fashion brand landing page — in a new tab">
+          <div class="ex-card__thumb ex-card__thumb--video" aria-hidden="true">
+            <video data-hover-play src="_tests/_thumbs/Najm-loop.mp4" autoplay loop muted playsinline preload="metadata" width="1784" height="1080"></video>
+          </div>
+          <p class="ex-card__prompt"><span class="ex-card__prompt-mark">$</span> /hallmark build a Moroccan fashion brand landing page</p>
+        </a>
+
+        <a class="ex-card" role="listitem" href="_tests/11-soroe-ceramics/" target="_blank" rel="noopener" aria-label="Open the Soroe example — small ceramics studio site — in a new tab">
+          <div class="ex-card__thumb ex-card__thumb--video" aria-hidden="true">
+            <video data-hover-play src="_tests/_thumbs/Soroe-loop.mp4" autoplay loop muted playsinline preload="metadata" width="1804" height="1080"></video>
+          </div>
+          <p class="ex-card__prompt"><span class="ex-card__prompt-mark">$</span> /hallmark build a small ceramics studio site</p>
+        </a>
+
+        <a class="ex-card" role="listitem" href="examples/hyperlane/" target="_blank" rel="noopener" aria-label="Open the Hyperlane example — developer infrastructure landing page — in a new tab">
+          <div class="ex-card__thumb ex-card__thumb--video" aria-hidden="true">
+            <video data-hover-play src="_tests/_thumbs/Hyperlane-example.mp4" autoplay loop muted playsinline preload="metadata" width="1784" height="1080"></video>
+          </div>
+          <p class="ex-card__prompt"><span class="ex-card__prompt-mark">$</span> /hallmark build a developer infrastructure landing page</p>
+        </a>
+
+      </div>
+
+    </section>
+
+    <!-- 03 · SKILLS — five things Hallmark does, one ruleset underneath -->
+    <section class="section reveal" style="--i:2" id="skills" aria-labelledby="s-skills">
+      <header class="section__head">
+        <p class="section-label">
+          <span class="num">03</span><span class="divider">⁄</span><span>Skills</span>
+        </p>
+        <h2 class="section__title" id="s-skills">
+          What it does.
+        </h2>
+      </header>
+
+      <p class="skills__intro">
+        Hallmark has one default behaviour and three explicit verbs. Each reads a different input and returns a
+        different shape — same opinions, different jobs.
+      </p>
+
+      <ol class="skills-list">
+
+        <!-- Row I — Build (default) -->
+        <li class="skill-row" data-verb="build">
+          <header class="skill-row__head">
+            <div class="skill-row__head-body">
+              <h3 class="skill-row__title">Build <span class="skill-row__title-meta">(default)</span></h3>
+              <p class="skill-row__lede">Ask for a page. Get a page that doesn't look generated. Hallmark picks a
+                macrostructure first, then dresses it — and refuses to repeat the same shape twice.</p>
+            </div>
+          </header>
+
+          <div class="skill-row__body">
+            <figure class="skill-row__demo skill-row__demo--build">
+              <span class="brief-pill" aria-label="Example brief">"Build me a landing page for an indie podcast
+                platform."</span>
+              <span class="brief-arrow" aria-hidden="true">↓</span>
+              <span class="fig-corners brief-output">
+                <span class="fig-corners__bl"></span><span class="fig-corners__br"></span>
+                <video class="brief-output__media" src="_tests/_thumbs/Podcast-loop.mp4" autoplay loop muted playsinline
+                  preload="metadata" width="1600" height="1022"
+                  aria-label="Podcast platform — a Hallmark output looping through its scroll"></video>
+              </span>
+            </figure>
+
+            <ol class="skill-row__list">
+              <li class="dna__row"><span class="dna__k">Invocation</span><span class="dna__v">(default) — just
+                  ask</span></li>
+              <li class="dna__row"><span class="dna__k">Reads</span><span class="dna__v">your brief, project tokens,
+                  framework</span></li>
+              <li class="dna__row"><span class="dna__k">Picks</span><span class="dna__v">macrostructure → theme →
+                  enrichment</span></li>
+              <li class="dna__row"><span class="dna__k">Returns</span><span class="dna__v">a working page, stamped,
+                  slop-tested</span></li>
+              <li class="dna__row"><span class="dna__k">Refuses</span><span class="dna__v">repeating the last 3
+                  macrostructures</span></li>
+            </ol>
+          </div>
+        </li>
+
+        <!-- Row II — Study (preserves the existing DNA cards as THE demo) -->
+        <li class="skill-row" data-verb="study">
+          <header class="skill-row__head">
+            <div class="skill-row__head-body">
+              <h3 class="skill-row__title">Study</h3>
+              <p class="skill-row__lede">Paste a design you admire — a screenshot <em>or</em> a URL. Hallmark reads its
+                structure, not its pixels, and returns a DNA card you can build against. Or say <code>lock the
+                  DNA</code> to write a portable <code>design.md</code> you can hand to another AI tool. Never copies
+                pixels. Tighter refusal layer for the portable spec than for the diagnosis.</p>
+            </div>
+          </header>
+
+          <div class="skill-row__body">
+            <figure class="skill-row__demo skill-row__demo--build">
+              <span class="brief-pill" aria-label="Example brief">/hallmark study together.ai &nbsp;·&nbsp; or paste a screenshot</span>
+              <span class="brief-arrow" aria-hidden="true">↓</span>
+              <span class="fig-corners brief-output">
+                <span class="fig-corners__bl"></span><span class="fig-corners__br"></span>
+                <img src="_tests/_thumbs/study-example.png"
+                  alt="A scheduling-tool landing page — used as a study reference for Hallmark's DNA extractor"
+                  loading="lazy" decoding="async" width="1680" height="1050" />
+              </span>
+            </figure>
+
+            <ol class="skill-row__list">
+              <li class="dna__row"><span class="dna__k">Invocation</span><span
+                  class="dna__v"><code>hallmark study &lt;screenshot &#124; URL&gt;</code></span></li>
+              <li class="dna__row"><span class="dna__k">Macrostructure</span><span class="dna__v">Split Hero</span></li>
+              <li class="dna__row"><span class="dna__k">Hero archetype</span><span class="dna__v">H7 Clipped · copy-left
+                  + product-mock right</span></li>
+              <li class="dna__row"><span class="dna__k">Display role</span><span class="dna__v">heavy geometric
+                  sans</span></li>
+              <li class="dna__row"><span class="dna__k">Body role</span><span class="dna__v">same family · regular
+                  weight</span></li>
+              <li class="dna__row"><span class="dna__k">Label role</span><span class="dna__v">grotesque · sentence
+                  case</span></li>
+              <li class="dna__row"><span class="dna__k">Paper band</span><span class="dna__v">light · pure white</span>
+              </li>
+              <li class="dna__row"><span class="dna__k">Accent hue</span><span class="dna__v">cool blue + magenta ·
+                  organic gradient</span></li>
+              <li class="dna__row"><span class="dna__k">Rhythm</span><span class="dna__v">left-copy · right product card
+                  · overlapping watercolor blobs</span></li>
+              <li class="dna__row"><span class="dna__k">Refuses</span><span class="dna__v">to ID fonts · to copy
+                  pixels</span></li>
+            </ol>
+          </div>
+        </li>
+
+        <!-- Row III — Audit -->
+        <li class="skill-row" data-verb="audit">
+          <header class="skill-row__head">
+            <div class="skill-row__head-body">
+              <h3 class="skill-row__title">Audit</h3>
+              <p class="skill-row__lede">Point Hallmark at a page. Get a ranked punch list of what's wrong — scored
+                against the anti-pattern catalogue. <strong>No edits.</strong> Just the diagnosis.</p>
+            </div>
+          </header>
+
+          <div class="skill-row__body">
+            <figure class="skill-row__demo skill-row__demo--audit" aria-label="A Hallmark output for reference">
+              <span class="fig-corners brief-output">
+                <span class="fig-corners__bl"></span><span class="fig-corners__br"></span>
+                <img src="_tests/_thumbs/audit-example.png"
+                  alt="A Hallmark output — editorial display, real proof, hand-built illustration"
+                  loading="lazy" decoding="async" width="1024" height="640" />
+              </span>
+            </figure>
+
+            <ol class="audit-check">
+              <li class="audit-check__row">
+                <span class="audit-check__cross" aria-hidden="true">✗</span>
+                <span class="audit-check__problem">Purple-to-pink gradient hero</span>
+                <span class="audit-check__arrow" aria-hidden="true">→</span>
+                <span class="audit-check__fix">Solid surface, single accent</span>
+              </li>
+              <li class="audit-check__row">
+                <span class="audit-check__cross" aria-hidden="true">✗</span>
+                <span class="audit-check__problem">Inter as display + body</span>
+                <span class="audit-check__arrow" aria-hidden="true">→</span>
+                <span class="audit-check__fix">Pair distinctive display + body</span>
+              </li>
+              <li class="audit-check__row">
+                <span class="audit-check__cross" aria-hidden="true">✗</span>
+                <span class="audit-check__problem">Centered everything</span>
+                <span class="audit-check__arrow" aria-hidden="true">→</span>
+                <span class="audit-check__fix">Bias the layout, break symmetry</span>
+              </li>
+              <li class="audit-check__row">
+                <span class="audit-check__cross" aria-hidden="true">✗</span>
+                <span class="audit-check__problem">Sparkle ✨ emoji as badge</span>
+                <span class="audit-check__arrow" aria-hidden="true">→</span>
+                <span class="audit-check__fix">Pick an icon library, or drop it</span>
+              </li>
+              <li class="audit-check__row">
+                <span class="audit-check__cross" aria-hidden="true">✗</span>
+                <span class="audit-check__problem">Gradient pill CTA</span>
+                <span class="audit-check__arrow" aria-hidden="true">→</span>
+                <span class="audit-check__fix">Solid fill or outline, single hue</span>
+              </li>
+            </ol>
+          </div>
+        </li>
+
+        <!-- Row IV — Redesign -->
+        <li class="skill-row" data-verb="redesign">
+          <header class="skill-row__head">
+            <div class="skill-row__head-body">
+              <h3 class="skill-row__title">Redesign</h3>
+              <p class="skill-row__lede">Same content. Same brand. Different bones. Hallmark throws out the structural
+                fingerprint and rebuilds with a deliberately different one — new section rhythm, new heading placement,
+                new component voice.</p>
+            </div>
+          </header>
+
+          <div class="skill-row__body skill-row__body--full">
+            <figure class="skill-row__demo skill-row__demo--diptych">
+              <figure class="diptych__half" data-state="before">
+                <span class="fig-corners">
+                  <span class="fig-corners__bl"></span><span class="fig-corners__br"></span>
+                  <img src="_tests/_thumbs/example-redesign-uractivation.png"
+                    alt="The original page — generic SaaS chrome before the redesign" loading="lazy" decoding="async"
+                    width="1784" height="1080" />
+                </span>
+                <figcaption class="diptych__cap">Before</figcaption>
+              </figure>
+              <figure class="diptych__half" data-state="after">
+                <span class="fig-corners">
+                  <span class="fig-corners__bl"></span><span class="fig-corners__br"></span>
+                  <video src="_tests/_thumbs/uractivation-after-loop.mp4" autoplay loop muted
+                    playsinline preload="metadata" width="1784" height="1080"
+                    aria-label="Same content, redesigned by Hallmark — different macrostructure, different fingerprint"></video>
+                </span>
+                <figcaption class="diptych__cap">After Hallmark redesign</figcaption>
+              </figure>
+            </figure>
+          </div>
+        </li>
+
+      </ol>
+
+    </section>
+
+    <!-- INTERLUDE — full-bleed typographic moment between III and IV.
+         Mid-scroll punctuation: a single declarative phrase set in
+         the active theme's display face, on a contrasting paper band.
+         Reprise of the marketing pitch in oversized type. -->
+    <aside class="interlude reveal" style="--i:3" aria-hidden="true">
+      <p class="interlude__phrase"><em>The page</em> is the demo.</p>
+    </aside>
+
+    <!-- 04 · ANTI-PATTERNS — Slop, by name. Five named AI-UI tells, each
+         with the Hallmark fix beside it. Replaces the original Without/
+         With section (preserved as a <template> below). -->
+    <section class="section reveal" style="--i:3" id="anti-patterns" aria-labelledby="s-anti">
+      <header class="section__head">
+        <p class="section-label">
+          <span class="num">04</span><span class="divider">⁄</span><span>Anti-patterns</span>
+        </p>
+        <h2 class="section__title" id="s-anti">
+          Slop, by name.
+        </h2>
+      </header>
+
+      <p class="anti__intro">
+        Five tells the LLM reaches for by default. The Hallmark fix beside each. <code>hallmark audit</code> flags every
+        one of these on existing code.
+      </p>
+
+      <ol class="anti-list">
+
+        <li class="anti-row">
+          <p class="anti-row__num tnum">01</p>
+          <div class="anti-row__slop">
+            <h3 class="anti-row__name">The purple-gradient hero.</h3>
+            <p class="anti-row__desc">A hero with a background gradient from purple to blue or purple to pink, white
+              centred text. The single most-recognised AI aesthetic.</p>
+          </div>
+          <div class="anti-row__fix">
+            <p class="anti-row__fix-label">Hallmark</p>
+            <p class="anti-row__fix-body">Pick a single anchor hue. One accent. No gradient backgrounds on heroes. If
+              you want warmth, tint the neutrals.</p>
+          </div>
+        </li>
+
+        <li class="anti-row">
+          <p class="anti-row__num tnum">02</p>
+          <div class="anti-row__slop">
+            <h3 class="anti-row__name">Inter as display.</h3>
+            <p class="anti-row__desc">Inter (or Roboto, or Open Sans) used as both display and body, no pairing face. A
+              one-font page is a template page.</p>
+          </div>
+          <div class="anti-row__fix">
+            <p class="anti-row__fix-label">Hallmark</p>
+            <p class="anti-row__fix-body">Pair a distinctive display face with a refined body. Two faces minimum, never
+              the same family doing both jobs.</p>
+          </div>
+        </li>
+
+        <li class="anti-row">
+          <p class="anti-row__num tnum">03</p>
+          <div class="anti-row__slop">
+            <h3 class="anti-row__name">Centred everything.</h3>
+            <p class="anti-row__desc">Headline centred, body centred, button centred, section after section of centred
+              columns. Symmetry as default.</p>
+          </div>
+          <div class="anti-row__fix">
+            <p class="anti-row__fix-label">Hallmark</p>
+            <p class="anti-row__fix-body">Bias the layout. Wide left margin, narrow right — or the reverse. Breaking
+              symmetry once is enough to register intent.</p>
+          </div>
+        </li>
+
+        <li class="anti-row">
+          <p class="anti-row__num tnum">04</p>
+          <div class="anti-row__slop">
+            <h3 class="anti-row__name">The icon-tile feature card.</h3>
+            <p class="anti-row__desc">Rounded rectangle, icon in a coloured square top-left, two-line heading,
+              three-line copy, optional "Learn more →". The universal template.</p>
+          </div>
+          <div class="anti-row__fix">
+            <p class="anti-row__fix-label">Hallmark</p>
+            <p class="anti-row__fix-body">If you need feature cards, let them be asymmetric — vary sizes, vary
+              alignments, pull the icon inline. Or drop the icon and lead with type.</p>
+          </div>
+        </li>
+
+        <li class="anti-row">
+          <p class="anti-row__num tnum">05</p>
+          <div class="anti-row__slop">
+            <h3 class="anti-row__name">The AI nav.</h3>
+            <p class="anti-row__desc">Wordmark hard-left, four inline links centred, CTA button hard-right, sticky on
+              scroll, hairline border-bottom. The shape every LLM ships.</p>
+          </div>
+          <div class="anti-row__fix">
+            <p class="anti-row__fix-label">Hallmark</p>
+            <p class="anti-row__fix-body">Pick a nav archetype that matches the page's genre — newspaper masthead,
+              terminal command bar, edge-aligned minimal. The nav should tell you what kind of site you're on.</p>
+          </div>
+        </li>
+
+      </ol>
+
+    </section>
+
+
+    <!-- 05 · FOUNDATIONS — eight compact cards in a 4×2 grid. Each
+         card holds a hand-drawn SVG icon, one-word title, and a single
+         line of description. Replaces the radio-tab Foundations panel
+         (preserved in <template id="section-05-archive-foundations-tabs">
+         below). -->
+    <section class="section reveal" style="--i:4" id="foundations" aria-labelledby="s5-foundations">
+      <header class="section__head">
+        <p class="section-label">
+          <span class="num">05</span><span class="divider">⁄</span><span>Foundations</span>
+        </p>
+        <h2 class="section__title" id="s5-foundations">
+          Foundations.
+        </h2>
+      </header>
+
+      <p class="found__intro">Eight rules that hold across every theme. None of them are settings.</p>
+
+      <ul class="found-cards" role="list">
+
+        <li class="found-card">
+          <span class="found-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <text x="3" y="36" font-family="'Fraunces', 'Tiempos', serif" font-style="italic" font-size="34"
+                font-weight="500" fill="currentColor">A</text>
+              <text x="22" y="42" font-family="'Geist', 'Inter', sans-serif" font-size="22" font-weight="600"
+                fill="currentColor">a</text>
+            </svg>
+          </span>
+          <h3 class="found-card__name">Type</h3>
+          <p class="found-card__body">Pair a display face with a body face. Never one font doing both jobs.</p>
+        </li>
+
+        <li class="found-card">
+          <span class="found-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="currentColor">
+              <circle cx="9" cy="24" r="4.5" />
+              <circle cx="20" cy="24" r="4.5" opacity="0.7" />
+              <circle cx="31" cy="24" r="4.5" opacity="0.4" />
+              <circle cx="42" cy="24" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+          </span>
+          <h3 class="found-card__name">Colour</h3>
+          <p class="found-card__body">OKLCH palettes. One anchor hue. The accent stays under five percent.</p>
+        </li>
+
+        <li class="found-card">
+          <span class="found-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="4" y1="26" x2="44" y2="26" />
+              <line x1="8" y1="22" x2="8" y2="30" />
+              <line x1="16" y1="24" x2="16" y2="28" />
+              <line x1="24" y1="18" x2="24" y2="32" />
+              <line x1="32" y1="24" x2="32" y2="28" />
+              <line x1="40" y1="22" x2="40" y2="30" />
+            </svg>
+          </span>
+          <h3 class="found-card__name">Space</h3>
+          <p class="found-card__body">A named scale. Multiples of four. No arbitrary 17-pixel paddings.</p>
+        </li>
+
+        <li class="found-card">
+          <span class="found-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M 6 32 Q 18 32 24 24 T 40 14" />
+              <path d="M 34 14 L 40 14 L 40 20" />
+            </svg>
+          </span>
+          <h3 class="found-card__name">Motion</h3>
+          <p class="found-card__body">Exponential ease-out. Reduced-motion alternative for every animation.</p>
+        </li>
+
+        <li class="found-card">
+          <span class="found-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+              <path d="M 11 16 Q 7 19 7 24 Q 7 28 11 28" />
+              <path d="M 17 16 Q 13 19 13 24 Q 13 28 17 28" />
+              <path d="M 31 16 Q 27 19 27 24 Q 27 28 31 28" />
+              <path d="M 37 16 Q 33 19 33 24 Q 33 28 37 28" />
+            </svg>
+          </span>
+          <h3 class="found-card__name">Voice</h3>
+          <p class="found-card__body">Distinct register per theme. Never the SaaS-default neutral middle.</p>
+        </li>
+
+        <li class="found-card">
+          <span class="found-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="6" y="12" width="14" height="26" />
+              <rect x="22" y="18" width="20" height="20" />
+            </svg>
+          </span>
+          <h3 class="found-card__name">Layout</h3>
+          <p class="found-card__body">Bias the page. Asymmetric is intentional. Centred everything is a tell.</p>
+        </li>
+
+        <li class="found-card">
+          <span class="found-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round">
+              <line x1="6" y1="14" x2="42" y2="14" stroke-width="3.5" />
+              <line x1="6" y1="25" x2="32" y2="25" stroke-width="2" />
+              <line x1="6" y1="36" x2="22" y2="36" stroke-width="1.2" />
+            </svg>
+          </span>
+          <h3 class="found-card__name">Hierarchy</h3>
+          <p class="found-card__body">Display, body, label. A weight ladder you can read in two seconds.</p>
+        </li>
+
+        <li class="found-card">
+          <span class="found-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="6" y="6" width="36" height="36" />
+              <circle cx="24" cy="24" r="3" fill="currentColor" />
+            </svg>
+          </span>
+          <h3 class="found-card__name">Restraint</h3>
+          <p class="found-card__body">Better nothing than bad something. The strongest fail-state is silence.</p>
+        </li>
+
+      </ul>
+
+    </section>
+
+    <!-- DEPRECATED: original Section 05 (Foundations radio tabs) — replaced
+         by the 8-card grid above. Wrapped in <template> so the markup stays
+         in this file but doesn't render. To revert: change the opening
+         <template> to <section class="section reveal" style="--i:4"
+         aria-labelledby="s5-foundations"> and the closing </template> to
+         </section>, then remove the new 8-card section above. -->
+
+    <!-- 06 · WITH / WITHOUT HALLMARK — same prompt, two different outputs.
+         The "without" was generated by Sonnet 4.6 alone; the "with" by
+         Sonnet 4.6 with Hallmark loaded. Both are real outputs of the
+         same brief. -->
+    <section class="section reveal" style="--i:5" id="before-after" aria-labelledby="s-ba">
+      <header class="section__head">
+        <p class="section-label">
+          <span class="num">06</span><span class="divider">⁄</span><span>With / Without</span>
+        </p>
+        <h2 class="section__title" id="s-ba">
+          Same prompt. Two different outputs.
+        </h2>
+      </header>
+
+      <p class="ba__prompt" aria-label="The shared prompt"><span class="ba__prompt-mark">$</span> /hallmark build a landing page for a dev event launch.</p>
+
+      <div class="ba">
+        <figure class="ba__panel ba__panel--before">
+          <p class="ba__panel-label"><span class="ba__panel-tag">Sonnet 4.6, no Hallmark</span></p>
+          <span class="fig-corners ba__frame">
+            <span class="fig-corners__bl"></span><span class="fig-corners__br"></span>
+            <img src="_tests/_thumbs/before-quiet-hour.png" alt="Generic AI-default landing page — purple-pink gradient hero, generic 'Discover natural wines' headline, ★★★★★ trust strip, 3-column feature cards" loading="lazy" decoding="async" width="1440" height="900" />
+          </span>
+          <figcaption class="ba__panel-cap">Default reach for the gradient. Generic stat strip, made-up Trustpilot rating, "10× faster" feature card.</figcaption>
+        </figure>
+
+        <figure class="ba__panel ba__panel--after">
+          <p class="ba__panel-label"><span class="ba__panel-tag ba__panel-tag--accent">Sonnet 4.6 + Hallmark</span></p>
+          <span class="fig-corners ba__frame">
+            <span class="fig-corners__bl"></span><span class="fig-corners__br"></span>
+            <img src="_tests/_thumbs/after-quiet-hour.png" alt="A Hallmark output — editorial Lisbon dispatch, italic Fraunces display, real bottle plate with grape + region + tasting notes, no fabricated proof" loading="lazy" decoding="async" width="1440" height="900" />
+          </span>
+          <figcaption class="ba__panel-cap">Marquee Hero · Atelier · italic Fraunces. Real bottle, real grape, real region. No fabricated stats.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 07 · INSTALL — one command, every harness -->
+    <section class="section reveal" style="--i:6" id="install" aria-labelledby="s6">
+      <header class="section__head">
+        <p class="section-label">
+          <span class="num">07</span><span class="divider">⁄</span><span>Install</span>
+        </p>
+        <h2 class="section__title" id="s6">
+          Install.
+        </h2>
+      </header>
+
+      <div class="install-pane">
+
+        <div class="install-pane__row install-pane__row--cmd">
+          <p class="install-pane__label"><span class="install-pane__step">I</span> Run</p>
+          <div class="install-pane__cmd" data-copy-source>
+            <span class="install-pane__prompt" aria-hidden="true">$</span>
+            <span class="install-pane__cmd-text" data-copy-text>npx skills add nutlope/hallmark</span>
+            <button class="install-pane__copy" type="button" data-copy-btn aria-label="Copy install command">
+              <span class="install-pane__copy-default">Copy</span>
+              <span class="install-pane__copy-done">Copied</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="install-pane__row">
+          <p class="install-pane__label"><span class="install-pane__step">II</span> In</p>
+          <ul class="install-pane__harnesses">
+            <li class="harness"> <span class="harness__name">Claude Code</span>
+              <code class="harness__path">~/.claude/skills/hallmark/</code>
+              <span class="harness__status harness__status--ok">auto-detected</span>
+            </li>
+            <li class="harness"> <span class="harness__name">Cursor</span>
+              <code class="harness__path">.cursor/rules/hallmark.mdc</code>
+              <span class="harness__status harness__status--ok">auto-detected</span>
+            </li>
+            <li class="harness"> <span class="harness__name">Codex</span>
+              <code class="harness__path">~/.codex/skills/hallmark/</code>
+              <span class="harness__status harness__status--ok">auto-detected</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="install-pane__row">
+          <p class="install-pane__label"><span class="install-pane__step">III</span> Then</p>
+          <p class="install-pane__next">Ask your agent for a UI. <code>hallmark</code> attaches itself.</p>
+        </div>
+
+      </div>
+    </section>
+    <!-- FOOTER SLOT — archetype swaps per theme -->
+    <footer class="slot slot--foot reveal" data-slot="footer" style="--i:6" role="contentinfo" aria-label="Colophon">
+    </footer>
+
+  </main>
+
+  <!-- ─── Easter egg ─── revealed when the user spams T —— -->
+  <aside class="easter" data-easter-egg hidden role="dialog" aria-modal="true" aria-label="A note from Hallmark">
+    <div class="easter__panel">
+      <ol class="easter__lines" aria-live="polite">
+        <li class="easter__line easter__line--cmd"><span class="easter__prompt">$</span> hallmark.observe()</li>
+        <li class="easter__line easter__line--punchline" data-easter-punchline>
+          <span class="easter__arrow">&gt;</span> <span data-easter-line>theme connoisseur.</span><span
+            class="easter__cursor" aria-hidden="true"></span>
+        </li>
+      </ol>
+      <p class="easter__hint">
+        <span>back in a moment</span>
+      </p>
+    </div>
+  </aside>
+
+  <!-- ─────────── HERO ARCHETYPES ─────────── -->
+
+  <template id="hero-marquee">
+    <div class="hero hero--marquee">
+      <div class="hero__main">
+        <p class="hero__eyebrow"><span class="mark" aria-hidden="true"></span>{{eyebrow}}</p>
+        <h1 class="hero__display" data-text="{{title}}">{{title}}</h1>
+        <p class="hero__lede">{{lede}}</p>
+        <div class="hero__cta">
+          <p class="label">{{ctaLabel}}</p>
+          <pre class="code"
+            data-copy-source><span class="prompt">$</span><span data-copy-text>npx skills add nutlope/hallmark</span><button class="code__copy" type="button" data-copy-btn aria-label="Copy install command"><span class="code__copy-default">Copy</span><span class="code__copy-done">Copied</span></button></pre>
+        </div>
+      </div>
+      <aside class="hero__moment" aria-hidden="true"></aside>
+    </div>
+  </template>
+
+  <template id="hero-split">
+    <div class="hero hero--split">
+      <div class="hero__col">
+        <p class="hero__eyebrow"><span class="mark" aria-hidden="true"></span>{{eyebrow}}</p>
+        <h1 class="hero__display">{{title}}</h1>
+        <p class="hero__lede">{{lede}}</p>
+      </div>
+      <aside class="hero__proof">
+        <p class="label">{{proofLabel}}</p>
+        <p class="hero__proof-line">{{proofA}}</p>
+        <p class="hero__proof-line">{{proofB}}</p>
+        <p class="hero__proof-line">{{proofC}}</p>
+        <a href="#install" class="link">{{cta}} &rarr;</a>
+      </aside>
+    </div>
+  </template>
+
+  <template id="hero-stat-led">
+    <div class="hero hero--stat">
+      <div class="hero__main">
+        <p class="hero__eyebrow"><span class="mark" aria-hidden="true"></span>{{eyebrow}}</p>
+        <span class="hero__stat tabular-nums">{{stat}}</span>
+        <p class="hero__qualifier">{{qualifier}}</p>
+        <p class="hero__lede">{{lede}}</p>
+        <a href="#install" class="link hero__link">{{cta}} &rarr;</a>
+      </div>
+      <aside class="hero__moment" aria-hidden="true"></aside>
+    </div>
+  </template>
+
+  <template id="hero-quote-led">
+    <div class="hero hero--quote">
+      <div class="hero__main">
+        <p class="hero__eyebrow"><span class="mark" aria-hidden="true"></span>{{eyebrow}}</p>
+        <blockquote class="hero__quote">
+          <p>&ldquo;{{quote}}&rdquo;</p>
+          <footer class="hero__attrib">— {{attrib}}</footer>
+        </blockquote>
+        <p class="hero__lede">{{lede}}</p>
+        <a href="#install" class="link hero__link">{{cta}} &rarr;</a>
+      </div>
+      <aside class="hero__moment" aria-hidden="true"></aside>
+    </div>
+  </template>
+
+  <template id="hero-letter">
+    <div class="hero hero--letter">
+      <div class="hero__main">
+        <p class="hero__eyebrow"><span class="mark" aria-hidden="true"></span>{{eyebrow}}</p>
+        <p class="hero__salutation">{{salutation}}</p>
+        <p class="hero__letter-body">{{letterBody}}</p>
+        <p class="hero__signoff">{{signoff}}<br><span class="hero__sign">— Hallmark</span></p>
+      </div>
+      <aside class="hero__moment" aria-hidden="true"></aside>
+    </div>
+  </template>
+
+
+
+
+  <!-- H9 — Bloom. Two-column hero with a layered watercolor + brushstroke
+       composition on the right: soft transparent SVG wash + oversized
+       italic wordmark + small geometric accents. Painterly, no chrome. -->
+  <template id="hero-bloom">
+    <div class="hero hero--bloom">
+      <div class="hero__copy">
+        <p class="hero__eyebrow"><span class="mark" aria-hidden="true"></span>{{eyebrow}}</p>
+        <h1 class="hero__display hero__display--small">{{title}}</h1>
+        <p class="hero__lede">{{lede}}</p>
+        <div class="hero__cta">
+          <pre class="code"
+            data-copy-source><span class="prompt">$</span><span data-copy-text>npx skills add nutlope/hallmark</span><button class="code__copy" type="button" data-copy-btn aria-label="Copy install command"><span class="code__copy-default">Copy</span><span class="code__copy-done">Copied</span></button></pre>
+        </div>
+      </div>
+      <figure class="hero__bloom-stage" aria-hidden="true">
+        <svg class="hero__bloom-wash" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <radialGradient id="bloomGrad" cx="0.42" cy="0.36" r="0.72">
+              <stop offset="0%" stop-color="currentColor" stop-opacity="0.85" />
+              <stop offset="55%" stop-color="currentColor" stop-opacity="0.45" />
+              <stop offset="100%" stop-color="currentColor" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+          <path
+            d="M 80 60 Q 60 140 90 220 Q 50 280 80 360 Q 110 410 200 420 Q 320 440 340 360 Q 380 280 340 220 Q 380 130 320 80 Q 240 30 180 60 Q 130 30 80 60 Z"
+            fill="url(#bloomGrad)" />
+        </svg>
+        <span class="hero__bloom-glyph"><em>Hallmark.</em></span>
+        <span class="hero__bloom-dot" aria-hidden="true"></span>
+        <span class="hero__bloom-line" aria-hidden="true"></span>
+        <span class="hero__bloom-circle" aria-hidden="true"></span>
+      </figure>
+    </div>
+  </template>
+
+  <!-- H10 — Orbit. Two-column hero with concentric rings + a glowing
+       center dot. Slow rotation gives the page life without noise.
+       Reserved for atmospheric warm-glow themes (Halo). -->
+  <template id="hero-orbit">
+    <div class="hero hero--orbit">
+      <div class="hero__copy">
+        <p class="hero__eyebrow"><span class="mark" aria-hidden="true"></span>{{eyebrow}}</p>
+        <h1 class="hero__display hero__display--small">{{title}}</h1>
+        <p class="hero__lede">{{lede}}</p>
+        <div class="hero__cta">
+          <pre class="code"
+            data-copy-source><span class="prompt">$</span><span data-copy-text>npx skills add nutlope/hallmark</span><button class="code__copy" type="button" data-copy-btn aria-label="Copy install command"><span class="code__copy-default">Copy</span><span class="code__copy-done">Copied</span></button></pre>
+        </div>
+      </div>
+      <figure class="hero__orbit-stage" aria-hidden="true">
+        <div class="hero__orbit-rings">
+          <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+            <g fill="none" stroke="currentColor" stroke-linecap="round">
+              <circle cx="200" cy="200" r="190" stroke-width="0.6" opacity="0.35" />
+              <circle cx="200" cy="200" r="155" stroke-width="0.8" opacity="0.5" />
+              <circle cx="200" cy="200" r="118" stroke-width="1" opacity="0.7" />
+              <circle cx="200" cy="200" r="82" stroke-width="1.4" opacity="0.85" />
+              <circle cx="200" cy="200" r="48" stroke-width="1.8" opacity="1" />
+              <line x1="200" y1="10" x2="200" y2="22" stroke-width="1.2" stroke="var(--color-accent)" />
+            </g>
+          </svg>
+        </div>
+        <span class="hero__orbit-dot pulse" aria-hidden="true"></span>
+        <div class="hero__orbit-rule"></div>
+        <p class="hero__orbit-spec">{{captionA}} · {{captionB}}</p>
+      </figure>
+    </div>
+  </template>
+
+  <!-- ─────────── FOOTER ARCHETYPES ─────────── -->
+
+  <!-- The COLOPHON — a single editorial footer for every theme. The
+       publisher's signature page traditionally doesn't change across
+       volumes; the structural variety lives in the body, not here.
+       Per-theme typography still re-renders this block. -->
+  <template id="footer-colophon">
+    <div class="foot foot--colophon">
+
+      <div class="foot__masthead">
+        <span class="foot__wordmark" aria-label="Hallmark"><span class="brand-mark brand-mark--lg" aria-hidden="true"><span class="brand-mark__slash">/</span><span class="brand-mark__name">hallmark</span></span></span>
+        <span class="foot__version tnum">v1.0 · MMXXVI</span>
+      </div>
+
+      <div class="foot__grid">
+        <section class="foot__block">
+          <p class="foot__label">Currently in</p>
+          <p class="foot__value"><strong data-theme-current-foot>Specimen</strong></p>
+          <p class="foot__hint">Press <kbd class="kbd">T</kbd> to cycle · <kbd class="kbd">R</kbd> to randomise.</p>
+        </section>
+
+        <section class="foot__block">
+          <p class="foot__label">In the catalog</p>
+          <ul class="foot__stats">
+            <li><span class="foot__stat-num tnum">22</span><span class="foot__stat-key">themes</span></li>
+            <li><span class="foot__stat-num tnum">21</span><span class="foot__stat-key">macrostructures</span></li>
+            <li><span class="foot__stat-num tnum">65</span><span class="foot__stat-key">slop-test gates</span></li>
+          </ul>
+        </section>
+
+        <section class="foot__block">
+          <p class="foot__label">Read or take a copy</p>
+          <ul class="foot__nav">
+            <li><a class="link" href="https://github.com/nutlope/hallmark">Source on GitHub &rarr;</a></li>
+            <li><a class="link" href="#install">Install command</a></li>
+            <li><a class="link" href="#top">Back to top</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <p class="foot__base">
+        Made by <a class="foot__powered-mark" href="https://www.together.ai" target="_blank" rel="noopener">Together&nbsp;AI</a>. MIT licensed.
+      </p>
+
+    </div>
+  </template>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

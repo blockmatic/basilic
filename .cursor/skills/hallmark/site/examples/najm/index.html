@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>NAJM · W&rsquo;25 — Made in Morocco. Worn anywhere.</title>
+  <meta name="description" content="NAJM is a Moroccan clothing house. Hand-cut in Marrakech, shipped from Casablanca. New drop every six weeks." />
+  <meta name="theme-color" content="#1a1411" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800;12..96,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+  <!-- Announcement -->
+  <div class="announce" role="status" aria-label="Site promotions">
+    <span><strong>★</strong> Free shipping in Morocco over 1500 MAD</span>
+    <span>New drop · Friday 06.05 · 18h00</span>
+    <span>Use code <strong>NAJM10</strong> · 100 MAD off your first order</span>
+  </div>
+
+  <!-- Nav -->
+  <header class="nav">
+    <div class="shell nav__inner">
+      <a href="#" class="brand" aria-label="NAJM home">
+        NAJM<span class="brand__ar" aria-hidden="true">نجم</span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#shop">Shop</a>
+        <a href="#lookbook">Lookbook</a>
+        <a href="#story">Story</a>
+        <a href="#stockists">Stockists</a>
+      </nav>
+      <div class="nav__util">
+        <button class="icon-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <button id="cartBtn" class="cart-btn" aria-label="Open bag" aria-controls="drawer">
+          Bag
+          <span id="cartCount" class="cart-btn__count" aria-live="polite">2</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>
+        <span>Hand-cut in Marrakech</span><span class="marquee__star"></span>
+        <span>New drop W&rsquo;25</span><span class="marquee__star"></span>
+        <span>Free returns across Morocco</span><span class="marquee__star"></span>
+        <span>Shipped from Casablanca</span><span class="marquee__star"></span>
+        <span>1% to oasis reforestation</span><span class="marquee__star"></span>
+      </span>
+      <span>
+        <span>Hand-cut in Marrakech</span><span class="marquee__star"></span>
+        <span>New drop W&rsquo;25</span><span class="marquee__star"></span>
+        <span>Free returns across Morocco</span><span class="marquee__star"></span>
+        <span>Shipped from Casablanca</span><span class="marquee__star"></span>
+        <span>1% to oasis reforestation</span><span class="marquee__star"></span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero shell" id="shop">
+    <div class="hero__grid">
+      <div class="hero__lead">
+        <p class="hero__meta"><b></b> Live · 2,318 watching the drop</p>
+        <h1 class="hero__h1">
+          New cuts.<br/>
+          Old <em>soul</em>.<br/>
+          Made in Morocco.
+        </h1>
+        <p class="hero__sub">
+          Twenty-three pieces, hand-cut in Marrakech and shipped from Casablanca. The Winter <em>&rsquo;25</em> drop opens Friday at 18h00.
+        </p>
+        <div class="hero__cta-row">
+          <a class="btn btn--primary" href="#shop">
+            Shop the drop <span class="btn__arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="btn btn--ghost" href="#lookbook">Lookbook</a>
+        </div>
+      </div>
+
+      <div class="hero__feature">
+        <a class="feature-card" href="#"
+           data-product="medina"
+           data-name="Médina Cropped Jacket"
+           data-variant="Terracotta · M"
+           data-price="1450"
+           data-surface="terracotta">
+          <div class="surface surface--terracotta"></div>
+          <div class="zellige" aria-hidden="true"></div>
+          <div class="feature-card__body">
+            <span class="feature-card__tag">★ Drop · 01 / 23</span>
+            <div>
+              <div class="feature-card__title">Médina<br/>Cropped Jacket</div>
+              <div class="feature-card__row" style="margin-top:.5rem">
+                <div class="feature-card__price">1,450 <small>MAD</small></div>
+                <button class="feature-card__cta" aria-label="Add Médina Cropped Jacket to bag" data-add data-label="↗">↗</button>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Collection -->
+  <section class="section shell">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">The W&rsquo;25 Collection</p>
+        <h2 class="section__title">Twenty-three pieces. <em>Made to be worn out.</em></h2>
+      </div>
+      <div>
+        <p class="section__lede">Pre-order opens Friday 06.05 at 18h00 (Casablanca). First 200 orders ship same-week.</p>
+        <a href="#shop" class="section__link" style="margin-top:.75rem; display:inline-flex">View the full drop <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+
+    <div class="collection" role="list">
+
+      <article class="product" role="listitem"
+               data-product="atlas"
+               data-name="Atlas Wide-Leg Trouser"
+               data-variant="Bone · 32"
+               data-price="980"
+               data-surface="bone">
+        <div class="product__media">
+          <div class="surface surface--bone"></div>
+          <div class="zellige zellige--dark" aria-hidden="true"></div>
+          <span class="product__badge product__badge--new">New</span>
+          <button class="product__quick" data-add data-label="Add to bag">Add to bag</button>
+        </div>
+        <div class="product__row">
+          <div>
+            <h3 class="product__name">Atlas Wide-Leg Trouser</h3>
+            <p class="product__meta">Heavy linen · Bone</p>
+          </div>
+          <p class="product__price">980 MAD</p>
+        </div>
+      </article>
+
+      <article class="product" role="listitem"
+               data-product="zellige"
+               data-name="Zellige Knit Sweater"
+               data-variant="Saffron · M"
+               data-price="1180"
+               data-surface="saffron">
+        <div class="product__media">
+          <div class="surface surface--saffron"></div>
+          <div class="zellige zellige--dark" aria-hidden="true"></div>
+          <span class="product__badge product__badge--low">Low stock</span>
+          <button class="product__quick" data-add data-label="Add to bag">Add to bag</button>
+        </div>
+        <div class="product__row">
+          <div>
+            <h3 class="product__name">Zellige Knit Sweater</h3>
+            <p class="product__meta">Atlas wool · Saffron</p>
+          </div>
+          <p class="product__price">1,180 MAD</p>
+        </div>
+      </article>
+
+      <article class="product" role="listitem"
+               data-product="saadian"
+               data-name="Saadian Linen Shirt"
+               data-variant="Ink · L"
+               data-price="640"
+               data-surface="ink">
+        <div class="product__media">
+          <div class="surface surface--ink"></div>
+          <div class="zellige" aria-hidden="true"></div>
+          <button class="product__quick" data-add data-label="Add to bag">Add to bag</button>
+        </div>
+        <div class="product__row">
+          <div>
+            <h3 class="product__name">Saadian Linen Shirt</h3>
+            <p class="product__meta">Hand-loomed linen · Ink</p>
+          </div>
+          <p class="product__price"><s>820</s> 640 MAD</p>
+        </div>
+      </article>
+
+      <article class="product" role="listitem"
+               data-product="riad"
+               data-name="Riad Wool Coat"
+               data-variant="Marine · M"
+               data-price="2480"
+               data-surface="marine">
+        <div class="product__media">
+          <div class="surface surface--marine"></div>
+          <div class="zellige" aria-hidden="true"></div>
+          <span class="product__badge product__badge--new">New</span>
+          <button class="product__quick" data-add data-label="Add to bag">Add to bag</button>
+        </div>
+        <div class="product__row">
+          <div>
+            <h3 class="product__name">Riad Wool Coat</h3>
+            <p class="product__meta">Boiled Atlas wool · Marine</p>
+          </div>
+          <p class="product__price">2,480 MAD</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Editorial moment -->
+  <section class="shell" id="lookbook">
+    <div class="editorial">
+      <div class="editorial__bg" aria-hidden="true"></div>
+
+      <div>
+        <p class="editorial__eyebrow">Lookbook · W&rsquo;25 / 02</p>
+        <p class="editorial__quote">
+          A coat that should outlast its country of origin.
+        </p>
+        <p class="editorial__byline">— Karim Bennani · founder, NAJM</p>
+      </div>
+
+      <div>
+        <p style="max-width: 36ch; opacity: .9; line-height: 1.5; font-size: var(--text-md);">
+          Every piece is built for ten years. Boiled Atlas wool, hand-loomed linen, vegetable-tanned leather — sourced inside the country, cut by people we know by name.
+        </p>
+        <a href="#" class="editorial__cta">
+          See the full lookbook <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust strip -->
+  <section class="shell" id="story">
+    <div class="trust">
+      <div class="trust__item">
+        <span class="trust__num">24h</span>
+        <div>
+          <h3 class="trust__title">Same-week shipping</h3>
+          <p class="trust__body">Orders before 14h00 (Casablanca) leave the same day. Tracked, signed, in your hands.</p>
+        </div>
+      </div>
+      <div class="trust__item">
+        <span class="trust__num">14d</span>
+        <div>
+          <h3 class="trust__title">Free returns, no friction</h3>
+          <p class="trust__body">Don't love it, send it back. Anywhere in Morocco — we cover the courier.</p>
+        </div>
+      </div>
+      <div class="trust__item">
+        <span class="trust__num">100%</span>
+        <div>
+          <h3 class="trust__title">Made in Morocco</h3>
+          <p class="trust__body">Marrakech atelier, Casablanca warehouse. Every label tells you who cut the piece.</p>
+        </div>
+      </div>
+      <div class="trust__item">
+        <span class="trust__num">1%</span>
+        <div>
+          <h3 class="trust__title">Oasis reforestation</h3>
+          <p class="trust__body">One percent of every order plants palms in the Drâa-Tafilalet oases. Receipt with every shipment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="shell">
+    <div class="news">
+      <div>
+        <h2 class="news__h">Get the drop <em>before</em> it goes live.</h2>
+        <p class="news__p">Friday at 18h00 — first dibs on twenty-three pieces. Some are made once.</p>
+      </div>
+      <form id="news" class="news__form-wrap" novalidate>
+        <div class="news__form">
+          <input class="news__input" type="email" required placeholder="you@email.com" aria-label="Email" />
+          <button class="news__submit" type="submit">Notify me</button>
+        </div>
+        <p id="newsNote" class="news__note">No spam. One mail per drop. Unsubscribe with one tap.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="shell">
+      <div class="footer__top">
+        <div>
+          <div class="footer__brand">NAJM<span style="color:var(--color-accent); margin-inline-start:8px; font-size:.6em" aria-hidden="true">نجم</span></div>
+          <p class="footer__tag">A clothing house from Morocco. Hand-cut in Marrakech, shipped from Casablanca, worn from Tangier to Tokyo.</p>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-h">Shop</h4>
+          <ul>
+            <li><a href="#">Winter &rsquo;25</a></li>
+            <li><a href="#">Outerwear</a></li>
+            <li><a href="#">Knitwear</a></li>
+            <li><a href="#">Linen</a></li>
+            <li><a href="#">Archive</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-h">Help</h4>
+          <ul>
+            <li><a href="#">Sizing</a></li>
+            <li><a href="#">Shipping</a></li>
+            <li><a href="#">Returns</a></li>
+            <li><a href="#">Care</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-h">House</h4>
+          <ul>
+            <li><a href="#">Story</a></li>
+            <li><a href="#">Atelier</a></li>
+            <li><a href="#">Stockists</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Newsletter</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2026 NAJM · Casablanca</span>
+        <span>EN · FR · العربية</span>
+        <span>MAD · EUR · USD</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile sticky bar -->
+  <div class="mobile-bar" role="region" aria-label="Quick shop">
+    <span class="mobile-bar__text">W&rsquo;25 drop · Friday 18h00</span>
+    <button id="mobileCart" class="mobile-bar__cta">Shop now →</button>
+  </div>
+
+  <!-- Cart drawer -->
+  <div id="scrim" class="scrim" aria-hidden="true"></div>
+  <aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+    <div class="drawer__head">
+      <h3 id="drawerTitle" class="drawer__title">Your bag</h3>
+      <button class="icon-btn drawer__close" aria-label="Close bag">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="cartLines" class="drawer__body"></div>
+    <div class="drawer__foot">
+      <p id="cartFree" class="drawer__free">Calculating shipping…</p>
+      <div class="drawer__total">
+        <span>Total</span>
+        <b id="cartTotal">—</b>
+      </div>
+      <a href="#checkout" class="drawer__checkout">
+        Checkout <span aria-hidden="true">→</span>
+      </a>
+      <p class="drawer__free">Apple Pay · CMI · Cash on delivery (Morocco only)</p>
+    </div>
+  </aside>
+
+  <script src="./script.js" defer></script>
+</body>
+</html>

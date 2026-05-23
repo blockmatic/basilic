@@ -1,0 +1,36 @@
+{
+  "name": "hallmark",
+  "version": "1.0.0",
+  "description": "A design skill for AI coding assistants. Makes the UIs they generate look made, not generated. Powered by Together AI.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "cursor",
+    "codex",
+    "skill",
+    "design",
+    "ui",
+    "anti-ai-slop",
+    "typography",
+    "oklch",
+    "together-ai"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "SKILL.md",
+    "references"
+  ],
+  "skill": {
+    "entry": "SKILL.md",
+    "references": "references",
+    "harnesses": [
+      "claude-code",
+      "cursor",
+      "codex"
+    ]
+  },
+  "scripts": {
+    "serve": "python3 -m http.server --directory site 4173"
+  }
+}

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hyperlane / 26 — A one-night developer summit · Brooklyn · Oct 17, 2026</title>
+  <meta name="description" content="Twelve hours. Eight talks. Four live product launches. Brooklyn, October 17, 2026. Public list opens September 9." />
+  <meta name="theme-color" content="#1a120c" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;700;800;900&family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ambient blooms (atmospheric backdrop) -->
+  <div class="ambient" aria-hidden="true">
+    <div class="bloom bloom--1"></div>
+    <div class="bloom bloom--2"></div>
+    <div class="grain"></div>
+  </div>
+
+  <!-- skip link for keyboard users -->
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- ─── nav · N5 floating pill ────────────────────────────── -->
+  <header class="nav" data-state="rest">
+    <div class="nav__inner">
+      <a class="nav__brand" href="#top" aria-label="Hyperlane 2026 · home">
+        <span class="nav__brand-dot" aria-hidden="true"></span>
+        <span class="nav__brand-text">Hyperlane<span class="nav__brand-num">/26</span></span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#format">Format</a>
+        <a href="#why">Why</a>
+        <a href="#program">Programme</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <a class="nav__cta" href="#rsvp">
+        <span>Join the list</span>
+        <span class="nav__cta-arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ─── hero · Marquee Hero + HP3 cursor-spotlight ──────── -->
+    <section class="hero" id="top" aria-labelledby="hero-h">
+      <div class="hero__spotlight" aria-hidden="true"></div>
+
+      <div class="hero__rail">
+        <span class="hero__rail-dot" aria-hidden="true"></span>
+        <span>HYPERLANE / 26 — a developer summit · public list opens 09 Sep</span>
+      </div>
+
+      <h1 class="hero__display" id="hero-h">
+        <span class="hero__line">For engineers</span>
+        <span class="hero__line">who ship</span>
+        <span class="hero__line"><em>after dark.</em></span>
+      </h1>
+
+      <div class="hero__meta">
+        <div class="hero__meta-cell">
+          <span class="hero__label">When</span>
+          <span class="hero__value">Sat 17 Oct 2026 · 7 PM</span>
+        </div>
+        <div class="hero__meta-cell hero__meta-cell--mid">
+          <span class="hero__label">To liftoff</span>
+          <span class="hero__value tnum" id="countdown" data-target="2026-10-17T19:00:00-04:00">— —</span>
+        </div>
+        <div class="hero__meta-cell hero__meta-cell--end">
+          <span class="hero__label">Where</span>
+          <span class="hero__value">Brooklyn · 480 cap</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── format band · spec sheet ────────────────────────── -->
+    <section class="format" id="format" aria-labelledby="format-h">
+      <header class="section-head">
+        <p class="section-eyebrow"><span class="num tnum">01</span> · Format</p>
+        <h2 class="section-h" id="format-h">A single night, end to end.</h2>
+      </header>
+
+      <ol class="format__schedule" aria-label="Schedule">
+        <li class="format__row">
+          <span class="format__time tnum">7:00 <small>PM</small></span>
+          <span class="format__label">Doors</span>
+          <span class="format__note">soft open · drinks · introductions in the foyer</span>
+        </li>
+        <li class="format__row">
+          <span class="format__time tnum">8:30 <small>PM</small></span>
+          <span class="format__label">Programme</span>
+          <span class="format__note">eight talks · four live launches · running until 1 AM</span>
+        </li>
+        <li class="format__row">
+          <span class="format__time tnum">11:00 <small>PM</small></span>
+          <span class="format__label">Workshop</span>
+          <span class="format__note">a hands-on session in the side room · 40 seats only</span>
+        </li>
+        <li class="format__row">
+          <span class="format__time tnum">1:00 <small>AM</small></span>
+          <span class="format__label">Late</span>
+          <span class="format__note">closing DJ · open until four · room is yours</span>
+        </li>
+        <li class="format__row format__row--reveal">
+          <span class="format__time tnum">— —</span>
+          <span class="format__label">Address</span>
+          <span class="format__note">released 48 hours before to ticketed guests · Williamsburg waterfront</span>
+        </li>
+      </ol>
+
+      <div class="format__cta">
+        <a class="cta cta--primary cta--lg" href="#rsvp">
+          <span>Save your spot</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <p class="format__cta-note tnum">— Wave 01 of 3 · 480 cap · public list opens 09 Sep 2026</p>
+      </div>
+    </section>
+
+    <!-- ─── why · pitch ────────────────────────────────────── -->
+    <section class="why" id="why" aria-labelledby="why-h">
+      <header class="section-head">
+        <p class="section-eyebrow"><span class="num tnum">02</span> · Why</p>
+        <h2 class="section-h" id="why-h">A room for the people still building things at 2 AM.</h2>
+      </header>
+
+      <div class="why__body">
+        <p class="why__lead">
+          Twelve hours. Eight talks. Four live launches. Four hundred and eighty engineers, designers, founders, infra people, ML people, the frontend people who keep telling you the framework isn't done yet. Show up at seven. Leave when the sun does.
+        </p>
+        <p>
+          The conference circuit is fine. But the launches that matter — the new database, the new compiler, the next thing you'll be writing against in March — those don't happen on big stages. They happen in small rooms, late, when the ten people who actually shipped the thing are still around to answer questions.
+        </p>
+        <p>
+          Hyperlane is a room for that. <em>No badges. No pitches. No panels.</em> Talks short enough to remember (twelve to eighteen minutes). Live demos you can interrupt. Closing DJ.
+        </p>
+        <p class="why__signoff">— Brooklyn. October. The list opens in September.</p>
+      </div>
+    </section>
+
+    <!-- ─── programme grid · Wave 01 ───────────────────────── -->
+    <section class="program" id="program" aria-labelledby="program-h">
+      <header class="section-head">
+        <p class="section-eyebrow"><span class="num tnum">03</span> · Programme · Wave 01</p>
+        <h2 class="section-h" id="program-h">Six of twelve slots announced.</h2>
+        <p class="section-note">Wave 02 reveals 09 Sep · final programme 30 Sep · launches stay sealed until the night.</p>
+      </header>
+
+      <ul class="program__grid">
+        <li class="card card--keynote">
+          <p class="card__time tnum">8:30 PM</p>
+          <p class="card__type">Opening keynote</p>
+          <h3 class="card__h">A short talk on shipping under constraint.</h3>
+          <p class="card__sub">Twelve minutes. From an engineer who's released compilers to production for the last decade.</p>
+          <p class="card__name">— announced soon</p>
+        </li>
+
+        <li class="card card--launch">
+          <p class="card__time tnum">9:00 PM</p>
+          <p class="card__type">Live launch · 01</p>
+          <h3 class="card__h">A new way to ship developer tools.</h3>
+          <p class="card__sub">First public demo. Press embargo lifts at the door.</p>
+          <p class="card__name">— sealed until the night</p>
+        </li>
+
+        <li class="card card--talk">
+          <p class="card__time tnum">9:45 PM</p>
+          <p class="card__type">Talk</p>
+          <h3 class="card__h">Live coding · forty-five minutes · no slides.</h3>
+          <p class="card__sub">A working session, in front of the room, on a real production codebase.</p>
+          <p class="card__name">— announced soon</p>
+        </li>
+
+        <li class="card card--tba">
+          <p class="card__time tnum">10:30 PM</p>
+          <p class="card__type">Wave 02</p>
+          <h3 class="card__h">Reveal · 09 Sep 2026.</h3>
+          <p class="card__sub">A speaker we're glad to have. The third name we're announcing first.</p>
+          <p class="card__name">TBA</p>
+        </li>
+
+        <li class="card card--launch">
+          <p class="card__time tnum">11:30 PM</p>
+          <p class="card__type">Live launch · 02</p>
+          <h3 class="card__h">Open-source. Day one. The repo opens during the demo.</h3>
+          <p class="card__sub">Bring a laptop if you'd like to follow along.</p>
+          <p class="card__name">— sealed until the night</p>
+        </li>
+
+        <li class="card card--closing">
+          <p class="card__time tnum">12:30 AM</p>
+          <p class="card__type">Closing</p>
+          <h3 class="card__h">Eight engineers · one sentence each.</h3>
+          <p class="card__sub">Then dancing. The DJ takes over at one.</p>
+          <p class="card__name">— announced soon</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ─── rsvp · join the list ───────────────────────────── -->
+    <section class="rsvp" id="rsvp" aria-labelledby="rsvp-h">
+      <div class="rsvp__inner">
+        <p class="section-eyebrow"><span class="num tnum">04</span> · Tickets</p>
+        <h2 class="rsvp__h" id="rsvp-h">Two emails. One night.</h2>
+        <p class="rsvp__lead">
+          Join the public list and get early access to Wave 01 tickets when they open on 09 Sep. We send the address two days before doors and a final note 24 hours out — that's it.
+        </p>
+
+        <form class="rsvp__form" id="rsvp-form" novalidate>
+          <div class="rsvp__row">
+            <label class="rsvp__field">
+              <span class="rsvp__field-label">Email</span>
+              <input
+                type="email"
+                name="email"
+                id="rsvp-email"
+                autocomplete="email"
+                placeholder="you@studio.work"
+                required
+                aria-describedby="rsvp-help"
+              />
+            </label>
+            <button class="cta cta--primary cta--lg" type="submit" data-state="default">
+              <span class="cta__label">Get on the list</span>
+              <span class="cta__arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+          <p class="rsvp__help" id="rsvp-help">
+            <span class="tnum">Wave 01 · $140</span> · <span class="tnum">Wave 02 · $180</span> · <span class="tnum">Wave 03 · $220</span> at the door, capacity permitting.
+          </p>
+          <output class="rsvp__success" for="rsvp-email" aria-live="polite"></output>
+        </form>
+      </div>
+    </section>
+
+    <!-- ─── FAQ · conversational ───────────────────────────── -->
+    <section class="faq" id="faq" aria-labelledby="faq-h">
+      <header class="section-head">
+        <p class="section-eyebrow"><span class="num tnum">05</span> · Questions</p>
+        <h2 class="section-h" id="faq-h">A few honest answers.</h2>
+      </header>
+
+      <div class="faq__list">
+        <details class="faq__item">
+          <summary>
+            <span>What exactly is Hyperlane?</span>
+            <span class="faq__chev" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq__a">
+            <p>One night, twelve hours, eight programmed slots. Four of those slots are live product launches — first public demos, with the team that built it taking questions afterward. Talks are short (twelve to eighteen minutes). No panels. No badges. The room itself is the after-show.</p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary>
+            <span>Who comes?</span>
+            <span class="faq__chev" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq__a">
+            <p>Roughly: half engineers, a quarter designers, a quarter everything adjacent — founders, ML researchers, devrel, technical writers. The list is public; the seats are not. Tickets are not transferable.</p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary>
+            <span>Where is it, exactly?</span>
+            <span class="faq__chev" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq__a">
+            <p>A warehouse on the Williamsburg waterfront. We release the address forty-eight hours before doors, to ticketed guests only. There are real reasons.</p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary>
+            <span>How much?</span>
+            <span class="faq__chev" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq__a">
+            <p>Three waves. Wave 01 (early list, you're reading this) opens at <span class="tnum">$140</span>. Wave 02 at <span class="tnum">$180</span>. Wave 03 at the door, capacity permitting, <span class="tnum">$220</span>. We don't do tiers, comp lists, or sponsorship seats.</p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary>
+            <span>Is it recorded?</span>
+            <span class="faq__chev" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq__a">
+            <p>Talks are recorded and released thirty days after the event. The launches and live demos are not streamed and not recorded — you have to be in the room.</p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary>
+            <span>Refunds?</span>
+            <span class="faq__chev" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq__a">
+            <p>Up to seven days before doors. After that we'll move your seat to the waitlist and credit you toward the next room.</p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary>
+            <span>I'd like to launch something. Can I?</span>
+            <span class="faq__chev" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq__a">
+            <p>Maybe. Two of the four launch slots are still open. Email <a href="mailto:launches@hyperlane.events">launches@hyperlane.events</a> with what you're shipping and we'll write back. We are not a sponsorship channel; the slot has to be a real launch.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── footer · Ft5 statement ──────────────────────────── -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__statement">
+        <em>Built late. Shipped live.</em> One room a year — for the people who'd be coding tonight anyway.
+      </p>
+      <div class="footer__meta">
+        <p class="footer__line tnum">Hyperlane / 26 · 17 Oct 2026 · Brooklyn · 7 PM</p>
+        <ul class="footer__links">
+          <li><a href="#main">Top</a></li>
+          <li><a href="#program">Programme</a></li>
+          <li><a href="#rsvp">List</a></li>
+          <li><a href="mailto:hello@hyperlane.events">hello@hyperlane.events</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

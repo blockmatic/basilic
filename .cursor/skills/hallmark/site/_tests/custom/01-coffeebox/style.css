@@ -1,0 +1,269 @@
+/* Hallmark · macrostructure: Long Document · H5 hero knobs: salutation=time-stamp, body=2 paragraphs, signoff=initials
+ * theme: custom · vibe: "archival warmth, hand-set, no varnish" · paper: oklch(94% 0.020 65) · accent: oklch(58% 0.16 35)
+ * display: Fraunces italic · body: Source Serif 4 · axes: light / italic-serif / chromatic-terracotta
+ * studied: no · context: explicit · v0.7.0
+ */
+
+:root {
+  /* Custom palette — derived per brand vibe + anchor (terracotta) */
+  --color-paper: oklch(94% 0.02 65);
+  --color-paper-2: oklch(91% 0.022 65);
+  --color-paper-3: oklch(88% 0.024 65);
+  --color-rule: oklch(78% 0.018 65);
+  --color-rule-2: oklch(82% 0.018 65);
+  --color-muted: oklch(54% 0.014 60);
+  --color-neutral: oklch(42% 0.014 60);
+  --color-ink: oklch(22% 0.014 60);
+  --color-ink-2: oklch(40% 0.014 60);
+  --color-accent: oklch(58% 0.16 35);
+  --color-accent-ink: oklch(96% 0.014 65);
+  --color-focus: oklch(56% 0.2 35);
+
+  /* Pair: Editorial display + Editorial body — custom retains the catalog's free pairing */
+  --font-display: "Fraunces", "EB Garamond", Georgia, serif;
+  --font-body: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", ui-monospace, monospace;
+
+  /* Canonical 4-pt scale (reused) */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+  --space-4xl: 9rem;
+
+  --measure-prose: 60ch;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-micro: 140ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
+}
+
+/* Masthead — italic Fraunces wordmark */
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-block-end: 1px solid var(--color-rule);
+  padding-block-end: var(--space-sm);
+  margin-block-end: var(--space-3xl);
+}
+
+.masthead__brand {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  font-size: 1.75rem;
+  letter-spacing: -0.015em;
+  margin: 0;
+  color: var(--color-ink);
+}
+
+.masthead__brand .dot {
+  color: var(--color-accent);
+}
+
+.masthead__meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Salutation — H5 time-stamp */
+.salutation {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-xl);
+  color: var(--color-ink);
+}
+
+.salutation__time {
+  display: block;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-block-end: var(--space-sm);
+}
+
+/* Letter body */
+.letter {
+  max-width: var(--measure-prose);
+  font-family: var(--font-body);
+  font-size: 1.1875rem;
+  line-height: 1.6;
+  color: var(--color-ink);
+}
+
+.letter p {
+  margin: 0 0 var(--space-lg);
+}
+
+.letter p:first-of-type::first-letter {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 4.5rem;
+  line-height: 0.85;
+  float: inline-start;
+  padding-inline-end: 0.18em;
+  padding-block-start: 0.14em;
+  color: var(--color-accent);
+  font-variation-settings: "opsz" 144;
+}
+
+.letter em {
+  font-style: italic;
+  color: var(--color-ink);
+}
+
+/* Three notes */
+.notes {
+  margin-block-start: var(--space-3xl);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-rule);
+}
+
+.notes__head {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin: 0 0 var(--space-lg);
+}
+
+.note {
+  display: grid;
+  grid-template-columns: 4ch 1fr;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-block-end: 1px solid var(--color-rule);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.55;
+  align-items: baseline;
+}
+
+.note:last-child {
+  border-block-end: none;
+}
+
+.note__num {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.note__body {
+  color: var(--color-ink);
+  max-width: var(--measure-prose);
+}
+.note__body strong {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+/* Sign-off + colophon */
+.signoff {
+  margin-block-start: var(--space-2xl);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.125rem;
+  color: var(--color-ink-2);
+}
+
+.signoff__name {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.colophon {
+  margin-block-start: var(--space-3xl);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-xl);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.colophon a {
+  color: var(--color-muted);
+  text-decoration: none;
+  border-block-end: 1px solid transparent;
+  padding-block-end: 1px;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.colophon a:hover,
+.colophon a:focus-visible {
+  color: var(--color-accent);
+  border-block-end-color: var(--color-accent);
+}
+
+.colophon a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+@media (max-width: 40rem) {
+  .page {
+    padding: var(--space-xl) var(--space-md) var(--space-2xl);
+  }
+  .salutation {
+    font-size: 1.875rem;
+  }
+  .letter {
+    font-size: 1.0625rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .colophon a {
+    transition: none;
+  }
+}

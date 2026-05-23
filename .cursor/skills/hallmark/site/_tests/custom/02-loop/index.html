@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loop — real-time payment-rail observability for fintechs</title>
+  <meta name="description" content="See every cross-rail payment in real time. Find the regressed leg, read why, and clear the queue before the SLA fires." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <span class="masthead__brand"><span class="dot"></span>loop · v0.7</span>
+      <nav class="masthead__nav">
+        <a href="#walkthrough">Walkthrough</a>
+        <a href="#">Rails</a>
+        <a href="#">Pricing</a>
+        <a href="#">Docs</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero__copy">
+        <p class="hero__eyebrow">For payment platform engineers</p>
+        <h1 class="hero__head">Real-time payment-rail observability that <em>tells you why.</em></h1>
+        <p class="hero__sub">
+          Watch every leg of a cross-rail payment in flight. Find the regressed
+          hop, read why — in plain text — without grafana, splunk, and a status-page hunt.
+          Loop is what your on-call wishes the bank's API gave them.
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--primary" href="#">Try it free <span aria-hidden="true">→</span></a>
+          <a class="btn" href="#">Talk to sales</a>
+        </div>
+      </div>
+      <aside class="hero__panel" aria-label="Sample trace preview">
+        <div class="hero__panel-head"><span>payment · 9c3a72ef</span><span>4.21 s</span></div>
+        <div class="trace">
+          <div class="span"><span class="span__label">api.transfer</span><span class="span__bar"><i style="width:100%"></i></span><span class="span__time">4.21s</span></div>
+          <div class="span"><span class="span__label">↳ kyc.verify</span><span class="span__bar"><i style="width:18%"></i></span><span class="span__time">762ms</span></div>
+          <div class="span span--err"><span class="span__label">↳ rail.swift</span><span class="span__bar"><i style="width:78%"></i></span><span class="span__time">3.28s</span></div>
+          <div class="span span--warn"><span class="span__label">&nbsp;&nbsp;↳ fx.spot</span><span class="span__bar"><i style="width:62%"></i></span><span class="span__time">2.71s</span></div>
+          <div class="span"><span class="span__label">↳ ledger.write</span><span class="span__bar"><i style="width:6%"></i></span><span class="span__time">240ms</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="workbench" id="walkthrough">
+      <div class="steps">
+        <article class="step">
+          <p class="step__num">step 01 · open</p>
+          <h2 class="step__head">Open the payment, not a dashboard.</h2>
+          <p class="step__body">
+            Drop a payment ID, an idempotency key, or a five-second time window. Loop
+            pulls the legs from your rails and renders them inline — no Grafana hop,
+            no link to Splunk, no separate logs window. The payment is the unit of work.
+          </p>
+        </article>
+
+        <article class="step">
+          <p class="step__num">step 02 · find</p>
+          <h2 class="step__head">Find the regressed leg.</h2>
+          <p class="step__body">
+            Loop ranks legs by <strong>p99 deviation against your rail's seven-day baseline</strong>.
+            The first one in the list is almost always the problem. The baseline is
+            precomputed every five minutes per rail; you don't set it.
+          </p>
+        </article>
+
+        <article class="step">
+          <p class="step__num">step 03 · read</p>
+          <h2 class="step__head">Read why, in plain text.</h2>
+          <p class="step__body">
+            Each leg carries an <strong>auto-generated explainer</strong>: which dependency
+            regressed, which version of which service, which deploy correlates, and the
+            diff between then and now. Plain text, copy-paste ready into a post-mortem.
+          </p>
+        </article>
+      </div>
+
+      <aside class="pinned" aria-label="Pinned trace panel">
+        <header class="pinned__head">
+          <span>payment · 9c3a72ef</span>
+          <span class="pinned__chip">REGRESSED</span>
+        </header>
+        <div class="trace">
+          <div class="span"><span class="span__label">api.transfer</span><span class="span__bar"><i style="width:100%"></i></span><span class="span__time">4.21s</span></div>
+          <div class="span"><span class="span__label">↳ kyc.verify</span><span class="span__bar"><i style="width:18%"></i></span><span class="span__time">762ms</span></div>
+          <div class="span span--err"><span class="span__label">↳ rail.swift</span><span class="span__bar"><i style="width:78%"></i></span><span class="span__time">3.28s</span></div>
+          <div class="span span--warn"><span class="span__label">&nbsp;&nbsp;↳ fx.spot</span><span class="span__bar"><i style="width:62%"></i></span><span class="span__time">2.71s</span></div>
+          <div class="span"><span class="span__label">↳ ledger.write</span><span class="span__bar"><i style="width:6%"></i></span><span class="span__time">240ms</span></div>
+        </div>
+        <p class="pinned__why">
+          <strong>WHY:</strong> rail.swift p99 doubled at 14:02 UTC. Correlates with
+          counterparty BNYM-N's queue depth crossing 12 k pending. Loop's escalation
+          fires automatically; oncall has the diff in their inbox.
+        </p>
+      </aside>
+    </section>
+
+    <footer class="colophon">
+      <span>Loop · v0.7 · made in Lisbon &amp; Berlin</span>
+      <span><a href="#">docs</a> · <a href="#">changelog</a> · <a href="#">status</a> · <a href="#">github</a></span>
+    </footer>
+  </main>
+</body>
+</html>

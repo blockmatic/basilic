@@ -43,7 +43,7 @@ If gitleaks is installed, staged files are scanned for:
 
 ## Required Tools
 
-Install all required security tools automatically with `pnpm run setup` (see [Getting Started](/docs/development)). For manual installation, see the instructions below.
+Install all required security tools automatically with `pnpm run setup` (see [Getting Started](/docs/development)); this also scaffolds `.deepsec/` via `setup:deepsec` when missing. For manual installation, see the instructions below.
 
 ### gitleaks
 
@@ -150,6 +150,34 @@ pnpm security:audit
 # Run all security checks
 pnpm security:check
 ```
+
+## Deepsec (optional)
+
+[deepsec](https://github.com/vercel-labs/deepsec) is an agent-powered vulnerability scanner for code that static tools miss. It is **opt-in**, **not** run in pre-commit hooks, `pnpm security:check`, `pnpm qa`, or CI.
+
+### One-time setup
+
+```bash
+pnpm setup:deepsec
+```
+
+1. Set `AI_GATEWAY_API_KEY` in `.deepsec/.env.local` (see [deepsec Vercel setup](https://github.com/vercel-labs/deepsec/blob/main/docs/vercel-setup.md)).
+2. Fill `.deepsec/data/basilic/INFO.md` using the prompt printed by `init` (~50–100 lines: auth shape, threat model, project-specific primitives).
+3. Commit `.deepsec/` config and `INFO.md`; never commit `.deepsec/.env.local` or `data/` findings.
+
+### Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `pnpm security:deepsec` | PR-scoped review: changed files vs `origin/main` |
+| `pnpm security:deepsec:full` | Full repo: `scan` then `process` (high cost) |
+
+Full scans support budgeting: `DEEPSEC_LIMIT=50 pnpm security:deepsec:full`.
+
+### Exit codes and cost
+
+- `security:deepsec` exits `1` when there are **net-new** findings (expected for gating a branch before push).
+- Full-repo `process` can cost hundreds to thousands of dollars on large trees; run `DEEPSEC_LIMIT` first to calibrate.
 
 ## CI Workflow
 

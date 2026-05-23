@@ -1,0 +1,302 @@
+/* Hallmark · macrostructure: Catalogue · F1 catalogue knobs: tiles=8, columns=2, rule=hairline-between
+ * theme: custom · vibe: "moss, lichen, soft pink, herbal" · paper: oklch(96% 0.018 145) · accent: oklch(72% 0.13 350)
+ * display: Cormorant Garamond · body: EB Garamond · axes: light / roman-serif / chromatic-other (dusty-pink)
+ * studied: no · context: explicit · v0.7.0
+ */
+
+:root {
+  /* Custom palette — moss-tinted paper with dusty-pink accent */
+  --color-paper: oklch(96% 0.018 145);
+  --color-paper-2: oklch(93% 0.02 145);
+  --color-paper-3: oklch(90% 0.022 145);
+  --color-rule: oklch(82% 0.018 145);
+  --color-rule-2: oklch(86% 0.018 145);
+  --color-muted: oklch(56% 0.014 140);
+  --color-neutral: oklch(46% 0.014 140);
+  --color-ink: oklch(22% 0.014 140);
+  --color-ink-2: oklch(42% 0.014 140);
+  --color-accent: oklch(72% 0.13 350);
+  --color-accent-ink: oklch(96% 0.014 145);
+  --color-focus: oklch(70% 0.18 350);
+
+  --font-display: "Cormorant Garamond", "EB Garamond", "Cardo", Georgia, serif;
+  --font-body: "EB Garamond", "Crimson Pro", "Cardo", Georgia, serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-micro: 140ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
+}
+
+/* Masthead — apothecary plate */
+.masthead {
+  text-align: center;
+  border-block-end: 2px double var(--color-rule);
+  padding-block-end: var(--space-lg);
+  margin-block-end: var(--space-2xl);
+}
+
+.masthead__rule {
+  width: 4ch;
+  border: 0;
+  border-block-start: 1px solid var(--color-ink);
+  margin: 0 auto var(--space-md);
+}
+
+.masthead__brand {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.005em;
+  margin: 0 0 var(--space-2xs);
+  color: var(--color-ink);
+}
+
+.masthead__brand .em {
+  color: var(--color-accent);
+  font-style: italic;
+}
+
+.masthead__sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-2);
+  margin: 0;
+}
+
+/* Today's batch */
+.todays {
+  text-align: center;
+  margin-block-end: var(--space-xl);
+}
+
+.todays__head {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 3vw, 2.25rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin: 0 0 var(--space-2xs);
+  color: var(--color-ink);
+}
+
+.todays__date {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+/* Catalogue grid */
+.catalogue {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border-block-start: 1px solid var(--color-rule);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
+  border-block-end: 1px solid var(--color-rule);
+  position: relative;
+  transition: background var(--dur-micro) var(--ease-out);
+}
+
+.item:nth-child(odd) {
+  border-inline-end: 1px solid var(--color-rule);
+}
+.item:hover {
+  background: var(--color-paper-2);
+}
+
+.item__shape {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink-2);
+}
+
+.item__shape svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.item__shape--accent svg {
+  stroke: var(--color-accent);
+}
+
+.item__body {
+  min-width: 0;
+}
+
+.item__name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  margin: 0 0 var(--space-3xs);
+  color: var(--color-ink);
+}
+
+.item__name em {
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+.item__desc {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.9375rem;
+  color: var(--color-ink-2);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.item__price {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.item__price--out {
+  color: var(--color-muted);
+  font-style: italic;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+}
+
+/* Visit */
+.visit {
+  margin-block-start: var(--space-2xl);
+  padding: var(--space-xl) var(--space-md);
+  border-block-start: 2px double var(--color-rule);
+  border-block-end: 2px double var(--color-rule);
+  text-align: center;
+}
+
+.visit__head {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 400;
+  margin: 0 0 var(--space-md);
+  color: var(--color-ink);
+}
+
+.visit__lines {
+  display: grid;
+  gap: var(--space-2xs);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+
+.visit__lines em {
+  font-style: italic;
+  color: var(--color-ink-2);
+}
+.visit__lines strong {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+/* Colophon */
+.colophon {
+  margin-block-start: var(--space-2xl);
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.colophon a {
+  color: var(--color-muted);
+  text-decoration: none;
+  border-block-end: 1px solid transparent;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.colophon a:hover,
+.colophon a:focus-visible {
+  color: var(--color-accent);
+  border-block-end-color: var(--color-accent);
+}
+
+.colophon a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+@media (max-width: 48rem) {
+  .catalogue {
+    grid-template-columns: 1fr;
+  }
+  .item:nth-child(odd) {
+    border-inline-end: none;
+  }
+  .item {
+    grid-template-columns: 64px 1fr auto;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-2xs);
+  }
+  .item__shape {
+    width: 64px;
+    height: 64px;
+  }
+  .item__name {
+    font-size: 1.25rem;
+  }
+}
