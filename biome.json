@@ -10,6 +10,7 @@
       "!**/build",
       "!**/bin",
       "!**/.turbo",
+      "!**/.cursor/skills",
       "!**/.source",
       "!**/.vercel",
       "!**/.cache",
