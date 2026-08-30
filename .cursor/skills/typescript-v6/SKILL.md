@@ -1,5 +1,5 @@
 ---
-name: typescript-v5
+name: typescript-v6
 description: Advanced TypeScript patterns for type-safe, maintainable code using sophisticated type system features. Use when building type-safe APIs, implementing complex domain models, or leveraging TypeScript's advanced type capabilities.
 ---
 
@@ -7,14 +7,16 @@ description: Advanced TypeScript patterns for type-safe, maintainable code using
 
 ## Scope
 
-- Applies to: TypeScript v5+ advanced type system features, type-safe APIs, complex domain models, sophisticated type inference, compile-time guarantees
-- Does NOT cover: Basic TypeScript syntax, framework-specific patterns, runtime validation libraries (use Zod separately)
+- Applies to: TypeScript 6.0+ type system features, type-safe APIs, complex domain models, inference, compile-time guarantees
+- Does NOT cover: Basic syntax, framework-specific patterns, runtime validation (use Zod separately)
 
 ## Assumptions
 
-- TypeScript v5+
-- Strict mode enabled (`"strict": true` in `tsconfig.json`)
-- Target: ES2020+ or higher
+- Folder major tracks `package.json` `typescript` (this repo: `@typescript/typescript6` ^6), not `npm view typescript` (may already be 7)
+- 6.0 is the last JavaScript-based compiler; 7.0 is native (Go). `@typescript/native` may sit beside `tsc`; it is not this skill’s major
+- Strict mode (`"strict": true`)
+- Target ES2020+ (6.0 defaults trend toward `esnext` / `es2025`)
+- Options deprecated in 6.0 can be ignored with `"ignoreDeprecations": "6.0"` until 7.0 removes them. Prefer fixing deprecations: https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/
 
 ## Principles
 
@@ -42,6 +44,7 @@ description: Advanced TypeScript patterns for type-safe, maintainable code using
 - Keep types composable and shallow
 - Mark immutable data structures as `readonly`
 - Use branded types to prevent primitive mixing
+- Address 6.0 deprecations before adopting TypeScript 7 native
 
 ### AVOID
 
@@ -49,11 +52,12 @@ description: Advanced TypeScript patterns for type-safe, maintainable code using
 - Type assertions without validation
 - Overusing generics (only when types truly vary)
 - Deep type nesting (slow compilation, hard to debug)
+- Import assertions (`assert { type: ... }`); use `with` import attributes
 
 ## Interactions
 
 - Works with [zod](https://zod.dev) for runtime validation with type inference
-- Complements [nextjs](@cursor/skills/nextjs-v16/SKILL.md) for type-safe API routes
+- Complements [next](@cursor/skills/next-v16/SKILL.md) for type-safe API routes
 - Complements [fastify](@cursor/skills/fastify-v5/SKILL.md) for type-safe route schemas
 
 ## Patterns
@@ -115,6 +119,6 @@ type LoadingState =
 
 ## Resources
 
+- [Announcing TypeScript 6.0](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/)
 - [Type Challenges](https://github.com/type-challenges/type-challenges)
-- [ts-toolbelt](https://github.com/millsp/ts-toolbelt) - Advanced type utilities library

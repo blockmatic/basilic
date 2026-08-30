@@ -8,7 +8,7 @@ alwaysApply: false
 1. CSS + data attributes: `tw-animate-css` with `data-[state=*]` (`animate-in`, `fade-in-0`, `zoom-in-95`, `slide-in-from-*`)
 2. Shadcn built-in Dialog/Popover/Sheet/Dropdown animations
 3. Custom `data-*` + Tailwind `data-[state=x]:*`
-4. Motion only for drag, scroll-linked, layout, gestures, shared-element. See @.cursor/skills/motion-v1
+4. Motion only for drag, scroll-linked, layout, gestures, shared-element. See @.cursor/skills/motion-v13
 If `transition-*` or `animate-*` works, do not use Motion.
 
 ## Spacing (8pt)

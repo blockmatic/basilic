@@ -8,16 +8,8 @@ import { streamText } from 'ai'
 async function main() {
   const stream = streamText({
     model: anthropic('claude-sonnet-4-5'),
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a helpful assistant that writes concise responses.',
-      },
-      {
-        role: 'user',
-        content: 'Tell me a short story about AI and humanity working together.',
-      },
-    ],
+    instructions: 'You are a helpful assistant that writes concise responses.',
+    prompt: 'Tell me a short story about AI and humanity working together.',
     maxOutputTokens: 500,
   })
 

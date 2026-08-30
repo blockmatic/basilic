@@ -4,6 +4,8 @@ paths: "**/*.ts", "**/*.tsx", "**/motion*.ts", "**/animate*.ts"
 
 # Motion (formerly Framer Motion) Corrections
 
+Package major: `motion` ^13. Import from `motion/react`. Motion 13: if styled components leak props to the DOM, pass `isValidProp` to `MotionConfig` or use `motion.create(StyledComponent)`. https://motion.dev/docs/react-upgrade-guide
+
 Claude's training may reference Framer Motion. The library was **renamed to Motion** in late 2024.
 
 ## Package Name Change

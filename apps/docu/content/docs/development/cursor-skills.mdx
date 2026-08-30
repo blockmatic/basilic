@@ -23,7 +23,7 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 - Library major change → new folder (`next-v17`). Drop the old folder when the repo no longer uses that major.
 - Upstream wording, references, or bugfixes → same folder; commit the file diff.
-- Design and motion skills with no library major keep `-v1` until the skill format itself breaks.
+- Design skills with no npm package keep `-v1` until the skill format itself breaks (`frontend-design-v1`, `emilkowal-animations-v1`, `vercel-react-v1`). Library skills (including Motion) use the npm major (`motion-v13` for `motion` ^13).
 - Workflows stay unversioned.
 
 This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is what upstream publishes. Do not invent empty `*-v57` folders. When Expo ships v57 skills, add those folders and drop v55.
@@ -39,8 +39,10 @@ Do not `git pull` inside a nested `.git` under `.cursor/skills/`. Do not store p
 1. Fetch into `/tmp`: `npx skills add owner/repo --skill <upstream-name> --agent cursor -p`, or a shallow clone.
 2. Copy files into `.cursor/skills/<topic>-v<major>/`.
 3. Overlay: set frontmatter `name:` to the folder name. Keep Basilic sections on tech skills we maintain. Restore repo notes (Playwright E2E stays in `apps/web/e2e` and `apps/api/test`).
-4. Delete any unversioned sibling folder.
+4. Delete any unversioned sibling folder. Confirm with `ls .cursor/skills` before hunting leftovers.
 5. Commit. Review the diff like any other vendored snippet.
+
+When grepping skill names, match the folder or `name:` exactly (`motion-v1/`, `name: motion-v1`). Do not use a substring (`motion-v1` also hits `motion-v13`).
 
 **Remove** — delete the folder, drop inventory rows, grep for `@.cursor/skills/…` links.
 
@@ -63,7 +65,7 @@ Third-party (fetch, then overlay `name:`):
 - `frontend-design-v1` ← [anthropics/skills](https://github.com/anthropics/skills) `frontend-design`
 - `emilkowal-animations-v1` ← pproenca/dot-skills `emilkowal-animations`
 
-Basilic forks (do not clobber with a different upstream skill): `ahooks-v3`, `ai-sdk-core-v6`, `ai-sdk-ui-v6`, `drizzle-orm-v0`, `motion-v1`, `openapi-ts-v0`, `playwright-v1` (ad-hoc `/tmp` scripts; not `microsoft/playwright-cli`; overlay: app E2E stays in `apps/web/e2e` and `apps/api/test`), `shadcn-v3` (Next 16, CSS-first Tailwind v4), `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v5`.
+Basilic forks (do not clobber with a different upstream skill): `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1` (ad-hoc `/tmp` scripts; not `microsoft/playwright-cli`; overlay: app E2E stays in `apps/web/e2e` and `apps/api/test`), `shadcn-v3` (Next 16, CSS-first Tailwind v4), `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`.
 
 ## Related
 

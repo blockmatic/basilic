@@ -71,7 +71,7 @@ description: |
 
 ## Interactions
 
-- Works with [nextjs](@cursor/skills/nextjs-v16/SKILL.md) Server Components and API routes
+- Works with [next](@cursor/skills/next-v16/SKILL.md) Server Components and API routes
 - Complements [fastify](@cursor/skills/fastify-v5/SKILL.md) for API development
 
 ## Patterns

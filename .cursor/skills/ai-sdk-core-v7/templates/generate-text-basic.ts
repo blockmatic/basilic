@@ -7,8 +7,9 @@ import { generateText } from 'ai'
 
 async function main() {
   const result = await generateText({
-    model: openai('gpt-4-turbo'),
-    prompt: 'What is TypeScript? Explain in 2 sentences.',
+    model: openai('gpt-4.1'),
+    instructions: 'Answer in two sentences.',
+    prompt: 'What is TypeScript?',
     maxOutputTokens: 100,
     temperature: 0.7,
   })

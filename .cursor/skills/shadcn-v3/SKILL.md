@@ -19,7 +19,7 @@ description: |
 - shadcn/ui latest
 - Next.js 16 (this repo); CSS-first Tailwind v4, not Vite
 - React 18+ or Next.js 14+
-- TypeScript 5+
+- TypeScript 6+
 
 ## Principles
 
@@ -76,8 +76,8 @@ description: |
 
 ## Interactions
 
-- Works with [nextjs](@cursor/skills/nextjs-v16/SKILL.md) for App Router setup
-- Uses [typescript](@cursor/skills/typescript-v5/SKILL.md) for type safety
+- Works with [next](@cursor/skills/next-v16/SKILL.md) for App Router setup
+- Uses [typescript](@cursor/skills/typescript-v6/SKILL.md) for type safety
 
 ## Patterns
 

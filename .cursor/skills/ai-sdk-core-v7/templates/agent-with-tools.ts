@@ -1,15 +1,15 @@
-// Agent class with multiple tools
-// AI SDK Core - Agent class for multi-step execution
+// ToolLoopAgent with tools
+// AI SDK Core v7 - https://ai-sdk.dev/docs/reference/ai-sdk-core/tool-loop-agent
 
 import { anthropic } from '@ai-sdk/anthropic'
 import { logger } from '@repo/utils/logger'
-import { Agent, tool } from 'ai'
+import { ToolLoopAgent, tool } from 'ai'
 import { z } from 'zod'
 
-// Create agent with tools
-const weatherAgent = new Agent({
+const weatherAgent = new ToolLoopAgent({
   model: anthropic('claude-sonnet-4-5'),
-  system: "You are a weather assistant. Always provide temperature in the user's preferred unit.",
+  instructions:
+    "You are a weather assistant. Always provide temperature in the user's preferred unit.",
   tools: {
     getWeather: tool({
       description: 'Get current weather for a location',
@@ -18,7 +18,6 @@ const weatherAgent = new Agent({
       }),
       execute: async ({ location }) => {
         logger.debug({ location }, '[Tool] Getting weather')
-        // Simulate API call
         return {
           location,
           temperature: 72,
@@ -48,7 +47,6 @@ const weatherAgent = new Agent({
       }),
       execute: async ({ location }) => {
         logger.debug({ location }, '[Tool] Getting air quality')
-        // Simulate API call
         return {
           location,
           aqi: 42,
@@ -67,24 +65,11 @@ const weatherAgent = new Agent({
 async function main() {
   logger.info('Starting agent conversation')
 
-  const result = await weatherAgent.run({
-    messages: [
-      {
-        role: 'user',
-        content:
-          'What is the weather in San Francisco? Tell me in Celsius and include air quality.',
-      },
-    ],
+  const result = await weatherAgent.generate({
+    prompt: 'What is the weather in San Francisco? Tell me in Celsius and include air quality.',
   })
 
   logger.info({ text: result.text }, 'Agent Response')
-  logger.info(
-    {
-      steps: result.steps,
-      toolsUsed: result.toolCalls?.map(tc => tc.toolName).join(', ') || 'none',
-    },
-    'Execution Summary',
-  )
 }
 
 main().catch(error => {
