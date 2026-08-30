@@ -4,8 +4,6 @@ globs: "apps/web/**/*,packages/core/**/*,packages/react/**/*"
 alwaysApply: false
 ---
 
-See @apps/docu/content/docs/architecture/authentication.mdx for full architecture.
-
 ## Cookie Storage
 
 - Single cookie `api.session` (env: `AUTH_COOKIE_NAME` / `NEXT_PUBLIC_AUTH_COOKIE_NAME`) stores JSON `{ token, refreshToken }`

@@ -8,7 +8,7 @@ Answer this question about the work just completed (this session, the last plan,
 
 anything you would do better in retrospect ?
 
-Follow architecture, strategies, and decisions in `@apps/docu/`. Reply in chat only—never create files unless the user asks to apply a change.
+Reply in chat only—never create files unless the user asks to apply a change.
 
 1. **Scope**: The work that just shipped or the plan just executed—not a career retrospective, not a generic process lecture
 2. **Be specific**: Name files, APIs, grep patterns, leftover folders, APIs you taught vs what the app still calls. Skip items that were the right call

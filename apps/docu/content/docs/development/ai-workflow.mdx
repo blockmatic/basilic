@@ -3,9 +3,13 @@ title: "AI Development Workflow"
 description: "Cursor-first workflow: plan, review, execute incrementally. Claude Code uses the same rules and skills."
 ---
 
-Development is **Cursor-first**. Claude Code follows the same `.cursor/rules` and `.cursor/skills` via root `CLAUDE.md`. Do not run a parallel process.
+Development is **Cursor-first**. Claude Code follows the same rules and skills via root `AGENTS.md`. Do not run a parallel process.
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era). Index this site once — [Cursor Setup](/docs/development/cursor-setup). Versioning and how to update skills: [Cursor Skills](/docs/development/cursor-skills).
+
+## Sources of truth
+
+Always-on rules point at `apps/docu/content/docs/`. Glob rules are constraints only. **Read** the topic MDX for the task. Do not `@`-attach MDX from rules or skills. Root `AGENTS.md` is the cross-harness stub.
 
 ## Guidance hierarchy
 

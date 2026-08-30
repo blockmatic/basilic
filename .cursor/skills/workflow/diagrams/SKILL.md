@@ -4,7 +4,7 @@ description: Analyze provided code, architecture, or concept and generate clear,
 disable-model-invocation: true
 ---
 
-Analyze provided code, architecture, or concept and generate clear, well-structured Mermaid diagram visualizing relationships, flow, or structure. Follow architecture, strategies, and decisions in `@apps/docu/`.
+Analyze provided code, architecture, or concept and generate clear, well-structured Mermaid diagram visualizing relationships, flow, or structure.
 
 1. **Analyze the input**: Understand what user wants to visualize (code flow, architecture, data relationships, state machines, sequences, etc)
 2. **Choose appropriate diagram type**: `flowchart` (process flows/decision trees/algorithms), `sequenceDiagram` (API calls/message passing/request-response flows), `classDiagram` (class structures/inheritance/interfaces), `erDiagram` (database schemas/entity relationships), `stateDiagram-v2` (state machines/lifecycle flows), `graph TD/LR` (dependency graphs/module relationships), `gitgraph` (git branching strategies), `journey` (user journeys), `gantt` (timelines/schedules)

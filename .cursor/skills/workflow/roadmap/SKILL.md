@@ -4,7 +4,7 @@ description: Analyze codebase and generate visual roadmap of potential features 
 disable-model-invocation: true
 ---
 
-Analyze codebase and generate visual roadmap of potential features and improvements. Track progress with todos. Follow architecture, strategies, and decisions in `@apps/docu/`.
+Analyze codebase and generate visual roadmap of potential features and improvements. Track progress with todos.
 
 1. **Scan codebase**: Scan codebase architecture, patterns, conventions, look for opportunities (missing common patterns, performance optimization opportunities, developer experience improvements, user-facing feature enhancements, code quality/refactoring candidates)
 2. **Identify opportunities**: Identify feature gaps and improvement opportunities

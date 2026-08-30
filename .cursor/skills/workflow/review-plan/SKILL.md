@@ -4,7 +4,7 @@ description: Review the attached or in-context plan. Use when the user types /re
 disable-model-invocation: true
 ---
 
-Review the attached or in-context plan. Cross-check **code**, **current implementation**, and **plan goals** to ensure coherence. Assess phase ordering and surface any gaps or improvements. **Out of scope**: deadlines, time estimates—only logical implementation order matters. Follow architecture, strategies, and decisions in `@apps/docu/`. Plans should follow @.cursor/rules/base/general.mdc.
+Review the attached or in-context plan. Cross-check **code**, **current implementation**, and **plan goals** to ensure coherence. Assess phase ordering and surface any gaps or improvements. **Out of scope**: deadlines, time estimates—only logical implementation order matters.
 
 1. **Plan discipline**: Plan includes ## References (rules/skills used) and 3–5 assumption bullets; deferrals flagged for ambiguous/high-risk items
 2. **Coherence**: Code, implementation, and plan goals align; logic flow, terminology, no contradictions

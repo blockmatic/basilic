@@ -4,7 +4,7 @@ description: Use mermaid diagram to visualize the data lineage of the referenced
 disable-model-invocation: true
 ---
 
-Use mermaid diagram to visualize the data lineage of the referenced code or project. Follow architecture, strategies, and decisions in `@apps/docu/`.
+Use mermaid diagram to visualize the data lineage of the referenced code or project.
 
 1. **Analyze code**: Understand the data flow, relationships, and structure in the referenced code or project
 2. **Choose diagram type**: Select appropriate mermaid diagram type (flowchart, sequence diagram, class diagram, ER diagram, etc.) based on what needs visualization

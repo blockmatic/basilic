@@ -4,7 +4,7 @@ description: Fetch CodeRabbit review comments for current PR, analyze all issues
 disable-model-invocation: true
 ---
 
-Fetch CodeRabbit review comments for current PR, analyze all issues, apply fixes automatically, and commit changes. Integrates CodeRabbit's AI code review directly into workflow. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+Fetch CodeRabbit review comments for current PR, analyze all issues, apply fixes automatically, and commit changes. Integrates CodeRabbit's AI code review directly into workflow.
 
 1. **Identify PR context**: Get current branch name, determine associated GitHub PR (if exists), if no PR exists check for uncommitted changes to review
 2. **Fetch CodeRabbit review**: Use CodeRabbit MCP to fetch review comments for PR, if no PR exists create review context from current changes, group comments by file/severity (critical/high/medium/low)

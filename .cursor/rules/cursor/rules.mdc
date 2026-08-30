@@ -8,5 +8,6 @@ alwaysApply: false
 - `globs` (plural) for file-scoped rules; comma-separated string or YAML array
 - `alwaysApply: true` only for true globals; omit globs then
 - Target under 50 lines; patterns and conventions, not verbose examples; no h1
-- `@` existing docs/rules instead of copying
+- Do not `@`-attach MDX or `apps/docu/` from rules. Do not `@` files from `alwaysApply` rules
+- `@` another `.mdc` only if you intend to attach that small rule and it is not already always-on
 - Do not use description-only “apply intelligently” rules — those belong in skills

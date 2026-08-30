@@ -4,7 +4,7 @@ description: Guide for implementing features using TDD workflow when explicitly 
 disable-model-invocation: true
 ---
 
-Guide for implementing features using TDD workflow when explicitly requested. TDD follows red-green-refactor cycle: write failing tests first, implement minimal code to pass, then refactor while keeping tests green. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+Guide for implementing features using TDD workflow when explicitly requested. TDD follows red-green-refactor cycle: write failing tests first, implement minimal code to pass, then refactor while keeping tests green.
 
 1. **Write Failing Test (Red Phase)**: Write test describing desired behavior, test should fail initially, focus on behavior not implementation, follow project testing conventions (see @.cursor/rules/base/testing.mdc), use real APIs - no mocks for core functionality
 2. **Implement Minimal Code (Green Phase)**: Write simplest code that makes test pass, don't worry about code quality yet, verify test passes, avoid over-engineering

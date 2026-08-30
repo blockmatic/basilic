@@ -4,7 +4,7 @@ description: Execute complete quality assurance pass across all apps in monorepo
 disable-model-invocation: true
 ---
 
-Execute complete quality assurance pass across all apps in monorepo. Performs comprehensive checks including linting, building, testing, runtime verification, AI-assisted code review, and external review remediation when available. Work autonomously using best judgment, strictly following repository rules, Cursor rules, and established best practices. NEVER ask permission to edit, delete, or create files - proceed directly with all file operations. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+Execute complete quality assurance pass across all apps in monorepo. Performs comprehensive checks including linting, building, testing, runtime verification, AI-assisted code review, and external review remediation when available. Work autonomously using best judgment, strictly following repository rules, Cursor rules, and established best practices. NEVER ask permission to edit, delete, or create files - proceed directly with all file operations.
 
 1. **Run Quality Checks**: Execute linting (`pnpm lint`) for all apps/packages, run builds (`pnpm build`) to verify compilation, execute test suites (`pnpm test`), verify dev runtime works correctly, fix any issues found
 2. **AI-Assisted Code Review**: Perform full AI-based static review, analyze for correctness bugs/type safety issues/runtime edge cases/performance pitfalls/architectural inconsistencies, cross-check findings against Cursor rules/indexed documentation/existing code patterns, fix all high-confidence issues

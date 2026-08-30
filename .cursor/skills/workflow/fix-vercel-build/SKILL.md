@@ -4,7 +4,7 @@ description: Retrieve Vercel build logs, analyze failures, and fix deployment is
 disable-model-invocation: true
 ---
 
-Retrieve Vercel build logs, analyze failures, and fix deployment issues. MUST use Vercel MCP tools. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+Retrieve Vercel build logs, analyze failures, and fix deployment issues. MUST use Vercel MCP tools.
 
 1. **Get build logs**: Use current branch (unless explicitly told otherwise), use Vercel MCP tools to retrieve build logs
 2. **Analyze errors**: Parse logs for TypeScript/ESLint errors, missing dependencies, env vars, imports, config issues

@@ -4,7 +4,7 @@ description: Process outstanding reviewer feedback, apply required fixes, and dr
 disable-model-invocation: true
 ---
 
-Process outstanding reviewer feedback, apply required fixes, and draft clear responses for each GitHub pull-request comment. Use global git user for commits—never cursor/system identity. Never use `--trailer` for Co-authored-by or similar. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+Process outstanding reviewer feedback, apply required fixes, and draft clear responses for each GitHub pull-request comment. Use global git user for commits—never cursor/system identity. Never use `--trailer` for Co-authored-by or similar.
 
 1. **Sync and audit comments**: Pull latest branch changes, open PR conversation view and read every unresolved comment, group comments by affected files/themes
 2. **Plan resolutions**: List requested code edits for each thread, identify clarifications/additional context needed, note dependencies/blockers before implementing changes

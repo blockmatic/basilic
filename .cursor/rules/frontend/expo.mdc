@@ -29,4 +29,4 @@ Kebab-case filenames, collocated in `hooks/`. See @.cursor/rules/frontend/react-
 Enabled in app.json—no manual `useMemo`/`useCallback`. Aligns with @.cursor/rules/frontend/react-hooks.mdc
 
 ## EAS / CI
-EAS builds: mobile-build (manual), mobile-preview (main), mobile-pr-preview (EAS Update). EXPO_TOKEN required. See @apps/docu/content/docs/deployment/mobile-cicd.mdx
+EAS builds: mobile-build (manual), mobile-preview (main), mobile-pr-preview (EAS Update). EXPO_TOKEN required.

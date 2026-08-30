@@ -23,4 +23,4 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 ## Hierarchy
 Rules (constraints) > skills (patterns) > model
 
-Update procedure and inventory: `@apps/docu/content/docs/development/cursor-skills.mdx`
+Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`

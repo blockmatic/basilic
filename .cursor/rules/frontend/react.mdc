@@ -29,7 +29,7 @@ Default: avoid. React 19.2.3 + modern engines handle most cases. See @.cursor/ru
 **Suspense**: Wrap async ops. Server: automatic via `loading.tsx`. Client: manual boundaries. Use multiple for independent streaming
 
 ## Error Boundaries
-Use `react-error-boundary` with `@repo/error` (see @apps/docu/content/docs/architecture/error-handling.mdx). Use for app/section/feature-level, third-party component errors. Not for event handlers (try/catch with `captureError`), async code (try/catch), SSR errors
+Use `react-error-boundary` with `@repo/error`. Use for app/section/feature-level, third-party component errors. Not for event handlers (try/catch with `captureError`), async code (try/catch), SSR errors
 
 ## Client Boundaries
 Avoid `*-client.tsx` wrapper files that only re-export a component with `next/dynamic` or `ssr: false`. Prefer regular client components (`'use client'`) imported directly from server components, and reserve `next/dynamic` for heavy or truly conditional code-splitting scenarios.

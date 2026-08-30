@@ -4,10 +4,9 @@ alwaysApply: true
 ---
 
 ## Agent Behavior (CRITICAL)
-- Read readme, docs, skills, rules before planning and coding. Slash playbooks: `.cursor/skills/workflow/` (`/name`)
-- Planning: Follow architecture, strategies, and decisions in `@apps/docu/`
-- Execution: Follow architecture, strategies, and decisions in `@apps/docu/`; after implementation (new features and fixes), update docs, readme, and cursor rules if required to keep them aligned
-- When creating plans add a ## References section listing cursor rules files and cursor skills you are using
+- Docs: `apps/docu/content/docs/`. **Read** the topic MDX for this task. Do not `@`-attach docs from rules or skills. Slash playbooks: `.cursor/skills/workflow/` (`/name`)
+- After features/fixes: same change, update that MDX and nearest README if behavior, commands, or conventions changed; glob `.mdc` only if a constraint changed
+- When creating plans add a ## References section listing rules, skills, and MDX pages used
 - Summarize assumptions in 3–5 bullets
 - Respect Ask mode restrictions (read-only)
 - Verify before destructive operations

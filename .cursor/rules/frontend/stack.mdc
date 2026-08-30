@@ -4,8 +4,6 @@ globs: "apps/web/**/*,packages/ui/**/*,packages/react/**/*"
 alwaysApply: false
 ---
 
-See @apps/docu/content/docs/architecture/frontend.mdx for complete documentation
-
 ## Core Libraries
 - `@tanstack/react-query`: Data fetching/async (use `@lukemorales/query-key-factory`)
 - `@repo/react`: React Query hooks and helpers only—never UI components. Route-specific UI (e.g. login form) lives in apps, collocated by route

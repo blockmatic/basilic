@@ -4,7 +4,7 @@ description: Help debug current issue by walking through debugging process syste
 disable-model-invocation: true
 ---
 
-Help debug current issue by walking through debugging process systematically and providing clear, actionable solutions. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+Help debug current issue by walking through debugging process systematically and providing clear, actionable solutions.
 
 1. **Problem Analysis**: Identify specific problem/error, understand expected vs actual behavior, trace execution flow to find root cause
 2. **Debugging Strategy**: Add appropriate logging statements, suggest debugging tools/techniques, identify key variables/states to monitor, recommend breakpoint locations
