@@ -17,6 +17,7 @@ alwaysApply: false
 ## Naming (templates) — pattern `.env.<qualifier>.example`
 
 - **Canonical glob**: `**/.env.*.example` (Cursor: `@**/.env.*.example`). Filenames must be `.env.` + one qualifier + `.example` (e.g. `defaults`, `local`, `test`). Do **not** add `.env.sample`, `.env-example`, or bare `.env.example`.
+- **`pnpm setup` / `pnpm setup:env`** copies each template to its dest when the dest is missing (never overwrites). Mapping: `.env.defaults.example` → `.env`; `.env.<qualifier>.example` → `.env.<qualifier>`.
 - **Fastify API** (`apps/api`): `.env.defaults.example` (copy to `.env`); `.env.test.example` → `.env.test`.
 - **Next.js** (`apps/web`, `apps/mathler`): `.env.local.example` (copy to `.env.local`); committed `.env.development` / `.env.staging` / `.env.production` only for non-sensitive defaults (`NEXT_PUBLIC_*`, etc.).
 - **Expo** (`apps/mobile`): `.env.defaults.example` with `EXPO_PUBLIC_*`.

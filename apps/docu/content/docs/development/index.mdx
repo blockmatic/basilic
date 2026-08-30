@@ -23,7 +23,7 @@ cd <project-name>
 pnpm run setup
 ```
 
-`setup` installs dependencies, git hooks, security tools, and the database. Copy `apps/api/.env.defaults.example` to `apps/api/.env`.
+`setup` installs dependencies, git hooks, security tools, and the database. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Edit the copied files to set secrets.
 
 ```bash
 pnpm dev

@@ -51,8 +51,9 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 Run with `pnpm <script>`.
 
 **Setup**
-  - `setup` — Full setup (install, hooks, gitleaks, osv, database, deepsec)
+  - `setup` — Full setup (install, hooks, gitleaks, osv, env templates, database, deepsec)
   - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
+  - `setup:env` — Copy `.env.<qualifier>.example` templates to dest files when missing
   - `setup:database` — Database tools (Docker, Supabase CLI)
   - `setup:deepsec` — Install DeepSec workspace (`.deepsec/`)
   - `reset` — Local API database: Supabase reset + Drizzle migrations + seed (`pnpm --filter @repo/api reset`). See [apps/api/README.md](apps/api/README.md)
