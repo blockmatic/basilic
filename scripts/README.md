@@ -63,6 +63,13 @@ All security-related pnpm scripts are organized under the `security:` namespace:
 - **`pnpm security:osv`** - Scan dependencies for vulnerabilities (OSV Scanner)
 - **`pnpm security:audit`** - Run pnpm audit for dependency vulnerabilities
 - **`pnpm security:check`** - Run all security checks (comprehensive)
+- **`pnpm security:deepsec:scan`** - DeepSec regex scan (no AI)
+- **`pnpm security:deepsec:process:diff`** - DeepSec AI review vs `origin/main` (GPT-5.6 Sol / Codex)
+- **`pnpm security:deepsec:process:diff:grok`** - Same diff review with Cursor Grok 4.6 / Pi
+- **`pnpm security:deepsec:process`** - DeepSec full-repo AI review (GPT-5.6 Sol / Codex)
+- **`pnpm security:deepsec:report`** - DeepSec findings summary
+
+DeepSec lives in `.deepsec/` and is not part of pre-commit or `security.yml`. `scan` is free. `process` needs `AI_GATEWAY_API_KEY`. See [Security](@apps/docu/content/docs/architecture/security.mdx).
 
 ### `block-secret-files.mjs`
 
@@ -158,6 +165,20 @@ node scripts/setup-osv-scanner.mjs
 ```
 
 **Note**: osv-scanner is optional. Used for scanning dependencies with `pnpm security:osv`.
+
+### `setup:deepsec` (package.json)
+
+Installs the DeepSec workspace in `.deepsec/` (same as CI `deepsec.yml`).
+
+**What it installs**:
+- **deepsec** and transitive deps from `.deepsec/pnpm-lock.yaml`
+
+**Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+```bash
+pnpm setup:deepsec
+```
+
+**Note**: Required for `pnpm security:deepsec:*` commands. `process` still needs `AI_GATEWAY_API_KEY`.
 
 ### `setup-security-tools.mjs`
 

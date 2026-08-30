@@ -1,0 +1,10 @@
+{
+  "ignorePaths": [
+    "apps/docu/**",
+    "**/openapi/*.json",
+    "**/*.gen.ts",
+    "**/playwright/.auth/**",
+    "**/e2e/**",
+    "**/.source/**"
+  ]
+}

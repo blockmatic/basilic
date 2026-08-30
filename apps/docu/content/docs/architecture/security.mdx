@@ -10,7 +10,8 @@ This repository implements a comprehensive security baseline to prevent committi
 The security baseline consists of:
 
 1. **Pre-commit hooks** - Run locally before each commit
-2. **CI workflows** - Run on every pull request and push to main
+2. **CI workflows** - Secrets and dependency CVEs on every pull request and push to main (`security.yml`)
+3. **Source-code review** - DeepSec reviews the PR diff on same-repo pull requests (`deepsec.yml`)
 
 ## Pre-commit Hooks
 
@@ -149,6 +150,15 @@ pnpm security:audit
 
 # Run all security checks
 pnpm security:check
+
+# DeepSec: regex scan (no AI)
+pnpm security:deepsec:scan
+
+# DeepSec: AI review of the diff vs origin/main
+pnpm security:deepsec:process:diff
+
+# DeepSec: full-repo AI review (local only; needs model auth)
+pnpm security:deepsec:process
 ```
 
 ## CI Workflow
@@ -162,6 +172,22 @@ The `.github/workflows/security.yml` workflow runs on every pull request and pus
 5. **pnpm audit** - Checks for known vulnerabilities in dependencies
 
 All checks must pass for CI to succeed.
+
+DeepSec is **not** in this workflow. Same-repo PRs run `deepsec.yml` separately (see below).
+
+## Source-code review (DeepSec)
+
+[DeepSec](https://deepsec.sh) is agent-powered SAST. It does not replace Gitleaks, TruffleHog, OSV Scanner, or `pnpm audit`. Those tools own secrets and lockfile CVEs. DeepSec reviews application code.
+
+The workspace lives in `.deepsec/` at the repo root. It is not a pnpm workspace package. Commit `deepsec.config.ts`, `INFO.md`, and generated matchers. Scan output (`data/*/files/`, `data/*/runs/`), `.env.local`, and `node_modules` stay gitignored.
+
+DeepSec is not in pre-commit and not in `security.yml`.
+
+**Agents:** CI and default local `process` use GPT-5.6 Sol on the Codex harness (`--agent codex --model gpt-5.6-sol --thinking-level medium`). Cursor Grok 4.6 is the alternate: `pnpm security:deepsec:process:diff:grok` (`--agent pi --model xai/grok-4.6`). Both route through Vercel AI Gateway. Claude is not used.
+
+**Local:** `pnpm security:deepsec:scan` is regex-only and free. `process` / `process:diff` need `AI_GATEWAY_API_KEY`. A full-repo `process` is an operator follow-up, not required for every commit.
+
+**CI:** `.github/workflows/deepsec.yml` runs on same-repo pull requests from OWNER, MEMBER, or COLLABORATOR (forks and untrusted authors skip; no secrets). `analyze` gets `AI_GATEWAY_API_KEY` only after that trusted-author gate; GitHub also requires maintainer approval for first-time contributor workflow runs. The job checks out the PR for scan input, overlays `.deepsec` from the PR base SHA when present, runs Codex `process --files-from` on `git diff --name-only BASE_SHA...HEAD`, and fails on net-new findings. Codex uses GPT-5.6 Sol via Vercel AI Gateway (`https://ai-gateway.vercel.sh/v1`). A second job posts the comment; it never executes PR code and never receives the key. Add `AI_GATEWAY_API_KEY` (`vck_…`) in **Settings → Secrets and variables → Actions**. Without that secret, `analyze` is skipped.
 
 ## What to Do If Secrets Are Detected
 
@@ -234,7 +260,9 @@ regexes = [
 - **`.gitleaks.toml`** - Gitleaks configuration with crypto-focused rules and allowlist
 - **`scripts/block-secret-files.mjs`** - Pre-commit script that blocks sensitive file types
 - **`scripts/ensure-tool.mjs`** - Checks tool availability and prints install instructions
-- **`.github/workflows/security.yml`** - CI workflow for security checks
+- **`.github/workflows/security.yml`** - CI workflow for secret and dependency checks
+- **`.github/workflows/deepsec.yml`** - PR diff source-code review (same-repo only)
+- **`.deepsec/`** - DeepSec workspace (`deepsec.config.ts`, `INFO.md`)
 
 ## Troubleshooting
 
@@ -264,6 +292,14 @@ If CI detects secrets:
 2. Rotate the secret immediately
 3. Remove it from git history if already pushed
 4. Add to allowlist only if it's a false positive
+
+### CI failing on DeepSec install (`minimumReleaseAge`)
+
+`deepsec.yml` runs `pnpm install --frozen-lockfile` in `.deepsec`. pnpm 11 rejects lockfile entries younger than 24 hours. If the version is a known security patch, add the exact version to `minimumReleaseAgeExclude` in `.deepsec/pnpm-workspace.yaml` (for example `qs@6.16.0`). Do not pin back to a vulnerable release and do not set `minimumReleaseAge` to `0`.
+
+### CI failing on DeepSec credentials
+
+`deepsec process` needs model auth in CI (no local Codex login). Add `AI_GATEWAY_API_KEY` (`vck_…` from [Vercel AI Gateway](https://vercel.com/docs/ai-gateway)) to repository secrets. `analyze` receives it only after the trusted-author gate (OWNER, MEMBER, or COLLABORATOR on a same-repo PR). Without the secret, or for forks and untrusted authors, `analyze` is skipped. The workflow writes `.deepsec/.env.local` from the secret before running. The comment job never receives the key.
 
 ## Best Practices
 
@@ -394,6 +430,7 @@ If a security incident is detected:
 - [gitleaks documentation](https://github.com/gitleaks/gitleaks)
 - [TruffleHog documentation](https://github.com/trufflesecurity/trufflehog)
 - [OSV Scanner documentation](https://google.github.io/osv-scanner/)
+- [DeepSec documentation](https://deepsec.sh)
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [GitHub Secret Scanning](https://docs.github.com/en/code-security/secret-scanning)
 - [Fastify Security Best Practices](https://www.fastify.io/docs/latest/Guides/Security/)

@@ -7,7 +7,7 @@ GitHub Actions workflows automate quality checks on pull requests (opened and up
 
 ## Workflows
 
-Path filters are used only for test workflows (app E2E and package unit tests) so they run when relevant code changes. Lint and security run on every PR. Path patterns are defined in each workflow file.
+Path filters are used only for test workflows (app E2E and package unit tests) so they run when relevant code changes. Lint and `security.yml` run on every PR. DeepSec runs on same-repo PRs from OWNER, MEMBER, or COLLABORATOR. Path patterns are defined in each workflow file.
 
 ### Web (`web-e2e.yml`)
 
@@ -43,7 +43,16 @@ See [Mobile CI/CD](/docs/deployment/mobile-cicd) for setup, reviewer bootstrap, 
 
 ### Security (`security.yml`)
 
-Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main.
+Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main. DeepSec is not in this workflow; see DeepSec (`deepsec.yml`).
+
+### DeepSec (`deepsec.yml`)
+
+Source-code review of the PR diff on same-repo pull requests from OWNER, MEMBER, or COLLABORATOR. Forks and untrusted authors skip (no secrets). `analyze` receives `AI_GATEWAY_API_KEY` only after that trusted-author gate (GitHub also requires a maintainer to approve workflow runs from first-time contributors). Two jobs:
+
+1. **analyze** — `contents: read` only. Skipped when `AI_GATEWAY_API_KEY` is not set or the author is untrusted. Checks out the PR for scan input, overlays `.deepsec` from the PR base SHA when that tree exists (bootstrap uses the PR workspace if `.deepsec` is not on the base), writes credentials to `.deepsec/.env.local`, runs Codex `process --files-from` on files from `git diff BASE_SHA...HEAD` with GPT-5.6 Sol via Vercel AI Gateway. Fails on net-new findings. Local alternate: Cursor Grok 4.6 via `pnpm security:deepsec:process:diff:grok`.
+2. **comment** — `pull-requests: write`. Posts the findings comment. Never checks out or executes PR code. Never receives `AI_GATEWAY_API_KEY`.
+
+Full-repo DeepSec review stays local. See [Security](/docs/architecture/security).
 
 ## CodeRabbit Integration
 
@@ -104,7 +113,8 @@ All workflows are in `.github/workflows/`:
 - `mobile-preview.yml` - Mobile: EAS build on push to main (path-filtered)
 - `mobile-pr-preview.yml` - Mobile: EAS Update, QR comment on PR (path-filtered)
 - `lint.yml` - Linting checks (every PR)
-- `security.yml` - Security scans (every PR and push to main)
+- `security.yml` - Secret and dependency scans (every PR and push to main)
+- `deepsec.yml` - Source-code review of the PR diff (same-repo trusted authors)
 
 ## Related Documentation
 

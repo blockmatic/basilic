@@ -12,6 +12,6 @@ import { config } from '@repo/eslint-config/library.js'
 export default [
   ...config,
   {
-    ignores: ['apps/**', 'packages/**', 'node_modules/**', '__dev/**'],
+    ignores: ['apps/**', 'packages/**', 'node_modules/**', '__dev/**', '.deepsec/**'],
   },
 ]
