@@ -1,5 +1,5 @@
 ---
-name: TypeBox + Fastify
+name: fastify-v5
 description: |
   TypeBox schemas with Fastify routes for type-safe API development. Native JSON Schema, automatic OpenAPI generation.
   

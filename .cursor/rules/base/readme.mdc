@@ -1,6 +1,7 @@
 ---
-alwaysApply: true
-glob: "**/README.md"
+description: README structure for apps and packages
+globs: "**/README.md"
+alwaysApply: false
 ---
 
 - Simple, succinct, technical, factual

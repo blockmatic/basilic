@@ -1,5 +1,5 @@
 ---
-name: tanstack-query
+name: tanstack-query-v5
 description: |
   TanStack Query (React Query) for async operations, data fetching, caching, and state management.
   

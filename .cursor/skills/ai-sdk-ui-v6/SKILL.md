@@ -1,5 +1,5 @@
 ---
-name: AI SDK v6 UI
+name: ai-sdk-ui-v6
 description: |
   Build React chat interfaces with Vercel AI SDK v5/v6. Agent integration, tool approval, auto-submit.
   

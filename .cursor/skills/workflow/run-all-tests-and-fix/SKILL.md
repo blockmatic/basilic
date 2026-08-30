@@ -1,0 +1,12 @@
+---
+name: run-all-tests-and-fix
+description: Execute full test suite and systematically fix any failures, ensuring code quality and functionality. Use when the user types /run-all-tests-and-fix.
+disable-model-invocation: true
+---
+
+Execute full test suite and systematically fix any failures, ensuring code quality and functionality. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+
+1. **Run test suite**: Execute all tests in project, capture output/identify failures, check both unit and integration tests
+2. **Analyze failures**: Categorize by type (flaky, broken, new failures), prioritize fixes based on impact, check if failures related to recent changes
+3. **Fix issues systematically**: Start with most critical failures, fix one issue at a time, re-run tests after each fix, verify all tests pass
+

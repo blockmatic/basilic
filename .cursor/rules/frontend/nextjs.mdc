@@ -1,7 +1,7 @@
 ---
 description: Next.js standards
-glob: "apps/web/**/*.{tsx,css}"
-alwaysApply: true
+globs: "apps/web/**/*.{tsx,css}"
+alwaysApply: false
 ---
 
 ## Route Collocation

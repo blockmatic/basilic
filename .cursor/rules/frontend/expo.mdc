@@ -1,13 +1,14 @@
 ---
 description: Expo/React Native standards
-glob: "apps/mobile/**/*"
+globs: "apps/mobile/**/*"
+alwaysApply: false
 ---
 
 ## Expo Router
-File-based routing: `src/app/`, `_layout.tsx`, route groups `(group)`. `_layout` cannot be DOM component—see @.cursor/skills/expo-use-dom
+File-based routing: `src/app/`, `_layout.tsx`, route groups `(group)`. `_layout` cannot be DOM component—see @.cursor/skills/expo-use-dom-v55
 
 ## NativeTabs (SDK 55+)
-Use `NativeTabs.Trigger.Icon`, `NativeTabs.Trigger.Label`, `NativeTabs.Trigger.Badge` (not separate imports). See @.cursor/skills/expo-upgrading/references/native-tabs.md
+Use `NativeTabs.Trigger.Icon`, `NativeTabs.Trigger.Label`, `NativeTabs.Trigger.Badge` (not separate imports). See @.cursor/skills/expo-upgrading-v55/references/native-tabs.md
 
 ## React Native
 Primitives only: View, Text, Pressable, ScrollView—no HTML elements

@@ -1,7 +1,7 @@
 ---
 description: Fastify backend development standards and patterns
-glob: "apps/api/**/*"
-alwaysApply: true
+globs: "apps/api/**/*"
+alwaysApply: false
 ---
 
 - CRITICAL: Never edit db/migrations or openapi schema files directly.

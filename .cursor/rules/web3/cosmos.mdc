@@ -1,6 +1,6 @@
 ---
 description: Cosmos address validation patterns and best practices
-glob: "**/*cosmos*, packages/utils/src/web3/**/*"
+globs: "**/*cosmos*,packages/utils/src/web3/**/*"
 alwaysApply: false
 ---
 

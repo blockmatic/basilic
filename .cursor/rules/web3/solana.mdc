@@ -1,6 +1,6 @@
 ---
 description: Solana address validation patterns and best practices
-glob: "**/*solana*"
+globs: "**/*solana*"
 alwaysApply: false
 ---
 

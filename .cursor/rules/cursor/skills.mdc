@@ -1,36 +1,24 @@
 ---
 description: Best practices for writing high-quality agent skills
-glob: ".cursor/skills/**/*"
-alwaysApply: true
+globs: ".cursor/skills/**/*"
+alwaysApply: false
 ---
 
 ## Scope
-Skills extend agent with narrow, reusable expertise for a single primary topic. Applies when creating/modifying `.cursor/skills/`.
+Skills are on-demand expertise. `name` must match the folder that contains `SKILL.md`.
 
-## Core Principles
-- **One primary topic per skill**: Independent versioning = separate skills. If two things version independently, split them
-- **Versioned directories**: `<primary-topic>-v<major>` (e.g., `fastify-v4`, `openapi-v3`). Avoid: unversioned, minor/patch versions, multiple topics
-- **Declarative over instructional**: State what is true, not how to reason. ✅ "Use queryKey factories" ❌ "First analyze the code, then decide…"
-- **Patterns over examples**: Stable patterns preferred. If examples needed: minimal, universal, no repo-specific paths or real code
-- **Hard rules sparingly**: Use MUST/NEVER only for real harm (bugs, security, vendor lock-in, severe DX regression)
-- **Explicit assumptions**: State version scope (v5+, v4.x) and runtime constraints (Node 18+, ESM-first, Edge-compatible)
-- **Trade-offs, not dogma**: Explain why when recommendation is preference vs constraint
+## Two kinds
+- **Tech** (`<topic>-v<major>/`, e.g. `fastify-v5`): agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions
+- **Workflow** (`workflow/<name>/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned
 
-## Structure
-- **Versioned directory**: `<primary-topic>-v<major>` with `SKILL.md` entry point
-- **Required sections**: Scope, Assumptions, Principles, Constraints, Interactions
-- **Optional files**: `PATTERNS.md` for stable patterns, `references/` for integration notes
-- **Integration placement**: "Use X from Y" → under Y (caller). "Implement X across hosts" → under X (spec). Neither owns it → dedicated integration skill
-- **Self-contained**: Cross-skill references and official docs allowed. No repo-specific files, internal paths, or codebase examples
-
-## Writing Style
-- **Machine-read first**: Bullets, short sentences, consistent vocabulary, clear headers. Avoid: long paragraphs, storytelling, metaphors
-- **Design for composition**: Multiple skills may apply simultaneously. Rules override skills. Don't re-explain language fundamentals or formatting
-- **Explicit conflicts**: State divergences from common conventions plainly
+## Principles
+- One primary topic per skill; independent versions = separate skills
+- `name` lowercase/digits/hyphens, max 64, equals folder name
+- Prefer `paths` over legacy `globs` when file-scoped
+- Declarative: state what is true. Patterns over long examples
+- Progressive disclosure: keep `SKILL.md` short; depth in `references/` or `PATTERNS.md`
+- No repo-specific paths in tech skills. Rules override skills
+- Workflow descriptions stay one line (discovery tokens are always-on)
 
 ## Hierarchy
-| Layer | Purpose |
-| --- | --- |
-| Rules | Global, opinionated, override everything |
-| Skills | Local expertise, patterns, constraints |
-| Model | Reasoning and synthesis |
+Rules (constraints) > skills (patterns) > model

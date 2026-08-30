@@ -1,6 +1,6 @@
 ---
 description: Environment files — templates, naming, alignment with t3 createEnv
-glob: "**/.env.*.example"
+globs: "**/.env.*.example"
 alwaysApply: false
 ---
 
