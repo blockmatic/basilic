@@ -36,6 +36,7 @@
     "setup:database": "node scripts/setup-database.mjs",
     "setup:deepsec": "pnpm --dir=.deepsec install --frozen-lockfile",
     "reset": "pnpm --filter @repo/api reset",
+    "skills:update": "pnpm dlx skills@latest add blockmatic/basilic-skills --agent cursor --copy --skill '*' -y && node scripts/sync-cursor-skills.mjs",
     "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },
   "devDependencies": {
