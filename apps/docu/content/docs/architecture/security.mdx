@@ -187,7 +187,7 @@ DeepSec is not in pre-commit and not in `security.yml`.
 
 **Local:** `pnpm security:deepsec:scan` is regex-only and free. `process` / `process:diff` need `AI_GATEWAY_API_KEY`. A full-repo `process` is an operator follow-up, not required for every commit.
 
-**CI:** `.github/workflows/deepsec.yml` runs on same-repo pull requests from OWNER, MEMBER, or COLLABORATOR (forks and untrusted authors skip; no secrets). The `analyze` job checks out the PR for scan input, overlays `.deepsec` from the PR base SHA when present, runs Codex `process --files-from` on `git diff --name-only BASE_SHA...HEAD`, and fails on net-new findings. Codex uses GPT-5.6 Sol via Vercel AI Gateway (`https://ai-gateway.vercel.sh/v1`). A second job posts the comment; it never executes PR code. Add `AI_GATEWAY_API_KEY` (`vck_…`) in **Settings → Secrets and variables → Actions**. Without that secret, the job is skipped.
+**CI:** `.github/workflows/deepsec.yml` runs on same-repo pull requests from OWNER, MEMBER, or COLLABORATOR (forks and untrusted authors skip; no secrets). `analyze` gets `AI_GATEWAY_API_KEY` only after that trusted-author gate; GitHub also requires maintainer approval for first-time contributor workflow runs. The job checks out the PR for scan input, overlays `.deepsec` from the PR base SHA when present, runs Codex `process --files-from` on `git diff --name-only BASE_SHA...HEAD`, and fails on net-new findings. Codex uses GPT-5.6 Sol via Vercel AI Gateway (`https://ai-gateway.vercel.sh/v1`). A second job posts the comment; it never executes PR code and never receives the key. Add `AI_GATEWAY_API_KEY` (`vck_…`) in **Settings → Secrets and variables → Actions**. Without that secret, `analyze` is skipped.
 
 ## What to Do If Secrets Are Detected
 
@@ -299,7 +299,7 @@ If CI detects secrets:
 
 ### CI failing on DeepSec credentials
 
-`deepsec process` needs model auth in CI (no local Codex login). Add `AI_GATEWAY_API_KEY` (`vck_…` from [Vercel AI Gateway](https://vercel.com/docs/ai-gateway)) to repository secrets. Without it, `analyze` is skipped. The workflow writes `.deepsec/.env.local` from the secret before running.
+`deepsec process` needs model auth in CI (no local Codex login). Add `AI_GATEWAY_API_KEY` (`vck_…` from [Vercel AI Gateway](https://vercel.com/docs/ai-gateway)) to repository secrets. `analyze` receives it only after the trusted-author gate (OWNER, MEMBER, or COLLABORATOR on a same-repo PR). Without the secret, or for forks and untrusted authors, `analyze` is skipped. The workflow writes `.deepsec/.env.local` from the secret before running. The comment job never receives the key.
 
 ## Best Practices
 
