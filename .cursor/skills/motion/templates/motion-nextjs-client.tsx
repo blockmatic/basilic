@@ -48,12 +48,12 @@ import {
 import { type ReactNode, useState } from 'react'
 
 // Re-export for Server Component imports
-export { motion }
 export {
   AnimatePresence,
   LayoutGroup,
   LazyMotion,
   MotionConfig,
+  motion,
   useAnimate,
   useDragControls,
   useInView,

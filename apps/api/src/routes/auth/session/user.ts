@@ -68,10 +68,10 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         })
 
       const userId = request.session.user.id
-      let linkedWallets: { id: string; chain: string; address: string }[] = []
-      let linkedAccounts: { providerId: string }[] = []
-      let totpEnabled = false
-      let passkeys: { id: string; name: string; createdAt: string }[] = []
+      let linkedWallets: { id: string; chain: string; address: string }[]
+      let linkedAccounts: { providerId: string }[]
+      let totpEnabled: boolean
+      let passkeys: { id: string; name: string; createdAt: string }[]
       let userRow: { name?: string | null; username?: string | null } | undefined
 
       try {

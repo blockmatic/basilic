@@ -63,7 +63,7 @@ test.describe('Security - Authenticator', () => {
       throw new Error(`TOTP current failed: ${res.status()} ${body}`)
     }
     const { code } = (await res.json()) as { code: string }
-    if (!code || code.length !== 6) throw new Error(`Invalid TOTP code: ${code}`)
+    if (code?.length !== 6) throw new Error(`Invalid TOTP code: ${code}`)
 
     const otpGroup = authenticatedPage.locator('[data-slot="input-otp-group"]')
     await otpGroup.click()

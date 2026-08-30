@@ -48,6 +48,7 @@ export async function waitForDatabase(logger?: {
         logger?.error(`Database connection timeout after ${maxWaitTime}ms`, err)
         throw new Error(
           `Database connection failed after ${maxWaitTime}ms. Make sure your database is running and accessible via DATABASE_URL. Error: ${err instanceof Error ? err.message : String(err)}`,
+          { cause: err },
         )
       }
 

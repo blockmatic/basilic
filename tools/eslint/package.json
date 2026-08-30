@@ -18,7 +18,7 @@
     "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "eslint": "^10.9.1",
     "eslint-plugin-check-file": "^3.3.2",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-only-warn": "^1.2.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",

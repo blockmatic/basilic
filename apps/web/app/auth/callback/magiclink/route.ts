@@ -11,7 +11,7 @@ const sixDigitCode = /^\d{6}$/
 const uuidLike = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 function isSafeCallbackUrl(raw: string | null, requestUrl: string): string {
-  if (!raw || !raw.startsWith('/')) return '/'
+  if (!raw?.startsWith('/')) return '/'
   if (raw.startsWith('//')) return '/'
   try {
     const url = new URL(raw, requestUrl)

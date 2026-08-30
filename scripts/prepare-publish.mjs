@@ -10,12 +10,12 @@ const originalMain = pkg.main || null
 const originalTypes = pkg.types || null
 
 function toDistPath(srcPath) {
-  if (!srcPath || !srcPath.startsWith('./src/')) return srcPath
+  if (!srcPath?.startsWith('./src/')) return srcPath
   return srcPath.replace('./src/', './dist/').replace(/\.tsx?$/, '.js')
 }
 
 function toDistTypesPath(srcPath) {
-  if (!srcPath || !srcPath.startsWith('./src/')) return srcPath
+  if (!srcPath?.startsWith('./src/')) return srcPath
   return srcPath.replace('./src/', './dist/').replace(/\.tsx?$/, '.d.ts')
 }
 

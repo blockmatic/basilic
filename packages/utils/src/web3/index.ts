@@ -15,9 +15,9 @@ import {
 } from 'viem/chains'
 import type { ChainType } from './chain-type.js'
 
-export type { ChainType }
 export * from './alchemy.js'
 export { chainTypeSchema } from './chain-type.js'
+export type { ChainType }
 
 /** SIWE/SIWS chain identifier: eip155 for EVM, solana for Solana */
 export type Web3Chain = 'eip155' | 'solana'

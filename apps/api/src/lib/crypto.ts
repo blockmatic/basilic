@@ -27,7 +27,7 @@ const weakEncryptionKey = '0'.repeat(64)
  */
 export function validateEncryptionKey(): void {
   const key = env.ENCRYPTION_KEY
-  if (!key || key.length !== 64 || !/^[0-9a-fA-F]+$/.test(key))
+  if (key?.length !== 64 || !/^[0-9a-fA-F]+$/.test(key))
     throw new Error('ENCRYPTION_KEY must be a 64-character hex string (32 bytes)')
 
   if (env.NODE_ENV === 'production' && key === weakEncryptionKey)

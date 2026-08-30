@@ -49,7 +49,6 @@ function waitForUrl(url, timeoutMs = 60_000) {
 }
 
 async function main() {
-  // eslint-disable-next-line turbo/no-undeclared-env-vars -- set by root test:e2e script
   if (!process.env.SKIP_KILL_PORTS)
     try {
       spawnSync('bash', [join(repoRoot, 'scripts/kill-test-servers.sh')], {

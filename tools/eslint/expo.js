@@ -1,6 +1,6 @@
 import js from '@eslint/js'
 import pluginCheckFile from 'eslint-plugin-check-file'
-import pluginImport from 'eslint-plugin-import'
+import pluginImport from 'eslint-plugin-import-x'
 import pluginReact from 'eslint-plugin-react'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
@@ -40,9 +40,10 @@ export const config = [
   {
     files: reactFiles,
     plugins: {
+      react: pluginReact,
       'react-hooks': pluginReactHooks,
     },
-    settings: { react: { version: 'detect' } },
+    settings: { react: { version: '19.2' } },
     rules: {
       ...pluginReactHooks.configs.recommended.rules,
       'react-hooks/compiler': 'off',
@@ -187,6 +188,7 @@ export const config = [
       'no-restricted-properties': 'off',
       '@typescript-eslint/no-require-imports': 'off',
       'no-undef': 'off',
+      'max-depth': 'off',
     },
   },
   // RN/Expo: require() for assets, process.env, naming (INITIAL_SCALE_FACTOR, experimental_*)

@@ -94,7 +94,7 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
         email?: string
         email_verified?: boolean
         name?: string
-      } | null = null
+      }
       try {
         const ticket = await client.verifyIdToken({
           idToken: credential,
@@ -113,8 +113,6 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
           message: 'Failed to verify Google ID token',
         })
       }
-
-      if (!payload) throw new Error('Invalid payload')
 
       const accountId = payload.sub
       const email = payload.email ?? ''
