@@ -17,14 +17,7 @@ AI-assisted development configuration for this codebase. Contains rules, command
 
 ### Workflow Documentation
 
-Human-facing workflow documentation for AI-assisted development is now in the [documentation site](https://basilic-docs.vercel.app/docs/cursor-workflow).
-
-**Start here:** [Cursor Workflow Overview](https://basilic-docs.vercel.app/docs/cursor-workflow)
-
-Key guides:
-- [Quick Start](https://basilic-docs.vercel.app/docs/cursor-workflow/quick-start) - 5-minute reference card with essential patterns
-- [Complete Workflow](https://basilic-docs.vercel.app/docs/cursor-workflow/complete-workflow) - Complete development lifecycle (discovery → architecture → planning → execution → review)
-- [Extensions](https://basilic-docs.vercel.app/docs/cursor-workflow/extensions) - VS Code/Cursor extensions and their roles
+Human-facing workflow: [AI Development Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow) (Cursor-first; Claude Code supported). IDE setup: [Cursor Setup](https://basilic-docs.vercel.app/docs/development/cursor-setup).
 
 ### Rules (`rules/`)
 
@@ -75,7 +68,7 @@ Task-specific command definitions for common development workflows.
 Specialized knowledge bundles for technologies and patterns.
 
 **Categories:**
-- **Framework skills**: Next.js 15, React best practices (Vercel Labs), Tailwind v4
+- **Framework skills**: Next.js 16, React (Vercel), Tailwind 4
 - **Backend skills**: Fastify, Drizzle ORM, TypeBox, OpenTelemetry
 - **AI skills**: Vercel AI SDK (core & UI)
 - **Web3 skills**: Ethereum development, Solana, web3 frontend

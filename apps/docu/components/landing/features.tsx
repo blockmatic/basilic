@@ -54,7 +54,7 @@ const features = [
     icon: Bot,
     title: 'AI-Assisted Development',
     description:
-      'Pre-configured rules and skills for Cursor and Claude. Ship features faster with AI pair programming that understands your codebase.',
+      'Pre-configured rules and skills for Cursor (primary) and Claude Code. Ship features faster with AI pair programming that understands your codebase.',
   },
   {
     icon: ShieldCheck,

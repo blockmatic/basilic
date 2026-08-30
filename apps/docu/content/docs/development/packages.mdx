@@ -26,11 +26,11 @@ Only import from **exported entrypoints** (package root or documented subpaths).
 
 Examples:
 
-- ✅ `import { createClient } from '@repo/core'`
-- ✅ `import { Button } from '@repo/ui/components/button'`
-- ✅ `import { delay } from '@repo/utils/async'`
-- ❌ `import { delay } from '@repo/utils'` (allowed by exports, but discouraged)
-- ❌ `import { something } from '@repo/core/src/...'`
+- `import { createClient } from '@repo/core'`
+- `import { Button } from '@repo/ui/components/button'`
+- `import { delay } from '@repo/utils/async'`
+- Avoid `import { delay } from '@repo/utils'` (allowed by exports, but prefer subpaths)
+- Never `import { something } from '@repo/core/src/...'`
 
 ## Package catalog
 
@@ -95,14 +95,7 @@ await client.auth.magiclink.request({
 
 React-only helpers built on top of `@repo/core`.
 
-**Exports** (public):
-- `ApiProvider`
-- `useReactApiConfig`
-- `useSession`
-- `useUser`
-- `useHealthCheck`
-- `useMagicLink`
-- `createReactApiConfig`
+Handwritten hooks on `@repo/core` (not generated). Public exports include `ApiProvider`, `createReactApiConfig`, `useReactApiConfig`, session/user, magic link, OAuth, passkeys, TOTP, API keys, profile, chat, and Web3 verify (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useLinkEmail`). See `packages/react/src/index.ts`.
 
 **Usage** (minimal):
 

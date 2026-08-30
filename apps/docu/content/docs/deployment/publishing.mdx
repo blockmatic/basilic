@@ -3,20 +3,7 @@ title: "Publishing Packages"
 description: "How to publish monorepo packages to npm using the dual-mode export strategy."
 ---
 
-This guide explains how to publish packages from the monorepo to npm using the dual-mode export strategy.
-
-## Overview
-
-Our packages use a **dual-mode export strategy**:
-
-- **Development mode**: Exports point to `src/` for fast local development without requiring builds
-- **Publishing mode**: Exports point to `dist/` for npm consumers who need built artifacts
-
-This allows:
-- ✅ Fast local development (no build step needed)
-- ✅ Next.js can transpile `src/` directly via `transpilePackages`
-- ✅ Clean `dist/`-only packages for npm publishing
-- ✅ Proper TypeScript types in both modes
+Packages use **dual-mode exports**: workspace apps import `src/` (no local build); `prepack` rewrites to `dist/` for npm. ESM details: [ESM & TypeScript Strategy](/docs/architecture/esm-strategy).
 
 ## How It Works
 
@@ -115,6 +102,6 @@ The publishing scripts (`prepare-publish.mjs` and `restore-publish.mjs`) are loc
 
 ## Related Documentation
 
-- [Package Conventions](/docs/architecture/package-conventions) - Package architecture and organization
+- [Package Conventions](/docs/development/package-conventions) - Package architecture and organization
 - [Monorepo Structure](/docs/architecture/monorepo) - Turborepo organization and package dependencies
 - [Packages Reference](/docs/development/packages) - Complete reference for all shared packages

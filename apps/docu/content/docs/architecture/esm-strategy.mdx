@@ -1,286 +1,38 @@
 ---
 title: "ESM & TypeScript Strategy"
-description: "ESM-first module architecture with TypeScript 7, dual-mode exports, subpath exports, ts-reset, and the native Go compiler for fast builds and typechecks."
+description: "ESM-first packages, dual-mode exports, TypeScript 7 for tsc, TypeScript 6 for tools that need the compiler API."
 ---
 
-## Overview
+Packages are `"type": "module"`. Workspace apps import TypeScript source; `prepack` switches exports to `dist/` for npm. Details of the publish switch: [Publishing](/docs/deployment/publishing).
 
-This document describes the monorepo’s **ESM-first** strategy and how packages are authored and consumed across different runtimes (Next.js and Node/Fastify).
+## Dual-mode exports
 
-Key ideas:
+**Pattern A** (`@repo/core`, `@repo/react`): `import` points at `src/` in the workspace.
 
-- **ESM everywhere**: packages are `"type": "module"` and use `import`/`export`
-- **Source in monorepo, dist for publishing**: workspace development imports TypeScript source; publishing switches to `dist/`
-- **Subpath exports**: consumers import from explicit subpaths (no root barrels)
-- **Runtime-aware configs**: Next.js and Node/Fastify have different constraints
-- **Fast compilation/typecheck**: TypeScript 7 (`tsc`) is the native Go compiler; we use it for builds and `--noEmit` typechecks
+**Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`, `@repo/notif`): `source` for bundlers, `node` / `import` / `default` for compiled `dist/` so serverless resolvers do not hit `ERR_MODULE_NOT_FOUND`.
 
-## ESM-First Architecture
+Prefer subpath imports (`@repo/utils/async`). Do not deep-import `src/`.
 
-All packages use `"type": "module"` in `package.json`. This enables:
-- Native ESM imports (`import`/`export`) throughout the codebase
-- No CommonJS interop overhead
-- Better tree-shaking and bundling optimization
+## TypeScript 7 and 6
 
-## Dual-Mode Package Exports
+TypeScript 7 is the native Go `tsc` (`"@typescript/native": "npm:typescript@^7.0.2"`). Use it for `build` and `checktypes`. It does not yet ship a programmatic API, so ESLint and Next.js keep TypeScript 6 via `"typescript": "npm:@typescript/typescript6@^6.0.2"`. Next.js 16.3 would call `typescript/bin/tsc`; set `experimental.useTypeScriptCli: false` so it uses the TS 6 API instead.
 
-Packages use a **dual-mode export strategy** for optimal developer experience and publishing:
+Shared configs live in `tools/typescript` (`base.json`, `nextjs.json`, `react-library.json`). `ts-reset` is on. `types: ["*"]` restores automatic `@types/*` (TS 7 defaults `types` to `[]`).
 
-### Development Mode (Monorepo)
+## Resolution
 
-Packages expose TypeScript source for workspace consumption. Two patterns exist:
+| Runtime | `moduleResolution` | Relative imports |
+| --- | --- | --- |
+| Next.js 16, React libraries | `bundler` | extensionless OK |
+| Fastify / Node | `NodeNext` | use `.js` in the import path (emit), never `.ts` |
 
-**Pattern A** – `import` points to source (packages like `@repo/core`, `@repo/react`):
+Node dev: `tsx`. Next: `transpilePackages` plus webpack `conditionNames: ['source', …]` and `.js` → `.ts` `extensionAlias`. Import `@repo/*`, not relative paths into `packages/`.
 
-```json
-{
-  "type": "module",
-  "exports": {
-    ".": { "types": "./src/index.ts", "import": "./src/index.ts" }
-  }
-}
-```
+Generated OpenAPI client (`packages/core/src/gen/`) and skill templates are excluded from hand-maintained TS rules. Conventions: `.cursor/rules/base/typescript.mdc`.
 
-**Pattern B** – `source` condition for bundlers, `node`/`import` for Node (packages like `@repo/utils`, `@repo/error`, `@repo/email`, `@repo/notif`):
+## Related
 
-```json
-{
-  "exports": {
-    "./async": {
-      "types": "./src/async/index.ts",
-      "source": "./src/async/index.ts",
-      "import": "./dist/async/index.js",
-      "node": "./dist/async/index.js",
-      "default": "./dist/async/index.js"
-    }
-  }
-}
-```
-
-- **Next.js** (webpack): resolves `source` first to consume TypeScript directly.
-- **Node / serverless** (Vercel, etc.): resolves `node` or `import` to compiled `dist/`. The explicit `node` and `default` conditions ensure serverless runtimes always get the compiled output, avoiding `ERR_MODULE_NOT_FOUND` when resolvers prefer non-standard conditions.
-
-### Publishing Mode (npm)
-
-The `prepack` script transforms exports to compiled `dist/` before publishing. Subpath exports are preserved.
-
-```json
-{
-  "exports": {
-    "./async": {
-      "types": "./dist/async/index.d.ts",
-      "import": "./dist/async/index.js"
-    }
-  },
-  "files": ["dist"]
-}
-```
-
-**Process (high level):**
-
-1. `prepack` runs before `pnpm pack`/`publish`
-2. Package is built (ESM + `.d.ts`)
-3. `prepare-publish.mjs` switches all export paths from `src/` → `dist/`
-4. `postpack` restores the original exports after packing
-
-## Directory/Subpath Exports
-
-Packages use **subpath exports** for better tree-shaking and explicit imports:
-
-**Pattern:**
-```json
-{
-  "exports": {
-    "./async": { "types": "./src/async/index.ts", "import": "./src/async/index.ts" },
-    "./web3": { "types": "./src/web3/index.ts", "import": "./src/web3/index.ts" },
-    "./components/*": { "types": "./src/components/*.tsx", "import": "./src/components/*.tsx" }
-  }
-}
-```
-
-**Rules:**
-- ✅ Always use subpath imports: `import { delay } from "@repo/utils/async"`
-- ❌ Never use root imports: `import { delay } from "@repo/utils"` (no root export)
-- ✅ Use directory patterns for UI: `import { Button } from "@repo/ui/components/button"`
-
-## Runtime consumption
-
-### Next.js apps (App Router)
-
-Next.js apps import TypeScript source directly using **package interpolation**:
-
-**Configuration:**
-```js
-// next.config.mjs
-export default {
-  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/error', '@repo/utils'],
-  serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
-  webpack: config => {
-    // Resolve "source" condition so Next.js uses TypeScript source from workspace packages
-    config.resolve.conditionNames = ['source', ...(config.resolve.conditionNames ?? ['...'])]
-    // Allow .js imports to resolve to .ts/.tsx in transpiled packages
-    // Merge with existing extensionAlias if present to preserve Next.js defaults
-    const existingExtensionAlias = config.resolve.extensionAlias || {}
-    config.resolve.extensionAlias = {
-      ...existingExtensionAlias,
-      '.js': ['.ts', '.tsx', '.js', '.jsx'],
-      '.jsx': ['.tsx', '.jsx'],
-    }
-    return config
-  },
-}
-```
-
-```json
-// tsconfig.json
-{
-  "compilerOptions": {
-    "paths": {
-      "@repo/ui/*": ["../../packages/ui/src/*"],
-      "@repo/core": ["../../packages/core/src/index.ts"],
-      "@repo/core/*": ["../../packages/core/src/*"]
-    }
-  }
-}
-```
-
-**How It Works:**
-1. `conditionNames: ['source', ...]` makes Next.js prefer the `source` export when packages define it
-2. `extensionAlias` lets `.js` imports resolve to `.ts`/`.tsx` in transpiled packages
-3. TypeScript path mappings resolve `@repo/*` to `src/` for packages that need them
-4. `transpilePackages` ensures workspace packages are transpiled during build
-5. No pre-build step required – Fast refresh works with direct TypeScript source
-
-**Rules:**
-- ✅ Add all workspace packages to `transpilePackages` array
-- ✅ Use TypeScript path mappings for direct `src/` imports
-- ✅ Import from package names (not relative paths): `import { Button } from "@repo/ui/components/button"`
-- ❌ Don't use relative paths across packages: `import { Button } from "../../packages/ui/src/components/button"`
-
-### Node.js/Fastify apps
-
-Node.js apps use native ESM and typically run TypeScript in development via `tsx` (Node ESM loader), while builds/typechecks use TypeScript 7 (`tsc`).
-
-**Development:**
-```json
-{
-  "scripts": {
-    "dev": "node --watch --import tsx server.ts"
-  }
-}
-```
-
-**Build / watch / typecheck (TypeScript 7):**
-
-```json
-{
-  "scripts": {
-    "build:ts": "tsc",
-    "watch:ts": "tsc -w",
-    "checktypes": "tsc --noEmit"
-  }
-}
-```
-
-**What is TypeScript 7?**
-
-TypeScript 7 is the native Go port of the compiler. Install it as `"@typescript/native": "npm:typescript@^7.0.2"` and run `tsc` — the same command as prior versions, now 8–12× faster. TypeScript 7.0 does not ship a programmatic API (planned for 7.1), so tools that import `typescript` (typescript-eslint, Next.js webpack path resolution) keep TypeScript 6 via `"typescript": "npm:@typescript/typescript6@^6.0.2"`. Next.js 16.3 defaults to the TypeScript CLI (`typescript/bin/tsc`), which that alias does not provide — set `experimental.useTypeScriptCli: false` so Next uses the TypeScript 6 API instead.
-
-**TypeScript config (Node ESM):**
-```json
-{
-  "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
-  }
-}
-```
-
-**Rules:**
-- ✅ Use `tsx` (or equivalent) for dev execution when you need to run TS directly
-- ✅ Use TypeScript 7 `tsc` for builds and `--noEmit` typechecks (default across apps/packages)
-- ✅ Configure `moduleResolution: "NodeNext"` for proper ESM support
-- ✅ Import workspace packages normally – dev resolves to `src/` (tsx); built output resolves to `dist/` (Pattern B packages include `node`/`default` conditions for serverless)
-
-## Import Extension Rules
-
-Extensionless imports (`import "./utils/delay"`) work only when using `moduleResolution: "bundler"` (e.g., Next.js) or tooling that supports extensionless resolution. With `moduleResolution: "NodeNext"` (used for Fastify/Node ESM), Node requires **explicit `.js` extensions** for relative imports.
-
-**In TypeScript source:**
-- ✅ `import { delay } from "./utils/delay.js"` (required for NodeNext/strict ESM)
-- ✅ `import { delay } from "./utils/delay"` (bundler environments only—Next.js, etc.)
-- ❌ `import { delay } from "./utils/delay.ts"` (don't use `.ts` extension)
-
-**Best Practice:**
-- Use `.js` extensions for NodeNext/strict ESM (Fastify, Node apps)
-- Omit extensions only in bundler-based setups (`moduleResolution: "bundler"`)
-- Never use `.ts` extensions in imports
-
-## TypeScript Strategy
-
-The monorepo uses **TypeScript 7** (`tsc`, native Go compiler) with strict mode enabled and enhanced type safety via `@total-typescript/ts-reset`. ESLint keeps TypeScript 6 via `@typescript/typescript6` until 7.1 ships a stable API.
-
-### Shared TypeScript Configuration
-
-Packages extend shared TypeScript configs (strict defaults + runtime-specific overrides).
-
-**Base Configuration** (`base.json`):
-- Strict mode enabled
-- ES2022 target
-- ESNext modules
-- `types: ["*"]` (TypeScript 7 defaults `types` to `[]`; this restores automatic `@types/*` inclusion)
-- Bundler module resolution (for Next.js/bundler environments)
-- `noUncheckedIndexedAccess` enabled (safer array/object access)
-- `ts-reset` integration for enhanced type safety
-
-**Next.js Configuration** (`nextjs.json`):
-- Extends base config
-- Next.js plugin support
-- Bundler module resolution
-- JSX preserve mode
-- No emit (Next.js handles compilation)
-
-**React Library Configuration** (`react-library.json`):
-- Extends base config
-- React JSX support
-- Declaration files for library distribution
-
-### ts-reset Integration
-
-`@total-typescript/ts-reset` is configured globally to enhance TypeScript's built-in type safety:
-
-Key effects:
-
-- Some “unsafe by default” APIs become `unknown` until validated
-- TypeScript nudges you toward boundary validation (e.g. Zod in app code, TypeBox in Fastify)
-
-### Module resolution
-
-**Bundler Resolution** (Next.js, React libraries):
-- `moduleResolution: "bundler"` - Optimized for bundlers
-- Works with ESM imports and subpath exports
-- TypeScript resolves to source files via path mappings
-
-**Node Resolution** (Fastify, Node.js apps):
-- `moduleResolution: "NodeNext"` - Native ESM support
-- May require explicit file extensions in strict ESM contexts
-- Works with a TypeScript runtime (`tsx`) in development
-
-**Rules:**
-- ✅ Use `bundler` resolution for Next.js apps and React libraries
-- ✅ Use `NodeNext` resolution for Node.js/Fastify apps
-- ✅ Exceptions allowed for infrastructure tooling (Pulumi, Anchor/Solana)
-
-## TypeScript Compliance
-
-TypeScript conventions are defined in `.cursor/rules/base/typescript.mdc` and enforced via ESLint and Biome. Key rules: strict mode, no `any`, ESM (`fileURLToPath(import.meta.url)` instead of `__dirname`), named exports, RORO pattern, thin wrappers avoided, lodash per-function imports.
-
-**Exclusions:**
-- `packages/core/src/gen/` — Autogenerated OpenAPI client code; not hand-maintained
-- `.cursor/skills/**/templates/` — Example/snippet code for skills
-
-## Related Documentation
-
-- [Package Conventions](/docs/architecture/package-conventions) - Package organization and naming
-- [Packages Reference](/docs/development/packages) - Complete package API reference
-- [Monorepo Structure](/docs/architecture/monorepo) - Overall monorepo architecture
+- [Package Conventions](/docs/development/package-conventions)
+- [Packages](/docs/development/packages)
+- [Publishing](/docs/deployment/publishing)
+- [Monorepo](/docs/architecture/monorepo)

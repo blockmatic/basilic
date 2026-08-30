@@ -1,86 +1,12 @@
 ---
 title: "Testing"
-description: "Testing patterns and best practices for this monorepo."
+description: "Vitest for the API and packages; Playwright E2E for web. No frontend unit suite."
 ---
 
-Testing patterns using Vitest for backend and Playwright E2E for frontend.
+- **API** — Vitest + `fastify.inject()`, blackbox HTTP, PGlite. Group entry files are `*.spec.ts` (see Fastify testing rules).
+- **Packages** — Vitest unit tests (`core`, `react`, `error`, …). CI: `packages-test.yml` when `packages/` or `tools/` change.
+- **Web** — Playwright E2E only. Commands, fixtures, and specs: [E2E Testing](/docs/testing/e2e-testing).
 
-## Overview
+PGLite does not support concurrent writers. API Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false`.
 
-- **Backend**: Vitest with blackbox testing
-- **Packages**: Vitest unit tests (core, react, sentry); CI runs `packages-test` when packages change
-- **Frontend**: Playwright E2E only (no separate unit/integration suites)
-- **E2E**: Playwright setup — see [E2E Testing](/docs/testing/e2e-testing)
-
-## Backend Testing
-
-### Setup
-
-```typescript
-// apps/api/src/routes/users.test.ts
-import { describe, it, expect } from 'vitest'
-import { createApp } from '../app'
-
-describe('GET /users/:id', () => {
-  it('returns user when found', async () => {
-    const app = await createApp()
-    const response = await app.inject({
-      method: 'GET',
-      url: '/users/123',
-    })
-    
-    expect(response.statusCode).toBe(200)
-    expect(response.json()).toMatchObject({
-      id: '123',
-      email: 'user@example.com',
-    })
-  })
-})
-```
-
-### Best Practices
-
-- Use blackbox testing (test via HTTP)
-- Test contracts, not implementation
-- Use test database (PGLite for embedded Postgres)
-- Clean up after tests
-- **PGLite linear execution**: Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false` to avoid PGLite/WASM instability with parallel workers
-
-### Test Utilities
-
-Import from `@test/utils/auth-helper.js`:
-
-- **getOrCreateSession(app, email)** — Cached JWT by email; reduces magic-link requests when tests share users
-- **createAuthenticatedUser(app)** — Returns `{ token, email }` using the session pool
-- **insertTestPasskey(app, jwt)** — Inserts a passkey for the authenticated user, returns passkey id (for delete/ownership tests)
-- **getApiKeyToken(app, email)** — Creates an API key for the user and returns the raw key
-- **clearSessionPool()** — Clears the session cache (called in `account.spec.ts` afterAll)
-
-## Frontend Testing
-
-Frontend apps use **Playwright E2E only** — no unit or integration test suites. See [Frontend Testing](/docs/testing/frontend-testing) and [E2E Testing](/docs/testing/e2e-testing).
-
-### E2E Example
-
-```typescript
-// apps/web/e2e/magic-link-auth.spec.ts
-import { expect, test } from '@playwright/test'
-import { authHelpers } from './auth-helpers'
-
-test('should complete magic link flow', async ({ page }) => {
-  await page.goto('/auth/login')
-  const response = await authHelpers.sendMagicLink(page)
-  expect(response.ok()).toBe(true)
-  const token = await authHelpers.extractToken(page)
-  if (!token) throw new Error('Failed to extract token')
-  await authHelpers.verifyMagicLink(page, token)
-  await page.goto('/')
-  await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible()
-})
-```
-
-## Related Documentation
-
-- [Frontend Testing](/docs/testing/frontend-testing) - Complete guide for testing React and Next.js applications with real APIs
-- [E2E Testing](/docs/testing/e2e-testing) - Playwright E2E for Next.js and Fastify
-- [API Development](/docs/architecture/api) - Fastify testing patterns with Vitest and blackbox testing
+Auth helpers live in `@test/utils/auth-helper.js` (`getOrCreateSession`, `createAuthenticatedUser`, `insertTestPasskey`, `getApiKeyToken`, `clearSessionPool`).

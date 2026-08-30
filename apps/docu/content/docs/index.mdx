@@ -1,33 +1,19 @@
 ---
 title: "Introduction"
-description: "App Development Toolkit that provides starters, guidelines, and tools for rapid development."
+description: "App development toolkit: starters, conventions, and tooling for web, API, and mobile."
 ---
 
-## Features
-
-- Portable architecture that avoids vendor lock-in
-- REST API starter with OpenAPI support
-- Type-safe SDK generation from OpenAPI specs
-- Self-hosted Web2 and Web3 authentication, JWT and refresh tokens
-- Designed for Multichain support ( EVM, Solana, Cosmos )
-- Minimal boilerplate for AI features
-- Automated security scanning and testing
-- AI-assisted development workflow
-- Monorepo with shared packages and clear app boundaries
-- Consistent conventions across frontend, backend, and tooling
-- Documentation for developers and AI agents
-- Robust logging and error handling strategies
+Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and a Cursor-first AI workflow. Shared packages keep web, mobile, and docs consistent.
 
 ## Explore the docs
 
 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 my-8">
   <div className="rounded-lg border border-border bg-card p-6">
     <div className="mb-2 flex items-center gap-2">
-      <span className="text-2xl">🏗️</span>
       <h3 className="text-lg font-semibold">Architecture</h3>
     </div>
     <p className="text-sm text-muted-foreground">
-      Monorepo structure, API architecture and OpenAPI based SDK generation.
+      Monorepo, API, auth, frontend, observability, and security.
     </p>
     <div className="mt-4">
       <a href="/docs/architecture" className="text-sm font-medium text-primary hover:underline">
@@ -38,29 +24,13 @@ description: "App Development Toolkit that provides starters, guidelines, and to
 
   <div className="rounded-lg border border-border bg-card p-6">
     <div className="mb-2 flex items-center gap-2">
-      <span className="text-2xl">⚡</span>
       <h3 className="text-lg font-semibold">Development</h3>
     </div>
     <p className="text-sm text-muted-foreground">
-      TypeScript-first workflow, tooling, and AI-assisted development.
+      Setup, tooling, packages, and the AI-assisted workflow.
     </p>
     <div className="mt-4">
-      <a href="/docs/ai-workflow" className="text-sm font-medium text-primary hover:underline">
-        Learn more →
-      </a>
-    </div>
-  </div>
-
-    <div className="rounded-lg border border-border bg-card p-6">
-    <div className="mb-2 flex items-center gap-2">
-      <span className="text-2xl">📦</span>
-      <h3 className="text-lg font-semibold">Packages</h3>
-    </div>
-    <p className="text-sm text-muted-foreground">
-      Shared packages for API clients, hooks, UI, observability, and utilities.
-    </p>
-    <div className="mt-4">
-      <a href="/docs/development/package-conventions" className="text-sm font-medium text-primary hover:underline">
+      <a href="/docs/development" className="text-sm font-medium text-primary hover:underline">
         Learn more →
       </a>
     </div>
@@ -68,19 +38,31 @@ description: "App Development Toolkit that provides starters, guidelines, and to
 
   <div className="rounded-lg border border-border bg-card p-6">
     <div className="mb-2 flex items-center gap-2">
-      <span className="text-2xl">🚀</span>
-      <h3 className="text-lg font-semibold">Deployment</h3>
+      <h3 className="text-lg font-semibold">Testing</h3>
     </div>
     <p className="text-sm text-muted-foreground">
-      Portability and migration paths across hosting providers.
+      Vitest for the API and packages; Playwright E2E for web.
     </p>
     <div className="mt-4">
-      <a href="/docs/architecture/portability" className="text-sm font-medium text-primary hover:underline">
+      <a href="/docs/testing" className="text-sm font-medium text-primary hover:underline">
         Learn more →
       </a>
     </div>
   </div>
 
-
+  <div className="rounded-lg border border-border bg-card p-6">
+    <div className="mb-2 flex items-center gap-2">
+      <h3 className="text-lg font-semibold">Deployment</h3>
+    </div>
+    <p className="text-sm text-muted-foreground">
+      GitHub Actions, Vercel, mobile CI/CD, and publishing.
+    </p>
+    <div className="mt-4">
+      <a href="/docs/deployment" className="text-sm font-medium text-primary hover:underline">
+        Learn more →
+      </a>
+    </div>
+  </div>
 </div>
 
+Architecture Decision Records live under [ADRs](/docs/adrs).

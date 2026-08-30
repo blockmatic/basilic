@@ -1,66 +1,13 @@
 ---
 title: "Deployment"
-description: "Continuous deployment with GitHub Flow, CI/CD pipelines, and platform options."
+description: "GitHub Flow, CI, Vercel, mobile, and package publishing."
 ---
 
-This section covers deployment strategies, CI/CD setup, and platform-specific configurations.
+Branch from `main`, PR, automated checks, CodeRabbit + human review, merge, deploy. Lint and `security.yml` run on every PR. App E2E and package tests are path-filtered. Mobile EAS: [Mobile CI/CD](/docs/deployment/mobile-cicd). Workflows: [GitHub Actions](/docs/deployment/github-actions).
 
-## GitHub Flow
+**Vercel** for web/API/docs previews. **GCP/AWS** with no app-code change — [Portability](/docs/architecture/portability). In-app LLM on your hardware: [Self-Hosted LLM](/docs/deployment/self-hosted-llm). npm dual-mode exports: [Publishing](/docs/deployment/publishing).
 
-This project follows **GitHub Flow** for continuous deployment:
+## Related
 
-1. **Create feature branch** - Branch from `main` for new features
-2. **Make changes** - Develop and test locally
-3. **Open pull request** - Create PR when ready for review
-4. **Automated checks** - GitHub Actions runs tests, linting, security scans
-5. **Code review** - CodeRabbit + human review
-6. **Merge to main** - Merge when checks pass and approved
-7. **Automatic deployment** - Deploy to staging/production automatically
-
-**Benefits:**
-- ✅ Continuous deployment - Every merge triggers deployment
-- ✅ Automated quality gates - Tests, linting, security checks
-- ✅ AI-powered reviews - CodeRabbit provides immediate feedback
-- ✅ Preview environments - Test changes before merging
-
-## CI/CD Pipeline
-
-Automated workflows enforce quality standards:
-
-- **CodeRabbit** - AI-powered code reviews on every PR
-- **GitHub Actions** - Lint and security on every PR; path-filtered app E2E and package unit tests; mobile EAS builds and PR OTA previews
-- **Pre-commit hooks** - Local quality checks (formatting, secrets detection)
-
-See [GitHub Actions](/docs/deployment/github-actions) for CI workflow configuration. For mobile: [Mobile CI/CD](/docs/deployment/mobile-cicd).
-
-## Deployment Platforms
-
-### Vercel (Recommended for Development)
-
-Fast deployment with preview environments for every PR. Great for rapid iteration and frontend apps.
-
-See [Vercel Deployment](/docs/deployment/vercel) for details.
-
-### Google Cloud / AWS (Production)
-
-Enterprise deployment options with zero code changes required. Great for compliance, security, and scale.
-
-See [Portability Strategy](/docs/architecture/portability) for migration paths.
-
-### Self-Hosted LLM (Data Privacy)
-
-Run local models with [Ollama](https://ollama.com) to keep prompts and responses on your infrastructure. Recommended when handling sensitive data or avoiding third-party API providers.
-
-See [Self-Hosted LLM](/docs/deployment/self-hosted-llm) for setup instructions and hardware recommendations.
-
-## Publishing Packages
-
-Internal packages can be published to npm using the dual-mode export strategy.
-
-See [Publishing Packages](/docs/deployment/publishing) for details.
-
-## Related Documentation
-
-- [Security](/docs/security) - Security scanning and secret detection
-- [Testing](/docs/testing) - Testing strategies and patterns
-- [Portability Strategy](/docs/architecture/portability) - Zero vendor lock-in
+- [Security](/docs/architecture/security)
+- [Testing](/docs/testing)

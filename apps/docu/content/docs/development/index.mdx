@@ -1,52 +1,21 @@
 ---
 title: "Getting Started"
-description: "Get up and running with this project in under 15 minutes. Perfect for projects needing SDKs or modular service architecture."
+description: "Node 24, pnpm 11.24.0, clone, setup, and run the apps."
 ---
 
 ## Prerequisites
 
-### Install Node.js
-
-Install Node.js 24 (LTS Krypton) with nvm. The repo pins this in `.nvmrc` and `.node-version`:
+Node.js **24.x (LTS Krypton)** is pinned in `.nvmrc` and `.node-version`. pnpm is pinned as `packageManager`: **11.24.0**.
 
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-
 nvm install lts/krypton
 nvm alias default lts/krypton
 nvm use
-```
-
-### Install pnpm
-
-If you don't have pnpm installed, install it using one of the following methods:
-
-**Using npm:**
-```bash
-npm install -g pnpm@11.24.0
-```
-
-**Using corepack (recommended):**
-```bash
 corepack enable
 corepack prepare pnpm@11.24.0 --activate
 ```
 
-**Using standalone script:**
-```bash
-curl -fsSL https://get.pnpm.io/install.sh | sh -
-```
-
-Verify your installation:
-```bash
-pnpm --version
-```
-
-## Quick Start
-
-### 1. Clone and Setup
+## Setup
 
 ```bash
 git clone <repository-url>
@@ -54,63 +23,26 @@ cd <project-name>
 pnpm run setup
 ```
 
-Setup runs install, git hooks, security tools, and database. See the root README in the repository for the full script reference. Together this brings the monorepo to a working dev environment with security tooling and the database.
-
-### 2. Environment variables
-
-- copy `apps/api/.env.defaults.example` to `apps/api/.env` and update the values
-
-### 3. Explore the Running Apps 
+`setup` installs dependencies, git hooks, security tools, and the database. Copy `apps/api/.env.defaults.example` to `apps/api/.env`.
 
 ```bash
 pnpm dev
 ```
 
-This will start the main applications and the packages in watch mode. 
+- API: http://localhost:3001 (`GET /health`, `/reference`)
+- Web: http://localhost:3000
+- Docs: `pnpm --filter @repo/docu dev` (http://localhost:3002)
+- Mobile: `pnpm --filter @repo/mobile start`
 
-- **API**: http://localhost:3001 (`GET /health`, `/reference` for docs)
-- **Next**: http://localhost:3000 (Next.js app)
+**Apps:** `apps/api` (Fastify 5), `apps/web` (Next.js 16), `apps/mobile` (Expo 57), `apps/docu` (Fumadocs).
 
-To run the docs site: `pnpm --filter @repo/docu dev` (e.g. http://localhost:3002).
+**Packages:** `core`, `react`, `ui`, `utils`, `error`, `email`, `notif`, `cli`. Catalog: [Packages](/docs/development/packages).
 
-To run the mobile app: `pnpm --filter @repo/mobile start` (Expo for Android, iOS, Web).
+Local Postgres via Supabase: `pnpm --filter @repo/api db:start`, then **`pnpm reset`** from the repo root. See [ADR 008](/docs/adrs/008-database).
 
-### 4. Understand the Structure
+## Next
 
-**Apps:** `apps/api/` (Fastify backend), `apps/web/` (Next.js frontend), `apps/docu/` (documentation)
-
-**Packages:** `core/` (generated API client + types), `react/` (React Query hooks), `ui/` (components), `sentry/` (Sentry integration), `utils/` (utilities)
-
-```mermaid
-flowchart TB
-  subgraph Apps["Applications"]
-    API["apps/api<br/>Fastify backend"]
-    Docs["apps/docu<br/>Documentation"]
-  end
-
-  subgraph Packages["Shared Packages"]
-    Core["@repo/core<br/>Generated API client + types"]
-    React["@repo/react<br/>React hooks"]
-    UI["@repo/ui<br/>Components"]
-  end
-
-  Core --> React
-  API -->|OpenAPI| Core
-  UI --> Docs
-```
-
-## Next Steps
-
-**Continue your AI-assisted development setup:**
-- [Installation](/docs/development) - Environment variables and optional database setup
-- [Dev Environments](/docs/development/dev-environments) - Local vs remote (ports, tunneling, Expo)
-- [AI Workflow](/docs/development/ai-workflow) - Recommended development workflow
-- [Cursor Setup](/docs/development/cursor-setup) - Configure your IDE
-
-**Understand Core Concepts:**
-- [Architecture](/docs/architecture) - Monorepo structure, API architecture, and OpenAPI generation
-- [Architecture](/docs/architecture) - Deep technical details and design decisions
-
-**Optional Setup:**
-
-For database features, use local PostgreSQL via Supabase: `pnpm --filter @repo/api db:start`, configure `apps/api/.env`, then apply schema and optional seed with **`pnpm reset`** from the repo root (Supabase reset + Drizzle migrate + `scripts/seed.ts`). See [ADR 008: Database](/docs/adrs/008-database) and `apps/api/README.md` in the monorepo.
+- [Dev Environments](/docs/development/dev-environments) — ports, remote, Expo
+- [AI Workflow](/docs/development/ai-workflow) — Cursor-first (Claude Code supported)
+- [Cursor Setup](/docs/development/cursor-setup) — indexed docs and MCP
+- [Architecture](/docs/architecture)

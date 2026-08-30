@@ -3,17 +3,7 @@ title: "Architecture Overview"
 description: "Technical stack and design decisions."
 ---
 
-The architecture is guided by these principles:
-
-- Composability and reusability
-- Security and automation
-- Designed for scale
-- API as source of truth
-- Multiple clients (web, mobile, desktop, other servers)
-- No vendor lock-in
-- Tooling chosen for long-term and community support
-
-## Architecture Flow
+Principles: composability, API as source of truth, multiple clients, no vendor lock-in, tooling with long-term support.
 
 ```mermaid
 sequenceDiagram
@@ -25,21 +15,24 @@ sequenceDiagram
   Client->>API: HTTP Request
   API->>API: Validate
   API->>Drizzle: Type-safe query
-  Drizzle->>DB: Plain SQL query
-  DB-->>Drizzle: Query result
+  Drizzle->>DB: SQL
+  DB-->>Drizzle: Result
   Drizzle-->>API: Typed data
-  API-->>Client: JSON response
+  API-->>Client: JSON
 ```
 
-## Architecture Topics
+## Topics
 
-- **[Monorepo Structure](/docs/architecture/monorepo)** - Turborepo organization and package architecture
-- **[API Architecture](/docs/architecture/api)** - Node.js, Fastify, PostgreSQL, Drizzle ORM
-- **[Authentication](/docs/architecture/authentication)** - Magic link, OAuth and Web3 wallet authentication
-- **[Account linking](/docs/architecture/account-linking)** - Change email, OAuth linking, guardrails
-- **[Frontend Architecture](/docs/architecture/frontend)** - Next.js, Shadcn/ui, Tailwind CSS
-- **[Frontend Stack](/docs/architecture/frontend-stack)** - Core libraries, patterns, Web3 wallet hooks
-- **[ESM & TypeScript Strategy](/docs/architecture/esm-strategy)** - ESM module system architecture and TypeScript configuration
-- **[Error Handling](/docs/architecture/error-handling)** - Error handling and logging
-- **[Product Analytics](/docs/architecture/analytics)** - PostHog for product usage tracking across web and mobile
-- **[Portability Strategy](/docs/architecture/portability)** - Zero vendor lock-in strategy
+- [Monorepo](/docs/architecture/monorepo) — Turborepo, apps, packages
+- [API](/docs/architecture/api) — Fastify 5, TypeBox, OpenAPI, `@repo/core`
+- [Authentication](/docs/architecture/authentication) — Magic link, OAuth, Web3
+- [Account linking](/docs/architecture/account-linking) — Email change, OAuth, wallets
+- [Frontend](/docs/architecture/frontend) — Next.js 16, React 19, Tailwind 4, Web3 hooks
+- [Error handling](/docs/architecture/error-handling) — `@repo/error`, Sentry
+- [Logging](/docs/architecture/logging) — Pino server, client wrapper
+- [Product analytics](/docs/architecture/analytics) — PostHog
+- [Security](/docs/architecture/security) — Secrets, CVE scans, DeepSec
+- [ESM & TypeScript](/docs/architecture/esm-strategy) — TypeScript 7, dual-mode exports
+- [Portability](/docs/architecture/portability) — Host anywhere
+
+Decisions: [ADRs](/docs/adrs).

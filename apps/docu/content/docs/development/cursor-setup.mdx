@@ -3,13 +3,11 @@ title: "Cursor IDE Setup"
 description: "Complete guide to configuring Cursor for optimal AI-assisted development."
 ---
 
-Cursor rules/skills for this repo are already set up. Do the steps below once to get the best AI context and tooling.
+Cursor rules/skills for this repo are already set up. Daily workflow: [AI Development Workflow](/docs/development/ai-workflow) (Cursor-first; Claude Code uses the same rules via `CLAUDE.md`). Do the steps below once.
 
 ## Step 1: Add Documentation Sites
 
-Cursor can index external documentation sites (Fastify, Next.js, Viem, etc.) by crawling and embedding them as scoped AI reference, separate from your workspace code index and managed via the Cursor settings UI. Cursor re-crawls these sources periodically on its own schedule (not configurable), so the content can change as upstream docs evolve; treat the results as helpful, current guidance for planning, reasoning, and API suggestions, but not as behavioral constraints—repository rules and source code remain the final authority, and indexed docs may conflict with each other or repo conventions.
-
-Add these in Cursor Settings → **Indexing & Docs**:
+Cursor can index external docs (Fastify, Next.js, Viem, …) under Settings → **Indexing & Docs**. Indexed docs are advisory; repository rules and source win. Add:
 
 1. Open Cursor Settings (Cmd/Ctrl + ,)
 2. Go to **Indexing & Docs**
@@ -47,7 +45,7 @@ Included servers:
 - **shadcnui-jpisnice-react**: blocks/templates
 - **shadcnui-jpisnice-react-native**: future RN blocks/templates
 - **next-devtools**: Next.js runtime diagnostics (errors, routes, logs) and migration tools
-- **docu**, **fastify**, **next**: Vercel project context
+- **docu**, **fastify**, **next**: Vercel project MCP (names are historical; they map to `apps/docu`, `apps/api`, `apps/web`)
 
 **next-devtools** provides live diagnostics when `pnpm dev` is running (errors, page metadata, Server Actions). Docs search and migration tools work without a dev server. For richer agent context when working on Next.js, agents can call the `init` tool at the start of a session.
 
