@@ -187,7 +187,7 @@ DeepSec is not in pre-commit and not in `security.yml`.
 
 **Local:** `pnpm security:deepsec:scan` is regex-only and free. `process` / `process:diff` need `AI_GATEWAY_API_KEY`. A full-repo `process` is an operator follow-up, not required for every commit.
 
-**CI:** `.github/workflows/deepsec.yml` runs on same-repo pull requests only (forks skip; no secrets). The `analyze` job installs `.deepsec` only, runs Sol GPT `process --diff` against the PR base, and fails on net-new findings. A second job posts the comment; it never executes PR code. Set the `AI_GATEWAY_API_KEY` repository secret or same-repo PRs fail closed.
+**CI:** `.github/workflows/deepsec.yml` runs on same-repo pull requests only (forks skip; no secrets). The `analyze` job installs `.deepsec` only, runs Sol GPT `process --diff` against the PR base, and fails on net-new findings. A second job posts the comment; it never executes PR code. Add the `AI_GATEWAY_API_KEY` repository secret (Vercel AI Gateway key, `vck_…`) in **Settings → Secrets and variables → Actions**. `OPENAI_API_KEY` works as a fallback for Codex direct auth. Without either secret, the workflow fails before processing.
 
 The `secret-env-var` matcher is excluded so DeepSec does not duplicate Gitleaks/TruffleHog.
 
@@ -298,6 +298,10 @@ If CI detects secrets:
 ### CI failing on DeepSec install (`minimumReleaseAge`)
 
 `deepsec.yml` runs `pnpm install --frozen-lockfile` in `.deepsec`. pnpm 11 rejects lockfile entries younger than 24 hours. If the version is a known security patch, add the exact version to `minimumReleaseAgeExclude` in `.deepsec/pnpm-workspace.yaml` (for example `qs@6.16.0`). Do not pin back to a vulnerable release and do not set `minimumReleaseAge` to `0`.
+
+### CI failing on DeepSec credentials
+
+`deepsec process` needs model auth in CI (no local Codex login). Add `AI_GATEWAY_API_KEY` (`vck_…` from [Vercel AI Gateway](https://vercel.com/docs/ai-gateway)) to repository secrets, or `OPENAI_API_KEY` as a fallback. The workflow writes `.deepsec/.env.local` from the secret before running.
 
 ## Best Practices
 

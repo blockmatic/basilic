@@ -49,7 +49,7 @@ Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and p
 
 Source-code review of the PR diff on same-repo pull requests. Fork PRs skip (no secrets). Two jobs:
 
-1. **analyze** — `contents: read` only. Installs `.deepsec`, runs GPT-5.6 Sol (`codex`, thinking `medium`) `process --diff` against the PR base. Fails on net-new findings. Requires the `AI_GATEWAY_API_KEY` repository secret. Local alternate: Cursor Grok 4.6 via `pnpm security:deepsec:process:diff:grok`.
+1. **analyze** — `contents: read` only. Installs `.deepsec`, writes credentials to `.deepsec/.env.local`, runs GPT-5.6 Sol (`codex`, thinking `medium`) `process --diff` against the PR base. Fails on net-new findings. Requires `AI_GATEWAY_API_KEY` (recommended) or `OPENAI_API_KEY` in repository secrets. Local alternate: Cursor Grok 4.6 via `pnpm security:deepsec:process:diff:grok`.
 2. **comment** — `pull-requests: write`. Posts the findings comment. Never checks out or executes PR code.
 
 Full-repo DeepSec review stays local. See [Security](/docs/architecture/security).

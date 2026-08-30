@@ -52,11 +52,29 @@ jobs:
         working-directory: .deepsec
         run: pnpm install --frozen-lockfile
 
+      - name: Configure DeepSec credentials
+        working-directory: .deepsec
+        env:
+          AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$AI_GATEWAY_API_KEY" ] && [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error title=Missing DeepSec credentials::Add AI_GATEWAY_API_KEY (recommended) or OPENAI_API_KEY to repository secrets (Settings → Secrets and variables → Actions). See https://github.com/vercel-labs/deepsec/blob/main/docs/vercel-setup.md"
+            exit 1
+          fi
+          if [ -n "$AI_GATEWAY_API_KEY" ]; then
+            printf 'AI_GATEWAY_API_KEY=%s\n' "$AI_GATEWAY_API_KEY" > .env.local
+          elif [ -n "$OPENAI_API_KEY" ]; then
+            printf 'OPENAI_API_KEY=%s\n' "$OPENAI_API_KEY" > .env.local
+          fi
+          chmod 600 .env.local
+
       - name: Review PR diff
         id: deepsec
         working-directory: .deepsec
         env:
           AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           pnpm deepsec process \
             --agent codex \
