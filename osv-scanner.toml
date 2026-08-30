@@ -21,8 +21,3 @@ reason = "Transitive sandbox, no fix available in ecosystem"
 [[IgnoredVulns]]
 id = "GHSA-gc25-3vc5-2jf9"
 reason = "Transitive sandbox, no fix available in ecosystem"
-
-# uuid 7/8/9 are walletconnect/solana transitive; 11.x is a breaking bump
-[[IgnoredVulns]]
-id = "GHSA-w5hq-g745-h8pq"
-reason = "Transitive uuid 7/8/9, 11.x breaking for wallet adapters"

@@ -43,16 +43,16 @@
     "expo-system-ui": "~57.0.3",
     "expo-web-browser": "~57.0.2",
     "nativewind": "5.0.0-preview.2",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "react-native": "0.87.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
     "react-native-css": "^3.0.7",
-    "react-native-gesture-handler": "~3.2.1",
-    "react-native-reanimated": "4.6.0",
-    "react-native-safe-area-context": "~5.9.1",
-    "react-native-screens": "~4.27.0",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.2",
     "react-native-web": "~0.21.2",
-    "react-native-worklets": "0.12.1",
+    "react-native-worklets": "0.10.1",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
@@ -66,7 +66,7 @@
     "eslint": "^10.9.1",
     "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",
-    "typescript": "npm:@typescript/typescript6@^6.0.2"
+    "typescript": "^6.0.3"
   },
   "private": true
 }
