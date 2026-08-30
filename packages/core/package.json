@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsgo --declaration --emitDeclarationOnly",
     "checktypes": "tsgo --noEmit",
     "dev": "node --import tsx scripts/wait-and-watch.mjs",
     "lint:eslint": "eslint . --max-warnings 0",
@@ -25,15 +25,15 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.92.4",
+    "@hey-api/openapi-ts": "^0.0.0-next-20260824173136",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@typescript/native-preview": "7.0.0-dev.20260213.1",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "chokidar-cli": "^3.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^10.9.1",
     "tsup": "^8.5.1",
-    "tsx": "^4.21.0",
-    "vitest": "^4.0.18"
+    "tsx": "^4.23.12",
+    "vitest": "^4.1.11"
   }
 }

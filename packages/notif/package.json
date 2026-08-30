@@ -38,9 +38,9 @@
   "dependencies": {
     "@repo/email": "workspace:*",
     "@repo/utils": "workspace:*",
-    "nanoid": "^5.1.6",
-    "resend": "^6.9.2",
-    "zod": "^4.3.6"
+    "nanoid": "^6.0.1",
+    "resend": "^6.25.0",
+    "zod": "^4.5.2"
   },
   "peerDependencies": {
     "@t3-oss/env-core": "^0.13.10"
@@ -48,11 +48,11 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@t3-oss/env-core": "^0.13.10",
-    "@types/node": "^25.2.3",
-    "@types/react": "^19.2.14",
-    "@typescript/native-preview": "7.0.0-dev.20260213.1",
-    "eslint": "^9.0.0",
-    "react": "^19.2.4"
+    "@t3-oss/env-core": "^0.13.11",
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "eslint": "^10.9.1",
+    "react": "^19.2.8"
   }
 }

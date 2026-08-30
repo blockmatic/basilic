@@ -12,7 +12,7 @@ export default defineConfig({
     'src/data/index.ts',
   ],
   format: ['esm'],
-  dts: true,
+  dts: false,
   sourcemap: true,
   clean: true,
   outDir: 'dist',

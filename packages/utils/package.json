@@ -64,7 +64,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsgo --declaration --emitDeclarationOnly",
     "checktypes": "tsgo --noEmit",
     "dev": "tsup --watch",
     "lint:eslint": "eslint . --max-warnings 0",
@@ -112,17 +112,17 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/lodash-es": "latest",
-    "@types/node": "^25.2.3",
-    "@types/react": "^19.2.14",
-    "@typescript/native-preview": "7.0.0-dev.20260213.1",
-    "ahooks": "^3.9.6",
-    "eslint": "^9.0.0",
-    "nuqs": "^2.8.8",
-    "react": "^19.2.4",
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "ahooks": "^3.9.7",
+    "eslint": "^10.9.1",
+    "nuqs": "^2.10.1",
+    "react": "^19.2.8",
     "tsup": "^8.5.1",
     "vconsole": "^3.15.1",
-    "viem": "2.45.3",
-    "zod": "^4.3.6",
+    "viem": "2.56.0",
+    "zod": "^4.5.2",
     "zod-validation-error": "^5.0.0"
   }
 }
