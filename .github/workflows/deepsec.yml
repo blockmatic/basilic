@@ -28,14 +28,9 @@ jobs:
       - name: Restore trusted DeepSec workspace
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
           GIT_TERMINAL_PROMPT: "0"
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          git config --local http.https://github.com/.extraheader "AUTHORIZATION: bearer $GITHUB_TOKEN"
-          git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
           git rev-parse --verify "$BASE_SHA^{commit}"
-          git config --local --unset-all http.https://github.com/.extraheader
           if git cat-file -e "$BASE_SHA:.deepsec/deepsec.config.ts"; then
             git checkout "$BASE_SHA" -- .deepsec
           fi
