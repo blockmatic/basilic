@@ -1,103 +1,39 @@
 ---
 title: "OpenAPI Generation"
-description: "TypeBox → OpenAPI → Zod clients workflow for end-to-end type safety."
+description: "TypeBox routes → OpenAPI → @repo/core. React Query hooks in @repo/react are handwritten."
 ---
 
-## Overview
-
-The OpenAPI generation workflow provides end-to-end type safety from backend routes to frontend clients. We use **TypeBox** for route schemas, generate **OpenAPI** specs, and then generate **TypeScript clients with Zod schemas** using Hey API.
-
-## Data Flow
-
-**TypeBox (Backend) → OpenAPI Spec → Zod Schemas + Types (Frontend)**
+TypeBox on Fastify routes is the source of truth. Generate OpenAPI, then the `@repo/core` client. Add TanStack Query hooks in `@repo/react` by hand when the UI needs them. There is no `packages/react/src/gen/` and no Hey API React plugin in this repo.
 
 ```mermaid
 flowchart LR
-  TypeBox[TypeBox Schemas<br/>Backend Routes] --> OpenAPI[OpenAPI Spec<br/>Generated JSON]
-  OpenAPI --> Core[Core Package<br/>Runtime Client + Types]
-  OpenAPI --> React[React Package<br/>TanStack Query Hooks]
-  Core --> Web[Frontend Apps<br/>Fully Typed]
-  React --> Web
+  TypeBox[TypeBox on Fastify routes] --> OpenAPI[openapi.json]
+  OpenAPI --> Core["@repo/core client + types"]
+  Core --> React["@repo/react handwritten hooks"]
+  Core --> Apps[web / mobile / CLI]
+  React --> Apps
 ```
 
-## Step 1: Define TypeBox Schemas
-
-TypeBox schemas are native JSON Schema definitions for Fastify routes:
-
-```typescript
-// apps/api/src/routes/users.ts
-import { Type } from '@sinclair/typebox'
-
-const UserSchema = Type.Object({
-  id: Type.String(),
-  email: Type.String({ format: 'email' }),
-  name: Type.String(),
-})
-
-const ErrorSchema = Type.Object({
-  code: Type.String(),
-  message: Type.String(),
-})
-
-fastify.get('/users/:id', {
-  schema: {
-    params: Type.Object({ id: Type.String() }),
-    response: {
-      200: UserSchema,
-      404: ErrorSchema,
-    },
-  },
-}, async (request, reply) => {
-  // Implementation
-})
-```
-
-## Step 2: Generate OpenAPI Spec
-
-The OpenAPI specification is automatically generated from Fastify routes:
+## Commands
 
 ```bash
-pnpm --filter @repo/api generate:openapi
+pnpm --filter @repo/api generate:openapi   # apps/api/openapi/openapi.json
+pnpm --filter @repo/core generate          # packages/core/src/gen/
 ```
 
-This runs `generate-openapi.ts` which:
-1. Scans Fastify route definitions
-2. Extracts TypeBox schemas
-3. Generates OpenAPI 3.0 spec at `apps/api/openapi/openapi.json`
+Spec also served at `/reference/openapi.json`; Scalar UI at `/reference`. Config: `packages/core/openapi-ts.config.ts`.
 
-**Key benefits:**
-- No manual OpenAPI writing
-- Single source of truth (TypeBox schemas)
-- Automatic synchronization
+## New endpoint
 
-## Step 3: Generate TypeScript Clients
-
-Hey API generates type-safe clients from the OpenAPI spec:
-
-```bash
-# Generate runtime-agnostic client and types
-pnpm --filter @repo/core generate
-```
-
-This generates:
-- **`packages/core/src/gen/`** - Runtime-agnostic client with types
-- **`packages/react/src/gen/`** - React Query hooks with TanStack Query integration
-
-**Generated code includes:**
-- Fully typed API methods
-- Zod schemas for runtime validation
-- Request/response types
-- TanStack Query hooks (React package)
-
-## Step 4: Use Generated Clients
-
-The generated clients provide full type safety:
+1. Add the route + TypeBox schema in `apps/api/src/routes/` (one file per endpoint).
+2. `pnpm --filter @repo/api generate:openapi`
+3. `pnpm --filter @repo/core generate`
+4. If the UI needs a hook, add it under `packages/react/src/hooks/` and export from `packages/react/src/index.ts`.
 
 ```typescript
 import { createClient } from '@repo/core'
 import { useUser } from '@repo/react'
 
-// Runtime-agnostic client (JWT mode for authenticated calls)
 const client = createClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL!,
   getAuthToken: async () => session?.token,
@@ -105,43 +41,8 @@ const client = createClient({
   onTokensRefreshed: async ({ token, refreshToken }) => { /* persist */ },
 })
 
-// Fully typed API call
 const user = await client.auth.session.user()
-// user is typed from OpenAPI spec
-
-// Or use generated React Query hooks
-const { data, isLoading, error } = useUser()
-// data is typed from OpenAPI spec
+const { data } = useUser()
 ```
 
-## Benefits
-
-- ✅ **End-to-end type safety** - Types flow from routes → OpenAPI → clients automatically
-- ✅ **No duplication** - Define schemas once, generate everything
-- ✅ **Automatic synchronization** - OpenAPI and clients stay in sync with routes
-- ✅ **Runtime validation** - Zod schemas provide runtime type checking
-- ✅ **Framework portability** - Works with any framework that consumes OpenAPI
-- ✅ **Multi-language support** - Generate clients for TypeScript, Python, Go, Rust, etc.
-
-## Complete Workflow
-
-When adding a new endpoint:
-
-1. **Implement route** - Define TypeBox schemas and implement Fastify route
-2. **Generate OpenAPI** - Run `pnpm --filter @repo/api generate:openapi`
-3. **Generate clients** - Run `pnpm --filter @repo/core generate` (generates client and types; `@repo/react` consumes `@repo/core`)
-4. **Use typed client** - Import and use in frontend with full type safety
-
-## OpenAPI Spec Location
-
-The generated OpenAPI spec is available at:
-- **File**: `apps/api/openapi/openapi.json`
-- **Endpoint**: `/reference/openapi.json` (programmatic access)
-- **Interactive docs**: `/reference` (Scalar UI)
-
-## Client Generation Configuration
-
-Client generation is configured in:
-- **Core package**: `packages/core/openapi-ts.config.ts` (Hey API config)
-- **React package**: `packages/react/openapi-ts.config.ts` (Hey API config with TanStack Query plugin)
-
+See [API Architecture](/docs/architecture/api) and [Package Conventions](/docs/development/package-conventions).

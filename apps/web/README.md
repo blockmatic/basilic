@@ -140,7 +140,7 @@ E2E tests automatically start both servers:
 
 Tests wait for both servers to be ready before running. All E2E tests use real infrastructure - no mocks.
 
-See [Frontend Testing Documentation](@apps/docu/content/docs/testing/frontend-testing.mdx) for complete testing patterns and examples.
+See [E2E Testing](@apps/docu/content/docs/testing/e2e-testing.mdx) for complete testing patterns and examples.
 
 ## Vercel Deployment
 
@@ -160,5 +160,5 @@ This app includes a `vercel.json` configuration file. If deploying to Vercel:
 ## Related Documentation
 
 - [Monorepo Structure](@apps/docu/content/docs/architecture/monorepo.mdx) - Package organization
-- [Frontend Stack](@apps/docu/content/docs/architecture/frontend-stack.mdx) - Next.js and Shadcn/ui
+- [Frontend Architecture](@apps/docu/content/docs/architecture/frontend.mdx) - Next.js 16, React 19, and UI
 - [Package Conventions](@apps/docu/content/docs/architecture/package-conventions.mdx) - Package architecture

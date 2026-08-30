@@ -1,113 +1,65 @@
 ---
 title: "Frontend Architecture"
-description: "Next.js (App Router, RSC-first) with shadcn/ui + Tailwind CSS in @repo/ui and type-safe API consumption via @repo/core + @repo/react."
+description: "Next.js 16 (App Router, RSC-first), React 19, Tailwind 4, and handwritten TanStack Query hooks in @repo/react."
 ---
 
-Frontend apps (for example `apps/web` and `apps/docu`) are built on **Next.js** and share UI, data access, and utilities through monorepo packages.
+`apps/web` and `apps/mobile` consume shared UI and API types through monorepo packages. `apps/docu` uses `@repo/ui` only — it does not depend on `@repo/core` or `@repo/react`.
 
-## Architecture at a glance
+## Layout
 
 ```mermaid
 flowchart TB
-  subgraph Apps["Applications (Next.js)"]
-    Web["apps/web<br/>(product web app)"]
-    Docs["apps/docu<br/>(docs site)"]
+  subgraph Apps["Applications"]
+    Web["apps/web<br/>Next.js 16"]
+    Mobile["apps/mobile<br/>Expo 57"]
+    Docs["apps/docu<br/>Fumadocs"]
   end
 
   subgraph Packages["Shared packages"]
-    UI["@repo/ui<br/>(shadcn/ui + Radix + Tailwind)"]
-    React["@repo/react<br/>(React Query hooks + providers)"]
-    Core["@repo/core<br/>(generated API client + types)"]
-    Utils["@repo/utils<br/>(shared utilities)"]
+    UI["@repo/ui<br/>shadcn/ui + Radix + Tailwind 4"]
+    React["@repo/react<br/>handwritten TanStack Query hooks"]
+    Core["@repo/core<br/>generated API client"]
+    Utils["@repo/utils"]
   end
 
   Web --> UI
-  Docs --> UI
   Web --> React
-  Docs --> React
-  React --> Core
+  Web --> Core
   Web --> Utils
-  Docs --> Utils
+  Mobile --> UI
+  Mobile --> React
+  Mobile --> Core
+  Docs --> UI
+  React --> Core
 ```
 
-## Ownership & placement
+- Reusable primitives → `@repo/ui`
+- App-only UI → the app’s `components/` (collocated with the route)
+- API types and client → `@repo/core` (generated from OpenAPI)
+- React Query hooks → `@repo/react` (**handwritten**, not generated). See [OpenAPI Generation](/docs/development/openapi-generation).
 
-Use these rules of thumb to keep code consistent across apps:
+## Rendering (RSC-first)
 
-- Put **reusable UI primitives** in `@repo/ui`.
-- Keep **app-only UI** in the app’s `components/`.
-- Keep **domain + API consumption** in `@repo/core` / `@repo/react` (generated + wrappers), not hand-rolled per app.
+Default to Server Components. Use `'use client'` only for interactivity, browser APIs, or client-only libraries.
 
-## Rendering model (RSC-first)
+Stream with `loading.tsx` and Suspense. Mark search/filter updates as transitions when they would block the UI.
 
-Default to **Server Components**. Use Client Components only when you need:
+## Data and state
 
-- interactivity (`onClick`, forms)
-- browser APIs (`window`, `localStorage`)
-- client-only libraries
-
-This keeps the default path simple: server rendering, smaller client bundles, and fewer hydration boundaries.
-
-## Data layer (type-safe by default)
-
-We keep data access consistent across apps:
-
-- **Server Components**: fetch server-side when possible.
-- **Client async state**: use **TanStack Query** (via `@tanstack/react-query`), preferably through generated hooks from `@repo/react`.
-- **API client surface**: use `@repo/core` (runtime-agnostic) and `@repo/react` (React integration).
-
-The generation pipeline is documented in [API Architecture](/docs/architecture/api) and [OpenAPI Generation](/docs/development/openapi-generation).
-
-## UI system & styling
-
-The shared design system lives in `@repo/ui`:
-
-- **Components**: shadcn/ui-style components that we own and can edit
-- **Accessibility primitives**: Radix UI under the hood
-- **Styling**: Tailwind CSS, mobile-first
-- **Consumption**: apps import from `@repo/ui/components/*`
-
-## v0-assisted UI workflow
-
-We use **v0** (Vercel’s UI generator) for rapid prototyping because it outputs **Next.js + shadcn/ui**-compatible components we can commit and maintain.
-
-Workflow:
-
-1. Prototype UI in v0
-2. Install/author components in `@repo/ui`
-3. Customize for product needs (variants, tokens, composition)
-4. Consume from apps via `@repo/ui/components/*`
-
-## Core libraries & patterns
-
-### Data fetching & async state
-
-- **`@tanstack/react-query`**: default choice for async data and server state (caching, dedupe, retries)
-- **`@repo/react`**: generated React Query hooks and integration for the OpenAPI client surface
-- **`@repo/core`**: generated, runtime-agnostic API client and types
-- **`@lukemorales/query-key-factory`**: centralized query key factories (for hand-written queries)
-
-### URL and local state
-
-- **`nuqs`**: URL-based state for shareable UI state (filters, search, tabs, pagination)
-- **`ahooks`**: `useSetState` for grouped ephemeral state, `useLocalStorageState` for persistence
-
-### Validation, errors, utilities
-
-- **`zod`**: schema validation at boundaries (prefer `z.infer<typeof schema>`)
-- **`react-error-boundary`**: component subtree failure isolation (see error handling below)
-- **`@repo/utils`**: shared utilities (prefer subpath imports)
-- **`lodash-es`**: per-function imports for common operations
-- **`nanoid`**: unique IDs when needed
-
-### Web3 (when applicable)
-
-Wallet auth, link, sign, and send: use `@repo/react` hooks via `WalletProvider`; apps supply wagmi + Solana adapters. See [Frontend Stack](/docs/architecture/frontend-stack) for hooks, `WalletAdaptersInjector`, and mermaid.
-
-### Query key factory (example)
+| Concern | Library |
+| --- | --- |
+| Server fetch | Server Components when possible |
+| Client async | TanStack Query 5 via `@repo/react` |
+| API client | `@repo/core` |
+| Query keys | `@lukemorales/query-key-factory` for hand-written queries |
+| URL state | `nuqs` (filters, tabs, pagination) |
+| Grouped / persisted UI | `ahooks` (`useSetState`, `useLocalStorageState`) |
+| Validation | Zod at boundaries |
+| Errors | `react-error-boundary` + [Error Handling](/docs/architecture/error-handling) |
 
 ```tsx
 import { createQueryKeys } from "@lukemorales/query-key-factory"
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs"
 
 export const users = createQueryKeys("users", {
   detail: (id: string) => ({
@@ -115,12 +67,6 @@ export const users = createQueryKeys("users", {
     queryFn: () => fetchUser(id),
   }),
 })
-```
-
-### nuqs URL state (example)
-
-```tsx
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs"
 
 const [filters, setFilters] = useQueryStates({
   search: parseAsString.withDefault(""),
@@ -128,21 +74,35 @@ const [filters, setFilters] = useQueryStates({
 })
 ```
 
-## Error handling
+## UI
 
-Use `react-error-boundary` for component subtree failures and prefer shared error utilities from `@repo/*` packages.
+`@repo/ui` owns shadcn-style components, Radix primitives, and Tailwind 4. Import `@repo/ui/components/*`. Prototype in v0 if useful, then install into `@repo/ui` and consume from apps.
 
-See [Error Handling](/docs/architecture/error-handling) for project-wide patterns.
+## Web3 (apps/web)
 
-## Performance & concurrency
+Wallet adapters live in the app (`@/hooks/`, `@/wallet/`). `@repo/react` only exposes verify/link helpers (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useLinkEmail`). Stack: Wagmi 3 + Viem 2 + Solana wallet-adapter.
 
-Next.js uses modern React rendering features by default. Practical guidance:
+`WalletAdaptersInjector` bridges wagmi and Solana, enforces single-wallet mode, and signs out on disconnect when the session was created by a wallet. After login, `/` shows link-wallet and link-email. See [Authentication](/docs/architecture/authentication).
 
-- **Stream on the server** with layouts and `loading.tsx` boundaries.
-- **Use Suspense** to isolate slow client boundaries instead of blocking whole pages.
-- **Mark non-urgent updates** (search, filters, heavy re-render paths) as transitions when needed.
+```mermaid
+flowchart TB
+  subgraph AppHooks [apps/web]
+    useWalletAuth[useWalletAuth]
+    useLinkWallet[useLinkWallet]
+    useWallet[useWallet]
+    WalletProvider[WalletProvider]
+  end
+  subgraph RepoReact ["@repo/react"]
+    useVerifyWeb3Auth[useVerifyWeb3Auth]
+    useVerifyLinkWallet[useVerifyLinkWallet]
+  end
+  useWalletAuth --> useWallet
+  useWalletAuth --> useVerifyWeb3Auth
+  useLinkWallet --> useWallet
+  useLinkWallet --> useVerifyLinkWallet
+  useWallet --> WalletProvider
+```
 
-## Testing & quality
+## Testing
 
-Frontend apps are validated via **Playwright E2E tests** instead of separate unit or integration suites. See [Frontend Testing](/docs/testing/frontend-testing) for the E2E-only frontend testing strategy.
-
+Frontend apps use Playwright E2E only. See [E2E Testing](/docs/testing/e2e-testing).

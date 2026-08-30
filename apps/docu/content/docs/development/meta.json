@@ -2,11 +2,13 @@
   "title": "Development",
   "pages": [
     "index",
+    "dev-environments",
+    "dev-tooling",
     "ai-workflow",
     "cursor-setup",
-    "dev-tooling",
     "openapi-generation",
     "package-conventions",
-    "packages"
+    "packages",
+    "cli"
   ]
 }

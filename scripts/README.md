@@ -20,7 +20,7 @@ node scripts/run-qa.mjs
 For comprehensive guides, see:
 
 - **[Publishing Guide](@apps/docu/content/docs/deployment/publishing.mdx)** - Complete guide to publishing packages
-- **[Security Guide](@apps/docu/content/docs/security/index.mdx)** - Security baseline and secret scanning
+- **[Security Guide](@apps/docu/content/docs/architecture/security.mdx)** - Security baseline and secret scanning
 - **[Deployment Guide](@apps/docu/content/docs/deployment/index.mdx)** - Deployment options and strategies
 
 ## Publishing Scripts

@@ -1,149 +1,76 @@
 ---
 title: "E2E Testing"
-description: "Playwright E2E tests for Next.js app and Fastify API (Scalar login)."
+description: "Playwright E2E for Next.js and Fastify. Frontend apps have no separate unit suite."
 ---
 
-End-to-end tests run full user flows using Playwright. Two suites: **Web E2E** (apps/web) tests the web app + auth; **Fastify E2E** (apps/api) tests Scalar UI login. Both use `test@test.ai` for magic-link when `ALLOW_TEST=true`.
+Frontend quality is validated through real user flows against the real API. There are no Vitest or Testing Library suites in `apps/web`. Two Playwright suites: **Web** (`apps/web`) for the product UI, **API** (`apps/api`) for Scalar login. Both use `test@test.ai` when `ALLOW_TEST=true`.
 
-Playwright specs are currently skipped (`test.describe.skip`) because the Chromium headless shell is not installed locally. Re-enable after `pnpm exec playwright install`, then remove `.skip` from the describe blocks.
+Install browsers with `pnpm exec playwright install` if Chromium is missing. Specs are not skipped.
 
-**Root QA**: `pnpm qa` runs the full pipeline (install → checktypes → lint → build → test) and ends with `pnpm test:e2e`, which runs Fastify E2E then Next E2E via `scripts/run-e2e.mjs` (both use `test:e2e:local` to spawn servers). The E2E script kills any processes on ports 3000 and 3001 before starting (unless `SKIP_KILL_PORTS=1`).
+Root `pnpm qa` ends with `pnpm test:e2e` (`scripts/run-e2e.mjs`). That script kills processes on ports 3000 and 3001 unless `SKIP_KILL_PORTS=1`.
 
 ## Commands
 
 | Command | Description |
-|---------|-------------|
-| `pnpm test:e2e` (root) | Run Fastify API E2E, then Next E2E (spawns local servers) |
-| `pnpm test:e2e` (in apps/web) | Run E2E; expects URLs via env or `--app`/`--api` params |
-| `pnpm test:e2e:local` (in apps/web) | Build (unless `SKIP_BUILD=1`), spawn Fastify + Next, poll until healthy, run tests, cleanup |
-| `pnpm test:e2e` (in apps/api) | Run E2E; expects API URL via env or `--api` param |
-| `pnpm test:e2e:local` (in apps/api) | Spawn API, poll until healthy, run tests, cleanup |
-| `pnpm test:e2e:ui` (in apps/web or apps/api) | Run with Playwright UI |
-| `pnpm test:e2e:debug` (in apps/web or apps/api) | Run in debug mode |
+| --- | --- |
+| `pnpm test:e2e` (root) | Fastify E2E, then Next E2E (spawns servers) |
+| `pnpm --filter @repo/web test:e2e:local` | Build (unless `SKIP_BUILD=1`), spawn API + Next, run web E2E |
+| `pnpm --filter @repo/api test:e2e:local` | Spawn API, run Scalar login E2E |
+| `pnpm test:e2e:ui` / `test:e2e:debug` | Playwright UI or debug (in the app) |
 
-## URL Configuration
-
-`test:e2e` accepts URL params. Next: `--app` and `--api`. Fastify: `--api` only. Params override environment variables.
+Pass URLs with `--app` / `--api`, or `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL`. Defaults: `http://localhost:3000` and `http://localhost:3001`.
 
 ```bash
-# Next (both app and API)
 pnpm test:e2e --app=https://my-app.vercel.app --api=https://my-api.vercel.app
-pnpm test:e2e -- --app https://localhost:3000 --api https://localhost:3001
-
-# Fastify (API only)
-pnpm test:e2e --api=https://my-api.vercel.app
-pnpm test:e2e -- --api https://localhost:3001
-
-# Environment (defaults when no params)
-PLAYWRIGHT_APP_URL=https://... PLAYWRIGHT_API_URL=https://... pnpm test:e2e
 ```
 
-Defaults: Next `NEXT_PUBLIC_APP_URL` or `http://localhost:3000`; API `NEXT_PUBLIC_API_URL` or `http://localhost:3001`.
+## Auth fixtures
 
-## Local Development
+Use **one worker** (PGlite cannot take concurrent writers). Auth project runs first (errors, login, logout). Authed tests import `authenticatedPage` from `e2e/fixtures` — one login per worker via `authenticatedStorageState` (`test-results/.auth/user.json`). Login/logout tests use a fresh `page` from `@playwright/test`.
 
-1. **Full suite** (root): `pnpm test:e2e` — runs Fastify E2E then Next E2E (both spawn servers, poll, run, cleanup).
-2. **Next only**: `pnpm --filter @repo/web test:e2e:local` — builds, spawns Fastify + Next, runs Next E2E, cleanup.
-3. **Fastify only**: `pnpm --filter @repo/api test:e2e:local` — spawns API, runs Scalar login E2E, cleanup.
-4. **Manual** (two terminals): Build with `pnpm --filter @repo/web build:e2e`, run `pnpm --filter @repo/web start:e2e:servers` in one terminal and `pnpm --filter @repo/web test:e2e` in another.
-5. **External URLs**: Use `--app` and `--api` (Next) or `--api` (Fastify) to target already-running servers or Vercel previews.
+```typescript
+import { expect, test } from './fixtures'
 
-## Test Email (test@test.ai)
-
-Magic-link E2E tests use `test@test.ai` when `ALLOW_TEST=true`. The token is stored in the database (`verification.token_plain`) and read from `/test/magic-link/last`. No fake outbox; works with Vercel serverless (shared DB across instances).
-
-- **Local**: `test:e2e:local` and `start:ci` set `ALLOW_TEST=true`.
-- **Vercel previews**: Set `ALLOW_TEST=true` for the Preview environment in project env vars.
-
-## CI
-
-Test workflows run on pull requests (path-filtered):
-
-- **API E2E** (`api-e2e.yml`) — Runs when `apps/api` or its deps change. Spawns Fastify locally, runs Playwright.
-- **Web E2E** (`web-e2e.yml`) — Runs when `apps/web` or its deps change. Spawns Fastify + Next locally, runs Playwright.
-- **Packages** (`packages-test.yml`) — Runs when `packages` or `tools` change. Unit tests only; excludes app E2E.
-
-Lint and security run on every PR. See [GitHub Actions](/docs/deployment/github-actions).
-
-## Mobile E2E (Maestro)
-
-The Expo app uses **Maestro** for E2E flows. Flow at `apps/mobile/.maestro/flows/home.yml`: launch app, assert home screen content.
-
-**Run locally** (app must be installed on emulator/simulator):
-
-```bash
-cd apps/mobile && maestro test .maestro/flows/home.yml
+test('should show dashboard when authenticated', async ({ authenticatedPage }) => {
+  await authenticatedPage.goto('/')
+  await expect(authenticatedPage.locator('text=Signed In')).toBeVisible()
+})
 ```
 
-An optional `mobile-e2e` workflow (EAS Workflows + Maestro) can be added to run in CI; v1 defers this. See [Mobile CI/CD](/docs/deployment/mobile-cicd).
+Chat E2E needs `ANTHROPIC_API_KEY` (in-app Claude Sonnet 4). CI and `test:e2e:local` set `AI_PROVIDER=anthropic`.
 
-## Vercel Deployment Protection (Manual Testing)
+## Magic link
 
-To run E2E manually against Vercel preview deployments with Deployment Protection enabled:
+`ALLOW_TEST=true` stores the token in `verification.token_plain` and exposes `/test/magic-link/last`. Local spawn scripts set it. For Vercel previews, set it on the Preview environment. The API process exits if `ALLOW_TEST` is true in production.
 
-When Deployment Protection is enabled:
-1. **Protection Bypass for Automation**: In each project (Next, Fastify): Settings → Deployment Protection → Protection Bypass for Automation → enable → generate secret.
-2. Use the same bypass secret for both projects.
-3. Add `VERCEL_AUTOMATION_BYPASS_SECRET` to GitHub secrets.
-4. Playwright adds `x-vercel-protection-bypass` and `x-vercel-set-bypass-cookie` headers automatically when the env var is set.
-5. **OPTIONS Allowlist** (for CORS): In Fastify project, Deployment Protection → OPTIONS Allowlist → add `/` or `/auth` so CORS preflight succeeds.
+## CI and mobile
 
-See [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation).
+Path-filtered PR workflows: `api-e2e.yml`, `web-e2e.yml`, `packages-test.yml`. See [GitHub Actions](/docs/deployment/github-actions).
 
-## Environment Variables
+Expo uses Maestro (`apps/mobile/.maestro/flows/home.yml`). CI Maestro is deferred; see [Mobile CI/CD](/docs/deployment/mobile-cicd).
 
-- **Chat E2E** (chat-assistant.spec.ts): Uses Anthropic Sonnet (`ANTHROPIC_API_KEY`). CI and `test:e2e:local` force `AI_PROVIDER=anthropic`. Uses `authenticatedPage` fixture.
-- **E2E CI**: Uses local servers only; no Vercel URLs. For manual testing against previews, pass `--app`/`--api` URLs.
-
-## ALLOW_TEST
-
-`ALLOW_TEST=true` enables:
-
-- Fake email for `@test.ai` (no Resend)
-- DB-backed token storage for `/test/magic-link/last`
-- Production guard: server exits if `ALLOW_TEST` is true in production
-
-## Next E2E Specs
+## Web specs
 
 | Spec | Coverage |
-|------|----------|
-| `magic-link-auth.spec.ts` | Magic link login, invalid/expired token errors, email validation, protected route, JWT session |
-| `chat-assistant.spec.ts` | Chat UI with authenticatedPage; Who am I? prompt |
-| `security/api-keys.spec.ts` | API keys CRUD: create, revoke, empty state |
-| `security/authenticator.spec.ts` | TOTP setup/unlink via extractSessionToken + test endpoint |
-| `security/passkeys.spec.ts` | Passkeys add/remove with CDP virtual authenticator |
+| --- | --- |
+| `magic-link-auth.spec.ts` | Login, token errors, protected route, JWT session |
+| `chat-assistant.spec.ts` | Chat UI with `authenticatedPage` |
+| `security/api-keys.spec.ts` | API keys CRUD |
+| `security/authenticator.spec.ts` | TOTP setup/unlink |
+| `security/passkeys.spec.ts` | Passkeys with CDP virtual authenticator |
 
-### Project order
+Order: Auth project → Chromium → Security.
 
-```mermaid
-flowchart TB
-  subgraph AuthProj [Auth project]
-    MagicLinkAuth[magic-link-auth.spec.ts]
-  end
+## Vercel protection (manual)
 
-  subgraph ChromiumProj [Chromium project]
-    ChatAssistant[chat-assistant.spec.ts]
-  end
-
-  subgraph SecurityProj [Security project]
-    ApiKeys[api-keys.spec.ts]
-    Authenticator[authenticator.spec.ts]
-    Passkeys[passkeys.spec.ts]
-  end
-
-  MagicLinkAuth --> ChromiumProj --> SecurityProj
-```
+For protected previews: enable Protection Bypass for Automation on both projects with the same secret, set `VERCEL_AUTOMATION_BYPASS_SECRET`, and allowlist OPTIONS `/` or `/auth` on the API project.
 
 ## Troubleshooting
 
-- **Port in use**: `scripts/run-e2e.mjs` kills processes on 3000/3001 before E2E. If ports remain in use, run `bash scripts/kill-test-servers.sh` manually.
-- **Tests fail with unreachable URLs**: Ensure both servers are running, or pass correct `--app` / `--api` URLs.
-- **Token extraction fails**: Verify `ALLOW_TEST=true` and email is `test@test.ai`.
-- **Vercel CORS errors**: Add `/` or `/auth` to OPTIONS Allowlist in Fastify Deployment Protection.
-- **Protection bypass not working**: Ensure `VERCEL_AUTOMATION_BYPASS_SECRET` matches the secret in both Vercel projects.
+Ports in use: `bash scripts/kill-test-servers.sh`. Token extraction fails: confirm `ALLOW_TEST=true` and `test@test.ai`.
 
 ## Related
 
-- [Frontend Testing](/docs/testing/frontend-testing) - E2E-only frontend testing strategy
-- [GitHub Actions](/docs/deployment/github-actions) - CI workflow
-- [Vercel Deployment](/docs/deployment/vercel) - Preview deployment and env vars
+- [Testing](/docs/testing)
+- [GitHub Actions](/docs/deployment/github-actions)
+- [Frontend Architecture](/docs/architecture/frontend)

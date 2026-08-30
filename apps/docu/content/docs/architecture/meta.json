@@ -7,10 +7,11 @@
     "authentication",
     "account-linking",
     "frontend",
-    "portability",
-    "esm-strategy",
+    "analytics",
     "error-handling",
     "logging",
-    "security"
+    "security",
+    "esm-strategy",
+    "portability"
   ]
 }

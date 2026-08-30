@@ -45,10 +45,10 @@ tools/      # shared tooling (eslint, typescript config, etc.)
 ```
 packages/
   core/        # generated client + types (runtime-agnostic)
-  react/       # TanStack Query hooks + React utilities (built on core)
+  react/       # handwritten TanStack Query hooks (built on core)
 apps/
-  fastify/     # Fastify server + TypeBox routes → generates OpenAPI
-  next/        # Next.js app consuming core/react
+  api/         # Fastify 5 + TypeBox routes → generates OpenAPI
+  web/         # Next.js 16 consuming core/react
 ```
 
 ### Dependency direction (strict)
@@ -68,8 +68,8 @@ flowchart TB
   end
 
   subgraph A[apps]
-    API["fastify<br/>Fastify + TypeBox"]
-    WEB["next<br/>Next.js"]
+    API["api<br/>Fastify 5 + TypeBox"]
+    WEB["web<br/>Next.js 16"]
   end
 
   K --> R

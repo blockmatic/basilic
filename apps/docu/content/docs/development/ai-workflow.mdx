@@ -1,76 +1,41 @@
 ---
 title: "AI Development Workflow"
-description: "Proven workflow for AI-assisted development using Plan Mode, iterative review, and incremental execution."
+description: "Cursor-first workflow: plan, review, execute incrementally. Claude Code is supported via the same rules and skills."
 ---
 
-## Philosophy
+Development is **Cursor-first**. [Claude Code](https://docs.anthropic.com/en/docs/claude-code) is supported through [`CLAUDE.md`](https://github.com/blockmatic/basilic/blob/main/CLAUDE.md): it follows the same `.cursor/rules` and `.cursor/skills`. Do not run a parallel process.
 
-AI excels at implementation but requires clear guidelines and critical oversight. When AI handles code generation, engineering work shifts to defining constraints, reviewing architectural decisions, catching conceptual errors, and maintaining quality standards. Real judgment and craftsmanship show up in the planning and review phases—not just the execution.
+Judgment lives in planning and review. Implementation is incremental and reviewed. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
 
-This project uses Cursor as the primary tool with Claude support (see CLAUDE.md). Engineers must choose the right tool for each task, follow a deliberate process, and critically review both plans and outcomes. This approach maximizes quality while maintaining velocity.
+Index this site and stack docs in Cursor once — [Cursor Setup](/docs/development/cursor-setup).
 
-Read more: [Engineering in the AI Era - The Responsibility Shift](https://gaboesquivel.com/blog/2026-02-engineering-ai-era)
+## Guidance hierarchy
 
-## Model Selection
+| Layer | Role |
+| --- | --- |
+| Rules | Global, opinionated, override everything |
+| Skills | Local expertise and patterns |
+| Model | Reasoning and synthesis |
+| Indexed docs | Advisory; never override rules or source |
 
-Choose the right model for each task:
+## Models (30 Aug 2026)
 
-| Model            | Primary Use                    | When to Use                                               | Strength                                     |
-| ---------------- | ------------------------------ | --------------------------------------------------------- | -------------------------------------------- |
-| **Opus**         | 🧠 Planning                    | Architecture, system design, complex decisions            | Deep reasoning & big-picture thinking        |
-| **Composer**     | 💻 Implementation              | Feature work, edits, understanding code context           | Fast, efficient, great for day-to-day coding |
-| **GPT**          | 🐛 Debugging                   | Investigating errors, fixing bugs, log analysis           | Strong at diagnosing and explaining issues   |
-| **GPT Codex**    | 📂 Long Tasks                  | Large features, multi-file work, extended coding sessions | Handles long, iterative coding flows well    |
-| **Sonnet / GPT** | 📝 Writing & General Questions | Docs, explanations, research, conceptual discussions      | Clear communication, structured answers      |
+| Model | Use |
+| --- | --- |
+| **Cursor Grok 4.6** | Default for plan and implement. Grok 4.5 is a cheaper/faster picker option. |
+| **GPT-5.6 Sol** | Long-horizon work, large diffs, hard debugging |
+| **Composer 2.5** | Fast multi-file execution after a reviewed plan |
+| **Claude Code** (Opus 5) | Secondary harness; same rules and skills |
 
-**AI Guidance Hierarchy:**
+In-app chat (Fastify `/ai/chat`) defaults to Claude Sonnet 4 — that is the product model, not this workflow. See [Self-Hosted LLM](/docs/deployment/self-hosted-llm).
 
-| Layer  | Purpose                                  |
-| ------ | ---------------------------------------- |
-| Rules  | Global, opinionated, override everything |
-| Skills | Local expertise, patterns, constraints   |
-| Model  | Reasoning and synthesis                  |
-| Docs   | Indexed documentation for planning       |
+## Workflow
 
-## Research & Discovery
+1. **Plan** — Start in plan mode (Grok 4.6, or Sol for large/ambiguous work). Break the task into steps and surface edge cases before coding.
+2. **Review** — Read the plan. Check scope, dependencies, and approach. Refine until you would implement it yourself.
+3. **Execute** — Follow the plan in small steps. Composer 2.5 is fine for mechanical multi-file edits; stay on Grok 4.6 or Sol when judgment is still required. Test between steps.
+4. **Commit** — Ship &lt;30-minute chunks. Easy to review, easy to revert.
 
-**Before Implementation:**
+CodeRabbit reviews PRs against project standards. Local quality gates are Biome, ESLint, and [pre-commit security](/docs/architecture/security).
 
-- **Perplexity** - Research APIs, libraries, technical concepts with sourced information
-- **ChatGPT** - Brainstorm approaches, explore patterns, understand trade-offs
-
-## The Workflow
-
-### 1. Plan Mode (Always Start Here)
-
-Use Claude Opus for planning, better reasoning produces better results. Break down complex tasks into clear steps and get a reviewed plan before coding. Planning identifies edge cases early and reduces iterations.
-
-### 2. Review and Iterate
-
-Read the plan carefully. Ask clarifying questions. Refine until satisfied. Don't rush to execution.
-
-**Key questions:** Are edge cases covered? Is scope appropriate? Are dependencies identified? Is the approach optimal?
-
-### 3. Execute Incrementally
-
-Use Composer for multi-file edits. Follow the plan step-by-step. Make small, incremental changes.
-
-**Execute one step at a time, test between steps, review before proceeding.**
-
-### 4. Commit Small Tasks
-
-Break work into &lt;30-minute chunks. Commit after each complete task. Test between commits. Keep changes easy to review and revert.
-
-**Benefits:** Clear progress tracking, simple rollbacks, focused code reviews.
-
-## Automated Reviews
-
-**CodeRabbit** provides automated code reviews on pull requests, checking adherence to project standards and identifying potential issues.
-
-## Reference Documentation
-
-MDX files can be used directly in prompts:
-
-```
-"Using the patterns from @api-architecture, create a new API endpoint..."
-```
+You can point agents at MDX pages: `Using the patterns from @api, add an endpoint…`

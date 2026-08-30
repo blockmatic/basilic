@@ -19,7 +19,7 @@ Build → Unit → E2E. Triggers on pull request when `apps/api/**` or shared pa
 
 ### Packages (`packages-test.yml`)
 
-Unit tests for shared packages (core, react, sentry, etc.). Triggers on pull request when `packages/**` or `tools/**` change. Excludes app tests (handled by api-e2e, web-e2e).
+Unit tests for shared packages (`core`, `react`, `error`, `utils`, …). Triggers on pull request when `packages/**` or `tools/**` change. Excludes app tests (handled by api-e2e, web-e2e).
 
 ### Docu (Vercel)
 
@@ -82,9 +82,10 @@ Local quality checks run before each commit:
 ```
 
 Pre-commit hooks check:
-1. **File blocking** - Prevents committing sensitive files (`.env`, `*.pem`, etc.)
-2. **Secret scanning** - Scans staged files with gitleaks
-3. **Formatting** - Runs Biome formatter on staged files
+1. **File blocking** — sensitive files (`.env`, `*.pem`, …)
+2. **Secret scanning** — gitleaks on staged files
+3. **OSV** — dependency CVEs
+4. **Formatting** — Biome on staged files
 
 ## Best Practices
 
@@ -118,6 +119,6 @@ All workflows are in `.github/workflows/`:
 
 ## Related Documentation
 
-- [Security](/docs/security) - Security scanning and secret detection
+- [Security](/docs/architecture/security) - Secret scanning and CVE checks
 - [Testing](/docs/testing) - Testing strategies and patterns
 - [Deployment Overview](/docs/deployment) - GitHub Flow and deployment platforms

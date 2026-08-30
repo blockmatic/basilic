@@ -7,9 +7,7 @@ Cursor rules/skills for this repo are already set up. Do the steps below once to
 
 ## Step 1: Add Documentation Sites
 
-Cursor can index external documentation sites (Fastify, Next.js, Viem, etc.) by crawling and embedding them as scoped AI reference, separate from your workspace code index and managed via the Cursor settings UI. Cursor re-crawls these sources periodically on its own schedule (not configurable), so the content can change as upstream docs evolve; treat the results as helpful, current guidance for planning, reasoning, and API suggestions, but not as behavioral constraints—repository rules and source code remain the final authority, and indexed docs may conflict with each other or repo conventions.
-
-Add these in Cursor Settings → **Indexing & Docs**:
+Cursor can index external docs (Fastify, Next.js, Viem, …) under Settings → **Indexing & Docs**. Indexed docs are advisory; repository rules and source win. Add:
 
 1. Open Cursor Settings (Cmd/Ctrl + ,)
 2. Go to **Indexing & Docs**

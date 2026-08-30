@@ -1,443 +1,60 @@
 ---
 title: "Security Baseline"
-description: "OSS-only security baseline to prevent committing secrets and scan for vulnerabilities."
+description: "Pre-commit and CI scanning for secrets and CVEs, plus DeepSec source-code review. OSS tools only."
 ---
 
-This repository implements a comprehensive security baseline to prevent committing secrets and to scan for vulnerabilities. All tools used are free and open source.
+Layers: local pre-commit, `security.yml` on every PR and push to main, DeepSec on trusted same-repo PRs (`deepsec.yml`), and Fastify request hardening. Install scanners with `pnpm run setup`. Manual install: [gitleaks](https://github.com/gitleaks/gitleaks#installation), [OSV Scanner](https://google.github.io/osv-scanner/installation/), [TruffleHog](https://github.com/trufflesecurity/trufflehog#installation).
 
-## Overview
+## Pre-commit
 
-The security baseline consists of:
+`simple-git-hooks` runs `hooks:pre-commit`: block secret file types → gitleaks on staged files → OSV on dependencies → Biome on staged files.
 
-1. **Pre-commit hooks** - Run locally before each commit
-2. **CI workflows** - Secrets and dependency CVEs on every pull request and push to main (`security.yml`)
-3. **Source-code review** - DeepSec reviews the PR diff on same-repo pull requests (`deepsec.yml`)
+Blocked paths include `.env` (templates like `.env.defaults.example`, `.env.schema`, `.env.test` are allowed), `*.pem` / `*.key` / `*.p12` / keystores, `id_rsa*`, certificate dumps, `*.keytab`.
 
-## Pre-commit Hooks
-
-Pre-commit hooks run automatically via `simple-git-hooks` when you attempt to commit. They perform:
-
-1. **File blocking** - Prevents committing sensitive file types (`.env`, `*.pem`, `*.key`, etc.)
-2. **Secret scanning** - Scans staged files for secrets using gitleaks
-3. **Vulnerability scanning** - Scans dependencies for known vulnerabilities using OSV Scanner
-
-### What Gets Blocked
-
-The following file patterns are blocked from being committed:
-
-- `.env` (but `.env.<qualifier>.example` templates such as `.env.defaults.example` / `.env.local.example`, `.env.schema`, `.env.development`, `.env.staging`, `.env.production`, `.env.test` are allowed)
-- `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`
-- `id_rsa*` (SSH private keys)
-- Certificate files: `*.crt`, `*.cer`, `*.der`, `*.p7b`, `*.p7c`, `*.p7m`, `*.p7s`
-- `*.keytab`
-
-### Secret Scanning
-
-If gitleaks is installed, staged files are scanned for:
-
-- Cryptocurrency private keys (Ethereum, Solana, Cosmos, etc.)
-- Mnemonic phrases and seed phrases
-- API keys and secrets
-- JWT secrets
-- Database passwords
-- AWS credentials
-
-## Required Tools
-
-Install all required security tools automatically with `pnpm run setup` (see [Getting Started](/docs/development)). For manual installation, see the instructions below.
-
-### gitleaks
-
-**macOS:**
-```bash
-brew install gitleaks
-```
-
-**Linux:**
-```bash
-ARCH=$(uname -m)
-if [ "$ARCH" = "x86_64" ]; then ARCH="x64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
-VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed 's/^v//')
-wget -O /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_${ARCH}.tar.gz
-tar -xzf /tmp/gitleaks.tar.gz -C /tmp
-sudo mv /tmp/gitleaks /usr/local/bin/
-```
-
-**Windows:**
-```bash
-# Using Chocolatey
-choco install gitleaks
-
-# Using Scoop
-scoop install gitleaks
-```
-
-**Manual installation:** [gitleaks installation guide](https://github.com/gitleaks/gitleaks#installation)
-
-### osv-scanner (CI only, optional locally)
-
-**macOS:**
-```bash
-brew install osv-scanner
-```
-
-**Linux:**
-```bash
-ARCH=$(uname -m)
-if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
-wget -O /tmp/osv-scanner https://github.com/google/osv-scanner/releases/latest/download/osv-scanner_linux_${ARCH}
-chmod +x /tmp/osv-scanner
-sudo mv /tmp/osv-scanner /usr/local/bin/
-```
-
-**Windows:**
-```bash
-# Using Chocolatey
-choco install osv-scanner
-
-# Using Scoop
-scoop install osv-scanner
-```
-
-**Manual installation:** [OSV Scanner installation guide](https://google.github.io/osv-scanner/installation/)
-
-### trufflehog (CI only, optional locally)
-
-**macOS:**
-```bash
-brew install trufflesecurity/trufflehog/trufflehog
-```
-
-**Linux:**
-```bash
-ARCH=$(uname -m)
-if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
-wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_linux_${ARCH}.tar.gz
-tar -xzf /tmp/trufflehog.tar.gz -C /tmp
-sudo mv /tmp/trufflehog /usr/local/bin/
-```
-
-**Windows:**
-```bash
-# Using Chocolatey
-choco install trufflehog
-
-# Using Scoop
-scoop install trufflehog
-```
-
-**Manual installation:** [TruffleHog installation guide](https://github.com/trufflesecurity/trufflehog#installation)
-
-## Manual Scanning
-
-You can run security scans manually:
+Gitleaks looks for crypto keys and mnemonics, API keys, JWTs, DB passwords, and cloud credentials.
 
 ```bash
-# Check for blocked secret file types
 pnpm security:block-files
-
-# Scan staged files for secrets
-pnpm security:secrets
-
-# Scan entire repository for secrets
-pnpm security:secrets:full
-
-# Scan dependencies for vulnerabilities (OSV)
+pnpm security:secrets          # staged
+pnpm security:secrets:full     # whole repo
 pnpm security:osv
-
-# Run pnpm audit
 pnpm security:audit
-
-# Run all security checks
-pnpm security:check
-
-# DeepSec: regex scan (no AI)
-pnpm security:deepsec:scan
-
-# DeepSec: AI review of the diff vs origin/main
-pnpm security:deepsec:process:diff
-
-# DeepSec: full-repo AI review (local only; needs model auth)
-pnpm security:deepsec:process
+pnpm security:check            # all of the above
+pnpm security:deepsec:scan     # regex only, no AI
+pnpm security:deepsec:process:diff   # AI review vs origin/main
+pnpm security:deepsec:process        # full-repo AI review (local)
 ```
 
-## CI Workflow
+## CI (`security.yml`)
 
-The `.github/workflows/security.yml` workflow runs on every pull request and push to main. It performs:
+Lockfile integrity (`--frozen-lockfile`), gitleaks, TruffleHog (filesystem + history), OSV on `pnpm-lock.yaml`, `pnpm audit`. DeepSec is a separate workflow. See [GitHub Actions](/docs/deployment/github-actions).
 
-1. **Lockfile integrity check** - Uses `--frozen-lockfile` to ensure dependencies match lockfile
-2. **Full repository secret scan** - Scans entire repo with gitleaks
-3. **TruffleHog scan** - Scans filesystem and git history
-4. **Dependency vulnerability scan** - Uses OSV Scanner on `pnpm-lock.yaml`
-5. **pnpm audit** - Checks for known vulnerabilities in dependencies
+## DeepSec
 
-All checks must pass for CI to succeed.
+[DeepSec](https://deepsec.sh) reviews application code. It does not replace gitleaks, TruffleHog, OSV, or `pnpm audit`. Workspace: `.deepsec/` at the repo root (not a pnpm workspace package). Commit `deepsec.config.ts`, `INFO.md`, and generated matchers. Scan output, `.env.local`, and `node_modules` stay gitignored. Not in pre-commit or `security.yml`.
 
-DeepSec is **not** in this workflow. Same-repo PRs run `deepsec.yml` separately (see below).
+**Agents:** CI and default local `process` use GPT-5.6 Sol on Codex (`--agent codex --model gpt-5.6-sol`). Alternate: Cursor Grok 4.6 via `pnpm security:deepsec:process:diff:grok`. Both go through Vercel AI Gateway. Claude is not used.
 
-## Source-code review (DeepSec)
+**Local:** `scan` is regex-only and free. `process` / `process:diff` need `AI_GATEWAY_API_KEY`. Full-repo `process` is an operator follow-up.
 
-[DeepSec](https://deepsec.sh) is agent-powered SAST. It does not replace Gitleaks, TruffleHog, OSV Scanner, or `pnpm audit`. Those tools own secrets and lockfile CVEs. DeepSec reviews application code.
+**CI:** `deepsec.yml` on same-repo PRs from OWNER, MEMBER, or COLLABORATOR. `analyze` uses the gateway key after that gate; the comment job never receives the secret. Without `AI_GATEWAY_API_KEY`, `analyze` is skipped. pnpm 11 `minimumReleaseAge` can fail the `.deepsec` install — exclude a known-safe version in `.deepsec/pnpm-workspace.yaml`, do not set age to `0`. Details: [GitHub Actions](/docs/deployment/github-actions).
 
-The workspace lives in `.deepsec/` at the repo root. It is not a pnpm workspace package. Commit `deepsec.config.ts`, `INFO.md`, and generated matchers. Scan output (`data/*/files/`, `data/*/runs/`), `.env.local`, and `node_modules` stay gitignored.
+## If a secret lands in git
 
-DeepSec is not in pre-commit and not in `security.yml`.
+1. Rotate it immediately. Editing the file is not enough.
+2. If not pushed: `git reset HEAD~1`, remove the secret, commit again.
+3. If pushed: history rewrite (`git-filter-repo` / BFG) and a coordinated force-push. False positives go in `.gitleaks.toml` — never real secrets.
 
-**Agents:** CI and default local `process` use GPT-5.6 Sol on the Codex harness (`--agent codex --model gpt-5.6-sol --thinking-level medium`). Cursor Grok 4.6 is the alternate: `pnpm security:deepsec:process:diff:grok` (`--agent pi --model xai/grok-4.6`). Both route through Vercel AI Gateway. Claude is not used.
+## API hardening
 
-**Local:** `pnpm security:deepsec:scan` is regex-only and free. `process` / `process:diff` need `AI_GATEWAY_API_KEY`. A full-repo `process` is an operator follow-up, not required for every commit.
+- Headers: nosniff, frame deny, CSP, HSTS in production (`apps/api/src/plugins/security.ts`).
+- CORS: `ALLOWED_ORIGINS`, not `*`. Config: `apps/api/src/plugins/cors.ts`.
+- Rate limit: `RATE_LIMIT_MAX` / `RATE_LIMIT_TIME_WINDOW` per client IP (`trustProxy`).
+- Validation: **TypeBox** on Fastify routes. Extra sanitization in `apps/api/src/lib/security.ts`.
+- API keys hashed SHA-256 at rest; timing-safe compare.
 
-**CI:** `.github/workflows/deepsec.yml` runs on same-repo pull requests from OWNER, MEMBER, or COLLABORATOR (forks and untrusted authors skip; no secrets). `analyze` gets `AI_GATEWAY_API_KEY` only after that trusted-author gate; GitHub also requires maintainer approval for first-time contributor workflow runs. The job checks out the PR for scan input, overlays `.deepsec` from the PR base SHA when present, runs Codex `process --files-from` on `git diff --name-only BASE_SHA...HEAD`, and fails on net-new findings. Codex uses GPT-5.6 Sol via Vercel AI Gateway (`https://ai-gateway.vercel.sh/v1`). A second job posts the comment; it never executes PR code and never receives the key. Add `AI_GATEWAY_API_KEY` (`vck_…`) in **Settings → Secrets and variables → Actions**. Without that secret, `analyze` is skipped.
+## Related
 
-## What to Do If Secrets Are Detected
-
-### 1. Rotate the Secret Immediately
-
-If a secret is detected in your commit:
-
-1. **Rotate the secret immediately** - Change the API key, private key, or password
-2. **Do not commit the fix** - The secret is already exposed in git history
-3. **Clean git history** - See below
-
-### 2. Clean Git History
-
-If a secret was committed:
-
-**Option A: If not yet pushed**
-```bash
-# Remove the secret from the commit
-git reset HEAD~1
-# Edit the file to remove the secret
-# Commit again
-```
-
-**Option B: If already pushed (requires force push)**
-```bash
-# Use git-filter-repo or BFG Repo-Cleaner to remove secrets from history
-# WARNING: This rewrites git history and requires force push
-# Only do this if you have permission and coordinate with your team
-```
-
-**Option C: Add to allowlist (only for false positives)**
-- If the detection is a false positive (e.g., test data), add it to `.gitleaks.toml` allowlist
-- Never add real secrets to the allowlist
-
-### 3. Prevent Future Incidents
-
-- Use `.env` files for secrets (never commit them)
-- Use `.env.<qualifier>.example` (e.g. `.env.defaults.example`, `.env.local.example`) or `.env.schema` for templates
-- Review staged files before committing: `git diff --cached`
-- Run `pnpm security:secrets` before committing
-
-## Adding Allowlist Entries
-
-If you have a legitimate false positive (e.g., test fixtures, example data), you can add it to `.gitleaks.toml`:
-
-### Allowlist a File Path
-
-```toml
-[allowlist]
-paths = [
-  '''test/fixtures/.*''',
-  '''examples/.*''',
-]
-```
-
-### Allowlist a Regex Pattern
-
-```toml
-[allowlist]
-regexes = [
-  '''test.*private.*key''',
-  '''example.*secret''',
-]
-```
-
-**Important:** Only add entries for obvious test/example data. Never allowlist real secrets.
-
-## Configuration Files
-
-- **`.gitleaks.toml`** - Gitleaks configuration with crypto-focused rules and allowlist
-- **`scripts/block-secret-files.mjs`** - Pre-commit script that blocks sensitive file types
-- **`scripts/ensure-tool.mjs`** - Checks tool availability and prints install instructions
-- **`.github/workflows/security.yml`** - CI workflow for secret and dependency checks
-- **`.github/workflows/deepsec.yml`** - PR diff source-code review (same-repo only)
-- **`.deepsec/`** - DeepSec workspace (`deepsec.config.ts`, `INFO.md`)
-
-## Troubleshooting
-
-### Pre-commit hook not running
-
-Ensure simple-git-hooks is installed:
-```bash
-pnpm install
-pnpm simple-git-hooks
-```
-
-### gitleaks not found
-
-The pre-commit hook will show install instructions if gitleaks is missing. Install it using the instructions above.
-
-### False positives
-
-If you get false positives:
-1. Verify it's actually a false positive (not a real secret)
-2. Add to `.gitleaks.toml` allowlist if appropriate
-3. Use specific patterns to avoid allowing real secrets
-
-### CI failing on secrets
-
-If CI detects secrets:
-1. Check the workflow logs to see what was detected
-2. Rotate the secret immediately
-3. Remove it from git history if already pushed
-4. Add to allowlist only if it's a false positive
-
-### CI failing on DeepSec install (`minimumReleaseAge`)
-
-`deepsec.yml` runs `pnpm install --frozen-lockfile` in `.deepsec`. pnpm 11 rejects lockfile entries younger than 24 hours. If the version is a known security patch, add the exact version to `minimumReleaseAgeExclude` in `.deepsec/pnpm-workspace.yaml` (for example `qs@6.16.0`). Do not pin back to a vulnerable release and do not set `minimumReleaseAge` to `0`.
-
-### CI failing on DeepSec credentials
-
-`deepsec process` needs model auth in CI (no local Codex login). Add `AI_GATEWAY_API_KEY` (`vck_…` from [Vercel AI Gateway](https://vercel.com/docs/ai-gateway)) to repository secrets. `analyze` receives it only after the trusted-author gate (OWNER, MEMBER, or COLLABORATOR on a same-repo PR). Without the secret, or for forks and untrusted authors, `analyze` is skipped. The workflow writes `.deepsec/.env.local` from the secret before running. The comment job never receives the key.
-
-## Best Practices
-
-1. **Never commit secrets** - Use `.env` files and environment variables
-2. **Use `.env.<qualifier>.example`** - Provide templates for required environment variables (see `apps/api/.env.defaults.example`, `apps/web/.env.local.example`)
-3. **Review before committing** - Check `git diff --cached` before committing
-4. **Rotate secrets regularly** - Even if not exposed, rotate secrets periodically
-5. **Use secret management** - Consider using tools like HashiCorp Vault, AWS Secrets Manager, etc. for production
-
-## API Security
-
-The API implements comprehensive application-layer security measures to protect against common attacks and vulnerabilities. DDoS protection is handled by Vercel/Cloudflare at the infrastructure layer.
-
-### Security Headers
-
-The API automatically sets security headers on all responses:
-
-- **X-Content-Type-Options: nosniff** - Prevents MIME type sniffing
-- **X-Frame-Options: DENY** - Prevents clickjacking attacks
-- **X-XSS-Protection: 1; mode=block** - Enables browser XSS protection
-- **Referrer-Policy: strict-origin-when-cross-origin** - Controls referrer information
-- **Permissions-Policy** - Restricts browser features (camera, microphone, geolocation)
-- **Content-Security-Policy** - Restricts resource loading to prevent XSS
-- **Strict-Transport-Security** - Enforces HTTPS in production (HSTS)
-
-Security headers are configured in `apps/api/src/plugins/security.ts` and can be disabled via the `SECURITY_HEADERS_ENABLED` environment variable.
-
-### CORS Configuration
-
-Cross-Origin Resource Sharing (CORS) allows all origins. Security is enforced via JWT authentication rather than origin restriction.
-
-- **Allowed Origins**: All (`*`)
-- **Allowed Methods**: GET, POST, PUT, DELETE, PATCH, OPTIONS
-- **Allowed Headers**: Content-Type, Authorization, X-Requested-With
-- **Credentials**: Disabled (JWT-only auth, no cookies required)
-
-CORS configuration is in `apps/api/src/plugins/cors.ts`.
-
-### Rate Limiting
-
-Rate limiting protects against abuse and brute force attacks:
-
-- **Default Limit**: 100 requests per 60 seconds per IP address
-- **Configurable**: Via `RATE_LIMIT_MAX` and `RATE_LIMIT_TIME_WINDOW` environment variables
-- **IP Detection**: Uses real client IP from `X-Forwarded-For` header (trust proxy enabled)
-- **Response Headers**: Includes rate limit information (`x-ratelimit-limit`, `x-ratelimit-remaining`, `x-ratelimit-reset`)
-- **Error Response**: Returns 429 status with retry information
-
-Rate limiting is configured in `apps/api/src/plugins/rate-limit.ts`.
-
-### Trust Proxy Configuration
-
-The API is configured to trust proxy headers from Vercel/Cloudflare:
-
-- **Trust Proxy**: Enabled by default (`TRUST_PROXY=true`)
-- **Real IP Detection**: Extracts client IP from `X-Forwarded-For` header
-- **Rate Limiting**: Uses real client IP for rate limiting
-- **Logging**: Logs real client IP addresses
-
-This is essential for proper IP-based rate limiting and security logging when deployed behind Vercel/Cloudflare.
-
-### Request Validation
-
-All API requests are validated using Zod schemas:
-
-- **Schema Validation**: Defined in route handlers using Fastify's schema option
-- **Type Safety**: End-to-end type safety from OpenAPI spec to runtime validation
-- **Input Sanitization**: Additional sanitization layer in `apps/api/src/lib/security.ts`
-- **Error Messages**: Sanitized in production to prevent information leakage
-
-### Security Event Logging
-
-Security events are automatically logged:
-
-- **Suspicious Activity Detection**: Detects common attack patterns (path traversal, XSS attempts, SQL injection, etc.)
-- **Rate Limit Exceeded**: Logs when rate limits are exceeded
-- **Authentication Failures**: Logs 401/403 errors
-- **Request Logging**: All requests logged in production with security context
-
-Security logging is implemented in `apps/api/src/plugins/security.ts` and `apps/api/src/lib/security.ts`.
-
-### Environment Variables
-
-Security-related environment variables:
-
-```bash
-# Rate Limiting
-RATE_LIMIT_MAX=100  # Maximum requests per time window
-RATE_LIMIT_TIME_WINDOW=60000  # Time window in milliseconds (default: 60 seconds)
-
-# Security Headers
-SECURITY_HEADERS_ENABLED=true  # Enable/disable security headers
-
-# Trust Proxy
-TRUST_PROXY=true  # Trust proxy headers (required for Vercel/Cloudflare)
-
-# Request Limits
-BODY_LIMIT=1048576  # Maximum request body size in bytes (default: 1MB)
-```
-
-### API Keys
-
-API keys are stored hashed (SHA-256) and never in plaintext. Use timing-safe comparison for validation. Rotate keys via revoke + create when compromised or for routine rotation.
-
-### API Security Best Practices
-
-1. **Always use HTTPS** - Enforced by HSTS header in production
-2. **Configure rate limits** - Adjust based on your API usage patterns
-3. **Monitor security logs** - Review security events regularly
-4. **Keep dependencies updated** - Run `pnpm security:audit` and `pnpm security:osv` regularly
-5. **Validate all inputs** - Use Zod schemas for all request validation
-6. **Sanitize error messages** - Don't expose internal details in production
-7. **Use environment variables** - Never hardcode secrets or configuration
-
-### Incident Response
-
-If a security incident is detected:
-
-1. **Review security logs** - Check `apps/api/src/plugins/security.ts` logs
-2. **Identify affected endpoints** - Review request patterns
-3. **Block malicious IPs** - Add to blocklist if needed (requires custom implementation)
-4. **Rotate secrets** - If credentials are compromised
-5. **Update rate limits** - Adjust if under attack
-6. **Notify team** - Escalate if necessary
-
-## Additional Resources
-
-- [gitleaks documentation](https://github.com/gitleaks/gitleaks)
-- [TruffleHog documentation](https://github.com/trufflesecurity/trufflehog)
-- [OSV Scanner documentation](https://google.github.io/osv-scanner/)
-- [DeepSec documentation](https://deepsec.sh)
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [GitHub Secret Scanning](https://docs.github.com/en/code-security/secret-scanning)
-- [Fastify Security Best Practices](https://www.fastify.io/docs/latest/Guides/Security/)
-- [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
-
-## Related Documentation
-
-- [Error Handling](/docs/architecture/error-handling) - Error handling with Sentry integration and PII scrubbing
-- [API Development](/docs/architecture/api) - Fastify security headers and CORS configuration
-- [Deployment](/docs/deployment/vercel) - Deployment security considerations
+- [GitHub Actions](/docs/deployment/github-actions)
+- [Error Handling](/docs/architecture/error-handling)
+- [API Architecture](/docs/architecture/api)

@@ -95,14 +95,7 @@ await client.auth.magiclink.request({
 
 React-only helpers built on top of `@repo/core`.
 
-**Exports** (public):
-- `ApiProvider`
-- `useReactApiConfig`
-- `useSession`
-- `useUser`
-- `useHealthCheck`
-- `useMagicLink`
-- `createReactApiConfig`
+Handwritten hooks on `@repo/core` (not generated). Public exports include `ApiProvider`, `createReactApiConfig`, `useReactApiConfig`, session/user, magic link, OAuth, passkeys, TOTP, API keys, profile, chat, and Web3 verify (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useLinkEmail`). See `packages/react/src/index.ts`.
 
 **Usage** (minimal):
 
