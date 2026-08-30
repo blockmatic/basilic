@@ -5,8 +5,8 @@ INFO.md is filled. Do not re-run the placeholder pass.
 ## Next (local, not this PR)
 
 ```bash
-pnpm deepsec scan
-pnpm deepsec process
+pnpm security:deepsec:scan
+pnpm security:deepsec:process
 ```
 
 `--project-id` is auto-resolved while there is only one project.

@@ -13,7 +13,9 @@ permissions:
 jobs:
   analyze:
     name: Analyze diff
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -21,9 +23,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Fetch PR base
-        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+      - name: Restore trusted DeepSec workspace
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch origin "$BASE_REF"
+          if git cat-file -e "$BASE_SHA:.deepsec/deepsec.config.ts"; then
+            git checkout "$BASE_SHA" -- .deepsec
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -75,12 +85,13 @@ jobs:
         env:
           AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           pnpm deepsec process \
             --agent codex \
             --model gpt-5.6-sol \
             --thinking-level medium \
-            --diff origin/${{ github.event.pull_request.base.ref }} \
+            --diff "origin/$BASE_REF" \
             --comment-out "${{ github.workspace }}/comment.md"
 
       - name: Upload findings comment

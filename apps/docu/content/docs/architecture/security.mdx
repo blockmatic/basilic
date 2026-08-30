@@ -187,9 +187,7 @@ DeepSec is not in pre-commit and not in `security.yml`.
 
 **Local:** `pnpm security:deepsec:scan` is regex-only and free. `process` / `process:diff` need `AI_GATEWAY_API_KEY`. A full-repo `process` is an operator follow-up, not required for every commit.
 
-**CI:** `.github/workflows/deepsec.yml` runs on same-repo pull requests only (forks skip; no secrets). The `analyze` job installs `.deepsec` only, runs Sol GPT `process --diff` against the PR base, and fails on net-new findings. A second job posts the comment; it never executes PR code. Add the `AI_GATEWAY_API_KEY` repository secret (Vercel AI Gateway key, `vck_…`) in **Settings → Secrets and variables → Actions**. `OPENAI_API_KEY` works as a fallback for Codex direct auth. Without either secret, the workflow fails before processing.
-
-The `secret-env-var` matcher is excluded so DeepSec does not duplicate Gitleaks/TruffleHog.
+**CI:** `.github/workflows/deepsec.yml` runs on same-repo pull requests from OWNER, MEMBER, or COLLABORATOR (forks and untrusted authors skip; no secrets). The `analyze` job checks out the PR for scan input, overlays `.deepsec` from the PR base SHA when present, runs Sol GPT `process --diff` against the quoted PR base ref, and fails on net-new findings. A second job posts the comment; it never executes PR code. Add the `AI_GATEWAY_API_KEY` repository secret (Vercel AI Gateway key, `vck_…`) in **Settings → Secrets and variables → Actions**. `OPENAI_API_KEY` works as a fallback for Codex direct auth. Without either secret, the workflow fails before processing.
 
 ## What to Do If Secrets Are Detected
 

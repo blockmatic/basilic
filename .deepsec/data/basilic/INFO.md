@@ -28,4 +28,3 @@ Account takeover via magic-link, OAuth, or wallet-link/verify is the highest imp
 - `apps/api/src/routes/test/*` — authenticated test helpers.
 - `.env.*.example`, `.env.schema`, and `.gitleaks.toml` allowlist entries — templates and fixtures, not live secrets.
 - Generated OpenAPI clients (`packages/core`) and Playwright auth state — do not treat as app ingress.
-- Hardcoded-secret-shaped strings already owned by Gitleaks/TruffleHog; `secret-env-var` is excluded.

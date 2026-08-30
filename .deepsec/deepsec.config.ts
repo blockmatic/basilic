@@ -6,9 +6,6 @@ export default defineConfig({
   defaultAgent: "codex",
   defaultModel: "gpt-5.6-sol",
   defaultThinkingLevel: "medium",
-  matchers: {
-    exclude: ["secret-env-var"],
-  },
   projects: [
     {
       id: "basilic",
