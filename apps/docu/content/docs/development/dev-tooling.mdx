@@ -61,7 +61,7 @@ flowchart LR
 
 ### Workflow
 
-See the root README in the repository for lint commands.
+`pnpm lint` runs Biome then ESLint. See the root README for `lint:biome`, `lint:eslint`, and `lint:fix`.
 
 ### Pre-commit & CI/CD
 
@@ -115,7 +115,19 @@ ESLint configured to disable checks Biome handles:
 
 ## Turborepo Task Orchestration
 
-**Turborepo** orchestrates builds, tests, and other tasks across the monorepo:
+**Turborepo** orchestrates builds, tests, and codegen across the monorepo. `turbo.json` is not only parallel scripts — it encodes a multi-hop dependency graph that a zero-config runner cannot infer. See [ADR 001](/docs/adrs/001-monorepo-vs-standalone).
+
+### Codegen Graph
+
+```mermaid
+flowchart LR
+  utilsBuild["utils build"] --> openapi["api generate:openapi"]
+  errorBuild["error build"] --> openapi
+  openapi --> coreGen["core generate"]
+  coreGen --> cliGen["cli generate"]
+```
+
+`@repo/utils#build` and `@repo/error#build` must finish before `@repo/api#generate:openapi`. That spec then drives `@repo/core#generate` (typed SDK) and `@repo/cli#generate`. Four apps (API, web, mobile, docs) also have different env footprints listed per task.
 
 ### Task Configuration
 
@@ -150,6 +162,7 @@ Tasks are configured in `turbo.json` with:
 3. Auto-fix linting (`pnpm lint:fix`)
 4. Build all packages (`pnpm build`)
 5. Test all packages (`turbo run test`)
+6. E2E tests (`pnpm test:e2e`) — Fastify API then Next.js web
 
 ### Running Individual Apps
 
@@ -167,3 +180,11 @@ pnpm --filter @repo/mobile start
 ```
 
 For local vs remote development (ports, tunneling, physical devices), see [Dev Environments](/docs/development/dev-environments).
+
+## Simplification Boundaries
+
+Keep **pnpm + Turborepo + Biome/ESLint**. That stack reflects real complexity: a multi-hop OpenAPI → SDK → CLI pipeline, four apps with different env footprints, and mobile. Nothing zero-config infers the `turbo.json` graph as cleanly.
+
+Do not swap Turbo for Nx, Moon, or shell-script ordering. Do not collapse Biome + ESLint into one tool while ESLint still owns type-aware and framework correctness rules. See [ADR 001](/docs/adrs/001-monorepo-vs-standalone) and [ADR 006](/docs/adrs/006-linters).
+
+If config surface area needs cutting later, look at `scripts/` (QA, E2E, and security wrappers around Gitleaks/OSV-Scanner), not the core stack. Pre-commit already uses `simple-git-hooks`.

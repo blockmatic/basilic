@@ -72,9 +72,31 @@ Shared components, utilities, and standards will live under `packages/`, while e
 - Faster CI/CD via Turborepo caching
 - Simplified dependency management and easier developer onboarding
 
+## Why Turborepo
+
+Turborepo is not only a parallel script runner. `turbo.json` encodes a multi-hop codegen graph that a zero-config tool cannot infer:
+
+```
+@repo/utils#build + @repo/error#build
+  → @repo/api#generate:openapi
+  → @repo/core#generate
+  → @repo/cli#generate
+```
+
+Four apps (API, web, mobile, docs) have different env footprints. Swapping Turbo would move that ordering into custom scripts, which is more code to maintain than a declarative `turbo.json`.
+
+**Rejected alternatives:**
+
+- **Nx** — faster at 50+ packages, but adds `project.json` per package and a plugin ecosystem. Wrong direction for this repo size.
+- **Moon** — built for polyglot repos (Node + Rust + Go). This repo is all TypeScript.
+- **Hand-written shell order** — more code to maintain than the existing task graph.
+
+See [Development Tooling](/docs/development/dev-tooling) for the task graph and `pnpm` commands.
+
 ## Related Documentation
 
 - [Monorepo Structure](/docs/architecture/monorepo) - Detailed Turborepo organization and package architecture
-- [Package Conventions](/docs/architecture/package-conventions) - Package organization and dependency rules
+- [Package Conventions](/docs/development/package-conventions) - Package organization and dependency rules
+- [Development Tooling](/docs/development/dev-tooling) - Turbo task graph and lint pipeline
 - [Architecture Overview](/docs/architecture) - Technical stack and design decisions
 

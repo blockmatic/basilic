@@ -23,6 +23,8 @@ We chose a monorepo over standalone repositories for several key benefits:
 - ✅ **Simplified dependencies** - Automatic synchronization across workspace packages
 - ✅ **Better DX** - Single repository, consistent developer experience
 
+Turborepo owns the OpenAPI → SDK → CLI task graph (`turbo.json` `dependsOn`). See [ADR 001](/docs/adrs/001-monorepo-vs-standalone) and [Development Tooling](/docs/development/dev-tooling).
+
 ## Package Dependency Graph
 
 ```mermaid
