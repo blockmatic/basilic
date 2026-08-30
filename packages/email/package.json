@@ -25,9 +25,9 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "format": "biome format --write .",
-    "checktypes": "tsgo --noEmit",
+    "checktypes": "tsc --noEmit",
     "dev": "email dev -p 3003",
-    "build": "tsgo",
+    "build": "tsc",
     "build:preview": "NEXT_TELEMETRY_DISABLED=1 email build",
     "start": "email start"
   },
@@ -46,9 +46,9 @@
     "@react-email/preview-server": "5.2.10",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^26.4.0",
+    "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
-    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "cross-env": "^10.1.0",
     "eslint": "^10.9.1",
     "react": "^19.2.8"

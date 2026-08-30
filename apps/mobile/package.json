@@ -3,6 +3,9 @@
   "type": "module",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "engines": {
+    "node": "24.20.0"
+  },
   "scripts": {
     "start": "expo start",
     "start:localhost": "expo start --localhost",
@@ -11,7 +14,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "checktypes": "tsgo --noEmit",
+    "checktypes": "tsc --noEmit",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "lint:biome": "biome check .",
     "lint:biome:fix": "biome check . --write",
@@ -56,13 +59,14 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.13.3",
     "@types/react": "~19.2.18",
-    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "babel-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
     "eslint": "^10.9.1",
     "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",
-    "typescript": "~7.0.2"
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "private": true
 }

@@ -25,10 +25,11 @@ export default function AppTabs() {
   )
 }
 
-export function TabButton({ children, isFocused, style, ...props }: TabTriggerSlotProps) {
+export function TabButton({ children, isFocused, style, ref, ...props }: TabTriggerSlotProps) {
   return (
     <Pressable
       {...props}
+      ref={ref as never}
       style={state => [
         typeof style === 'function' ? style(state) : style,
         state.pressed && styles.pressed,

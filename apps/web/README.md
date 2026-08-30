@@ -26,8 +26,8 @@ See the [monorepo documentation](@apps/docu/content/docs/architecture/monorepo.m
 
 ### Prerequisites
 
-- **Node.js** >= 22
-- **pnpm** 10.28.0
+- **Node.js** 24.20.0 (LTS Krypton)
+- **pnpm** 11.24.0
 
 ### Installation
 

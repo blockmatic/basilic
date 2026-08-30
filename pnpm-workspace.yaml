@@ -22,6 +22,7 @@ allowBuilds:
   utf-8-validate: true
 
 overrides:
+  '@types/node': 24.13.3
   axios: 1.18.0
   esbuild: 0.25.10
   glob: 10.5.0

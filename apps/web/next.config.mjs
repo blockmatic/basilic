@@ -56,6 +56,9 @@ function getApiUrl() {
 const apiUrl = process.env.VERCEL ? getApiUrl() : undefined
 
 const nextConfig = {
+  // Next 16.3 defaults to the TypeScript CLI (`typescript/bin/tsc`). The dual-package
+  // alias (`typescript` → @typescript/typescript6) only ships `tsc6` + the compiler API.
+  experimental: { useTypeScriptCli: false },
   ...(apiUrl !== undefined && {
     env: { NEXT_PUBLIC_API_URL: apiUrl },
   }),

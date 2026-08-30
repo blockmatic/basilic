@@ -15,7 +15,7 @@
     "@next/eslint-plugin-next": "^16.3.3",
     "@typescript-eslint/eslint-plugin": "^8.68.0",
     "@typescript-eslint/parser": "^8.68.0",
-    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "eslint": "^10.9.1",
     "eslint-plugin-check-file": "^3.3.2",
     "eslint-plugin-import-x": "^4.16.2",

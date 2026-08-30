@@ -5,14 +5,17 @@
   },
   "build": {
     "preview": {
+      "node": "24.20.0",
       "distribution": "internal",
       "channel": "preview"
     },
     "development": {
+      "node": "24.20.0",
       "developmentClient": true,
       "distribution": "internal"
     },
     "e2e-test": {
+      "node": "24.20.0",
       "withoutCredentials": true,
       "ios": { "simulator": true },
       "android": { "buildType": "apk" }
