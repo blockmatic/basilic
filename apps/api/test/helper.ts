@@ -38,4 +38,4 @@ async function build(t: TestContext) {
   return app
 }
 
-export { config, build }
+export { build, config }

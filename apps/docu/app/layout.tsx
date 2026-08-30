@@ -17,7 +17,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <RootProvider theme={{ defaultTheme: 'dark' }} search={{ options: { type: 'fetch' } }}>
+        <RootProvider theme={{ defaultTheme: 'dark' }} search={{ options: { api: '/api/search' } }}>
           {children}
         </RootProvider>
       </body>

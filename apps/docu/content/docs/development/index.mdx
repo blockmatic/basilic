@@ -7,14 +7,16 @@ description: "Get up and running with this project in under 15 minutes. Perfect 
 
 ### Install Node.js
 
-Install and set Node.js 22 as default using nvm:
+Install Node.js 24 (LTS Krypton) with nvm. The repo pins this in `.nvmrc` and `.node-version`:
 
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
-nvm install 22 && nvm alias default 22
+nvm install lts/krypton
+nvm alias default lts/krypton
+nvm use
 ```
 
 ### Install pnpm
@@ -23,13 +25,13 @@ If you don't have pnpm installed, install it using one of the following methods:
 
 **Using npm:**
 ```bash
-npm install -g pnpm@10.28.0
+npm install -g pnpm@11.24.0
 ```
 
 **Using corepack (recommended):**
 ```bash
 corepack enable
-corepack prepare pnpm@10.28.0 --activate
+corepack prepare pnpm@11.24.0 --activate
 ```
 
 **Using standalone script:**

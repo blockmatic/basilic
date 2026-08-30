@@ -72,7 +72,7 @@ CI builds Android preview via EAS. **EXPO_TOKEN** required in GitHub Secrets. Re
 | `start` | `expo start` | Local dev, default LAN |
 | `start:localhost` | `expo start --localhost` | Remote + port forwarding |
 | `start:tunnel` | `expo start --tunnel` | Remote without forwarding, physical device |
-| `checktypes` | `tsgo --noEmit` | Type-check |
+| `checktypes` | `tsc --noEmit` | Type-check |
 | `lint` | Biome + ESLint | Lint |
 | `lint:fix` | — | Auto-fix lint |
 | `test:e2e` | `maestro test .maestro/flows/home.yml` | Maestro E2E (app on emulator/simulator) |

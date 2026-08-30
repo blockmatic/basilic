@@ -39,14 +39,14 @@
     }
   },
   "scripts": {
-    "build": "tsup",
-    "checktypes": "tsgo --noEmit",
+    "build": "tsup && tsc --declaration --emitDeclarationOnly",
+    "checktypes": "tsc --noEmit",
     "dev": "tsup --watch",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "test": "pnpm test:unit",
     "test:unit": "vitest run",
-    "test:types": "tsgo --noEmit src/__tests__/types.test-d.ts",
+    "test:types": "tsc --noEmit src/__tests__/types.test-d.ts",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs"
   },
@@ -75,15 +75,15 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@sentry/browser": "^10.38.0",
-    "@sentry/nextjs": "^10.38.0",
-    "@sentry/node": "^10.38.0",
-    "@types/node": "^25.2.3",
-    "@types/react": "^19.2.14",
-    "@typescript/native-preview": "7.0.0-dev.20260213.1",
-    "eslint": "^9.0.0",
-    "react": "^19.2.4",
+    "@sentry/browser": "^10.72.0",
+    "@sentry/nextjs": "^10.72.0",
+    "@sentry/node": "^10.72.0",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "eslint": "^10.9.1",
+    "react": "^19.2.8",
     "tsup": "^8.5.1",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.11"
   }
 }

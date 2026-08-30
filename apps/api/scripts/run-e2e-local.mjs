@@ -49,7 +49,6 @@ function waitForUrl(url, timeoutMs = 60_000) {
 }
 
 async function main() {
-  // eslint-disable-next-line turbo/no-undeclared-env-vars -- set by root test:e2e or user
   if (!process.env.SKIP_KILL_PORTS)
     try {
       spawnSync('bash', [join(repoRoot, 'scripts/kill-test-servers.sh')], {
@@ -61,13 +60,8 @@ async function main() {
     }
 
   const loaded = loadEnvTest()
-  const jwtSecret = loaded.JWT_SECRET ?? process.env.JWT_SECRET
-  if (!jwtSecret) {
-    process.stderr.write(
-      'E2E local: JWT_SECRET must be set in .env.test or process.env. Refusing to run without it.\n',
-    )
-    process.exit(1)
-  }
+  const jwtSecret =
+    loaded.JWT_SECRET ?? process.env.JWT_SECRET ?? 'e2e-jwt-secret-min-32-chars-for-tests'
   const anthropicApiKey = loaded.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY
   if (!anthropicApiKey) {
     process.stderr.write(

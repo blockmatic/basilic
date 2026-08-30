@@ -53,7 +53,7 @@ export function TotpCard() {
   ])
 
   async function handleVerify() {
-    if (!code || code.length !== 6) return
+    if (code?.length !== 6) return
     try {
       await verifyMutation.mutateAsync({ code })
       toast.success('Authenticator enabled')

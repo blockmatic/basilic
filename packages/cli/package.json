@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "checktypes": "tsgo --noEmit",
+    "checktypes": "tsc --noEmit",
     "generate": "node --import tsx scripts/generate-cli.mjs",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
@@ -25,12 +25,14 @@
   },
   "dependencies": {
     "@repo/core": "workspace:*",
-    "commander": "^13.1.0"
+    "commander": "^15.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.13.3",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "tsup": "^8.5.1",
-    "tsx": "^4.21.0"
+    "tsx": "^4.23.12"
   }
 }

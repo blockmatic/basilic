@@ -11,7 +11,7 @@ Portability keeps options open as requirements change: you can pick the right pr
 
 Technology choices for portability: 
 
-- **Runtime (Node.js LTS)**: Runs on Vercel, GCP, AWS, or on-prem with no platform-specific code.
+- **Runtime (Node.js 24.x, LTS Krypton)**: Runs on Vercel, GCP, AWS, or on-prem with no platform-specific code.
 - **API (Fastify)**: Standard HTTP service that can be deployed as a serverless function, container, or VM.
 - **Web (Next.js)**: Runs on Vercel or self-hosted Node.js; avoid vendor-only features if you need easy migration.
 - **Database (PostgreSQL + Drizzle)**: Standard Postgres and plain SQL; migration is typically switching `DATABASE_URL`.

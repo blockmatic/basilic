@@ -5,7 +5,8 @@
     "rootDir": "src",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["node"]
   },
   "include": ["src/**/*", "../../tools/typescript/reset.d.ts"],
   "exclude": ["node_modules", "dist"]

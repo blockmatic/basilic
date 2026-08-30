@@ -31,7 +31,7 @@ export function usePasskeyAuth() {
           optionsJSON: options as Parameters<typeof startAuthentication>[0]['optionsJSON'],
         })
       } catch (err) {
-        throw new Error(err instanceof Error ? err.message : 'Sign-in cancelled')
+        throw new Error(err instanceof Error ? err.message : 'Sign-in cancelled', { cause: err })
       }
 
       const body: AuthPasskeyVerifyData['body'] = {

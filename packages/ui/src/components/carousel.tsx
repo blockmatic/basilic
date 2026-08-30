@@ -90,12 +90,15 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
+    // Sync initial Embla slide state; subscribe for later select/reInit events
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- embla does not emit select on mount
     onSelect(api)
     api.on('reInit', onSelect)
     api.on('select', onSelect)
 
     return () => {
-      api?.off('select', onSelect)
+      api.off('reInit', onSelect)
+      api.off('select', onSelect)
     }
   }, [api, onSelect])
 
@@ -217,4 +220,4 @@ function CarouselNext({
   )
 }
 
-export { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext }
+export { Carousel, type CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious }

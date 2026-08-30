@@ -25,32 +25,32 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "format": "biome format --write .",
-    "checktypes": "tsgo --noEmit",
+    "checktypes": "tsc --noEmit",
     "dev": "email dev -p 3003",
-    "build": "tsgo",
+    "build": "tsc",
     "build:preview": "NEXT_TELEMETRY_DISABLED=1 email build",
     "start": "email start"
   },
   "dependencies": {
-    "@react-email/components": "1.0.7",
-    "@react-email/render": "2.0.4",
-    "@react-email/tailwind": "2.0.4",
+    "@react-email/components": "1.0.12",
+    "@react-email/render": "2.1.0",
+    "@react-email/tailwind": "2.0.7",
     "@repo/ui": "workspace:*",
-    "date-fns": "^4.1.0",
-    "react-email": "5.2.8"
+    "date-fns": "^4.4.0",
+    "react-email": "6.9.3"
   },
   "peerDependencies": {
     "react": "^19.0.0"
   },
   "devDependencies": {
-    "@react-email/preview-server": "5.2.8",
+    "@react-email/preview-server": "5.2.10",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^25.2.3",
-    "@types/react": "^19.2.14",
-    "@typescript/native-preview": "7.0.0-dev.20260213.1",
-    "cross-env": "^7.0.3",
-    "eslint": "^9.0.0",
-    "react": "^19.2.4"
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.9.1",
+    "react": "^19.2.8"
   }
 }

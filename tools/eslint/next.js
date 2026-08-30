@@ -1,7 +1,7 @@
 import js from '@eslint/js'
 import pluginNext from '@next/eslint-plugin-next'
 import pluginCheckFile from 'eslint-plugin-check-file'
-import pluginImport from 'eslint-plugin-import'
+import pluginImport from 'eslint-plugin-import-x'
 import pluginReact from 'eslint-plugin-react'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
@@ -33,12 +33,18 @@ try {
  *
  * @type {import("eslint").Linter.Config}
  * */
+const reactFiles = ['**/*.{jsx,tsx}']
+
 export const nextJsConfig = [
   ...baseConfig,
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    files: reactFiles,
     ...pluginReact.configs.flat.recommended,
+  },
+  {
+    files: reactFiles,
     languageOptions: {
       ...pluginReact.configs.flat.recommended.languageOptions,
       globals: {
@@ -57,12 +63,13 @@ export const nextJsConfig = [
   },
   {
     plugins: {
+      react: pluginReact,
       'react-hooks': pluginReactHooks,
       ...(pluginReactServer && { 'react-server-components': pluginReactServer }),
       'check-file': pluginCheckFile,
       import: pluginImport,
     },
-    settings: { react: { version: 'detect' } },
+    settings: { react: { version: '19.2' } },
     rules: {
       ...pluginReactHooks.configs.recommended.rules,
       // Disable React Compiler rules if not using React Compiler

@@ -1,6 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalPassThroughEnv": ["QA_SKIP_TESTS", "SKIP_KILL_PORTS"],
   "tasks": {
     "generate": {
       "dependsOn": [],

@@ -1,6 +1,6 @@
 ---
 title: "ESM & TypeScript Strategy"
-description: "ESM-first module architecture with TypeScript v5.9.3, dual-mode exports, subpath exports, ts-reset, and tsgo (TypeScript Go compiler) for fast builds and typechecks."
+description: "ESM-first module architecture with TypeScript 7, dual-mode exports, subpath exports, ts-reset, and the native Go compiler for fast builds and typechecks."
 ---
 
 ## Overview
@@ -13,7 +13,7 @@ Key ideas:
 - **Source in monorepo, dist for publishing**: workspace development imports TypeScript source; publishing switches to `dist/`
 - **Subpath exports**: consumers import from explicit subpaths (no root barrels)
 - **Runtime-aware configs**: Next.js and Node/Fastify have different constraints
-- **Fast compilation/typecheck**: we use **tsgo** (TypeScript Go compiler) for builds and `--noEmit` typechecks
+- **Fast compilation/typecheck**: TypeScript 7 (`tsc`) is the native Go compiler; we use it for builds and `--noEmit` typechecks
 
 ## ESM-First Architecture
 
@@ -159,7 +159,7 @@ export default {
 
 ### Node.js/Fastify apps
 
-Node.js apps use native ESM and typically run TypeScript in development via `tsx` (Node ESM loader), while builds/typechecks use **tsgo**.
+Node.js apps use native ESM and typically run TypeScript in development via `tsx` (Node ESM loader), while builds/typechecks use TypeScript 7 (`tsc`).
 
 **Development:**
 ```json
@@ -170,21 +170,21 @@ Node.js apps use native ESM and typically run TypeScript in development via `tsx
 }
 ```
 
-**Build / watch / typecheck (tsgo):**
+**Build / watch / typecheck (TypeScript 7):**
 
 ```json
 {
   "scripts": {
-    "build:ts": "tsgo",
-    "watch:ts": "tsgo -w",
-    "checktypes": "tsgo --noEmit"
+    "build:ts": "tsc",
+    "watch:ts": "tsc -w",
+    "checktypes": "tsc --noEmit"
   }
 }
 ```
 
-**What is tsgo?**
+**What is TypeScript 7?**
 
-`tsgo` is the **TypeScript Go compiler** (preview tool as of 2025). We use it because it’s fast and works well as the default tool for monorepo **compilation** and `--noEmit` **typechecks**. Known limitations: incomplete declaration (`.d.ts`) emit, gaps with some downlevel emit targets, watch-mode caveats (`watch:ts`), and incompatibility with the legacy TypeScript compiler API. The scripts `build:ts`, `watch:ts`, and `checktypes` are affected. Contributors should avoid relying on unsupported emit modes or legacy-API tooling integrations until these gaps are resolved.
+TypeScript 7 is the native Go port of the compiler. Install it as `"@typescript/native": "npm:typescript@^7.0.2"` and run `tsc` — the same command as prior versions, now 8–12× faster. TypeScript 7.0 does not ship a programmatic API (planned for 7.1), so tools that import `typescript` (typescript-eslint, Next.js webpack path resolution) keep TypeScript 6 via `"typescript": "npm:@typescript/typescript6@^6.0.2"`. Next.js 16.3 defaults to the TypeScript CLI (`typescript/bin/tsc`), which that alias does not provide — set `experimental.useTypeScriptCli: false` so Next uses the TypeScript 6 API instead.
 
 **TypeScript config (Node ESM):**
 ```json
@@ -198,7 +198,7 @@ Node.js apps use native ESM and typically run TypeScript in development via `tsx
 
 **Rules:**
 - ✅ Use `tsx` (or equivalent) for dev execution when you need to run TS directly
-- ✅ Use `tsgo` for builds and `--noEmit` typechecks (default across apps/packages)
+- ✅ Use TypeScript 7 `tsc` for builds and `--noEmit` typechecks (default across apps/packages)
 - ✅ Configure `moduleResolution: "NodeNext"` for proper ESM support
 - ✅ Import workspace packages normally – dev resolves to `src/` (tsx); built output resolves to `dist/` (Pattern B packages include `node`/`default` conditions for serverless)
 
@@ -218,7 +218,7 @@ Extensionless imports (`import "./utils/delay"`) work only when using `moduleRes
 
 ## TypeScript Strategy
 
-The monorepo uses **TypeScript v5.9.3** with strict mode enabled and enhanced type safety via `@total-typescript/ts-reset`.
+The monorepo uses **TypeScript 7** (`tsc`, native Go compiler) with strict mode enabled and enhanced type safety via `@total-typescript/ts-reset`. ESLint keeps TypeScript 6 via `@typescript/typescript6` until 7.1 ships a stable API.
 
 ### Shared TypeScript Configuration
 
@@ -228,6 +228,7 @@ Packages extend shared TypeScript configs (strict defaults + runtime-specific ov
 - Strict mode enabled
 - ES2022 target
 - ESNext modules
+- `types: ["*"]` (TypeScript 7 defaults `types` to `[]`; this restores automatic `@types/*` inclusion)
 - Bundler module resolution (for Next.js/bundler environments)
 - `noUncheckedIndexedAccess` enabled (safer array/object access)
 - `ts-reset` integration for enhanced type safety

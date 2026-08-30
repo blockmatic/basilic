@@ -10,7 +10,7 @@ export default defineConfig({
     react: 'src/react/index.ts',
   },
   format: ['esm'],
-  dts: true,
+  dts: false,
   sourcemap: true,
   clean: true,
   outDir: 'dist',

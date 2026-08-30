@@ -29,7 +29,7 @@ export async function getAuthStatus(): Promise<{
   if (!token) return { authenticated: false, userId: null, sessionId: null }
 
   const decoded = await verifyJwtToken({ token, secret: env.JWT_SECRET })
-  if (!decoded || decoded.typ !== 'access' || !decoded.sub || !decoded.sid)
+  if (decoded?.typ !== 'access' || !decoded.sub || !decoded.sid)
     return { authenticated: false, userId: null, sessionId: null }
 
   if (isTokenExpired({ token })) return { authenticated: false, userId: null, sessionId: null }

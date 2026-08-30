@@ -89,11 +89,10 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       const db = await getDb()
 
       // Find or create user
-      let [user] = await db.select().from(users).where(eq(users.email, email))
-      if (!user) {
+      const [existingUser] = await db.select().from(users).where(eq(users.email, email))
+      if (!existingUser) {
         const created = await findOrCreateUserForMagicLink(db, email)
         if (!created) throw new Error('Failed to create user')
-        user = created
       }
 
       // Generate 6-digit login code (in email body and link for one-click; manual flow uses email+token)

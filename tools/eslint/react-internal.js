@@ -1,6 +1,6 @@
 import js from '@eslint/js'
 import pluginCheckFile from 'eslint-plugin-check-file'
-import pluginImport from 'eslint-plugin-import'
+import pluginImport from 'eslint-plugin-import-x'
 import pluginReact from 'eslint-plugin-react'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
@@ -19,7 +19,8 @@ import { config as baseConfig } from './base.js'
  * ESLint focuses on correctness: TypeScript, React, and architecture rules.
  *
  * @type {import("eslint").Linter.Config} */
-// Restrict React plugin to JSX/TSX - eslint-plugin-react 7.x uses context.getFilename() removed in ESLint 10
+// Restrict React plugin to JSX/TSX and pin the React version — eslint-plugin-react 7.x
+// still calls context.getFilename() (removed in ESLint 10) when version is "detect"
 const reactFiles = ['**/*.{jsx,tsx}']
 const tsxFiles = ['**/*.{ts,tsx}']
 
@@ -44,9 +45,10 @@ export const config = [
   {
     files: reactFiles,
     plugins: {
+      react: pluginReact,
       'react-hooks': pluginReactHooks,
     },
-    settings: { react: { version: 'detect' } },
+    settings: { react: { version: '19.2' } },
     rules: {
       ...pluginReactHooks.configs.recommended.rules,
       'react-hooks/compiler': 'off',

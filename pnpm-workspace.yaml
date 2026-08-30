@@ -4,14 +4,68 @@ packages:
   - tools/*
 
 nodeLinker: hoisted
+enablePrePostScripts: true
+engineStrict: true
+
+allowBuilds:
+  '@sentry/cli': true
+  '@stellar/stellar-sdk': true
+  blake-hash: true
+  bufferutil: true
+  core-js: false
+  esbuild: true
+  protobufjs: true
+  sharp: true
+  simple-git-hooks: true
+  tiny-secp256k1: true
+  unrs-resolver: true
+  usb: true
+  utf-8-validate: true
 
 overrides:
-  axios: 1.13.5
+  '@types/node': 24.13.3
+  axios: 1.18.0
   esbuild: 0.25.10
   glob: 10.5.0
-  lodash: 4.17.23
-  lodash-es: 4.17.23
+  lodash: 4.18.1
+  lodash-es: 4.18.1
   path-to-regexp: 6.3.0
   vercel>@vercel/blob: 2.2.0
   webrtc-adapter: 9.0.3
-  ws: 8.17.1
+  ws: 8.21.0
+  lightningcss: 1.30.1
+  flatted: 3.4.2
+  h3: 1.15.9
+  socket.io-parser: 4.2.7
+  undici@5.28.4: 6.24.0
+  undici@6.23.0: 6.24.0
+  undici@7.22.0: 7.29.0
+  undici: 7.29.0
+  next@<16.3.3: 16.3.3
+  tar@<7.5.21: 7.5.21
+  basic-ftp@<5.2.0: 5.2.0
+  bn.js@4.12.2: 4.12.3
+  bn.js@5.2.2: 5.2.3
+  minimatch@<10.2.3: 10.2.3
+  minimatch@3.1.2: 3.1.4
+  minimatch@9.0.5: 9.0.7
+  rollup@<4.59.0: 4.59.0
+  '@tootallnate/once@<3.0.1': 3.0.1
+  protobufjs: 7.6.5
+  eslint: ^10.9.1
+  '@eslint/js': ^10.0.0
+  tmp@<=0.2.3: '>=0.2.4'
+  js-yaml@<4.3.1: 4.3.1
+  js-yaml@5: 5.2.2
+  postcss@<8.5.23: 8.5.23
+  smol-toml: 1.6.1
+  sharp@<0.35.0: 0.35.0
+  diff@<8.0.3: '>=8.0.3'
+  bigint-buffer: npm:bigint-buffer-fixed@1.1.6
+  image-size: npm:image-size-next@1.2.2
+  '@isaacs/brace-expansion@5.0.0': 5.0.1
+  fast-uri@<3.1.3: '>=3.1.3'
+  picomatch@<2.3.2: 2.3.2
+  picomatch@>=4.0.0 <4.0.4: 4.0.4
+  vite@<=7.3.1: '>=7.3.2'
+  uuid@<11.1.1: 11.1.1

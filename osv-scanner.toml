@@ -3,43 +3,21 @@
 id = "GHSA-848j-6mx2-7j84"
 reason = "Transitive dep, no fix available in ecosystem"
 
-[[IgnoredVulns]]
-id = "GHSA-3mv9-4h5g-vhg3"
-reason = "Transitive (tsup), no fix in ecosystem"
-# Override in package.json (esbuild@>=0.25.0), lockfile has transitive old versions
-[[IgnoredVulns]]
-id = "GHSA-67mh-4wv8-2f99"
-reason = "Transitive esbuild, override to >=0.25.0 in package.json"
-# Override in package.json (lodash/lodash-es >=4.17.23)
-[[IgnoredVulns]]
-id = "GHSA-xxjr-mmjv-4gpg"
-reason = "Transitive lodash/lodash-es, override in package.json"
-# Undici: can't override to 6.23 (breaks jsdom), 5.28.5 breaks jsdom wrap-handler. Tracked for vercel/node upstream.
-[[IgnoredVulns]]
-id = "GHSA-g9mf-h72j-4rw9"
-reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
-[[IgnoredVulns]]
-id = "GHSA-c76h-2ccp-4975"
-reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
-[[IgnoredVulns]]
-id = "GHSA-cxrh-j4jr-qwg3"
-reason = "Transitive undici (@vercel/node), jsdom incompatible with patched undici"
-# path-to-regexp: override in pnpm-workspace
-[[IgnoredVulns]]
-id = "GHSA-9wv6-86v2-598j"
-reason = "Transitive path-to-regexp, override in pnpm-workspace.yaml"
-
 # ajv: transitive deps, fix requires package upgrades
 [[IgnoredVulns]]
 id = "GHSA-2g4f-4pwh-qvx6"
 reason = "Transitive ajv (6.12.6, 8.6.3), fix in 8.18.0"
 
-# tar: override tar@<7.5.8 -> 7.5.8 in package.json, @vercel/fun pins 7.5.7
+# @hey-api/openapi-ts@next is 0.0.0-next-*; OSV treats it as older than 0.97.3
 [[IgnoredVulns]]
-id = "GHSA-83g3-92jg-28cx"
-reason = "Override tar@>=7.5.8 in package.json, @vercel/fun transitive"
+id = "GHSA-hhx9-57xq-r5rw"
+reason = "False positive on 0.0.0-next prerelease required for TypeScript 7"
 
-# dompurify 3.3.1: transitive, no fix in ecosystem
+# sandbox: no patched release
 [[IgnoredVulns]]
-id = "GHSA-v2wj-7wpq-c8vv"
-reason = "Transitive dompurify, no fix available in ecosystem"
+id = "GHSA-fm4j-4xhm-xpwx"
+reason = "Transitive sandbox, no fix available in ecosystem"
+
+[[IgnoredVulns]]
+id = "GHSA-gc25-3vc5-2jf9"
+reason = "Transitive sandbox, no fix available in ecosystem"

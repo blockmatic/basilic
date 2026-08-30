@@ -25,6 +25,37 @@ function buildClientPath(spec: CommandSpec): string[] {
   return spec.path.map(seg => (seg.includes('-') ? toCamelCase(seg) : seg))
 }
 
+function parseBodyValue({ name, value }: { name: string; value: string }): unknown {
+  if (name === 'messages')
+    try {
+      return JSON.parse(value) as unknown
+    } catch {
+      return [{ role: 'user', content: value }]
+    }
+
+  if (name === 'stream') {
+    if (value === 'true' || value === '1') return true
+    if (value === 'false' || value === '0') return false
+    throw new Error(`Invalid --stream value: ${value}. Use true, 1, false, or 0`)
+  }
+
+  if (name === 'temperature') {
+    const n = Number.parseFloat(value)
+    if (!Number.isFinite(n))
+      throw new Error(`Invalid --temperature value: ${value}. Must be a finite number`)
+    return n
+  }
+
+  if (name === 'tools')
+    try {
+      return JSON.parse(value) as unknown
+    } catch {
+      throw new Error(`Invalid --tools JSON: ${value}`)
+    }
+
+  return value
+}
+
 export async function runCommand({
   client,
   spec,
@@ -48,33 +79,7 @@ export async function runCommand({
   const bodyParams: Record<string, unknown> = {}
   for (const p of meta.bodyParams) {
     const v = opts[p.name]
-    if (v !== undefined && v !== '')
-      if (p.name === 'messages' && typeof v === 'string')
-        try {
-          bodyParams[p.name] = JSON.parse(v) as unknown
-        } catch {
-          bodyParams[p.name] = [{ role: 'user', content: v }]
-        }
-      else if (p.name === 'stream')
-        if (v === 'true' || v === '1') bodyParams[p.name] = true
-        else if (v === 'false' || v === '0') bodyParams[p.name] = false
-        else throw new Error(`Invalid --stream value: ${v}. Use true, 1, false, or 0`)
-      else if ((p.name === 'temperature' || p.name === 'model') && v)
-        if (p.name === 'temperature') {
-          const n = Number.parseFloat(v)
-          if (!Number.isFinite(n))
-            throw new Error(`Invalid --temperature value: ${v}. Must be a finite number`)
-          bodyParams[p.name] = n
-        } else {
-          bodyParams[p.name] = v
-        }
-      else if (p.name === 'tools' && typeof v === 'string')
-        try {
-          bodyParams[p.name] = JSON.parse(v) as unknown
-        } catch {
-          throw new Error(`Invalid --tools JSON: ${v}`)
-        }
-      else bodyParams[p.name] = v
+    if (v !== undefined && v !== '') bodyParams[p.name] = parseBodyValue({ name: p.name, value: v })
   }
 
   const callOpts: Record<string, unknown> = {}

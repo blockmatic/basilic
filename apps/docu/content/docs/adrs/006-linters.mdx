@@ -132,8 +132,16 @@ See [Development Tooling](/docs/development/dev-tooling) and the root README in 
 - Monitor Biome's ecosystem growth for additional rule coverage
 - Pre-commit hooks use Biome for automatic formatting of staged files
 
+## Rejected: third linter and Biome-only
+
+The two-tool setup is not duplication. Root `eslint.config.mjs` states the split: Biome owns formatting and stylistic linting; ESLint owns TypeScript and architecture correctness. The root ESLint config ignores `apps/**` and `packages/**` — each workspace has its own scoped config.
+
+Biome still lacks parity on type-aware rules, `eslint-plugin-jsx-a11y`, and custom architectural rules. Next.js 16 removed `next lint` and treats Biome as a first-class option, which validates the hybrid direction rather than a collapse to one tool.
+
+A third linter (`react-doctor`) was rejected. It overlapped hooks and Next.js rules already in `@repo/eslint-config` (`eslint-plugin-react-hooks`, `@next/eslint-plugin-next`). It ran unpinned via `pnpm dlx …@latest`, and `lint:fix` / `pnpm qa` never invoked it. `pnpm lint` is Biome + ESLint only.
+
 ## Related Documentation
 
-- [Development Tooling](/docs/architecture/dev-tooling) - Biome and ESLint configuration and usage
+- [Development Tooling](/docs/development/dev-tooling) - Biome and ESLint configuration and usage
 - [Monorepo Structure](/docs/architecture/monorepo) - Unified tooling across the monorepo
 - [Architecture Overview](/docs/architecture) - Technical stack and design decisions

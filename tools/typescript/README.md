@@ -15,6 +15,7 @@ Base TypeScript configuration that all other configs extend. Suitable for Node.j
 - Node.js module resolution
 - Declaration files generation
 - No unchecked indexed access
+- `types: ["*"]` so TypeScript 7 still auto-includes `@types/*` (7.0 defaults `types` to `[]`)
 - Enhanced type safety via `@total-typescript/ts-reset` (see [ts-reset Integration](#ts-reset-integration))
 
 **Usage:**

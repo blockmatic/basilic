@@ -4,6 +4,14 @@ import { config as expoConfig } from '@repo/eslint-config/expo'
 export default [
   ...expoConfig,
   {
-    ignores: ['.expo/**', 'node_modules/**', 'dist/**', 'build/**', '.turbo/**', 'coverage/**'],
+    ignores: [
+      '.expo/**',
+      'node_modules/**',
+      'dist/**',
+      'build/**',
+      '.turbo/**',
+      'coverage/**',
+      'nativewind-env.d.ts',
+    ],
   },
 ]
