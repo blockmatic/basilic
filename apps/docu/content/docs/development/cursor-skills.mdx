@@ -1,17 +1,39 @@
 ---
 title: "Cursor Skills"
-description: "Versioned tech skills and slash workflows. Git is the source of truth; fetch upstream, overlay, commit."
+description: "Versioned tech skills and slash workflows from the Basilic skills.sh catalog."
 ---
 
-Project skills live in `.cursor/skills/`. Cursor requires `name` in each `SKILL.md` to match the folder that contains it. That is why tech skills use a versioned dirname.
+Project skills live under `.agents/skills/`. The [skills CLI](https://github.com/vercel-labs/skills) installs there for `-a cursor` (project scope). Cursor also reads `.cursor/skills/` if present, but this repo commits the CLI layout only.
+
+Cursor requires `name` in each `SKILL.md` to match the folder that contains it. That is why tech skills use a versioned dirname (`fastify-v5`, not `fastify`).
 
 Rules override skills. Skills override the model. Indexed docs are advisory.
 
+## Catalog
+
+Canonical source: [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills).
+
+Install or refresh (interactive — pick skills and agents):
+
+```bash
+pnpm dlx skills@latest add blockmatic/basilic-skills
+```
+
+Basilic refresh (Cursor, all skills, copies, non-interactive):
+
+```bash
+pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
+```
+
+That writes flat trees under `.agents/skills/<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
+
+Root `skills-lock.json` tracks catalog hashes (`source: blockmatic/basilic-skills`). Commit it with `.agents/skills/` after every refresh.
+
 ## Two kinds
 
-**Tech** — `.cursor/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.cursor/skills/<topic>-v<major>` or `/<topic>-v<major>`.
+**Tech** — `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
-**Workflow** — `.cursor/skills/workflow/<name>/`. Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/name` in Cursor. Claude Code has no `/` menu: read the `SKILL.md` file.
+**Workflow** — `.agents/skills/<name>/` (example: `plan-feature`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/name` in Cursor. Claude Code has no `/` menu: read the `SKILL.md` file.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name.
 
@@ -22,50 +44,45 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 `<topic>-v<major>` is the **library or SDK major**, not a skill-file revision.
 
 - Library major change → new folder (`next-v17`). Drop the old folder when the repo no longer uses that major.
-- Upstream wording, references, or bugfixes → same folder; commit the file diff.
+- Upstream wording, references, or bugfixes → edit the catalog; re-run the skills CLI in this repo.
 - Design skills with no npm package keep `-v1` until the skill format itself breaks (`frontend-design-v1`, `emilkowal-animations-v1`, `vercel-react-v1`). Library skills (including Motion) use the npm major (`motion-v13` for `motion` ^13).
 - Workflows stay unversioned.
 
-This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is what upstream publishes. Do not invent empty `*-v57` folders. When Expo ships v57 skills, add those folders and drop v55.
+This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is what upstream publishes. Do not invent empty `*-v57` folders. When Expo ships v57 skills, add those folders in the catalog and drop v55.
 
-## Vendor and overlay
+## Update procedure
 
-Git is the source of truth. The team gets skills on clone. `npx skills` is a fetch tool only. Do not use `npx skills update` after rename: lock keys will not match upstream names.
+1. Edit and push [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on GitHub.
+2. From this repo root:
 
-Do not `git pull` inside a nested `.git` under `.cursor/skills/`. Do not store project skills only in `~/.cursor/skills/` (personal experiments only).
+```bash
+pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
+```
 
-**Add or update a third-party skill**
+3. Review the diff; commit `.agents/skills/` and `skills-lock.json`.
 
-1. Fetch into `/tmp`: `npx skills add owner/repo --skill <upstream-name> --agent cursor -p`, or a shallow clone.
-2. Copy files into `.cursor/skills/<topic>-v<major>/`.
-3. Overlay: set frontmatter `name:` to the folder name. Keep Basilic sections on tech skills we maintain. Restore repo notes (Playwright E2E stays in `apps/web/e2e` and `apps/api/test`).
-4. Delete any unversioned sibling folder. Confirm with `ls .cursor/skills` before hunting leftovers.
-5. Commit. Review the diff like any other vendored snippet.
+Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
+
+Repo-specific overlays stay in `.cursor/rules/` (example: Playwright app E2E paths in `e2e-playwright.mdc`).
 
 When grepping skill names, match the folder or `name:` exactly (`motion-v1/`, `name: motion-v1`). Do not use a substring (`motion-v1` also hits `motion-v13`).
 
-**Remove** — delete the folder, drop inventory rows, grep for `@.cursor/skills/…` links.
+## Upstream provenance
 
-Root `skills-lock.json` tracks Expo CLI hashes only. It is optional and incomplete. Do not treat it as the full inventory.
-
-## Inventory
-
-Basilic-owned (edit in git; do not clobber with CLI output): `fastify-v5`, `wagmi-v3`, `solana-v1`, and everything under `workflow/`.
-
-Third-party (fetch, then overlay `name:`):
+Catalog copies may differ from upstream. Original sources:
 
 - `expo-cicd-workflows-v55` ← `eas-workflows` in [expo/skills](https://github.com/expo/skills)
-- `expo-deployment-v55` ← `eas-app-stores` (hosting is a separate upstream skill, not vendored)
+- `expo-deployment-v55` ← `eas-app-stores`
 - `expo-dev-client-v55` ← `expo-dev-client`
 - `expo-tailwind-setup-v55` ← `expo-tailwind-setup`
 - `expo-upgrading-v55` ← `expo-upgrade`
 - `expo-use-dom-v55` ← `expo-dom`
 - `vercel-react-v1` ← `react-best-practices` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
-- `next-v16` ← `nextjs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills) (curated)
+- `next-v16` ← `nextjs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
 - `frontend-design-v1` ← [anthropics/skills](https://github.com/anthropics/skills) `frontend-design`
 - `emilkowal-animations-v1` ← pproenca/dot-skills `emilkowal-animations`
 
-Basilic forks (do not clobber with a different upstream skill): `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1` (ad-hoc `/tmp` scripts; not `microsoft/playwright-cli`; overlay: app E2E stays in `apps/web/e2e` and `apps/api/test`), `shadcn-v3` (Next 16, CSS-first Tailwind v4), `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`.
+Basilic-maintained in the catalog: `fastify-v5`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks.
 
 ## Related
 

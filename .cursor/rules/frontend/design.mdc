@@ -8,7 +8,7 @@ alwaysApply: false
 1. CSS + data attributes: `tw-animate-css` with `data-[state=*]` (`animate-in`, `fade-in-0`, `zoom-in-95`, `slide-in-from-*`)
 2. Shadcn built-in Dialog/Popover/Sheet/Dropdown animations
 3. Custom `data-*` + Tailwind `data-[state=x]:*`
-4. Motion only for drag, scroll-linked, layout, gestures, shared-element. See @.cursor/skills/motion-v13
+4. Motion only for drag, scroll-linked, layout, gestures, shared-element. See @.agents/skills/motion-v13
 If `transition-*` or `animate-*` works, do not use Motion.
 
 ## Spacing (8pt)
@@ -20,8 +20,8 @@ xs captions · sm secondary/labels · base body · lg card titles · xl page tit
 Page titles: `text-lg md:text-xl font-heading font-semibold`. Card: `text-lg font-heading font-semibold`. Secondary: `text-sm text-muted-foreground`.
 
 ## Design
-- Distinctive fonts; dashboard exception Inter + Poppins. `font-sans` UI, `font-heading` titles, `tabular-nums` prices, `font-mono` code. See @.cursor/skills/frontend-design-v1
-- Semantic tokens (`bg-primary`, `text-muted-foreground`). See @.cursor/skills/tailwind-design-system-v4
-- Motion: feedback, orientation, focus—never decorate. 100–150ms micro, 200–300ms transitions, 500ms drawers. `ease-out` default. Animate `transform`/`opacity` only. Never `scale(0)`—min 0.95. See @.cursor/skills/emilkowal-animations-v1
+- Distinctive fonts; dashboard exception Inter + Poppins. `font-sans` UI, `font-heading` titles, `tabular-nums` prices, `font-mono` code. See @.agents/skills/frontend-design-v1
+- Semantic tokens (`bg-primary`, `text-muted-foreground`). See @.agents/skills/tailwind-design-system-v4
+- Motion: feedback, orientation, focus—never decorate. 100–150ms micro, 200–300ms transitions, 500ms drawers. `ease-out` default. Animate `transform`/`opacity` only. Never `scale(0)`—min 0.95. See @.agents/skills/emilkowal-animations-v1
 - Loading: skeleton that preserves layout; toasts for async success/failure; hover/focus states before extra animation
 - Respect `prefers-reduced-motion`. Opacity fallback. Motion: `MotionConfig reducedMotion="user"`
