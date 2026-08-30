@@ -4,32 +4,32 @@
     "expo-cicd-workflows-v55": {
       "source": "expo/skills",
       "sourceType": "github",
-      "computedHash": "700b20b575fcbe75ad238b41a0bd57938abe495e62dc53e05400712ab01ee7c0"
+      "computedHash": "aaedc695614984c0d2d7a0e59ee7b8f63d4213772e1e875b7151ab4410dc2535"
     },
     "expo-deployment-v55": {
       "source": "expo/skills",
       "sourceType": "github",
-      "computedHash": "9ea9f16374765c1b16764a51bd43a64098921b33f48e94d9c5c1cce24b335c10"
+      "computedHash": "a251cf2b66691c27c5ae7b50a71687e82a7a5877c6fa02f32170933f1464f13c"
     },
     "expo-dev-client-v55": {
       "source": "expo/skills",
       "sourceType": "github",
-      "computedHash": "234e2633b7fbcef2d479f8fe8ab20d53d08ed3e4beec7c965da4aff5b43affe7"
+      "computedHash": "31b421ee658038b023eddc6187a05953195ff24037f05e7d7aa9d53970c4954f"
     },
     "expo-tailwind-setup-v55": {
       "source": "expo/skills",
       "sourceType": "github",
-      "computedHash": "d39e806942fe880347f161056729b588a3cb0f1796270eebf52633fe11cfdce1"
+      "computedHash": "bf34902f2b9a6579bc1265c624cf19eaa7ba1ca38eb5f4a40a22f41e9960e662"
     },
     "expo-upgrading-v55": {
       "source": "expo/skills",
       "sourceType": "github",
-      "computedHash": "939a6820e0d6ead943bb4ad93cec647815e73fbc04043401773b2138e9e13b69"
+      "computedHash": "13aef9c1a295bd820ffec57670f4a8dff8cd98046dd173e9ed9e66975d7365fe"
     },
     "expo-use-dom-v55": {
       "source": "expo/skills",
       "sourceType": "github",
-      "computedHash": "8eca0e229f16e3499e5dbf791a79f5a5cba1e98b4af88ca495c903930d7f1ba0"
+      "computedHash": "2d3116fa70a9d90fff016b8c058ed14ecaa84334d614ec9a6a70d5efeb975d46"
     }
   }
 }

@@ -35,5 +35,5 @@ This script ensures the OpenAPI spec stays in sync with route implementations, e
 ## Related Documentation
 
 - **[Deployment Guide](@apps/docu/content/docs/deployment/index.mdx)** - Deployment options and strategies
-- **[Backend Stack](@apps/docu/content/docs/architecture/backend-stack.mdx)** - Technology choices and architecture
-- **[API Development](@apps/docu/content/docs/architecture/api.mdx)** - REST API with OpenAPI and hey-api client generation
+- **[API Architecture](@apps/docu/content/docs/architecture/api.mdx)** - Fastify, TypeBox, OpenAPI, `@repo/core`
+- **[OpenAPI generation](@apps/docu/content/docs/development/openapi-generation.mdx)** - Spec from routes, hey-api clients

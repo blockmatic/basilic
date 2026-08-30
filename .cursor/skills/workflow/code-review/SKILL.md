@@ -4,7 +4,7 @@ description: Perform thorough code review verifying functionality, maintainabili
 disable-model-invocation: true
 ---
 
-Perform thorough code review verifying functionality, maintainability, and security. Focus on architecture, readability, performance, provide actionable suggestions. Follow architecture, strategies, and decisions in `@apps/docu/`.
+Perform thorough code review verifying functionality, maintainability, and security. Focus on architecture, readability, performance, provide actionable suggestions.
 
 1. **Understand change**: Read PR description/issues for context, identify scope of files/features impacted, note assumptions/questions
 2. **Validate functionality**: Confirm code delivers intended behavior, exercise edge cases/guard conditions, check error handling/logging

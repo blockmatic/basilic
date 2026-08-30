@@ -161,4 +161,4 @@ This app includes a `vercel.json` configuration file. If deploying to Vercel:
 
 - [Monorepo Structure](@apps/docu/content/docs/architecture/monorepo.mdx) - Package organization
 - [Frontend Architecture](@apps/docu/content/docs/architecture/frontend.mdx) - Next.js 16, React 19, and UI
-- [Package Conventions](@apps/docu/content/docs/architecture/package-conventions.mdx) - Package architecture
+- [Package Conventions](@apps/docu/content/docs/development/package-conventions.mdx) - Package architecture

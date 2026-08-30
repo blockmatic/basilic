@@ -4,7 +4,7 @@ description: Create comprehensive tests for API endpoints validating behavior th
 disable-model-invocation: true
 ---
 
-Create comprehensive tests for API endpoints validating behavior through external interactions. Tests use real services with sandbox/staging endpoints and dedicated test accounts following strict safety protocols. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation, update docs, readme, and cursor rules if required to keep them aligned.
+Create comprehensive tests for API endpoints validating behavior through external interactions. Tests use real services with sandbox/staging endpoints and dedicated test accounts following strict safety protocols.
 
 1. **Test Structure**: Follow project conventions for test file naming, set up proper test lifecycle, use appropriate utilities to simulate requests, test through public interfaces only
 2. **Test Coverage**: All operations (create, read, update, delete), error handling/validation scenarios, response validation against contracts, authentication/authorization, input validation

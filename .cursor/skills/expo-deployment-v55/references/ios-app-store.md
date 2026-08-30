@@ -1,5 +1,21 @@
 # Submitting to iOS App Store
 
+## Contents
+
+- [Prerequisites](#prerequisites)
+- [Credential Setup](#credential-setup)
+- [Submission Commands](#submission-commands)
+- [App Store Connect Configuration](#app-store-connect-configuration)
+- [TestFlight vs App Store](#testflight-vs-app-store)
+- [App Review Process](#app-review-process)
+- [Version and Build Numbers](#version-and-build-numbers)
+- [Release Options](#release-options)
+- [Certificates and Provisioning](#certificates-and-provisioning)
+- [App Store Metadata](#app-store-metadata)
+- [Troubleshooting](#troubleshooting)
+- [CI/CD Integration](#cicd-integration)
+- [Tips](#tips)
+
 ## Prerequisites
 
 1. **Apple Developer Account** - Enroll at [developer.apple.com](https://developer.apple.com)
@@ -35,7 +51,6 @@ Configure in `eas.json`:
   "submit": {
     "production": {
       "ios": {
-        "ascAppId": "1234567890",
         "ascApiKeyPath": "./AuthKey_XXXXX.p8",
         "ascApiKeyIssuerId": "xxxxx-xxxx-xxxx-xxxx-xxxxx",
         "ascApiKeyId": "XXXXXXXXXX"
@@ -49,38 +64,26 @@ Or use environment variables:
 
 ```bash
 EXPO_ASC_API_KEY_PATH=./AuthKey.p8
-EXPO_ASC_ISSUER_ID=xxxxx-xxxx-xxxx-xxxx-xxxxx
-EXPO_ASC_KEY_ID=XXXXXXXXXX
+EXPO_ASC_API_KEY_ISSUER_ID=xxxxx-xxxx-xxxx-xxxx-xxxxx
+EXPO_ASC_API_KEY_ID=XXXXXXXXXX
 ```
 
 ### Apple ID Authentication (Alternative)
 
-For non-API-key submissions, configure `appleId` in `eas.json` and provide an app-specific password:
-
-```json
-{
-  "submit": {
-    "production": {
-      "ios": {
-        "ascAppId": "1234567890",
-        "appleId": "your@email.com"
-      }
-    }
-  }
-}
-```
+For manual submissions, you can use Apple ID:
 
 ```bash
-EXPO_APPLE_APP_SPECIFIC_PASSWORD=xxxx-xxxx-xxxx-xxxx
+EXPO_APPLE_ID=your@email.com
+EXPO_APPLE_TEAM_ID=XXXXXXXXXX
 ```
 
-Note: This fallback requires an app-specific password for accounts with 2FA.
+Note: Requires app-specific password for accounts with 2FA.
 
 ## Submission Commands
 
 ```bash
 # Build and submit to App Store Connect
-eas build -p ios --profile production --auto-submit
+eas build -p ios --profile production --submit
 
 # Submit latest build
 eas submit -p ios --latest
@@ -121,7 +124,7 @@ Before submitting, complete in App Store Connect:
 ```json
 {
   "cli": {
-    "version": ">= 18.0.5",
+    "version": ">= 16.0.1",
     "appVersionSource": "remote"
   },
   "build": {
@@ -215,15 +218,12 @@ With `autoIncrement: true`, EAS handles build numbers automatically.
 
 ## Release Options
 
-These `apple.release` keys belong in `store.config.json` (or the file referenced by `submit.ios.metadataPath` in `eas.json`).
-
 ### Automatic Release
 
 Release immediately when approved:
 
 ```json
 {
-  "configVersion": 0,
   "apple": {
     "release": {
       "automaticRelease": true
@@ -234,14 +234,11 @@ Release immediately when approved:
 
 ### Scheduled Release
 
-In `store.config.json`:
-
 ```json
 {
-  "configVersion": 0,
   "apple": {
     "release": {
-      "automaticRelease": "YYYY-MM-DDTHH:mm:ssZ"
+      "automaticRelease": "2025-03-01T10:00:00Z"
     }
   }
 }
@@ -249,11 +246,10 @@ In `store.config.json`:
 
 ### Phased Release
 
-In `store.config.json`. Gradual rollout over 7 days:
+Gradual rollout over 7 days:
 
 ```json
 {
-  "configVersion": 0,
   "apple": {
     "release": {
       "phasedRelease": true
@@ -269,7 +265,7 @@ Rollout: Day 1 (1%) → Day 2 (2%) → Day 3 (5%) → Day 4 (10%) → Day 5 (20%
 ### Distribution Certificate
 
 - Required for App Store submissions
-- Team-level credential; only one of each distribution certificate type allowed per team
+- Limited to 3 per Apple Developer account
 - Valid for 1 year
 - EAS manages automatically
 
@@ -300,7 +296,7 @@ eas metadata:pull
 eas metadata:push
 ```
 
-See @.cursor/skills/expo-deployment-v55/references/app-store-metadata.md for detailed configuration.
+See ./app-store-metadata.md for detailed configuration.
 
 ## Troubleshooting
 
@@ -361,7 +357,7 @@ jobs:
     type: submit
     needs: [build]
     params:
-      build_id: ${{ needs.build.outputs.build_id }}
+      platform: ios
       profile: production
 ```
 
@@ -370,6 +366,6 @@ jobs:
 - Submit to TestFlight early and often for feedback
 - Use beta app review for external testers to catch issues before App Store review
 - Respond to reviewer questions promptly in App Store Connect
-- Keep demo account credentials up-to-date
+- Keep demo account credentials up to date
 - Monitor App Store Connect notifications for review updates
 - Use phased release for major updates to catch issues early

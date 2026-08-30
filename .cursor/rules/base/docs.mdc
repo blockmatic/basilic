@@ -22,3 +22,8 @@ alwaysApply: false
 ## Organization
 - DRY, progressive complexity (simple → advanced)
 - Task-based guides, separate reference from tutorials, modular
+
+## Layers
+- This MDX is canonical (architecture, ADRs, how-to). Rules do not `@`-attach it
+- READMEs are how to run the app/package; they link here, no duplication
+- Update this page when behavior, architecture, commands, or conventions change (same change as the code)

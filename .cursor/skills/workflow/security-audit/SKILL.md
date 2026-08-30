@@ -4,7 +4,7 @@ description: Comprehensive security review to identify and fix vulnerabilities i
 disable-model-invocation: true
 ---
 
-Comprehensive security review to identify and fix vulnerabilities in codebase. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+Comprehensive security review to identify and fix vulnerabilities in codebase.
 
 1. **Dependency audit**: Check for known vulnerabilities, update outdated packages, review third-party dependencies
 2. **Code security review**: Check for common vulnerabilities, review authentication/authorization, audit data handling practices
