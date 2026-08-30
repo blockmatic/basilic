@@ -26,7 +26,7 @@ See the [monorepo documentation](@apps/docu/content/docs/architecture/monorepo.m
 
 ### Prerequisites
 
-- **Node.js** 24.x (`engines`); local/CI pin 24.20.0 (LTS Krypton) via `.nvmrc`
+- **Node.js** 24.x (LTS Krypton)
 - **pnpm** 11.24.0
 
 ### Installation

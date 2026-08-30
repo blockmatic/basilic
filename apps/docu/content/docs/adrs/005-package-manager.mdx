@@ -88,7 +88,7 @@ We will use **pnpm** as our package manager.
 
 ## Notes
 
-- **Runtime**: Local and CI use **Node.js 24.20.0 (LTS Krypton)** via `.nvmrc`. Package `engines.node` is `24.x` so hosts that only ship a Node major (for example Vercel) can install. Package management is pnpm.
+- **Runtime**: We use **Node.js 24.x (LTS Krypton)** for runtime with pnpm for package management
 - **Workspace protocol**: pnpm supports `workspace:*` protocol for internal package dependencies
 - **Lockfile**: pnpm uses `pnpm-lock.yaml` format (committed to repository)
 - **CI/CD**: All GitHub Actions workflows use pnpm setup action
