@@ -210,6 +210,27 @@ node scripts/security-check.mjs
 
 **Note**: Scripts will skip gracefully if tools are not installed, but will report warnings.
 
+## Environment Scripts
+
+### `setup-env.mjs`
+
+Copies `.env.<qualifier>.example` templates to gitignored dest files when the dest is missing. Never overwrites existing dest files.
+
+**Mapping**:
+- `.env.defaults.example` → `.env`
+- `.env.local.example` → `.env.local`
+- `.env.test.example` → `.env.test`
+- any other `.env.<qualifier>.example` → `.env.<qualifier>`
+
+**Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+```bash
+pnpm setup:env
+# or
+node scripts/setup-env.mjs
+```
+
+**Note**: Idempotent. Skips dest files that already exist so local secrets are preserved. Edit copied files to set real values.
+
 ## Database Development Scripts
 
 Scripts that install database development tools for PostgreSQL with Supabase.
