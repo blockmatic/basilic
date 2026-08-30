@@ -15,7 +15,8 @@ jobs:
     name: Analyze diff
     if: >
       github.event.pull_request.head.repo.full_name == github.repository &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) &&
+      secrets.AI_GATEWAY_API_KEY != ''
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -72,18 +73,9 @@ jobs:
         working-directory: .deepsec
         env:
           AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          if [ -z "$AI_GATEWAY_API_KEY" ] && [ -z "$OPENAI_API_KEY" ]; then
-            echo "::error title=Missing DeepSec credentials::Add AI_GATEWAY_API_KEY (recommended) or OPENAI_API_KEY to repository secrets (Settings → Secrets and variables → Actions). See https://github.com/vercel-labs/deepsec/blob/main/docs/vercel-setup.md"
-            exit 1
-          fi
-          if [ -n "$AI_GATEWAY_API_KEY" ]; then
-            printf 'AI_GATEWAY_API_KEY=%s\nOPENAI_API_KEY=%s\nOPENAI_BASE_URL=https://ai-gateway.vercel.sh/v1\n' \
-              "$AI_GATEWAY_API_KEY" "$AI_GATEWAY_API_KEY" > .env.local
-          elif [ -n "$OPENAI_API_KEY" ]; then
-            printf 'OPENAI_API_KEY=%s\n' "$OPENAI_API_KEY" > .env.local
-          fi
+          printf 'AI_GATEWAY_API_KEY=%s\nOPENAI_API_KEY=%s\nOPENAI_BASE_URL=https://ai-gateway.vercel.sh/v1\n' \
+            "$AI_GATEWAY_API_KEY" "$AI_GATEWAY_API_KEY" > .env.local
           chmod 600 .env.local
 
       - name: Review PR diff
@@ -91,19 +83,13 @@ jobs:
         working-directory: .deepsec
         env:
           AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+          OPENAI_BASE_URL: https://ai-gateway.vercel.sh/v1
         run: |
-          if [ -n "$AI_GATEWAY_API_KEY" ]; then
-            export OPENAI_API_KEY="$AI_GATEWAY_API_KEY"
-            export OPENAI_BASE_URL="https://ai-gateway.vercel.sh/v1"
-            MODEL=gpt-5.6-sol
-          else
-            MODEL=gpt-5.5
-          fi
           set -o pipefail
           pnpm exec deepsec process \
             --agent codex \
-            --model "$MODEL" \
+            --model gpt-5.6-sol \
             --thinking-level medium \
             --root "${{ github.workspace }}" \
             --files-from "${{ github.workspace }}/deepsec-files.txt" \
