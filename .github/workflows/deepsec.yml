@@ -29,12 +29,22 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
+          GIT_TERMINAL_PROMPT: "0"
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
+          git config --local http.https://github.com/.extraheader "AUTHORIZATION: bearer $GITHUB_TOKEN"
           git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
           git rev-parse --verify "$BASE_SHA^{commit}"
+          git config --local --unset-all http.https://github.com/.extraheader
           if git cat-file -e "$BASE_SHA:.deepsec/deepsec.config.ts"; then
             git checkout "$BASE_SHA" -- .deepsec
           fi
+
+      - name: List PR files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GIT_TERMINAL_PROMPT: "0"
+        run: git diff --name-only --diff-filter=AMRC "${BASE_SHA}...HEAD" | tee "${{ github.workspace }}/deepsec-files.txt"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -87,7 +97,6 @@ jobs:
         env:
           AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           if [ -n "$AI_GATEWAY_API_KEY" ]; then
             export OPENAI_API_KEY="$AI_GATEWAY_API_KEY"
@@ -96,12 +105,23 @@ jobs:
           else
             MODEL=gpt-5.5
           fi
+          set -o pipefail
           pnpm exec deepsec process \
             --agent codex \
             --model "$MODEL" \
             --thinking-level medium \
-            --diff "$BASE_SHA" \
-            --comment-out ../comment.md
+            --root "${{ github.workspace }}" \
+            --files-from "${{ github.workspace }}/deepsec-files.txt" \
+            --comment-out ../comment.md \
+            2>&1 | tee "${{ github.workspace }}/deepsec.log"
+
+      - name: Upload DeepSec log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deepsec-log
+          path: deepsec.log
+          retention-days: 1
 
       - name: Upload findings comment
         if: always() && hashFiles('comment.md') != ''
