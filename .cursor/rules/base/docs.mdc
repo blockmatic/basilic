@@ -1,7 +1,7 @@
 ---
 description: Documentation standards and best practices
-glob: "apps/docu/**/*.mdx"
-alwaysApply: true
+globs: "apps/docu/**/*.mdx"
+alwaysApply: false
 ---
 
 ## Writing Principles

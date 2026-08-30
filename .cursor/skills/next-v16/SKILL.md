@@ -1,5 +1,5 @@
 ---
-name: next-best-practices
+name: next-v16
 description: Next.js v16 best practices - proxy.ts, file conventions, RSC boundaries, Cache Components, async APIs, route handlers, image/font optimization
 user-invocable: false
 ---

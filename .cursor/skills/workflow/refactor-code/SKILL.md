@@ -1,0 +1,12 @@
+---
+name: refactor-code
+description: Refactor selected code to improve quality while maintaining same functionality, providing refactored code with explanations. Use when the user types /refactor-code.
+disable-model-invocation: true
+---
+
+Refactor selected code to improve quality while maintaining same functionality, providing refactored code with explanations. Follow architecture, strategies, and decisions in `@apps/docu/`. After implementation (for both new features and fixes), update docs, readme, and cursor rules if required to keep them aligned.
+
+1. **Code Quality**: Extract reusable functions/components, eliminate duplication, improve naming, simplify complex logic/reduce nesting
+2. **Performance**: Identify/fix bottlenecks, optimize algorithms/data structures, reduce unnecessary computations, improve memory usage
+3. **Maintainability**: Make code readable/self-documenting, add appropriate comments, follow SOLID principles/design patterns, improve error handling/edge case coverage
+

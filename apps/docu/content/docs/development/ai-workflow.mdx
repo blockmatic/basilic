@@ -1,41 +1,59 @@
 ---
 title: "AI Development Workflow"
-description: "Cursor-first workflow: plan, review, execute incrementally. Claude Code is supported via the same rules and skills."
+description: "Cursor-first workflow: plan, review, execute incrementally. Claude Code uses the same rules and skills."
 ---
 
-Development is **Cursor-first**. Claude Code is supported via root `CLAUDE.md`: it follows the same `.cursor/rules` and `.cursor/skills`. Do not run a parallel process.
+Development is **Cursor-first**. Claude Code follows the same `.cursor/rules` and `.cursor/skills` via root `CLAUDE.md`. Do not run a parallel process.
 
-Judgment lives in planning and review. Implementation is incremental and reviewed. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
-
-Index this site and stack docs in Cursor once — [Cursor Setup](/docs/development/cursor-setup).
+Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era). Index this site once — [Cursor Setup](/docs/development/cursor-setup).
 
 ## Guidance hierarchy
 
-| Layer | Role |
-| --- | --- |
-| Rules | Global, opinionated, override everything |
-| Skills | Local expertise and patterns |
-| Model | Reasoning and synthesis |
-| Indexed docs | Advisory; never override rules or source |
+| Layer | Role | How it loads |
+| --- | --- | --- |
+| **Rules** (`.cursor/rules/*.mdc`) | Constraints. Override everything else | Always on: `general`, `naming`, `git`. Other rules attach when matching files are in context |
+| **Workflow skills** (`.cursor/skills/workflow/`) | Slash playbooks | Type `/name` |
+| **Tech skills** (`.cursor/skills/<topic>-v<major>/`) | Patterns for a stack | Agent loads when relevant; `@` or `/` to force |
+| **Indexed docs** | Advisory | Never override rules or source |
+
+## Slash workflows
+
+In Cursor chat, type `/` then the skill name.
+
+- **Enter** — attach for this message only
+- **Option+Enter** (Alt+Enter) — pin for the session
+
+Daily set: `/plan-feature`, `/exec-push`, `/git-commit`, `/code-review`, `/deslop`. `/` lists the rest. Names match the folder under `.cursor/skills/workflow/` (`audit-accessibility`, not the old typo).
+
+Do not `@.cursor/commands/…` — that directory is gone.
+
+Claude Code has no `/` menu. Read `.cursor/skills/workflow/<name>/SKILL.md` instead.
+
+## Workflow
+
+1. **Plan** — Plan mode, then `/plan-feature` (Grok 4.6, or Sol for large/ambiguous work). List goals first. Surface edge cases before coding.
+2. **Review** — Read the plan. Check scope, dependencies, approach. `/review-plan` if you want a structured pass.
+3. **Execute** — `/exec-push` (or implement in small steps). Composer 2.5 is fine for mechanical multi-file edits; stay on Grok 4.6 or Sol when judgment is still required. Test between steps.
+4. **Commit** — `/git-commit`. Ship &lt;30-minute chunks.
+
+Tech skills (`fastify-v5`, `next-v16`, `vercel-react-v1`) usually attach themselves. Force with `@.cursor/skills/fastify-v5` or `/fastify-v5`.
 
 ## Models (30 Aug 2026)
 
 | Model | Use |
 | --- | --- |
-| **Cursor Grok 4.6** | Default for plan and implement. Grok 4.5 is a cheaper/faster picker option. |
+| **Cursor Grok 4.6** | Default for plan and implement. Grok 4.5 is a cheaper/faster picker option |
 | **GPT-5.6 Sol** | Long-horizon work, large diffs, hard debugging |
 | **Composer 2.5** | Fast multi-file execution after a reviewed plan |
 | **Claude Code** (Opus 5) | Secondary harness; same rules and skills |
 
-In-app chat (Fastify `/ai/chat`) defaults to Claude Sonnet 4 — that is the product model, not this workflow. See [Self-Hosted LLM](/docs/deployment/self-hosted-llm).
+In-app chat (Fastify `/ai/chat`) defaults to Claude Sonnet 4 — product model, not this workflow. See [Self-Hosted LLM](/docs/deployment/self-hosted-llm).
 
-## Workflow
+CodeRabbit reviews PRs against project standards. Local gates: Biome, ESLint, [pre-commit security](/docs/architecture/security).
 
-1. **Plan** — Start in plan mode (Grok 4.6, or Sol for large/ambiguous work). Break the task into steps and surface edge cases before coding.
-2. **Review** — Read the plan. Check scope, dependencies, and approach. Refine until you would implement it yourself.
-3. **Execute** — Follow the plan in small steps. Composer 2.5 is fine for mechanical multi-file edits; stay on Grok 4.6 or Sol when judgment is still required. Test between steps.
-4. **Commit** — Ship &lt;30-minute chunks. Easy to review, easy to revert.
+Point agents at MDX: `Using the patterns from @api, add an endpoint…`
 
-CodeRabbit reviews PRs against project standards. Local quality gates are Biome, ESLint, and [pre-commit security](/docs/architecture/security).
+## Related
 
-You can point agents at MDX pages: `Using the patterns from @api, add an endpoint…`
+- [Cursor Setup](/docs/development/cursor-setup) — indexed docs and MCP
+- Repo `.cursor/README.md` — short file index (points here for how to work)

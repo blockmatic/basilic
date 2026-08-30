@@ -1,5 +1,5 @@
 ---
-name: AI SDK v6 Core
+name: ai-sdk-core-v6
 description: |
   Build backend AI with Vercel AI SDK v5/v6. Agent abstraction, tool approval, error solutions.
   

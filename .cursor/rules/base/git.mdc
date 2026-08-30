@@ -1,29 +1,10 @@
 ---
-description: Git workflow, commits, push, and PR creation for exec-push and related commands
+description: Git identity, conventional commits, and exec-push constraints
 alwaysApply: true
 ---
 
-## Identity and Constraints
 - Use default global git user (`git config --global user.name`, `git config --global user.email`)—never cursor/system identity
-- Never use `--no-verify` or `--trailer` (e.g. Co-authored-by)
-- Fix all lint, type-check, and test failures before committing
-
-## exec-push Flow
-1. **Branch**: If on `main`, `git pull origin main` then `git checkout -b <branch-name>`. Skip if already on a branch
-2. **Execute**: Implement per @.cursor/rules and relevant skills
-3. **Validate**: Run `pnpm qa` and resolve failures
-4. **Commit**: See commit format below, see @.cursor/commands/git-commit.md
-5. **Push**: `git push`
-6. **PR**: Open PR if none exists; skip if PR already exists for branch
-
-## Commit Message
-[Conventional Commits](https://www.conventionalcommits.org/):
-- Format: `<type>(<scope>): <short summary>` or `<issue-key>: <type>(<scope>): <short summary>`
-- Type and scope lowercase (e.g. `feat(fastify):`, `fix(ui):`)
-- Summary: imperative mood, lowercase, ≤60 chars, no period ("fix", "add" not "fixed", "added")
-- Scope: app (`next`, `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit if general
-
-## Pre-push
-- Remove debug instrumentations
-- Review diff: `git diff` / `git diff --cached`
-- Stage: `git add -A`
+- Never `--no-verify` or `--trailer` (e.g. Co-authored-by)
+- Fix lint, type-check, and test failures before committing
+- Conventional Commits: `<type>(<scope>): <short summary>` — type/scope lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`, `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit
+- Branch/validate/commit/push/PR: `/exec-push` (@.cursor/skills/workflow/exec-push/SKILL.md). Commit message: `/git-commit`

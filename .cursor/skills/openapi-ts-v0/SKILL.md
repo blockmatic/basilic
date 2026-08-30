@@ -1,5 +1,5 @@
 ---
-name: Hey API Codegen
+name: openapi-ts-v0
 description: |
   Generate TypeScript clients from OpenAPI specs using @hey-api/openapi-ts. Type-safe API clients with Zod schemas.
   

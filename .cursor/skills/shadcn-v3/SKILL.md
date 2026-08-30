@@ -1,5 +1,5 @@
 ---
-name: Tailwind v4 + shadcn/ui
+name: shadcn-v3
 description: |
   Set up Tailwind v4 with shadcn/ui using @theme inline pattern and CSS variable architecture. Includes component composition patterns, accessibility guidelines, and React Hook Form integration.
   
@@ -17,7 +17,7 @@ description: |
 
 - Tailwind CSS v4+
 - shadcn/ui latest
-- Vite (use `@tailwindcss/vite` plugin)
+- Next.js 16 (this repo); CSS-first Tailwind v4, not Vite
 - React 18+ or Next.js 14+
 - TypeScript 5+
 
@@ -27,7 +27,7 @@ description: |
 - Use `hsl()` wrapper for color values in `:root` and `.dark`
 - Set `"tailwind.config": ""` in `components.json` (empty for v4)
 - Delete `tailwind.config.ts` if it exists (v4 uses CSS-based config)
-- Use `@tailwindcss/vite` plugin (not PostCSS)
+- Use CSS-first Tailwind v4 in the Next app (not `@tailwindcss/vite`)
 - Use `cn()` utility for conditional classes
 - Semantic colors automatically adapt to dark mode (no `dark:` variants needed)
 - Use `@plugin` directive for plugins (not `@import` or `require()`)

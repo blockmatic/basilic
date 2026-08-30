@@ -1,6 +1,7 @@
 ---
 description: TypeScript conventions
-alwaysApply: true
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
 ---
 
 - TypeScript strict mode

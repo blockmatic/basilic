@@ -1,6 +1,7 @@
 ---
 description: Playwright E2E patterns for Next.js and Fastify API
-glob: "apps/web/e2e/**/*, apps/web/playwright.config.ts, apps/api/test/**/*, apps/api/playwright.config.ts"
+globs: "apps/web/e2e/**/*,apps/web/playwright.config.ts,apps/api/test/**/*,apps/api/playwright.config.ts"
+alwaysApply: false
 ---
 
 ## Config

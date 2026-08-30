@@ -1,7 +1,7 @@
 ---
 description: Viem v2 integration patterns and best practices
-glob: "**/*.{ts,tsx}"
-alwaysApply: true
+globs: "packages/utils/src/web3/**/*,apps/web/**/*.{ts,tsx}"
+alwaysApply: false
 ---
 
 ## Version

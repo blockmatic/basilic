@@ -1,5 +1,5 @@
 ---
-name: ahooks
+name: ahooks-v3
 description: |
   Utility hooks for React state management - grouped state and localStorage persistence.
   

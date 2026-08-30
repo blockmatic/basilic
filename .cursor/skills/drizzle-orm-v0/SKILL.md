@@ -1,5 +1,5 @@
 ---
-name: Drizzle ORM
+name: drizzle-orm-v0
 description: |
   Drizzle ORM for TypeScript - type-safe SQL queries, schema definitions, migrations, and relations.
   
