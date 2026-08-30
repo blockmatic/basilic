@@ -3,19 +3,7 @@ title: "Vercel Deployment"
 description: "Deploy Next.js apps to Vercel for rapid iteration with preview environments."
 ---
 
-Vercel is recommended for development and staging environments. Deployments use Vercel's native Git integration (automatic on push).
-
-## Overview
-
-Vercel provides:
-- ✅ Automatic Git deployments (preview on PRs, production on main/develop)
-- ✅ Preview deployments for PRs and branches
-- ✅ Zero-config Next.js support
-- ✅ Edge network (CDN)
-- ✅ Serverless functions
-- ✅ Environment variable management
-
-**Note**: Vercel is great for convenience, but this project is designed to be portable. Other platforms (Google Cloud, AWS, etc.) can be used without code changes. See [Portability Strategy](/docs/architecture/portability) for migration paths.
+Vercel is recommended for development and staging. Git integration deploys automatically: preview on PRs, production on main/develop. Zero-config Next.js, edge CDN, serverless functions, env vars in the dashboard. The app is portable — see [Portability](/docs/architecture/portability).
 
 ## Setup
 
@@ -119,13 +107,6 @@ For monorepo apps, Vercel needs to know the root directory:
 ## E2E Testing
 
 CI runs E2E against local servers only (no Vercel URLs). For manual E2E against preview deployments: set `ALLOW_TEST=true` for Preview env. When Deployment Protection is enabled, use `VERCEL_AUTOMATION_BYPASS_SECRET` and Protection Bypass for Automation. See [E2E Testing](/docs/testing/e2e-testing).
-
-## Best Practices
-
-1. **Use preview deployments** - Test changes before merging
-2. **Set environment variables** - Don't commit secrets
-3. **Monitor builds** - Check build logs for errors
-4. **Use production branch protection** - Require PR reviews before merging to main
 
 ## Migration to Other Platforms
 

@@ -1,34 +1,9 @@
 ---
 title: "Package Conventions"
-description: "Monorepo package architecture conventions: core / react with clean boundaries, no duplication, and portable design."
+description: "Boundaries for @repo/core and @repo/react: generated clients, handwritten hooks, public imports only."
 ---
 
-## Overview
-
-This document defines conventions for a **TypeScript + ESM** monorepo with:
-
-- **Fastify + TypeBox** for HTTP + schemas
-- **OpenAPI** generated from route schemas
-- **@hey-api/openapi-ts** for the generated TypeScript client (in `@repo/core`)
-- **Zod** for generated schemas and runtime validation (when needed)
-- **TanStack Query** for React async state (in `@repo/react`)
-
-Goals: **clean boundaries**, **no duplicated sources of truth**, **portable packages**, and a **fast DX** in a pnpm workspace.
-
-## Why this architecture
-
-We want three outcomes at the same time:
-
-1. **Single source of truth** for API shapes (request/response) with runtime validation.
-2. Apps across the monorepo can import types safely without dragging server/runtime dependencies everywhere.
-3. Packages compile to clean ESM artifacts for npm (but we can still do fast local dev in the monorepo).
-
-The key idea:
-
-- **Fastify routes + TypeBox schemas** are the source of truth.
-- The **OpenAPI spec** is generated from routes.
-- `@repo/core` contains the **generated client + types** and a small wrapper API.
-- `@repo/react` is a **React Query layer** on top of `@repo/core` (handwritten hooks and helpers only—no UI components).
+Fastify routes and TypeBox schemas are the API source of truth. OpenAPI is generated from routes; `@repo/core` owns the generated client and types; `@repo/react` is handwritten TanStack Query on top of core (no UI). Design: [API Architecture](/docs/architecture/api). Commands: [OpenAPI Generation](/docs/development/openapi-generation).
 
 ## Workspace layout
 
@@ -109,10 +84,9 @@ The **runtime-agnostic** client package with generated OpenAPI client code and t
 
 **Hard rules**
 
-- ✅ No React
-- ✅ No TanStack Query
-- ✅ Generated code lives in `packages/core/src/gen/`
-- ✅ All OpenAPI types are re-exported from `@repo/core` (via `export type * from './gen/types.gen'`)
+- No React or TanStack Query in `@repo/core`
+- Generated code lives in `packages/core/src/gen/`
+- OpenAPI types are re-exported from `@repo/core`
 
 ### 3) `packages/react`
 
@@ -122,22 +96,12 @@ React-only helpers using **TanStack Query**.
 
 - React Query hooks that call `@repo/core` (handwritten)
 - Shared provider/context to supply a core client instance to hooks
-- Hooks and helpers only—no UI components (login forms, cards, etc.). UI lives in apps, collocated by route
+- Hooks and helpers only — no UI. UI lives in apps, collocated by route
 
 **Hard rules**
 
-* ✅ Hooks and helpers only—never add UI components to `@repo/react`
-* ✅ React-only dependencies live here
-* ✅ `@tanstack/react-query` is a peer dependency (apps own the version)
-
-## Server implementation generates OpenAPI
-
-The server app (`apps/api`) should treat **Fastify routes + TypeBox schemas** as the source of truth.
-
-1. Define request/response schemas in the route (TypeBox)
-2. Generate OpenAPI from routes into `apps/api/openapi/openapi.json`
-3. Expose OpenAPI JSON at `/reference/openapi.json`
-4. Mount Scalar UI at `/reference`
+- Hooks and helpers only — never UI in `@repo/react`
+- `@tanstack/react-query` is a peer dependency
 
 ## Import and export conventions
 
@@ -183,39 +147,15 @@ When you add or change an endpoint:
 4. If you want a React Query wrapper, add/update a hook in `packages/react/src/hooks/`
 5. Consume the types from `@repo/core` (single source of truth)
 
-## Multi-language SDK philosophy
+## Multi-language SDKs
 
-**TypeScript consumers** use generated clients from `@hey-api/openapi-ts` for full type safety.
+TypeScript uses `@hey-api/openapi-ts`. Other languages generate from the same OpenAPI spec when needed.
 
-**Other languages** (Go, Rust, Python) generate SDKs from the same OpenAPI spec when needed.
-
-This gives us:
-- ✅ Generated TypeScript clients with full type safety
-- ✅ Consistent API contracts across all languages
-- ✅ OpenAPI always available for non-TS consumers
-
-See:
-- **[API Architecture](/docs/architecture/api)** for the end-to-end flow (TypeBox → OpenAPI → clients/hooks)
-- **[OpenAPI Generation](/docs/development/openapi-generation)** for the exact commands and generated output locations
-
-## ESM & TypeScript strategy
-
-This monorepo is **ESM-first** and uses **source exports in-workspace** with a **publish switch to `dist/`** (plus subpath exports and runtime-aware config for Next.js vs Node).
-
-All the details (export maps, `prepack`/`postpack`, subpath exports, Next.js `transpilePackages`, Node dev with `tsx`, TypeScript module resolution) live in:
-
-- **[ESM & TypeScript Strategy](/docs/architecture/esm-strategy)**
-
-## Summary
-
-* **Fastify routes + TypeBox schemas** are the source of truth; OpenAPI is generated from routes.
-* `@repo/core` owns generated client code + types; apps import types from it.
-* `@repo/react` is the React Query layer built on top of `@repo/core`.
-* Prefer subpath exports when available; never deep-import internal files.
-* ESM everywhere (see **[ESM & TypeScript Strategy](/docs/architecture/esm-strategy)**).
+ESM, dual-mode exports, and TypeScript 7: [ESM & TypeScript Strategy](/docs/architecture/esm-strategy).
 
 ## Related
 
 - **[Packages Reference](/docs/development/packages)**
 - **[OpenAPI Generation](/docs/development/openapi-generation)**
 - **[API Architecture](/docs/architecture/api)**
+- **[ESM & TypeScript Strategy](/docs/architecture/esm-strategy)**

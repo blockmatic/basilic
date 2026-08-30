@@ -22,6 +22,7 @@ pnpm security:audit
 pnpm security:check            # all of the above
 pnpm security:deepsec:scan     # regex only, no AI
 pnpm security:deepsec:process:diff   # AI review vs origin/main
+pnpm security:deepsec:process:diff:grok  # same, Cursor Grok 4.6
 pnpm security:deepsec:process        # full-repo AI review (local)
 ```
 
@@ -33,11 +34,11 @@ Lockfile integrity (`--frozen-lockfile`), gitleaks, TruffleHog (filesystem + his
 
 [DeepSec](https://deepsec.sh) reviews application code. It does not replace gitleaks, TruffleHog, OSV, or `pnpm audit`. Workspace: `.deepsec/` at the repo root (not a pnpm workspace package). Commit `deepsec.config.ts`, `INFO.md`, and generated matchers. Scan output, `.env.local`, and `node_modules` stay gitignored. Not in pre-commit or `security.yml`.
 
-**Agents:** CI and default local `process` use GPT-5.6 Sol on Codex (`--agent codex --model gpt-5.6-sol`). Alternate: Cursor Grok 4.6 via `pnpm security:deepsec:process:diff:grok`. Both go through Vercel AI Gateway. Claude is not used.
+**Agents:** CI and default local `process` use GPT-5.6 Sol on Codex (`--agent codex --model gpt-5.6-sol`). Alternate: Grok 4.6 on DeepSec `pi` (`pnpm security:deepsec:process:diff:grok`). Both go through Vercel AI Gateway. Claude is not used.
 
 **Local:** `scan` is regex-only and free. `process` / `process:diff` need `AI_GATEWAY_API_KEY`. Full-repo `process` is an operator follow-up.
 
-**CI:** `deepsec.yml` on same-repo PRs from OWNER, MEMBER, or COLLABORATOR. `analyze` uses the gateway key after that gate; the comment job never receives the secret. Without `AI_GATEWAY_API_KEY`, `analyze` is skipped. pnpm 11 `minimumReleaseAge` can fail the `.deepsec` install — exclude a known-safe version in `.deepsec/pnpm-workspace.yaml`, do not set age to `0`. Details: [GitHub Actions](/docs/deployment/github-actions).
+**CI:** Trusted same-repo PRs only. Job split, secrets, and skip conditions: [GitHub Actions](/docs/deployment/github-actions).
 
 ## If a secret lands in git
 

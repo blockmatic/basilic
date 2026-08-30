@@ -49,7 +49,7 @@ Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and p
 
 Source-code review of the PR diff on same-repo pull requests from OWNER, MEMBER, or COLLABORATOR. Forks and untrusted authors skip (no secrets). `analyze` receives `AI_GATEWAY_API_KEY` only after that trusted-author gate (GitHub also requires a maintainer to approve workflow runs from first-time contributors). Two jobs:
 
-1. **analyze** — `contents: read` only. Skipped when `AI_GATEWAY_API_KEY` is not set or the author is untrusted. Checks out the PR for scan input, overlays `.deepsec` from the PR base SHA when that tree exists (bootstrap uses the PR workspace if `.deepsec` is not on the base), writes credentials to `.deepsec/.env.local`, runs Codex `process --files-from` on files from `git diff BASE_SHA...HEAD` with GPT-5.6 Sol via Vercel AI Gateway. Fails on net-new findings. Local alternate: Cursor Grok 4.6 via `pnpm security:deepsec:process:diff:grok`.
+1. **analyze** — `contents: read` only. Skipped when `AI_GATEWAY_API_KEY` is not set or the author is untrusted. Checks out the PR for scan input, overlays `.deepsec` from the PR base SHA when that tree exists (bootstrap uses the PR workspace if `.deepsec` is not on the base), writes credentials to `.deepsec/.env.local`, runs Codex `process --files-from` on files from `git diff BASE_SHA...HEAD` with GPT-5.6 Sol via Vercel AI Gateway. Fails on net-new findings. Local alternate: Grok 4.6 on DeepSec `pi` (`pnpm security:deepsec:process:diff:grok`).
 2. **comment** — `pull-requests: write`. Posts the findings comment. Never checks out or executes PR code. Never receives `AI_GATEWAY_API_KEY`.
 
 Full-repo DeepSec review stays local. See [Security](/docs/architecture/security).
@@ -87,38 +87,8 @@ Pre-commit hooks check:
 3. **OSV** — dependency CVEs
 4. **Formatting** — Biome on staged files
 
-## Best Practices
-
-1. **Run checks locally** - Fix issues before pushing
-   ```bash
-   pnpm lint
-   pnpm checktypes
-   pnpm test
-   ```
-
-2. **Review CodeRabbit suggestions** - Learn from AI feedback and iterate
-
-3. **Keep workflows fast** - Use caching and parallel jobs
-
-4. **Test before merge** - Ensure all checks pass before merging
-
-5. **Monitor CI failures** - Fix broken workflows immediately
-
-## Workflow Files
-
-All workflows are in `.github/workflows/`:
-- `web-e2e.yml` - Next: unit → E2E (local servers, path-filtered)
-- `api-e2e.yml` - API: unit → E2E (local servers, path-filtered)
-- `packages-test.yml` - Packages: unit tests (path-filtered)
-- `mobile-build.yml` - Mobile: manual EAS build (Android)
-- `mobile-preview.yml` - Mobile: EAS build on push to main (path-filtered)
-- `mobile-pr-preview.yml` - Mobile: EAS Update, QR comment on PR (path-filtered)
-- `lint.yml` - Linting checks (every PR)
-- `security.yml` - Secret and dependency scans (every PR and push to main)
-- `deepsec.yml` - Source-code review of the PR diff (same-repo trusted authors)
-
 ## Related Documentation
 
-- [Security](/docs/architecture/security) - Secret scanning and CVE checks
-- [Testing](/docs/testing) - Testing strategies and patterns
-- [Deployment Overview](/docs/deployment) - GitHub Flow and deployment platforms
+- [Security](/docs/architecture/security) — secrets, CVEs, DeepSec local commands
+- [Testing](/docs/testing)
+- [Deployment](/docs/deployment)

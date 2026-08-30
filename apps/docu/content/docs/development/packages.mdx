@@ -26,11 +26,11 @@ Only import from **exported entrypoints** (package root or documented subpaths).
 
 Examples:
 
-- ✅ `import { createClient } from '@repo/core'`
-- ✅ `import { Button } from '@repo/ui/components/button'`
-- ✅ `import { delay } from '@repo/utils/async'`
-- ❌ `import { delay } from '@repo/utils'` (allowed by exports, but discouraged)
-- ❌ `import { something } from '@repo/core/src/...'`
+- `import { createClient } from '@repo/core'`
+- `import { Button } from '@repo/ui/components/button'`
+- `import { delay } from '@repo/utils/async'`
+- Avoid `import { delay } from '@repo/utils'` (allowed by exports, but prefer subpaths)
+- Never `import { something } from '@repo/core/src/...'`
 
 ## Package catalog
 
