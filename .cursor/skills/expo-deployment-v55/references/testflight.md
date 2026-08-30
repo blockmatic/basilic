@@ -8,7 +8,7 @@ Always ship to TestFlight first. Internal testers, then external testers, then A
 npx testflight
 ```
 
-`npx testflight` runs the Expo TestFlight CLI (no install required). It builds and submits to TestFlight in one command. See [Expo docs](https://docs.expo.dev/build-reference/npx-testflight/) for details.
+That's it. One command builds and submits to TestFlight.
 
 ## Skip the Prompts
 
@@ -50,19 +50,7 @@ The CLI prints your Team ID when you run `npx testflight`. Copy it.
 Create the app in App Store Connect first. Bundle ID must match.
 
 **"The bundle version must be higher"**
-Add `autoIncrement` to the build profile's `ios` section in `eas.json`:
-
-```json
-{
-  "build": {
-    "production": {
-      "ios": {
-        "autoIncrement": "buildNumber"
-      }
-    }
-  }
-}
-```
+Use `autoIncrement: true` in `eas.json`. Problem solved.
 
 **Credentials issues**
 ```bash

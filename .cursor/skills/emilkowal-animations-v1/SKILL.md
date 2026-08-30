@@ -5,7 +5,7 @@ description: Emil Kowalski's animation best practices for web interfaces. Use wh
 
 # Emil Kowalski Animation Best Practices
 
-Comprehensive animation guide for web interfaces based on Emil Kowalski's teachings, open-source libraries (Sonner, Vaul), and his [animations.dev](https://animations.dev) course. Contains 43 rules across 7 categories, prioritized by impact.
+Comprehensive animation guide for web interfaces based on Emil Kowalski's teachings, open-source libraries (Sonner, Vaul), and his [animations.dev](https://animations.dev) course. Contains 58 rules across 8 categories, prioritized by impact.
 
 ## When to Apply
 
@@ -16,6 +16,7 @@ Reference these guidelines when:
 - Building toast notifications or drawer components
 - Optimizing animation performance
 - Ensuring animation accessibility
+- Expressing any of the above with Tailwind CSS v4 utilities (see the `tw-` category)
 
 ## Rule Categories by Priority
 
@@ -28,6 +29,7 @@ Reference these guidelines when:
 | 5 | Interaction Patterns | MEDIUM-HIGH | `interact-` |
 | 6 | Strategic Animation | MEDIUM | `strategy-` |
 | 7 | Accessibility & Polish | MEDIUM | `polish-` |
+| 8 | Tailwind v4 Utilities | MEDIUM | `tw-` |
 
 ## Quick Reference
 
@@ -37,6 +39,7 @@ Reference these guidelines when:
 - [`ease-custom-curves`](references/ease-custom-curves.md) - Use custom cubic-bezier over built-in CSS
 - [`ease-in-out-onscreen`](references/ease-in-out-onscreen.md) - Use ease-in-out for on-screen movement
 - [`ease-spring-natural`](references/ease-spring-natural.md) - Use spring animations for natural motion
+- [`ease-spring-config`](references/ease-spring-config.md) - Configure springs with duration and bounce
 - [`ease-ios-drawer`](references/ease-ios-drawer.md) - Use iOS-style easing for drawer components
 - [`ease-context-matters`](references/ease-context-matters.md) - Match easing to animation context
 
@@ -64,6 +67,7 @@ Reference these guidelines when:
 - [`transform-origin-aware`](references/transform-origin-aware.md) - Make animations origin-aware
 - [`transform-scale-children`](references/transform-scale-children.md) - Scale transforms affect children
 - [`transform-3d-preserve`](references/transform-3d-preserve.md) - Use preserve-3d for 3D transform effects
+- [`transform-starting-style`](references/transform-starting-style.md) - Animate enter states with @starting-style
 
 ### 5. Interaction Patterns (MEDIUM-HIGH)
 
@@ -74,6 +78,8 @@ Reference these guidelines when:
 - [`interact-snap-points`](references/interact-snap-points.md) - Implement velocity-aware snap points
 - [`interact-friction-upward`](references/interact-friction-upward.md) - Allow upward drag with friction
 - [`interact-pointer-capture`](references/interact-pointer-capture.md) - Use pointer capture for drag operations
+- [`interact-multitouch`](references/interact-multitouch.md) - Ignore extra touch points during drag
+- [`interact-touch-hover`](references/interact-touch-hover.md) - Gate hover animations behind a pointer media query
 
 ### 6. Strategic Animation (MEDIUM)
 
@@ -82,13 +88,15 @@ Reference these guidelines when:
 - [`strategy-purpose-required`](references/strategy-purpose-required.md) - Every animation must have a purpose
 - [`strategy-feedback-immediate`](references/strategy-feedback-immediate.md) - Provide immediate feedback on all actions
 - [`strategy-marketing-exception`](references/strategy-marketing-exception.md) - Marketing sites are the exception
+- [`strategy-cohesion`](references/strategy-cohesion.md) - Match motion to the component's personality
+- [`strategy-review-fresh-eyes`](references/strategy-review-fresh-eyes.md) - Review animations in slow motion and the next day
 
 ### 7. Accessibility & Polish (MEDIUM)
 
 - [`polish-reduced-motion`](references/polish-reduced-motion.md) - Respect prefers-reduced-motion
 - [`polish-opacity-fallback`](references/polish-opacity-fallback.md) - Use opacity as reduced motion fallback
 - [`polish-framer-hook`](references/polish-framer-hook.md) - Use useReducedMotion hook in Framer Motion
-- [`polish-dont-remove-all`](references/polish-dont-remove-all.md) - Don't remove all animation for reduced motion
+- [`polish-dont-remove-all`](references/polish-dont-remove-all.md) - Keep gentle animation for reduced motion
 - [`polish-blur-bridge`](references/polish-blur-bridge.md) - Use blur to bridge animation states
 - [`polish-clip-path-tabs`](references/polish-clip-path-tabs.md) - Use clip-path for tab transitions
 - [`polish-toast-stacking`](references/polish-toast-stacking.md) - Implement toast stacking with scale and offset
@@ -96,10 +104,25 @@ Reference these guidelines when:
 - [`polish-hover-gap-fill`](references/polish-hover-gap-fill.md) - Fill gaps between hoverable elements
 - [`polish-stagger-children`](references/polish-stagger-children.md) - Stagger child animations for orchestration
 
+### 8. Tailwind v4 Utilities (MEDIUM)
+
+Express the principles above with proper Tailwind CSS v4 utilities. Applies only to Tailwind v4 projects; the raw-CSS and Framer Motion rules above remain the source of truth.
+
+- [`tw-ease-duration-defaults`](references/tw-ease-duration-defaults.md) - Set ease-out and a sub-300ms duration explicitly
+- [`tw-custom-easing-theme`](references/tw-custom-easing-theme.md) - Register custom easing curves as @theme tokens
+- [`tw-press-scale`](references/tw-press-scale.md) - Use active:scale-[0.97] for button press feedback
+- [`tw-asymmetric-timing`](references/tw-asymmetric-timing.md) - Split press and release timing with active:duration
+- [`tw-starting-enter`](references/tw-starting-enter.md) - Animate enter states with the starting: variant
+- [`tw-reduced-motion`](references/tw-reduced-motion.md) - Gate movement behind motion-safe / motion-reduce
+- [`tw-origin-aware`](references/tw-origin-aware.md) - Set transform-origin with origin-* utilities
+- [`tw-will-change`](references/tw-will-change.md) - Scope will-change-transform to the active gesture
+
 ## Key Values Reference
 
 | Value | Usage |
 |-------|-------|
+| `cubic-bezier(0.23, 1, 0.32, 1)` | Strong ease-out for UI interactions |
+| `cubic-bezier(0.77, 0, 0.175, 1)` | Strong ease-in-out for on-screen movement |
 | `cubic-bezier(0.32, 0.72, 0, 1)` | iOS-style drawer/sheet animation |
 | `scale(0.97)` | Button press feedback |
 | `scale(0.95)` | Minimum enter scale (never scale(0)) |
@@ -110,11 +133,22 @@ Reference these guidelines when:
 | `100px` | Scroll-reveal viewport threshold |
 | `14px` | Toast stack offset |
 
+## Duration by Element
+
+Pick duration by how often the element is seen and how much it moves. Keep UI animations under 300ms.
+
+| Element | Duration |
+|---------|----------|
+| Button press feedback | 100–160ms |
+| Tooltips, small popovers | 125–200ms |
+| Dropdowns, selects | 150–250ms |
+| Modals, drawers | 200–500ms |
+| Marketing / explanatory | Can be longer |
+
 ## Reference Files
 
-| Category | Example References |
-|----------|-------------------|
-| Easing | [ease-context-matters](references/ease-context-matters.md), [ease-ios-drawer](references/ease-ios-drawer.md) |
-| Timing | [timing-300ms-max](references/timing-300ms-max.md), [timing-drawer-500ms](references/timing-drawer-500ms.md) |
-| Props & Transform | [props-transform-opacity](references/props-transform-opacity.md), [transform-scale-097](references/transform-scale-097.md) |
-| Interaction & Polish | [interact-interruptible](references/interact-interruptible.md), [polish-reduced-motion](references/polish-reduced-motion.md) |
+| File | Description |
+|------|-------------|
+| [references/_sections.md](references/_sections.md) | Category definitions and ordering |
+| [assets/templates/_template.md](assets/templates/_template.md) | Template for new rules |
+| [metadata.json](metadata.json) | Version and reference information |

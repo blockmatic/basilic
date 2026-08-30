@@ -1,27 +1,29 @@
 ---
 name: expo-cicd-workflows-v55
-description: Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.
-allowed-tools: "Read,Write,Bash(node:*)"
+description: EAS service (paid). Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.
+allowed-tools: "Read,Write,Bash(node:*),Bash(npx *eas-cli@*)"
 version: 1.0.0
 license: MIT License
 ---
 
 # EAS Workflows Skill
 
+> **EAS service - costs apply.** EAS Workflows run on Expo Application Services, a paid product with free-tier limits. Each workflow job consumes your plan's build/compute minutes, and jobs that build or submit also need paid Apple Developer and Google Play accounts. Review https://expo.dev/pricing before triggering runs.
+
 Help developers write and edit EAS CI/CD workflow YAML files.
 
 ## Reference Documentation
 
-Fetch these resources before generating or validating workflow files. Use the fetch script (implemented using Node.js) in this skill's `scripts/` directory; it caches responses using ETags for efficiency:
+Fetch these resources before generating or editing workflow files, or when answering syntax questions. First resolve this skill's directory, then use the fetch script in its `scripts/` directory. It is implemented using Node.js and caches responses using ETags for efficiency:
 
 ```bash
 # Fetch resources
-node {baseDir}/scripts/fetch.js <url>
+node <skill-dir>/scripts/fetch.js <url>
 ```
 
 1. **JSON Schema** — https://api.expo.dev/v2/workflows/schema
    - It is NECESSARY to fetch this schema
-   - Source of truth for validation
+   - Source of truth for the workflow YAML structure; EAS CLI remains the authoritative final validator
    - All job types and their required/optional parameters
    - Trigger types and configurations
    - Runner types, VM images, and all enums
@@ -39,7 +41,7 @@ Do not rely on memorized values; these resources evolve as new features are adde
 
 ## Workflow File Location
 
-Workflows live in `.eas/workflows/*.yml` (or `.yaml`).
+Workflows live in `.eas/workflows/*.yml` (or `.yaml`). Each file must be 16 KiB or smaller.
 
 ## Top-Level Structure
 
@@ -76,17 +78,22 @@ When generating or editing workflows:
 
 ## Validation
 
-After generating or editing a workflow file, validate it against the schema:
+After generating or editing a workflow file, validate it with EAS CLI from the Expo project root:
 
 ```sh
-# Install dependencies if missing
-[ -d "{baseDir}/scripts/node_modules" ] || npm install --prefix {baseDir}/scripts
-
-node {baseDir}/scripts/validate.js <workflow.yml> [workflow2.yml ...]
+npx -y eas-cli@latest workflow:validate .eas/workflows/<workflow.yml> --non-interactive
 ```
 
-The validator fetches the latest schema and checks the YAML structure. Fix any reported errors before considering the workflow complete.
+Run the command separately for each changed workflow file. It requires a logged-in EAS CLI session and a linked Expo project. Unlike schema-only validation, it also checks build profile references against the project's `eas.json` and performs EAS server-side validation. Fix every reported error and rerun the command until it prints `Workflow configuration YAML is valid.` Do not replace this command with a local YAML or JSON Schema validator.
 
 ## Answering Questions
 
 When users ask about available options (job types, triggers, runner types, etc.), fetch the schema and derive the answer from it rather than relying on potentially outdated information.
+
+## Submitting Feedback
+If you encounter errors, misleading or outdated information in this skill, report it so Expo can improve:
+```bash
+npx --yes submit-expo-feedback@latest --category skills --subject "eas-workflows" "<actionable feedback>"
+```
+Only submit when you have something specific and actionable to report. Include as much relevant context as possible.
+If an AI agent repeatedly failed or the user had to take over an Expo task, load the expo-skill-feedback skill and follow its eval-candidate flow instead of reusing the command above.

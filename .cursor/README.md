@@ -5,7 +5,7 @@ Rules, skills, and MCP for AI-assisted development. Daily workflow: [AI Developm
 ## Layout
 
 - [`rules/`](rules/) — constraints. Glob-scoped except `base/general.mdc`, `base/naming.mdc`, `base/git.mdc` (always on).
-- [`skills/`](skills/) — on-demand expertise (`<topic>-v<major>/`) and slash playbooks (`workflow/<name>/`).
+- [`skills/`](skills/) — on-demand expertise (`<topic>-v<major>/`) and slash playbooks (`workflow/<name>/`). How to version and update: [Cursor Skills](../apps/docu/content/docs/development/cursor-skills.mdx).
 - [`mcp.json`](mcp.json) — MCP servers. Setup: [Cursor Setup](../apps/docu/content/docs/development/cursor-setup.mdx).
 
 Type `/` in chat for playbooks (`/plan-feature`, `/exec-push`, `/git-commit`). Tech skills load when relevant, or `@.cursor/skills/<name>`.
@@ -14,4 +14,5 @@ Type `/` in chat for playbooks (`/plan-feature`, `/exec-push`, `/git-commit`). T
 
 - [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)
 - [Cursor Setup](https://basilic-docs.vercel.app/docs/development/cursor-setup)
+- [Cursor Skills](https://basilic-docs.vercel.app/docs/development/cursor-skills)
 - [Cursor rules](https://cursor.com/docs/context/rules) · [skills](https://cursor.com/docs/context/skills)

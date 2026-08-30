@@ -2,6 +2,24 @@
 
 Manage App Store metadata and optimize for ASO using EAS Metadata.
 
+## Contents
+
+- [What is EAS Metadata?](#what-is-eas-metadata)
+- [Getting Started](#getting-started)
+- [Configuration File](#configuration-file)
+- [App Store Optimization (ASO)](#app-store-optimization-aso)
+- [Categories](#categories)
+- [Localization](#localization)
+- [Dynamic Configuration](#dynamic-configuration)
+- [Age Rating (Advisory)](#age-rating-advisory)
+- [Release Strategy](#release-strategy)
+- [Review Information](#review-information)
+- [ASO Checklist](#aso-checklist)
+- [VS Code Integration](#vs-code-integration)
+- [Common Issues](#common-issues)
+- [CI/CD Integration](#cicd-integration)
+- [Tips](#tips)
+
 ## What is EAS Metadata?
 
 EAS Metadata automates App Store presence management from the command line using a `store.config.json` file instead of manually filling forms in App Store Connect. It includes built-in validation to catch common rejection pitfalls.
@@ -128,19 +146,7 @@ Hidden from users but crucial for discoverability. Use comma-separated keywords 
 ```json
 {
   "keywords": [
-    "finance",
-    "budget",
-    "expense",
-    "money",
-    "tracker",
-    "savings",
-    "bills",
-    "income",
-    "spending",
-    "wallet",
-    "personal",
-    "weekly",
-    "monthly"
+    "finance,budget,expense,money,tracker,savings,bills,income,spending,wallet,personal,weekly,monthly"
   ]
 }
 ```
@@ -228,22 +234,22 @@ Localize metadata for each target market. Keywords should be researched per loca
     "en-US": {
       "title": "Budgetly - Money Tracker",
       "subtitle": "Smart Expense Planner",
-      "keywords": ["budget", "finance", "money", "expense", "tracker"]
+      "keywords": ["budget,finance,money,expense,tracker"]
     },
     "es-ES": {
       "title": "Budgetly - Control de Gastos",
       "subtitle": "Planificador de Presupuesto",
-      "keywords": ["presupuesto", "finanzas", "dinero", "gastos", "ahorro"]
+      "keywords": ["presupuesto,finanzas,dinero,gastos,ahorro"]
     },
     "ja": {
       "title": "Budgetly - 家計簿アプリ",
       "subtitle": "簡単支出管理",
-      "keywords": ["家計簿", "支出", "予算", "節約", "お金"]
+      "keywords": ["家計簿,支出,予算,節約,お金"]
     },
     "de-DE": {
       "title": "Budgetly - Haushaltsbuch",
       "subtitle": "Ausgaben Verwalten",
-      "keywords": ["budget", "finanzen", "geld", "ausgaben", "sparen"]
+      "keywords": ["budget,finanzen,geld,ausgaben,sparen"]
     }
   }
 }

@@ -1,6 +1,6 @@
 ---
 name: expo-tailwind-setup-v55
-description: Set up Tailwind CSS v4 in Expo with react-native-css and NativeWind v5 for universal styling
+description: Framework (OSS). Set up Tailwind CSS v4 in Expo with react-native-css and NativeWind v5 for universal styling
 version: 1.0.0
 license: MIT
 ---
@@ -20,19 +20,17 @@ This setup uses:
 
 ## Installation
 
-> **Note:** `react-native-css@0.0.0-nightly.5ce6396` and `nativewind@5.0.0-preview.2` are pre-release/experimental and may be unstable. Check for newer stable releases before using.
-
 ```bash
 # Install dependencies
 npx expo install tailwindcss@^4 nativewind@5.0.0-preview.2 react-native-css@0.0.0-nightly.5ce6396 @tailwindcss/postcss tailwind-merge clsx
 ```
 
-Add pnpm overrides for lightningcss compatibility:
+Add resolutions for lightningcss compatibility:
 
 ```json
 // package.json
 {
-  "overrides": {
+  "resolutions": {
     "lightningcss": "1.30.1"
   }
 }
@@ -81,7 +79,9 @@ export default {
 Create `src/global.css`:
 
 ```css
-@import "tailwindcss";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
 
 /* Platform-specific font families */
 @media android {
@@ -102,8 +102,6 @@ Create `src/global.css`:
   }
 }
 ```
-
-> Use granular imports (`@import "tailwindcss/theme.css" layer(theme);`, etc.) only when deliberately omitting or customizing Preflight or other layers.
 
 ## IMPORTANT: No Babel Config Needed
 
@@ -149,18 +147,16 @@ import {
 } from "react-native";
 
 // CSS-enabled Link
-const LinkBase = (
+export const Link = (
   props: React.ComponentProps<typeof RouterLink> & { className?: string }
 ) => {
   return useCssElement(RouterLink, props, { className: "style" });
 };
 
-export const Link = Object.assign(LinkBase, {
-  Trigger: RouterLink.Trigger,
-  Menu: RouterLink.Menu,
-  MenuAction: RouterLink.MenuAction,
-  Preview: RouterLink.Preview,
-});
+Link.Trigger = RouterLink.Trigger;
+Link.Menu = RouterLink.Menu;
+Link.MenuAction = RouterLink.MenuAction;
+Link.Preview = RouterLink.Preview;
 
 // CSS Variable hook
 export const useCSSVariable =
@@ -232,7 +228,7 @@ export const AnimatedScrollView = (
 };
 
 // TouchableHighlight with underlayColor extraction
-function BaseTouchableHighlight(
+function XXTouchableHighlight(
   props: React.ComponentProps<typeof RNTouchableHighlight>
 ) {
   const { underlayColor, ...style } = StyleSheet.flatten(props.style) || {};
@@ -248,11 +244,9 @@ function BaseTouchableHighlight(
 export const TouchableHighlight = (
   props: React.ComponentProps<typeof RNTouchableHighlight>
 ) => {
-  return useCssElement(BaseTouchableHighlight, props, { className: "style" });
+  return useCssElement(XXTouchableHighlight, props, { className: "style" });
 };
 TouchableHighlight.displayName = "CSS(TouchableHighlight)";
-
-export { Image } from "./image";
 ```
 
 ### Image Component (`src/tw/image.tsx`)
@@ -309,8 +303,6 @@ export const Animated = {
 ```
 
 ## Usage
-
-See also: @expo-deployment-v55, @expo-cicd-workflows-v55.
 
 Import CSS-wrapped components from your tw directory:
 
@@ -388,28 +380,22 @@ Create a CSS file for Apple semantic colors:
 }
 
 :root {
-  --sf-blue: rgb(0 122 255);
-  --sf-green: rgb(52 199 89);
-  --sf-red: rgb(255 59 48);
-  --sf-gray: rgb(142 142 147);
-  --sf-gray-2: rgb(174 174 178);
-  --sf-text: rgb(0 0 0);
-  --sf-text-2: rgb(60 60 67 / 0.6);
-  --sf-bg: rgb(255 255 255);
-  --sf-bg-2: rgb(242 242 247);
-}
+  /* Accent colors with light/dark mode */
+  --sf-blue: light-dark(rgb(0 122 255), rgb(10 132 255));
+  --sf-green: light-dark(rgb(52 199 89), rgb(48 209 89));
+  --sf-red: light-dark(rgb(255 59 48), rgb(255 69 58));
 
-.dark,
-[data-theme="dark"] {
-  --sf-blue: rgb(10 132 255);
-  --sf-green: rgb(48 209 89);
-  --sf-red: rgb(255 69 58);
-  --sf-gray: rgb(142 142 147);
-  --sf-gray-2: rgb(99 99 102);
-  --sf-text: rgb(255 255 255);
-  --sf-text-2: rgb(235 235 245 / 0.6);
-  --sf-bg: rgb(0 0 0);
-  --sf-bg-2: rgb(28 28 30);
+  /* Gray scales */
+  --sf-gray: light-dark(rgb(142 142 147), rgb(142 142 147));
+  --sf-gray-2: light-dark(rgb(174 174 178), rgb(99 99 102));
+
+  /* Text colors */
+  --sf-text: light-dark(rgb(0 0 0), rgb(255 255 255));
+  --sf-text-2: light-dark(rgb(60 60 67 / 0.6), rgb(235 235 245 / 0.6));
+
+  /* Background colors */
+  --sf-bg: light-dark(rgb(255 255 255), rgb(0 0 0));
+  --sf-bg-2: light-dark(rgb(242 242 247), rgb(28 28 30));
 }
 
 /* iOS native colors via platformColor */
@@ -465,18 +451,14 @@ function MyComponent() {
 
 ## Key Differences from NativeWind v4 / Tailwind v3
 
-See also: @expo-deployment-v55, @expo-cicd-workflows-v55.
-
 1. **No babel.config.js** - Configuration is now CSS-first
 2. **PostCSS plugin** - Uses `@tailwindcss/postcss` instead of `tailwindcss`
-3. **CSS imports** - Use single `@import "tailwindcss";` (granular imports like `@import "tailwindcss/components";` only as an explicit exception)
+3. **CSS imports** - Use `@import "tailwindcss/..."` instead of `@tailwind` directives
 4. **Theme config** - Use `@theme` in CSS instead of `tailwind.config.js`
 5. **Component wrappers** - Must wrap components with `useCssElement` for className support
 6. **Metro config** - Use `withNativewind` with different options (`inlineVariables: false`)
 
 ## Troubleshooting
-
-See also: @expo-deployment-v55, @expo-cicd-workflows-v55.
 
 ### Styles not applying
 
@@ -487,7 +469,7 @@ See also: @expo-deployment-v55, @expo-cicd-workflows-v55.
 ### Platform colors not working
 
 1. Use `platformColor()` in `@media ios` blocks
-2. For web/Android, use explicit `:root` (light) and `.dark` / `[data-theme="dark"]` (dark) overrides; react-native-css does not support `light-dark()`
+2. Fall back to `light-dark()` for web/Android
 
 ### TypeScript errors
 
@@ -496,3 +478,11 @@ Add className to component props:
 ```tsx
 type Props = React.ComponentProps<typeof RNView> & { className?: string };
 ```
+
+## Submitting Feedback
+If you encounter errors, misleading or outdated information in this skill, report it so Expo can improve:
+```bash
+npx --yes submit-expo-feedback@latest --category skills --subject "expo-tailwind-setup" "<actionable feedback>"
+```
+Only submit when you have something specific and actionable to report. Include as much relevant context as possible.
+If an AI agent repeatedly failed or the user had to take over an Expo task, load the expo-skill-feedback skill and follow its eval-candidate flow instead of reusing the command above.

@@ -1,6 +1,6 @@
 ---
 name: expo-use-dom-v55
-description: Use Expo DOM components to run web code in a webview on native and as-is on web. Migrate web code to native incrementally.
+description: Framework (OSS). Use Expo DOM components to run web code in a webview on native and as-is on web. Migrate web code to native incrementally. For the end-to-end migration of a whole web app, use the expo-web-to-native skill.
 version: 1.0.0
 license: MIT
 ---
@@ -415,3 +415,11 @@ On web, the `dom` prop is ignored since no webview is needed.
 - Test on all platforms — web rendering may differ slightly from native webviews
 - Large DOM components may impact performance — profile if needed
 - The webview has its own JavaScript context — cannot directly share state with native
+
+## Submitting Feedback
+If you encounter errors, misleading or outdated information in this skill, report it so Expo can improve:
+```bash
+npx --yes submit-expo-feedback@latest --category skills --subject "expo-dom" "<actionable feedback>"
+```
+Only submit when you have something specific and actionable to report. Include as much relevant context as possible.
+If an AI agent repeatedly failed or the user had to take over an Expo task, load the expo-skill-feedback skill and follow its eval-candidate flow instead of reusing the command above.

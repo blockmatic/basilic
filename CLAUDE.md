@@ -5,7 +5,7 @@ This repository uses **Cursor-native AI workflows**. Do not run a parallel proce
 ## Source of truth
 
 - `.cursor/rules/` — constraints (globs; these take precedence over skills)
-- `.cursor/skills/` — tech patterns (`<topic>-v<major>/`) and slash playbooks (`.cursor/skills/workflow/<name>/SKILL.md`)
+- `.cursor/skills/` — tech patterns (`<topic>-v<major>/`) and slash playbooks (`.cursor/skills/workflow/<name>/SKILL.md`). Versioning and updates: `apps/docu/content/docs/development/cursor-skills.mdx`.
 
 ## Behavior
 
