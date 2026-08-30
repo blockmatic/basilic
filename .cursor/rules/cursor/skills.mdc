@@ -1,6 +1,6 @@
 ---
 description: Best practices for writing high-quality agent skills
-globs: ".cursor/skills/**/*"
+globs: ".agents/skills/**/*"
 alwaysApply: false
 ---
 
@@ -9,7 +9,7 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 
 ## Two kinds
 - **Tech** (`<topic>-v<major>/`, e.g. `fastify-v5`): agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions
-- **Workflow** (`workflow/<name>/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned
+- **Workflow** (`<name>/` under `.agents/skills/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned
 
 ## Principles
 - One primary topic per skill; independent versions = separate skills

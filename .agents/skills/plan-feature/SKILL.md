@@ -13,5 +13,5 @@ Systematically set up new feature from planning through implementation structure
 5. **Create feature branch**: Branch from main/develop, set up local dev, configure dependencies
 6. **Plan architecture**: Design data models/APIs, plan UI components/flow, consider testing strategy, document requirements
 7. **Add diagrams**: For architecture, data flow, or component relationships, generate Mermaid diagrams. Use `flowchart` (process flows), `sequenceDiagram` (API/request flows), `classDiagram` (structures), `erDiagram` (DB schemas), `stateDiagram-v2` (lifecycles). Clear labels, subgraphs for grouping, wrap in mermaid code blocks. Split into multiple diagrams if complex.
-8. **Output structure**: ## Goals first, then body, then ## References. List paths to each rule, skill, and MDX page used (plain paths, no `@`). Example: `apps/docu/content/docs/architecture/api.mdx`, `.cursor/rules/backend/fastify.mdc`, `.cursor/skills/fastify-v5`.
+8. **Output structure**: ## Goals first, then body, then ## References. List paths to each rule, skill, and MDX page used (plain paths, no `@`). Example: `apps/docu/content/docs/architecture/api.mdx`, `.cursor/rules/backend/fastify.mdc`, `.agents/skills/fastify-v5`.
 9. **Defer when uncertain**: Ask questions when in doubt; defer to user for ambiguous, high-risk decisions

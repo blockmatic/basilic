@@ -17,7 +17,7 @@ Components in `packages/ui/src/components/`. App's `components.json`: `"utils": 
 `import { Button } from "@repo/ui/components/button"`, `import { cn } from "@repo/ui/lib/utils"`
 
 ## Component Patterns
-Use cva for variants, `cn` for class merging. See @.cursor/skills/shadcn-v3
+Use cva for variants, `cn` for class merging. See @.agents/skills/shadcn-v3
 
 ## Design System Organization
 **Base (Primitives) → `@repo/ui`**: `packages/ui/src/components/`, shared across apps

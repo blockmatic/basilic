@@ -5,16 +5,16 @@ alwaysApply: false
 ---
 
 ## Expo Router
-File-based routing: `src/app/`, `_layout.tsx`, route groups `(group)`. `_layout` cannot be DOM component—see @.cursor/skills/expo-use-dom-v55
+File-based routing: `src/app/`, `_layout.tsx`, route groups `(group)`. `_layout` cannot be DOM component—see @.agents/skills/expo-use-dom-v55
 
 ## NativeTabs (SDK 55+)
-Use `NativeTabs.Trigger.Icon`, `NativeTabs.Trigger.Label`, `NativeTabs.Trigger.Badge` (not separate imports). See @.cursor/skills/expo-upgrading-v55/references/native-tabs.md
+Use `NativeTabs.Trigger.Icon`, `NativeTabs.Trigger.Label`, `NativeTabs.Trigger.Badge` (not separate imports). See @.agents/skills/expo-upgrading-v55/references/native-tabs.md
 
 ## React Native
 Primitives only: View, Text, Pressable, ScrollView—no HTML elements
 
 ## Styling
-Tailwind via NativeWind v5 + react-native-css. Use `className` on View, Text, Pressable, etc. StyleSheet for complex cases. See @.cursor/skills/expo-tailwind-setup-v55
+Tailwind via NativeWind v5 + react-native-css. Use `className` on View, Text, Pressable, etc. StyleSheet for complex cases. See @.agents/skills/expo-tailwind-setup-v55
 
 ## Platform extensions
 Use `.web.tsx`, `.native.tsx` for platform-specific code

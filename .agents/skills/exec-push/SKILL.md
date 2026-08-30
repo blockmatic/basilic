@@ -10,6 +10,6 @@ Execute plan or instructions, validate, commit, push, and create a PR. Use when 
 2. **Execute**: Implement the plan/instructions—follow `.cursor/rules`, `apps/docu/content/docs/` topic MDX, and relevant skills
 3. **Docs**: If behavior, commands, or conventions changed, update matching MDX and nearest README in the same change
 4. **Validate**: Run `pnpm qa` and resolve any failures
-5. **Commit**: Follow steps in @.cursor/skills/workflow/git-commit/SKILL.md
+5. **Commit**: Follow steps in @.agents/skills/git-commit/SKILL.md
 6. **Push**: `git push`
 7. **Pull Request**: If a PR does not already exist for your branch, open a new PR without a description. Skip if a PR already exists for this branch.

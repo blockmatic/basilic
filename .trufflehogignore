@@ -4,7 +4,7 @@
 
 # Documentation files (contain example connection strings)
 ^apps/docu/.*
-^\.cursor/skills/.*
+^\.agents/skills/.*
 ^packages/.*/README\.md$
 
 # Committed env templates and defaults (match scripts/block-secret-files.mjs allowlist)

@@ -152,7 +152,7 @@
         "**/scripts/**/*.ts",
         "**/scripts/**/*.js",
         "**/scripts/**/*.cjs",
-        ".cursor/skills/**/*.js"
+        ".agents/skills/**/*.js"
       ],
       "linter": {
         "rules": {

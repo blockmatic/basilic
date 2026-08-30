@@ -16,8 +16,8 @@ Always-on rules point at `apps/docu/content/docs/`. Glob rules are constraints o
 | Layer | Role | How it loads |
 | --- | --- | --- |
 | **Rules** (`.cursor/rules/*.mdc`) | Constraints. Override everything else | Always on: `general`, `naming`, `git`. Other rules attach when matching files are in context |
-| **Workflow skills** (`.cursor/skills/workflow/`) | Slash playbooks | Type `/name` |
-| **Tech skills** (`.cursor/skills/<topic>-v<major>/`) | Patterns for a stack | Agent loads when relevant; `@` or `/` to force |
+| **Workflow skills** (`.agents/skills/<name>/`) | Slash playbooks | Type `/name` |
+| **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Patterns for a stack | Agent loads when relevant; `@` or `/` to force |
 | **Indexed docs** | Advisory | Never override rules or source |
 
 ## Slash workflows
@@ -27,11 +27,11 @@ In Cursor chat, type `/` then the skill name.
 - **Enter** — attach for this message only
 - **Option+Enter** (Alt+Enter) — pin for the session
 
-Daily set: `/plan-feature`, `/exec-push`, `/git-commit`, `/code-review`, `/deslop`, `/retro`. `/` lists the rest. Names match the folder under `.cursor/skills/workflow/` (`audit-accessibility`, not the old typo).
+Daily set: `/plan-feature`, `/exec-push`, `/git-commit`, `/code-review`, `/deslop`, `/retro`. `/` lists the rest. Names match the folder under `.agents/skills/` (`audit-accessibility`, not the old typo).
 
 Do not `@.cursor/commands/…` — that directory is gone.
 
-Claude Code has no `/` menu. Read `.cursor/skills/workflow/<name>/SKILL.md` instead.
+Claude Code has no `/` menu. Read `.agents/skills/<name>/SKILL.md` instead.
 
 ## Workflow
 
@@ -40,7 +40,7 @@ Claude Code has no `/` menu. Read `.cursor/skills/workflow/<name>/SKILL.md` inst
 3. **Execute** — `/exec-push` (or implement in small steps). Composer 2.5 is fine for mechanical multi-file edits; stay on Grok 4.6 or Sol when judgment is still required. Test between steps.
 4. **Commit** — `/git-commit`. Ship &lt;30-minute chunks.
 
-Tech skills (`fastify-v5`, `next-v16`, `vercel-react-v1`) usually attach themselves. Force with `@.cursor/skills/fastify-v5` or `/fastify-v5`.
+Tech skills (`fastify-v5`, `next-v16`, `vercel-react-v1`) usually attach themselves. Force with `@.agents/skills/fastify-v5` or `/fastify-v5`.
 
 ## Models (30 Aug 2026)
 

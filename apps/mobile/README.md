@@ -55,7 +55,7 @@ export function MyScreen() {
 }
 ```
 
-Global styles live in `src/global.css`. Use StyleSheet for complex cases. See `.cursor/rules/frontend/expo.mdc` and `@.cursor/skills/expo-tailwind-setup-v55`.
+Global styles live in `src/global.css`. Use StyleSheet for complex cases. See `.cursor/rules/frontend/expo.mdc` and `@.agents/skills/expo-tailwind-setup-v55`.
 
 ## API / Environment
 
