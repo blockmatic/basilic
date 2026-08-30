@@ -1,1 +1,9 @@
 packages: []
+
+allowBuilds:
+  '@google/genai': false
+  protobufjs: false
+
+# qs 6.16.0 patches CVE-2026-82417 and CVE-2026-82562; published inside the 24h cooldown.
+minimumReleaseAgeExclude:
+  - qs@6.16.0

@@ -25,6 +25,8 @@ env vars needed.
 
 From the monorepo root: `pnpm security:deepsec:scan`, `pnpm security:deepsec:process:diff` (GPT-5.6 Sol / Codex), `pnpm security:deepsec:process:diff:grok` (Cursor Grok 4.6 / Pi), `pnpm security:deepsec:process`, `pnpm security:deepsec:report`. CI uses Sol GPT on same-repo PRs (`.github/workflows/deepsec.yml`). Not in pre-commit or `security.yml`.
 
+pnpm 11 rejects lockfile entries younger than 24 hours (`minimumReleaseAge`). Security patches published inside that window go in `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` (currently `qs@6.16.0` for CVE-2026-82417 / CVE-2026-82562). Install scripts must be listed under `allowBuilds` (`true` to run, `false` to skip).
+
 ## Daily commands
 
 ```bash

@@ -166,6 +166,20 @@ node scripts/setup-osv-scanner.mjs
 
 **Note**: osv-scanner is optional. Used for scanning dependencies with `pnpm security:osv`.
 
+### `setup:deepsec` (package.json)
+
+Installs the DeepSec workspace in `.deepsec/` (same as CI `deepsec.yml`).
+
+**What it installs**:
+- **deepsec** and transitive deps from `.deepsec/pnpm-lock.yaml`
+
+**Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+```bash
+pnpm setup:deepsec
+```
+
+**Note**: Required for `pnpm security:deepsec:*` commands. `process` still needs `AI_GATEWAY_API_KEY`.
+
 ### `setup-security-tools.mjs`
 
 Installs all security tools (gitleaks and osv-scanner).
