@@ -18,7 +18,7 @@ Data flow: TypeBox (backend) → OpenAPI spec → generated types & Zod schemas 
 
 ## Stack
 
-- Runtime: Node.js 24.20.0 (LTS Krypton) — stability, ecosystem, tooling
+- Runtime: Node.js 24.x (local/CI pin 24.20.0 LTS Krypton) — stability, ecosystem, tooling
 - Framework: Fastify — performance, TypeBox, plugin-based, ESM-native
 - Database: PostgreSQL (any host via `DATABASE_URL`; PGLite for tests with `PGLITE=true`)
 - ORM: Drizzle — type-safe queries, SQL-like syntax, no code generation

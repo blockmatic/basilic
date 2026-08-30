@@ -25,7 +25,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - **Frontend:** Next.js 16, React 19, Tailwind, ShadcnUI
 - **Backend:** Fastify, PostgreSQL, Supabase
 - **Web3:** Solidity, Viem, Wagmi, Ponder, Solana
-- **DevOps:** Node.js 24.20.0 (LTS Krypton), pnpm, TurboRepo, TypeScript, Biome, ESLint
+- **DevOps:** Node.js 24.x (local/CI pin 24.20.0 LTS Krypton), pnpm, TurboRepo, TypeScript, Biome, ESLint
 
 ## Apps
 

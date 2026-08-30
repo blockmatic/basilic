@@ -5,7 +5,7 @@
   "description": "This project was bootstrapped with Fastify-CLI.",
   "main": "dist/server.js",
   "engines": {
-    "node": "24.20.0"
+    "node": "24.x"
   },
   "directories": {
     "test": "test"
