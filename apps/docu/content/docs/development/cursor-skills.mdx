@@ -15,9 +15,11 @@ Forks install interactively:
 
 ```bash
 npx skills@latest add blockmatic/basilic-skills
+pnpm dlx skills@latest add blockmatic/basilic-skills
+bunx skills@latest add blockmatic/basilic-skills
 ```
 
-This repo vendors committed copies under `.cursor/skills/` so Cloud Agents and CI do not need a sibling clone. Refresh by copying from the catalog (see Update procedure) and re-running the skills CLI to update `skills-lock.json`.
+This repo vendors committed copies under `.cursor/skills/` so Cloud Agents and CI do not need a sibling clone. Refresh from the public GitHub catalog (see Update procedure) and re-run the skills CLI to update `skills-lock.json`.
 
 Root `skills-lock.json` tracks catalog hashes (`source: blockmatic/basilic-skills`).
 
@@ -44,9 +46,27 @@ This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is 
 
 ## Update procedure
 
-1. Edit [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills).
-2. Copy changed trees into `.cursor/skills/<name>/` (tech) or `.cursor/skills/workflow/<name>/` (playbooks). A sibling clone: `rsync -a ../basilic-skills/skills/workflow/ .cursor/skills/workflow/` and per-tech `rsync -a ../basilic-skills/skills/<name>/ .cursor/skills/<name>/`.
-3. Refresh the lockfile: `npx skills@latest add blockmatic/basilic-skills --agent cursor --copy --skill '*' -y`, then remove `.agents/` if the CLI created it.
+1. Edit and push [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on GitHub (canonical catalog).
+2. From this repo root, pull from GitHub and refresh the lockfile:
+
+```bash
+npx skills@latest add blockmatic/basilic-skills --agent cursor --copy --skill '*' -y
+pnpm dlx skills@latest add blockmatic/basilic-skills --agent cursor --copy --skill '*' -y
+bunx skills@latest add blockmatic/basilic-skills --agent cursor --copy --skill '*' -y
+```
+
+3. The CLI writes flat trees under `.agents/skills/`. Copy into Basilic’s nested layout, then remove `.agents/`:
+
+```bash
+# tech skills → .cursor/skills/<name>/
+# playbooks → .cursor/skills/workflow/<name>/
+rsync -a .agents/skills/<name>/ .cursor/skills/<name>/          # tech example
+rsync -a .agents/skills/plan-feature/ .cursor/skills/workflow/plan-feature/
+rm -rf .agents
+```
+
+   **Authoring shortcut:** when you have a sibling clone and have not pushed yet, `rsync -a ../basilic-skills/skills/workflow/ .cursor/skills/workflow/` and per-tech `rsync -a ../basilic-skills/skills/<name>/ .cursor/skills/<name>/`, then run step 2 after push so `skills-lock.json` matches GitHub.
+
 4. Review the diff; commit vendored trees + `skills-lock.json`.
 
 Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.

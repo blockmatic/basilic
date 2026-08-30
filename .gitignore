@@ -55,6 +55,7 @@ npm-debug.log*
 .DS_Store
 *.pem
 __dev__dev
+.agents
 
 # TypeScript build info
 *.tsbuildinfo
