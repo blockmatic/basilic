@@ -14,7 +14,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - 🔓 **Zero vendor lock-in** — Run on VPS, AWS, Vercel, or local
 - 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
-- 🛡️ **Security & quality** — Automated checks in CI (e.g. Gitleaks, OSV)
+- 🛡️ **Security & quality** — Automated checks in CI (Gitleaks, OSV, DeepSec)
 - ⛓️ **Multichain** — EVM, Solana; shared validation and chain-specific tooling
 - 📐 **Conventions** — Cursor rules per domain, @repo/error, Pino logging, shared TS and style
 - 🧑‍💻 **TypeScript-first** — End-to-end types from database to frontend
@@ -71,7 +71,7 @@ Run with `pnpm <script>`.
   - `test` — Run unit tests (packages + apps)
   - `test:e2e` — E2E (Fastify + Next)
 **CI**
-  - Lint and security run on every PR. App E2E (`web-e2e`, `api-e2e`) and package tests (`packages-test`) run only when relevant code changes. Mobile: EAS build, preview on main, PR OTA—see [GitHub Actions](https://basilic-docs.vercel.app/docs/deployment/github-actions) and [Mobile CI/CD](https://basilic-docs.vercel.app/docs/deployment/mobile-cicd).
+  - Lint and `security.yml` run on every PR. DeepSec reviews the PR diff on same-repo PRs (`deepsec.yml`). App E2E (`web-e2e`, `api-e2e`) and package tests (`packages-test`) run only when relevant code changes. Mobile: EAS build, preview on main, PR OTA—see [GitHub Actions](https://basilic-docs.vercel.app/docs/deployment/github-actions) and [Mobile CI/CD](https://basilic-docs.vercel.app/docs/deployment/mobile-cicd).
 **Security**
   - `security:block-files` — Block sensitive file patterns
   - `security:secrets` — Scan staged files for secrets
@@ -79,6 +79,11 @@ Run with `pnpm <script>`.
   - `security:osv` — OSV vulnerability scan
   - `security:audit` — pnpm audit (high+)
   - `security:check` — Run security check script
+  - `security:deepsec:scan` — DeepSec regex scan (no AI)
+  - `security:deepsec:process:diff` — DeepSec AI review vs `origin/main` (GPT-5.6 Sol)
+  - `security:deepsec:process:diff:grok` — Same review with Cursor Grok 4.6
+  - `security:deepsec:process` — DeepSec full-repo AI review (GPT-5.6 Sol)
+  - `security:deepsec:report` — DeepSec findings summary
 **Hooks**
   - `hooks:pre-commit` — Pre-commit: security + Biome staged
   - `hooks:security` — Block files, scan secrets, OSV

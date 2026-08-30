@@ -69,3 +69,10 @@ tsup.config.bundled_*.mjs
 
 
 .react-email
+
+# DeepSec scan output and credentials (config and INFO.md are committed)
+.deepsec/node_modules/
+.deepsec/.env.local
+.deepsec/data/**/files/
+.deepsec/data/**/runs/
+.deepsec/findings/

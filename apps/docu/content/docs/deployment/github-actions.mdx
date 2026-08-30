@@ -7,7 +7,7 @@ GitHub Actions workflows automate quality checks on pull requests (opened and up
 
 ## Workflows
 
-Path filters are used only for test workflows (app E2E and package unit tests) so they run when relevant code changes. Lint and security run on every PR. Path patterns are defined in each workflow file.
+Path filters are used only for test workflows (app E2E and package unit tests) so they run when relevant code changes. Lint and `security.yml` run on every PR. DeepSec runs on same-repo PRs only. Path patterns are defined in each workflow file.
 
 ### Web (`web-e2e.yml`)
 
@@ -43,7 +43,16 @@ See [Mobile CI/CD](/docs/deployment/mobile-cicd) for setup, reviewer bootstrap, 
 
 ### Security (`security.yml`)
 
-Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main.
+Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main. DeepSec is not in this workflow; see DeepSec (`deepsec.yml`).
+
+### DeepSec (`deepsec.yml`)
+
+Source-code review of the PR diff on same-repo pull requests. Fork PRs skip (no secrets). Two jobs:
+
+1. **analyze** — `contents: read` only. Installs `.deepsec`, runs GPT-5.6 Sol (`codex`, thinking `medium`) `process --diff` against the PR base. Fails on net-new findings. Requires the `AI_GATEWAY_API_KEY` repository secret. Local alternate: Cursor Grok 4.6 via `pnpm security:deepsec:process:diff:grok`.
+2. **comment** — `pull-requests: write`. Posts the findings comment. Never checks out or executes PR code.
+
+Full-repo DeepSec review stays local. See [Security](/docs/architecture/security).
 
 ## CodeRabbit Integration
 
@@ -104,7 +113,8 @@ All workflows are in `.github/workflows/`:
 - `mobile-preview.yml` - Mobile: EAS build on push to main (path-filtered)
 - `mobile-pr-preview.yml` - Mobile: EAS Update, QR comment on PR (path-filtered)
 - `lint.yml` - Linting checks (every PR)
-- `security.yml` - Security scans (every PR and push to main)
+- `security.yml` - Secret and dependency scans (every PR and push to main)
+- `deepsec.yml` - Source-code review of the PR diff (same-repo PRs)
 
 ## Related Documentation
 
