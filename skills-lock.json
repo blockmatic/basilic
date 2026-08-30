@@ -1,35 +1,365 @@
 {
   "version": 1,
   "skills": {
-    "expo-cicd-workflows-v55": {
-      "source": "expo/skills",
+    "add-documentation": {
+      "source": "blockmatic/basilic-skills",
       "sourceType": "github",
-      "computedHash": "aaedc695614984c0d2d7a0e59ee7b8f63d4213772e1e875b7151ab4410dc2535"
+      "computedHash": "a8329ec55c2f0a1a2f07dac6138e8249763757231ccf2cfe75ed76a49b5501b9"
+    },
+    "add-error-handling": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "ab851f5b0f8950f5f599ad185b81670b51fc92490e832ce4529fa43698aa4a1a"
+    },
+    "ahooks-v3": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "3039b90fef8c876b2cfb8095c3497a7d6e23f426565d2ed852ddbf0eb872a722"
+    },
+    "ai-sdk-core-v7": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "2151a26924c7bbbf8a7638e0c6fa3cfeec401e3cedb57611d4ee67a9691b0a2d"
+    },
+    "ai-sdk-ui-v7": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "446a382301c6c13361ecbced280a2650d12ae795fca6e210d68b360961829e76"
+    },
+    "audit-accessibility": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "01d32200b05d37e2df059c3f3e37d4638057cebf754ffdb49bcf8e3c32ce836d"
+    },
+    "clarify-task": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "a4a7c3ce1d1afb26e0650df9132500570f20beb15b7513223b553b0f2361173b"
+    },
+    "code-review": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "67a16c692bfd51ece028fd338ee70f33010e0abffb60299737ae5c95909a6c51"
+    },
+    "coderabbit": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "003de22db3d11cd3dcc1831092e38f3c4e88403468b31a6a45639326f5a1cf1e"
+    },
+    "council": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "e0a8741a017a6349106bb59ffb369b3e5833c8b569ee98fe5edeccba598af91c"
+    },
+    "debug-browser": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "a481e13136d849bfb4035faf06eb37b35ceb9ef831422cfde62bc1839c668696"
+    },
+    "debug-issue": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "4d340c9f64a6cc58cc77d4f50bf42592afce0a4d63bfae0fad498a3aad4e27e8"
+    },
+    "deslop": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "adcb54bb845e0354833ee526b8784f692bf112b3a3167633693cb1d2af1b749a"
+    },
+    "diagrams": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "c8aba311a525ac1ecdb7700438b7c84b577ebb2b5307fa600bed842fe4106644"
+    },
+    "docker-logs": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "73c22af1a7b9126788a187d9a3ef481c4d2e23a446ffb01d05bb9d2850c52f23"
+    },
+    "drizzle-orm-v0": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "316ca07d0db56eeaca2c3fc3de1924f64f3a2328206092e8bac1d4db75428210"
+    },
+    "emilkowal-animations-v1": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "2aa501c3407899c54a036a828ea2f3efc2b58671e1329f53299a84f138a99b15"
+    },
+    "exec-push": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "f27d9b490684675c997d02c386523dacbaaefb06b3656e0d309cc5e0c91291a9"
+    },
+    "expo-cicd-workflows-v55": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "f6c3bf2387f811b1323cc116c19a0a6b6f28fcc58c62ac669926e8f60d787823"
     },
     "expo-deployment-v55": {
-      "source": "expo/skills",
+      "source": "blockmatic/basilic-skills",
       "sourceType": "github",
-      "computedHash": "a251cf2b66691c27c5ae7b50a71687e82a7a5877c6fa02f32170933f1464f13c"
+      "computedHash": "66508e5f6e701af8c931e52ddc1e7f9fdd0e0a4510f6eedfd3540c2033c84da9"
     },
     "expo-dev-client-v55": {
-      "source": "expo/skills",
+      "source": "blockmatic/basilic-skills",
       "sourceType": "github",
-      "computedHash": "31b421ee658038b023eddc6187a05953195ff24037f05e7d7aa9d53970c4954f"
+      "computedHash": "c729b0529b6cacf48f7ed4c8110b07f70c96c9826fc08b543b57713f5b83ef4e"
     },
     "expo-tailwind-setup-v55": {
-      "source": "expo/skills",
+      "source": "blockmatic/basilic-skills",
       "sourceType": "github",
-      "computedHash": "bf34902f2b9a6579bc1265c624cf19eaa7ba1ca38eb5f4a40a22f41e9960e662"
+      "computedHash": "d1dd52a3d26504111a1900510863550a7d6a38acd578acaa99f4b1594530786e"
     },
     "expo-upgrading-v55": {
-      "source": "expo/skills",
+      "source": "blockmatic/basilic-skills",
       "sourceType": "github",
-      "computedHash": "13aef9c1a295bd820ffec57670f4a8dff8cd98046dd173e9ed9e66975d7365fe"
+      "computedHash": "e504ac9840db20de1232cafa2441a9acc29b82e597fef6fcaa84d4cc1f2100d8"
     },
     "expo-use-dom-v55": {
-      "source": "expo/skills",
+      "source": "blockmatic/basilic-skills",
       "sourceType": "github",
-      "computedHash": "2d3116fa70a9d90fff016b8c058ed14ecaa84334d614ec9a6a70d5efeb975d46"
+      "computedHash": "a0e1ed807d7ce099ee37607291a256a889a597582a595ceeb4805e96946cddc3"
+    },
+    "fastify-v5": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "c0ad4753f43b887f4b6614d15dc193ffd81095fe06509380b527efa6a0e920cf"
+    },
+    "fix-compile-errors": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "68656cb484eeb98d680351672803a17e0d10deb73fce7014f0cedc249e6642c6"
+    },
+    "fix-git-issues": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "6e4121d1e73a7e98dbcde9c2985ad2e2fbcb10feb509a5290bbdc28989f0ca4b"
+    },
+    "fix-github-actions": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "951c99d22f91b9845569d194abd2dafb0c58fd5ee03ebda147550765e41b3348"
+    },
+    "fix-push": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "3e34ac9e7489f03842141956570309cfbb45f3eddf89b733471bdb35652dda4f"
+    },
+    "fix-vercel-build": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "ff9aeb4a1cf29fef2e631b74fdbb67af3e92c2288ddba14cb0a51ac2dc799ed5"
+    },
+    "frontend-design-v1": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "b88872a00592c6962be2e87aacf19c8fcaba04d24dc16adbdce40bd981d23ad3"
+    },
+    "generate-api-docs": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "96aa51be6ad365f8b042bcb696a4c2616a5875d6e18e12db1bd4c2e1ba82238e"
+    },
+    "generate-pr-description": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "07e402047301bf228331f37166553dd690c1edd146fcf4f2ce84418caec6118a"
+    },
+    "git-commit": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "b6307a599cb1dd8ec2267af4810104b35cd1bb62ca61e0d44ef28c68a12d9f3f"
+    },
+    "git-create-pr": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "6f126f71816d4c7eab6219c0889a4296101b6ed5353edd531c7260cb78189457"
+    },
+    "git-pr-comments": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "12c2ba17eb2c3e312d071efe19556d34b929009fde0bcad13ac8938c3cc3bd3b"
+    },
+    "git-push": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "08588b41e683cdf8f4438069f604dd02af7e1eeb28e0cb893e3fd292389dc936"
+    },
+    "info-architecture": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "1dbd6f18769041e6936093930267b0ab0c224fd594eb1b6ee123af3c52c28793"
+    },
+    "light-review-existing-diffs": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "1e43244e0745c7dc0caad2342cac32004d6a7a818b008486780d803a426d551a"
+    },
+    "lint-fix": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "2fcb0e914e7b4e9c93b50779a1ca673ad1cb2768b59679ef600066dbe6969ea8"
+    },
+    "lint-suite": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "cfa321171fe5b5ad0cedcbf3867f564b9097c6aecf6f97256c3c1aa69f90f165"
+    },
+    "motion-v13": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "942ca557b6f8f382c1c1aff454018c20548f07e9ae36146d08c2d406a64bf4f8"
+    },
+    "next-v16": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "70d2d953a9d41fb7b5d7e71c23692952a5bb589bf76bfdfe3b2a5f00ace81925"
+    },
+    "nextjs-form": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "57fc0fa53563a7addcb677825fbecd46ed430d796d53d65cb321075c281384c4"
+    },
+    "onboard-new-developer": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "f2aa725a3b7dfcb60650f17b1480253b244be430d663b36c0d8c82ddbe31844b"
+    },
+    "openapi-ts-v0": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "ea7292bf9a5b99d2722b3b14dc82d025ed0957d6bcb20c81cd25ccde01009888"
+    },
+    "optimize-performance": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "687e1cd01bd433a8a878e83572e4950fe7491200821f2ff0f2a97a50113c04cf"
+    },
+    "overview": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "b2f0ffbb5eeb34b8f8f474eae772939884dbeee48f1384c45aad5d7270163d33"
+    },
+    "plan-architecture": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "ac220ae90cbcc83589480324fdd2a5acbcf1ac000df428e1e5bbe4d58630ba00"
+    },
+    "plan-feature": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "f49ef83df4ea96fa0b60952a2749a7adc6b1c776b78d6ad38cf0a1b235024067"
+    },
+    "playwright-v1": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "90a72381b7d8a9c13899c193827cec28ca1eb3da97b6a581d5310eb6d2b4770f"
+    },
+    "refactor-code": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "1ce0ccfe8e6c39f4223289c38436c7b9f00fb2b417fbcd8d2236d8a5902047e1"
+    },
+    "retro": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "5c2194e310fef6ca72b7397bd22b24bbc39a1c27a61ca2c5c19a2ef19b7ce01d"
+    },
+    "review-plan": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "8759fe3a6b912c50ded22f9d36c441042fee6334b040fb69fc750ea726264e9f"
+    },
+    "roadmap": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "bfe0957ec098742cb7f4637e46c2b0487f6e6d49642f81db49922eca867fc777"
+    },
+    "run-all-tests-and-fix": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "ec10e821178de142d97978423bd60508d6b2d0db663aca2c86ae51abac7e6632"
+    },
+    "security-audit": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "09d7b53477512320d53d9cd8fd3d33caaf47fb4cddecdab2ffe7b57802bd05c5"
+    },
+    "security-review": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "4e82b27b835d137278669165fcb215ea06b861701092d08eb1f013bb2d9bb2bc"
+    },
+    "shadcn-v3": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "6acd3e9aa52485fb6a24b2b26398830f0c7bc9f0833131249d3c5bd8a37da7c3"
+    },
+    "solana-v1": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "104806c15bf7fa2f9624e584bca3f64144d4a112879f0bc268bb5bce1d1cf6ab"
+    },
+    "tailwind-design-system-v4": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "9336f38958f2a6cb46553eb4e08e70e8f2979898dbfa4fd086e2b983aad0fc66"
+    },
+    "tanstack-query-v5": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "f2ee5037b8ab0486409cb82f3d65e29024154af3dd21920650553804ec145d46"
+    },
+    "typescript-v6": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "5ee3953e62169144b673b9bca7329aadb3a69688f91f392e24e75eee792b44eb"
+    },
+    "use-shadcn": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "0b0434d2e940f28f0a6a7a652304462cf7deb7b1d32a9ac2e66c61f9f0e5af4c"
+    },
+    "use-tdd": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "c6bd46953a70feb922c719881645cc381089e3572bab27688d9f68c721ca62e3"
+    },
+    "use-v0": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "be5c2a28ea71fdd07cab3b99262c5c0f776f7751de5afa86c4bdc5e2f9274ebd"
+    },
+    "vercel-react-v1": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "f451c6eddc8acea6cba67c6f54dc9a1d602f4353b0b0fc26fbd5580b4a0ec68a"
+    },
+    "visualize": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "7e874c45ef1f718d26c9957f39e4f7573a150bf4d65991552e11da7c1c51eb48"
+    },
+    "wagmi-v3": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "56876dc11686eec2ff248eaa44b26d7a48d599ee95f72b08164f206876b15fc3"
+    },
+    "write-api-test": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "4cc0744778d3cee2e1fd265439ea31d413c34276622308621be089b5f02a86e7"
+    },
+    "write-unit-tests": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "d1ff3c4248441526b460b445a507d8e31eb7b37303eb79cf8ada9dc306d0ccfb"
+    },
+    "yolo": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "computedHash": "3806c45fe34fa92523a5fd0688cbd29bba629491573bb695f2908b8b61ffaeb3"
     }
   }
 }

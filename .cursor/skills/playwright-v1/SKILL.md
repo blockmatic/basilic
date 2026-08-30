@@ -1,11 +1,11 @@
 ---
 name: playwright-v1
-description: Ad-hoc Playwright browser automation (scripts in /tmp). Use when testing a URL in a visible browser. Repo E2E stays in apps/web/e2e and apps/api/test — see @.cursor/rules/frontend/e2e-playwright.mdc.
+description: Ad-hoc Playwright browser automation (scripts in /tmp). Use when testing a URL in a visible browser. App E2E belongs in the consuming repo's E2E dirs — see project rules (e.g. e2e-playwright.mdc).
 ---
 
 # Playwright (ad-hoc)
 
-Not for app E2E. Those live in `apps/web/e2e` and `apps/api/test`.
+Not for app E2E. Those live in the consuming app's E2E test directories.
 
 ## Run
 
