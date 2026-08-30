@@ -253,5 +253,5 @@ describe('User Routes', () => {
 
 ## See Also
 
-- [Test Utils Template](@cursor/skills/fastify-v5/templates/test-utils.ts) - Test app builder example
+- [Test Utils Template](../templates/test-utils.ts) - Test app builder example
 - [Backend Testing Rules](@.cursor/rules/backend/testing.mdc) - Testing standards for Fastify

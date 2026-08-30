@@ -64,6 +64,6 @@ Does NOT cover:
 ## Interactions
 
 - Uses generated contract ABIs/types from OpenAPI specs
-- Complements [fastify](@cursor/skills/fastify-v5/SKILL.md) for API development
+- Complements [fastify](../fastify-v5/SKILL.md) for API development
 
 Patterns and code samples: [PATTERNS.md](PATTERNS.md).

@@ -1,9 +1,6 @@
 ---
 name: tanstack-query-v5
-description: |
-  TanStack Query (React Query) for async operations, data fetching, caching, and state management.
-  
-  Use when: fetching server data, managing async operations, caching responses, handling mutations, or any operation that benefits from automatic state management and caching.
+description: TanStack Query (React Query) for async operations, data fetching, caching, and state management. Use when fetching server data, managing async operations, caching responses, handling mutations, or any operation that benefits from automatic state management and caching.
 ---
 
 # Skill: tanstack-query
@@ -256,5 +253,5 @@ function UserProfile({ userId }: { userId: string }) {
 - [TanStack Query documentation](https://tanstack.com/query/latest) - Official documentation
 - [Query Key Factory](https://github.com/lukemorales/query-key-factory) - Query key factory library
 - React rules - State management decision tree and patterns
-- [ahooks](@cursor/skills/ahooks-v3/SKILL.md) - Utility hooks for synchronous state
-- [OpenAPI Integration](@cursor/skills/openapi-ts-v0/references/react-query-integration.md) - Generated client patterns
+- [ahooks](../ahooks-v3/SKILL.md) - Utility hooks for synchronous state
+- [OpenAPI Integration](../openapi-ts-v0/references/react-query-integration.md) - Generated client patterns

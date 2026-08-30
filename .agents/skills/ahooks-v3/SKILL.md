@@ -1,9 +1,6 @@
 ---
 name: ahooks-v3
-description: |
-  Utility hooks for React state management - grouped state and localStorage persistence.
-  
-  Use when: managing grouped state that changes together, persisting state to localStorage, or coordinating state between URL and storage.
+description: Utility hooks for React state management — grouped state and localStorage persistence. Use when managing grouped state that changes together, persisting state to localStorage, or coordinating state between URL and storage.
 ---
 
 # Skill: ahooks

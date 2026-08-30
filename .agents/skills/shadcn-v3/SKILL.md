@@ -1,9 +1,6 @@
 ---
 name: shadcn-v3
-description: |
-  Set up Tailwind v4 with shadcn/ui using @theme inline pattern and CSS variable architecture. Includes component composition patterns, accessibility guidelines, and React Hook Form integration.
-  
-  Use when: initializing React projects with Tailwind v4, setting up shadcn/ui dark mode, composing/extending components, implementing forms, ensuring accessibility, or fixing colors not working, theme not applying, CSS variables broken, tw-animate-css errors, or migrating from v3.
+description: Set up Tailwind v4 with shadcn/ui using @theme inline pattern and CSS variable architecture — component composition, accessibility, React Hook Form. Use when initializing React projects with Tailwind v4, setting up shadcn/ui dark mode, composing components, implementing forms, fixing theme/CSS issues, or migrating from v3.
 ---
 
 # Skill: shadcn
@@ -76,8 +73,8 @@ description: |
 
 ## Interactions
 
-- Works with [next](@cursor/skills/next-v16/SKILL.md) for App Router setup
-- Uses [typescript](@cursor/skills/typescript-v6/SKILL.md) for type safety
+- Works with [next](../next-v16/SKILL.md) for App Router setup
+- Uses [typescript](../typescript-v6/SKILL.md) for type safety
 
 ## Patterns
 

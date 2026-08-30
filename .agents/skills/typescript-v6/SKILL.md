@@ -57,8 +57,8 @@ description: Advanced TypeScript patterns for type-safe, maintainable code using
 ## Interactions
 
 - Works with [zod](https://zod.dev) for runtime validation with type inference
-- Complements [next](@cursor/skills/next-v16/SKILL.md) for type-safe API routes
-- Complements [fastify](@cursor/skills/fastify-v5/SKILL.md) for type-safe route schemas
+- Complements [next](../next-v16/SKILL.md) for type-safe API routes
+- Complements [fastify](../fastify-v5/SKILL.md) for type-safe route schemas
 
 ## Patterns
 

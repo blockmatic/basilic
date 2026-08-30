@@ -170,6 +170,6 @@ fastify.addHook('preHandler', async (request, reply) => {
 
 ## See Also
 
-- [Hook Plugin Template](@cursor/skills/fastify-v5/templates/hook-plugin.ts) - Complete hook plugin example
-- [Plugin Patterns](@cursor/skills/fastify-v5/references/plugins.md) - Plugin development guide
+- [Hook Plugin Template](../templates/hook-plugin.ts) - Complete hook plugin example
+- [Plugin Patterns](plugins.md) - Plugin development guide
 - [Fastify Lifecycle](https://fastify.dev/docs/latest/Reference/Lifecycle/)

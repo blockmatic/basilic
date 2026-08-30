@@ -1,9 +1,6 @@
 ---
 name: ai-sdk-ui-v7
-description: |
-  Build React chat UIs with Vercel AI SDK v7. useChat, DefaultChatTransport, status, sendMessage.
-
-  Use when: implementing AI SDK v7 chat UIs or troubleshooting useChat stream parse / no response / stale values. Never write useChat from memory.
+description: Build React chat UIs with Vercel AI SDK v7 — useChat, DefaultChatTransport, status, sendMessage. Use when implementing AI SDK v7 chat UIs or troubleshooting useChat stream parse / no response / stale values. Never write useChat from memory.
 ---
 
 # Skill: ai-sdk-ui
@@ -11,7 +8,7 @@ description: |
 ## Scope
 
 - Applies to: `@ai-sdk/react` `useChat` and `DefaultChatTransport` from `ai`
-- Does NOT cover: Backend generation (see [ai-sdk-core](@cursor/skills/ai-sdk-core-v7/SKILL.md))
+- Does NOT cover: Backend generation (see [ai-sdk-core](../ai-sdk-core-v7/SKILL.md))
 
 ## Assumptions
 
@@ -23,7 +20,7 @@ description: |
 
 - `useChat` from `@ai-sdk/react`; `DefaultChatTransport` from `ai`
 - Local input state; `sendMessage({ text })`; `status` not `isLoading`; render `message.parts`
-- Server: see [ai-sdk-core](@cursor/skills/ai-sdk-core-v7/SKILL.md). New code uses stateless stream helpers. Do not migrate existing `toUIMessageStreamResponse()` unless asked
+- Server: see [ai-sdk-core](../ai-sdk-core-v7/SKILL.md). New code uses stateless stream helpers. Do not migrate existing `toUIMessageStreamResponse()` unless asked
 
 ## Constraints
 
@@ -40,8 +37,8 @@ description: |
 
 ## Interactions
 
-- Uses [ai-sdk-core](@cursor/skills/ai-sdk-core-v7/SKILL.md)
-- Complements [fastify](@cursor/skills/fastify-v5/SKILL.md), [next](@cursor/skills/next-v16/SKILL.md)
+- Uses [ai-sdk-core](../ai-sdk-core-v7/SKILL.md)
+- Complements [fastify](../fastify-v5/SKILL.md), [next](../next-v16/SKILL.md)
 
 ## Templates
 

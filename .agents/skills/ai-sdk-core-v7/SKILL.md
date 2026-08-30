@@ -1,9 +1,6 @@
 ---
 name: ai-sdk-core-v7
-description: |
-  Build backend AI with Vercel AI SDK v7. generateText, streamText, ToolLoopAgent, tools.
-
-  Use when: implementing AI SDK v7 or troubleshooting AI errors. Never write AI SDK from memory.
+description: Build backend AI with Vercel AI SDK v7 — generateText, streamText, ToolLoopAgent, tools. Use when implementing AI SDK v7 or troubleshooting AI errors. Never write AI SDK from memory.
 ---
 
 # Skill: ai-sdk-core
@@ -11,7 +8,7 @@ description: |
 ## Scope
 
 - Applies to: Backend AI with Vercel AI SDK v7 (`ai` package)
-- Does NOT cover: React chat UIs (see [ai-sdk-ui](@cursor/skills/ai-sdk-ui-v7/SKILL.md))
+- Does NOT cover: React chat UIs (see [ai-sdk-ui](../ai-sdk-ui-v7/SKILL.md))
 
 ## Assumptions
 
@@ -42,7 +39,7 @@ description: |
 
 ## Interactions
 
-- Complements [ai-sdk-ui](@cursor/skills/ai-sdk-ui-v7/SKILL.md), [fastify](@cursor/skills/fastify-v5/SKILL.md), [next](@cursor/skills/next-v16/SKILL.md)
+- Complements [ai-sdk-ui](../ai-sdk-ui-v7/SKILL.md), [fastify](../fastify-v5/SKILL.md), [next](../next-v16/SKILL.md)
 - Upstream: [vercel/ai use-ai-sdk](https://github.com/vercel/ai/blob/main/skills/use-ai-sdk/SKILL.md)
 
 ## Templates

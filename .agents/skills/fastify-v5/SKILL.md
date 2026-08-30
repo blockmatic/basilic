@@ -1,9 +1,6 @@
 ---
 name: fastify-v5
-description: |
-  TypeBox schemas with Fastify routes for type-safe API development. Native JSON Schema, automatic OpenAPI generation.
-  
-  Use when: building Fastify REST APIs with schema validation and OpenAPI generation.
+description: TypeBox schemas with Fastify routes for type-safe API development — native JSON Schema, automatic OpenAPI generation. Use when building Fastify REST APIs with schema validation and OpenAPI generation.
 ---
 
 # Skill: fastify
@@ -11,7 +8,7 @@ description: |
 ## Scope
 
 - Applies to: Fastify v5+ with TypeBox schemas, type-safe route definitions, automatic OpenAPI generation, plugins, hooks, testing
-- Does NOT cover: Database integration (see [drizzle-orm](@cursor/skills/drizzle-orm-v0/SKILL.md))
+- Does NOT cover: Database integration (see [drizzle-orm](../drizzle-orm-v0/SKILL.md))
 
 ## Assumptions
 
@@ -51,8 +48,8 @@ description: |
 
 ## Interactions
 
-- Complements [drizzle-orm](@cursor/skills/drizzle-orm-v0/SKILL.md) for database integration
-- Generates OpenAPI specs compatible with [openapi-ts](@cursor/skills/openapi-ts-v0/SKILL.md) codegen
+- Complements [drizzle-orm](../drizzle-orm-v0/SKILL.md) for database integration
+- Generates OpenAPI specs compatible with [openapi-ts](../openapi-ts-v0/SKILL.md) codegen
 
 ## Patterns
 

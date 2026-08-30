@@ -1,9 +1,6 @@
 ---
 name: drizzle-orm-v0
-description: |
-  Drizzle ORM for TypeScript - type-safe SQL queries, schema definitions, migrations, and relations.
-  
-  Use when: building database layers in TypeScript applications.
+description: Drizzle ORM for TypeScript — type-safe SQL queries, schema definitions, migrations, and relations. Use when building database layers in TypeScript applications.
 ---
 
 # Skill: drizzle-orm
@@ -71,8 +68,8 @@ description: |
 
 ## Interactions
 
-- Works with [next](@cursor/skills/next-v16/SKILL.md) Server Components and API routes
-- Complements [fastify](@cursor/skills/fastify-v5/SKILL.md) for API development
+- Works with [next](../next-v16/SKILL.md) Server Components and API routes
+- Complements [fastify](../fastify-v5/SKILL.md) for API development
 
 ## Patterns
 

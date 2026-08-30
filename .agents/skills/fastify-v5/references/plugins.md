@@ -158,6 +158,6 @@ export default fp(corsPlugin, { name: 'cors' })
 
 ## See Also
 
-- [Plugin Template](@cursor/skills/fastify-v5/templates/plugin.ts) - Complete plugin example
-- [Hook Plugin Template](@cursor/skills/fastify-v5/templates/hook-plugin.ts) - Plugin with hooks
+- [Plugin Template](../templates/plugin.ts) - Complete plugin example
+- [Hook Plugin Template](../templates/hook-plugin.ts) - Plugin with hooks
 - [Fastify Plugins Guide](https://fastify.dev/docs/latest/Guides/Plugins-Guide/)
