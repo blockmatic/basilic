@@ -30,7 +30,8 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
-          git fetch origin "$BASE_REF"
+          git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+          git rev-parse --verify "$BASE_SHA^{commit}"
           if git cat-file -e "$BASE_SHA:.deepsec/deepsec.config.ts"; then
             git checkout "$BASE_SHA" -- .deepsec
           fi
@@ -73,7 +74,8 @@ jobs:
             exit 1
           fi
           if [ -n "$AI_GATEWAY_API_KEY" ]; then
-            printf 'AI_GATEWAY_API_KEY=%s\n' "$AI_GATEWAY_API_KEY" > .env.local
+            printf 'AI_GATEWAY_API_KEY=%s\nOPENAI_API_KEY=%s\nOPENAI_BASE_URL=https://ai-gateway.vercel.sh/v1\n' \
+              "$AI_GATEWAY_API_KEY" "$AI_GATEWAY_API_KEY" > .env.local
           elif [ -n "$OPENAI_API_KEY" ]; then
             printf 'OPENAI_API_KEY=%s\n' "$OPENAI_API_KEY" > .env.local
           fi
@@ -85,14 +87,21 @@ jobs:
         env:
           AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          pnpm deepsec process \
+          if [ -n "$AI_GATEWAY_API_KEY" ]; then
+            export OPENAI_API_KEY="$AI_GATEWAY_API_KEY"
+            export OPENAI_BASE_URL="https://ai-gateway.vercel.sh/v1"
+            MODEL=gpt-5.6-sol
+          else
+            MODEL=gpt-5.5
+          fi
+          pnpm exec deepsec process \
             --agent codex \
-            --model gpt-5.6-sol \
+            --model "$MODEL" \
             --thinking-level medium \
-            --diff "origin/$BASE_REF" \
-            --comment-out "${{ github.workspace }}/comment.md"
+            --diff "$BASE_SHA" \
+            --comment-out ../comment.md
 
       - name: Upload findings comment
         if: always() && hashFiles('comment.md') != ''
