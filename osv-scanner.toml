@@ -13,15 +13,6 @@ reason = "Transitive ajv (6.12.6, 8.6.3), fix in 8.18.0"
 id = "GHSA-hhx9-57xq-r5rw"
 reason = "False positive on 0.0.0-next prerelease required for TypeScript 7"
 
-# image-size 1.2.1: no patched release for these IDs
-[[IgnoredVulns]]
-id = "GHSA-5p2g-fcmc-qvqq"
-reason = "Transitive image-size, no fix available in ecosystem"
-
-[[IgnoredVulns]]
-id = "GHSA-w3rx-r6r6-pgpr"
-reason = "Transitive image-size, no fix available in ecosystem"
-
 # sandbox: no patched release
 [[IgnoredVulns]]
 id = "GHSA-fm4j-4xhm-xpwx"
