@@ -3,7 +3,7 @@ title: "Cursor Skills"
 description: "Versioned tech skills and slash workflows from the Basilic skills.sh catalog."
 ---
 
-Project skills live in `.cursor/skills/`. Cursor requires `name` in each `SKILL.md` to match the folder that contains it. That is why tech skills use a versioned dirname.
+Project skills live under `.cursor/skills/` (and optionally `.agents/skills/` as the CLI canonical hub). Cursor requires `name` in each `SKILL.md` to match the folder that contains it. That is why tech skills use a versioned dirname.
 
 Rules override skills. Skills override the model. Indexed docs are advisory.
 
@@ -11,21 +11,29 @@ Rules override skills. Skills override the model. Indexed docs are advisory.
 
 Canonical source: [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills).
 
-Forks install interactively:
+Install or refresh with the skills CLI (same as other catalogs — pick skills and agents interactively, or use flags):
 
 ```bash
 pnpm dlx skills@latest add blockmatic/basilic-skills
 ```
 
-This repo vendors committed copies under `.cursor/skills/` so Cloud Agents and CI do not need a sibling clone. Refresh from the public GitHub catalog (see Update procedure) and re-run the skills CLI to update `skills-lock.json`.
+Cursor-only, all skills, non-interactive:
 
-Root `skills-lock.json` tracks catalog hashes (`source: blockmatic/basilic-skills`).
+```bash
+pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
+```
+
+Full installer options (agents, paths, flags): catalog [README](https://github.com/blockmatic/basilic-skills#install).
+
+Root `skills-lock.json` tracks catalog hashes (`source: blockmatic/basilic-skills`). Commit it with any skill tree changes the CLI writes.
+
+This repo may still have legacy nested playbooks under `.cursor/skills/workflow/<name>/` from earlier vendoring. New installs from the CLI place each skill in a flat folder (e.g. `.cursor/skills/plan-feature/`). Either layout works as long as `name` matches the folder.
 
 ## Two kinds
 
 **Tech** — `.cursor/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.cursor/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
-**Workflow** — `.cursor/skills/workflow/<name>/`. Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/name` in Cursor. Claude Code has no `/` menu: read the `SKILL.md` file.
+**Workflow** — slash playbooks (`plan-feature`, `exec-push`, …). Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/name` in Cursor. Claude Code has no `/` menu: read the `SKILL.md` file.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name.
 
@@ -36,7 +44,7 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 `<topic>-v<major>` is the **library or SDK major**, not a skill-file revision.
 
 - Library major change → new folder (`next-v17`). Drop the old folder when the repo no longer uses that major.
-- Upstream wording, references, or bugfixes → edit the catalog; vendor into Basilic.
+- Upstream wording, references, or bugfixes → edit the catalog; re-run the skills CLI in this repo.
 - Design skills with no npm package keep `-v1` until the skill format itself breaks (`frontend-design-v1`, `emilkowal-animations-v1`, `vercel-react-v1`). Library skills (including Motion) use the npm major (`motion-v13` for `motion` ^13).
 - Workflows stay unversioned.
 
@@ -44,18 +52,14 @@ This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is 
 
 ## Update procedure
 
-1. Edit and push [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on GitHub (canonical catalog).
-2. From this repo root:
+1. Edit and push [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on GitHub.
+2. From this repo root, run the skills CLI (interactive or with `--skill` / `-a` as needed). Example for Cursor, all skills, copies:
 
 ```bash
-pnpm skills:update
+pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
 ```
 
-   That runs `pnpm dlx skills@latest add blockmatic/basilic-skills --agent cursor --copy --skill '*' -y`, then copies flat `.agents/skills/` trees into `.cursor/skills/<name>/` (tech) or `.cursor/skills/workflow/<name>/` (playbooks) and removes `.agents/`.
-
-   **Authoring shortcut:** when you have a sibling clone and have not pushed yet, `rsync -a ../basilic-skills/skills/workflow/ .cursor/skills/workflow/` and per-tech `rsync -a ../basilic-skills/skills/<name>/ .cursor/skills/<name>/`, then run step 2 after push so `skills-lock.json` matches GitHub.
-
-3. Review the diff; commit vendored trees + `skills-lock.json`.
+3. Review the diff; commit `skills-lock.json` and the skill trees the CLI wrote (`.cursor/skills/`, `.agents/skills/`, or both).
 
 Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
 
