@@ -13,20 +13,35 @@ import { useIsMobile } from '@repo/ui/hooks/use-mobile'
 import { cn } from '@repo/ui/lib/utils'
 import { useLocalStorageState } from 'ahooks'
 import { MessageCircleIcon, PanelRightCloseIcon } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { useState } from 'react'
 
-import { AssistantChat } from './assistant-chat'
+const AssistantChat = dynamic(() => import('./assistant-chat').then(m => m.AssistantChat), {
+  loading: () => <AssistantChatSkeleton />,
+})
 
 const assistantOpenKey = 'assistant-sidebar-open'
 /** Use 640px (sm) so inline aside shows from tablet up; Sheet overlay only on small phones. */
 const assistantMobileBreakpoint = 640
 
+function AssistantChatSkeleton() {
+  return (
+    <div className="flex flex-1 flex-col gap-3 p-4 animate-pulse">
+      <div className="h-4 w-3/4 rounded bg-muted" />
+      <div className="h-4 w-1/2 rounded bg-muted" />
+      <div className="mt-auto h-10 rounded bg-muted" />
+    </div>
+  )
+}
+
 export function AssistantSidebar() {
   const isMobile = useIsMobile(assistantMobileBreakpoint)
   const [open, setOpen] = useLocalStorageState(assistantOpenKey, { defaultValue: true })
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   if (isMobile)
     return (
-      <Sheet>
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetTrigger asChild>
           <Button
             className="fixed bottom-4 right-4 z-40 size-12 rounded-full shadow-lg sm:bottom-6 sm:right-6 sm:hidden"
@@ -40,7 +55,7 @@ export function AssistantSidebar() {
           <SheetHeader className="border-b px-4 py-3">
             <SheetTitle>Assistant</SheetTitle>
           </SheetHeader>
-          <AssistantChat hideHeader className="flex-1" />
+          {mobileOpen ? <AssistantChat hideHeader className="flex-1" /> : null}
         </SheetContent>
       </Sheet>
     )

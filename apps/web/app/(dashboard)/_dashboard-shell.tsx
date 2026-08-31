@@ -3,7 +3,6 @@
 import { Button } from '@repo/ui/components/button'
 import { ScrollArea } from '@repo/ui/components/scroll-area'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@repo/ui/components/sidebar'
-import { Toaster } from '@repo/ui/components/sonner'
 import { useQueryClient } from '@tanstack/react-query'
 import { AssistantSidebar } from 'components/assistant'
 import { ApiHealthBadge } from 'components/shared/api-health-badge'
@@ -66,7 +65,6 @@ export function DashboardShell({
           </div>
         </SidebarInset>
       </div>
-      <Toaster richColors position="top-right" />
     </SidebarProvider>
   )
 }

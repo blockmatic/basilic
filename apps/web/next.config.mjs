@@ -58,7 +58,10 @@ const apiUrl = process.env.VERCEL ? getApiUrl() : undefined
 const nextConfig = {
   // Next 16.3 defaults to the TypeScript CLI (`typescript/bin/tsc`). The dual-package
   // alias (`typescript` → @typescript/typescript6) only ships `tsc6` + the compiler API.
-  experimental: { useTypeScriptCli: false },
+  experimental: {
+    useTypeScriptCli: false,
+    optimizePackageImports: ['lucide-react', 'ahooks'],
+  },
   ...(apiUrl !== undefined && {
     env: { NEXT_PUBLIC_API_URL: apiUrl },
   }),
@@ -79,33 +82,17 @@ const nextConfig = {
     '@repo/utils',
     'ai',
     'eventsource-parser',
-    // ESM-only unist/mdast deps for react-markdown - webpack needs to transpile for proper named-export resolution
+    // ESM-only unist/mdast deps for react-markdown
     'mdast-util-from-markdown',
     'unist-util-is',
     'unist-util-stringify-position',
     'unist-util-visit-parents',
   ],
   serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
-  // @/ alias is automatically resolved from tsconfig.json paths
-  // Webpack config forces Next.js to use webpack instead of Turbopack
+  // Turbopack: resolveExtensionAlias is not available in Next 16.3.3; scripts use --webpack until it is.
+  // Webpack: Pattern B `source` exports and `.js` → `.ts` for workspace + instrumentation imports.
   webpack: config => {
-    // Resolve "source" condition from internal packages for direct TS imports (after defaults so node_modules use dist)
     config.resolve.conditionNames = [...(config.resolve.conditionNames ?? []), 'source']
-    // Stub optional wagmi connectors we don't use to avoid build resolution errors
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      porto: false,
-      'porto/internal': false,
-      '@base-org/account': false,
-      '@coinbase/wallet-sdk': false,
-      '@gemini-wallet/core': false,
-      '@metamask/sdk': false,
-      '@safe-global/safe-apps-sdk': false,
-      '@safe-global/safe-apps-provider': false,
-      '@walletconnect/ethereum-provider': false,
-    }
-    // Resolve .js imports to .ts files for transpiled packages
-    // Merge with existing extensionAlias if present to preserve Next.js defaults
     const existingExtensionAlias = config.resolve.extensionAlias || {}
     config.resolve.extensionAlias = {
       ...existingExtensionAlias,

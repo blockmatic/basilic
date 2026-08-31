@@ -61,6 +61,7 @@ overrides:
   smol-toml: 1.6.1
   sharp@<0.35.0: 0.35.0
   diff@<8.0.3: '>=8.0.3'
+  decode-uri-component@<0.5.0: 0.5.0
   bigint-buffer: npm:bigint-buffer-fixed@1.1.6
   image-size: npm:image-size-next@1.2.2
   '@isaacs/brace-expansion@5.0.0': 5.0.1
