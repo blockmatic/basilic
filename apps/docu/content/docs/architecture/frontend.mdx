@@ -80,28 +80,7 @@ const [filters, setFilters] = useQueryStates({
 
 ## Web3 (apps/web)
 
-Wallet adapters live in the app (`@/hooks/`, `@/wallet/`). `@repo/react` only exposes verify/link helpers (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useLinkEmail`). Stack: Wagmi 3 + Viem 2 + Solana wallet-adapter.
-
-`WalletAdaptersInjector` bridges wagmi and Solana, enforces single-wallet mode, and signs out on disconnect when the session was created by a wallet. After login, `/` shows link-wallet and link-email. See [Authentication](/docs/architecture/authentication).
-
-```mermaid
-flowchart TB
-  subgraph AppHooks [apps/web]
-    useWalletAuth[useWalletAuth]
-    useLinkWallet[useLinkWallet]
-    useWallet[useWallet]
-    WalletProvider[WalletProvider]
-  end
-  subgraph RepoReact ["@repo/react"]
-    useVerifyWeb3Auth[useVerifyWeb3Auth]
-    useVerifyLinkWallet[useVerifyLinkWallet]
-  end
-  useWalletAuth --> useWallet
-  useWalletAuth --> useVerifyWeb3Auth
-  useLinkWallet --> useWallet
-  useLinkWallet --> useVerifyLinkWallet
-  useWallet --> WalletProvider
-```
+The Fastify API supports Web3 auth and account linking (EIP-155 / Solana). **`apps/web` does not ship a wallet UI yet** — no wagmi, viem, or Solana wallet-adapter packages in the web app. When wallet connect ships, adapters live in the app (`@/hooks/`, `@/wallet/`) and `@repo/react` exposes verify/link helpers (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useLinkEmail`). See [Authentication](/docs/architecture/authentication) and [Account linking](/docs/architecture/account-linking).
 
 ## Testing
 

@@ -26,7 +26,7 @@ Shared configs live in `tools/typescript` (`base.json`, `nextjs.json`, `react-li
 | Next.js 16, React libraries | `bundler` | extensionless OK |
 | Fastify / Node | `NodeNext` | use `.js` in the import path (emit), never `.ts` |
 
-Node dev: `tsx`. Next: `transpilePackages` plus webpack `conditionNames: ['source', …]` and `.js` → `.ts` `extensionAlias`. Import `@repo/*`, not relative paths into `packages/`.
+Node dev: `tsx`. Next: `transpilePackages` plus webpack `conditionNames: ['source', …]` and `.js` → `.ts` `extensionAlias` (required in Next 16.3.3 — Turbopack lacks `resolveExtensionAlias`). Scripts pass `--webpack` until Turbopack supports workspace `.js` imports. Import `@repo/*`, not relative paths into `packages/`.
 
 Generated OpenAPI client (`packages/core/src/gen/`) and skill templates are excluded from hand-maintained TS rules. Conventions: `.cursor/rules/base/typescript.mdc`.
 

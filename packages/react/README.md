@@ -41,7 +41,7 @@ Add `@repo/react` and `@repo/core` to `transpilePackages` in your `next.config.m
 const nextConfig = {
   transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/error', '@repo/utils'],
   webpack: config => {
-    // Resolve .js imports to .ts files for transpiled packages
+    config.resolve.conditionNames = [...(config.resolve.conditionNames ?? []), 'source']
     config.resolve.extensionAlias = {
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.jsx': ['.tsx', '.jsx'],
@@ -53,7 +53,7 @@ const nextConfig = {
 export default nextConfig
 ```
 
-**Note**: If you're using Turbopack (Next.js 16+ default), you may need to use the `--webpack` flag when building (`pnpm build --webpack`), or configure Turbopack accordingly. The webpack configuration ensures proper resolution of `.js` imports to `.ts` files in transpiled packages.
+**Note**: Next.js 16.3 defaults to Turbopack, but this monorepo uses `--webpack` on dev/build because Turbopack 16.3.3 does not yet support `resolveExtensionAlias` for workspace `.js` → `.ts` resolution (instrumentation and `@repo/*` imports). Drop `--webpack` when Next ships Turbopack extension aliasing.
 
 #### Setup Provider
 
