@@ -29,7 +29,6 @@ flowchart TB
   Core --> React
   Core --> Cli
   React --> Web
-  React --> Mobile
   UI --> Web
   UI --> Mobile
   UI --> Docu
@@ -42,8 +41,8 @@ flowchart TB
   Cli -->|HTTP| API
 ```
 
-**Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57), `docu` (Fumadocs).
+**Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shared `@repo/ui` only, not wired to `@repo/core`/`@repo/react` yet), `docu` (Fumadocs).
 
-**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `notif`, `error`, `utils`, `cli`.
+**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `notif` (unused scaffold), `error`, `utils`, `cli`.
 
 Dependency rule: `core` → `react`; apps depend on packages, never the reverse. Local dev imports TypeScript source; `prepack` switches to `dist/` for npm. See [Publishing](/docs/deployment/publishing).

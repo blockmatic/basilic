@@ -18,7 +18,7 @@ Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as t
 
 ## Testing
 
-Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest loads it when present. `ALLOWED_ORIGINS` (default `*`) controls CORS and URL validation for auth callbacks.
+Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest loads it when present. `ALLOWED_ORIGINS` controls CORS and URL validation for auth callbacks (default `*` in dev/test; production requires explicit origins, not `*`).
 
 ## pnpm commands
 

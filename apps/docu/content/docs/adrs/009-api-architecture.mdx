@@ -192,7 +192,7 @@ Fastify routes are the source of truth:
 - OpenAPI spec automatically generated from route definitions via `generate-openapi.ts`
 - Type-safe request/response handling via route schemas with TypeBox type provider
 - Validation uses TypeBox schemas defined in routes (no conversion overhead)
-- Frontend receives Zod schemas generated from OpenAPI spec (via hey-api)
+- Frontend receives TypeScript types from the generated OpenAPI client (`@repo/core`); route validation stays TypeBox on Fastify
 
 ### Client Consumption
 
@@ -217,7 +217,7 @@ Frontend consumes the API via generated clients:
 1. **Fastify routes** define the API (source of truth)
 2. **OpenAPI spec** generated from routes via `generate-openapi.ts`
 3. **Clients generated** from OpenAPI spec:
-   - TypeScript: Hey API generates `@repo/core` and `@repo/react` clients
+   - TypeScript: Hey API generates `@repo/core` only; `@repo/react` hooks are handwritten
    - Other languages: Use standard OpenAPI generators (oapi-codegen, openapi-generator, etc.)
 
 **Benefits:**
@@ -240,6 +240,13 @@ oapi-codegen -package client openapi.json > client.go
 **When to generate SDKs for other languages:**
 - Early stage: Use REST endpoints directly with `/openapi.json` for reference
 - Production: Generate SDKs using language-specific generators (keep in separate repos)
+
+## Superseded claims
+
+Some bullets below overstate what Hey API generates today:
+
+- Hey API generates **`@repo/core`** from OpenAPI; it does **not** generate `@repo/react` hooks or frontend Zod schemas.
+- See [API Architecture](/docs/architecture/api) for the current generate → consume workflow.
 
 ## Related Documentation
 

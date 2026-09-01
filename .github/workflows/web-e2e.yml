@@ -9,8 +9,9 @@ on:
       - 'packages/react/**'
       - 'packages/ui/**'
       - 'packages/utils/**'
-      - 'packages/eslint-config/**'
-      - 'packages/typescript-config/**'
+      - 'packages/error/**'
+      - 'tools/eslint-config/**'
+      - 'tools/typescript-config/**'
       - 'apps/api/openapi/**'
       - 'pnpm-lock.yaml'
       - 'package.json'
@@ -54,7 +55,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build
         run: pnpm turbo run build --filter=@repo/web...
-      - name: Unit tests
+      - name: Web test script (E2E only placeholder)
         run: pnpm turbo run test --filter=@repo/web
       - name: Install Playwright
         run: pnpm --filter @repo/web exec playwright install chromium --with-deps

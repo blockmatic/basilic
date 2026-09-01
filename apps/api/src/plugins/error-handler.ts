@@ -83,25 +83,26 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
     // Map status code to error code
     const errorCode = mapHttpStatusToErrorCode(statusCode)
 
-    // Report via @repo/error/node (non-blocking)
-    captureError({
-      code: errorCode,
-      error, // ← Full stack trace → reporting backend
-      logger: request.log, // ← Use Fastify's native logger
-      label: `${request.method} ${request.url}`,
-      data: {
-        method: request.method,
-        url: request.url,
-        headers: sanitizedHeaders,
-        body: sanitizedBody, // Redacted sensitive data
-      },
-      tags: {
-        app: 'api',
-        module,
-        route: routePath,
-        method: request.method,
-      },
-    })
+    // Report via @repo/error/node (non-blocking) — skip expected client errors
+    if (statusCode >= 500)
+      captureError({
+        code: errorCode,
+        error,
+        logger: request.log,
+        label: `${request.method} ${request.url}`,
+        data: {
+          method: request.method,
+          url: request.url,
+          headers: sanitizedHeaders,
+          body: sanitizedBody,
+        },
+        tags: {
+          app: 'api',
+          module,
+          route: routePath,
+          method: request.method,
+        },
+      })
 
     // Get catalog error from app's own catalog
     const catalogError = getError(errorCode) ??

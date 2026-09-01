@@ -148,7 +148,11 @@ export const env = createEnv({
           .map(s => s.trim())
           .filter(Boolean)
         return parts.length > 0 ? parts : ['*']
-      }),
+      })
+      .refine(
+        val => !isProduction || (val.length > 0 && !val.includes('*')),
+        'ALLOWED_ORIGINS must be a non-empty list of explicit origins in production (not *)',
+      ),
     TOTP_ISSUER: z.string().optional(),
     WEBAUTHN_RP_NAME: z.string().optional(),
   },

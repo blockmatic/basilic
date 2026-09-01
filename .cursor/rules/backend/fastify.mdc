@@ -17,7 +17,7 @@ alwaysApply: false
 - Avoid unnecessary validations - Fastify already validates inputs based on route schemas
 - Pass `logger: request.log` to `@repo/error` for Fastify's Pino logger with request context. 
 - Routes can throw - global handler catches/formats
-- Always use @fastify/sensible
+- Prefer the app error catalog in the global error handler; `@fastify/sensible` is optional and not registered by default
 
 ## Testing
 

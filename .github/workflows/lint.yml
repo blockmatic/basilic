@@ -48,3 +48,6 @@ jobs:
 
       - name: Run lint
         run: pnpm lint
+
+      - name: Run type check
+        run: pnpm exec turbo run checktypes

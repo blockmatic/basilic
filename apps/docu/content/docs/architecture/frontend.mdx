@@ -27,8 +27,6 @@ flowchart TB
   Web --> Core
   Web --> Utils
   Mobile --> UI
-  Mobile --> React
-  Mobile --> Core
   Docs --> UI
   React --> Core
 ```
@@ -78,7 +76,7 @@ Pending and optimistic UI for mutations stays on TanStack mutation flags (`isPen
 | Server fetch | Server Components when possible |
 | Client async | TanStack Query 5 via `@repo/react` |
 | API client | `@repo/core` |
-| Query keys | `@lukemorales/query-key-factory` for hand-written queries |
+| Query keys | Handwritten in `@repo/react` hooks and `apps/web/lib/query-keys.ts` |
 | URL state | `nuqs` (filters, tabs, pagination) |
 | Grouped / persisted UI | `ahooks` (`useSetState`, `useLocalStorageState`) |
 | Validation | Zod at boundaries |
@@ -90,15 +88,7 @@ Pending and optimistic UI for mutations stays on TanStack mutation flags (`isPen
 - **Client TanStack:** settings/security (API keys, passkeys, TOTP). These surfaces are mutation-first and need WebAuthn or OTP browser APIs. Do not duplicate their GETs in Server Components; an empty first paint until hydration is accepted.
 
 ```tsx
-import { createQueryKeys } from "@lukemorales/query-key-factory"
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs"
-
-export const users = createQueryKeys("users", {
-  detail: (id: string) => ({
-    queryKey: [id],
-    queryFn: () => fetchUser(id),
-  }),
-})
 
 const [filters, setFilters] = useQueryStates({
   search: parseAsString.withDefault(""),

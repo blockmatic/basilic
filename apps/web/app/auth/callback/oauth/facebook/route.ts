@@ -1,8 +1,7 @@
 import { createClient } from '@repo/core'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
-import { extractTokens, getOAuthRedirectTarget } from '@/lib/auth/callback-utils'
+import { completeOAuthCallback } from '@/lib/auth/callback-utils'
 import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
 import { env } from '@/lib/env'
 
@@ -46,19 +45,11 @@ export async function GET(request: Request) {
       body: { code, state },
       throwOnError: true,
     })
-    const tokens = extractTokens(response)
-    if (!tokens)
-      return NextResponse.redirect(
-        new URL(`/auth/login?message=${encodeURIComponent('facebook_oauth_failed')}`, request.url),
-        303,
-      )
-
-    const redirectResponse = NextResponse.redirect(
-      new URL(getOAuthRedirectTarget(response), request.url),
-      303,
-    )
-    setAuthCookiesOnResponse(redirectResponse, tokens)
-    return redirectResponse
+    return completeOAuthCallback({
+      request,
+      response,
+      failureMessage: 'facebook_oauth_failed',
+    })
   } catch (error) {
     const rawMessage = error instanceof Error ? error.message : 'Facebook sign-in failed'
     const errorCode = mapAuthError(rawMessage)

@@ -44,9 +44,23 @@ import { createReactApiConfig } from './setup'
  */
 export function ApiProvider({
   children,
-  ...config
+  client,
+  baseUrl,
+  getAuthToken,
+  queryClient,
+  queryClientDefaults,
 }: ReactApiConfig & { children: ReactNode }): React.JSX.Element {
-  const apiConfig = useMemo(() => createReactApiConfig(config), [config])
+  const apiConfig = useMemo(
+    () =>
+      createReactApiConfig({
+        client,
+        baseUrl,
+        getAuthToken,
+        queryClient,
+        queryClientDefaults,
+      }),
+    [client, baseUrl, getAuthToken, queryClient, queryClientDefaults],
+  )
 
   return <ReactApiContext.Provider value={apiConfig}>{children}</ReactApiContext.Provider>
 }

@@ -22,13 +22,6 @@ const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
     // Log but don't block - let rate limiting handle abuse
     // In production, you might want to block or add to blocklist
 
-    // Log all requests in production for security monitoring
-    if (env.NODE_ENV === 'production')
-      logSecurityEvent(request, 'request_received', {
-        method: request.method,
-        url: request.url,
-      })
-
     // Prevent MIME type sniffing
     reply.header('X-Content-Type-Options', 'nosniff')
 
