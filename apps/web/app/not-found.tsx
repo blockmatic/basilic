@@ -8,7 +8,7 @@ export default function NotFoundPage() {
       <div className="max-w-md space-y-4 text-center">
         <h2 className="font-heading text-xl font-bold md:text-2xl">Page not found</h2>
         <p className="text-muted-foreground">The page you are looking for does not exist.</p>
-        <Button asChild>
+        <Button asChild className="min-h-11 min-w-11">
           <Link href="/">Go home</Link>
         </Button>
       </div>

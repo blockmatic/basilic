@@ -38,6 +38,17 @@ flowchart TB
 - API types and client → `@repo/core` (generated from OpenAPI)
 - React Query hooks → `@repo/react` (**handwritten**, not generated). See [OpenAPI Generation](/docs/development/openapi-generation).
 
+## Routing
+
+- [`proxy.ts`](/docs/architecture/authentication) is the only auth gate. Do not duplicate redirects in layouts or pages.
+- Unauthenticated requests never reach the App Router 404: `apps/web/proxy.ts` redirects them to `/auth/login`. After auth, unmatched paths render `apps/web/app/not-found.tsx` with HTTP 404.
+- When dynamic resource routes exist, call `notFound()` for missing resources — not inline “not found” JSX with a 200 status.
+- No parallel (`@slot`) or intercepting routes until the product needs a multi-pane or modal-detail UI.
+
+## Errors
+
+`app/error.tsx` and the shared `ErrorBoundary` report via `captureError` from `@repo/error/nextjs`, same as `global-error.tsx`. See [Error Handling](/docs/architecture/error-handling).
+
 ## Rendering (RSC-first)
 
 Default to Server Components. Use `'use client'` only for interactivity, browser APIs, or client-only libraries.
@@ -54,12 +65,6 @@ Stream with `loading.tsx` and Suspense. Mark search/filter updates as transition
 - Auth / Fastify: `cache: 'no-store'`. Identical GET `fetch` calls are request-memoized; do not wrap them in `React.cache()`.
 - No `revalidateTag` until something is tagged. Mutations stay on Fastify, not Server Actions.
 
-### Routing
-
-- [`proxy.ts`](/docs/architecture/authentication) is the only auth gate. Do not duplicate redirects in layouts or pages.
-- Unmatched paths render `apps/web/app/not-found.tsx` (HTTP 404). When dynamic resource routes exist, call `notFound()` for missing resources — not inline “not found” JSX with a 200 status.
-- No parallel (`@slot`) or intercepting routes until the product needs a multi-pane or modal-detail UI.
-
 ## Data and state
 
 | Concern | Library |
@@ -73,11 +78,10 @@ Stream with `loading.tsx` and Suspense. Mark search/filter updates as transition
 | Validation | Zod at boundaries |
 | Errors | `react-error-boundary` + [Error Handling](/docs/architecture/error-handling) |
 
-**Server vs client fetch**
+### Server vs client fetch
 
 - **RSC:** semi-static pages (news, markets) and profile (`getUserInfo` in the page, `initialData` on `useUser`).
 - **Client TanStack:** settings/security (API keys, passkeys, TOTP). These surfaces are mutation-first and need WebAuthn or OTP browser APIs. Do not duplicate their GETs in Server Components; an empty first paint until hydration is accepted.
-- **Errors:** `app/error.tsx` and the shared `ErrorBoundary` report via `captureError` from `@repo/error/nextjs`, same as `global-error.tsx`.
 
 ```tsx
 import { createQueryKeys } from "@lukemorales/query-key-factory"
