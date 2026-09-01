@@ -1,5 +1,6 @@
 'use client'
 
+import { captureError } from '@repo/error/nextjs'
 import { logger } from '@repo/utils/logger/client'
 import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary'
 
@@ -28,6 +29,12 @@ export function ErrorBoundary({ children }: { children: React.ReactNode }) {
       FallbackComponent={ErrorFallback}
       onReset={() => window.location.reload()}
       onError={error => {
+        captureError({
+          code: 'UNEXPECTED_ERROR',
+          error,
+          label: 'App ErrorBoundary',
+          tags: { runtime: 'nextjs' },
+        })
         logger.error(error, 'Error in ErrorBoundary')
       }}
     >
