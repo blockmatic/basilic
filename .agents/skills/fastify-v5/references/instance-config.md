@@ -46,12 +46,16 @@ const fastify = Fastify({
 Configure request ID tracking for request correlation:
 
 ```typescript
+import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import Fastify, { LogController } from 'fastify'
+
 const fastify = Fastify({
-  requestIdHeader: 'x-request-id', // Header name for request ID
-  requestIdLogLabel: 'reqId', // Label in logs
-  disableRequestLogging: false, // Enable request logging
+  requestIdHeader: 'x-request-id',
+  logController: new LogController({ requestIdLogLabel: 'reqId', disableRequestLogging: false }),
 }).withTypeProvider<TypeBoxTypeProvider>()
 ```
+
+`requestIdLogLabel` and `disableRequestLogging` on the top-level Fastify options are deprecated (Fastify 5); use `logController` instead.
 
 ## Proxy Configuration
 
@@ -78,7 +82,7 @@ const fastify = Fastify({
 
 ```typescript
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import Fastify from 'fastify'
+import Fastify, { LogController } from 'fastify'
 
 const fastify = Fastify({
   logger: {
@@ -95,8 +99,7 @@ const fastify = Fastify({
   bodyLimit: parseInt(process.env.BODY_LIMIT ?? '1048576', 10),
   requestTimeout: parseInt(process.env.REQUEST_TIMEOUT ?? '30000', 10),
   requestIdHeader: 'x-request-id',
-  requestIdLogLabel: 'reqId',
-  disableRequestLogging: false,
+  logController: new LogController({ requestIdLogLabel: 'reqId', disableRequestLogging: false }),
 }).withTypeProvider<TypeBoxTypeProvider>()
 ```
 

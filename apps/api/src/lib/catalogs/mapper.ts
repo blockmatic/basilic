@@ -1,3 +1,4 @@
+import type { FastifyReply } from 'fastify'
 import { clientErrors, serverErrors, webErrors } from './index.js'
 
 type ServerErrorCode = keyof typeof serverErrors
@@ -15,6 +16,23 @@ const allErrors = {
   ...clientErrors,
   ...webErrors,
 } as const
+
+/**
+ * Send a catalog error as an HTTP response
+ */
+export function sendCatalogError({
+  reply,
+  status,
+  code,
+}: {
+  reply: FastifyReply
+  status: number
+  code: ErrorCode
+}) {
+  const err = getError(code) ??
+    getError('UNEXPECTED_ERROR') ?? { code: 'UNEXPECTED_ERROR', message: 'Unexpected error' }
+  return reply.code(status).send(err)
+}
 
 /**
  * Maps HTTP status codes to error catalog codes

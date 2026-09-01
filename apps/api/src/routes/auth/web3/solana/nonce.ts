@@ -5,8 +5,9 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { web3Nonce } from '../../../../db/schema/index.js'
+import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
-import { isValidChain, validateAddress } from '../validate-address.js'
+import { validateAddress } from '../validate-address.js'
 
 const nonceTtlMs = 5 * 60 * 1000 // 5 minutes
 
@@ -38,17 +39,11 @@ const solanaNonceRoute: FastifyPluginAsync = async fastify => {
       const { address } = request.query as { address: string }
       const chain = 'solana'
 
-      if (!isValidChain(chain))
-        return reply.code(400).send({ code: 'INVALID_CHAIN', message: 'Invalid chain' })
-
       let validatedAddress: string
       try {
         validatedAddress = validateAddress({ chain, address })
-      } catch (err) {
-        return reply.code(400).send({
-          code: 'INVALID_ADDRESS',
-          message: err instanceof Error ? err.message : 'Invalid address',
-        })
+      } catch {
+        return sendCatalogError({ reply, status: 400, code: 'INVALID_ADDRESS' })
       }
 
       const nonce = randomBytes(16).toString('hex')

@@ -254,4 +254,4 @@ describe('User Routes', () => {
 ## See Also
 
 - [Test Utils Template](../templates/test-utils.ts) - Test app builder example
-- [Backend Testing Rules](@.cursor/rules/backend/testing.mdc) - Testing standards for Fastify
+- Fastify route testing rules: `.cursor/rules/backend/fastify.mdc` (group `*.spec.ts` + imported `*.test.ts`, PGLite single-worker)

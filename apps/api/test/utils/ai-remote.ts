@@ -29,11 +29,25 @@ type ResponseLike = {
   headers?: Record<string, string | string[] | number | undefined>
 }
 
-export const isProviderUnavailable = (res: ResponseLike) =>
-  res.statusCode === 502 ||
+const isUpstreamConfigError = (res: ResponseLike) => {
+  if (res.statusCode !== 502) return false
+  try {
+    const data = JSON.parse(res.body) as { code?: string }
+    return data.code === 'UPSTREAM_SERVICE_ERROR'
+  } catch {
+    return false
+  }
+}
+
+const isConnectionClassFailure = (res: ResponseLike) =>
   res.statusCode === 503 ||
   res.statusCode === 504 ||
   /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET/i.test(res.body)
+
+export const isProviderUnavailable = (res: ResponseLike) => {
+  if (isUpstreamConfigError(res)) return false
+  return res.statusCode === 502 || isConnectionClassFailure(res)
+}
 
 export const skipIfProviderUnavailable = (
   res: ResponseLike,
@@ -49,11 +63,7 @@ export const skipIfProviderUnavailable = (
   if (opts?.expectStream) {
     const ct = String(res.headers?.['content-type'] ?? '').toLowerCase()
     if (!ct.includes('text/event-stream')) {
-      const hasUpstreamFailure =
-        res.statusCode === 502 ||
-        res.statusCode === 503 ||
-        res.statusCode === 504 ||
-        /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET/i.test(res.body)
+      const hasUpstreamFailure = isProviderUnavailable(res)
       if (hasUpstreamFailure) {
         process.stderr.write(
           `[AI test] ${name}: Expected event-stream, got ${ct || 'unknown'} - upstream failure, passing\n`,

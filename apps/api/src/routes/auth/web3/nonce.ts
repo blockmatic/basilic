@@ -7,15 +7,10 @@ import { getAddress } from 'viem'
 import { generateSiweNonce } from 'viem/siwe'
 import { getDb } from '../../../db/index.js'
 import { web3Nonce } from '../../../db/schema/index.js'
+import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const nonceExpiryMinutes = 5
-const validChains = ['eip155', 'solana'] as const
-type ValidChain = (typeof validChains)[number]
-
-function isValidChain(chain: string): chain is ValidChain {
-  return validChains.includes(chain as ValidChain)
-}
 
 const NonceResponseSchema = Type.Object({
   nonce: Type.String(),
@@ -23,7 +18,7 @@ const NonceResponseSchema = Type.Object({
 
 const web3NonceRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().get<{
-    Querystring: { chain: string; address: string }
+    Querystring: { chain: 'eip155' | 'solana'; address: string }
   }>(
     '/nonce',
     {
@@ -46,33 +41,18 @@ const web3NonceRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { chain, address } = request.query
 
-      if (!isValidChain(chain))
-        return reply.code(400).send({
-          code: 'INVALID_CHAIN',
-          message: 'Chain must be eip155 or solana',
-        })
-
-      if (!chain || !address?.trim())
-        return reply.code(400).send({
-          code: 'MISSING_PARAMS',
-          message: 'chain and address query parameters are required',
-        })
-
-      const db = await getDb()
       let normalizedAddr: string
       try {
         normalizedAddr =
           chain === 'eip155' ? getAddress(address.trim()).toLowerCase() : address.trim()
       } catch {
-        return reply.code(400).send({
-          code: 'INVALID_ADDRESS',
-          message: 'Invalid wallet address',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'INVALID_ADDRESS' })
       }
 
       const nonce = generateSiweNonce()
       const expiresAt = new Date(Date.now() + nonceExpiryMinutes * 60 * 1000)
 
+      const db = await getDb()
       await db
         .delete(web3Nonce)
         .where(and(eq(web3Nonce.chain, chain), eq(web3Nonce.address, normalizedAddr)))

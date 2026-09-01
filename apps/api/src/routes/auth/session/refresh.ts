@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { sessions } from '../../../db/schema/index.js'
+import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { env } from '../../../lib/env.js'
 import {
   createAccessTokenPayload,
@@ -15,7 +16,7 @@ import {
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const RefreshSchema = Type.Object({
-  refreshToken: Type.String(),
+  refreshToken: Type.String({ minLength: 1 }),
 })
 
 const RefreshResponseSchema = Type.Object({
@@ -44,12 +45,6 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { refreshToken: refreshTokenInput } = request.body
 
-      if (!refreshTokenInput)
-        return reply.code(400).send({
-          code: 'MISSING_TOKEN',
-          message: 'Refresh token is required',
-        })
-
       // Verify refresh JWT
       let decoded: {
         typ?: string
@@ -60,38 +55,25 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
       try {
         decoded = fastify.jwt.verify<typeof decoded>(refreshTokenInput)
       } catch {
-        return reply.code(401).send({
-          code: 'INVALID_TOKEN',
-          message: 'Invalid refresh token',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_TOKEN' })
       }
 
       // Validate token type
       if (decoded.typ !== 'refresh' || !decoded.sub || !decoded.sid || !decoded.jti)
-        return reply.code(401).send({
-          code: 'INVALID_TOKEN',
-          message: 'Invalid refresh token',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_TOKEN' })
 
       const db = await getDb()
 
       // Load session
       const [session] = await db.select().from(sessions).where(eq(sessions.id, decoded.sid))
 
-      if (!session)
-        return reply.code(401).send({
-          code: 'SESSION_NOT_FOUND',
-          message: 'Session not found',
-        })
+      if (!session) return sendCatalogError({ reply, status: 401, code: 'SESSION_NOT_FOUND' })
 
       // Check expiration
       if (session.expiresAt < new Date()) {
         // Clean up expired session
         await db.delete(sessions).where(eq(sessions.id, session.id))
-        return reply.code(401).send({
-          code: 'EXPIRED_TOKEN',
-          message: 'Refresh token has expired',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'EXPIRED_TOKEN' })
       }
 
       // Verify jti hash matches (reuse detection)
@@ -117,10 +99,7 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
           },
         })
 
-        return reply.code(401).send({
-          code: 'TOKEN_REUSE_DETECTED',
-          message: 'Token reuse detected - session revoked',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'TOKEN_REUSE_DETECTED' })
       }
 
       // Rotate refresh token

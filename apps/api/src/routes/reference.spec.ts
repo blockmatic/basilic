@@ -26,6 +26,26 @@ describe('GET /reference', () => {
     expect(response.body).toContain('scalar')
   })
 
+  it('should embed jwtFromServer when magic link callback succeeds', async () => {
+    const email = 'scalar-jwt@test.ai'
+    await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/request',
+      payload: { email, callbackUrl: 'https://example.com/reference' },
+    })
+    const token = fastify.fakeEmail?.extractToken()
+    const verificationId = fastify.fakeEmail?.extractVerificationId()
+    if (!token || !verificationId) throw new Error('Missing magic link params')
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `/reference?token=${token}&verificationId=${verificationId}`,
+    })
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toContain('jwtFromServer')
+    expect(response.body).not.toContain('jwtFromServer = null')
+  })
+
   it('should return OpenAPI JSON at /reference/openapi.json', async () => {
     const response = await fastify.inject({
       method: 'GET',

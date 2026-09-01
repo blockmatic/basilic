@@ -19,7 +19,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
- * Returns server health status with current ISO datetime
+ * Returns server health status
  *
  * Health check endpoint
  */

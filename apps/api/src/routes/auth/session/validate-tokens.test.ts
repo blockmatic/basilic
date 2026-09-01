@@ -59,9 +59,10 @@ describe('POST /auth/session/validate-tokens', () => {
     })
 
     expect(response.statusCode).toBe(401)
+    expect(response.json().code).toBe('UNAUTHORIZED')
   })
 
-  it('rejects swapped token types', async () => {
+  it('rejects swapped token types with UNAUTHORIZED', async () => {
     const { token, refreshToken } = await getTokenPair('swap-types@example.com')
 
     const response = await fastify.inject({
@@ -72,9 +73,10 @@ describe('POST /auth/session/validate-tokens', () => {
     })
 
     expect(response.statusCode).toBe(401)
+    expect(response.json().code).toBe('UNAUTHORIZED')
   })
 
-  it('rejects mismatched sub/sid on the refresh token', async () => {
+  it('rejects mismatched sub/sid on the refresh token with INVALID_TOKEN', async () => {
     const { token } = await getTokenPair('mismatch-a@example.com')
     const { refreshToken: foreignRefresh } = await getTokenPair('mismatch-b@example.com')
 
@@ -86,9 +88,10 @@ describe('POST /auth/session/validate-tokens', () => {
     })
 
     expect(response.statusCode).toBe(401)
+    expect(response.json().code).toBe('INVALID_TOKEN')
   })
 
-  it('rejects a deleted session', async () => {
+  it('rejects a deleted session with UNAUTHORIZED', async () => {
     const { token, refreshToken } = await getTokenPair('deleted-session@example.com')
 
     const logoutResponse = await fastify.inject({
@@ -106,9 +109,10 @@ describe('POST /auth/session/validate-tokens', () => {
     })
 
     expect(response.statusCode).toBe(401)
+    expect(response.json().code).toBe('UNAUTHORIZED')
   })
 
-  it('rejects an expired session', async () => {
+  it('rejects an expired session with UNAUTHORIZED', async () => {
     const { token, refreshToken } = await getTokenPair('expired-session@example.com')
     const decoded = decodeJwtPayload<{ sid?: string }>(token)
     if (!decoded.sid) throw new Error('Missing session id in access token')
@@ -127,9 +131,10 @@ describe('POST /auth/session/validate-tokens', () => {
     })
 
     expect(response.statusCode).toBe(401)
+    expect(response.json().code).toBe('UNAUTHORIZED')
   })
 
-  it('rejects a stale refresh jti', async () => {
+  it('rejects a stale refresh jti with INVALID_TOKEN', async () => {
     const { refreshToken } = await getTokenPair('stale-jti@example.com')
 
     const refreshResponse = await fastify.inject({
@@ -148,6 +153,7 @@ describe('POST /auth/session/validate-tokens', () => {
     })
 
     expect(response.statusCode).toBe(401)
+    expect(response.json().code).toBe('INVALID_TOKEN')
   })
 
   it('does not mutate the session row on success', async () => {

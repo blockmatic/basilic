@@ -122,7 +122,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       const provider = getResolvedProvider()
       if (!provider)
         return reply.code(500).send({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: 'SERVER_ERROR',
           message:
             'No AI provider configured. Set ANTHROPIC_API_KEY (default), OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL.',
         })

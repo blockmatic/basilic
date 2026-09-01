@@ -5,5 +5,6 @@ import type { FastifyRequest } from 'fastify'
  * Uses request.ip which respects Fastify's trustProxy setting.
  */
 export function getTrustedClientIp(request: FastifyRequest): string {
-  return request.ip ?? 'unknown'
+  const raw = request.ip ?? 'unknown'
+  return raw.startsWith('::ffff:') ? raw.slice(7) : raw
 }

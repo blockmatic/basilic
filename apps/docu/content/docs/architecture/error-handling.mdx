@@ -15,6 +15,14 @@ captureError({ error, label: 'Database', tags: { app: 'api' } })
 // reply with getError('SERVER_ERROR') — not error.message
 ```
 
+On the API, prefer `sendCatalogError({ reply, status, code })` from `apps/api/src/lib/catalogs/mapper.ts` so routes return catalog `{ code, message }` without duplicating strings.
+
+```typescript
+import { sendCatalogError } from '../lib/catalogs/mapper.js'
+
+return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
+```
+
 Initialize the SDK in the app (`instrumentation.ts` on Next.js, bootstrap on Fastify). PII scrubbing is the SDK’s job. Fastify routes may throw; the global handler captures and maps status to catalog codes.
 
 React subtrees: `react-error-boundary` plus `captureError` from `@repo/error/react`. See [Frontend](/docs/architecture/frontend). Logging (Pino) is separate: [Logging](/docs/architecture/logging).

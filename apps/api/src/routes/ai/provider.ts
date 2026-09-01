@@ -5,8 +5,11 @@ import { createOllama } from 'ai-sdk-ollama'
 import { env } from '../../lib/env.js'
 
 export const defaultOllamaModel = 'qwen3:8b'
-export const defaultOpenRouterModel = 'anthropic/claude-sonnet-4'
-export const defaultAnthropicModel = 'claude-sonnet-4-20250514'
+export const defaultOpenRouterModel = 'anthropic/claude-haiku-4.5'
+export const defaultAnthropicModel = 'claude-haiku-4-5'
+/** Explicit Sonnet tier when callers request `sonnet` (not the default — Haiku is cheaper). */
+export const upgradeSonnetAnthropicModel = 'claude-sonnet-4-6'
+export const upgradeSonnetOpenRouterModel = 'anthropic/claude-sonnet-4.6'
 
 /** Default provider when AI_PROVIDER is unset; Anthropic direct API is preferred. */
 export const defaultProvider: ResolvedProvider = 'anthropic'
@@ -43,17 +46,22 @@ const openRouterModelAliases: Record<string, string> = {
   'openrouter/free': openRouterFreeModel,
   grok: 'x-ai/grok-3-mini',
   'grok-3-mini': 'x-ai/grok-3-mini',
-  sonnet: defaultOpenRouterModel,
+  haiku: defaultOpenRouterModel,
+  sonnet: upgradeSonnetOpenRouterModel,
   opus: 'anthropic/claude-3-opus',
 }
 
 const anthropicModelAliases: Record<string, string> = {
-  sonnet: defaultAnthropicModel,
-  'claude-3-5-sonnet': defaultAnthropicModel,
-  'claude-sonnet-4': defaultAnthropicModel,
+  haiku: defaultAnthropicModel,
+  sonnet: upgradeSonnetAnthropicModel,
+  'claude-3-5-sonnet': upgradeSonnetAnthropicModel,
+  'claude-sonnet-4': upgradeSonnetAnthropicModel,
+  'claude-sonnet-4-5': upgradeSonnetAnthropicModel,
+  'claude-sonnet-4-6': upgradeSonnetAnthropicModel,
+  'claude-sonnet-4-20250514': upgradeSonnetAnthropicModel,
 }
 
-function resolveAnthropicModel(modelParam?: string): string {
+export function resolveAnthropicModel(modelParam?: string): string {
   const defaultModel = env.AI_DEFAULT_MODEL ?? defaultAnthropicModel
   const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
   const useDefault =
@@ -61,7 +69,7 @@ function resolveAnthropicModel(modelParam?: string): string {
     m === defaultAnthropicModel ||
     m === 'aurora-alpha' ||
     m === 'default' ||
-    m === 'sonnet'
+    m === 'haiku'
   return useDefault ? defaultModel : (anthropicModelAliases[m ?? ''] ?? m ?? defaultModel)
 }
 
@@ -73,7 +81,7 @@ function resolveOllamaModel(modelParam?: string): string {
   return useDefault ? defaultModel : (m ?? defaultModel)
 }
 
-function resolveOpenRouterModel(modelParam?: string): string {
+export function resolveOpenRouterModel(modelParam?: string): string {
   const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOpenRouterModel
   const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
   const useRuntimeDefault =

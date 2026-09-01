@@ -1,12 +1,12 @@
-import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import EmailChangedNotification from '@repo/email/emails/email-changed-notification'
 import { render } from '@repo/email/render'
 import { Type } from '@sinclair/typebox'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { authAttempts, sessions, users, verification } from '../../../../db/schema/index.js'
+import { recordAuthFailedAttempt } from '../../../../lib/auth-attempts.js'
 import { normalizeEmail } from '../../../../lib/email.js'
 import { env } from '../../../../lib/env.js'
 import {
@@ -20,6 +20,15 @@ import { ErrorResponseSchema } from '../../../schemas.js'
 
 const changeEmailMaxAttempts = 5
 const changeEmailLockMinutes = 15
+
+const recordChangeEmailFailedAttempt = (db: Awaited<ReturnType<typeof getDb>>, ip: string) =>
+  recordAuthFailedAttempt({
+    db,
+    ip,
+    type: 'change_email',
+    maxAttempts: changeEmailMaxAttempts,
+    lockMinutes: changeEmailLockMinutes,
+  })
 
 const VerifySchema = Type.Object({
   token: Type.String({ pattern: '^\\d{6}$', description: '6-digit code' }),
@@ -118,33 +127,8 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
 
       const [verificationRecord] = await db.select().from(verification).where(verificationWhere)
 
-      async function recordFailedAttempt() {
-        const now = new Date()
-        const lockedUntilNew = new Date(now.getTime() + changeEmailLockMinutes * 60 * 1000)
-        await db
-          .insert(authAttempts)
-          .values({
-            id: randomUUID(),
-            key: ip,
-            type: 'change_email',
-            failedAttempts: 1,
-            firstFailureAt: now,
-            lockedUntil: null,
-            updatedAt: now,
-          })
-          .onConflictDoUpdate({
-            target: [authAttempts.key, authAttempts.type],
-            set: {
-              failedAttempts: sql`${authAttempts.failedAttempts} + 1`,
-              firstFailureAt: sql`COALESCE(${authAttempts.firstFailureAt}, ${now})`,
-              lockedUntil: sql`CASE WHEN (${authAttempts.failedAttempts} + 1) >= ${changeEmailMaxAttempts} THEN ${lockedUntilNew}::timestamptz ELSE NULL END`,
-              updatedAt: now,
-            },
-          })
-      }
-
       if (!verificationRecord) {
-        await recordFailedAttempt()
+        await recordChangeEmailFailedAttempt(db, ip)
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Invalid or expired token',
@@ -153,7 +137,7 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (verificationRecord.expiresAt < new Date()) {
         await db.delete(verification).where(eq(verification.id, verificationRecord.id))
-        await recordFailedAttempt()
+        await recordChangeEmailFailedAttempt(db, ip)
         return reply.code(401).send({
           code: 'EXPIRED_TOKEN',
           message: 'Token has expired',

@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { getDb } from '../../../../src/db/index.js'
-import { users } from '../../../../src/db/schema/index.js'
+import { authAttempts, users, verification } from '../../../../src/db/schema/index.js'
 import { fastify } from '../magiclink.spec.js'
 
 describe('POST /auth/magiclink/verify', () => {
@@ -106,6 +106,89 @@ describe('POST /auth/magiclink/verify', () => {
     expect(body.code).toBe('INVALID_TOKEN')
   })
 
+  it('should return EXPIRED_TOKEN for expired verification', async () => {
+    const email = 'expired-magic@test.ai'
+    await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/request',
+      payload: { email, callbackUrl: 'https://example.com/callback' },
+    })
+    const token = fastify.fakeEmail?.extractToken()
+    if (!token) throw new Error('Missing token')
+
+    const db = await getDb()
+    await db
+      .update(verification)
+      .set({ expiresAt: new Date(Date.now() - 60_000) })
+      .where(eq(verification.identifier, email))
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token },
+    })
+    expect(res.statusCode).toBe(401)
+    expect(JSON.parse(res.body).code).toBe('EXPIRED_TOKEN')
+  })
+
+  it('should return TOO_MANY_ATTEMPTS after repeated failures', async () => {
+    const lockoutIp = `10.0.${Math.floor(Math.random() * 200)}.${Math.floor(Math.random() * 200)}`
+    const email = `lockout-${lockoutIp}@test.ai`
+
+    for (let i = 0; i < 5; i++) {
+      const res = await fastify.inject({
+        method: 'POST',
+        url: '/auth/magiclink/verify',
+        remoteAddress: lockoutIp,
+        headers: { 'x-forwarded-for': lockoutIp },
+        payload: { email, token: '000000' },
+      })
+      expect(res.statusCode).toBe(401)
+      expect(JSON.parse(res.body).code).toBe('INVALID_TOKEN')
+    }
+
+    const db = await getDb()
+    const [attemptRow] = await db.select().from(authAttempts).where(eq(authAttempts.key, lockoutIp))
+    expect(attemptRow?.failedAttempts).toBeGreaterThanOrEqual(5)
+    expect(attemptRow?.lockedUntil).toBeTruthy()
+
+    const locked = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      remoteAddress: lockoutIp,
+      headers: { 'x-forwarded-for': lockoutIp },
+      payload: { email, token: '000000' },
+    })
+    expect(locked.statusCode).toBe(429)
+    expect(JSON.parse(locked.body).code).toBe('TOO_MANY_ATTEMPTS')
+  })
+
+  it('should reject reused magic link token', async () => {
+    const email = 'reuse-magic@test.ai'
+    await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/request',
+      payload: { email, callbackUrl: 'https://example.com/callback' },
+    })
+    const token = fastify.fakeEmail?.extractToken()
+    if (!token) throw new Error('Missing token')
+
+    const first = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token },
+    })
+    expect(first.statusCode).toBe(200)
+
+    const second = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token },
+    })
+    expect(second.statusCode).toBe(401)
+    expect(JSON.parse(second.body).code).toBe('INVALID_TOKEN')
+  })
+
   it('should return error for missing token', async () => {
     const response = await fastify.inject({
       method: 'POST',
@@ -113,7 +196,8 @@ describe('POST /auth/magiclink/verify', () => {
       payload: {},
     })
 
-    expect([400, 401, 404]).toContain(response.statusCode)
+    expect(response.statusCode).toBe(400)
+    expect(JSON.parse(response.body).code).toBe('BAD_REQUEST')
   })
 
   it('should access protected route after magic link authentication', async () => {

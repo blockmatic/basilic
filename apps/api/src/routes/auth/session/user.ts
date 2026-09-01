@@ -1,4 +1,3 @@
-import { logger } from '@repo/utils/logger/server'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
@@ -10,6 +9,7 @@ import {
   users,
   walletIdentities,
 } from '../../../db/schema/index.js'
+import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const LinkedWalletSchema = Type.Object({
@@ -61,11 +61,7 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session)
-        return reply.code(401).send({
-          code: 'UNAUTHORIZED',
-          message: 'Not authenticated',
-        })
+      if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
       const userId = request.session.user.id
       let linkedWallets: { id: string; chain: string; address: string }[]
@@ -120,11 +116,8 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           .from(users)
           .where(eq(users.id, userId))
       } catch (err) {
-        logger.error({ err }, 'Failed to fetch user data')
-        return reply.code(500).send({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch user data',
-        })
+        request.log.error({ err }, 'Failed to fetch user data')
+        return sendCatalogError({ reply, status: 500, code: 'SERVER_ERROR' })
       }
 
       return reply.code(200).send({
