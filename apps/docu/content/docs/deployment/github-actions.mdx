@@ -11,7 +11,7 @@ Path filters are used only for test workflows (app E2E and package unit tests) s
 
 ### Web (`web-e2e.yml`)
 
-Build → Unit → E2E. Triggers on pull request when `apps/web/**`, shared packages, or openapi change. Single job: build (with localhost API URL), unit tests, E2E via `test:e2e:local` (spawns Fastify + Next locally).
+Build → E2E. Triggers on pull request when `apps/web/**`, shared packages, or openapi change. Single job: build (with localhost API URL), `test` (E2E-only placeholder, no unit suite), then E2E via `test:e2e:local` (spawns Fastify + Next locally).
 
 ### API (`api-e2e.yml`)
 
@@ -29,7 +29,7 @@ See [E2E Testing](/docs/testing/e2e-testing) for details.
 
 ### Lint (`lint.yml`)
 
-Linting and type checking on every PR. Supports `workflow_dispatch` for manual runs.
+Linting and type checking on every PR (`pnpm lint`, then `pnpm exec turbo run checktypes`). Supports `workflow_dispatch` for manual runs.
 
 ### Mobile (`mobile-build.yml`, `mobile-preview.yml`, `mobile-pr-preview.yml`)
 

@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 ## Core Libraries
-- `@tanstack/react-query`: Data fetching/async (use `@lukemorales/query-key-factory`)
+- `@tanstack/react-query`: Data fetching/async (handwritten query keys in `@repo/react` and app `lib/query-keys.ts`)
 - `@repo/react`: React Query hooks and helpers only—never UI components. Route-specific UI (e.g. login form) lives in apps, collocated by route
 - `nuqs`: URL-based state (search/filters/tabs/pagination)
 - `zod`: Schema validation
@@ -14,4 +14,4 @@ alwaysApply: false
 - `ahooks`: `useSetState` (grouped state), `useLocalStorageState` (localStorage)
 
 ## Essential Patterns
-Query Key Factory (see @.cursor/rules/frontend/react-hooks.mdc), nuqs for URL-shareable state, `@repo/core` for API clients. Auth: see @.cursor/rules/frontend/auth.mdc
+Query keys: handwritten in `@repo/react` and `apps/web/lib/query-keys.ts`. nuqs for URL-shareable state, `@repo/core` for API clients. Auth: see @.cursor/rules/frontend/auth.mdc

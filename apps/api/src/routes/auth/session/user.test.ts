@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { createAuthenticatedUser } from '../../../../test/utils/auth-helper.js'
+import { createAuthenticatedUser, getWeb3Session } from '../../../../test/utils/auth-helper.js'
 import { fastify } from '../session.spec.js'
 
 describe('GET /auth/session/user', () => {
@@ -34,7 +34,24 @@ describe('GET /auth/session/user', () => {
     expect(body.user).toBeDefined()
     expect(body.user.id).toBeTruthy()
     expect(body.user.email).toBe(email)
+    expect(body.user.emailVerified).toBe(true)
     expect(Array.isArray(body.user.linkedWallets)).toBe(true)
+  })
+
+  it('should return emailVerified false for web3-authenticated session', async () => {
+    const token = await getWeb3Session(fastify)
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    })
+
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.user.emailVerified).toBe(false)
   })
 
   it('should return user when authenticated via API key', async () => {

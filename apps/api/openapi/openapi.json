@@ -5606,14 +5606,7 @@
                           ]
                         },
                         "emailVerified": {
-                          "anyOf": [
-                            {
-                              "type": "boolean"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
+                          "type": "boolean"
                         },
                         "wallet": {
                           "type": "object",

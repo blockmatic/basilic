@@ -82,6 +82,11 @@ export async function verifyMagicLinkAndIssueToken(
   if (!user) return null
 
   await db
+    .update(users)
+    .set({ emailVerified: true, updatedAt: new Date() })
+    .where(eq(users.id, user.id))
+
+  await db
     .delete(authAttempts)
     .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, 'magic_link')))
   await db.delete(verification).where(eq(verification.id, verificationRecord.id))
@@ -216,6 +221,11 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
           code: 'USER_NOT_FOUND',
           message: 'User not found',
         })
+
+      await db
+        .update(users)
+        .set({ emailVerified: true, updatedAt: new Date() })
+        .where(eq(users.id, user.id))
 
       await db
         .delete(authAttempts)

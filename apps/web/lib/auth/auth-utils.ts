@@ -11,7 +11,7 @@ const userResponseSchema = z
         email: z.string().nullable().optional(),
         name: z.string().nullable().optional(),
         username: z.string().nullable().optional(),
-        emailVerified: z.boolean().nullable().optional(),
+        emailVerified: z.boolean().optional(),
       })
       .passthrough()
       .nullable()
@@ -46,7 +46,7 @@ export async function getUserInfo(): Promise<{
   email?: string | null
   name?: string | null
   username?: string | null
-  emailVerified?: boolean | null
+  emailVerified?: boolean
 } | null> {
   const { token } = await getServerAuthToken()
   if (!token) return null

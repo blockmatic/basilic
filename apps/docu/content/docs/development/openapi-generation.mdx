@@ -23,6 +23,10 @@ pnpm --filter @repo/core generate          # packages/core/src/gen/
 
 Spec also served at `/reference/openapi.json`; Scalar UI at `/reference`. Config: `packages/core/openapi-ts.config.ts`.
 
+## Vercel / production builds
+
+`generate:openapi` boots the Fastify app to scan routes. When env vars are missing (e.g. `@repo/web` on Vercel with `NODE_ENV=production`), the script stubs production-only values before import: `ALLOWED_ORIGINS`, `APP_NAME`, secrets, and `PGLITE`. Runtime API CORS rules in `apps/api/src/lib/env.ts` are unchanged—stubs apply only to codegen.
+
 ## New endpoint
 
 1. Add the route + TypeBox schema in `apps/api/src/routes/` (one file per endpoint).

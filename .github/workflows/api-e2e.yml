@@ -5,10 +5,10 @@ on:
     paths:
       - 'apps/api/**'
       - 'packages/email/**'
-      - 'packages/sentry/**'
+      - 'packages/error/**'
       - 'packages/utils/**'
-      - 'packages/eslint-config/**'
-      - 'packages/typescript-config/**'
+      - 'tools/eslint-config/**'
+      - 'tools/typescript-config/**'
       - 'pnpm-lock.yaml'
       - 'package.json'
       - 'turbo.json'

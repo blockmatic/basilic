@@ -2183,7 +2183,7 @@ export type GetUserResponses = {
       email: string | unknown;
       name: string | unknown;
       username: string | unknown;
-      emailVerified: boolean | unknown;
+      emailVerified: boolean;
       wallet?: {
         chain: string;
         address: string;

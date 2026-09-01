@@ -7,10 +7,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { getAuthToken, getRefreshToken, updateAuthTokens } from 'lib/auth/auth-client'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import type { ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import { env } from '@/lib/env'
-
-const queryClient = new QueryClient()
 
 export const coreClient = createClient({
   baseUrl: env.NEXT_PUBLIC_API_URL,
@@ -20,6 +18,8 @@ export const coreClient = createClient({
 })
 
 export function Providers({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient())
+
   return (
     <QueryClientProvider client={queryClient}>
       <ApiProvider client={coreClient}>

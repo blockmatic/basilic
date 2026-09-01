@@ -1,4 +1,7 @@
+import { eq } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { getDb } from '../../../../src/db/index.js'
+import { users } from '../../../../src/db/schema/index.js'
 import { fastify } from '../magiclink.spec.js'
 
 describe('POST /auth/magiclink/verify', () => {
@@ -85,6 +88,10 @@ describe('POST /auth/magiclink/verify', () => {
     expect(typeof body.refreshToken).toBe('string')
     expect(body.token.length).toBeGreaterThan(0)
     expect(body.refreshToken.length).toBeGreaterThan(0)
+
+    const db = await getDb()
+    const [user] = await db.select().from(users).where(eq(users.email, email))
+    expect(user?.emailVerified).toBe(true)
   })
 
   it('should return error for invalid token', async () => {

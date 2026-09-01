@@ -99,6 +99,8 @@ async function generateOpenAPI() {
     PGLITE: 'true',
     ENCRYPTION_KEY: 'deadbeef'.repeat(8), // 64-char hex (valid, not weak)
     JWT_SECRET: 'openapi-gen-jwt-secret-placeholder-32ch',
+    ALLOWED_ORIGINS: 'https://openapi-gen.example',
+    APP_NAME: 'OpenAPI Generation',
   }
   for (const [k, v] of Object.entries(stubs)) if (!process.env[k]) process.env[k] = v
 

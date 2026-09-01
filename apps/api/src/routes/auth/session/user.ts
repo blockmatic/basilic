@@ -34,7 +34,7 @@ const UserResponseSchema = Type.Object({
     email: Type.Union([Type.String(), Type.Null()]),
     name: Type.Union([Type.String(), Type.Null()]),
     username: Type.Union([Type.String(), Type.Null()]),
-    emailVerified: Type.Union([Type.Boolean(), Type.Null()]),
+    emailVerified: Type.Boolean(),
     wallet: Type.Optional(Type.Object({ chain: Type.String(), address: Type.String() })),
     linkedWallets: Type.Array(LinkedWalletSchema),
     linkedAccounts: Type.Array(LinkedAccountSchema),
@@ -72,7 +72,9 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
       let linkedAccounts: { providerId: string }[]
       let totpEnabled: boolean
       let passkeys: { id: string; name: string; createdAt: string }[]
-      let userRow: { name?: string | null; username?: string | null } | undefined
+      let userRow:
+        | { name?: string | null; username?: string | null; emailVerified?: boolean }
+        | undefined
 
       try {
         const db = await getDb()
@@ -110,7 +112,11 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
         }))
 
         ;[userRow] = await db
-          .select({ name: users.name, username: users.username })
+          .select({
+            name: users.name,
+            username: users.username,
+            emailVerified: users.emailVerified,
+          })
           .from(users)
           .where(eq(users.id, userId))
       } catch (err) {
@@ -127,7 +133,7 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           email: request.session.user.email,
           name: userRow?.name ?? request.session.user.name ?? null,
           username: userRow?.username ?? request.session.user.username ?? null,
-          emailVerified: null,
+          emailVerified: userRow?.emailVerified ?? false,
           ...(request.session.user.wallet && { wallet: request.session.user.wallet }),
           linkedWallets,
           linkedAccounts,

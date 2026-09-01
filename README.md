@@ -10,7 +10,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - 🤖 **AI-first dev workflow** — Agent rules, skills, MCP integrations, and automated CodeRabbit reviews
 - 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
-- 🧩 **Web3 & AI starters** — Ready-to-use templates for Next.js, React, Expo, Fastify, and Ponder
+- 🧩 **Web3 & AI starters** — Ready-to-use templates for Next.js, React, Expo, and Fastify
 - 🔓 **Zero vendor lock-in** — Run on VPS, AWS, Vercel, or local
 - 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
@@ -24,14 +24,14 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - **AI:** AI SDK, OpenAI, Claude, Grok
 - **Frontend:** Next.js 16, React 19, Tailwind, ShadcnUI
 - **Backend:** Fastify, PostgreSQL, Supabase
-- **Web3:** Solidity, Viem, Wagmi, Ponder, Solana
+- **Web3:** Viem, Wagmi, Solana wallet tooling in shared packages
 - **DevOps:** Node.js 24.x (LTS Krypton), pnpm, TurboRepo, TypeScript, Biome, ESLint
 
 ## Apps
 
 - **[API](apps/api/README.md)** — Type-safe REST API built with Fastify & OpenAPI
 - **[Web App](apps/web/README.md)** — Next.js app with monorepo integration
-- **[Mobile App](apps/mobile/README.md)** — Expo app (Android, iOS, Web)
+- **[Mobile App](apps/mobile/README.md)** — Expo UI scaffold (shared `@repo/ui`; not an API client yet)
 - **[Documentation](apps/docu/README.md)** — Fumadocs-based docs site for architecture, ADRs, and development workflows
 
 ## Packages
@@ -43,7 +43,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - **[@repo/utils](packages/utils/README.md)** — Shared utilities (async, data, debug, error, logger, web3)
 - **[@repo/error](packages/error/README.md)** — Error reporting and utilities (`captureError`, `getErrorMessage`)
 - **[@repo/email](packages/email/README.md)** — Email template library built with React Email
-- **[@repo/notif](packages/notif/README.md)** — Notification service (email, activity) with type-safe schemas
+- **[@repo/notif](packages/notif/README.md)** — Notification scaffold (unused; package kept for future work)
 
 
 ## Scripts
