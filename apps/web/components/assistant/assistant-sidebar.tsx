@@ -16,9 +16,12 @@ import { MessageCircleIcon, PanelRightCloseIcon } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
-const AssistantChat = dynamic(() => import('./assistant-chat').then(m => m.AssistantChat), {
-  loading: () => <AssistantChatSkeleton />,
-})
+const AssistantChat = dynamic(
+  () => import('./assistant-chat-boundary').then(m => m.AssistantChatBoundary),
+  {
+    loading: () => <AssistantChatSkeleton />,
+  },
+)
 
 const assistantOpenKey = 'assistant-sidebar-open'
 /** Use 640px (sm) so inline aside shows from tablet up; Sheet overlay only on small phones. */

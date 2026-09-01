@@ -1,62 +1,54 @@
-import { expect, test } from '../fixtures'
+import { expect, test } from '@playwright/test'
 
-test.describe
-  .skip('Security - Passkeys', () => {
-    test.describe.configure({ mode: 'serial' })
+test.describe('Security - Passkeys', () => {
+  test.describe.configure({ mode: 'serial' })
 
-    test('should redirect to login when unauthenticated', async ({ page }) => {
-      await page.context().clearCookies()
-      await page.goto('/settings/security/passkeys')
-      await page.waitForURL(/\/auth\/login/, { timeout: 5000 })
-      await expect(page.locator('input[type="email"]')).toBeVisible()
-    })
-
-    test('should reach page and see Passkeys card when authenticated', async ({
-      authenticatedPage,
-    }) => {
-      await authenticatedPage.goto('/settings/security/passkeys')
-      await expect(authenticatedPage).toHaveURL(/\/settings\/security\/passkeys/)
-      await expect(authenticatedPage.getByRole('heading', { name: 'Passkeys' })).toBeVisible()
-      await expect(authenticatedPage.getByText(/no passkeys configured/i)).toBeVisible()
-      await expect(authenticatedPage.getByRole('button', { name: /add passkey/i })).toBeVisible()
-    })
-
-    test('should add passkey with CDP virtual authenticator and remove it', async ({
-      authenticatedPage,
-    }) => {
-      await authenticatedPage.goto('/settings/security/passkeys')
-      await expect(authenticatedPage.getByRole('button', { name: /add passkey/i })).toBeVisible({
-        timeout: 10000,
-      })
-
-      const cdp = await authenticatedPage.context().newCDPSession(authenticatedPage)
-      await cdp.send('WebAuthn.enable')
-      await cdp.send('WebAuthn.addVirtualAuthenticator', {
-        options: {
-          protocol: 'ctap2',
-          transport: 'internal',
-          hasResidentKey: true,
-          hasUserVerification: true,
-          isUserVerified: true,
-        },
-      })
-
-      await authenticatedPage.getByRole('button', { name: /add passkey/i }).click()
-      await expect(authenticatedPage.getByRole('dialog')).toBeVisible()
-      await authenticatedPage.getByRole('button', { name: /^add$/i }).click()
-      await expect(authenticatedPage.getByText(/passkey added/i)).toBeVisible({ timeout: 10000 })
-
-      await expect(authenticatedPage.getByRole('button', { name: /remove/i })).toBeVisible({
-        timeout: 5000,
-      })
-      await authenticatedPage
-        .getByRole('button', { name: /remove/i })
-        .first()
-        .click()
-      await expect(authenticatedPage.getByRole('dialog')).toBeVisible()
-      await authenticatedPage.getByRole('button', { name: /^remove$/i }).click()
-      await expect(authenticatedPage.getByText(/no passkeys configured/i)).toBeVisible({
-        timeout: 10000,
-      })
-    })
+  test('should reach page and see Passkeys card when authenticated', async ({ page }) => {
+    await page.goto('/settings/security/passkeys')
+    await expect(page).toHaveURL(/\/settings\/security\/passkeys/)
+    await expect(page.getByRole('heading', { name: 'Passkeys' })).toBeVisible()
+    await expect(page.getByText(/no passkeys configured/i)).toBeVisible()
+    await expect(page.getByRole('button', { name: /add passkey/i })).toBeVisible()
   })
+
+  test('should add passkey with CDP virtual authenticator and remove it', async ({ page }) => {
+    const cdp = await page.context().newCDPSession(page)
+    await cdp.send('WebAuthn.enable')
+    await cdp.send('WebAuthn.addVirtualAuthenticator', {
+      options: {
+        protocol: 'ctap2',
+        transport: 'internal',
+        hasResidentKey: true,
+        hasUserVerification: true,
+        isUserVerified: true,
+      },
+    })
+
+    await page.goto('/settings/security/passkeys')
+    await expect(page.getByRole('button', { name: /add passkey/i })).toBeVisible({
+      timeout: 10_000,
+    })
+
+    await page.getByRole('button', { name: /add passkey/i }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.getByRole('button', { name: /^add$/i }).click()
+
+    const errorToast = page.getByText(/failed to add passkey|registration cancelled/i)
+    const successToast = page.getByText(/passkey added/i)
+    const outcome = await Promise.race([
+      successToast.waitFor({ state: 'visible', timeout: 10_000 }).then(() => 'success' as const),
+      errorToast.waitFor({ state: 'visible', timeout: 10_000 }).then(() => 'error' as const),
+    ])
+    if (outcome === 'error')
+      throw new Error(`Passkey registration failed: ${await errorToast.textContent()}`)
+
+    await expect(page.getByRole('button', { name: /^remove /i })).toBeVisible({ timeout: 5000 })
+    await page
+      .getByRole('button', { name: /^remove /i })
+      .first()
+      .click()
+    await expect(page.getByRole('alertdialog')).toBeVisible()
+    await page.getByRole('button', { name: /^remove$/i }).click()
+    await expect(page.getByText(/no passkeys configured/i)).toBeVisible({ timeout: 10_000 })
+  })
+})

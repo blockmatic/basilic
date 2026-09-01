@@ -75,6 +75,7 @@ async function main() {
     ALLOW_TEST: 'true',
     PGLITE: 'true',
     NODE_ENV: 'test',
+    WEBAUTHN_RP_NAME: loaded.WEBAUTHN_RP_NAME ?? process.env.WEBAUTHN_RP_NAME ?? 'Test App',
     JWT_SECRET: jwtSecret,
     AI_PROVIDER: 'anthropic',
     ANTHROPIC_API_KEY: anthropicApiKey,

@@ -86,6 +86,8 @@ async function main() {
     ALLOW_TEST: 'true',
     PGLITE: 'true',
     NODE_ENV: 'test',
+    RATE_LIMIT_MAX: '10000',
+    WEBAUTHN_RP_NAME: loaded.WEBAUTHN_RP_NAME ?? process.env.WEBAUTHN_RP_NAME ?? 'Test App',
     NEXT_PUBLIC_API_URL: 'http://localhost:3001',
     AI_PROVIDER: 'anthropic',
     JWT_SECRET:
@@ -142,11 +144,8 @@ async function main() {
   const userArgs = process.argv.slice(2).filter(a => a !== '--')
   const hasWorkers = userArgs.some(a => a.startsWith('--workers='))
   const pwArgs = ['exec', 'playwright', 'test', ...(hasWorkers ? [] : ['--workers=1']), ...userArgs]
-  const hasProjectArg = pwArgs.some(a => a.startsWith('--project='))
-  // Security (authenticator, api-keys, passkeys) excluded from default run - flaky in headless/CI
-  const finalPwArgs = !hasProjectArg ? [...pwArgs, '--project=auth', '--project=chromium'] : pwArgs
 
-  const pw = spawn('pnpm', finalPwArgs, {
+  const pw = spawn('pnpm', pwArgs, {
     cwd: nextDir,
     env,
     stdio: 'inherit',

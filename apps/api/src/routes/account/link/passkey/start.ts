@@ -6,8 +6,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { passkeyChallenges, passkeyCredentials } from '../../../../db/schema/index.js'
-import { env } from '../../../../lib/env.js'
-import { getWebAuthnOriginFromRequest } from '../../../../lib/passkey.js'
+import { getWebAuthnOriginFromRequest, getWebAuthnRpName } from '../../../../lib/passkey.js'
 import { PublicKeyCredentialCreationOptionsJSONSchema } from '../../../../lib/schemas/webauthn.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
@@ -70,14 +69,7 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
         )[],
       }))
 
-      const rpName = env.WEBAUTHN_RP_NAME
-      if (!rpName?.trim()) {
-        request.log.error('WEBAUTHN_RP_NAME is required for passkey registration')
-        return reply.code(500).send({
-          code: 'CONFIGURATION_ERROR',
-          message: 'WebAuthn RP name is not configured',
-        })
-      }
+      const rpName = getWebAuthnRpName()
 
       const userIDBytes = new TextEncoder().encode(userId)
       const options = await generateRegistrationOptions({

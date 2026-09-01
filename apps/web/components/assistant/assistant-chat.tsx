@@ -1,6 +1,12 @@
 'use client'
 
-import { Renderer, type Spec, StateProvider, VisibilityProvider } from '@json-render/react'
+import {
+  ActionProvider,
+  Renderer,
+  type Spec,
+  StateProvider,
+  VisibilityProvider,
+} from '@json-render/react'
 import { useChatFromConfig } from '@repo/react'
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
@@ -134,7 +140,9 @@ export function AssistantChat({ className, header, hideHeader }: AssistantChatPr
                     elements.push(
                       <StateProvider key={`${message.id}-tool-${i}`} initialState={{}}>
                         <VisibilityProvider>
-                          <Renderer spec={output.spec as Spec} registry={userInfoRegistry} />
+                          <ActionProvider>
+                            <Renderer spec={output.spec as Spec} registry={userInfoRegistry} />
+                          </ActionProvider>
                         </VisibilityProvider>
                       </StateProvider>,
                     )

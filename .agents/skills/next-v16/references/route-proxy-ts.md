@@ -7,7 +7,7 @@ tags: route, proxy-ts, network-boundary, middleware-migration
 
 ## Network-boundary logic (auth, redirects, header rewrites) lives in `proxy.ts` — not the deprecated `middleware.ts`
 
-**Pattern intent:** Next.js 16 renamed and re-runtimed the network boundary: `middleware.ts` (Edge runtime) → `proxy.ts` (Node.js runtime). Code at the network boundary now has full Node access; the file name and the exported function name both change.
+**Pattern intent:** Next.js 16 renamed the network-boundary file to `proxy.ts` and runs it on the Node.js runtime only (not configurable). `middleware.ts` is deprecated; keep it only if you still need Edge ([upgrade guide](https://nextjs.org/docs/app/guides/upgrading/version-16)). Named export or default export must be `proxy`. Codemod: `npx @next/codemod@canary middleware-to-proxy .`.
 
 ### Shapes to recognize
 
@@ -19,7 +19,7 @@ tags: route, proxy-ts, network-boundary, middleware-migration
 
 The canonical resolution: rename `middleware.ts` → `proxy.ts`, rename the exported `middleware` function → `proxy`. Keep the `config.matcher`. Remove any Edge-runtime workarounds.
 
-Reference: [Next.js 16 proxy.ts](https://nextjs.org/docs/app/building-your-application/routing/middleware)
+Reference: [proxy.ts](https://nextjs.org/docs/app/api-reference/file-conventions/proxy), [middleware → proxy](https://nextjs.org/docs/messages/middleware-to-proxy), [Upgrade to 16](https://nextjs.org/docs/app/guides/upgrading/version-16)
 
 **Incorrect (old middleware.ts pattern):**
 
@@ -71,4 +71,4 @@ export const config = {
 2. Rename exported function `middleware` → `proxy`
 3. Update any Edge-specific code to use Node.js APIs
 
-Reference: [Next.js 16 proxy.ts](https://nextjs.org/docs/app/building-your-application/routing/middleware)
+Reference: [proxy.ts](https://nextjs.org/docs/app/api-reference/file-conventions/proxy), [middleware → proxy](https://nextjs.org/docs/messages/middleware-to-proxy), [Upgrade to 16](https://nextjs.org/docs/app/guides/upgrading/version-16)

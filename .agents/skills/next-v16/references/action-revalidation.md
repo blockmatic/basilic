@@ -18,7 +18,7 @@ tags: action, revalidation, post-mutation-invalidate, cache-pair
 - An action that returns `{ success: true }` and the *client* triggers `router.refresh()` afterward — works but loses the server-driven invalidation guarantee.
 - A `redirect()` called *before* `revalidatePath` — `redirect` throws internally; the invalidation never runs.
 
-The canonical resolution: after the write succeeds, call `revalidateTag(tag, cacheLife)` (preferred for granular control) or `revalidatePath(path)` (coarser), *then* `redirect(...)`. Pair every action with one or more invalidation calls.
+The canonical resolution: after the write succeeds, call `revalidateTag(tag, cacheLife)` (preferred for granular control) or `revalidatePath(path)` (coarser), *then* `redirect(...)`. Use `updateTag(tag)` when the user must see the write immediately (read-your-writes). Use `refresh()` from a Server Action when only uncached data elsewhere on the page must update — `refresh()` is only valid inside Server Actions and throws when called elsewhere.
 
 **Incorrect (stale cache after mutation):**
 
@@ -37,17 +37,14 @@ export async function deletePost(postId: string) {
 ```typescript
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag, updateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export async function deletePost(postId: string) {
   await db.posts.delete({ where: { id: postId } })
 
-  // Option 1: Revalidate specific path
   revalidatePath('/posts')
-
-  // Option 2: Revalidate by tag (more granular)
-  revalidateTag('posts')
+  revalidateTag('posts', 'max')
 
   redirect('/posts')
 }
@@ -55,10 +52,14 @@ export async function deletePost(postId: string) {
 export async function updatePost(postId: string, formData: FormData) {
   await db.posts.update({
     where: { id: postId },
-    data: { title: formData.get('title') }
+    data: { title: formData.get('title') },
   })
 
-  // Revalidate both the list and detail pages
+  // Cached fetch must use the same tag (e.g. in getPost):
+  // fetch(`/api/posts/${postId}`, { next: { tags: [`post-${postId}`] } })
+
+  // Read-your-writes: user sees the edit immediately
+  updateTag(`post-${postId}`)
   revalidatePath('/posts')
   revalidatePath(`/posts/${postId}`)
 }
@@ -76,10 +77,18 @@ revalidatePath(`/posts/${postId}`)
 // All routes using a layout
 revalidatePath('/dashboard', 'layout')
 
-// By cache tag
-revalidateTag('posts')
+// By cache tag (stale-while-revalidate)
+revalidateTag('posts', 'max')
 
-// Multiple tags
-revalidateTag('posts')
-revalidateTag(`post-${postId}`)
+// Read-your-writes in a Server Action
+updateTag(`post-${postId}`)
+
+// Refresh uncached data only (Server Actions only — throws elsewhere)
+'use server'
+
+import { refresh } from 'next/cache'
+
+export async function refreshHeaderCount() {
+  refresh()
+}
 ```

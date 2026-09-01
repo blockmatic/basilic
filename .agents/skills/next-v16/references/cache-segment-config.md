@@ -7,6 +7,8 @@ tags: cache, segment-config, force-static, dynamic-rendering
 
 ## Declare route-level caching intent via segment-config exports — `dynamic`, `revalidate`, `generateStaticParams`
 
+> **Cache model:** `export const dynamic`, `revalidate`, and `fetchCache` apply only when `cacheComponents` is unset or `false` ([previous model](https://nextjs.org/docs/app/guides/caching-without-cache-components)). When `cacheComponents: true`, these segment configs **error** — use `'use cache'` + `cacheLife` instead.
+
 **Pattern intent:** each route segment has a default rendering mode (dynamic if it reads cookies/headers/searchParams; static otherwise). For pages where the default is wrong — e.g., a marketing page that would be perfectly cacheable — declare intent explicitly via `export const dynamic = 'force-static'` / `'force-dynamic'` and `export const revalidate = N`.
 
 ### Shapes to recognize

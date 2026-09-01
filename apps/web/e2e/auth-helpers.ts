@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
 
-const testEmail = 'test@test.ai'
+const defaultTestEmail = 'test@test.ai'
 const apiUrl =
   process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 const appUrl =
@@ -8,10 +8,12 @@ const appUrl =
 const authCookieName =
   process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME ?? 'api.session'
 
-async function sendMagicLinkOnce(page: Page) {
+type VerificationType = 'magic_link' | 'change_email'
+
+async function sendMagicLinkOnce(page: Page, email: string) {
   await page.goto('/auth/login')
   await page.getByRole('button', { name: /send magic link/i }).waitFor({ state: 'visible' })
-  await page.fill('input[type="email"]', testEmail)
+  await page.fill('input[type="email"]', email)
   const [response] = await Promise.all([
     page.waitForResponse(
       resp => resp.url().includes('/auth/magiclink/request') && resp.request().method() === 'POST',
@@ -36,15 +38,55 @@ async function enrichError(response: Awaited<ReturnType<typeof sendMagicLinkOnce
   )
 }
 
+async function fetchVerificationLast(
+  page: Page,
+  { type, email }: { type: VerificationType; email: string },
+) {
+  const maxRetries = 8
+  const delayMs = 400
+  for (let attempt = 0; attempt < maxRetries; attempt++)
+    try {
+      const response = await page.request.get(
+        `${apiUrl}/test/verification/last?type=${type}&email=${encodeURIComponent(email)}`,
+      )
+      if (!response.ok()) {
+        if (attempt < maxRetries - 1) {
+          await new Promise(r => setTimeout(r, delayMs))
+          continue
+        }
+        return null
+      }
+      const data = (await response.json()) as {
+        token?: string | null
+        verificationId?: string | null
+      }
+      if (data.token && data.verificationId)
+        return { token: data.token, verificationId: data.verificationId }
+      if (data.token) return { token: data.token, verificationId: data.verificationId ?? '' }
+      if (attempt < maxRetries - 1) {
+        await new Promise(r => setTimeout(r, delayMs))
+        continue
+      }
+      return null
+    } catch {
+      if (attempt < maxRetries - 1) {
+        await new Promise(r => setTimeout(r, delayMs))
+        continue
+      }
+      return null
+    }
+  return null
+}
+
 export const authHelpers = {
   appUrl,
   apiUrl,
-  testEmail,
+  testEmail: defaultTestEmail,
 
-  async sendMagicLink(page: Page) {
-    let response = await sendMagicLinkOnce(page)
+  async sendMagicLink(page: Page, email = defaultTestEmail) {
+    let response = await sendMagicLinkOnce(page, email)
     if (!response.ok()) {
-      response = await sendMagicLinkOnce(page)
+      response = await sendMagicLinkOnce(page, email)
       if (!response.ok()) await enrichError(response)
     }
     return response
@@ -52,44 +94,22 @@ export const authHelpers = {
 
   async extractMagicLinkData(
     page: Page,
+    email = defaultTestEmail,
   ): Promise<{ token: string; verificationId: string } | null> {
     await new Promise(r => setTimeout(r, 500))
-    const maxRetries = 8
-    const delayMs = 400
-    for (let attempt = 0; attempt < maxRetries; attempt++)
-      try {
-        const response = await page.request.get(`${apiUrl}/test/magic-link/last`)
-        if (!response.ok()) {
-          if (attempt < maxRetries - 1) {
-            await new Promise(r => setTimeout(r, delayMs))
-            continue
-          }
-          return null
-        }
-        const data = (await response.json()) as {
-          token?: string
-          verificationId?: string
-        }
-        if (data.token && data.verificationId)
-          return data as { token: string; verificationId: string }
-        if (data.token) return { token: data.token, verificationId: data.verificationId ?? '' }
-        if (attempt < maxRetries - 1) {
-          await new Promise(r => setTimeout(r, delayMs))
-          continue
-        }
-        return null
-      } catch {
-        if (attempt < maxRetries - 1) {
-          await new Promise(r => setTimeout(r, delayMs))
-          continue
-        }
-        return null
-      }
-    return null
+    return fetchVerificationLast(page, { type: 'magic_link', email })
   },
 
-  async extractToken(page: Page): Promise<string | null> {
-    const data = await this.extractMagicLinkData(page)
+  async extractChangeEmailData(
+    page: Page,
+    email: string,
+  ): Promise<{ token: string; verificationId: string } | null> {
+    await new Promise(r => setTimeout(r, 500))
+    return fetchVerificationLast(page, { type: 'change_email', email })
+  },
+
+  async extractToken(page: Page, email = defaultTestEmail): Promise<string | null> {
+    const data = await this.extractMagicLinkData(page, email)
     return data?.token ?? null
   },
 
@@ -98,10 +118,10 @@ export const authHelpers = {
     await page.getByTestId('submit-login-code').click()
   },
 
-  async verifyMagicLink(page: Page, code: string, verificationIdParam?: string) {
+  async verifyMagicLink(page: Page, code: string, verificationIdParam?: string, email?: string) {
     let verificationId = verificationIdParam
     if (!verificationId) {
-      const data = await this.extractMagicLinkData(page)
+      const data = await this.extractMagicLinkData(page, email)
       verificationId = data?.verificationId ?? undefined
     }
     if (!verificationId) throw new Error('Need verificationId for link-click flow')
@@ -135,13 +155,13 @@ export const authHelpers = {
     return parsed.token ?? null
   },
 
-  async loginAsTestUser(page: Page) {
-    const response = await this.sendMagicLink(page)
+  async loginAsTestUser(page: Page, email = defaultTestEmail) {
+    const response = await this.sendMagicLink(page, email)
     if (response.status() !== 200) throw new Error('Magic link request failed')
     const successMessage = page.getByRole('heading', { name: 'Check your email' })
     await successMessage.waitFor({ state: 'visible', timeout: 10000 })
     await new Promise(r => setTimeout(r, 200))
-    const token = await this.extractToken(page)
+    const token = await this.extractToken(page, email)
     if (!token) throw new Error('Failed to extract magic link token')
     await this.enterLoginCodeAndSubmit(page, token)
     await page.waitForURL(

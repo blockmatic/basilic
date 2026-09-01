@@ -47,15 +47,20 @@ export default async function DashboardPage() {
 app/dashboard/
 ├── layout.tsx
 ├── @analytics/
+│   ├── default.tsx
 │   ├── page.tsx
 │   └── loading.tsx
 ├── @notifications/
+│   ├── default.tsx
 │   ├── page.tsx
 │   └── loading.tsx
 └── @activity/
+    ├── default.tsx
     ├── page.tsx
     └── loading.tsx
 ```
+
+> Next.js 16 requires an explicit `default.js` (or `.tsx`) in every parallel-route slot. Builds fail without it.
 
 ```typescript
 // app/dashboard/layout.tsx

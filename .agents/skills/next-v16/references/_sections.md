@@ -13,7 +13,7 @@ The section ID (in parentheses) is the filename prefix used to group rules.
 ## 2. Caching Strategy (cache)
 
 **Impact:** CRITICAL
-**Description:** The 'use cache' directive, revalidateTag, and cacheLife profiles control data freshness and reduce server load by eliminating redundant fetches.
+**Description:** Two cache models — detect `cacheComponents` in `next.config` first. Previous model: explicit `fetch` options, segment config, `unstable_cache`. Cache Components: `'use cache'` + `cacheLife` / `cacheTag`. `revalidateTag(tag, profile)` applies to both.
 
 ## 3. Server Components & Data Fetching (server)
 

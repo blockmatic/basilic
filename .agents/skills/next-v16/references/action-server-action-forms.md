@@ -19,6 +19,8 @@ tags: action, server-action, form-action, no-api-route-mutation
 
 The canonical resolution: declare `async function createX(formData: FormData) { 'use server'; ... }`. Bind via `<form action={createX}>`. Call `revalidatePath`/`revalidateTag` then `redirect` server-side.
 
+**Exception:** Route Handlers remain correct for cookies, webhooks, OAuth callbacks, and proxying an external API. Do not migrate those to Server Actions just because they accept POST.
+
 **Incorrect (API route for form handling):**
 
 ```typescript

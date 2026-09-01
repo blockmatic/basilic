@@ -1,13 +1,13 @@
 ---
-title: Every route should have a `loading.tsx` next to its `page.tsx` — never leave navigation showing a blank screen
+title: Routes that await data should have a `loading.tsx` next to their `page.tsx` — never leave navigation showing a blank screen
 impact: MEDIUM
 impactDescription: instant navigation feedback during async page renders; automatic Suspense wrapping with the loading component as fallback
 tags: stream, loading-tsx, route-level-skeleton, instant-feedback
 ---
 
-## Every route should have a `loading.tsx` next to its `page.tsx` — never leave navigation showing a blank screen
+## Routes that await data should have a `loading.tsx` next to their `page.tsx` — never leave navigation showing a blank screen
 
-**Pattern intent:** a route that fetches data during render shows nothing until that fetch lands — unless `loading.tsx` is present. Next.js auto-wraps the page in `<Suspense fallback={<Loading/>}>` so navigation feels instant.
+**Pattern intent:** a route whose `page.tsx` awaits data during render shows nothing until that fetch lands — unless `loading.tsx` is present. Static legal/marketing pages that render synchronously do not need one. Next.js auto-wraps the page in `<Suspense fallback={<Loading/>}>` so navigation feels instant.
 
 ### Shapes to recognize
 
@@ -17,7 +17,7 @@ tags: stream, loading-tsx, route-level-skeleton, instant-feedback
 - Multiple parallel routes (slots) with only the parent route having `loading.tsx` — slot-level loading needs slot-level `loading.tsx`.
 - A workaround using a client-side `useState(loading)` in `layout.tsx` to fake loading — couples loading to client state instead of route navigation.
 
-The canonical resolution: create `loading.tsx` adjacent to every `page.tsx` (and adjacent to slot `page.tsx` files for parallel routes). Make the skeleton match the page's real dimensions to prevent CLS. No data fetching in `loading.tsx`.
+The canonical resolution: create `loading.tsx` adjacent to segments whose `page.tsx` or descendants suspend during render — not for purely synchronous static pages. Also place one next to slot `page.tsx` files for parallel routes. Make the skeleton match the page's real dimensions to prevent CLS. No data fetching in `loading.tsx`.
 
 **Incorrect (no loading state):**
 

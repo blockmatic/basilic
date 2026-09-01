@@ -1,52 +1,63 @@
 ---
-title: Mark cacheable Server Components/functions explicitly with `'use cache'` — never rely on implicit caching
+title: Opt into cache explicitly — `'use cache'` only when Cache Components is on; otherwise fetch options / unstable_cache
 impact: CRITICAL
-impactDescription: eliminates the "Next.js 15 cached this, Next.js 16 doesn't" silent regression; makes cache scope visible in the source
-tags: cache, use-cache-directive, explicit-cache, opt-in-cache
+impactDescription: `'use cache'` is a Cache Components feature; emitting it with cacheComponents off is a Next 16 anti-pattern
+tags: cache, use-cache-directive, cache-components, force-cache, unstable-cache
 ---
 
-## Mark cacheable Server Components/functions explicitly with `'use cache'` — never rely on implicit caching
+## Opt into cache explicitly — `'use cache'` only when Cache Components is on
 
-**Pattern intent:** Next.js 16 removed default fetch caching. Data that should be cached must opt in, either via the `'use cache'` directive on a Server Component / async function or via `unstable_cache` around a fetcher. Pages relying on Next.js 15's implicit caching silently re-fetch on every request and hammer upstream APIs.
+**Pattern intent:** `fetch` is not cached by default. Caching is opt-in. Which API you use depends on `cacheComponents` in `next.config`. `'use cache'` / `cacheLife` / `cacheTag` require `cacheComponents: true` ([use cache](https://nextjs.org/docs/app/api-reference/directives/use-cache)). Without that flag, use `cache: 'force-cache'`, `next: { revalidate, tags }`, or `unstable_cache` ([previous model](https://nextjs.org/docs/app/guides/caching-without-cache-components)).
 
 ### Shapes to recognize
 
-- A Server Component making `fetch(url)` calls that worked fine in Next.js 15 — and silently became per-request in Next.js 16.
-- Migration from 15→16 where p95 latency suddenly doubled — implicit cache loss, not "the server got slow."
-- A `fetch(...)` without any cache option, where the data clearly doesn't need to be per-request — `'use cache'` (or `unstable_cache`) was forgotten.
-- A custom hand-rolled cache (module-level `Map`, in-memory dictionary) used to "fix" the per-request fetching — reinvents the wheel, doesn't integrate with `revalidateTag`.
-- A Server Component with manual `revalidate: 3600` on every fetch but no top-level `'use cache'` — works but is finer-grained than needed; `'use cache'` on the whole component is often cleaner.
-- A whole route marked `force-static` to "cache it all" — works but loses granular invalidation; `'use cache'` + `cacheTag` is more flexible.
+- `'use cache'` in an app whose `next.config` does not set `cacheComponents: true`.
+- A Server Component `fetch(url)` with no `cache` / `next.revalidate` / `'use cache'` where the data should be cached.
+- A hand-rolled module-level `Map` cache instead of the platform API for that model.
+- Enabling `cacheComponents` while still exporting `dynamic` / `revalidate` / `fetchCache` (those segment configs error under Cache Components).
 
-The canonical resolution: add `'use cache'` to the top of the Server Component or async function whose results should be cached. Pair with `cacheTag(...)` for invalidation. Use `unstable_cache(fn, key, options)` for finer-grained control.
+**Canonical resolution:**
 
-Reference: [Next.js 16 Cache Components](https://nextjs.org/blog/next-16)
+1. Read `cacheComponents` in `next.config`.
+2. Flag off: `fetch(..., { cache: 'force-cache' })` or `next: { revalidate: N, tags }`, or `unstable_cache`.
+3. Flag on: `'use cache'` on the async function/component, plus `cacheLife` / `cacheTag`. Do not keep route segment cache configs.
+
+Reference: [use cache](https://nextjs.org/docs/app/api-reference/directives/use-cache), [Caching without Cache Components](https://nextjs.org/docs/app/guides/caching-without-cache-components)
 
 **Incorrect (relying on implicit caching):**
 
 ```typescript
 // app/products/page.tsx
 export default async function ProductsPage() {
-  // In Next.js 15, this was cached by default
-  // In Next.js 16, this fetches fresh data every request
+  // No cache option — uncached on every request (both Next 16 models)
   const products = await fetch('https://api.store.com/products')
 
   return <ProductList products={products} />
 }
 ```
 
-**Correct (explicit caching with 'use cache'):**
+**Correct (Cache Components off — previous model):**
 
 ```typescript
+export default async function ProductsPage() {
+  const products = await fetch('https://api.store.com/products', {
+    next: { revalidate: 3600 },
+  })
+  return <ProductList products={products} />
+}
+```
+
+**Correct (Cache Components on — `'use cache'`):**
+
+```typescript
+// next.config: cacheComponents: true
 // app/products/page.tsx
 'use cache'
 
 export default async function ProductsPage() {
   const products = await fetch('https://api.store.com/products')
-
   return <ProductList products={products} />
 }
-// Entire page is cached until manually invalidated
 ```
 
 **Alternative (cache specific functions):**

@@ -99,6 +99,15 @@ If a heuristic returns < 3 files, sweep all of them. If it returns > 15, sweep t
 
 Never refuse a whole-repo audit — pick Mode B.
 
+### Step 0.5 — Detect cache model (REQUIRED before Category 2)
+
+Read `cacheComponents` in `next.config.{js,ts,mjs}` before sweeping Caching Strategy:
+
+- **Unset / `false`:** generate `cache: 'force-cache'`, `next: { revalidate, tags }`, segment config (`dynamic`, `revalidate`, `fetchCache`), or `unstable_cache`. Do **not** emit `'use cache'`.
+- **`true`:** generate `'use cache'` + `cacheLife` / `cacheTag`. Segment configs `dynamic` / `revalidate` / `fetchCache` **error** — flag them for removal.
+
+Replacing `cache: 'force-cache'` with `'use cache'` is only valid when `cacheComponents: true`. Otherwise it is a bug, not a refactor.
+
 ### Step 1 — Scope declaration (REQUIRED OUTPUT)
 
 Before any reading, emit this preamble verbatim with the placeholders filled. The user must be able to see what you're about to do.
@@ -211,7 +220,7 @@ When the user approves refactors:
 - **File-major reports** — never emit findings as "## app/page.tsx — issues: …" headings. Always group by category.
 - **Grep-only findings** — if the only evidence is a string match, re-check by reading the surrounding 30 lines and judging the pattern. Grep is the *trigger*, never the *verdict*.
 - **Skipping the scope declaration or coverage table** — these are required artifacts. An audit without them is not an audit.
-- **Trivial syntactic rewrites masquerading as refactors** — replacing `cache: 'force-cache'` with `'use cache'` is a codemod, not a refactor. The skill-worthy refactors are the ones that change the *shape* of data flow, caching boundaries, and server/client split.
+- **Trivial syntactic rewrites masquerading as refactors** — replacing `cache: 'force-cache'` with `'use cache'` is only valid when `cacheComponents: true`; otherwise it is a bug. The skill-worthy refactors change the *shape* of data flow, caching boundaries, and server/client split.
 - **Mass cache-tag additions without a revalidation story** — adding `cacheLife` profiles without thinking about what invalidates them is worse than no cache.
 
 What this algorithm **does not** refuse:

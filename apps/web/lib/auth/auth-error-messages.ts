@@ -70,6 +70,8 @@ const authErrorMessages: Record<string, string> = {
     'No verified email found. Please add a verified email to your Facebook account.',
   facebook_oauth_not_configured: 'Sign-in is temporarily unavailable.',
   facebook_oauth_failed: 'Facebook sign-in failed. Please try again.',
+  invalid_or_expired_code: 'Invalid or expired sign-in code. Please try again.',
+  invalid_code: 'Invalid code. Please try again.',
   unexpected_error: 'Something went wrong. Please try again.',
 }
 

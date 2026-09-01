@@ -22,6 +22,14 @@ const fontMono = Geist_Mono({
   variable: '--font-mono',
 })
 
+export const metadata = {
+  title: {
+    default: 'Basilic',
+    template: '%s | Basilic',
+  },
+  description: 'Basilic web dashboard',
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
