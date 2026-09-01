@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { getStoredMagicLink } from '../../test/utils/auth-helper.js'
 import { cleanupGroupDatabase, setupGroupDatabase } from '../../test/utils/db-setup.js'
 import type { TestApp } from '../../test/utils/fastify.js'
 import { buildTestApp } from '../../test/utils/fastify.js'
@@ -33,8 +34,7 @@ describe('GET /reference', () => {
       url: '/auth/magiclink/request',
       payload: { email, callbackUrl: 'https://example.com/reference' },
     })
-    const token = fastify.fakeEmail?.extractToken()
-    const verificationId = fastify.fakeEmail?.extractVerificationId()
+    const { token, verificationId } = await getStoredMagicLink(email)
     if (!token || !verificationId) throw new Error('Missing magic link params')
 
     const response = await fastify.inject({

@@ -98,12 +98,19 @@ export async function getMagicLinkTokenRaw(app: TestApp, email = 'test@test.ai')
     url: '/auth/magiclink/request',
     payload: { email, callbackUrl: 'https://example.com/callback' },
   })
-  const token = await getVerificationTokenPlain({ email, type: 'magic_link' })
-  if (!token) throw new Error('No magic link token in verification table')
+  const { token } = await getStoredMagicLink(email)
   return token
 }
 
-async function getVerificationTokenPlain({
+export async function getStoredMagicLink(
+  email: string,
+): Promise<{ token: string; verificationId: string }> {
+  const stored = await getStoredVerification({ email, type: 'magic_link' })
+  if (!stored) throw new Error('No magic link token in verification table')
+  return stored
+}
+
+async function getStoredVerification({
   email,
   type,
   userId,
@@ -111,7 +118,7 @@ async function getVerificationTokenPlain({
   email: string
   type: 'magic_link' | 'link_email'
   userId?: string
-}): Promise<string | null> {
+}): Promise<{ token: string; verificationId: string } | null> {
   const db = await getDb()
   const { verification } = await import('../../src/db/schema/index.js')
   const { and, desc, eq, isNotNull } = await import('drizzle-orm')
@@ -119,7 +126,7 @@ async function getVerificationTokenPlain({
   const identifier = type === 'link_email' ? `${userId}:${email}` : email
 
   const [row] = await db
-    .select({ tokenPlain: verification.tokenPlain })
+    .select({ tokenPlain: verification.tokenPlain, id: verification.id })
     .from(verification)
     .where(
       and(
@@ -131,7 +138,8 @@ async function getVerificationTokenPlain({
     .orderBy(desc(verification.createdAt))
     .limit(1)
 
-  return row?.tokenPlain ?? null
+  if (!row?.tokenPlain) return null
+  return { token: row.tokenPlain, verificationId: row.id }
 }
 
 export async function getLinkEmailToken(
@@ -167,9 +175,9 @@ export async function readLinkEmailToken(
   if (userRes.statusCode !== 200) throw new Error(`auth/session/user failed: ${userRes.body}`)
   const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
 
-  const token = await getVerificationTokenPlain({ email, type: 'link_email', userId })
-  if (!token) throw new Error('No link email token in verification table')
-  return token
+  const stored = await getStoredVerification({ email, type: 'link_email', userId })
+  if (!stored) throw new Error('No link email token in verification table')
+  return stored.token
 }
 
 export async function getSessionToken(
@@ -193,8 +201,7 @@ export async function getSessionToken(
       `auth/magiclink/request failed: url=/auth/magiclink/request status=${requestRes.statusCode} body=${requestRes.body}`,
     )
 
-  const token = await getVerificationTokenPlain({ email, type: 'magic_link' })
-  if (!token) throw new Error('No magic link token in verification table')
+  const { token } = await getStoredMagicLink(email)
   const verifyRes = await app.inject({
     method: 'POST',
     url: '/auth/magiclink/verify',

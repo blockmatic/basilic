@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { and, eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import type { getDb } from '../db/index.js'
 import { authAttempts } from '../db/schema/index.js'
 
@@ -17,8 +17,9 @@ export async function recordAuthFailedAttempt({
   type: AuthAttemptType
   maxAttempts: number
   lockMinutes: number
-}) {
+}): Promise<void> {
   const now = new Date()
+  const lockedUntil = new Date(now.getTime() + lockMinutes * 60 * 1000)
   await db
     .insert(authAttempts)
     .values({
@@ -27,7 +28,7 @@ export async function recordAuthFailedAttempt({
       type,
       failedAttempts: 1,
       firstFailureAt: now,
-      lockedUntil: null,
+      lockedUntil: maxAttempts <= 1 ? lockedUntil : null,
       updatedAt: now,
     })
     .onConflictDoUpdate({
@@ -35,20 +36,8 @@ export async function recordAuthFailedAttempt({
       set: {
         failedAttempts: sql`${authAttempts.failedAttempts} + 1`,
         firstFailureAt: sql`COALESCE(${authAttempts.firstFailureAt}, ${now})`,
+        lockedUntil: sql`CASE WHEN ${authAttempts.failedAttempts} + 1 >= ${maxAttempts} AND (${authAttempts.lockedUntil} IS NULL OR ${authAttempts.lockedUntil} <= ${now}) THEN ${lockedUntil} ELSE ${authAttempts.lockedUntil} END`,
         updatedAt: now,
       },
     })
-
-  const [row] = await db
-    .select()
-    .from(authAttempts)
-    .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, type)))
-
-  if (row && row.failedAttempts >= maxAttempts && row.lockedUntil == null) {
-    const lockedUntil = new Date(now.getTime() + lockMinutes * 60 * 1000)
-    await db
-      .update(authAttempts)
-      .set({ lockedUntil, updatedAt: now })
-      .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, type)))
-  }
 }

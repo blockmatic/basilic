@@ -28,7 +28,7 @@ export function sendCatalogError({
   reply: FastifyReply
   status: number
   code: ErrorCode
-}) {
+}): FastifyReply {
   const err = getError(code) ??
     getError('UNEXPECTED_ERROR') ?? { code: 'UNEXPECTED_ERROR', message: 'Unexpected error' }
   return reply.code(status).send(err)

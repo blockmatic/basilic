@@ -85,7 +85,11 @@ export function resolveOpenRouterModel(modelParam?: string): string {
   const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOpenRouterModel
   const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
   const useRuntimeDefault =
-    m === undefined || m === defaultOpenRouterModel || m === 'aurora-alpha' || m === 'default'
+    m === undefined ||
+    m === defaultOpenRouterModel ||
+    m === 'aurora-alpha' ||
+    m === 'default' ||
+    m === 'haiku'
   const effective = useRuntimeDefault ? defaultModel : (m ?? defaultModel)
   return (
     openRouterModelAliases[effective] ??

@@ -40,11 +40,12 @@ const web3NonceRoute: FastifyPluginAsync = async fastify => {
     },
     async (request, reply) => {
       const { chain, address } = request.query
+      const trimmed = address.trim()
+      if (!trimmed) return sendCatalogError({ reply, status: 400, code: 'INVALID_ADDRESS' })
 
       let normalizedAddr: string
       try {
-        normalizedAddr =
-          chain === 'eip155' ? getAddress(address.trim()).toLowerCase() : address.trim()
+        normalizedAddr = chain === 'eip155' ? getAddress(trimmed).toLowerCase() : trimmed
       } catch {
         return sendCatalogError({ reply, status: 400, code: 'INVALID_ADDRESS' })
       }

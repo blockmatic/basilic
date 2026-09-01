@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { getDb } from '../../../../src/db/index.js'
 import { authAttempts, users, verification } from '../../../../src/db/schema/index.js'
+import { getStoredMagicLink } from '../../../../test/utils/auth-helper.js'
 import { fastify } from '../magiclink.spec.js'
 
 describe('POST /auth/magiclink/verify', () => {
@@ -113,7 +114,7 @@ describe('POST /auth/magiclink/verify', () => {
       url: '/auth/magiclink/request',
       payload: { email, callbackUrl: 'https://example.com/callback' },
     })
-    const token = fastify.fakeEmail?.extractToken()
+    const { token } = await getStoredMagicLink(email)
     if (!token) throw new Error('Missing token')
 
     const db = await getDb()
@@ -170,7 +171,7 @@ describe('POST /auth/magiclink/verify', () => {
       url: '/auth/magiclink/request',
       payload: { email, callbackUrl: 'https://example.com/callback' },
     })
-    const token = fastify.fakeEmail?.extractToken()
+    const { token } = await getStoredMagicLink(email)
     if (!token) throw new Error('Missing token')
 
     const first = await fastify.inject({

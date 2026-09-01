@@ -1,5 +1,5 @@
 /** Only treat as insufficient credits when 402 and provider-indicative error (avoids masking real failures) */
-export const isInsufficientCredits = (res: { statusCode: number; body: string }) => {
+export const isInsufficientCredits = (res: { statusCode: number; body: string }): boolean => {
   if (res.statusCode !== 402) return false
   try {
     const data = JSON.parse(res.body) as { code?: string; message?: string; error?: string }
@@ -29,25 +29,13 @@ type ResponseLike = {
   headers?: Record<string, string | string[] | number | undefined>
 }
 
-const isUpstreamConfigError = (res: ResponseLike) => {
-  if (res.statusCode !== 502) return false
-  try {
-    const data = JSON.parse(res.body) as { code?: string }
-    return data.code === 'UPSTREAM_SERVICE_ERROR'
-  } catch {
-    return false
-  }
-}
-
-const isConnectionClassFailure = (res: ResponseLike) =>
+const isConnectionClassFailure = (res: ResponseLike): boolean =>
   res.statusCode === 503 ||
   res.statusCode === 504 ||
   /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET/i.test(res.body)
 
-export const isProviderUnavailable = (res: ResponseLike) => {
-  if (isUpstreamConfigError(res)) return false
-  return res.statusCode === 502 || isConnectionClassFailure(res)
-}
+export const isProviderUnavailable = (res: ResponseLike): boolean =>
+  res.statusCode === 502 || isConnectionClassFailure(res)
 
 export const skipIfProviderUnavailable = (
   res: ResponseLike,

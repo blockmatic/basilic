@@ -15,7 +15,7 @@ captureError({ error, label: 'Database', tags: { app: 'api' } })
 // reply with getError('SERVER_ERROR') — not error.message
 ```
 
-On the API, prefer `sendCatalogError({ reply, status, code })` from `apps/api/src/lib/catalogs/mapper.ts` so routes return catalog `{ code, message }` without duplicating strings.
+On the API, prefer `sendCatalogError({ reply, status, code })` from `apps/api/src/lib/catalogs/mapper.ts` so routes return catalog `{ code, message }` without duplicating strings. The import is relative to a route in `apps/api/src/routes/` (for example `health.ts`).
 
 ```typescript
 import { sendCatalogError } from '../lib/catalogs/mapper.js'
