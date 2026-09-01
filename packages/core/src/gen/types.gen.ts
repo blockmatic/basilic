@@ -2200,6 +2200,40 @@ export type GetUserResponses = {
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
 
+export type ValidateTokensData = {
+  body: {
+    refreshToken: string;
+  };
+  path?: never;
+  query?: never;
+  url: "/auth/session/validate-tokens";
+};
+
+export type ValidateTokensErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+  };
+};
+
+export type ValidateTokensError =
+  ValidateTokensErrors[keyof ValidateTokensErrors];
+
+export type ValidateTokensResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    valid: boolean;
+  };
+};
+
+export type ValidateTokensResponse =
+  ValidateTokensResponses[keyof ValidateTokensResponses];
+
 export type Web3ExchangeData = {
   body: {
     code: string;

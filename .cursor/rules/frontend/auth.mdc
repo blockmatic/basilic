@@ -22,7 +22,13 @@ alwaysApply: false
 
 - Core calls Fastify `POST /auth/session/refresh` directly on 401 (no BFF proxy)
 - `onTokensRefreshed` → `updateAuthTokens` → `POST /api/auth/update-tokens` persists new tokens in cookie
+- Before `Set-Cookie`, `update-tokens` requires same-origin `Origin` and Fastify `POST /auth/session/validate-tokens` approval of the access/refresh pair
 - Proxy (`proxy.ts`) refreshes on navigation; core refreshes on client-side 401 (e.g. `useUser`)
+
+## Mutations
+
+- Login, profile, passkeys, TOTP, and API keys mutate via `@repo/core` / `@repo/react` → Fastify. Do **not** rewrite them as Next.js Server Actions.
+- Next API routes exist only for SSR/cookie integration (`update-tokens`, auth callbacks, logout).
 
 ## Auth Protection (proxy.ts)
 

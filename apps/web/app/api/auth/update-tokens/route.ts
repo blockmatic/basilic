@@ -1,11 +1,46 @@
+import { ApiError, createClient } from '@repo/core'
+import { captureError } from '@repo/error/nextjs'
 import { logger } from '@repo/utils/logger/server'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
+import { env } from '@/lib/env'
+
+const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
 
 const updateTokensSchema = z.object({ token: z.string(), refreshToken: z.string() })
 
+function getRequestHost(request: Request) {
+  const forwarded = request.headers.get('X-Forwarded-Host')
+  if (forwarded) return forwarded.split(',')[0]?.trim()
+  return request.headers.get('Host') ?? undefined
+}
+
+function isSameOriginRequest(request: Request) {
+  if (request.headers.get('Sec-Fetch-Site') === 'cross-site') return false
+
+  const origin = request.headers.get('Origin')
+  if (!origin) return false
+
+  const host = getRequestHost(request)
+  if (!host) return false
+
+  try {
+    return new URL(origin).host === host
+  } catch {
+    return false
+  }
+}
+
 export async function POST(request: Request) {
+  if (!isSameOriginRequest(request)) {
+    logger.warn('update-tokens rejected: cross-origin or missing Origin')
+    return new Response(JSON.stringify({ message: 'Forbidden' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
   try {
     const parsed = updateTokensSchema.safeParse(await request.json())
     if (!parsed.success)
@@ -16,11 +51,42 @@ export async function POST(request: Request) {
         { status: 400, headers: { 'Content-Type': 'application/json' } },
       )
 
+    const { token, refreshToken } = parsed.data
+
+    try {
+      const authHeader = 'Authorization'
+      await client.auth.session.validateTokens({
+        body: { refreshToken },
+        headers: { [authHeader]: `Bearer ${token}` },
+      })
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        logger.warn({ status: error.status }, 'update-tokens rejected: invalid token pair')
+        return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+
+      captureError({
+        code: 'INTERNAL_ERROR',
+        error: error instanceof Error ? error : new Error(String(error)),
+        label: 'update-tokens Fastify validation failed',
+        data: { status: error instanceof ApiError ? error.status : undefined },
+        tags: { app: 'web', module: 'auth', route: '/api/auth/update-tokens' },
+      })
+
+      return new Response(JSON.stringify({ message: 'Auth service unavailable' }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
     const response = new NextResponse(JSON.stringify({ success: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     })
-    setAuthCookiesOnResponse(response, parsed.data)
+    setAuthCookiesOnResponse(response, { token, refreshToken })
     return response
   } catch (error) {
     logger.error({ error }, 'API auth route: update tokens failed')

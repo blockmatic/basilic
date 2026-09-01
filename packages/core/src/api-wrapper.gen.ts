@@ -86,6 +86,7 @@ auth: {
     logout: gen.logout,
     refresh: gen.refresh,
     user: gen.getUser,
+    validateTokens: gen.validateTokens,
   },
   web3: {
     exchange: gen.web3Exchange,

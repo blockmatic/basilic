@@ -28,7 +28,7 @@ export default defineConfig({
   projects: [
     {
       name: 'auth',
-      testMatch: ['**/magic-link-auth.spec.ts'],
+      testMatch: ['**/magic-link-auth.spec.ts', '**/update-tokens.spec.ts'],
       timeout: 60_000,
       use: { ...devices['Desktop Chrome'] },
     },

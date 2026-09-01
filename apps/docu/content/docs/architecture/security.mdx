@@ -54,6 +54,10 @@ Lockfile integrity (`--frozen-lockfile`), gitleaks, TruffleHog (filesystem + his
 - Validation: **TypeBox** on Fastify routes. Extra sanitization in `apps/api/src/lib/security.ts`.
 - API keys hashed SHA-256 at rest; timing-safe compare.
 
+## Session cookie (web)
+
+The Next.js `POST /api/auth/update-tokens` adapter writes `api.session` only for same-origin browser requests whose access/refresh pair Fastify has validated (`POST /auth/session/validate-tokens`). The cookie remains JS-readable (`httpOnly: false`) by design — this gate closes cross-site and forged writes, not same-origin XSS.
+
 ## Related
 
 - [GitHub Actions](/docs/deployment/github-actions)

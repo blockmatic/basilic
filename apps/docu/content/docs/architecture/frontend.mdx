@@ -65,6 +65,10 @@ Stream with `loading.tsx` and Suspense. Mark search/filter updates as transition
 - Auth / Fastify: `cache: 'no-store'`. Identical GET `fetch` calls are request-memoized; do not wrap them in `React.cache()`.
 - No `revalidateTag` until something is tagged. Mutations stay on Fastify, not Server Actions.
 
+## Mutations
+
+Forms and hooks call the shared API client (`@repo/core`, `@repo/react`) which hits Fastify directly. Next.js routes exist only for SSR and cookie integration — auth callbacks, logout, and `POST /api/auth/update-tokens` (same-origin, Fastify-validated before `Set-Cookie`). Do not migrate login or settings mutations to `'use server'`.
+
 ## Data and state
 
 | Concern | Library |

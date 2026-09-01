@@ -3,7 +3,7 @@ title: Authentication
 description: JWT access + refresh. Magic link, OAuth, Web3, passkeys, TOTP, and API keys. Clients call Fastify directly.
 ---
 
-Auth lives in `apps/api` as JWT Bearer over Drizzle sessions. One token model for web, mobile, CLI, and servers. `@repo/react` is framework-agnostic (token from cookie or storage — no Next.js APIs in the package). Next.js only sets cookies on callback/logout pages; API calls go to `NEXT_PUBLIC_API_URL`. The core client refreshes via `POST /auth/session/refresh` on 401.
+Auth lives in `apps/api` as JWT Bearer over Drizzle sessions. One token model for web, mobile, CLI, and servers. `@repo/react` is framework-agnostic (token from cookie or storage — no Next.js APIs in the package). Next.js only sets cookies on callback/logout pages and via the validated `update-tokens` adapter; API calls go to `NEXT_PUBLIC_API_URL`. The core client refreshes via `POST /auth/session/refresh` on 401.
 
 Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3** (EIP-155 / Solana), **passkeys**, **TOTP**, **API keys** (`bask_<prefix>_<secret>`, hashed at rest). Linking (email, wallet, OAuth) is [Account linking](/docs/architecture/account-linking). Exact paths: `/reference` or [OpenAPI](/docs/development/openapi-generation).
 
@@ -28,7 +28,7 @@ stateDiagram-v2
 
 ## Web (Next.js)
 
-Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. After login, home includes link-wallet and link-email.
+Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. Client-side token persistence goes through `POST /api/auth/update-tokens`, which accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before writing `api.session` — Fastify is issuer, refresh/revocation authority, and pair validator; Next only performs `Set-Cookie`. After login, home includes link-wallet and link-email.
 
 Magic link: request email → user clicks → verify → cookies. E2E uses `test@test.ai` when `ALLOW_TEST=true`. See [E2E Testing](/docs/testing/e2e-testing).
 

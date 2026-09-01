@@ -124,7 +124,7 @@ See `components/providers.tsx` for the provider setup.
 
 ## Authentication
 
-Auth callback pages (`/auth/callback/*`) exchange credentials with Fastify and set cookies. A single cookie `api.session` (configurable via `AUTH_COOKIE_NAME`) stores JSON `{ token, refreshToken }`—readable on the frontend (`httpOnly: false`) so `getAuthToken` can read from `document.cookie`. Clients call Fastify directly (`NEXT_PUBLIC_API_URL`); Next.js API routes exist only for cookie updates (`update-tokens`). On 401, core calls Fastify `POST /auth/session/refresh` directly, then `onTokensRefreshed` persists new tokens via `POST /api/auth/update-tokens`.
+Auth callback pages (`/auth/callback/*`) exchange credentials with Fastify and set cookies. A single cookie `api.session` (configurable via `AUTH_COOKIE_NAME`) stores JSON `{ token, refreshToken }`—readable on the frontend (`httpOnly: false`) so `getAuthToken` can read from `document.cookie`. Clients call Fastify directly (`NEXT_PUBLIC_API_URL`); Next.js API routes exist only for cookie updates (`update-tokens`). That route accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before `Set-Cookie`. On 401, core calls Fastify `POST /auth/session/refresh` directly, then `onTokensRefreshed` persists new tokens via `POST /api/auth/update-tokens`.
 
 See [Authentication Architecture](@apps/docu/content/docs/architecture/authentication.mdx) for complete details.
 

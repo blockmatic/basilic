@@ -91,6 +91,8 @@ import type {
   OauthTwitterLinkAuthorizeUrlResponse,
   RefreshData,
   RefreshResponse,
+  ValidateTokensData,
+  ValidateTokensResponse,
   Web3Eip155NonceData,
   Web3Eip155NonceResponse,
   Web3Eip155VerifyData,
@@ -188,7 +190,8 @@ export type CoreApiClient = {
     session: {
       logout: (opts?: Options<LogoutData>) => Promise<LogoutResponse>;
       refresh: (opts: Options<RefreshData>) => Promise<RefreshResponse>;
-      user: (opts?: Options<GetUserData>) => Promise<GetUserResponse>
+      user: (opts?: Options<GetUserData>) => Promise<GetUserResponse>;
+      validateTokens: (opts: Options<ValidateTokensData>) => Promise<ValidateTokensResponse>
     };
     web3: {
       exchange: (opts: Options<Web3ExchangeData>) => Promise<Web3ExchangeResponse>;

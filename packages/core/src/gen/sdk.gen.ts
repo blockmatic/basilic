@@ -141,6 +141,9 @@ import type {
   RefreshData,
   RefreshErrors,
   RefreshResponses,
+  ValidateTokensData,
+  ValidateTokensErrors,
+  ValidateTokensResponses,
   Web3Eip155NonceData,
   Web3Eip155NonceErrors,
   Web3Eip155NonceResponses,
@@ -1181,6 +1184,28 @@ export const getUser = <ThrowOnError extends boolean = false>(
     security: [{ scheme: "bearer", type: "http" }],
     url: "/auth/session/user",
     ...options,
+  });
+
+/**
+ * Validate tokens
+ *
+ * Validate access and refresh token pair without rotation
+ */
+export const validateTokens = <ThrowOnError extends boolean = false>(
+  options: Options<ValidateTokensData, ThrowOnError>,
+): RequestResult<ValidateTokensResponses, ValidateTokensErrors, ThrowOnError> =>
+  (options.client ?? client).post<
+    ValidateTokensResponses,
+    ValidateTokensErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/auth/session/validate-tokens",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
   });
 
 /**
