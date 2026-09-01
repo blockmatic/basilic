@@ -8,7 +8,16 @@ describe('POST /auth/session/logout', () => {
     fastify.fakeEmail?.clear()
   })
 
-  it('should logout user, return 204, delete session, and reject Bearer', async () => {
+  it('should return 401 when not authenticated', async () => {
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/session/logout',
+    })
+    expect(res.statusCode).toBe(401)
+    expect(JSON.parse(res.body).code).toBe('UNAUTHORIZED')
+  })
+
+  it('should logout user, return empty 204, delete session, and reject Bearer', async () => {
     const email = 'logout@test.ai'
 
     await fastify.inject({
@@ -41,6 +50,7 @@ describe('POST /auth/session/logout', () => {
     })
 
     expect(logoutResponse.statusCode).toBe(204)
+    expect(logoutResponse.body).toBe('')
 
     const db = await getDb()
     const remainingSessions = await db.select().from(sessions)

@@ -23,7 +23,7 @@
     "/health": {
       "get": {
         "operationId": "healthCheck",
-        "summary": "Returns server health status with current ISO datetime",
+        "summary": "Returns server health status",
         "tags": [
           "health"
         ],
@@ -5030,12 +5030,12 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "error",
+                    "code",
                     "message",
                     "retryAfter"
                   ],
                   "properties": {
-                    "error": {
+                    "code": {
                       "type": "string"
                     },
                     "message": {
@@ -5456,6 +5456,7 @@
                 ],
                 "properties": {
                   "refreshToken": {
+                    "minLength": 1,
                     "type": "string"
                   }
                 }

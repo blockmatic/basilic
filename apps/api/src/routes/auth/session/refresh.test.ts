@@ -70,4 +70,24 @@ describe('POST /auth/session/refresh', () => {
     expect(afterRevoke.statusCode).toBe(401)
     expect(JSON.parse(afterRevoke.body).code).toBe('SESSION_NOT_FOUND')
   })
+
+  it('should return INVALID_TOKEN when access token is used as refresh token', async () => {
+    const email = 'refresh-access-as-refresh@test.ai'
+    const token = await getMagicLinkTokenRaw(fastify, email)
+
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token },
+    })
+    const { token: accessToken } = JSON.parse(verifyRes.body) as { token: string }
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/session/refresh',
+      payload: { refreshToken: accessToken },
+    })
+    expect(res.statusCode).toBe(401)
+    expect(JSON.parse(res.body).code).toBe('INVALID_TOKEN')
+  })
 })

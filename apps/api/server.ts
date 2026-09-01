@@ -1,7 +1,7 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { initErrorReporting } from '@repo/error/node'
 import { logger } from '@repo/utils/logger/server'
-import Fastify from 'fastify'
+import Fastify, { LogController } from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
 import { getDb } from './src/db/index.js'
@@ -37,8 +37,7 @@ const fastify = Fastify({
   bodyLimit: env.BODY_LIMIT,
   requestTimeout: env.REQUEST_TIMEOUT,
   requestIdHeader: 'x-request-id',
-  requestIdLogLabel: 'reqId',
-  disableRequestLogging: false,
+  logController: new LogController({ requestIdLogLabel: 'reqId', disableRequestLogging: false }),
 }).withTypeProvider<TypeBoxTypeProvider>()
 
 fastify.register(app)

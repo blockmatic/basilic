@@ -1872,7 +1872,7 @@ export type AuthPasskeyResolveUserErrors = {
    * Default Response
    */
   429: {
-    error: string;
+    code: string;
     message: string;
     retryAfter: number;
   };

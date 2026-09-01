@@ -3,7 +3,7 @@ title: "Self-Hosted LLM (Ollama)"
 description: "Run local LLMs for data privacy. Recommended when prompts must stay on your infrastructure."
 ---
 
-By default, the app uses **Anthropic** (direct API, Claude Sonnet 4) when `ANTHROPIC_API_KEY` is set. Otherwise it falls back to **Open Router** or **Ollama**. Prefer the Anthropic provider for best integration; use Open Router only when an Anthropic key is unavailable. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
+By default, the app uses **Anthropic** (direct API, Claude Haiku 4.5) when `ANTHROPIC_API_KEY` is set. Otherwise it falls back to **Open Router** or **Ollama**. Prefer the Anthropic provider for best integration; use Open Router only when an Anthropic key is unavailable. Request alias `sonnet` upgrades to Claude Sonnet 4.6. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
 
 This guide covers [Ollama](https://ollama.com)—a local inference runtime with an OpenAI-compatible API—for both development and production.
 
@@ -254,11 +254,11 @@ At least one of `ANTHROPIC_API_KEY`, `OPEN_ROUTER_API_KEY`, or `OLLAMA_BASE_URL`
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `ANTHROPIC_API_KEY` | Conditional (default) | — | Anthropic API key (preferred); Claude Sonnet 4 via direct API |
+| `ANTHROPIC_API_KEY` | Conditional (default) | — | Anthropic API key (preferred); Claude Haiku 4.5 via direct API |
 | `OPEN_ROUTER_API_KEY` | Conditional (fallback) | — | Open Router API key when Anthropic unavailable |
 | `OLLAMA_BASE_URL` | Conditional | `http://localhost:11434` | Ollama server URL when self-hosting |
 | `AI_PROVIDER` | Conditional | Inferred | `anthropic`, `openrouter`, or `ollama` — inferred when only one provider configured; must be set when multiple vars present |
-| `AI_DEFAULT_MODEL` | No | Varies by provider | Anthropic/OpenRouter: Claude Sonnet 4; Ollama: `qwen3:8b`; use `openrouter/free` for OpenRouter free tier |
+| `AI_DEFAULT_MODEL` | No | Varies by provider | Anthropic: `claude-haiku-4-5` (default); OpenRouter: `anthropic/claude-haiku-4.5`; Ollama: `qwen3:8b`. Request alias `sonnet` for `claude-sonnet-4-6` / `anthropic/claude-sonnet-4.6`. Use `openrouter/free` for OpenRouter free tier |
 
 ### Provider Selection
 

@@ -77,4 +77,17 @@ describe('GET /health', () => {
     expect(data.ok).toBe(true)
     expect(typeof data.dbReady).toBe('boolean')
   })
+
+  it('should include security headers but not HSTS in non-production', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/health',
+      headers: { origin: 'https://example.com' },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(response.headers['x-content-type-options']).toBe('nosniff')
+    expect(response.headers['x-frame-options']).toBe('DENY')
+    expect(response.headers['strict-transport-security']).toBeUndefined()
+  })
 })

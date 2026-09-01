@@ -85,7 +85,7 @@ describe('POST /account/email/change/verify', () => {
     expect(body).toHaveProperty('refreshToken')
   })
 
-  it('should return 200 with new tokens when code is valid', async () => {
+  it('should return 200 with new tokens and update user email', async () => {
     if (!verificationCode) throw new Error('No verification code from email change request')
     const res = await fastify.inject({
       method: 'POST',
@@ -97,5 +97,13 @@ describe('POST /account/email/change/verify', () => {
     const body = JSON.parse(res.body)
     expect(body).toHaveProperty('token')
     expect(body).toHaveProperty('refreshToken')
+
+    const userRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { Authorization: `Bearer ${body.token}` },
+    })
+    expect(userRes.statusCode).toBe(200)
+    expect(userRes.json().user.email).toBe('verified-new@test.ai')
   })
 })

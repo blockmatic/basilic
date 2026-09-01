@@ -36,6 +36,9 @@ describe('GET /auth/session/user', () => {
     expect(body.user.email).toBe(email)
     expect(body.user.emailVerified).toBe(true)
     expect(Array.isArray(body.user.linkedWallets)).toBe(true)
+    expect(Array.isArray(body.user.linkedAccounts)).toBe(true)
+    expect(typeof body.user.totpEnabled).toBe('boolean')
+    expect(Array.isArray(body.user.passkeys)).toBe(true)
   })
 
   it('should return emailVerified false for web3-authenticated session', async () => {

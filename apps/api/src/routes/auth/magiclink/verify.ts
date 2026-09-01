@@ -1,10 +1,10 @@
-import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import type { FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { authAttempts, users, verification } from '../../../db/schema/index.js'
+import { recordAuthFailedAttempt } from '../../../lib/auth-attempts.js'
 import { hashToken } from '../../../lib/jwt.js'
 import { getTrustedClientIp } from '../../../lib/request.js'
 import { createSessionAndIssueTokens } from '../../../lib/session.js'
@@ -12,6 +12,15 @@ import { ErrorResponseSchema } from '../../schemas.js'
 
 const magicLinkMaxAttempts = 5
 const magicLinkLockMinutes = 15
+
+const recordMagicLinkFailedAttempt = (db: Awaited<ReturnType<typeof getDb>>, ip: string) =>
+  recordAuthFailedAttempt({
+    db,
+    ip,
+    type: 'magic_link',
+    maxAttempts: magicLinkMaxAttempts,
+    lockMinutes: magicLinkLockMinutes,
+  })
 
 /** Verify magic link token and return access JWT. Used by reference route callback and POST /verify. */
 export async function verifyMagicLinkAndIssueToken(
@@ -41,39 +50,14 @@ export async function verifyMagicLinkAndIssueToken(
       ),
     )
 
-  async function recordFailedAttempt() {
-    const now = new Date()
-    const lockedUntilNew = new Date(now.getTime() + magicLinkLockMinutes * 60 * 1000)
-    await db
-      .insert(authAttempts)
-      .values({
-        id: randomUUID(),
-        key: ip,
-        type: 'magic_link',
-        failedAttempts: 1,
-        firstFailureAt: now,
-        lockedUntil: null,
-        updatedAt: now,
-      })
-      .onConflictDoUpdate({
-        target: [authAttempts.key, authAttempts.type],
-        set: {
-          failedAttempts: sql`${authAttempts.failedAttempts} + 1`,
-          firstFailureAt: sql`COALESCE(${authAttempts.firstFailureAt}, ${now})`,
-          lockedUntil: sql`CASE WHEN (${authAttempts.failedAttempts} + 1) >= ${magicLinkMaxAttempts} THEN ${lockedUntilNew}::timestamptz ELSE NULL END`,
-          updatedAt: now,
-        },
-      })
-  }
-
   if (!verificationRecord) {
-    await recordFailedAttempt()
+    await recordMagicLinkFailedAttempt(db, ip)
     return null
   }
 
   if (verificationRecord.expiresAt < new Date()) {
     await db.delete(verification).where(eq(verification.id, verificationRecord.id))
-    await recordFailedAttempt()
+    await recordMagicLinkFailedAttempt(db, ip)
     return null
   }
 
@@ -169,33 +153,8 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
           )
       const [verificationRecord] = await db.select().from(verification).where(verificationWhere)
 
-      async function recordFailedAttempt() {
-        const now = new Date()
-        const lockedUntilNew = new Date(now.getTime() + magicLinkLockMinutes * 60 * 1000)
-        await db
-          .insert(authAttempts)
-          .values({
-            id: randomUUID(),
-            key: ip,
-            type: 'magic_link',
-            failedAttempts: 1,
-            firstFailureAt: now,
-            lockedUntil: null,
-            updatedAt: now,
-          })
-          .onConflictDoUpdate({
-            target: [authAttempts.key, authAttempts.type],
-            set: {
-              failedAttempts: sql`${authAttempts.failedAttempts} + 1`,
-              firstFailureAt: sql`COALESCE(${authAttempts.firstFailureAt}, ${now})`,
-              lockedUntil: sql`CASE WHEN (${authAttempts.failedAttempts} + 1) >= ${magicLinkMaxAttempts} THEN ${lockedUntilNew}::timestamptz ELSE NULL END`,
-              updatedAt: now,
-            },
-          })
-      }
-
       if (!verificationRecord) {
-        await recordFailedAttempt()
+        await recordMagicLinkFailedAttempt(db, ip)
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Invalid or expired token',
@@ -204,7 +163,7 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (verificationRecord.expiresAt < new Date()) {
         await db.delete(verification).where(eq(verification.id, verificationRecord.id))
-        await recordFailedAttempt()
+        await recordMagicLinkFailedAttempt(db, ip)
         return reply.code(401).send({
           code: 'EXPIRED_TOKEN',
           message: 'Token has expired',

@@ -9,6 +9,14 @@ description: "Vitest for the API and packages; Playwright E2E for web. No fronte
 
 PGLite does not support concurrent writers. API Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false`. Between group entry files, `cleanupGroupDatabase()` truncates all 15 schema tables and clears the JWT session pool.
 
+## Assertion rule
+
+Each `inject()` test should assert **one HTTP status**. Assert catalog `code` only on JSON error responses. Schema validation failures return `400` with `BAD_REQUEST`. Do not use `expect([A, B]).toContain(...)` for codes — remove unreachable handler branches instead.
+
+## Error contract
+
+HTTP errors use `{ code, message }` from the app catalog (`getError` / `sendCatalogError` in `apps/api/src/lib/catalogs/mapper.ts`). `INTERNAL_SERVER_ERROR` and `TOO_MANY_REQUESTS` are normalized to `SERVER_ERROR` and `RATE_LIMIT_EXCEEDED`. Global rate-limit 429 bodies include `{ code, message, retryAfter }`.
+
 ## Group entry map
 
 | Group entry | Routes covered |
@@ -19,7 +27,8 @@ PGLite does not support concurrent writers. API Vitest runs with `fileParallelis
 | `oauth.spec.ts` | OAuth authorize/exchange and link-authorize-url (unconfigured 503 contract) |
 | `passkey.spec.ts` | Passkey start/verify/exchange/resolve-user |
 | `web3.spec.ts` | EIP-155 and Solana verify |
-| `reference.spec.ts` | `/reference` HTML + OpenAPI JSON |
+| `health.spec.ts` | `/health` + security headers |
+| `reference.spec.ts` | `/reference` HTML + OpenAPI JSON (including `jwtFromServer` on magic-link callback) |
 | `ai.spec.ts` | AI chat (remote; may skip if provider down) |
 
 ## Auth helpers
@@ -33,4 +42,5 @@ When `ALLOW_TEST=true` (non-production), magic-link flows for `*@test.ai` store 
 ## Known gaps
 
 - **OAuth IdP exchange** — Unit tests assert unconfigured 503 and link-authorize-url 401/503 only. No live GitHub/Google/Facebook/Twitter calls in CI.
-- **AI remote** — `ai.spec.ts` uses `skipIfProviderUnavailable`. A skipped test run is not full coverage; ensure `ANTHROPIC_API_KEY` is set for CI when AI behavior must be validated.
+- **AI remote** — `ai.spec.ts` skips on connection-class failures (`ECONNREFUSED`, `503`/`504`) and `502` including catalog `UPSTREAM_SERVICE_ERROR` (transient provider outage). Default Anthropic model: `claude-haiku-4-5` (alias `sonnet` → `claude-sonnet-4-6`). Ensure `ANTHROPIC_API_KEY` is set when AI behavior must be validated in CI.
+- **Web E2E** — `magic-link-auth.spec.ts` and `chat-assistant.spec.ts` use `test.describe.skip` until re-enabled; see [E2E Testing](/docs/testing/e2e-testing).

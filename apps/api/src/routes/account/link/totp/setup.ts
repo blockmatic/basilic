@@ -49,7 +49,7 @@ const totpSetupRoute: FastifyPluginAsync = async fastify => {
       const encrypted = encryptTotpSecret(secret)
       if (!encrypted)
         return reply.code(500).send({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: 'SERVER_ERROR',
           message: 'Failed to encrypt secret',
         })
 

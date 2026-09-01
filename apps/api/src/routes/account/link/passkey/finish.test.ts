@@ -27,7 +27,39 @@ describe('POST /account/link/passkey/finish', () => {
     expect(JSON.parse(res.body).code).toBe('UNAUTHORIZED')
   })
 
-  it('should return 400 when credential is invalid or challenge expired', async () => {
+  it('should return EXPIRED_CHALLENGE when no registration challenge exists', async () => {
+    const isolatedJwt = await getOrCreateSession(fastify, 'phase2-pk-finish-expired@test.ai')
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/account/link/passkey/finish',
+      headers: {
+        Authorization: `Bearer ${isolatedJwt}`,
+        Origin: 'http://localhost:3000',
+      },
+      payload: {
+        credential: {
+          id: 'invalid',
+          rawId: 'invalid',
+          response: { clientDataJSON: '', attestationObject: '' },
+          type: 'public-key',
+        },
+      },
+    })
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).code).toBe('EXPIRED_CHALLENGE')
+  })
+
+  it('should return VERIFICATION_FAILED when challenge exists but credential is invalid', async () => {
+    const startRes = await fastify.inject({
+      method: 'POST',
+      url: '/account/link/passkey/start',
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        Origin: 'http://localhost:3000',
+      },
+    })
+    expect(startRes.statusCode).toBe(200)
+
     const res = await fastify.inject({
       method: 'POST',
       url: '/account/link/passkey/finish',
@@ -45,7 +77,6 @@ describe('POST /account/link/passkey/finish', () => {
       },
     })
     expect(res.statusCode).toBe(400)
-    const body = JSON.parse(res.body)
-    expect(['EXPIRED_CHALLENGE', 'VERIFICATION_FAILED']).toContain(body.code)
+    expect(JSON.parse(res.body).code).toBe('VERIFICATION_FAILED')
   })
 })

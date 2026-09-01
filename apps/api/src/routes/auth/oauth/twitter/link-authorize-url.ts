@@ -99,7 +99,7 @@ const oauthLinkAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
         )
       if ((recentCount?.count ?? 0) >= linkAuthorizeUrlPerUserPerHour)
         return reply.code(429).send({
-          code: 'TOO_MANY_REQUESTS',
+          code: 'RATE_LIMIT_EXCEEDED',
           message: 'Too many link requests. Try again later.',
         })
 

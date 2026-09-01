@@ -33,6 +33,18 @@ describe('GET /auth/web3/nonce', () => {
     expect(body.nonce.length).toBeGreaterThanOrEqual(8)
   })
 
+  it('should return nonce for trimmed solana address', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/nonce',
+      query: { chain: 'solana', address: `  ${validSolanaAddress}  ` },
+    })
+
+    expect(response.statusCode).toBe(200)
+    const body = JSON.parse(response.body)
+    expect(body).toHaveProperty('nonce')
+  })
+
   it('should return 400 for invalid chain', async () => {
     const response = await fastify.inject({
       method: 'GET',
@@ -41,9 +53,8 @@ describe('GET /auth/web3/nonce', () => {
     })
 
     expect(response.statusCode).toBe(400)
-    // Fastify schema validation returns BAD_REQUEST; handler returns INVALID_CHAIN for invalid chain value
     const body = JSON.parse(response.body)
-    expect(['BAD_REQUEST', 'INVALID_CHAIN']).toContain(body.code)
+    expect(body.code).toBe('BAD_REQUEST')
   })
 
   it('should return 400 for invalid eip155 address', async () => {
@@ -66,9 +77,8 @@ describe('GET /auth/web3/nonce', () => {
     })
 
     expect(response.statusCode).toBe(400)
-    // Schema validation may return BAD_REQUEST before handler runs
     const body = JSON.parse(response.body)
-    expect(['BAD_REQUEST', 'MISSING_PARAMS']).toContain(body.code)
+    expect(body.code).toBe('BAD_REQUEST')
   })
 
   it('should return 400 for missing address', async () => {
@@ -79,8 +89,30 @@ describe('GET /auth/web3/nonce', () => {
     })
 
     expect(response.statusCode).toBe(400)
-    // Schema validation may return BAD_REQUEST before handler runs
     const body = JSON.parse(response.body)
-    expect(['BAD_REQUEST', 'MISSING_PARAMS']).toContain(body.code)
+    expect(body.code).toBe('BAD_REQUEST')
+  })
+
+  it('should reject empty solana address', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/nonce?chain=solana&address=',
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = JSON.parse(response.body)
+    expect(body.code).toBe('INVALID_ADDRESS')
+  })
+
+  it('should reject whitespace-only solana address', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/nonce',
+      query: { chain: 'solana', address: '   ' },
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = JSON.parse(response.body)
+    expect(body.code).toBe('INVALID_ADDRESS')
   })
 })
