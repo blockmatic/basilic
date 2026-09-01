@@ -1,43 +1,47 @@
-import { expect, test } from './fixtures'
+import { expect, test } from '@playwright/test'
+import { authHelpers } from './auth-helpers'
 
-test.describe
-  .skip('Passkey sign-in', () => {
-    test.describe.configure({ mode: 'serial' })
+const passkeyEmail = 'e2e-passkey@test.ai'
 
-    test('should sign in with passkey after adding one', async ({ authenticatedPage }) => {
-      await authenticatedPage.goto('/settings/security/passkeys')
-      await expect(authenticatedPage.getByRole('button', { name: /add passkey/i })).toBeVisible({
-        timeout: 10000,
-      })
+test.describe('Passkey sign-in', () => {
+  test.describe.configure({ mode: 'serial' })
 
-      const cdp = await authenticatedPage.context().newCDPSession(authenticatedPage)
-      await cdp.send('WebAuthn.enable')
-      await cdp.send('WebAuthn.addVirtualAuthenticator', {
-        options: {
-          protocol: 'ctap2',
-          transport: 'internal',
-          hasResidentKey: true,
-          hasUserVerification: true,
-          isUserVerified: true,
-        },
-      })
-
-      await authenticatedPage.getByRole('button', { name: /add passkey/i }).click()
-      await expect(authenticatedPage.getByRole('dialog')).toBeVisible()
-      await authenticatedPage.getByRole('button', { name: /^add$/i }).click()
-      await expect(authenticatedPage.getByText(/passkey added/i)).toBeVisible({ timeout: 10000 })
-
-      await authenticatedPage.goto('/auth/logout')
-      await authenticatedPage.goto('/auth/login')
-
-      await expect(
-        authenticatedPage.getByRole('button', { name: /sign in with passkey/i }),
-      ).toBeVisible({ timeout: 5000 })
-      await authenticatedPage.getByRole('button', { name: /sign in with passkey/i }).click()
-
-      await expect(authenticatedPage).toHaveURL(/^https?:\/\/[^/]+\/$/, { timeout: 15000 })
-      await expect(authenticatedPage.getByRole('link', { name: /settings/i })).toBeVisible({
-        timeout: 5000,
-      })
+  test('should sign in with passkey after adding one', async ({ page }) => {
+    const cdp = await page.context().newCDPSession(page)
+    await cdp.send('WebAuthn.enable')
+    await cdp.send('WebAuthn.addVirtualAuthenticator', {
+      options: {
+        protocol: 'ctap2',
+        transport: 'internal',
+        hasResidentKey: true,
+        hasUserVerification: true,
+        isUserVerified: true,
+      },
     })
+
+    await authHelpers.loginAsTestUser(page, passkeyEmail)
+    await page.goto('/settings/security/passkeys')
+    await expect(page.getByRole('button', { name: /add passkey/i })).toBeVisible({
+      timeout: 10_000,
+    })
+
+    await page.getByRole('button', { name: /add passkey/i }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.getByRole('button', { name: /^add$/i }).click()
+    await expect(page.getByText(/passkey added/i)).toBeVisible({ timeout: 10_000 })
+
+    await page.getByRole('button', { name: 'Sign out' }).click()
+    await expect
+      .poll(() => new URL(page.url()).pathname, { timeout: 15_000 })
+      .toMatch(/\/auth\/login/)
+
+    await expect(page.getByRole('button', { name: /Continue with Passkey/i })).toBeVisible({
+      timeout: 10_000,
+    })
+    await page.getByRole('button', { name: /Continue with Passkey/i }).click()
+
+    await expect(page).toHaveURL(/^https?:\/\/[^/]+\/?$/, { timeout: 15_000 })
+    await expect(page.locator('text=Signed In')).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('link', { name: 'Profile' }).first()).toBeVisible({ timeout: 5000 })
   })
+})

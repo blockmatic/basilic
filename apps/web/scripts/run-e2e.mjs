@@ -41,9 +41,7 @@ const scriptDir = dirname(fileURLToPath(import.meta.url))
 const nextDir = dirname(scriptDir)
 
 const hasWorkers = rest.some(a => a.startsWith('--workers='))
-const hasProjectArg = rest.some(a => a.startsWith('--project='))
-const projectArgs = !hasProjectArg ? ['--project=auth', '--project=chromium'] : []
-const pwTestArgs = [...(hasWorkers ? [] : ['--workers=1']), ...projectArgs, ...rest]
+const pwTestArgs = [...(hasWorkers ? [] : ['--workers=1']), ...rest]
 const pwArgs = ['exec', 'playwright', 'test', ...pwTestArgs]
 
 const pw = spawn('pnpm', pwArgs, {

@@ -3,11 +3,11 @@ title: "E2E Testing"
 description: "Playwright E2E for Next.js and Fastify. Frontend apps have no separate unit suite."
 ---
 
-Frontend apps have no separate unit suite. Two Playwright suites: **Web** (`apps/web`) for the product UI, **API** (`apps/api`) for Scalar login at `/reference`. Both use `test@test.ai` when `ALLOW_TEST=true`.
+Frontend apps have no separate unit suite. Two Playwright suites: **Web** (`apps/web`) for the product UI, **API** (`apps/api`) for Scalar login at `/reference`. Both use `@test.ai` addresses when `ALLOW_TEST=true`.
 
 The Scalar page loads `@scalar/api-reference` from jsDelivr (pinned version in `reference/template.ts`). E2E depends on that CDN for the login button script.
 
-Install Chromium with `pnpm setup:playwright` (or `pnpm setup`) if browsers are missing. Specs are not skipped.
+Install Chromium with `pnpm setup:playwright` (or `pnpm setup`) if browsers are missing.
 
 Root `pnpm qa` ends with `pnpm test:e2e` (`scripts/run-e2e.mjs`). That script kills processes on ports 3000 and 3001 unless `SKIP_KILL_PORTS=1`.
 
@@ -26,24 +26,65 @@ Pass URLs with `--app` / `--api`, or `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL`
 pnpm test:e2e --app=https://my-app.vercel.app --api=https://my-api.vercel.app
 ```
 
-## Auth fixtures
+## Session model
 
-Use **one worker** (PGlite cannot take concurrent writers). Auth project runs first (errors, login, logout). Authed tests import `authenticatedPage` from `e2e/fixtures` — one login per worker via `authenticatedStorageState` (`test-results/.auth/user.json`). Login/logout tests use a fresh `page` from `@playwright/test`.
+Use **one worker** (PGlite cannot take concurrent writers). The **setup** project logs in as `test@test.ai` once and writes `test-results/.auth/user.json`. **chromium**, **security**, and **chat** reuse that file via project `storageState`. **auth**, **passkey-login**, and logout tests use empty storage so they never revoke the shared session.
+
+Import `page` from `@playwright/test` in all specs. Navigate to the target route in each authed test (`page.goto('/settings/...')`).
 
 ```typescript
-import { expect, test } from './fixtures'
+import { expect, test } from '@playwright/test'
 
-test('should show dashboard when authenticated', async ({ authenticatedPage }) => {
-  await authenticatedPage.goto('/')
-  await expect(authenticatedPage.locator('text=Signed In')).toBeVisible()
+test('shows dashboard when authenticated', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('text=Signed In')).toBeVisible()
 })
 ```
 
-Chat E2E needs `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). CI and `test:e2e:local` set `AI_PROVIDER=anthropic`.
+Chat E2E needs `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). CI and `test:e2e:local` set `AI_PROVIDER=anthropic`. Chat skips only on provider infra failures (401/402/network/5xx), not on optional UI like `user-info-card`.
 
-## Magic link
+## Test helpers
 
-`ALLOW_TEST=true` stores the token in `verification.token_plain` and exposes `/test/magic-link/last`. Local spawn scripts set it. For Vercel previews, set it on the Preview environment. The API process exits if `ALLOW_TEST` is true in production.
+`ALLOW_TEST=true` stores plain tokens in `verification.token_plain` for `@test.ai` addresses.
+
+| Endpoint | Use |
+| --- | --- |
+| `GET /test/verification/last?type=magic_link\|change_email&email=` | Email-scoped tokens for web E2E |
+| `GET /test/magic-link/last?email=` | Optional email filter; omit email for latest `@test.ai` (Scalar E2E) |
+| `GET /test/totp/current` | Bearer required; in-progress TOTP setup code |
+
+Local spawn scripts set `ALLOW_TEST`. The API process exits if `ALLOW_TEST` is true in production.
+
+## Playwright projects (order)
+
+1. **public** — legal pages, login smoke, robots/sitemap
+2. **auth** — `01-callbacks` … `06-logout` (empty storage; file-name order)
+3. **setup** — writes `user.json` (depends on public only)
+4. **chromium** — dashboard smokes, 404 (storageState)
+5. **security** — TOTP, API keys, passkeys CRUD (storageState; never logout)
+6. **passkey-login** — passkey sign-in with `e2e-passkey@test.ai` (empty storage)
+7. **chat** — assistant (storageState; mobile viewport; last)
+
+Dedicated emails: `test@test.ai` (shared), `e2e-passkey@test.ai`, `e2e-email@test.ai` (change-email).
+
+## Web specs
+
+| Spec | Project | Coverage |
+| --- | --- | --- |
+| `public.spec.ts` | public | Privacy, terms, login, robots/sitemap |
+| `01-callbacks.spec.ts` | auth | OAuth/passkey/web3 missing-param errors |
+| `02-magic-link-auth.spec.ts` | auth | Login, token errors, JWT session |
+| `03-proxy-gate.spec.ts` | auth | Unauthenticated redirects |
+| `04-update-tokens.spec.ts` | auth | Cookie adapter CSRF/origin |
+| `05-change-email.spec.ts` | auth | In-page email change verify |
+| `06-logout.spec.ts` | auth | Header sign-out revokes sid |
+| `auth.setup.ts` | setup | Writes shared storageState |
+| `dashboard.spec.ts` | chromium | News, markets, profile, 404 |
+| `security/authenticator.spec.ts` | security | TOTP setup/unlink |
+| `security/api-keys.spec.ts` | security | API keys CRUD |
+| `security/passkeys.spec.ts` | security | Passkeys add/remove |
+| `passkey-auth.spec.ts` | passkey-login | Passkey sign-in flow |
+| `chat-assistant.spec.ts` | chat | Assistant Who am I? |
 
 ## CI and mobile
 
@@ -51,25 +92,13 @@ Path-filtered PR workflows: `api-e2e.yml`, `web-e2e.yml`, `packages-test.yml`. S
 
 Expo uses Maestro (`apps/mobile/.maestro/flows/home.yml`). CI Maestro is deferred; see [Mobile CI/CD](/docs/deployment/mobile-cicd).
 
-## Web specs
-
-| Spec | Coverage |
-| --- | --- |
-| `magic-link-auth.spec.ts` | Login, token errors, protected route, JWT session |
-| `chat-assistant.spec.ts` | Chat UI with `authenticatedPage` |
-| `security/api-keys.spec.ts` | API keys CRUD |
-| `security/authenticator.spec.ts` | TOTP setup/unlink |
-| `security/passkeys.spec.ts` | Passkeys with CDP virtual authenticator |
-
-Order: Auth project → Chromium → Security.
-
 ## Vercel protection (manual)
 
 For protected previews: enable Protection Bypass for Automation on both projects with the same secret, set `VERCEL_AUTOMATION_BYPASS_SECRET`, and allowlist OPTIONS `/` or `/auth` on the API project.
 
 ## Troubleshooting
 
-Ports in use: `bash scripts/kill-test-servers.sh`. Token extraction fails: confirm `ALLOW_TEST=true` and `test@test.ai`.
+Ports in use: `bash scripts/kill-test-servers.sh`. Token extraction fails: confirm `ALLOW_TEST=true` and the correct `@test.ai` email query on `/test/verification/last`. Magic link `500` mid-suite: local/CI spawn sets `RATE_LIMIT_MAX=10000` (default API limit is 100/min per IP).
 
 ## Related
 

@@ -20,7 +20,10 @@ export function DashboardShell({
 
   async function handleSignOut() {
     const response = await fetch('/auth/logout', { redirect: 'manual' })
-    const isSuccess = response.status >= 200 && response.status < 400
+    const isSuccess =
+      response.type === 'opaqueredirect' ||
+      response.status === 0 ||
+      (response.status >= 200 && response.status < 400)
     if (!isSuccess) {
       toast.error('Sign out failed. Please try again.')
       return

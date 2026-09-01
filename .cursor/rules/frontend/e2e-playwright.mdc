@@ -10,23 +10,33 @@ alwaysApply: false
 - Fastify: only `--api` param; `test:e2e` = URL-based, `test:e2e:local` = spawn API, poll, run, cleanup
 - Param format: `--app=URL` or `--app URL`, `--api=URL` or `--api URL`
 - CI: test:e2e:local only (spawn local servers; no Vercel URLs)
-- Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
+- Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run all projects, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
-- projects: auth first (magic-link-auth), then chromium (chat-assistant), then security (authenticator, passkeys, api-keys)
+- Do not filter `--project=` in spawn scripts; run the full project DAG
+- Local/CI API spawn sets `ALLOW_TEST=true` and `RATE_LIMIT_MAX=10000` (default 100/min breaks magic-link after several logins)
+- Confirm dialogs use `getByRole('alertdialog')` (shadcn AlertDialog), not `dialog`
 
-## Session Model
-- Context = browser profile; authenticatedPage = single shared page reused across all authed tests (worker-scoped)
-- One login per worker, then navigate and assert. No per-test login for authed tests
-- Session reused via worker-scoped storageState (saved after login, new context per test)
-## Test Order
-- Auth project first: magic-link-auth (auth-helpers magic link flow). Use `/auth/login` for login page
-- Chromium project: chat-assistant (uses authenticatedPage; fixture triggers magic link login)
-- Security project: authenticator, passkeys, api-keys (use authenticatedPage; TOTP spec uses extractSessionToken for test endpoint)
+## Projects (order)
+public → auth → setup → chromium → security → passkey-login → chat
 
-## Auth Fixtures
-- Login/logout tests: import `@playwright/test`, use `page` (fresh context per test)
-- Authed feature tests: import from `e2e/fixtures`, use `authenticatedPage`; no `loginAsTestUser` in test body
-- Each authed test must navigate to its target route (e.g. `authenticatedPage.goto('/')`) since the same page is reused
+- **public**: no storageState
+- **auth**: empty storageState; numbered `01-`…`06-` specs run in file-name order (not `testMatch` array order)
+- **setup**: `auth.setup.ts` writes `test-results/.auth/user.json` (depends on public only)
+- **chromium** / **security** / **chat**: `storageState` from setup file
+- **passkey-login**: empty storageState; dedicated `e2e-passkey@test.ai`
 
-## Test Email
-- Use `test@test.ai` when `ALLOW_TEST` enabled; token from DB (`/test/magic-link/last`), no fake outbox. Only E2E magic-link flow requires `@test.ai`.
+## Session model
+- Setup project logs in once; authed projects reuse `user.json` with a **new context per test**
+- Logout and passkey-login tests use empty storage — never revoke the shared setup sid
+- Security specs never call `/auth/logout`
+
+## Auth helpers
+- Import `page` from `@playwright/test`; use `authHelpers` from `e2e/auth-helpers.ts`
+- Tokens: `GET /test/verification/last?type=magic_link|change_email&email=` (email required, `@test.ai` only)
+- Legacy: `GET /test/magic-link/last?email=` optional
+- TOTP in-progress code: `GET /test/totp/current` with Bearer from `extractSessionToken`
+
+## Test email
+- `test@test.ai` — setup, chromium, security (cleanup CRUD at end of file)
+- `e2e-passkey@test.ai` — passkey-login only
+- `e2e-email@test.ai` — change-email request user; unique target email per run

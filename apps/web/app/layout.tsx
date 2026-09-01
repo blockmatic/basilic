@@ -22,6 +22,14 @@ const fontMono = Geist_Mono({
   variable: '--font-mono',
 })
 
+export const metadata = {
+  title: {
+    default: 'Acme',
+    template: '%s | Acme',
+  },
+  description: 'Basilic web dashboard',
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
