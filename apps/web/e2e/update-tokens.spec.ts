@@ -19,8 +19,8 @@ async function setCookieHeaders(response: HeadersArrayResponse) {
 }
 
 async function hasAuthSessionSetCookie(response: HeadersArrayResponse) {
-  const prefix = `${authCookieName.toLowerCase()}=`
-  return (await setCookieHeaders(response)).some(value => value.toLowerCase().startsWith(prefix))
+  const prefix = `${authCookieName}=`
+  return (await setCookieHeaders(response)).some(value => value.startsWith(prefix))
 }
 
 function parseSessionCookieValue(setCookieValue: string) {
