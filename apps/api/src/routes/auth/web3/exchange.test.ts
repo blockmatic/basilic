@@ -91,7 +91,7 @@ describe('POST /auth/web3/exchange', () => {
     expect(res.statusCode).toBe(400)
     expect(res.json()).toMatchObject({
       code: 'MISSING_CODE',
-      message: 'code is required',
+      message: 'Code is required',
     })
   })
 })

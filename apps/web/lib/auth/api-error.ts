@@ -8,7 +8,7 @@ export function getApiErrorCode(error: unknown): string | undefined {
     !('code' in error.body)
   )
     return undefined
-  const code = (error.body as { code: unknown }).code
+  const code = (error.body as { code?: unknown }).code
   return typeof code === 'string' ? code : undefined
 }
 

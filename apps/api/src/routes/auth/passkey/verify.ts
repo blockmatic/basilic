@@ -3,8 +3,8 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import { and, eq, gt } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
+import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
-import { encryptPasskeyTokens } from '../../../db/passkey-callback.js'
 import { passkeyAuthChallenges, passkeyCallback } from '../../../db/schema/index.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
 import { getWebAuthnOriginFromRequest } from '../../../lib/passkey.js'
@@ -111,7 +111,7 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
           db,
           userId: result.userId,
         })
-        const encrypted = encryptPasskeyTokens({ accessToken, refreshToken })
+        const encrypted = encryptCallbackTokens({ accessToken, refreshToken })
         await db.insert(passkeyCallback).values({
           id: randomUUID(),
           codeHash,

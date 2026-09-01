@@ -45,7 +45,7 @@ export const logSecurityEvent = (
 /**
  * Detect suspicious activity patterns
  */
-export const detectSuspiciousActivity = (request: FastifyRequest): boolean => {
+export const detectSuspiciousActivity = (request: FastifyRequest): void => {
   const userAgent = request.headers['user-agent'] || ''
   const url = request.url
 
@@ -61,14 +61,11 @@ export const detectSuspiciousActivity = (request: FastifyRequest): boolean => {
   // Check URL
   if (suspiciousPatterns.some(pattern => pattern.test(url))) {
     logSecurityEvent(request, 'suspicious_url_pattern', { url })
-    return true
+    return
   }
 
   // Check user agent
   if (suspiciousPatterns.some(pattern => pattern.test(userAgent))) {
     logSecurityEvent(request, 'suspicious_user_agent', { userAgent })
-    return true
   }
-
-  return false
 }

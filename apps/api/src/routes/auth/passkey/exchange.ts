@@ -2,9 +2,10 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import { and, eq, gt } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
+import { decryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
-import { decryptPasskeyTokens } from '../../../db/passkey-callback.js'
 import { passkeyCallback } from '../../../db/schema/index.js'
+import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { hashToken } from '../../../lib/jwt.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
@@ -38,11 +39,7 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { code } = request.body
 
-      if (!code?.trim())
-        return reply.code(400).send({
-          code: 'MISSING_CODE',
-          message: 'code is required',
-        })
+      if (!code?.trim()) return sendCatalogError({ reply, status: 400, code: 'MISSING_CODE' })
 
       const rawOrigin = request.headers['x-callback-origin'] ?? request.headers.origin
       const requestOrigin =
@@ -71,13 +68,12 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
           return deleted ?? null
         })
 
-        if (!row)
-          return reply.code(401).send({
-            code: 'INVALID_OR_EXPIRED_CODE',
-            message: 'Invalid or expired code',
-          })
+        if (!row) return sendCatalogError({ reply, status: 401, code: 'INVALID_OR_EXPIRED_CODE' })
 
-        const decrypted = decryptPasskeyTokens(row)
+        const decrypted = decryptCallbackTokens(row)
+        if (!decrypted)
+          return sendCatalogError({ reply, status: 401, code: 'INVALID_OR_EXPIRED_CODE' })
+
         return reply.code(200).send({
           token: decrypted.accessToken,
           refreshToken: decrypted.refreshToken,

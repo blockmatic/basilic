@@ -82,18 +82,14 @@ export function LoginForm({
     },
     onError: error => {
       if (isRateLimitApiError(error)) {
-        setCatalogError(
-          getAuthErrorMessage('rate_limit_exceeded') ??
-            'Too many attempts. Please wait a moment and try again.',
-        )
+        setCatalogError(getAuthErrorMessage('rate_limit_exceeded'))
         setEmailValidationError(null)
         return
       }
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to send magic link'
-      const errorWithCode = error as Error & { code?: string }
       const isValidationError =
-        errorWithCode.code === 'VALIDATION_ERROR' ||
+        getApiErrorCode(error) === 'VALIDATION_ERROR' ||
         errorMessage.toLowerCase().includes('validation') ||
         errorMessage.toLowerCase().includes('invalid email') ||
         errorMessage.toLowerCase().includes('email')

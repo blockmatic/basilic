@@ -2,148 +2,177 @@
   "version": 1,
   "skills": {
     "ahooks-v3": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ahooks-v3/SKILL.md",
       "computedHash": "caf02decc8dbc3845845e417a150c81341e242cbc539af423399f943d63f9bc5"
     },
     "ai-sdk-core-v7": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai-sdk-core-v7/SKILL.md",
       "computedHash": "3dc89237f7ee0d680afd3f3dc0727212349f7d11a2fe25265d1191cca21097d8"
     },
     "ai-sdk-ui-v7": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai-sdk-ui-v7/SKILL.md",
       "computedHash": "562b1b2329be69739e3a90740feeccdfc9938536ef78196f5330d22b1e97e09a"
     },
     "drizzle-orm-v0": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/drizzle-orm-v0/SKILL.md",
       "computedHash": "28c4e0ac28452e89e6faf1f7949e5a2cc687fe385f8d8b3ba6bbb07d3d48053d"
     },
     "emilkowal-animations-v1": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/emilkowal-animations-v1/SKILL.md",
       "computedHash": "2aa501c3407899c54a036a828ea2f3efc2b58671e1329f53299a84f138a99b15"
     },
     "expo-cicd-workflows-v55": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/expo-cicd-workflows-v55/SKILL.md",
       "computedHash": "7034e4eccfefff6044dc9f9b1016c5fd0362a4242e184a1cdf3f4bbf4f64b0d1"
     },
     "expo-deployment-v55": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/expo-deployment-v55/SKILL.md",
       "computedHash": "bd83beb2ac513523713e565f014c4f03acfdb86eecd9be3fa220814b0c5465c8"
     },
     "expo-dev-client-v55": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/expo-dev-client-v55/SKILL.md",
       "computedHash": "78a7c889fbcca5b4635f67e62fc7c0587078fdbbdd62d8bdf71ccf8f00060d12"
     },
     "expo-tailwind-setup-v55": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/expo-tailwind-setup-v55/SKILL.md",
       "computedHash": "031ff16753fa67ffd570b60319168f966906bafeaf6fe710774dff3083f84a09"
     },
     "expo-upgrading-v55": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/expo-upgrading-v55/SKILL.md",
       "computedHash": "00e63e489ba39bebca4c0f4dea763f171a4fc147681b6c3517e2134bb32acab5"
     },
     "expo-use-dom-v55": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/expo-use-dom-v55/SKILL.md",
       "computedHash": "ca7a80679bc40c9b2798b29aa90b57b665871e97d02abc91c3d394786f4607af"
     },
     "fastify-v5": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/fastify-v5/SKILL.md",
       "computedHash": "31d7af2b1ab8cbbb59c904f0b7472698f968d01777e107b616e6127f6896d8ba"
     },
     "frontend-design-v1": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design-v1/SKILL.md",
       "computedHash": "b88872a00592c6962be2e87aacf19c8fcaba04d24dc16adbdce40bd981d23ad3"
     },
     "motion-v13": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/motion-v13/SKILL.md",
       "computedHash": "942ca557b6f8f382c1c1aff454018c20548f07e9ae36146d08c2d406a64bf4f8"
     },
     "next-v16": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/next-v16/SKILL.md",
       "computedHash": "230365194e69a6949797349b54aeaaca3b6db4c91c5351d278a0293cdbad85c5"
     },
     "nodejs-keccak256-v1": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/nodejs-keccak256-v1/SKILL.md",
       "computedHash": "a941757146380faed2a15dc35f14e86db7d4aa112ef2f0b40b82639d88b59ac3"
     },
     "nuqs-v2": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/nuqs-v2/SKILL.md",
       "computedHash": "5063df2c7617f3c3638dc44729971d5648c90a04a4aadce826b0347bb215fa9f"
     },
     "openapi-ts-v0": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/openapi-ts-v0/SKILL.md",
       "computedHash": "43753c89d5456738c68fc1dff319d33fc74b639597cb15173540b40d909ff022"
     },
     "playwright-v1": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/playwright-v1/SKILL.md",
       "computedHash": "90a72381b7d8a9c13899c193827cec28ca1eb3da97b6a581d5310eb6d2b4770f"
     },
     "shadcn-v3": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn-v3/SKILL.md",
       "computedHash": "ec7040adeb87150fd421d13b003db359e34881329d21db87fd75f90dc3b251c8"
     },
     "solana-v1": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/solana-v1/SKILL.md",
       "computedHash": "6dead44e1bd548bc6a1a895e1e4cc6e51e758e8fc15360bb8042e22b188fd035"
     },
     "tailwind-design-system-v4": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tailwind-design-system-v4/SKILL.md",
       "computedHash": "9336f38958f2a6cb46553eb4e08e70e8f2979898dbfa4fd086e2b983aad0fc66"
     },
     "tanstack-query-v5": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-query-v5/SKILL.md",
       "computedHash": "fbcbf57ad8b17ba0560fb0d481dd67ace323e6b701ab975d16e13936188fb8ae"
     },
     "typescript-v6": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/typescript-v6/SKILL.md",
       "computedHash": "50177be77d11e7e06c5e9da2dea9f502faa546c36d8c88d14c3cad28263ab11d"
     },
     "vercel-react-v1": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vercel-react-v1/SKILL.md",
       "computedHash": "f451c6eddc8acea6cba67c6f54dc9a1d602f4353b0b0fc26fbd5580b4a0ec68a"
     },
     "viem-v2": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/viem-v2/SKILL.md",
       "computedHash": "8a90af359e137a5ff4d046ceda7fa10cfe5ccd86efb8d5eedb1c4aee1d68609c"
     },
     "vitest-v4": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vitest-v4/SKILL.md",
       "computedHash": "26600524df910f688aeb75856b8ec457fe72250947e61f8fc8ba47d8bd8bb1c9"
     },
     "wagmi-v3": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/wagmi-v3/SKILL.md",
       "computedHash": "4fbe400f2d512bc1499e059db8f52e55078087409eb3ee68582c3feb7e5caf60"
     },
     "workflow": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/workflow/SKILL.md",
       "computedHash": "634035249f98ddaa65542d282a0a3d2ab87dd7ae8113c3a45dda7fd94aa5414b"
     }
   }

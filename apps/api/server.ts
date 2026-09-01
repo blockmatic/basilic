@@ -33,7 +33,6 @@ const fastify = Fastify({
           }
         : undefined,
   },
-  // Fastify 5: numeric trustProxy is fail-closed; boolean true honors X-Forwarded-For.
   trustProxy: env.TRUST_PROXY,
   bodyLimit: env.BODY_LIMIT,
   requestTimeout: env.REQUEST_TIMEOUT,

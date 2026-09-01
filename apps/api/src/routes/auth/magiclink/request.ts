@@ -8,7 +8,7 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { users, verification } from '../../../db/schema/index.js'
-import { authLoginRouteConfig } from '../../../lib/auth-login-route-config.js'
+import { authLoginRouteConfig } from '../../../lib/auth-route-rate-limit.js'
 import { isUniqueViolation } from '../../../lib/db-errors.js'
 import { env } from '../../../lib/env.js'
 import { generateLoginCode, hashToken } from '../../../lib/jwt.js'
@@ -110,17 +110,19 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         typeof email === 'string' &&
         email.endsWith('@test.ai')
 
-      await db
-        .delete(verification)
-        .where(and(eq(verification.type, 'magic_link'), eq(verification.identifier, email)))
+      await db.transaction(async tx => {
+        await tx
+          .delete(verification)
+          .where(and(eq(verification.type, 'magic_link'), eq(verification.identifier, email)))
 
-      await db.insert(verification).values({
-        id: verificationId,
-        type: 'magic_link',
-        identifier: email,
-        value: tokenHash,
-        ...(storePlain && { tokenPlain: code }),
-        expiresAt,
+        await tx.insert(verification).values({
+          id: verificationId,
+          type: 'magic_link',
+          identifier: email,
+          value: tokenHash,
+          ...(storePlain && { tokenPlain: code }),
+          expiresAt,
+        })
       })
 
       const magicLinkUrl = new URL(callbackUrl)
