@@ -5,17 +5,28 @@ description: Change email vs link email, OAuth provider linking, provider trust,
 
 ## Overview
 
-Account linking lets users attach additional sign-in methods (email, OAuth providers, wallets) to an existing account. Two primary patterns exist: **change email** (replace primary email) and **link email / OAuth** (add methods without removing existing ones).
+Account linking lets users attach additional sign-in methods (email, OAuth providers, wallets, passkeys) to an existing account. Two primary patterns exist: **change email** (replace primary email) and **link email** (set primary email when none exists).
 
 ## Change email vs link email
 
 | Capability | Change email | Link email |
 |------------|--------------|------------|
-| Effect | Replaces `users.email` | Adds a linked method; primary email unchanged |
-| Flow | Request → verify code/link → update | Request → verify link → link account |
-| Use case | User changes email address | User adds email sign-in to OAuth-only account |
+| Effect | Replaces `users.email` | Sets `users.email` when it is currently null (e.g. Web3-only account) |
+| Flow | Request → verify code/link → update | Request → verify link → set email |
+| Use case | User changes email address | User adds email sign-in to a wallet/OAuth-only account |
+| Already has email | Allowed (change) | 409 `EMAIL_ALREADY_SET` (use change email) |
+| Email owned by another user | 409 `EMAIL_ALREADY_IN_USE` | 409 `EMAIL_ALREADY_IN_USE` |
 
-Change email uses `change_email` verification type; link email uses `link_email`. Both use the same 6-digit + link UX and 15-minute TTL.
+Change email uses `change_email` verification type; link email uses `link_email`. Change email uses 6-digit + link UX with 15-minute TTL. Link email uses a link token (no 6-digit code).
+
+## Verify modes (change email)
+
+Verification accepts exactly one of:
+
+- `{ token, email }` — code entry flow; email used as identifier
+- `{ token, verificationId }` — link-click flow; verificationId from callback URL
+
+Both/neither returns 400 `INVALID_PAYLOAD`.
 
 ## OAuth provider linking
 
@@ -27,6 +38,8 @@ Logged-in users can link additional OAuth providers from Profile (Settings). The
 - Returns 409 `PROVIDER_ALREADY_LINKED` when the provider is linked to another user
 - Returns `redirectTo` so the client can return the user to the settings page after success
 
+`GET /auth/oauth/{provider}/link-authorize-url` requires Bearer auth. When OAuth env is unset, returns 503 `OAUTH_NOT_CONFIGURED`. Live IdP exchange is not covered by unit tests — see [Testing](/docs/testing).
+
 For Google, when using multiple callback URLs (e.g. web + mobile app), the client passes `redirect_uri` in the link-authorize-url request. It must be in the allowlist (`OAUTH_GOOGLE_CALLBACK_URLS`). See [Authentication](/docs/architecture/authentication) for full Google OAuth setup.
 
 ## Provider trust
@@ -35,13 +48,6 @@ OAuth providers are trusted for identity on first link. Subsequent links require
 
 ## Guardrail: last sign-in method
 
-Users must keep at least one sign-in method. Unlinking (wallet, OAuth, or other methods) fails with 400 `LAST_SIGN_IN_METHOD` if it would leave no way to sign in.
+Users must keep at least one sign-in method. Sign-in methods: `users.email`, OAuth `account`, `wallet_identities`, `passkey_credentials`. **TOTP is 2FA only** — unlinking TOTP is always allowed.
 
-## Verify modes (change email)
-
-Verification accepts exactly one of:
-
-- `{ token, email }` — code entry flow; email used as identifier
-- `{ token, verificationId }` — link-click flow; verificationId from callback URL
-
-See [Authentication](/docs/architecture/authentication#change-email-implemented) for full flow details.
+Unlinking wallet, OAuth, or passkey fails with 400 `LAST_SIGN_IN_METHOD` if it would leave no way to sign in.

@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest'
-import { fastify } from '../../oauth.spec.js'
 
 vi.mock('../../../../lib/env.js', async importOriginal => {
   const actual = (await importOriginal()) as { env: Record<string, unknown> }
@@ -13,6 +12,8 @@ vi.mock('../../../../lib/env.js', async importOriginal => {
     },
   }
 })
+
+import { fastify } from '../../oauth.spec.js'
 
 describe('GET /auth/oauth/google/authorize-url', () => {
   it('returns 503 when Google OAuth redirect is not configured', async () => {

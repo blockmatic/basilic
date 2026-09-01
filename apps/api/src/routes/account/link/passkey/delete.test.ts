@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { getOrCreateSession, insertTestPasskey } from '../../../../../test/utils/auth-helper.js'
 import { getDb } from '../../../../db/index.js'
-import { passkeyCredentials } from '../../../../db/schema/index.js'
+import { passkeyCredentials, users } from '../../../../db/schema/index.js'
 import { fastify } from '../../account.spec.js'
 
 describe('DELETE /account/link/passkey/:id', () => {
@@ -45,5 +45,26 @@ describe('DELETE /account/link/passkey/:id', () => {
       .from(passkeyCredentials)
       .where(eq(passkeyCredentials.id, passkeyId))
     expect(remaining).toHaveLength(0)
+  })
+
+  it('should return 400 LAST_SIGN_IN_METHOD when deleting only passkey', async () => {
+    const lastJwt = await getOrCreateSession(fastify, 'passkey-last@test.ai', { clearBefore: true })
+    const passkeyId = await insertTestPasskey(fastify, lastJwt)
+    const userRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { Authorization: `Bearer ${lastJwt}` },
+    })
+    const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
+    const db = await getDb()
+    await db.update(users).set({ email: null }).where(eq(users.id, userId))
+
+    const res = await fastify.inject({
+      method: 'DELETE',
+      url: `/account/link/passkey/${passkeyId}`,
+      headers: { Authorization: `Bearer ${lastJwt}` },
+    })
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).code).toBe('LAST_SIGN_IN_METHOD')
   })
 })

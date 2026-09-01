@@ -5,10 +5,6 @@ import { getDb } from '../../../db/index.js'
 import { sessions } from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
-const LogoutResponseSchema = Type.Object({
-  ok: Type.Boolean(),
-})
-
 const sessionLogoutRoute: FastifyPluginAsync = async fastify => {
   fastify.post(
     '/logout',
@@ -20,7 +16,6 @@ const sessionLogoutRoute: FastifyPluginAsync = async fastify => {
         tags: ['auth'],
         security: [{ bearerAuth: [] }],
         response: {
-          200: LogoutResponseSchema,
           204: Type.Null(),
           401: ErrorResponseSchema,
         },

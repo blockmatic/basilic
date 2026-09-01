@@ -22,6 +22,26 @@ const testEnvDefaults: [string, string][] = [
 ]
 for (const [k, v] of testEnvDefaults) process.env[k] = process.env[k] ?? v
 
+const oauthEnvKeys = [
+  'GITHUB_CLIENT_ID',
+  'GITHUB_CLIENT_SECRET',
+  'OAUTH_GITHUB_CALLBACK_URL',
+  'OAUTH_GITHUB_CALLBACK_URLS',
+  'GOOGLE_CLIENT_ID',
+  'GOOGLE_CLIENT_SECRET',
+  'OAUTH_GOOGLE_CALLBACK_URL',
+  'OAUTH_GOOGLE_CALLBACK_URLS',
+  'FACEBOOK_CLIENT_ID',
+  'FACEBOOK_CLIENT_SECRET',
+  'OAUTH_FACEBOOK_CALLBACK_URL',
+  'OAUTH_FACEBOOK_CALLBACK_URLS',
+  'TWITTER_CLIENT_ID',
+  'TWITTER_CLIENT_SECRET',
+  'OAUTH_TWITTER_CALLBACK_URL',
+  'OAUTH_TWITTER_CALLBACK_URLS',
+] as const
+for (const key of oauthEnvKeys) Reflect.deleteProperty(process.env, key)
+
 function toTsPath(id: string, importer?: string): string | null {
   if (!id.endsWith('.js') || id.includes('node_modules')) return null
   let tsPath: string | null = null
@@ -108,13 +128,7 @@ export default defineConfig({
   plugins: [resolveJsToTsPlugin(), tsconfigPaths()],
   test: {
     include: ['**/*.spec.ts'],
-    exclude: [
-      '**/e2e/**',
-      '**/*.e2e.spec.ts',
-      '**/node_modules/**',
-      '**/packages/email/**',
-      '**/auth/oauth.spec.ts',
-    ],
+    exclude: ['**/e2e/**', '**/*.e2e.spec.ts', '**/node_modules/**', '**/packages/email/**'],
     setupFiles: ['./vitest.setup.ts'],
     globalSetup: ['./vitest.global-setup.ts'],
     globals: true,

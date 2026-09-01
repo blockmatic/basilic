@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto'
+import { privateKeyToAccount } from 'viem/accounts'
+import { createSiweMessage } from 'viem/siwe'
 import { getDb } from '../../src/db/index.js'
 import { apiKeys, passkeyCredentials } from '../../src/db/schema/index.js'
 import { generateApiKey } from '../../src/lib/api-keys.js'
@@ -24,6 +26,55 @@ export function clearSessionPool(): void {
   sessionPool.clear()
 }
 
+const anvilPrivateKeys = [
+  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+  '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b786127',
+  '0x5de4111afa1a4b94908e83a8ec860c567f04b3aa191f021b7f36795a0579779b',
+] as const
+
+type AnvilAccountIndex = 0 | 1 | 2
+
+function resolveAnvilPrivateKey(accountIndex: number): `0x${string}` {
+  if (accountIndex < 0 || accountIndex >= anvilPrivateKeys.length)
+    throw new Error(
+      `Invalid accountIndex ${accountIndex}; supported indexes are 0–${anvilPrivateKeys.length - 1}`,
+    )
+  return anvilPrivateKeys[accountIndex as AnvilAccountIndex]
+}
+
+export async function getWeb3Session(
+  app: TestApp,
+  options?: { accountIndex?: AnvilAccountIndex },
+): Promise<string> {
+  const accountIndex = options?.accountIndex ?? 0
+  const testPrivateKey = resolveAnvilPrivateKey(accountIndex)
+  const testAccount = privateKeyToAccount(testPrivateKey)
+  const nonceRes = await app.inject({
+    method: 'GET',
+    url: '/auth/web3/eip155/nonce',
+    query: { address: testAccount.address },
+  })
+  if (nonceRes.statusCode !== 200) throw new Error(`nonce failed: ${nonceRes.body}`)
+  const { nonce } = JSON.parse(nonceRes.body) as { nonce: string }
+  const message = createSiweMessage({
+    address: testAccount.address,
+    chainId: 1,
+    domain: 'localhost',
+    nonce,
+    uri: 'https://localhost',
+    version: '1',
+  })
+  const signature = await testAccount.signMessage({ message })
+  const verifyRes = await app.inject({
+    method: 'POST',
+    url: '/auth/web3/eip155/verify',
+    payload: { message, signature },
+  })
+  if (verifyRes.statusCode !== 200) throw new Error(`web3 verify failed: ${verifyRes.body}`)
+  const { token } = JSON.parse(verifyRes.body) as { token: string }
+  return token
+}
+
 export async function createApiKey(
   _app: TestApp,
   userId: string,
@@ -47,8 +98,77 @@ export async function getMagicLinkTokenRaw(app: TestApp, email = 'test@test.ai')
     url: '/auth/magiclink/request',
     payload: { email, callbackUrl: 'https://example.com/callback' },
   })
-  const token = app.fakeEmail?.extractToken()
-  if (!token) throw new Error('No token in fake email')
+  const token = await getVerificationTokenPlain({ email, type: 'magic_link' })
+  if (!token) throw new Error('No magic link token in verification table')
+  return token
+}
+
+async function getVerificationTokenPlain({
+  email,
+  type,
+  userId,
+}: {
+  email: string
+  type: 'magic_link' | 'link_email'
+  userId?: string
+}): Promise<string | null> {
+  const db = await getDb()
+  const { verification } = await import('../../src/db/schema/index.js')
+  const { and, desc, eq, isNotNull } = await import('drizzle-orm')
+
+  const identifier = type === 'link_email' ? `${userId}:${email}` : email
+
+  const [row] = await db
+    .select({ tokenPlain: verification.tokenPlain })
+    .from(verification)
+    .where(
+      and(
+        eq(verification.type, type),
+        eq(verification.identifier, identifier),
+        isNotNull(verification.tokenPlain),
+      ),
+    )
+    .orderBy(desc(verification.createdAt))
+    .limit(1)
+
+  return row?.tokenPlain ?? null
+}
+
+export async function getLinkEmailToken(
+  app: TestApp,
+  jwt: string,
+  email: string,
+  callbackUrl = 'https://example.com/link-callback',
+): Promise<string> {
+  const requestRes = await app.inject({
+    method: 'POST',
+    url: '/account/link/email/request',
+    headers: { Authorization: `Bearer ${jwt}` },
+    payload: { email, callbackUrl },
+  })
+  if (requestRes.statusCode !== 200)
+    throw new Error(
+      `account/link/email/request failed: ${requestRes.statusCode} ${requestRes.body}`,
+    )
+
+  return readLinkEmailToken(app, jwt, email)
+}
+
+export async function readLinkEmailToken(
+  app: TestApp,
+  jwt: string,
+  email: string,
+): Promise<string> {
+  const userRes = await app.inject({
+    method: 'GET',
+    url: '/auth/session/user',
+    headers: { Authorization: `Bearer ${jwt}` },
+  })
+  if (userRes.statusCode !== 200) throw new Error(`auth/session/user failed: ${userRes.body}`)
+  const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
+
+  const token = await getVerificationTokenPlain({ email, type: 'link_email', userId })
+  if (!token) throw new Error('No link email token in verification table')
   return token
 }
 
@@ -57,7 +177,12 @@ export async function getSessionToken(
   email: string,
   options?: { clearBefore?: boolean },
 ): Promise<string> {
-  if (options?.clearBefore) app.fakeEmail?.clear()
+  if (options?.clearBefore) {
+    const db = await getDb()
+    const { verification } = await import('../../src/db/schema/index.js')
+    const { like } = await import('drizzle-orm')
+    await db.delete(verification).where(like(verification.identifier, `%${email}`))
+  }
   const requestRes = await app.inject({
     method: 'POST',
     url: '/auth/magiclink/request',
@@ -68,14 +193,8 @@ export async function getSessionToken(
       `auth/magiclink/request failed: url=/auth/magiclink/request status=${requestRes.statusCode} body=${requestRes.body}`,
     )
 
-  const lastForEmail = app.fakeEmail
-    ?.all()
-    .filter(e => e.to === email)
-    .at(-1)
-  const token = lastForEmail
-    ? app.fakeEmail?.extractToken(lastForEmail)
-    : app.fakeEmail?.extractToken()
-  if (!token) throw new Error('No token in fake email')
+  const token = await getVerificationTokenPlain({ email, type: 'magic_link' })
+  if (!token) throw new Error('No magic link token in verification table')
   const verifyRes = await app.inject({
     method: 'POST',
     url: '/auth/magiclink/verify',

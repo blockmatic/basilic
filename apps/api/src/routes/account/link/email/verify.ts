@@ -1,6 +1,6 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { sessions, users, verification } from '../../../../db/schema/index.js'
@@ -92,17 +92,32 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
       const refreshJtiHash = hashToken(refreshJti)
       const sessionExpiresAt = new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000)
 
-      await db.transaction(async tx => {
+      const emailUpdate = await db.transaction(async tx => {
+        await tx.select({ id: users.id }).from(users).where(eq(users.id, userId)).for('update')
+
         await tx.delete(verification).where(eq(verification.id, verificationRecord.id))
-        await tx
+
+        const [updated] = await tx
           .update(users)
           .set({ email, emailVerified: true, updatedAt: new Date() })
-          .where(eq(users.id, userId))
+          .where(and(eq(users.id, userId), isNull(users.email)))
+          .returning()
+
+        if (!updated) return 'EMAIL_ALREADY_SET' as const
+
         await tx
           .update(sessions)
           .set({ token: refreshJtiHash, expiresAt: sessionExpiresAt })
           .where(eq(sessions.id, sessionId))
+
+        return 'ok' as const
       })
+
+      if (emailUpdate === 'EMAIL_ALREADY_SET')
+        return reply.code(409).send({
+          code: 'EMAIL_ALREADY_SET',
+          message: 'Account already has a primary email. Use change email instead.',
+        })
 
       const accessPayload = createAccessTokenPayload({
         userId,
