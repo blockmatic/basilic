@@ -48,10 +48,18 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Check OpenAPI drift
+        run: pnpm generate && git diff --exit-code -- apps/api/openapi/openapi.json packages/core/src/gen
       - name: Build
         run: pnpm turbo run build --filter=@repo/api...
       - name: Unit tests
         run: pnpm turbo run test --filter=@repo/api
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
       - name: Install Playwright
         run: pnpm --filter @repo/api exec playwright install chromium --with-deps
       - name: Verify ANTHROPIC_API_KEY for E2E (AI_PROVIDER=anthropic)

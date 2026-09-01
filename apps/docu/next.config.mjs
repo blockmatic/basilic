@@ -8,7 +8,10 @@ const config = {
   transpilePackages: ['@repo/ui'],
   // Next 16.3 defaults to the TypeScript CLI (`typescript/bin/tsc`). The dual-package
   // alias (`typescript` → @typescript/typescript6) only ships `tsc6` + the compiler API.
-  experimental: { useTypeScriptCli: false },
+  experimental: {
+    useTypeScriptCli: false,
+    optimizePackageImports: ['lucide-react'],
+  },
   async redirects() {
     return [
       {

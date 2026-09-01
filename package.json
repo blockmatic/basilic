@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "generate": "turbo run generate --filter=@repo/core",
     "dev": "turbo run dev",
     "qa": "node scripts/run-qa.mjs",
     "checktypes": "turbo checktypes",
@@ -29,12 +30,13 @@
     "security:deepsec:process:diff:grok": "pnpm --dir=.deepsec exec deepsec process --agent pi --model xai/grok-4.6 --thinking-level medium --diff origin/main",
     "security:deepsec:report": "pnpm --dir=.deepsec exec deepsec report",
     "postinstall": "npx simple-git-hooks",
-    "setup": "pnpm i && npx simple-git-hooks && pnpm setup:gitleaks && pnpm setup:osv && pnpm setup:env && pnpm setup:database && pnpm setup:deepsec",
+    "setup": "pnpm i && npx simple-git-hooks && pnpm setup:gitleaks && pnpm setup:osv && pnpm setup:env && pnpm setup:database && pnpm setup:deepsec && pnpm setup:playwright",
     "setup:gitleaks": "node scripts/setup-gitleaks.mjs",
     "setup:osv": "node scripts/setup-osv-scanner.mjs",
     "setup:env": "node scripts/setup-env.mjs",
     "setup:database": "node scripts/setup-database.mjs",
     "setup:deepsec": "pnpm --dir=.deepsec install --frozen-lockfile",
+    "setup:playwright": "pnpm --filter @repo/web exec playwright install chromium",
     "reset": "pnpm --filter @repo/api reset",
     "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },

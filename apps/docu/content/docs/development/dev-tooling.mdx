@@ -12,4 +12,26 @@ pnpm lint
 pnpm lint:fix
 ```
 
-Turborepo caches `build`, `checktypes`, `lint:eslint`, and `test`. OpenAPI → `@repo/core` → CLI is a `dependsOn` chain in `turbo.json`. Commands: root README.
+Turborepo caches `build`, `checktypes`, `lint:eslint`, and `test`. Per-package `build.env` in `turbo.json` hashes only vars that change emitted output (e.g. `VERCEL_GIT_COMMIT_REF` on `@repo/web#build` only). Consumer app builds no longer run OpenAPI codegen — use `pnpm generate` when API routes change. Commands: root README.
+
+## Build performance
+
+Measure before and after build-graph changes. Cold run (clear caches first):
+
+```bash
+rm -rf .turbo
+find . \( -name node_modules -o -name .git \) -prune -o \( -name dist -o -name .next \) -type d -prune -exec rm -rf {} +
+find . \( -name node_modules -o -name .git \) -prune -o -name '*.tsbuildinfo' -delete
+pnpm turbo run build --force --profile=turbo-profile.json --verbosity=1
+pnpm checktypes
+pnpm lint
+pnpm turbo run build --filter=@repo/web... --force --profile=web.json --verbosity=1
+pnpm turbo run build --filter=@repo/api... --force --profile=api.json --verbosity=1
+pnpm turbo run build --filter=@repo/docu... --force --profile=docu.json --verbosity=1
+```
+
+Re-run the same commands after changes. OpenAPI regen: `pnpm generate` (not part of `@repo/web...` build).
+
+## Turbo remote cache (optional)
+
+For cross-machine cache hits, create a [Vercel Remote Cache](https://vercel.com/docs/monorepos/remote-caching) token and set `TURBO_TOKEN` + `TURBO_TEAM` in GitHub Actions secrets and Vercel project env. Per-package env keys (Phase 1a) must be in place first or branch secrets still bust package caches.

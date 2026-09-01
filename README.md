@@ -51,8 +51,9 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 Run with `pnpm <script>`.
 
 **Setup**
-  - `setup` — Full setup (install, hooks, gitleaks, osv, env templates, database, deepsec)
+  - `setup` — Full setup (install, hooks, gitleaks, osv, env templates, database, deepsec, Playwright Chromium)
   - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
+  - `setup:playwright` — Install Playwright Chromium for E2E tests
   - `setup:env` — Copy `.env.<qualifier>.example` templates to dest files when missing
   - `setup:database` — Database tools (Docker, Supabase CLI)
   - `setup:deepsec` — Install DeepSec workspace (`.deepsec/`)

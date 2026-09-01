@@ -10,7 +10,7 @@ Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (
 
 ## Vercel
 
-Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time; PGLite migrations run at runtime.
+Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time on non-preview deploys (advisory-locked); Preview skips unless `RUN_PG_MIGRATE=true` with an isolated `DATABASE_URL`. PGLite migrations run at runtime.
 
 **OPTIONS Allowlist (CORS preflight):** When Deployment Protection is enabled on preview deployments, add `/` (or `/auth`) to **Project Settings > Deployment Protection > OPTIONS Allowlist**. Otherwise, preflight OPTIONS requests are blocked before reaching Fastify and CORS fails for cross-origin clients.
 
@@ -34,7 +34,7 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 - `pnpm db:start` — Start Supabase (local)
 - `pnpm db:stop` — Stop Supabase (run before switching to another project’s Supabase)
 - `pnpm reset` — From repo root: `pnpm --filter @repo/api reset`. From `apps/api`: Supabase DB reset, then Drizzle migrations (`scripts/migrate.ts`), then seed (`scripts/seed.ts`) with local `DATABASE_URL` + `RUN_PG_MIGRATE=true`. `[db.seed]` / `seed.sql` unused (`supabase/config.toml`)
-- `pnpm db:migrate` — Run migrations (skips when PGLITE=true; use `RUN_PG_MIGRATE=true` to force PostgreSQL)
+- `pnpm db:migrate` — Run migrations (skips when PGLITE=true or Vercel Preview; use `RUN_PG_MIGRATE=true` to force PostgreSQL, including isolated Preview DBs)
 - `pnpm db:generate` — Generate migrations from schema
 - `pnpm db:push` — Push schema (dev only)
 - `pnpm generate:openapi` — Regenerate OpenAPI spec

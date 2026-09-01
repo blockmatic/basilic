@@ -8,7 +8,7 @@ export type HealthCheckData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/health";
+  url: '/health';
 };
 
 export type HealthCheckResponses = {
@@ -21,14 +21,13 @@ export type HealthCheckResponses = {
   };
 };
 
-export type HealthCheckResponse =
-  HealthCheckResponses[keyof HealthCheckResponses];
+export type HealthCheckResponse = HealthCheckResponses[keyof HealthCheckResponses];
 
 export type AccountApikeysListData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/account/apikeys/";
+  url: '/account/apikeys/';
 };
 
 export type AccountApikeysListErrors = {
@@ -41,8 +40,7 @@ export type AccountApikeysListErrors = {
   };
 };
 
-export type AccountApikeysListError =
-  AccountApikeysListErrors[keyof AccountApikeysListErrors];
+export type AccountApikeysListError = AccountApikeysListErrors[keyof AccountApikeysListErrors];
 
 export type AccountApikeysListResponses = {
   /**
@@ -60,8 +58,7 @@ export type AccountApikeysListResponses = {
   };
 };
 
-export type AccountApikeysListResponse =
-  AccountApikeysListResponses[keyof AccountApikeysListResponses];
+export type AccountApikeysListResponse = AccountApikeysListResponses[keyof AccountApikeysListResponses];
 
 export type AccountApikeysCreateData = {
   body: {
@@ -69,7 +66,7 @@ export type AccountApikeysCreateData = {
   };
   path?: never;
   query?: never;
-  url: "/account/apikeys/";
+  url: '/account/apikeys/';
 };
 
 export type AccountApikeysCreateErrors = {
@@ -82,8 +79,7 @@ export type AccountApikeysCreateErrors = {
   };
 };
 
-export type AccountApikeysCreateError =
-  AccountApikeysCreateErrors[keyof AccountApikeysCreateErrors];
+export type AccountApikeysCreateError = AccountApikeysCreateErrors[keyof AccountApikeysCreateErrors];
 
 export type AccountApikeysCreateResponses = {
   /**
@@ -98,8 +94,7 @@ export type AccountApikeysCreateResponses = {
   };
 };
 
-export type AccountApikeysCreateResponse =
-  AccountApikeysCreateResponses[keyof AccountApikeysCreateResponses];
+export type AccountApikeysCreateResponse = AccountApikeysCreateResponses[keyof AccountApikeysCreateResponses];
 
 export type AccountApikeysRevokeData = {
   body?: never;
@@ -107,7 +102,7 @@ export type AccountApikeysRevokeData = {
     id: string;
   };
   query?: never;
-  url: "/account/apikeys/{id}";
+  url: '/account/apikeys/{id}';
 };
 
 export type AccountApikeysRevokeErrors = {
@@ -127,8 +122,7 @@ export type AccountApikeysRevokeErrors = {
   };
 };
 
-export type AccountApikeysRevokeError =
-  AccountApikeysRevokeErrors[keyof AccountApikeysRevokeErrors];
+export type AccountApikeysRevokeError = AccountApikeysRevokeErrors[keyof AccountApikeysRevokeErrors];
 
 export type AccountApikeysRevokeResponses = {
   /**
@@ -137,8 +131,7 @@ export type AccountApikeysRevokeResponses = {
   204: void;
 };
 
-export type AccountApikeysRevokeResponse =
-  AccountApikeysRevokeResponses[keyof AccountApikeysRevokeResponses];
+export type AccountApikeysRevokeResponse = AccountApikeysRevokeResponses[keyof AccountApikeysRevokeResponses];
 
 export type AccountEmailChangeRequestData = {
   body: {
@@ -147,7 +140,7 @@ export type AccountEmailChangeRequestData = {
   };
   path?: never;
   query?: never;
-  url: "/account/email/change/request";
+  url: '/account/email/change/request';
 };
 
 export type AccountEmailChangeRequestErrors = {
@@ -181,8 +174,7 @@ export type AccountEmailChangeRequestErrors = {
   };
 };
 
-export type AccountEmailChangeRequestError =
-  AccountEmailChangeRequestErrors[keyof AccountEmailChangeRequestErrors];
+export type AccountEmailChangeRequestError = AccountEmailChangeRequestErrors[keyof AccountEmailChangeRequestErrors];
 
 export type AccountEmailChangeRequestResponses = {
   /**
@@ -193,8 +185,7 @@ export type AccountEmailChangeRequestResponses = {
   };
 };
 
-export type AccountEmailChangeRequestResponse =
-  AccountEmailChangeRequestResponses[keyof AccountEmailChangeRequestResponses];
+export type AccountEmailChangeRequestResponse = AccountEmailChangeRequestResponses[keyof AccountEmailChangeRequestResponses];
 
 export type AccountEmailChangeVerifyData = {
   body: {
@@ -213,7 +204,7 @@ export type AccountEmailChangeVerifyData = {
   };
   path?: never;
   query?: never;
-  url: "/account/email/change/verify";
+  url: '/account/email/change/verify';
 };
 
 export type AccountEmailChangeVerifyErrors = {
@@ -240,8 +231,7 @@ export type AccountEmailChangeVerifyErrors = {
   };
 };
 
-export type AccountEmailChangeVerifyError =
-  AccountEmailChangeVerifyErrors[keyof AccountEmailChangeVerifyErrors];
+export type AccountEmailChangeVerifyError = AccountEmailChangeVerifyErrors[keyof AccountEmailChangeVerifyErrors];
 
 export type AccountEmailChangeVerifyResponses = {
   /**
@@ -253,8 +243,7 @@ export type AccountEmailChangeVerifyResponses = {
   };
 };
 
-export type AccountEmailChangeVerifyResponse =
-  AccountEmailChangeVerifyResponses[keyof AccountEmailChangeVerifyResponses];
+export type AccountEmailChangeVerifyResponse = AccountEmailChangeVerifyResponses[keyof AccountEmailChangeVerifyResponses];
 
 export type AccountLinkEmailRequestData = {
   body: {
@@ -263,7 +252,7 @@ export type AccountLinkEmailRequestData = {
   };
   path?: never;
   query?: never;
-  url: "/account/link/email/request";
+  url: '/account/link/email/request';
 };
 
 export type AccountLinkEmailRequestErrors = {
@@ -290,8 +279,7 @@ export type AccountLinkEmailRequestErrors = {
   };
 };
 
-export type AccountLinkEmailRequestError =
-  AccountLinkEmailRequestErrors[keyof AccountLinkEmailRequestErrors];
+export type AccountLinkEmailRequestError = AccountLinkEmailRequestErrors[keyof AccountLinkEmailRequestErrors];
 
 export type AccountLinkEmailRequestResponses = {
   /**
@@ -302,8 +290,7 @@ export type AccountLinkEmailRequestResponses = {
   };
 };
 
-export type AccountLinkEmailRequestResponse =
-  AccountLinkEmailRequestResponses[keyof AccountLinkEmailRequestResponses];
+export type AccountLinkEmailRequestResponse = AccountLinkEmailRequestResponses[keyof AccountLinkEmailRequestResponses];
 
 export type AccountLinkEmailVerifyData = {
   body: {
@@ -311,7 +298,7 @@ export type AccountLinkEmailVerifyData = {
   };
   path?: never;
   query?: never;
-  url: "/account/link/email/verify";
+  url: '/account/link/email/verify';
 };
 
 export type AccountLinkEmailVerifyErrors = {
@@ -331,8 +318,7 @@ export type AccountLinkEmailVerifyErrors = {
   };
 };
 
-export type AccountLinkEmailVerifyError =
-  AccountLinkEmailVerifyErrors[keyof AccountLinkEmailVerifyErrors];
+export type AccountLinkEmailVerifyError = AccountLinkEmailVerifyErrors[keyof AccountLinkEmailVerifyErrors];
 
 export type AccountLinkEmailVerifyResponses = {
   /**
@@ -344,16 +330,15 @@ export type AccountLinkEmailVerifyResponses = {
   };
 };
 
-export type AccountLinkEmailVerifyResponse =
-  AccountLinkEmailVerifyResponses[keyof AccountLinkEmailVerifyResponses];
+export type AccountLinkEmailVerifyResponse = AccountLinkEmailVerifyResponses[keyof AccountLinkEmailVerifyResponses];
 
 export type AccountLinkOauthUnlinkData = {
   body?: never;
   path: {
-    providerId: "github" | "facebook" | "twitter" | "google";
+    providerId: 'github' | 'facebook' | 'twitter' | 'google';
   };
   query?: never;
-  url: "/account/link/oauth/{providerId}";
+  url: '/account/link/oauth/{providerId}';
 };
 
 export type AccountLinkOauthUnlinkErrors = {
@@ -373,8 +358,7 @@ export type AccountLinkOauthUnlinkErrors = {
   };
 };
 
-export type AccountLinkOauthUnlinkError =
-  AccountLinkOauthUnlinkErrors[keyof AccountLinkOauthUnlinkErrors];
+export type AccountLinkOauthUnlinkError = AccountLinkOauthUnlinkErrors[keyof AccountLinkOauthUnlinkErrors];
 
 export type AccountLinkOauthUnlinkResponses = {
   /**
@@ -383,8 +367,7 @@ export type AccountLinkOauthUnlinkResponses = {
   204: void;
 };
 
-export type AccountLinkOauthUnlinkResponse =
-  AccountLinkOauthUnlinkResponses[keyof AccountLinkOauthUnlinkResponses];
+export type AccountLinkOauthUnlinkResponse = AccountLinkOauthUnlinkResponses[keyof AccountLinkOauthUnlinkResponses];
 
 export type AccountLinkPasskeyDeleteData = {
   body?: never;
@@ -392,7 +375,7 @@ export type AccountLinkPasskeyDeleteData = {
     id: string;
   };
   query?: never;
-  url: "/account/link/passkey/{id}";
+  url: '/account/link/passkey/{id}';
 };
 
 export type AccountLinkPasskeyDeleteErrors = {
@@ -419,8 +402,7 @@ export type AccountLinkPasskeyDeleteErrors = {
   };
 };
 
-export type AccountLinkPasskeyDeleteError =
-  AccountLinkPasskeyDeleteErrors[keyof AccountLinkPasskeyDeleteErrors];
+export type AccountLinkPasskeyDeleteError = AccountLinkPasskeyDeleteErrors[keyof AccountLinkPasskeyDeleteErrors];
 
 export type AccountLinkPasskeyDeleteResponses = {
   /**
@@ -429,8 +411,7 @@ export type AccountLinkPasskeyDeleteResponses = {
   204: void;
 };
 
-export type AccountLinkPasskeyDeleteResponse =
-  AccountLinkPasskeyDeleteResponses[keyof AccountLinkPasskeyDeleteResponses];
+export type AccountLinkPasskeyDeleteResponse = AccountLinkPasskeyDeleteResponses[keyof AccountLinkPasskeyDeleteResponses];
 
 export type AccountLinkPasskeyFinishData = {
   body: {
@@ -441,21 +422,19 @@ export type AccountLinkPasskeyFinishData = {
         clientDataJSON: string;
         attestationObject: string;
         authenticatorData?: string;
-        transports?: Array<
-          "ble" | "cable" | "hybrid" | "internal" | "nfc" | "smart-card" | "usb"
-        >;
+        transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
         publicKeyAlgorithm?: number;
         publicKey?: string;
       };
-      authenticatorAttachment?: "platform" | "cross-platform";
+      authenticatorAttachment?: 'platform' | 'cross-platform';
       clientExtensionResults?: unknown;
-      type: "public-key";
+      type: 'public-key';
     };
     name?: string;
   };
   path?: never;
   query?: never;
-  url: "/account/link/passkey/finish";
+  url: '/account/link/passkey/finish';
 };
 
 export type AccountLinkPasskeyFinishErrors = {
@@ -475,8 +454,7 @@ export type AccountLinkPasskeyFinishErrors = {
   };
 };
 
-export type AccountLinkPasskeyFinishError =
-  AccountLinkPasskeyFinishErrors[keyof AccountLinkPasskeyFinishErrors];
+export type AccountLinkPasskeyFinishError = AccountLinkPasskeyFinishErrors[keyof AccountLinkPasskeyFinishErrors];
 
 export type AccountLinkPasskeyFinishResponses = {
   /**
@@ -487,14 +465,13 @@ export type AccountLinkPasskeyFinishResponses = {
   };
 };
 
-export type AccountLinkPasskeyFinishResponse =
-  AccountLinkPasskeyFinishResponses[keyof AccountLinkPasskeyFinishResponses];
+export type AccountLinkPasskeyFinishResponse = AccountLinkPasskeyFinishResponses[keyof AccountLinkPasskeyFinishResponses];
 
 export type AccountLinkPasskeyStartData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/account/link/passkey/start";
+  url: '/account/link/passkey/start';
 };
 
 export type AccountLinkPasskeyStartErrors = {
@@ -521,8 +498,7 @@ export type AccountLinkPasskeyStartErrors = {
   };
 };
 
-export type AccountLinkPasskeyStartError =
-  AccountLinkPasskeyStartErrors[keyof AccountLinkPasskeyStartErrors];
+export type AccountLinkPasskeyStartError = AccountLinkPasskeyStartErrors[keyof AccountLinkPasskeyStartErrors];
 
 export type AccountLinkPasskeyStartResponses = {
   /**
@@ -542,36 +518,33 @@ export type AccountLinkPasskeyStartResponses = {
       challenge: string;
       pubKeyCredParams: Array<{
         alg: number;
-        type: "public-key";
+        type: 'public-key';
       }>;
       timeout?: number;
       excludeCredentials?: Array<{
         id: string;
-        type: "public-key";
-        transports?: Array<
-          "ble" | "cable" | "hybrid" | "internal" | "nfc" | "smart-card" | "usb"
-        >;
+        type: 'public-key';
+        transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
       }>;
       authenticatorSelection?: {
-        authenticatorAttachment?: "platform" | "cross-platform";
+        authenticatorAttachment?: 'platform' | 'cross-platform';
         requireResidentKey?: boolean;
-        residentKey?: "discouraged" | "preferred" | "required";
-        userVerification?: "discouraged" | "preferred" | "required";
+        residentKey?: 'discouraged' | 'preferred' | 'required';
+        userVerification?: 'discouraged' | 'preferred' | 'required';
       };
-      attestation?: "direct" | "enterprise" | "indirect" | "none";
+      attestation?: 'direct' | 'enterprise' | 'indirect' | 'none';
       extensions?: unknown;
     };
   };
 };
 
-export type AccountLinkPasskeyStartResponse =
-  AccountLinkPasskeyStartResponses[keyof AccountLinkPasskeyStartResponses];
+export type AccountLinkPasskeyStartResponse = AccountLinkPasskeyStartResponses[keyof AccountLinkPasskeyStartResponses];
 
 export type AccountLinkTotpSetupData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/account/link/totp/setup";
+  url: '/account/link/totp/setup';
 };
 
 export type AccountLinkTotpSetupErrors = {
@@ -591,8 +564,7 @@ export type AccountLinkTotpSetupErrors = {
   };
 };
 
-export type AccountLinkTotpSetupError =
-  AccountLinkTotpSetupErrors[keyof AccountLinkTotpSetupErrors];
+export type AccountLinkTotpSetupError = AccountLinkTotpSetupErrors[keyof AccountLinkTotpSetupErrors];
 
 export type AccountLinkTotpSetupResponses = {
   /**
@@ -605,14 +577,13 @@ export type AccountLinkTotpSetupResponses = {
   };
 };
 
-export type AccountLinkTotpSetupResponse =
-  AccountLinkTotpSetupResponses[keyof AccountLinkTotpSetupResponses];
+export type AccountLinkTotpSetupResponse = AccountLinkTotpSetupResponses[keyof AccountLinkTotpSetupResponses];
 
 export type AccountLinkTotpUnlinkData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/account/link/totp/";
+  url: '/account/link/totp/';
 };
 
 export type AccountLinkTotpUnlinkErrors = {
@@ -632,8 +603,7 @@ export type AccountLinkTotpUnlinkErrors = {
   };
 };
 
-export type AccountLinkTotpUnlinkError =
-  AccountLinkTotpUnlinkErrors[keyof AccountLinkTotpUnlinkErrors];
+export type AccountLinkTotpUnlinkError = AccountLinkTotpUnlinkErrors[keyof AccountLinkTotpUnlinkErrors];
 
 export type AccountLinkTotpUnlinkResponses = {
   /**
@@ -642,8 +612,7 @@ export type AccountLinkTotpUnlinkResponses = {
   204: void;
 };
 
-export type AccountLinkTotpUnlinkResponse =
-  AccountLinkTotpUnlinkResponses[keyof AccountLinkTotpUnlinkResponses];
+export type AccountLinkTotpUnlinkResponse = AccountLinkTotpUnlinkResponses[keyof AccountLinkTotpUnlinkResponses];
 
 export type AccountLinkTotpVerifyData = {
   body: {
@@ -651,7 +620,7 @@ export type AccountLinkTotpVerifyData = {
   };
   path?: never;
   query?: never;
-  url: "/account/link/totp/verify";
+  url: '/account/link/totp/verify';
 };
 
 export type AccountLinkTotpVerifyErrors = {
@@ -678,8 +647,7 @@ export type AccountLinkTotpVerifyErrors = {
   };
 };
 
-export type AccountLinkTotpVerifyError =
-  AccountLinkTotpVerifyErrors[keyof AccountLinkTotpVerifyErrors];
+export type AccountLinkTotpVerifyError = AccountLinkTotpVerifyErrors[keyof AccountLinkTotpVerifyErrors];
 
 export type AccountLinkTotpVerifyResponses = {
   /**
@@ -690,8 +658,7 @@ export type AccountLinkTotpVerifyResponses = {
   };
 };
 
-export type AccountLinkTotpVerifyResponse =
-  AccountLinkTotpVerifyResponses[keyof AccountLinkTotpVerifyResponses];
+export type AccountLinkTotpVerifyResponse = AccountLinkTotpVerifyResponses[keyof AccountLinkTotpVerifyResponses];
 
 export type AccountLinkWalletUnlinkData = {
   body?: never;
@@ -699,7 +666,7 @@ export type AccountLinkWalletUnlinkData = {
     id: string;
   };
   query?: never;
-  url: "/account/link/wallet/{id}";
+  url: '/account/link/wallet/{id}';
 };
 
 export type AccountLinkWalletUnlinkErrors = {
@@ -726,8 +693,7 @@ export type AccountLinkWalletUnlinkErrors = {
   };
 };
 
-export type AccountLinkWalletUnlinkError =
-  AccountLinkWalletUnlinkErrors[keyof AccountLinkWalletUnlinkErrors];
+export type AccountLinkWalletUnlinkError = AccountLinkWalletUnlinkErrors[keyof AccountLinkWalletUnlinkErrors];
 
 export type AccountLinkWalletUnlinkResponses = {
   /**
@@ -736,18 +702,17 @@ export type AccountLinkWalletUnlinkResponses = {
   204: void;
 };
 
-export type AccountLinkWalletUnlinkResponse =
-  AccountLinkWalletUnlinkResponses[keyof AccountLinkWalletUnlinkResponses];
+export type AccountLinkWalletUnlinkResponse = AccountLinkWalletUnlinkResponses[keyof AccountLinkWalletUnlinkResponses];
 
 export type AccountLinkWalletVerifyData = {
   body: {
-    chain: "eip155" | "solana";
+    chain: 'eip155' | 'solana';
     message: string;
     signature: string;
   };
   path?: never;
   query?: never;
-  url: "/account/link/wallet/verify";
+  url: '/account/link/wallet/verify';
 };
 
 export type AccountLinkWalletVerifyErrors = {
@@ -774,8 +739,7 @@ export type AccountLinkWalletVerifyErrors = {
   };
 };
 
-export type AccountLinkWalletVerifyError =
-  AccountLinkWalletVerifyErrors[keyof AccountLinkWalletVerifyErrors];
+export type AccountLinkWalletVerifyError = AccountLinkWalletVerifyErrors[keyof AccountLinkWalletVerifyErrors];
 
 export type AccountLinkWalletVerifyResponses = {
   /**
@@ -786,14 +750,13 @@ export type AccountLinkWalletVerifyResponses = {
   };
 };
 
-export type AccountLinkWalletVerifyResponse =
-  AccountLinkWalletVerifyResponses[keyof AccountLinkWalletVerifyResponses];
+export type AccountLinkWalletVerifyResponse = AccountLinkWalletVerifyResponses[keyof AccountLinkWalletVerifyResponses];
 
 export type AccountPasskeysListData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/account/passkeys/";
+  url: '/account/passkeys/';
 };
 
 export type AccountPasskeysListErrors = {
@@ -806,8 +769,7 @@ export type AccountPasskeysListErrors = {
   };
 };
 
-export type AccountPasskeysListError =
-  AccountPasskeysListErrors[keyof AccountPasskeysListErrors];
+export type AccountPasskeysListError = AccountPasskeysListErrors[keyof AccountPasskeysListErrors];
 
 export type AccountPasskeysListResponses = {
   /**
@@ -822,8 +784,7 @@ export type AccountPasskeysListResponses = {
   };
 };
 
-export type AccountPasskeysListResponse =
-  AccountPasskeysListResponses[keyof AccountPasskeysListResponses];
+export type AccountPasskeysListResponse = AccountPasskeysListResponses[keyof AccountPasskeysListResponses];
 
 export type AccountProfileUpdateData = {
   body: {
@@ -832,7 +793,7 @@ export type AccountProfileUpdateData = {
   };
   path?: never;
   query?: never;
-  url: "/account/profile/";
+  url: '/account/profile/';
 };
 
 export type AccountProfileUpdateErrors = {
@@ -852,8 +813,7 @@ export type AccountProfileUpdateErrors = {
   };
 };
 
-export type AccountProfileUpdateError =
-  AccountProfileUpdateErrors[keyof AccountProfileUpdateErrors];
+export type AccountProfileUpdateError = AccountProfileUpdateErrors[keyof AccountProfileUpdateErrors];
 
 export type AccountProfileUpdateResponses = {
   /**
@@ -869,22 +829,18 @@ export type AccountProfileUpdateResponses = {
   };
 };
 
-export type AccountProfileUpdateResponse =
-  AccountProfileUpdateResponses[keyof AccountProfileUpdateResponses];
+export type AccountProfileUpdateResponse = AccountProfileUpdateResponses[keyof AccountProfileUpdateResponses];
 
 export type ChatData = {
   body: {
-    messages: Array<
-      | {
-          role: string;
-          content: string;
-          name?: string;
-        }
-      | {
-          role: string;
-          parts: Array<unknown>;
-        }
-    >;
+    messages: Array<{
+      role: string;
+      content: string;
+      name?: string;
+    } | {
+      role: string;
+      parts: Array<unknown>;
+    }>;
     stream?: boolean;
     model?: string;
     temperature?: number;
@@ -892,7 +848,7 @@ export type ChatData = {
   };
   path?: never;
   query?: never;
-  url: "/ai/chat";
+  url: '/ai/chat';
 };
 
 export type ChatErrors = {
@@ -955,7 +911,7 @@ export type GenerateData = {
   };
   path?: never;
   query?: never;
-  url: "/ai/generate";
+  url: '/ai/generate';
 };
 
 export type GenerateErrors = {
@@ -1002,11 +958,9 @@ export type GenerateResponses = {
   /**
    * Default Response
    */
-  200:
-    | {
-        text: string;
-      }
-    | string;
+  200: {
+    text: string;
+  } | string;
 };
 
 export type GenerateResponse = GenerateResponses[keyof GenerateResponses];
@@ -1018,7 +972,7 @@ export type MagiclinkRequestData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/magiclink/request";
+  url: '/auth/magiclink/request';
 };
 
 export type MagiclinkRequestErrors = {
@@ -1031,8 +985,7 @@ export type MagiclinkRequestErrors = {
   };
 };
 
-export type MagiclinkRequestError =
-  MagiclinkRequestErrors[keyof MagiclinkRequestErrors];
+export type MagiclinkRequestError = MagiclinkRequestErrors[keyof MagiclinkRequestErrors];
 
 export type MagiclinkRequestResponses = {
   /**
@@ -1043,8 +996,7 @@ export type MagiclinkRequestResponses = {
   };
 };
 
-export type MagiclinkRequestResponse =
-  MagiclinkRequestResponses[keyof MagiclinkRequestResponses];
+export type MagiclinkRequestResponse = MagiclinkRequestResponses[keyof MagiclinkRequestResponses];
 
 export type MagiclinkVerifyData = {
   body: {
@@ -1063,7 +1015,7 @@ export type MagiclinkVerifyData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/magiclink/verify";
+  url: '/auth/magiclink/verify';
 };
 
 export type MagiclinkVerifyErrors = {
@@ -1097,8 +1049,7 @@ export type MagiclinkVerifyErrors = {
   };
 };
 
-export type MagiclinkVerifyError =
-  MagiclinkVerifyErrors[keyof MagiclinkVerifyErrors];
+export type MagiclinkVerifyError = MagiclinkVerifyErrors[keyof MagiclinkVerifyErrors];
 
 export type MagiclinkVerifyResponses = {
   /**
@@ -1110,14 +1061,13 @@ export type MagiclinkVerifyResponses = {
   };
 };
 
-export type MagiclinkVerifyResponse =
-  MagiclinkVerifyResponses[keyof MagiclinkVerifyResponses];
+export type MagiclinkVerifyResponse = MagiclinkVerifyResponses[keyof MagiclinkVerifyResponses];
 
 export type OauthProvidersData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/auth/oauth/providers";
+  url: '/auth/oauth/providers';
 };
 
 export type OauthProvidersResponses = {
@@ -1136,8 +1086,7 @@ export type OauthProvidersResponses = {
   };
 };
 
-export type OauthProvidersResponse =
-  OauthProvidersResponses[keyof OauthProvidersResponses];
+export type OauthProvidersResponse = OauthProvidersResponses[keyof OauthProvidersResponses];
 
 export type OauthFacebookAuthorizeUrlData = {
   body?: never;
@@ -1145,7 +1094,7 @@ export type OauthFacebookAuthorizeUrlData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/facebook/authorize-url";
+  url: '/auth/oauth/facebook/authorize-url';
 };
 
 export type OauthFacebookAuthorizeUrlErrors = {
@@ -1165,8 +1114,7 @@ export type OauthFacebookAuthorizeUrlErrors = {
   };
 };
 
-export type OauthFacebookAuthorizeUrlError =
-  OauthFacebookAuthorizeUrlErrors[keyof OauthFacebookAuthorizeUrlErrors];
+export type OauthFacebookAuthorizeUrlError = OauthFacebookAuthorizeUrlErrors[keyof OauthFacebookAuthorizeUrlErrors];
 
 export type OauthFacebookAuthorizeUrlResponses = {
   /**
@@ -1177,8 +1125,7 @@ export type OauthFacebookAuthorizeUrlResponses = {
   };
 };
 
-export type OauthFacebookAuthorizeUrlResponse =
-  OauthFacebookAuthorizeUrlResponses[keyof OauthFacebookAuthorizeUrlResponses];
+export type OauthFacebookAuthorizeUrlResponse = OauthFacebookAuthorizeUrlResponses[keyof OauthFacebookAuthorizeUrlResponses];
 
 export type OauthFacebookExchangeData = {
   body: {
@@ -1187,7 +1134,7 @@ export type OauthFacebookExchangeData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/oauth/facebook/exchange";
+  url: '/auth/oauth/facebook/exchange';
 };
 
 export type OauthFacebookExchangeErrors = {
@@ -1235,8 +1182,7 @@ export type OauthFacebookExchangeErrors = {
   };
 };
 
-export type OauthFacebookExchangeError =
-  OauthFacebookExchangeErrors[keyof OauthFacebookExchangeErrors];
+export type OauthFacebookExchangeError = OauthFacebookExchangeErrors[keyof OauthFacebookExchangeErrors];
 
 export type OauthFacebookExchangeResponses = {
   /**
@@ -1249,8 +1195,7 @@ export type OauthFacebookExchangeResponses = {
   };
 };
 
-export type OauthFacebookExchangeResponse =
-  OauthFacebookExchangeResponses[keyof OauthFacebookExchangeResponses];
+export type OauthFacebookExchangeResponse = OauthFacebookExchangeResponses[keyof OauthFacebookExchangeResponses];
 
 export type OauthFacebookLinkAuthorizeUrlData = {
   body?: never;
@@ -1258,7 +1203,7 @@ export type OauthFacebookLinkAuthorizeUrlData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/facebook/link-authorize-url";
+  url: '/auth/oauth/facebook/link-authorize-url';
 };
 
 export type OauthFacebookLinkAuthorizeUrlErrors = {
@@ -1292,8 +1237,7 @@ export type OauthFacebookLinkAuthorizeUrlErrors = {
   };
 };
 
-export type OauthFacebookLinkAuthorizeUrlError =
-  OauthFacebookLinkAuthorizeUrlErrors[keyof OauthFacebookLinkAuthorizeUrlErrors];
+export type OauthFacebookLinkAuthorizeUrlError = OauthFacebookLinkAuthorizeUrlErrors[keyof OauthFacebookLinkAuthorizeUrlErrors];
 
 export type OauthFacebookLinkAuthorizeUrlResponses = {
   /**
@@ -1304,8 +1248,7 @@ export type OauthFacebookLinkAuthorizeUrlResponses = {
   };
 };
 
-export type OauthFacebookLinkAuthorizeUrlResponse =
-  OauthFacebookLinkAuthorizeUrlResponses[keyof OauthFacebookLinkAuthorizeUrlResponses];
+export type OauthFacebookLinkAuthorizeUrlResponse = OauthFacebookLinkAuthorizeUrlResponses[keyof OauthFacebookLinkAuthorizeUrlResponses];
 
 export type OauthGithubAuthorizeUrlData = {
   body?: never;
@@ -1313,7 +1256,7 @@ export type OauthGithubAuthorizeUrlData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/github/authorize-url";
+  url: '/auth/oauth/github/authorize-url';
 };
 
 export type OauthGithubAuthorizeUrlErrors = {
@@ -1333,8 +1276,7 @@ export type OauthGithubAuthorizeUrlErrors = {
   };
 };
 
-export type OauthGithubAuthorizeUrlError =
-  OauthGithubAuthorizeUrlErrors[keyof OauthGithubAuthorizeUrlErrors];
+export type OauthGithubAuthorizeUrlError = OauthGithubAuthorizeUrlErrors[keyof OauthGithubAuthorizeUrlErrors];
 
 export type OauthGithubAuthorizeUrlResponses = {
   /**
@@ -1345,8 +1287,7 @@ export type OauthGithubAuthorizeUrlResponses = {
   };
 };
 
-export type OauthGithubAuthorizeUrlResponse =
-  OauthGithubAuthorizeUrlResponses[keyof OauthGithubAuthorizeUrlResponses];
+export type OauthGithubAuthorizeUrlResponse = OauthGithubAuthorizeUrlResponses[keyof OauthGithubAuthorizeUrlResponses];
 
 export type OauthGithubAuthorizeData = {
   body?: never;
@@ -1354,7 +1295,7 @@ export type OauthGithubAuthorizeData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/github/authorize";
+  url: '/auth/oauth/github/authorize';
 };
 
 export type OauthGithubAuthorizeErrors = {
@@ -1374,8 +1315,7 @@ export type OauthGithubAuthorizeErrors = {
   };
 };
 
-export type OauthGithubAuthorizeError =
-  OauthGithubAuthorizeErrors[keyof OauthGithubAuthorizeErrors];
+export type OauthGithubAuthorizeError = OauthGithubAuthorizeErrors[keyof OauthGithubAuthorizeErrors];
 
 export type OauthGithubExchangeData = {
   body: {
@@ -1384,7 +1324,7 @@ export type OauthGithubExchangeData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/oauth/github/exchange";
+  url: '/auth/oauth/github/exchange';
 };
 
 export type OauthGithubExchangeErrors = {
@@ -1425,8 +1365,7 @@ export type OauthGithubExchangeErrors = {
   };
 };
 
-export type OauthGithubExchangeError =
-  OauthGithubExchangeErrors[keyof OauthGithubExchangeErrors];
+export type OauthGithubExchangeError = OauthGithubExchangeErrors[keyof OauthGithubExchangeErrors];
 
 export type OauthGithubExchangeResponses = {
   /**
@@ -1439,8 +1378,7 @@ export type OauthGithubExchangeResponses = {
   };
 };
 
-export type OauthGithubExchangeResponse =
-  OauthGithubExchangeResponses[keyof OauthGithubExchangeResponses];
+export type OauthGithubExchangeResponse = OauthGithubExchangeResponses[keyof OauthGithubExchangeResponses];
 
 export type OauthGithubLinkAuthorizeUrlData = {
   body?: never;
@@ -1448,7 +1386,7 @@ export type OauthGithubLinkAuthorizeUrlData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/github/link-authorize-url";
+  url: '/auth/oauth/github/link-authorize-url';
 };
 
 export type OauthGithubLinkAuthorizeUrlErrors = {
@@ -1482,8 +1420,7 @@ export type OauthGithubLinkAuthorizeUrlErrors = {
   };
 };
 
-export type OauthGithubLinkAuthorizeUrlError =
-  OauthGithubLinkAuthorizeUrlErrors[keyof OauthGithubLinkAuthorizeUrlErrors];
+export type OauthGithubLinkAuthorizeUrlError = OauthGithubLinkAuthorizeUrlErrors[keyof OauthGithubLinkAuthorizeUrlErrors];
 
 export type OauthGithubLinkAuthorizeUrlResponses = {
   /**
@@ -1494,8 +1431,7 @@ export type OauthGithubLinkAuthorizeUrlResponses = {
   };
 };
 
-export type OauthGithubLinkAuthorizeUrlResponse =
-  OauthGithubLinkAuthorizeUrlResponses[keyof OauthGithubLinkAuthorizeUrlResponses];
+export type OauthGithubLinkAuthorizeUrlResponse = OauthGithubLinkAuthorizeUrlResponses[keyof OauthGithubLinkAuthorizeUrlResponses];
 
 export type OauthGoogleAuthorizeUrlData = {
   body?: never;
@@ -1503,7 +1439,7 @@ export type OauthGoogleAuthorizeUrlData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/google/authorize-url";
+  url: '/auth/oauth/google/authorize-url';
 };
 
 export type OauthGoogleAuthorizeUrlErrors = {
@@ -1523,8 +1459,7 @@ export type OauthGoogleAuthorizeUrlErrors = {
   };
 };
 
-export type OauthGoogleAuthorizeUrlError =
-  OauthGoogleAuthorizeUrlErrors[keyof OauthGoogleAuthorizeUrlErrors];
+export type OauthGoogleAuthorizeUrlError = OauthGoogleAuthorizeUrlErrors[keyof OauthGoogleAuthorizeUrlErrors];
 
 export type OauthGoogleAuthorizeUrlResponses = {
   /**
@@ -1535,8 +1470,7 @@ export type OauthGoogleAuthorizeUrlResponses = {
   };
 };
 
-export type OauthGoogleAuthorizeUrlResponse =
-  OauthGoogleAuthorizeUrlResponses[keyof OauthGoogleAuthorizeUrlResponses];
+export type OauthGoogleAuthorizeUrlResponse = OauthGoogleAuthorizeUrlResponses[keyof OauthGoogleAuthorizeUrlResponses];
 
 export type OauthGoogleExchangeData = {
   body: {
@@ -1545,7 +1479,7 @@ export type OauthGoogleExchangeData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/oauth/google/exchange";
+  url: '/auth/oauth/google/exchange';
 };
 
 export type OauthGoogleExchangeErrors = {
@@ -1600,8 +1534,7 @@ export type OauthGoogleExchangeErrors = {
   };
 };
 
-export type OauthGoogleExchangeError =
-  OauthGoogleExchangeErrors[keyof OauthGoogleExchangeErrors];
+export type OauthGoogleExchangeError = OauthGoogleExchangeErrors[keyof OauthGoogleExchangeErrors];
 
 export type OauthGoogleExchangeResponses = {
   /**
@@ -1614,8 +1547,7 @@ export type OauthGoogleExchangeResponses = {
   };
 };
 
-export type OauthGoogleExchangeResponse =
-  OauthGoogleExchangeResponses[keyof OauthGoogleExchangeResponses];
+export type OauthGoogleExchangeResponse = OauthGoogleExchangeResponses[keyof OauthGoogleExchangeResponses];
 
 export type OauthGoogleLinkAuthorizeUrlData = {
   body?: never;
@@ -1623,7 +1555,7 @@ export type OauthGoogleLinkAuthorizeUrlData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/google/link-authorize-url";
+  url: '/auth/oauth/google/link-authorize-url';
 };
 
 export type OauthGoogleLinkAuthorizeUrlErrors = {
@@ -1657,8 +1589,7 @@ export type OauthGoogleLinkAuthorizeUrlErrors = {
   };
 };
 
-export type OauthGoogleLinkAuthorizeUrlError =
-  OauthGoogleLinkAuthorizeUrlErrors[keyof OauthGoogleLinkAuthorizeUrlErrors];
+export type OauthGoogleLinkAuthorizeUrlError = OauthGoogleLinkAuthorizeUrlErrors[keyof OauthGoogleLinkAuthorizeUrlErrors];
 
 export type OauthGoogleLinkAuthorizeUrlResponses = {
   /**
@@ -1669,8 +1600,7 @@ export type OauthGoogleLinkAuthorizeUrlResponses = {
   };
 };
 
-export type OauthGoogleLinkAuthorizeUrlResponse =
-  OauthGoogleLinkAuthorizeUrlResponses[keyof OauthGoogleLinkAuthorizeUrlResponses];
+export type OauthGoogleLinkAuthorizeUrlResponse = OauthGoogleLinkAuthorizeUrlResponses[keyof OauthGoogleLinkAuthorizeUrlResponses];
 
 export type OauthGoogleVerifyIdTokenData = {
   body: {
@@ -1678,7 +1608,7 @@ export type OauthGoogleVerifyIdTokenData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/oauth/google/verify-id-token";
+  url: '/auth/oauth/google/verify-id-token';
 };
 
 export type OauthGoogleVerifyIdTokenErrors = {
@@ -1698,8 +1628,7 @@ export type OauthGoogleVerifyIdTokenErrors = {
   };
 };
 
-export type OauthGoogleVerifyIdTokenError =
-  OauthGoogleVerifyIdTokenErrors[keyof OauthGoogleVerifyIdTokenErrors];
+export type OauthGoogleVerifyIdTokenError = OauthGoogleVerifyIdTokenErrors[keyof OauthGoogleVerifyIdTokenErrors];
 
 export type OauthGoogleVerifyIdTokenResponses = {
   /**
@@ -1711,8 +1640,7 @@ export type OauthGoogleVerifyIdTokenResponses = {
   };
 };
 
-export type OauthGoogleVerifyIdTokenResponse =
-  OauthGoogleVerifyIdTokenResponses[keyof OauthGoogleVerifyIdTokenResponses];
+export type OauthGoogleVerifyIdTokenResponse = OauthGoogleVerifyIdTokenResponses[keyof OauthGoogleVerifyIdTokenResponses];
 
 export type OauthTwitterAuthorizeUrlData = {
   body?: never;
@@ -1720,7 +1648,7 @@ export type OauthTwitterAuthorizeUrlData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/twitter/authorize-url";
+  url: '/auth/oauth/twitter/authorize-url';
 };
 
 export type OauthTwitterAuthorizeUrlErrors = {
@@ -1740,8 +1668,7 @@ export type OauthTwitterAuthorizeUrlErrors = {
   };
 };
 
-export type OauthTwitterAuthorizeUrlError =
-  OauthTwitterAuthorizeUrlErrors[keyof OauthTwitterAuthorizeUrlErrors];
+export type OauthTwitterAuthorizeUrlError = OauthTwitterAuthorizeUrlErrors[keyof OauthTwitterAuthorizeUrlErrors];
 
 export type OauthTwitterAuthorizeUrlResponses = {
   /**
@@ -1752,8 +1679,7 @@ export type OauthTwitterAuthorizeUrlResponses = {
   };
 };
 
-export type OauthTwitterAuthorizeUrlResponse =
-  OauthTwitterAuthorizeUrlResponses[keyof OauthTwitterAuthorizeUrlResponses];
+export type OauthTwitterAuthorizeUrlResponse = OauthTwitterAuthorizeUrlResponses[keyof OauthTwitterAuthorizeUrlResponses];
 
 export type OauthTwitterExchangeData = {
   body: {
@@ -1762,7 +1688,7 @@ export type OauthTwitterExchangeData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/oauth/twitter/exchange";
+  url: '/auth/oauth/twitter/exchange';
 };
 
 export type OauthTwitterExchangeErrors = {
@@ -1817,8 +1743,7 @@ export type OauthTwitterExchangeErrors = {
   };
 };
 
-export type OauthTwitterExchangeError =
-  OauthTwitterExchangeErrors[keyof OauthTwitterExchangeErrors];
+export type OauthTwitterExchangeError = OauthTwitterExchangeErrors[keyof OauthTwitterExchangeErrors];
 
 export type OauthTwitterExchangeResponses = {
   /**
@@ -1831,8 +1756,7 @@ export type OauthTwitterExchangeResponses = {
   };
 };
 
-export type OauthTwitterExchangeResponse =
-  OauthTwitterExchangeResponses[keyof OauthTwitterExchangeResponses];
+export type OauthTwitterExchangeResponse = OauthTwitterExchangeResponses[keyof OauthTwitterExchangeResponses];
 
 export type OauthTwitterLinkAuthorizeUrlData = {
   body?: never;
@@ -1840,7 +1764,7 @@ export type OauthTwitterLinkAuthorizeUrlData = {
   query?: {
     redirect_uri?: string;
   };
-  url: "/auth/oauth/twitter/link-authorize-url";
+  url: '/auth/oauth/twitter/link-authorize-url';
 };
 
 export type OauthTwitterLinkAuthorizeUrlErrors = {
@@ -1874,8 +1798,7 @@ export type OauthTwitterLinkAuthorizeUrlErrors = {
   };
 };
 
-export type OauthTwitterLinkAuthorizeUrlError =
-  OauthTwitterLinkAuthorizeUrlErrors[keyof OauthTwitterLinkAuthorizeUrlErrors];
+export type OauthTwitterLinkAuthorizeUrlError = OauthTwitterLinkAuthorizeUrlErrors[keyof OauthTwitterLinkAuthorizeUrlErrors];
 
 export type OauthTwitterLinkAuthorizeUrlResponses = {
   /**
@@ -1886,8 +1809,7 @@ export type OauthTwitterLinkAuthorizeUrlResponses = {
   };
 };
 
-export type OauthTwitterLinkAuthorizeUrlResponse =
-  OauthTwitterLinkAuthorizeUrlResponses[keyof OauthTwitterLinkAuthorizeUrlResponses];
+export type OauthTwitterLinkAuthorizeUrlResponse = OauthTwitterLinkAuthorizeUrlResponses[keyof OauthTwitterLinkAuthorizeUrlResponses];
 
 export type AuthPasskeyExchangeData = {
   body: {
@@ -1895,7 +1817,7 @@ export type AuthPasskeyExchangeData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/passkey/exchange";
+  url: '/auth/passkey/exchange';
 };
 
 export type AuthPasskeyExchangeErrors = {
@@ -1915,8 +1837,7 @@ export type AuthPasskeyExchangeErrors = {
   };
 };
 
-export type AuthPasskeyExchangeError =
-  AuthPasskeyExchangeErrors[keyof AuthPasskeyExchangeErrors];
+export type AuthPasskeyExchangeError = AuthPasskeyExchangeErrors[keyof AuthPasskeyExchangeErrors];
 
 export type AuthPasskeyExchangeResponses = {
   /**
@@ -1928,8 +1849,7 @@ export type AuthPasskeyExchangeResponses = {
   };
 };
 
-export type AuthPasskeyExchangeResponse =
-  AuthPasskeyExchangeResponses[keyof AuthPasskeyExchangeResponses];
+export type AuthPasskeyExchangeResponse = AuthPasskeyExchangeResponses[keyof AuthPasskeyExchangeResponses];
 
 export type AuthPasskeyResolveUserData = {
   body: {
@@ -1937,7 +1857,7 @@ export type AuthPasskeyResolveUserData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/passkey/resolve-user";
+  url: '/auth/passkey/resolve-user';
 };
 
 export type AuthPasskeyResolveUserErrors = {
@@ -1958,8 +1878,7 @@ export type AuthPasskeyResolveUserErrors = {
   };
 };
 
-export type AuthPasskeyResolveUserError =
-  AuthPasskeyResolveUserErrors[keyof AuthPasskeyResolveUserErrors];
+export type AuthPasskeyResolveUserError = AuthPasskeyResolveUserErrors[keyof AuthPasskeyResolveUserErrors];
 
 export type AuthPasskeyResolveUserResponses = {
   /**
@@ -1970,14 +1889,13 @@ export type AuthPasskeyResolveUserResponses = {
   };
 };
 
-export type AuthPasskeyResolveUserResponse =
-  AuthPasskeyResolveUserResponses[keyof AuthPasskeyResolveUserResponses];
+export type AuthPasskeyResolveUserResponse = AuthPasskeyResolveUserResponses[keyof AuthPasskeyResolveUserResponses];
 
 export type AuthPasskeyStartData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/auth/passkey/start";
+  url: '/auth/passkey/start';
 };
 
 export type AuthPasskeyStartErrors = {
@@ -1990,8 +1908,7 @@ export type AuthPasskeyStartErrors = {
   };
 };
 
-export type AuthPasskeyStartError =
-  AuthPasskeyStartErrors[keyof AuthPasskeyStartErrors];
+export type AuthPasskeyStartError = AuthPasskeyStartErrors[keyof AuthPasskeyStartErrors];
 
 export type AuthPasskeyStartResponses = {
   /**
@@ -2004,20 +1921,17 @@ export type AuthPasskeyStartResponses = {
       rpId?: string;
       allowCredentials?: Array<{
         id: string;
-        type: "public-key";
-        transports?: Array<
-          "ble" | "cable" | "hybrid" | "internal" | "nfc" | "smart-card" | "usb"
-        >;
+        type: 'public-key';
+        transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
       }>;
-      userVerification?: "discouraged" | "preferred" | "required";
+      userVerification?: 'discouraged' | 'preferred' | 'required';
       extensions?: unknown;
     };
     sessionId: string;
   };
 };
 
-export type AuthPasskeyStartResponse =
-  AuthPasskeyStartResponses[keyof AuthPasskeyStartResponses];
+export type AuthPasskeyStartResponse = AuthPasskeyStartResponses[keyof AuthPasskeyStartResponses];
 
 export type AuthPasskeyVerifyData = {
   body: {
@@ -2030,16 +1944,16 @@ export type AuthPasskeyVerifyData = {
         signature: string;
         userHandle?: string;
       };
-      authenticatorAttachment?: "platform" | "cross-platform";
+      authenticatorAttachment?: 'platform' | 'cross-platform';
       clientExtensionResults?: unknown;
-      type: "public-key";
+      type: 'public-key';
     };
     sessionId: string;
     callbackUrl?: string;
   };
   path?: never;
   query?: never;
-  url: "/auth/passkey/verify";
+  url: '/auth/passkey/verify';
 };
 
 export type AuthPasskeyVerifyErrors = {
@@ -2059,31 +1973,27 @@ export type AuthPasskeyVerifyErrors = {
   };
 };
 
-export type AuthPasskeyVerifyError =
-  AuthPasskeyVerifyErrors[keyof AuthPasskeyVerifyErrors];
+export type AuthPasskeyVerifyError = AuthPasskeyVerifyErrors[keyof AuthPasskeyVerifyErrors];
 
 export type AuthPasskeyVerifyResponses = {
   /**
    * Default Response
    */
-  200:
-    | {
-        redirectUrl: string;
-      }
-    | {
-        token: string;
-        refreshToken: string;
-      };
+  200: {
+    redirectUrl: string;
+  } | {
+    token: string;
+    refreshToken: string;
+  };
 };
 
-export type AuthPasskeyVerifyResponse =
-  AuthPasskeyVerifyResponses[keyof AuthPasskeyVerifyResponses];
+export type AuthPasskeyVerifyResponse = AuthPasskeyVerifyResponses[keyof AuthPasskeyVerifyResponses];
 
 export type LogoutData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/auth/session/logout";
+  url: '/auth/session/logout';
 };
 
 export type LogoutErrors = {
@@ -2113,7 +2023,7 @@ export type RefreshData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/session/refresh";
+  url: '/auth/session/refresh';
 };
 
 export type RefreshErrors = {
@@ -2151,7 +2061,7 @@ export type GetUserData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/auth/session/user";
+  url: '/auth/session/user';
 };
 
 export type GetUserErrors = {
@@ -2214,7 +2124,7 @@ export type ValidateTokensData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/session/validate-tokens";
+  url: '/auth/session/validate-tokens';
 };
 
 export type ValidateTokensErrors = {
@@ -2227,8 +2137,7 @@ export type ValidateTokensErrors = {
   };
 };
 
-export type ValidateTokensError =
-  ValidateTokensErrors[keyof ValidateTokensErrors];
+export type ValidateTokensError = ValidateTokensErrors[keyof ValidateTokensErrors];
 
 export type ValidateTokensResponses = {
   /**
@@ -2239,8 +2148,7 @@ export type ValidateTokensResponses = {
   };
 };
 
-export type ValidateTokensResponse =
-  ValidateTokensResponses[keyof ValidateTokensResponses];
+export type ValidateTokensResponse = ValidateTokensResponses[keyof ValidateTokensResponses];
 
 export type Web3ExchangeData = {
   body: {
@@ -2248,7 +2156,7 @@ export type Web3ExchangeData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/web3/exchange";
+  url: '/auth/web3/exchange';
 };
 
 export type Web3ExchangeErrors = {
@@ -2280,17 +2188,16 @@ export type Web3ExchangeResponses = {
   };
 };
 
-export type Web3ExchangeResponse =
-  Web3ExchangeResponses[keyof Web3ExchangeResponses];
+export type Web3ExchangeResponse = Web3ExchangeResponses[keyof Web3ExchangeResponses];
 
 export type Web3NonceData = {
   body?: never;
   path?: never;
   query: {
-    chain: "eip155" | "solana";
+    chain: 'eip155' | 'solana';
     address: string;
   };
-  url: "/auth/web3/nonce";
+  url: '/auth/web3/nonce';
 };
 
 export type Web3NonceErrors = {
@@ -2322,7 +2229,7 @@ export type Web3Eip155NonceData = {
   query: {
     address: string;
   };
-  url: "/auth/web3/eip155/nonce";
+  url: '/auth/web3/eip155/nonce';
 };
 
 export type Web3Eip155NonceErrors = {
@@ -2342,8 +2249,7 @@ export type Web3Eip155NonceErrors = {
   };
 };
 
-export type Web3Eip155NonceError =
-  Web3Eip155NonceErrors[keyof Web3Eip155NonceErrors];
+export type Web3Eip155NonceError = Web3Eip155NonceErrors[keyof Web3Eip155NonceErrors];
 
 export type Web3Eip155NonceResponses = {
   /**
@@ -2354,8 +2260,7 @@ export type Web3Eip155NonceResponses = {
   };
 };
 
-export type Web3Eip155NonceResponse =
-  Web3Eip155NonceResponses[keyof Web3Eip155NonceResponses];
+export type Web3Eip155NonceResponse = Web3Eip155NonceResponses[keyof Web3Eip155NonceResponses];
 
 export type Web3Eip155VerifyData = {
   body: {
@@ -2366,7 +2271,7 @@ export type Web3Eip155VerifyData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/web3/eip155/verify";
+  url: '/auth/web3/eip155/verify';
 };
 
 export type Web3Eip155VerifyErrors = {
@@ -2393,8 +2298,7 @@ export type Web3Eip155VerifyErrors = {
   };
 };
 
-export type Web3Eip155VerifyError =
-  Web3Eip155VerifyErrors[keyof Web3Eip155VerifyErrors];
+export type Web3Eip155VerifyError = Web3Eip155VerifyErrors[keyof Web3Eip155VerifyErrors];
 
 export type Web3Eip155VerifyResponses = {
   /**
@@ -2406,8 +2310,7 @@ export type Web3Eip155VerifyResponses = {
   };
 };
 
-export type Web3Eip155VerifyResponse =
-  Web3Eip155VerifyResponses[keyof Web3Eip155VerifyResponses];
+export type Web3Eip155VerifyResponse = Web3Eip155VerifyResponses[keyof Web3Eip155VerifyResponses];
 
 export type Web3SolanaNonceData = {
   body?: never;
@@ -2415,7 +2318,7 @@ export type Web3SolanaNonceData = {
   query: {
     address: string;
   };
-  url: "/auth/web3/solana/nonce";
+  url: '/auth/web3/solana/nonce';
 };
 
 export type Web3SolanaNonceErrors = {
@@ -2435,8 +2338,7 @@ export type Web3SolanaNonceErrors = {
   };
 };
 
-export type Web3SolanaNonceError =
-  Web3SolanaNonceErrors[keyof Web3SolanaNonceErrors];
+export type Web3SolanaNonceError = Web3SolanaNonceErrors[keyof Web3SolanaNonceErrors];
 
 export type Web3SolanaNonceResponses = {
   /**
@@ -2447,8 +2349,7 @@ export type Web3SolanaNonceResponses = {
   };
 };
 
-export type Web3SolanaNonceResponse =
-  Web3SolanaNonceResponses[keyof Web3SolanaNonceResponses];
+export type Web3SolanaNonceResponse = Web3SolanaNonceResponses[keyof Web3SolanaNonceResponses];
 
 export type Web3SolanaVerifyData = {
   body: {
@@ -2459,7 +2360,7 @@ export type Web3SolanaVerifyData = {
   };
   path?: never;
   query?: never;
-  url: "/auth/web3/solana/verify";
+  url: '/auth/web3/solana/verify';
 };
 
 export type Web3SolanaVerifyErrors = {
@@ -2486,8 +2387,7 @@ export type Web3SolanaVerifyErrors = {
   };
 };
 
-export type Web3SolanaVerifyError =
-  Web3SolanaVerifyErrors[keyof Web3SolanaVerifyErrors];
+export type Web3SolanaVerifyError = Web3SolanaVerifyErrors[keyof Web3SolanaVerifyErrors];
 
 export type Web3SolanaVerifyResponses = {
   /**
@@ -2499,5 +2399,4 @@ export type Web3SolanaVerifyResponses = {
   };
 };
 
-export type Web3SolanaVerifyResponse =
-  Web3SolanaVerifyResponses[keyof Web3SolanaVerifyResponses];
+export type Web3SolanaVerifyResponse = Web3SolanaVerifyResponses[keyof Web3SolanaVerifyResponses];

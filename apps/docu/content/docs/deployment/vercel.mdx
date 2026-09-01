@@ -33,6 +33,8 @@ SENTRY_DSN=https://...
 # Optional: OAuth — see [Authentication](/docs/architecture/authentication) for GITHUB_*, GOOGLE_*, OAUTH_*_CALLBACK_URL(S).
 ```
 
+Scope `DATABASE_URL` per Vercel environment. Production and Preview must not share a URL. Preview builds skip `db:migrate` unless `RUN_PG_MIGRATE=true` (use that only with an isolated Preview database).
+
 **For Web (`apps/web`):**
 ```bash
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com
@@ -67,6 +69,20 @@ Monorepo apps use custom configs. Example for `apps/web`:
 ```
 
 Root Directory must be set in Vercel project settings (e.g. `apps/web`).
+
+**API (`apps/api`)** compiles via `turbo run build`, then runs `db:migrate` only when `VERCEL_ENV` is not `preview` (or when `RUN_PG_MIGRATE=true`):
+
+```json
+{
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/api... && if [ \"$VERCEL_ENV\" != \"preview\" ] || [ \"$RUN_PG_MIGRATE\" = \"true\" ]; then pnpm turbo run db:migrate --filter=@repo/api; fi"
+}
+```
+
+Production migrations run against that environment's Postgres and take a PostgreSQL advisory lock so concurrent deploys serialize. They no-op under `PGLITE` or `NODE_ENV=test` (CI E2E). Preview defaults to skip so a shared Production `DATABASE_URL` cannot be migrated from a PR build.
+
+## Turbo remote cache
+
+Optional: set `TURBO_TOKEN` and `TURBO_TEAM` in Vercel project environment variables (same token as GitHub Actions) for cross-deploy cache hits. Per-package `build.env` in `turbo.json` must list only output-affecting vars. See [Development Tooling](/docs/development/dev-tooling#turbo-remote-cache-optional).
 
 ## Environment-Specific Configuration
 

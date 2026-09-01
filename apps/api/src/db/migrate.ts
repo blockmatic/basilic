@@ -24,7 +24,7 @@ async function readMigrationFiles(migrationDir: string): Promise<string[]> {
 /**
  * Run database migrations
  * Supports build-time migrations for PostgreSQL and runtime migrations for PGLite
- * - PostgreSQL: Migrations run at build time via `pnpm db:migrate` → `pnpm build`
+ * - PostgreSQL: Migrations run at build time via `pnpm db:migrate` (skipped on Vercel Preview unless `RUN_PG_MIGRATE=true`)
  *   Migrations are skipped at runtime (already applied at build time)
  * - PGLite: Migrations run at runtime when instance is created
  */

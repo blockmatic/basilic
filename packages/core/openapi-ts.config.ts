@@ -4,7 +4,6 @@ export default defineConfig({
   input: '../../apps/api/openapi/openapi.json',
   output: {
     path: './src/gen',
-    postProcess: ['prettier'],
   },
   types: {
     enums: 'typescript',

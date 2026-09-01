@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "tsup && tsc --declaration --emitDeclarationOnly",
+    "build": "node -e \"process.exit(0)\"",
     "checktypes": "tsc --noEmit",
     "dev": "tsup --watch",
     "lint:eslint": "eslint . --max-warnings 0",
@@ -19,7 +19,7 @@
     "lint:biome": "biome check .",
     "lint:biome:fix": "biome check . --write",
     "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
-    "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
+    "prepack": "tsup && tsc --declaration --emitDeclarationOnly && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs",
     "test": "pnpm test:unit",
     "test:unit": "vitest run"
