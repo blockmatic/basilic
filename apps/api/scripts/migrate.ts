@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url'
 import { logger } from '@repo/utils/logger/server'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
-import { Pool, type PoolClient } from 'pg'
+import { Pool } from 'pg'
 import { env } from '../src/lib/env.js'
 
 const scriptFile = fileURLToPath(import.meta.url)
@@ -26,17 +26,13 @@ const projectRoot = join(scriptDir, '..')
 /** Session advisory-lock pair so concurrent migrators serialize (int4, int4). */
 const migrationLockClassid = 1_882_746_001
 const migrationLockObjid = 1
-
-async function acquireMigrationLock(client: PoolClient): Promise<void> {
-  await client.query('SELECT pg_advisory_lock($1, $2)', [migrationLockClassid, migrationLockObjid])
-}
-
-async function releaseMigrationLock(client: PoolClient): Promise<void> {
-  await client.query('SELECT pg_advisory_unlock($1, $2)', [
-    migrationLockClassid,
-    migrationLockObjid,
-  ])
-}
+const requiredBootstrapTables = [
+  'users',
+  'sessions',
+  'verification',
+  'account',
+  'wallet_identities',
+]
 
 /** Read sorted .sql migration files from src/db/migrations. */
 async function readMigrationFiles(): Promise<string[]> {
@@ -49,12 +45,30 @@ async function readMigrationFiles(): Promise<string[]> {
   }
 }
 
+async function publicTableExists({
+  pool,
+  tableName,
+}: {
+  pool: Pool
+  tableName: string
+}): Promise<boolean> {
+  const result = await pool.query(
+    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = $1)",
+    [tableName],
+  )
+  return result.rows[0]?.exists ?? false
+}
+
 /** Mark the first migration as applied when DB has tables but no __drizzle_migrations (e.g. restored dump). */
-async function initMigrationsTrackingWhenTablesExist(
-  pool: Pool,
-  migrationsDir: string,
-  migrationFiles: string[],
-): Promise<void> {
+async function initMigrationsTrackingWhenTablesExist({
+  pool,
+  migrationsDir,
+  migrationFiles,
+}: {
+  pool: Pool
+  migrationsDir: string
+  migrationFiles: string[]
+}): Promise<void> {
   const firstMigrationFile = migrationFiles[0]
   if (!firstMigrationFile) return
 
@@ -69,6 +83,146 @@ async function initMigrationsTrackingWhenTablesExist(
     { context: 'migrate' },
     'Migrations tracking initialized. Existing migration marked as applied.',
   )
+}
+
+async function bootstrapMigrationTracking({
+  pool,
+  migrationsDir,
+  migrationFiles,
+}: {
+  pool: Pool
+  migrationsDir: string
+  migrationFiles: string[]
+}): Promise<{ migrationsTableExists: boolean; allTablesExist: boolean }> {
+  try {
+    const migrationsTableExists = await publicTableExists({
+      pool,
+      tableName: '__drizzle_migrations',
+    })
+    if (migrationsTableExists) {
+      logger.info({ context: 'migrate' }, 'Migrations tracking table exists, running migrations...')
+      return { migrationsTableExists: true, allTablesExist: false }
+    }
+
+    const tableChecks = await Promise.all(
+      requiredBootstrapTables.map(tableName => publicTableExists({ pool, tableName })),
+    )
+    const allTablesExist = tableChecks.every(Boolean)
+    if (!allTablesExist) {
+      logger.info({ context: 'migrate' }, 'Some tables are missing, running migrations...')
+      return { migrationsTableExists: false, allTablesExist: false }
+    }
+
+    logger.info(
+      { context: 'migrate' },
+      'All required tables exist but migrations tracking not initialized. Initializing migrations tracking...',
+    )
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
+        id SERIAL PRIMARY KEY,
+        hash text NOT NULL,
+        created_at bigint
+      )
+    `)
+    await initMigrationsTrackingWhenTablesExist({ pool, migrationsDir, migrationFiles })
+    return { migrationsTableExists: false, allTablesExist: true }
+  } catch (checkError) {
+    logger.error({ context: 'migrate', err: checkError }, 'Failed to check table existence')
+    throw checkError
+  }
+}
+
+function isTableAlreadyExistsError(migrationError: unknown): boolean {
+  const errorMessage =
+    migrationError instanceof Error ? migrationError.message : String(migrationError)
+  return (
+    errorMessage.includes('already exists') ||
+    (errorMessage.includes('relation') && errorMessage.includes('already exists'))
+  )
+}
+
+function handleMigrateError({
+  migrationError,
+  allTablesExist,
+  migrationsTableExists,
+}: {
+  migrationError: unknown
+  allTablesExist: boolean
+  migrationsTableExists: boolean
+}): void {
+  if (!isTableAlreadyExistsError(migrationError)) {
+    logger.error({ context: 'migrate', err: migrationError }, 'Migration failed')
+    throw migrationError
+  }
+
+  if (allTablesExist && !migrationsTableExists) {
+    logger.info(
+      { context: 'migrate' },
+      'Migration error expected - tables exist and migration is now tracked. Migration state is consistent.',
+    )
+    return
+  }
+
+  logger.warn(
+    { context: 'migrate', err: migrationError },
+    'Migration failed due to existing tables. Tables appear to match schema. For clean state, run: pnpm --filter @repo/api reset',
+  )
+  if (process.env.NODE_ENV === 'production') throw migrationError
+
+  logger.info(
+    { context: 'migrate' },
+    'Allowing build to continue - tables exist and appear to match expected schema. Consider running pnpm reset for clean migration state.',
+  )
+}
+
+async function runDrizzleMigrate({
+  pool,
+  migrationsDir,
+  migrationsTableExists,
+  allTablesExist,
+}: {
+  pool: Pool
+  migrationsDir: string
+  migrationsTableExists: boolean
+  allTablesExist: boolean
+}): Promise<void> {
+  try {
+    await migrate(drizzle(pool), { migrationsFolder: migrationsDir })
+    logger.info({ context: 'migrate' }, 'Migrations completed successfully (PostgreSQL)')
+  } catch (migrationError: unknown) {
+    handleMigrateError({ migrationError, allTablesExist, migrationsTableExists })
+  }
+}
+
+async function withMigrationLock({
+  pool,
+  run,
+}: {
+  pool: Pool
+  run: () => Promise<void>
+}): Promise<void> {
+  const lockClient = await pool.connect()
+  try {
+    await lockClient.query('SELECT pg_advisory_lock($1, $2)', [
+      migrationLockClassid,
+      migrationLockObjid,
+    ])
+    logger.info({ context: 'migrate' }, 'Acquired PostgreSQL advisory lock for migrations')
+    await run()
+  } finally {
+    try {
+      await lockClient.query('SELECT pg_advisory_unlock($1, $2)', [
+        migrationLockClassid,
+        migrationLockObjid,
+      ])
+    } catch (unlockError) {
+      logger.error(
+        { context: 'migrate', err: unlockError },
+        'Failed to release migration advisory lock',
+      )
+    }
+    lockClient.release()
+  }
 }
 
 try {
@@ -113,115 +267,24 @@ try {
   )
 
   const pool = new Pool({ connectionString: env.DATABASE_URL })
-  let lockClient: PoolClient | undefined
-
   try {
-    lockClient = await pool.connect()
-    await acquireMigrationLock(lockClient)
-    logger.info({ context: 'migrate' }, 'Acquired PostgreSQL advisory lock for migrations')
-
-    // --- Bootstrap for existing DBs ---
-    // If __drizzle_migrations is missing but tables exist (e.g. DB created before migrations, or restored),
-    // create the tracking table and mark first migration as applied so Drizzle doesn't re-create tables.
-    let migrationsTableExists = false
-    let allTablesExist = false
-
-    try {
-      const migrationsTableCheck = await pool.query(
-        "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = '__drizzle_migrations')",
-      )
-      migrationsTableExists = migrationsTableCheck.rows[0]?.exists ?? false
-
-      if (!migrationsTableExists) {
-        // Tables that must exist to treat the DB as already matching the initial schema (migration bootstrap)
-        const requiredTables = ['users', 'sessions', 'verification', 'account', 'wallet_identities']
-        const tableCheckPromises = requiredTables.map(tableName =>
-          pool.query(
-            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = $1)",
-            [tableName],
-          ),
-        )
-        const tableChecks = await Promise.all(tableCheckPromises)
-        allTablesExist = tableChecks.every(result => result.rows[0]?.exists ?? false)
-
-        if (allTablesExist) {
-          logger.info(
-            { context: 'migrate' },
-            'All required tables exist but migrations tracking not initialized. Initializing migrations tracking...',
-          )
-          await pool.query(`
-            CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
-              id SERIAL PRIMARY KEY,
-              hash text NOT NULL,
-              created_at bigint
-            )
-          `)
-          await initMigrationsTrackingWhenTablesExist(pool, migrationsDir, migrationFiles)
-        } else {
-          logger.info({ context: 'migrate' }, 'Some tables are missing, running migrations...')
-        }
-      } else {
-        logger.info(
-          { context: 'migrate' },
-          'Migrations tracking table exists, running migrations...',
-        )
-      }
-    } catch (checkError) {
-      logger.error({ context: 'migrate', err: checkError }, 'Failed to check table existence')
-      throw checkError
-    }
-
-    const db = drizzle(pool)
-
-    // --- Run Drizzle migrations ---
-    try {
-      await migrate(db, { migrationsFolder: migrationsDir })
-      logger.info({ context: 'migrate' }, 'Migrations completed successfully (PostgreSQL)')
-    } catch (migrationError: unknown) {
-      // Handle "table already exists": bootstrap race, or dev DB with manual schema
-      const errorMessage =
-        migrationError instanceof Error ? migrationError.message : String(migrationError)
-      const isTableExistsError =
-        errorMessage.includes('already exists') ||
-        (errorMessage.includes('relation') && errorMessage.includes('already exists'))
-
-      if (isTableExistsError && allTablesExist && !migrationsTableExists) {
-        // This is expected - we just initialized migrations tracking but drizzle still tried to create tables
-        // The migration is now tracked, so this is safe to ignore
-        logger.info(
-          { context: 'migrate' },
-          'Migration error expected - tables exist and migration is now tracked. Migration state is consistent.',
-        )
-      } else if (isTableExistsError) {
-        logger.warn(
-          { context: 'migrate', err: migrationError },
-          'Migration failed due to existing tables. Tables appear to match schema. For clean state, run: pnpm --filter @repo/api reset',
-        )
-        // In development/build, allow this to pass if tables exist and match schema
-        // In production, this should fail to ensure proper migration tracking
-        if (process.env.NODE_ENV === 'production') throw migrationError
-
-        logger.info(
-          { context: 'migrate' },
-          'Allowing build to continue - tables exist and appear to match expected schema. Consider running pnpm reset for clean migration state.',
-        )
-      } else {
-        logger.error({ context: 'migrate', err: migrationError }, 'Migration failed')
-        throw migrationError
-      }
-    }
+    await withMigrationLock({
+      pool,
+      run: async () => {
+        const { migrationsTableExists, allTablesExist } = await bootstrapMigrationTracking({
+          pool,
+          migrationsDir,
+          migrationFiles,
+        })
+        await runDrizzleMigrate({
+          pool,
+          migrationsDir,
+          migrationsTableExists,
+          allTablesExist,
+        })
+      },
+    })
   } finally {
-    if (lockClient) {
-      try {
-        await releaseMigrationLock(lockClient)
-      } catch (unlockError) {
-        logger.error(
-          { context: 'migrate', err: unlockError },
-          'Failed to release migration advisory lock',
-        )
-      }
-      lockClient.release()
-    }
     await pool.end()
   }
 
