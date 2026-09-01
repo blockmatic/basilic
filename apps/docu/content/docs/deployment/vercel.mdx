@@ -68,6 +68,20 @@ Monorepo apps use custom configs. Example for `apps/web`:
 
 Root Directory must be set in Vercel project settings (e.g. `apps/web`).
 
+**API (`apps/api`)** runs compile and OpenAPI generation via `turbo run build`, then database migrations via a separate `db:migrate` task:
+
+```json
+{
+  "buildCommand": "cd ../.. && pnpm turbo run build db:migrate --filter=@repo/api..."
+}
+```
+
+Migrations run against real Postgres on Vercel; they no-op under `PGLITE` or `NODE_ENV=test` (CI E2E).
+
+## Turbo remote cache
+
+Optional: set `TURBO_TOKEN` and `TURBO_TEAM` in Vercel project environment variables (same token as GitHub Actions) for cross-deploy cache hits. Per-package `build.env` in `turbo.json` must list only output-affecting vars. See [Development Tooling](/docs/development/dev-tooling#turbo-remote-cache-optional).
+
 ## Environment-Specific Configuration
 
 ### Development

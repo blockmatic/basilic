@@ -13,15 +13,7 @@
       "dependsOn": ["@repo/utils#build", "@repo/error#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
-      "env": [
-        "NODE_ENV",
-        "ANTHROPIC_API_KEY",
-        "OLLAMA_BASE_URL",
-        "OPEN_ROUTER_API_KEY",
-        "AI_PROVIDER",
-        "ALLOWED_ORIGINS",
-        "APP_NAME"
-      ]
+      "env": ["NODE_ENV"]
     },
     "@repo/core#generate": {
       "dependsOn": ["@repo/api#generate:openapi"],
@@ -40,33 +32,63 @@
       "env": ["NODE_ENV"]
     },
     "build": {
-      "dependsOn": ["^build", "generate"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", ".react-email/**"],
+      "env": ["NODE_ENV"]
+    },
+    "@repo/web#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "NODE_ENV",
-        "JWT_SECRET",
-        "AI_PROVIDER",
-        "ANTHROPIC_API_KEY",
-        "OLLAMA_BASE_URL",
-        "OPEN_ROUTER_API_KEY",
-        "DATABASE_URL",
-        "PGLITE",
         "VERCEL",
         "VERCEL_ENV",
         "VERCEL_GIT_COMMIT_REF",
         "VERCEL_URL",
+        "NEXT_PUBLIC_API_URL",
         "NEXT_PUBLIC_APP_URL",
-        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
         "NEXT_PUBLIC_AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
+        "NEXT_PUBLIC_LOG_ENABLED",
+        "NEXT_PUBLIC_LOG_LEVEL",
+        "NEXT_PUBLIC_LEGAL_EMAIL"
+      ],
+      "passThroughEnv": [
+        "JWT_SECRET",
+        "NEWSAPI_KEY",
+        "SENTRY_AUTH_TOKEN",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
-        "SENTRY_AUTH_TOKEN"
+        "AUTH_COOKIE_NAME",
+        "ALLOW_TEST",
+        "SENTRY_DSN",
+        "SENTRY_ENVIRONMENT"
       ]
+    },
+    "@repo/docu#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": ["NODE_ENV", "NEXT_PUBLIC_SITE_URL"]
+    },
+    "@repo/api#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": ["dist/**", "openapi/openapi.json"],
+      "env": ["NODE_ENV"]
+    },
+    "@repo/api#db:migrate": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "env": ["DATABASE_URL", "PGLITE", "RUN_PG_MIGRATE", "NODE_ENV"]
     },
     "lint": {},
     "lint:eslint": {
-      "env": [
+      "passThroughEnv": [
         "EXPO_OS",
         "EXPO_PUBLIC_API_URL",
         "AUTH_COOKIE_NAME",
@@ -114,7 +136,7 @@
     },
     "lint:eslint:fix": {
       "cache": false,
-      "env": [
+      "passThroughEnv": [
         "EXPO_OS",
         "EXPO_PUBLIC_API_URL",
         "AUTH_COOKIE_NAME",

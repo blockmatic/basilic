@@ -103,8 +103,11 @@ const nextConfig = {
   },
 }
 
-export default withSentryConfig(nextConfig, {
-  org: process.env.SENTRY_ORG ?? 'placeholder',
-  project: process.env.SENTRY_PROJECT ?? 'placeholder',
-  silent: !process.env.CI,
-})
+export default process.env.SENTRY_AUTH_TOKEN
+  ? withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG ?? 'placeholder',
+      project: process.env.SENTRY_PROJECT ?? 'placeholder',
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      silent: !process.env.CI,
+    })
+  : nextConfig

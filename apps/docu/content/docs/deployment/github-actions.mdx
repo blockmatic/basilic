@@ -19,7 +19,11 @@ Build → Unit → E2E. Triggers on pull request when `apps/api/**` or shared pa
 
 ### Packages (`packages-test.yml`)
 
-Unit tests for shared packages (`core`, `react`, `error`, `utils`, …). Triggers on pull request when `packages/**` or `tools/**` change. Excludes app tests (handled by api-e2e, web-e2e).
+Unit tests for shared packages (`core`, `react`, `error`, `utils`, …). Triggers on pull request when `packages/**`, `tools/**`, or `apps/api/openapi/**` change. Uses committed OpenAPI artifacts (no Fastify boot). Excludes app tests (handled by api-e2e, web-e2e).
+
+### API drift check (`api-e2e.yml`)
+
+When `apps/api/**` changes, CI runs `pnpm generate && git diff --exit-code` on `openapi.json` and `packages/core/src/gen` before build.
 
 ### Docu (Vercel)
 
@@ -67,6 +71,13 @@ reviews:
 ```
 
 See the complete `.coderabbit.yaml` in the repository root for full configuration.
+
+## Caching
+
+- **pnpm store** — all workflows cache `pnpm store path` keyed on `pnpm-lock.yaml`.
+- **Playwright** — `web-e2e` and `api-e2e` cache `~/.cache/ms-playwright`.
+- **Next.js** — `web-e2e` caches `apps/web/.next/cache`.
+- **Turbo remote cache** (optional) — set `TURBO_TOKEN` and `TURBO_TEAM` in GitHub Secrets after creating a Vercel Remote Cache token. Vercel deploys can reuse the same token. See [Development Tooling](/docs/development/dev-tooling#turbo-remote-cache-optional).
 
 ## Pre-commit Hooks
 

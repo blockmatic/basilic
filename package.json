@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "generate": "turbo run generate --filter=@repo/core",
     "dev": "turbo run dev",
     "qa": "node scripts/run-qa.mjs",
     "checktypes": "turbo checktypes",

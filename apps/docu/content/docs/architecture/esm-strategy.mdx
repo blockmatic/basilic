@@ -15,7 +15,9 @@ Prefer subpath imports (`@repo/utils/async`). Do not deep-import `src/`.
 
 ## TypeScript 7 and 6
 
-TypeScript 7 is the native Go `tsc` (`"@typescript/native": "npm:typescript@^7.0.2"`). Use it for `build` and `checktypes`. It does not yet ship a programmatic API, so ESLint and Next.js keep TypeScript 6 via `"typescript": "npm:@typescript/typescript6@^6.0.2"`. Next.js 16.3 would call `typescript/bin/tsc`; set `experimental.useTypeScriptCli: false` so it uses the TS 6 API instead.
+TypeScript 7 is the native Go compiler (`"@typescript/native": "npm:typescript@^7.0.2"`, bin `tsc`). Package `checktypes` and emit scripts invoke that binary. ESLint and Next.js keep TypeScript 6 via `"typescript": "npm:@typescript/typescript6@^6.0.2"` where the programmatic API is required. Next.js 16.3 would call `typescript/bin/tsc`; set `experimental.useTypeScriptCli: false` so it uses the TS 6 API instead.
+
+Workspace `build` for Pattern A packages (`@repo/core`, `@repo/react`) is a no-op; `prepack` runs `tsup` and declaration emit for npm publish. Next.js apps that also depend on TypeScript 6 for the compiler API invoke the native CLI explicitly: `node ../../node_modules/@typescript/native/bin/tsc --noEmit`.
 
 Shared configs live in `tools/typescript` (`base.json`, `nextjs.json`, `react-library.json`). `ts-reset` is on. `types: ["*"]` restores automatic `@types/*` (TS 7 defaults `types` to `[]`).
 

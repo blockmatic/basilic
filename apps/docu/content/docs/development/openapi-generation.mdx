@@ -17,9 +17,12 @@ flowchart LR
 ## Commands
 
 ```bash
-pnpm --filter @repo/api generate:openapi   # apps/api/openapi/openapi.json
+pnpm generate                              # openapi.json + packages/core/src/gen (when routes change)
+pnpm --filter @repo/api generate:openapi   # apps/api/openapi/openapi.json only
 pnpm --filter @repo/core generate          # packages/core/src/gen/
 ```
+
+`@repo/web`, `@repo/docu`, and package CI builds use committed `openapi.json` and `src/gen/`. Regenerate after route changes; `api-e2e` runs `pnpm generate && git diff --exit-code` on API PRs. The API Vercel build still runs `generate:openapi` inside `@repo/api` `build`.
 
 Spec also served at `/reference/openapi.json`; Scalar UI at `/reference`. Config: `packages/core/openapi-ts.config.ts`.
 

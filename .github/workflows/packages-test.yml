@@ -5,6 +5,7 @@ on:
     paths:
       - 'packages/**'
       - 'tools/**'
+      - 'apps/api/openapi/**'
       - 'pnpm-lock.yaml'
       - 'package.json'
       - 'turbo.json'
@@ -42,8 +43,6 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Generate OpenAPI (for @repo/core)
-        run: pnpm turbo run generate:openapi --filter=@repo/api
       - name: Build packages
         run: pnpm turbo run build --filter='!@repo/web' --filter='!@repo/api' --filter='!@repo/docu'
       - name: Unit tests (packages only)

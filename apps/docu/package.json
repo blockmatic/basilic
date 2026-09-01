@@ -9,7 +9,7 @@
     "build": "next build",
     "dev": "next dev -p 3002",
     "start": "next start",
-    "checktypes": "fumadocs-mdx && tsc --noEmit",
+    "checktypes": "fumadocs-mdx && node ../../node_modules/@typescript/native/bin/tsc --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0"

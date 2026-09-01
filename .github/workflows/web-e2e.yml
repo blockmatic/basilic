@@ -51,12 +51,24 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+      - uses: actions/cache@v4
+        with:
+          path: apps/web/.next/cache
+          key: ${{ runner.os }}-next-web-${{ hashFiles('**/pnpm-lock.yaml', 'apps/web/**', 'packages/ui/**', 'packages/core/**', 'packages/react/**', 'packages/utils/**', 'packages/error/**') }}
+          restore-keys: |
+            ${{ runner.os }}-next-web-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build
         run: pnpm turbo run build --filter=@repo/web...
       - name: Web test script (E2E only placeholder)
         run: pnpm turbo run test --filter=@repo/web
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
       - name: Install Playwright
         run: pnpm --filter @repo/web exec playwright install chromium --with-deps
       - name: Verify ANTHROPIC_API_KEY for E2E (AI_PROVIDER=anthropic)
