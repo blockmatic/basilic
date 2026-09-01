@@ -69,6 +69,8 @@ Stream with `loading.tsx` and Suspense. Mark search/filter updates as transition
 
 Forms and hooks call the shared API client (`@repo/core`, `@repo/react`) which hits Fastify directly. Next.js routes exist only for SSR and cookie integration — auth callbacks, logout, and `POST /api/auth/update-tokens` (same-origin, Fastify-validated before `Set-Cookie`). Do not migrate login or settings mutations to `'use server'`.
 
+Pending and optimistic UI for mutations stays on TanStack mutation flags (`isPending`, `isError`); do not rewrite forms to `useFormStatus` or `useOptimistic`.
+
 ## Data and state
 
 | Concern | Library |

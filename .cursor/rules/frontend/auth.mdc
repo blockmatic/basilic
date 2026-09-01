@@ -28,6 +28,7 @@ alwaysApply: false
 ## Mutations
 
 - Login, profile, passkeys, TOTP, and API keys mutate via `@repo/core` / `@repo/react` → Fastify. Do **not** rewrite them as Next.js Server Actions.
+- Pending/optimistic UI stays on TanStack mutation flags; do **not** rewrite to `useFormStatus` / `useOptimistic`.
 - Next API routes exist only for SSR/cookie integration (`update-tokens`, auth callbacks, logout).
 
 ## Auth Protection (proxy.ts)
