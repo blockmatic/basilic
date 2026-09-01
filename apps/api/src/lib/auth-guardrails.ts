@@ -13,7 +13,7 @@ type Db = Awaited<ReturnType<typeof getDb>>
 export async function hasRemainingLoginMethod(
   db: Db,
   userId: string,
-  options?: { excludeProviderId?: string },
+  options?: { excludeProviderId?: string; excludeWalletId?: string; excludePasskeyId?: string },
 ): Promise<boolean> {
   const [user] = await db.select({ email: users.email }).from(users).where(eq(users.id, userId))
   if (!user) return false
@@ -36,8 +36,8 @@ export async function hasRemainingLoginMethod(
   ])
 
   let oauthCount = oauthResult[0]?.count ?? 0
-  const walletCount = walletResult[0]?.count ?? 0
-  const passkeyCount = passkeyResult[0]?.count ?? 0
+  let walletCount = walletResult[0]?.count ?? 0
+  let passkeyCount = passkeyResult[0]?.count ?? 0
 
   if (options?.excludeProviderId && oauthCount > 0) {
     const [hasProvider] = await db
@@ -45,6 +45,29 @@ export async function hasRemainingLoginMethod(
       .from(account)
       .where(and(eq(account.userId, userId), eq(account.providerId, options.excludeProviderId)))
     if ((hasProvider?.count ?? 0) > 0) oauthCount -= 1
+  }
+
+  if (options?.excludeWalletId && walletCount > 0) {
+    const [hasWallet] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(walletIdentities)
+      .where(
+        and(eq(walletIdentities.userId, userId), eq(walletIdentities.id, options.excludeWalletId)),
+      )
+    if ((hasWallet?.count ?? 0) > 0) walletCount -= 1
+  }
+
+  if (options?.excludePasskeyId && passkeyCount > 0) {
+    const [hasPasskey] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(passkeyCredentials)
+      .where(
+        and(
+          eq(passkeyCredentials.userId, userId),
+          eq(passkeyCredentials.id, options.excludePasskeyId),
+        ),
+      )
+    if ((hasPasskey?.count ?? 0) > 0) passkeyCount -= 1
   }
 
   const total = (hasEmail ? 1 : 0) + oauthCount + walletCount + passkeyCount

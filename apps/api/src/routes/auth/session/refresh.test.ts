@@ -46,4 +46,49 @@ describe('POST /auth/session/refresh', () => {
     expect(typeof refreshBody.token).toBe('string')
     expect(typeof refreshBody.refreshToken).toBe('string')
   })
+
+  it('should return TOKEN_REUSE_DETECTED and revoke session on refresh replay', async () => {
+    const email = 'refresh-reuse@test.ai'
+
+    await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/request',
+      payload: { email, callbackUrl: 'https://example.com/callback' },
+    })
+    const token = fastify.fakeEmail?.extractToken()
+    if (!token) throw new Error('No token')
+
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token },
+    })
+    const { refreshToken: originalRefresh } = JSON.parse(verifyRes.body) as { refreshToken: string }
+
+    const firstRefresh = await fastify.inject({
+      method: 'POST',
+      url: '/auth/session/refresh',
+      payload: { refreshToken: originalRefresh },
+    })
+    expect(firstRefresh.statusCode).toBe(200)
+
+    const reuseRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/session/refresh',
+      payload: { refreshToken: originalRefresh },
+    })
+    expect(reuseRes.statusCode).toBe(401)
+    expect(JSON.parse(reuseRes.body).code).toBe('TOKEN_REUSE_DETECTED')
+
+    const { refreshToken: rotatedRefresh } = JSON.parse(firstRefresh.body) as {
+      refreshToken: string
+    }
+    const afterRevoke = await fastify.inject({
+      method: 'POST',
+      url: '/auth/session/refresh',
+      payload: { refreshToken: rotatedRefresh },
+    })
+    expect(afterRevoke.statusCode).toBe(401)
+    expect(JSON.parse(afterRevoke.body).code).toBe('SESSION_NOT_FOUND')
+  })
 })

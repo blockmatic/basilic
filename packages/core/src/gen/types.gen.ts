@@ -399,6 +399,13 @@ export type AccountLinkPasskeyDeleteErrors = {
   /**
    * Default Response
    */
+  400: {
+    code: string;
+    message: string;
+  };
+  /**
+   * Default Response
+   */
   401: {
     code: string;
     message: string;
@@ -696,6 +703,13 @@ export type AccountLinkWalletUnlinkData = {
 };
 
 export type AccountLinkWalletUnlinkErrors = {
+  /**
+   * Default Response
+   */
+  400: {
+    code: string;
+    message: string;
+  };
   /**
    * Default Response
    */
@@ -2085,12 +2099,6 @@ export type LogoutErrors = {
 export type LogoutError = LogoutErrors[keyof LogoutErrors];
 
 export type LogoutResponses = {
-  /**
-   * Default Response
-   */
-  200: {
-    ok: boolean;
-  };
   /**
    * Default Response
    */

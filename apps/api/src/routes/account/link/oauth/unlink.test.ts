@@ -3,7 +3,7 @@ import { and, eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { getOrCreateSession } from '../../../../../test/utils/auth-helper.js'
 import { getDb } from '../../../../db/index.js'
-import { account } from '../../../../db/schema/index.js'
+import { account, users } from '../../../../db/schema/index.js'
 import { fastify } from '../../account.spec.js'
 
 describe('DELETE /account/link/oauth/:providerId', () => {
@@ -62,5 +62,33 @@ describe('DELETE /account/link/oauth/:providerId', () => {
       .from(account)
       .where(and(eq(account.userId, userId), eq(account.providerId, 'github')))
     expect(remaining).toHaveLength(0)
+  })
+
+  it('should return 400 LAST_SIGN_IN_METHOD when unlinking only OAuth provider', async () => {
+    const lastJwt = await getOrCreateSession(fastify, 'oauth-last@test.ai', { clearBefore: true })
+    const userRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { Authorization: `Bearer ${lastJwt}` },
+    })
+    const lastUserId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
+    const db = await getDb()
+    await db.insert(account).values({
+      id: randomUUID(),
+      userId: lastUserId,
+      accountId: `oauth-last-${randomUUID()}`,
+      providerId: 'google',
+      accessToken: null,
+      refreshToken: null,
+    })
+    await db.update(users).set({ email: null }).where(eq(users.id, lastUserId))
+
+    const res = await fastify.inject({
+      method: 'DELETE',
+      url: '/account/link/oauth/google',
+      headers: { Authorization: `Bearer ${lastJwt}` },
+    })
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).code).toBe('LAST_SIGN_IN_METHOD')
   })
 })

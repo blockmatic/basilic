@@ -1,5 +1,10 @@
+import { eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
 import { getApiKeyToken, getOrCreateSession } from '../../../../test/utils/auth-helper.js'
+import { getDb } from '../../../db/index.js'
+import { apiKeys } from '../../../db/schema/index.js'
+import { parseApiKey } from '../../../lib/api-keys.js'
+import { hashToken } from '../../../lib/jwt.js'
 import { fastify } from '../account.spec.js'
 
 describe('POST /account/apikeys', () => {
@@ -28,6 +33,13 @@ describe('POST /account/apikeys', () => {
     expect(body.key).toMatch(/^bask_[A-Za-z0-9_-]+_[A-Za-z0-9_-]+$/)
     expect(body.prefix).toBeDefined()
     expect(body.createdAt).toBeDefined()
+
+    const parsed = parseApiKey(body.key)
+    if (!parsed) throw new Error('Failed to parse API key')
+    const db = await getDb()
+    const [row] = await db.select().from(apiKeys).where(eq(apiKeys.id, body.id))
+    expect(row?.hash).toBe(hashToken(parsed.secret))
+    expect(row?.hash).not.toBe(body.key)
   })
 
   it('should create API key when authenticated via API key', async () => {

@@ -57,6 +57,17 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
 
       const db = await getDb()
 
+      const [currentUser] = await db
+        .select({ email: users.email })
+        .from(users)
+        .where(eq(users.id, request.session.user.id))
+
+      if (currentUser?.email)
+        return reply.code(409).send({
+          code: 'EMAIL_ALREADY_SET',
+          message: 'Account already has a primary email. Use change email instead.',
+        })
+
       const [existingUser] = await db.select().from(users).where(eq(users.email, email))
       if (existingUser && existingUser.id !== request.session.user.id)
         return reply.code(409).send({

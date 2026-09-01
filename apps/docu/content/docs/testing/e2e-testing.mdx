@@ -3,7 +3,9 @@ title: "E2E Testing"
 description: "Playwright E2E for Next.js and Fastify. Frontend apps have no separate unit suite."
 ---
 
-Frontend quality is validated through real user flows against the real API. There are no Vitest or Testing Library suites in `apps/web`. Two Playwright suites: **Web** (`apps/web`) for the product UI, **API** (`apps/api`) for Scalar login. Both use `test@test.ai` when `ALLOW_TEST=true`.
+Frontend apps have no separate unit suite. Two Playwright suites: **Web** (`apps/web`) for the product UI, **API** (`apps/api`) for Scalar login at `/reference`. Both use `test@test.ai` when `ALLOW_TEST=true`.
+
+The Scalar page loads `@scalar/api-reference` from jsDelivr (pinned version in `reference/template.ts`). E2E depends on that CDN for the login button script.
 
 Install browsers with `pnpm exec playwright install` if Chromium is missing. Specs are not skipped.
 

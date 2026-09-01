@@ -25,15 +25,16 @@
  * - `setupGroupDatabase()`: Creates DB instance, runs migrations, returns cleanup function
  * - `cleanupGroupDatabase()`: Closes DB instance and cleans up directory
  *
- * Each group entry file gets its own isolated database instance.
+ * Each group entry file shares the worker database instance (maxWorkers: 1).
  * Tests within the same group share the same database instance.
- * Different groups run in parallel with isolated databases.
+ * Different groups run sequentially in the same worker with table truncation between groups.
  */
 
 import { readdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { resetDbInstance } from '../../src/db/index.js'
+import { clearSessionPool } from './auth-helper.js'
 import { getTestDatabase, truncateAllTables } from './db.js'
 
 const setupFile = fileURLToPath(import.meta.url)
@@ -106,6 +107,7 @@ export async function setupGroupDatabase() {
  * Truncates tables for next spec (does not close PGLite - that causes Aborted when reopening).
  */
 export async function cleanupGroupDatabase() {
+  clearSessionPool()
   await truncateAllTables()
   resetDbInstance()
 }

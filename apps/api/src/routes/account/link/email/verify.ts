@@ -80,6 +80,17 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
           message: 'Token does not match current session',
         })
 
+      const [currentUser] = await db
+        .select({ email: users.email })
+        .from(users)
+        .where(eq(users.id, userId))
+
+      if (currentUser?.email)
+        return reply.code(409).send({
+          code: 'EMAIL_ALREADY_SET',
+          message: 'Account already has a primary email. Use change email instead.',
+        })
+
       const [existingByEmail] = await db.select().from(users).where(eq(users.email, email))
       if (existingByEmail && existingByEmail.id !== userId)
         return reply.code(409).send({

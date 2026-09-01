@@ -17,6 +17,10 @@ afterAll(async () => {
 
 export { fastify }
 
+import './oauth/github/link-authorize-url.test'
+import './oauth/google/link-authorize-url.test'
+import './oauth/facebook/link-authorize-url.test'
+import './oauth/twitter/link-authorize-url.test'
 import './oauth/facebook/authorize-url.test'
 import './oauth/providers.test'
 import './oauth/facebook/exchange.test'

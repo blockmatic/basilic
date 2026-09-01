@@ -1,12 +1,12 @@
 /**
  * Test Database Utilities
  *
- * Manages per-worker file-based PGLite database instances for tests.
- * Each Vitest worker process gets its own isolated database directory and runs migrations independently.
+ * Manages per-worker in-memory PGLite database instances for tests.
+ * Each Vitest worker gets its own isolated database and runs migrations independently.
  *
  * ## Lifecycle
  *
- * - **getTestDatabase()**: Gets or creates a per-worker PGLite file-based instance
+ * - **getTestDatabase()**: Gets or creates a per-worker in-memory PGLite instance
  * - **resetTestDatabase()**: Closes existing instance and creates a fresh one (NOT used in tests)
  * - **closeTestDatabase()**: Closes the instance and cleans up the worker database directory
  *
@@ -19,12 +19,9 @@
  *
  * ## Important Notes
  *
- * - Per-worker pattern: Each Vitest worker gets its own database directory
- * - Database directory: `/tmp/basilic-api-test-db-{workerId}`
+ * - Per-worker pattern: Each Vitest worker gets its own in-memory database
  * - Instance created once per worker before tests in that worker execute
- * - Instance deleted once per worker after all tests in that worker complete
- * - Workers are isolated - no shared state/data across workers
- * - File-based storage allows persistence during test execution
+ * - Instance closed when worker exits (truncate between spec files)
  *
  * @module test/utils/db
  */
@@ -78,16 +75,23 @@ export async function getTestDatabase() {
   }
 }
 
-/** Tables to truncate (order respects FK: users referenced by others) */
+/** Tables to truncate (CASCADE handles FK order) */
 const tables = [
   'api_keys',
   'account',
   'sessions',
   'wallet_identities',
+  'passkey_credentials',
+  'passkey_challenges',
+  'passkey_callback',
+  'passkey_auth_challenges',
+  'totp',
+  'totp_setup',
   'web3_nonce',
+  'web3_callback',
   'auth_attempts',
-  'users',
   'verification',
+  'users',
 ] as const
 
 /**

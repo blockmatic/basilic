@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto'
+import { privateKeyToAccount } from 'viem/accounts'
+import { createSiweMessage } from 'viem/siwe'
 import { getDb } from '../../src/db/index.js'
 import { apiKeys, passkeyCredentials } from '../../src/db/schema/index.js'
 import { generateApiKey } from '../../src/lib/api-keys.js'
@@ -22,6 +24,45 @@ export async function getOrCreateSession(
 
 export function clearSessionPool(): void {
   sessionPool.clear()
+}
+
+const anvilPrivateKeys = [
+  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+  '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b786127',
+  '0x5de4111afa1a4b94908e83a8ec860c567f04b3aa191f021b7f36795a0579779b',
+] as const
+
+export async function getWeb3Session(
+  app: TestApp,
+  options?: { accountIndex?: number },
+): Promise<string> {
+  const accountIndex = options?.accountIndex ?? 0
+  const testPrivateKey = anvilPrivateKeys[accountIndex] ?? anvilPrivateKeys[0]
+  const testAccount = privateKeyToAccount(testPrivateKey)
+  const nonceRes = await app.inject({
+    method: 'GET',
+    url: '/auth/web3/eip155/nonce',
+    query: { address: testAccount.address },
+  })
+  if (nonceRes.statusCode !== 200) throw new Error(`nonce failed: ${nonceRes.body}`)
+  const { nonce } = JSON.parse(nonceRes.body) as { nonce: string }
+  const message = createSiweMessage({
+    address: testAccount.address,
+    chainId: 1,
+    domain: 'localhost',
+    nonce,
+    uri: 'https://localhost',
+    version: '1',
+  })
+  const signature = await testAccount.signMessage({ message })
+  const verifyRes = await app.inject({
+    method: 'POST',
+    url: '/auth/web3/eip155/verify',
+    payload: { message, signature },
+  })
+  if (verifyRes.statusCode !== 200) throw new Error(`web3 verify failed: ${verifyRes.body}`)
+  const { token } = JSON.parse(verifyRes.body) as { token: string }
+  return token
 }
 
 export async function createApiKey(

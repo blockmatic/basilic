@@ -122,4 +122,35 @@ describe('DELETE /account/link/wallet/:id', () => {
     })
     expect(response.statusCode).toBe(204)
   })
+
+  it('should return 400 LAST_SIGN_IN_METHOD when unlinking only wallet', async () => {
+    const email = 'wallet-last@test.ai'
+    const token = await getMagicLinkTokenRaw(fastify, email)
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token },
+    })
+    const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
+    const walletId = await linkWallet(jwt)
+
+    const db = await (await import('../../../../db/index.js')).getDb()
+    const { users } = await import('../../../../db/schema/index.js')
+    const { eq } = await import('drizzle-orm')
+    const userRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { Authorization: `Bearer ${jwt}` },
+    })
+    const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
+    await db.update(users).set({ email: null }).where(eq(users.id, userId))
+
+    const response = await fastify.inject({
+      method: 'DELETE',
+      url: `/account/link/wallet/${walletId}`,
+      headers: { Authorization: `Bearer ${jwt}` },
+    })
+    expect(response.statusCode).toBe(400)
+    expect(JSON.parse(response.body).code).toBe('LAST_SIGN_IN_METHOD')
+  })
 })

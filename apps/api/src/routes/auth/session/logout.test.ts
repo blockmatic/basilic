@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { getDb } from '../../../db/index.js'
+import { sessions } from '../../../db/schema/index.js'
 import { fastify } from '../session.spec.js'
 
 describe('POST /auth/session/logout', () => {
@@ -6,8 +8,8 @@ describe('POST /auth/session/logout', () => {
     fastify.fakeEmail?.clear()
   })
 
-  it('should logout user and return 204 or 200 { ok: true }', async () => {
-    const email = 'test@example.com'
+  it('should logout user, return 204, delete session, and reject Bearer', async () => {
+    const email = 'logout@test.ai'
 
     await fastify.inject({
       method: 'POST',
@@ -38,10 +40,17 @@ describe('POST /auth/session/logout', () => {
       },
     })
 
-    expect([200, 204]).toContain(logoutResponse.statusCode)
-    if (logoutResponse.statusCode === 200) {
-      const body = JSON.parse(logoutResponse.body)
-      expect(body).toMatchObject({ ok: true })
-    }
+    expect(logoutResponse.statusCode).toBe(204)
+
+    const db = await getDb()
+    const remainingSessions = await db.select().from(sessions)
+    expect(remainingSessions).toHaveLength(0)
+
+    const authedResponse = await fastify.inject({
+      method: 'GET',
+      url: '/test/authed',
+      headers: { Authorization: `Bearer ${jwtToken}` },
+    })
+    expect(authedResponse.statusCode).toBe(401)
   })
 })

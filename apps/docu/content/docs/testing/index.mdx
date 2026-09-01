@@ -3,10 +3,34 @@ title: "Testing"
 description: "Vitest for the API and packages; Playwright E2E for web. No frontend unit suite."
 ---
 
-- **API** — Vitest + `fastify.inject()`, blackbox HTTP, PGlite. Group entry files are `*.spec.ts` (see Fastify testing rules).
+- **API** — Vitest + `fastify.inject()`, blackbox HTTP, in-memory PGlite. Group entry files are `*.spec.ts`; route tests are imported `*.test.ts` (see Fastify testing rules).
 - **Packages** — Vitest unit tests (`core`, `react`, `error`, …). CI: `packages-test.yml` when `packages/` or `tools/` change.
 - **Web** — Playwright E2E only. Commands, fixtures, and specs: [E2E Testing](/docs/testing/e2e-testing).
 
-PGLite does not support concurrent writers. API Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false`.
+PGLite does not support concurrent writers. API Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false`. Between group entry files, `cleanupGroupDatabase()` truncates all 15 schema tables and clears the JWT session pool.
 
-Auth helpers live in `@test/utils/auth-helper.js` (`getOrCreateSession`, `createAuthenticatedUser`, `insertTestPasskey`, `getApiKeyToken`, `clearSessionPool`).
+## Group entry map
+
+| Group entry | Routes covered |
+| --- | --- |
+| `account.spec.ts` | Account linking, API keys, email change, profile |
+| `session.spec.ts` | Logout, refresh, validate-tokens, user |
+| `magiclink.spec.ts` | Magic link request/verify |
+| `oauth.spec.ts` | OAuth authorize/exchange (unconfigured 503 contract) |
+| `passkey.spec.ts` | Passkey start/verify/exchange/resolve-user |
+| `web3.spec.ts` | EIP-155 and Solana verify |
+| `reference.spec.ts` | `/reference` HTML + OpenAPI JSON |
+| `ai.spec.ts` | AI chat (remote; may skip if provider down) |
+
+## Auth helpers
+
+`@test/utils/auth-helper.js`: `getOrCreateSession`, `getWeb3Session`, `createAuthenticatedUser`, `insertTestPasskey`, `getApiKeyToken`, `clearSessionPool`.
+
+## ALLOW_TEST
+
+When `ALLOW_TEST=true` (non-production), magic-link and link-email flows for `*@test.ai` store plain tokens in `verification.token_plain`. E2E reads them via `/test/magic-link/last`. Do not enable on production deployments.
+
+## Known gaps
+
+- **OAuth IdP exchange** — Unit tests assert unconfigured 503 and link-authorize-url 401/503 only. No live GitHub/Google/Facebook/Twitter calls in CI.
+- **AI remote** — `ai.spec.ts` uses `skipIfProviderUnavailable`. A skip during prove is not full coverage; ensure `ANTHROPIC_API_KEY` is set for CI when AI behavior must be validated.
