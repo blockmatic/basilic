@@ -7,7 +7,7 @@ tags: cache, revalidate-tag, cache-life-profile, swr
 
 ## Call `revalidateTag(tag, cacheLife)` with a profile — never invoke the old one-arg API
 
-**Pattern intent:** Next.js 16's `revalidateTag` requires a `cacheLife` profile as the second argument (`'max' | 'hours' | 'days'` or `{ expire: number }`). The profile controls stale-while-revalidate. One-arg form is deprecated.
+**Pattern intent:** Next.js 16's `revalidateTag` requires a `cacheLife` profile as the second argument — for example `'max'`, `'hours'`, or `'days'`, any other built-in or custom profile name from your `cacheLife` config, or `{ expire: number }` (seconds). The profile controls stale-while-revalidate. One-arg form is deprecated.
 
 ### Shapes to recognize
 
@@ -17,7 +17,7 @@ tags: cache, revalidate-tag, cache-life-profile, swr
 - A Server Action that mutates and calls `revalidateTag` with no `'max'` profile when the user must see fresh data immediately — leaks stale content into the post-mutation render.
 - A code review comment ("we should pick a cacheLife here") followed by the author hardcoding `revalidate: 0` instead — sidesteps the API.
 
-The canonical resolution: `revalidateTag(tag, profile)` where profile is a `cacheLife` name (`'max'`, `'hours'`, `'days'`) or `{ expire: number }`. `'max'` is stale-while-revalidate (serve cached, refresh in background) — not read-your-writes. For forms where the user must see the write immediately, call `updateTag(tag)` from a Server Action ([Next.js 16 blog](https://nextjs.org/blog/next-16)).
+The canonical resolution: `revalidateTag(tag, profile)` where profile is a `cacheLife` name (e.g. `'max'`, `'hours'`, `'days'`, or a custom profile) or `{ expire: number }`. `'max'` is stale-while-revalidate (serve cached, refresh in background) — not read-your-writes. For forms where the user must see the write immediately, call `updateTag(tag)` from a Server Action ([Next.js 16 blog](https://nextjs.org/blog/next-16)).
 
 Reference: [Migrating to Cache Components](https://nextjs.org/docs/app/guides/migrating-to-cache-components), [Caching without Cache Components](https://nextjs.org/docs/app/guides/caching-without-cache-components)
 

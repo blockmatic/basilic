@@ -16,11 +16,11 @@ alwaysApply: false
 - Local/CI API spawn sets `ALLOW_TEST=true` and `RATE_LIMIT_MAX=10000` (default 100/min breaks magic-link after several logins)
 - Confirm dialogs use `getByRole('alertdialog')` (shadcn AlertDialog), not `dialog`
 
-## Projects (order)
-public → auth → setup → chromium → security → passkey-login → chat
+## Projects (dependency graph)
+`public` → `auth`; `public` → `setup` → `{chromium, security}`; `security` → `passkey-login`; `chromium` → `chat`
 
 - **public**: no storageState
-- **auth**: empty storageState; numbered `01-`…`06-` specs run in file-name order (not `testMatch` array order)
+- **auth**: empty storageState; numbered `01-`…`06-` specs (file-name order is the convention — `testMatch` only selects files, it does not impose execution order)
 - **setup**: `auth.setup.ts` writes `test-results/.auth/user.json` (depends on public only)
 - **chromium** / **security** / **chat**: `storageState` from setup file
 - **passkey-login**: empty storageState; dedicated `e2e-passkey@test.ai`

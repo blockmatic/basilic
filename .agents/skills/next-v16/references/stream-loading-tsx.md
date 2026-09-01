@@ -17,7 +17,7 @@ tags: stream, loading-tsx, route-level-skeleton, instant-feedback
 - Multiple parallel routes (slots) with only the parent route having `loading.tsx` — slot-level loading needs slot-level `loading.tsx`.
 - A workaround using a client-side `useState(loading)` in `layout.tsx` to fake loading — couples loading to client state instead of route navigation.
 
-The canonical resolution: create `loading.tsx` adjacent to every `page.tsx` (and adjacent to slot `page.tsx` files for parallel routes). Make the skeleton match the page's real dimensions to prevent CLS. No data fetching in `loading.tsx`.
+The canonical resolution: create `loading.tsx` adjacent to segments whose `page.tsx` or descendants suspend during render — not for purely synchronous static pages. Also place one next to slot `page.tsx` files for parallel routes. Make the skeleton match the page's real dimensions to prevent CLS. No data fetching in `loading.tsx`.
 
 **Incorrect (no loading state):**
 

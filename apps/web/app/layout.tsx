@@ -24,8 +24,8 @@ const fontMono = Geist_Mono({
 
 export const metadata = {
   title: {
-    default: 'Acme',
-    template: '%s | Acme',
+    default: 'Basilic',
+    template: '%s | Basilic',
   },
   description: 'Basilic web dashboard',
 }

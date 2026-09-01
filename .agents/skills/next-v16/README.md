@@ -10,7 +10,7 @@ Next.js 16 has **two cache models**: with `cacheComponents` unset/false, use the
 
 ### Structure
 
-```
+```text
 next-v16/
 ├── SKILL.md              # Entry point with quick reference
 ├── AGENTS.md             # Compiled comprehensive guide

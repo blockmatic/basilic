@@ -41,7 +41,7 @@ test('shows dashboard when authenticated', async ({ page }) => {
 })
 ```
 
-Chat E2E needs `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). CI and `test:e2e:local` set `AI_PROVIDER=anthropic`. Chat skips only on provider infra failures (401/402/network/5xx), not on optional UI like `user-info-card`.
+Chat E2E needs `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). CI and `test:e2e:local` set `AI_PROVIDER=anthropic`. Web chat (`chat-assistant.spec.ts`) skips only on provider infra failures: 402/quota markers, 401/invalid API key, network/timeout/522 errors, and upstream/5xx messages — not on optional UI like `user-info-card`. API remote AI tests (`ai.spec.ts` → `chat.test.ts`, `generate.test.ts`) delegate skip checks to `test/utils/ai-remote.ts`: 402 responses with credit/quota markers, plus 502/503/504 and connection failures.
 
 ## Test helpers
 

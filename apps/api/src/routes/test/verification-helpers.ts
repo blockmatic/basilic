@@ -12,6 +12,21 @@ export type VerificationLastResult = {
 
 const emptyResult: VerificationLastResult = { token: null, verificationId: null }
 
+function extractFromScopedFakeEmail({
+  fastify,
+  email,
+}: {
+  fastify: FastifyInstance
+  email: string
+}): VerificationLastResult {
+  const captured = fastify.fakeEmail?.all().findLast(e => e.to === email)
+  if (!captured) return emptyResult
+  return {
+    verificationId: fastify.fakeEmail?.extractVerificationId(captured) ?? null,
+    token: fastify.fakeEmail?.extractToken(captured) ?? null,
+  }
+}
+
 export function isTestEmailAllowed(email: string | undefined): email is string {
   return typeof email === 'string' && email.endsWith('@test.ai')
 }
@@ -53,9 +68,8 @@ export async function getLastVerification({
     .orderBy(desc(verification.createdAt))
     .limit(1)
 
-  const verificationId = row?.id ?? fastify.fakeEmail?.extractVerificationId() ?? null
-  const token = row?.tokenPlain ?? fastify.fakeEmail?.extractToken() ?? null
-  return { token, verificationId }
+  if (row) return { token: row.tokenPlain, verificationId: row.id }
+  return extractFromScopedFakeEmail({ fastify, email })
 }
 
 export async function getLastMagicLinkForTestAi({

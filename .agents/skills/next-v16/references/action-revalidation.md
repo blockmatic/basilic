@@ -18,7 +18,7 @@ tags: action, revalidation, post-mutation-invalidate, cache-pair
 - An action that returns `{ success: true }` and the *client* triggers `router.refresh()` afterward — works but loses the server-driven invalidation guarantee.
 - A `redirect()` called *before* `revalidatePath` — `redirect` throws internally; the invalidation never runs.
 
-The canonical resolution: after the write succeeds, call `revalidateTag(tag, cacheLife)` (preferred for granular control) or `revalidatePath(path)` (coarser), *then* `redirect(...)`. Use `updateTag(tag)` when the user must see the write immediately (read-your-writes). Use `refresh()` when only uncached data elsewhere on the page must update.
+The canonical resolution: after the write succeeds, call `revalidateTag(tag, cacheLife)` (preferred for granular control) or `revalidatePath(path)` (coarser), *then* `redirect(...)`. Use `updateTag(tag)` when the user must see the write immediately (read-your-writes). Use `refresh()` from a Server Action when only uncached data elsewhere on the page must update — `refresh()` is only valid inside Server Actions and throws when called elsewhere.
 
 **Incorrect (stale cache after mutation):**
 
@@ -55,6 +55,9 @@ export async function updatePost(postId: string, formData: FormData) {
     data: { title: formData.get('title') },
   })
 
+  // Cached fetch must use the same tag (e.g. in getPost):
+  // fetch(`/api/posts/${postId}`, { next: { tags: [`post-${postId}`] } })
+
   // Read-your-writes: user sees the edit immediately
   updateTag(`post-${postId}`)
   revalidatePath('/posts')
@@ -80,7 +83,12 @@ revalidateTag('posts', 'max')
 // Read-your-writes in a Server Action
 updateTag(`post-${postId}`)
 
-// Refresh uncached data only (e.g. header notification count)
+// Refresh uncached data only (Server Actions only — throws elsewhere)
+'use server'
+
 import { refresh } from 'next/cache'
-refresh()
+
+export async function refreshHeaderCount() {
+  refresh()
+}
 ```
