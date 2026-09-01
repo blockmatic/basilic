@@ -10,6 +10,7 @@ import {
   type ToolSet,
 } from 'ai'
 import type { FastifyPluginAsync } from 'fastify'
+import { sendCatalogError } from '../../lib/catalogs/mapper.js'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 import { getMergedTools } from './account-info-tool.js'
@@ -108,6 +109,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
           402: ErrorResponseSchema,
           500: ErrorResponseSchema,
           502: ErrorResponseSchema,
+          504: ErrorResponseSchema,
         },
       },
     },
@@ -152,8 +154,9 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       )
 
       const requestAbortController = new AbortController()
+      // Listen for client abort only — not `close`, which also fires when the
+      // response stream ends and would cut off long-running AI streams prematurely.
       request.raw.once('aborted', () => requestAbortController.abort())
-      request.raw.once('close', () => requestAbortController.abort())
       const abortSignal = AbortSignal.any([
         requestAbortController.signal,
         AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),
@@ -223,6 +226,8 @@ const chatRoute: FastifyPluginAsync = async fastify => {
             code: 'INSUFFICIENT_CREDITS',
             message: errObj.message.slice(0, 256) || 'Insufficient credits',
           })
+        if (errObj.name === 'AbortError' || errObj.name === 'TimeoutError')
+          return sendCatalogError({ reply, status: 504, code: 'UPSTREAM_TIMEOUT' })
         return reply.code(502).send({
           code: 'UPSTREAM_SERVICE_ERROR',
           message: 'AI provider request failed. Try again later.',

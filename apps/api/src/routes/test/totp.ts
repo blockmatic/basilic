@@ -4,8 +4,8 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../db/index.js'
 import { totpSetup } from '../../db/schema/index.js'
-import { env } from '../../lib/env.js'
 import { decryptTotpSecret, generateTotpCode } from '../../lib/totp.js'
+import { assertTestRoutesEnabled } from './assert-test-routes-enabled.js'
 
 const TotpCurrentResponseSchema = Type.Object({
   code: Type.String(),
@@ -29,8 +29,7 @@ const totpTestRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!env.ALLOW_TEST || env.NODE_ENV === 'production')
-        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' })
+      if (!assertTestRoutesEnabled(reply)) return
 
       if (!request.session)
         return reply.code(401).send({

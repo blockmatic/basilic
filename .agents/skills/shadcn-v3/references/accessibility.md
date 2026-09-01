@@ -19,7 +19,7 @@ Radix UI primitives include:
 ### Example: Dialog Component
 
 ```tsx
-import { Dialog, DialogContent, DialogTrigger } from '@repo/ui/components/dialog'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 
 function MyDialog() {
   return (

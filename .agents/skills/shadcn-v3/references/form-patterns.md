@@ -16,8 +16,8 @@ Wrap your form with the `Form` component (which is `FormProvider` from React Hoo
 'use client'
 
 import { useForm } from 'react-hook-form'
-import { Form } from '@repo/ui/components/form'
-import { Button } from '@repo/ui/components/button'
+import { Form } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
 
 function MyForm() {
   const form = useForm({
@@ -51,8 +51,8 @@ function MyForm() {
 Use `FormField` with `render` prop to connect React Hook Form with shadcn components:
 
 ```tsx
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@repo/ui/components/form'
-import { Input } from '@repo/ui/components/input'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { useForm } from 'react-hook-form'
 
 function EmailField({ control }) {
@@ -124,7 +124,7 @@ function EmailField({ control }) {
 ### Textarea
 
 ```tsx
-import { Textarea } from '@repo/ui/components/textarea'
+import { Textarea } from '@/components/ui/textarea'
 
 <FormField
   control={control}
@@ -154,7 +154,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@repo/ui/components/select'
+} from '@/components/ui/select'
 
 <FormField
   control={control}
@@ -189,7 +189,7 @@ import {
 ### Checkbox
 
 ```tsx
-import { Checkbox } from '@repo/ui/components/checkbox'
+import { Checkbox } from '@/components/ui/checkbox'
 
 <FormField
   control={control}
@@ -216,7 +216,7 @@ import { Checkbox } from '@repo/ui/components/checkbox'
 ### Radio Group
 
 ```tsx
-import { RadioGroup, RadioGroupItem } from '@repo/ui/components/radio-group'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 <FormField
   control={control}

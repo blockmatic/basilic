@@ -1,6 +1,6 @@
 ---
 name: expo-dev-client-v55
-description: Framework (OSS). Build and distribute Expo development clients locally or via TestFlight for internal testing. For production TestFlight releases and store submission, use the expo-deployment-v55 skill.
+description: Framework (OSS). Build and distribute Expo development clients locally or via TestFlight for internal testing (Expo SDK 57; upstream v55 naming). For production TestFlight releases and store submission, use the expo-deployment-v55 skill.
 version: 1.1.0
 license: MIT
 ---

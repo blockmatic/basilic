@@ -2,6 +2,7 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
+import { authLoginRouteConfig } from '../../../../lib/auth-login-route-config.js'
 import { isUniqueViolation } from '../../../../lib/db-errors.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
@@ -14,7 +15,7 @@ import {
   type TwitterAccountData,
 } from '../../../../lib/oauth-twitter.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
-import { ErrorResponseSchema } from '../../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
   code: Type.String(),
@@ -31,6 +32,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/exchange',
     {
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'oauthTwitterExchange',
         description: 'Exchange Twitter/X OAuth code for JWTs (PKCE)',
@@ -43,6 +45,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           409: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
           500: ErrorResponseSchema,
           502: ErrorResponseSchema,
           503: ErrorResponseSchema,

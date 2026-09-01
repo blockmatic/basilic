@@ -1,4 +1,4 @@
-import { and, desc, eq, isNotNull, like } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, sql } from 'drizzle-orm'
 import type { FastifyInstance } from 'fastify'
 import { getDb } from '../../db/index.js'
 import { verification } from '../../db/schema/index.js'
@@ -11,6 +11,10 @@ export type VerificationLastResult = {
 }
 
 const emptyResult: VerificationLastResult = { token: null, verificationId: null }
+
+function escapeLikePattern(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_')
+}
 
 function extractFromScopedFakeEmail({
   fastify,
@@ -57,7 +61,7 @@ export async function getLastVerification({
         )
       : and(
           eq(verification.type, type),
-          like(verification.identifier, `%:${email}`),
+          sql`${verification.identifier} LIKE ${`%:${escapeLikePattern(email)}`} ESCAPE '\\'`,
           isNotNull(verification.tokenPlain),
         )
 
@@ -77,30 +81,9 @@ export async function getLastMagicLinkForTestAi({
   email,
 }: {
   fastify: FastifyInstance
-  email?: string
+  email: string
 }): Promise<VerificationLastResult> {
   if (!env.ALLOW_TEST || env.NODE_ENV === 'production') return emptyResult
-
-  if (email) {
-    if (!isTestEmailAllowed(email)) return emptyResult
-    return getLastVerification({ fastify, type: 'magic_link', email })
-  }
-
-  const db = await getDb()
-  const [row] = await db
-    .select({ id: verification.id, tokenPlain: verification.tokenPlain })
-    .from(verification)
-    .where(
-      and(
-        like(verification.identifier, '%@test.ai'),
-        eq(verification.type, 'magic_link'),
-        isNotNull(verification.tokenPlain),
-      ),
-    )
-    .orderBy(desc(verification.createdAt))
-    .limit(1)
-
-  const verificationId = row?.id ?? fastify.fakeEmail?.extractVerificationId() ?? null
-  const token = row?.tokenPlain ?? fastify.fakeEmail?.extractToken() ?? null
-  return { token, verificationId }
+  if (!isTestEmailAllowed(email)) return emptyResult
+  return getLastVerification({ fastify, type: 'magic_link', email })
 }

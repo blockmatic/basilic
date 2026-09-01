@@ -1,5 +1,8 @@
-import { logger } from '@repo/utils/logger'
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
+
+const logger = {
+  warn: (..._args: unknown[]) => {},
+}
 
 type Theme = 'dark' | 'light' | 'system'
 

@@ -37,7 +37,7 @@ HTTP errors use `{ code, message }` from the app catalog (`getError` / `sendCata
 
 ## ALLOW_TEST
 
-When `ALLOW_TEST=true` (non-production), magic-link and change-email flows for `*@test.ai` store plain tokens in `verification.token_plain`. E2E reads them via `GET /test/verification/last` (email-scoped) or `GET /test/magic-link/last` (optional email). Do not enable on production deployments.
+When `ALLOW_TEST=true` (non-production), magic-link and change-email flows for `*@test.ai` store plain tokens in `verification.token_plain`. E2E reads them via `GET /test/verification/last?type=&email=` or `GET /test/magic-link/last?email=` (both require a `@test.ai` email). Do not enable on production deployments.
 
 ## Known gaps
 

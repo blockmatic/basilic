@@ -3,6 +3,7 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { SiweMessage } from 'siwe'
+import { encryptCallbackTokens } from '../../../../db/callback-tokens.js'
 import { getDb } from '../../../../db/index.js'
 import { web3Callback } from '../../../../db/schema/index.js'
 import { verifyWeb3Auth } from '../../../../lib/auth-web3.js'
@@ -93,11 +94,12 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
         const code = generateToken()
         const codeHash = hashToken(code)
         const expiresAt = new Date(Date.now() + callbackCodeExpiryMinutes * 60 * 1000)
+        const encrypted = encryptCallbackTokens({ accessToken, refreshToken })
         await db.insert(web3Callback).values({
           id: randomUUID(),
           codeHash,
-          accessToken,
-          refreshToken,
+          accessToken: encrypted.accessToken,
+          refreshToken: encrypted.refreshToken,
           expiresAt,
         })
         return reply.redirect(appendCodeToCallbackUrl(callbackUrl, code), 302)

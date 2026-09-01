@@ -25,7 +25,7 @@ Basilic refresh (Cursor, all skills, copies, non-interactive):
 pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
 ```
 
-That writes flat trees under `.agents/skills/<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
+That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/workflow/<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
 
 Root `skills-lock.json` tracks catalog hashes (`source: blockmatic/basilic-skills`). Commit it with `.agents/skills/` after every refresh.
 
@@ -33,7 +33,7 @@ Root `skills-lock.json` tracks catalog hashes (`source: blockmatic/basilic-skill
 
 **Tech** — `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
-**Workflow** — `.agents/skills/<name>/` (example: `plan-feature`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/name` in Cursor. Claude Code has no `/` menu: read the `SKILL.md` file.
+**Workflow** — `.agents/skills/workflow/<name>/` (example: `workflow/plan-feature`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/name` in Cursor. Claude Code has no `/` menu: read the `SKILL.md` file.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name.
 
@@ -53,13 +53,19 @@ This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is 
 ## Update procedure
 
 1. Edit and push [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on GitHub.
-2. From this repo root:
+2. Verify from a local catalog clone when racing GitHub (optional):
+
+```bash
+pnpm dlx skills@latest add /path/to/basilic-skills --skill '*' -a cursor --copy -y
+```
+
+3. After the catalog is on GitHub `main`, refresh from the canonical source:
 
 ```bash
 pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
 ```
 
-3. Review the diff; commit `.agents/skills/` and `skills-lock.json`.
+4. Review the diff; commit `.agents/skills/` and `skills-lock.json`.
 
 Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
 
@@ -79,10 +85,16 @@ Catalog copies may differ from upstream. Original sources:
 - `expo-use-dom-v55` ← `expo-dom`
 - `vercel-react-v1` ← `react-best-practices` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
 - `next-v16` ← `nextjs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
+- `nuqs-v2` ← `nuqs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
+- `vitest-v4` ← `vitest` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
+- `viem-v2` ← `viem-integration` in [uniswap/uniswap-ai](https://github.com/uniswap/uniswap-ai)
+- `nodejs-keccak256-v1` ← `nodejs-keccak256` in [affaan-m/ecc](https://github.com/affaan-m/ecc)
 - `frontend-design-v1` ← [anthropics/skills](https://github.com/anthropics/skills) `frontend-design`
 - `emilkowal-animations-v1` ← pproenca/dot-skills `emilkowal-animations`
 
 Basilic-maintained in the catalog: `fastify-v5`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks.
+
+**Intended unused stack** (catalog skills for future work, not installed app deps yet): `wagmi-v3`, `motion-v13`, `emilkowal-animations-v1`.
 
 ## Related
 

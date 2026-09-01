@@ -8,6 +8,6 @@ Fix all reported issues, validate, commit, and push. Use when resolving feedback
 
 1. **Fix issues**: Address all errors, warnings, or feedback mentioned (lint, types, tests, reviews)
 2. **Validate**: Run `pnpm qa` and resolve any failures
-3. **Commit**: Follow steps in @.agents/skills/git-commit/SKILL.md
+3. **Commit**: Follow steps in @.agents/skills/workflow/git-commit/SKILL.md
 4. **Push**: `git push`
 

@@ -1,6 +1,6 @@
 ---
 name: expo-cicd-workflows-v55
-description: EAS service (paid). Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.
+description: EAS service (paid). Helps understand and write EAS workflow YAML files for Expo SDK 57 projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.
 allowed-tools: "Read,Write,Bash(node:*),Bash(npx *eas-cli@*)"
 version: 1.0.0
 license: MIT License

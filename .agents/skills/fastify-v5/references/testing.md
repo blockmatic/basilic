@@ -254,4 +254,4 @@ describe('User Routes', () => {
 ## See Also
 
 - [Test Utils Template](../templates/test-utils.ts) - Test app builder example
-- Fastify route testing rules: `.cursor/rules/backend/fastify.mdc` (group `*.spec.ts` + imported `*.test.ts`, PGLite single-worker)
+- Consuming-repo Fastify testing rule — app-specific test file conventions and database setup

@@ -4,13 +4,14 @@ import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { verification } from '../../../../db/schema/index.js'
+import { authLoginRouteConfig } from '../../../../lib/auth-login-route-config.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
 import {
   getOAuthAllowedCallbackUrls,
   resolveOAuthCallbackUrl,
 } from '../../../../lib/oauth-shared.js'
-import { ErrorResponseSchema } from '../../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const AuthorizeUrlResponseSchema = Type.Object({
   redirectUrl: Type.String(),
@@ -32,6 +33,7 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().get(
     '/authorize-url',
     {
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'oauthTwitterAuthorizeUrl',
         description: 'Return Twitter/X OAuth authorization URL for client-side redirect (PKCE)',
@@ -42,6 +44,7 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: AuthorizeUrlResponseSchema,
           400: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
           503: ErrorResponseSchema,
         },
       },

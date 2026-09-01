@@ -6,6 +6,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
 import { account, sessions, users } from '../../../../db/schema/index.js'
+import { authLoginRouteConfig } from '../../../../lib/auth-login-route-config.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,
@@ -16,7 +17,7 @@ import {
 import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
 import { getOAuthAllowedCallbackUrls, type OAuthStateMeta } from '../../../../lib/oauth-shared.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
-import { ErrorResponseSchema } from '../../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
   code: Type.String(),
@@ -42,6 +43,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/exchange',
     {
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'oauthGithubExchange',
         description: 'Exchange GitHub OAuth code for JWTs',
@@ -54,6 +56,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           409: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
           500: ErrorResponseSchema,
           503: ErrorResponseSchema,
         },

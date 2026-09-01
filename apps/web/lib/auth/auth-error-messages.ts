@@ -13,6 +13,7 @@ const knownOAuthCodes = new Set([
   'oauth_not_configured',
   'oauth_failed',
   'oauth_failed_google',
+  'rate_limit_exceeded',
 ])
 
 /** Fallback: map raw backend message strings to auth-error-messages keys. Provider-agnostic. */
@@ -62,6 +63,7 @@ const authErrorMessages: Record<string, string> = {
   oauth_not_configured: 'Sign-in is temporarily unavailable.',
   oauth_failed: 'GitHub sign-in failed. Please try again.',
   oauth_failed_google: 'Google sign-in failed. Please try again.',
+  rate_limit_exceeded: 'Too many attempts. Please wait a moment and try again.',
   facebook_invalid_state: 'Invalid or expired sign-in session. Please try again.',
   facebook_expired_state: 'Sign-in session expired. Please try again.',
   facebook_token_exchange_failed: 'Facebook sign-in failed. Please try again.',

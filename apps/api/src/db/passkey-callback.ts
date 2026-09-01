@@ -1,26 +1,20 @@
-import { decrypt, encrypt } from '../lib/crypto.js'
+import { decryptCallbackTokens, encryptCallbackTokens } from './callback-tokens.js'
 import type { PasskeyCallback } from './schema/tables/passkey-callback.js'
 
 export function encryptPasskeyTokens(payload: { accessToken: string; refreshToken: string }): {
   accessToken: string
   refreshToken: string
 } {
-  const accessEncrypted = encrypt(payload.accessToken)
-  const refreshEncrypted = encrypt(payload.refreshToken)
-  if (!accessEncrypted || !refreshEncrypted) throw new Error('Passkey token encryption failed')
-  return { accessToken: accessEncrypted, refreshToken: refreshEncrypted }
+  return encryptCallbackTokens(payload)
 }
 
 export function decryptPasskeyTokens(record: PasskeyCallback): PasskeyCallback {
-  const accessDecrypted = decrypt(record.accessToken)
-  const refreshDecrypted = decrypt(record.refreshToken)
-  if (!accessDecrypted)
+  const decrypted = decryptCallbackTokens(record)
+  if (!decrypted)
     throw new Error('Passkey token decryption failed: accessToken could not be decrypted')
-  if (!refreshDecrypted)
-    throw new Error('Passkey token decryption failed: refreshToken could not be decrypted')
   return {
     ...record,
-    accessToken: accessDecrypted,
-    refreshToken: refreshDecrypted,
+    accessToken: decrypted.accessToken,
+    refreshToken: decrypted.refreshToken,
   }
 }

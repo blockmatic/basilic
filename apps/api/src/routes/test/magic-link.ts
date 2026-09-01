@@ -1,7 +1,8 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { getLastMagicLinkForTestAi } from './verification-helpers.js'
+import { assertTestRoutesEnabled } from './assert-test-routes-enabled.js'
+import { getLastMagicLinkForTestAi, isTestEmailAllowed } from './verification-helpers.js'
 
 const MagicLinkLastResponseSchema = Type.Object({
   token: Type.Union([Type.String(), Type.Null()]),
@@ -9,7 +10,7 @@ const MagicLinkLastResponseSchema = Type.Object({
 })
 
 const QuerystringSchema = Type.Object({
-  email: Type.Optional(Type.String()),
+  email: Type.String(),
 })
 
 const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
@@ -25,14 +26,22 @@ const magicLinkTestRoute: FastifyPluginAsync = async fastify => {
         querystring: QuerystringSchema,
         response: {
           200: MagicLinkLastResponseSchema,
+          400: Type.Object({ code: Type.String(), message: Type.String() }),
+          404: Type.Object({ code: Type.String(), message: Type.String() }),
         },
       },
     },
     async (request, reply) => {
-      const result = await getLastMagicLinkForTestAi({
-        fastify,
-        email: request.query.email,
-      })
+      if (!assertTestRoutesEnabled(reply)) return
+
+      const { email } = request.query
+      if (!isTestEmailAllowed(email))
+        return reply.code(400).send({
+          code: 'INVALID_INPUT',
+          message: 'email must be a @test.ai address',
+        })
+
+      const result = await getLastMagicLinkForTestAi({ fastify, email })
       return reply.code(200).send(result)
     },
   )

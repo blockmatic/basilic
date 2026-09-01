@@ -1,6 +1,6 @@
 ---
 name: expo-upgrading-v55
-description: Framework (OSS). Guidelines for upgrading Expo SDK versions and fixing dependency issues
+description: Framework (OSS). Guidelines for upgrading to Expo SDK 57 and fixing dependency issues (upstream v55 naming; NativeWind v5, NativeTabs)
 version: 1.0.0
 license: MIT
 ---
@@ -131,7 +131,7 @@ Remove redundant metro config options:
 
 ## Hermes engine v1
 
-Hermes V1 is the default on SDK 56 and later. SDK 55 apps using Hermes V1, all SDK 56 apps, and SDK 57 apps before `expo@57.0.9` may encounter a memory regression when importing `react-native-worklets` or `react-native-reanimated`. Upgrade directly to SDK 57 and `expo@57.0.9` or later. Do not recommend Worklets Bundle Mode as a production workaround; it is unsupported and experimental and may not work as expected.
+Hermes V1 is the default on SDK 56 and later. SDK 55 apps using Hermes V1, all SDK 56 apps, and SDK 57 apps before `expo@57.0.17` may encounter a memory regression when importing `react-native-worklets` or `react-native-reanimated`. Upgrade directly to SDK 57 and `expo@57.0.17` or later. Do not recommend Worklets Bundle Mode as a production workaround; it is unsupported and experimental and may not work as expected.
 
 Do not guide users to opt in to or out of Hermes V1. Changing the Hermes version from the SDK default is unsupported and has significant build and dependency-management caveats.
 

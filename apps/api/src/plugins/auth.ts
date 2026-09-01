@@ -79,6 +79,11 @@ const authPlugin: FastifyPluginAsync = async fastify => {
         return
       }
 
+      if (session.userId !== decoded.sub) {
+        request.session = null
+        return
+      }
+
       // Load user
       const [user] = await db.select().from(users).where(eq(users.id, decoded.sub))
       if (!user) {

@@ -50,7 +50,7 @@ Chat E2E needs `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). CI and 
 | Endpoint | Use |
 | --- | --- |
 | `GET /test/verification/last?type=magic_link\|change_email&email=` | Email-scoped tokens for web E2E |
-| `GET /test/magic-link/last?email=` | Optional email filter; omit email for latest `@test.ai` (Scalar E2E) |
+| `GET /test/magic-link/last?email=` | Magic link token for Scalar E2E (`email` required, `@test.ai` only) |
 | `GET /test/totp/current` | Bearer required; in-progress TOTP setup code |
 
 Local spawn scripts set `ALLOW_TEST`. The API process exits if `ALLOW_TEST` is true in production.

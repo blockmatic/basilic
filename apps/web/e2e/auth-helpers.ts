@@ -86,7 +86,7 @@ export const authHelpers = {
   async sendMagicLink(page: Page, email = defaultTestEmail) {
     let response = await sendMagicLinkOnce(page, email)
     if (!response.ok()) {
-      response = await sendMagicLinkOnce(page, email)
+      if (response.status() !== 429) response = await sendMagicLinkOnce(page, email)
       if (!response.ok()) await enrichError(response)
     }
     return response

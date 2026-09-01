@@ -4,7 +4,7 @@ import { logger } from '@repo/utils/logger/server'
 import Fastify, { LogController } from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
-import { getDb } from './src/db/index.js'
+import { closeDb, getDb } from './src/db/index.js'
 import { runMigrations } from './src/db/migrate.js'
 import { env } from './src/lib/env.js'
 
@@ -33,6 +33,7 @@ const fastify = Fastify({
           }
         : undefined,
   },
+  // Fastify 5: numeric trustProxy is fail-closed; boolean true honors X-Forwarded-For.
   trustProxy: env.TRUST_PROXY,
   bodyLimit: env.BODY_LIMIT,
   requestTimeout: env.REQUEST_TIMEOUT,
@@ -95,6 +96,7 @@ const shutdown = async (signal: string) => {
   try {
     // Close server with timeout
     await fastify.close()
+    await closeDb()
     fastify.log.info('Server closed successfully')
     process.exit(0)
   } catch (err) {

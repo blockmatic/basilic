@@ -84,6 +84,30 @@ describe('GET /test/verification/last', () => {
     expect(body.token).toMatch(/^\d{6}$/)
     expect(body.verificationId).toBeTruthy()
   })
+
+  it('should not match change_email via LIKE wildcards in email', async () => {
+    const jwt = await getOrCreateSession(fastify, 'foo_bar@test.ai', { clearBefore: true })
+    const targetEmail = 'foo_bar@test.ai'
+    const decoyEmail = 'fooXbar@test.ai'
+
+    await fastify.inject({
+      method: 'POST',
+      url: '/account/email/change/request',
+      headers: { Authorization: `Bearer ${jwt}` },
+      payload: {
+        email: targetEmail,
+        callbackUrl: 'https://example.com/auth/callback/change-email',
+      },
+    })
+
+    const decoyResponse = await fastify.inject({
+      method: 'GET',
+      url: `/test/verification/last?type=change_email&email=${encodeURIComponent(decoyEmail)}`,
+    })
+
+    expect(decoyResponse.statusCode).toBe(200)
+    expect(decoyResponse.json()).toEqual({ token: null, verificationId: null })
+  })
 })
 
 describe('GET /test/magic-link/last with email', () => {

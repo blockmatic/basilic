@@ -887,6 +887,13 @@ export type ChatErrors = {
     code: string;
     message: string;
   };
+  /**
+   * Default Response
+   */
+  504: {
+    code: string;
+    message: string;
+  };
 };
 
 export type ChatError = ChatErrors[keyof ChatErrors];
@@ -982,6 +989,14 @@ export type MagiclinkRequestErrors = {
   400: {
     code: string;
     message: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
   };
 };
 
@@ -1108,6 +1123,14 @@ export type OauthFacebookAuthorizeUrlErrors = {
   /**
    * Default Response
    */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+  };
+  /**
+   * Default Response
+   */
   503: {
     code: string;
     message: string;
@@ -1158,6 +1181,14 @@ export type OauthFacebookExchangeErrors = {
   409: {
     code: string;
     message: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
   };
   /**
    * Default Response
@@ -1270,6 +1301,14 @@ export type OauthGithubAuthorizeUrlErrors = {
   /**
    * Default Response
    */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+  };
+  /**
+   * Default Response
+   */
   503: {
     code: string;
     message: string;
@@ -1348,6 +1387,14 @@ export type OauthGithubExchangeErrors = {
   409: {
     code: string;
     message: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
   };
   /**
    * Default Response
@@ -1453,6 +1500,14 @@ export type OauthGoogleAuthorizeUrlErrors = {
   /**
    * Default Response
    */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+  };
+  /**
+   * Default Response
+   */
   503: {
     code: string;
     message: string;
@@ -1510,6 +1565,7 @@ export type OauthGoogleExchangeErrors = {
   429: {
     code: string;
     message: string;
+    retryAfter: number;
   };
   /**
    * Default Response
@@ -1662,6 +1718,14 @@ export type OauthTwitterAuthorizeUrlErrors = {
   /**
    * Default Response
    */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+  };
+  /**
+   * Default Response
+   */
   503: {
     code: string;
     message: string;
@@ -1712,6 +1776,14 @@ export type OauthTwitterExchangeErrors = {
   409: {
     code: string;
     message: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
   };
   /**
    * Default Response

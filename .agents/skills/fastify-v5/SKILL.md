@@ -103,7 +103,7 @@ Configure Fastify instance with TypeBox type provider, logger, and request setti
 
 ```typescript
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import Fastify from 'fastify'
+import Fastify, { LogController } from 'fastify'
 
 const fastify = Fastify({
   logger: {
@@ -116,7 +116,7 @@ const fastify = Fastify({
   bodyLimit: 1048576, // 1MB
   requestTimeout: 30000,
   requestIdHeader: 'x-request-id',
-  requestIdLogLabel: 'reqId',
+  logController: new LogController({ requestIdLogLabel: 'reqId', disableRequestLogging: false }),
 }).withTypeProvider<TypeBoxTypeProvider>()
 ```
 
