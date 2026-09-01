@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { getOrCreateSession, getWeb3Session } from '../../../../../test/utils/auth-helper.js'
+import {
+  getLinkEmailToken,
+  getOrCreateSession,
+  getWeb3Session,
+} from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 describe('POST /account/link/email/verify', () => {
@@ -45,20 +49,7 @@ describe('POST /account/link/email/verify', () => {
 
   it('should verify link token for web3-only user and return new JWTs', async () => {
     const jwt = await getWeb3Session(fastify, { accountIndex: 1 })
-    fastify.fakeEmail?.clear()
-
-    await fastify.inject({
-      method: 'POST',
-      url: '/account/link/email/request',
-      headers: { Authorization: `Bearer ${jwt}` },
-      payload: {
-        email: 'linked-web3@test.ai',
-        callbackUrl: 'https://example.com/callback',
-      },
-    })
-
-    const linkToken = fastify.fakeEmail?.extractToken()
-    if (!linkToken) throw new Error('No link token')
+    const linkToken = await getLinkEmailToken(fastify, jwt, 'linked-web3@test.ai')
 
     const response = await fastify.inject({
       method: 'POST',

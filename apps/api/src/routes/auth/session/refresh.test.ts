@@ -1,25 +1,11 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import { getMagicLinkTokenRaw } from '../../../../test/utils/auth-helper.js'
 import { fastify } from '../session.spec.js'
 
 describe('POST /auth/session/refresh', () => {
-  beforeEach(() => {
-    fastify.fakeEmail?.clear()
-  })
-
   it('should refresh token and return 200 { token, refreshToken }', async () => {
-    const email = 'test@example.com'
-
-    await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/request',
-      payload: {
-        email,
-        callbackUrl: 'https://example.com/callback',
-      },
-    })
-
-    const token = fastify.fakeEmail?.extractToken()
-    expect(token).toBeTruthy()
+    const email = 'refresh-happy@test.ai'
+    const token = await getMagicLinkTokenRaw(fastify, email)
 
     const verifyResponse = await fastify.inject({
       method: 'POST',
@@ -49,14 +35,7 @@ describe('POST /auth/session/refresh', () => {
 
   it('should return TOKEN_REUSE_DETECTED and revoke session on refresh replay', async () => {
     const email = 'refresh-reuse@test.ai'
-
-    await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/request',
-      payload: { email, callbackUrl: 'https://example.com/callback' },
-    })
-    const token = fastify.fakeEmail?.extractToken()
-    if (!token) throw new Error('No token')
+    const token = await getMagicLinkTokenRaw(fastify, email)
 
     const verifyRes = await fastify.inject({
       method: 'POST',

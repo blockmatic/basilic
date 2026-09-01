@@ -16,7 +16,7 @@ PGLite does not support concurrent writers. API Vitest runs with `fileParallelis
 | `account.spec.ts` | Account linking, API keys, email change, profile |
 | `session.spec.ts` | Logout, refresh, validate-tokens, user |
 | `magiclink.spec.ts` | Magic link request/verify |
-| `oauth.spec.ts` | OAuth authorize/exchange (unconfigured 503 contract) |
+| `oauth.spec.ts` | OAuth authorize/exchange and link-authorize-url (unconfigured 503 contract) |
 | `passkey.spec.ts` | Passkey start/verify/exchange/resolve-user |
 | `web3.spec.ts` | EIP-155 and Solana verify |
 | `reference.spec.ts` | `/reference` HTML + OpenAPI JSON |
@@ -28,9 +28,9 @@ PGLite does not support concurrent writers. API Vitest runs with `fileParallelis
 
 ## ALLOW_TEST
 
-When `ALLOW_TEST=true` (non-production), magic-link and link-email flows for `*@test.ai` store plain tokens in `verification.token_plain`. E2E reads them via `/test/magic-link/last`. Do not enable on production deployments.
+When `ALLOW_TEST=true` (non-production), magic-link flows for `*@test.ai` store plain tokens in `verification.token_plain`. E2E reads them via `/test/magic-link/last`. Do not enable on production deployments.
 
 ## Known gaps
 
 - **OAuth IdP exchange** — Unit tests assert unconfigured 503 and link-authorize-url 401/503 only. No live GitHub/Google/Facebook/Twitter calls in CI.
-- **AI remote** — `ai.spec.ts` uses `skipIfProviderUnavailable`. A skip during prove is not full coverage; ensure `ANTHROPIC_API_KEY` is set for CI when AI behavior must be validated.
+- **AI remote** — `ai.spec.ts` uses `skipIfProviderUnavailable`. A skipped test run is not full coverage; ensure `ANTHROPIC_API_KEY` is set for CI when AI behavior must be validated.

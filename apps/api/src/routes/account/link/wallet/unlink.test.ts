@@ -4,10 +4,13 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { getApiKeyToken, getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
-const testPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as const
-const testAccount = privateKeyToAccount(testPrivateKey as `0x${string}`)
+const anvilPrivateKeys = [
+  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+  '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b786127',
+] as const
 
-async function linkWallet(jwt: string): Promise<string> {
+async function linkWallet(jwt: string, privateKey: `0x${string}`): Promise<string> {
+  const testAccount = privateKeyToAccount(privateKey)
   const nonceRes = await fastify.inject({
     method: 'GET',
     url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
@@ -36,14 +39,16 @@ async function linkWallet(jwt: string): Promise<string> {
     headers: { Authorization: `Bearer ${jwt}` },
   })
   const { user } = JSON.parse(userRes.body)
-  const linked = user.linkedWallets?.find((w: { chain: string }) => w.chain === 'eip155')
+  const linked = user.linkedWallets?.find(
+    (w: { chain: string; address: string }) =>
+      w.chain === 'eip155' && w.address.toLowerCase() === testAccount.address.toLowerCase(),
+  )
   if (!linked?.id) throw new Error('Wallet not linked')
   return linked.id
 }
 
 describe('DELETE /account/link/wallet/:id', () => {
   beforeEach(async () => {
-    fastify.fakeEmail?.clear()
     const db = await (await import('../../../../db/index.js')).getDb()
     const { web3Nonce, walletIdentities } = await import('../../../../db/schema/index.js')
     await db.delete(walletIdentities)
@@ -90,7 +95,7 @@ describe('DELETE /account/link/wallet/:id', () => {
     })
     const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
 
-    const walletId = await linkWallet(jwt)
+    const walletId = await linkWallet(jwt, anvilPrivateKeys[0])
 
     const response = await fastify.inject({
       method: 'DELETE',
@@ -113,7 +118,7 @@ describe('DELETE /account/link/wallet/:id', () => {
       return (JSON.parse(verifyRes.body) as { token: string }).token
     })()
 
-    const walletId = await linkWallet(jwt)
+    const walletId = await linkWallet(jwt, anvilPrivateKeys[0])
 
     const response = await fastify.inject({
       method: 'DELETE',
@@ -132,7 +137,7 @@ describe('DELETE /account/link/wallet/:id', () => {
       payload: { email, token },
     })
     const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
-    const walletId = await linkWallet(jwt)
+    const walletId = await linkWallet(jwt, anvilPrivateKeys[0])
 
     const db = await (await import('../../../../db/index.js')).getDb()
     const { users } = await import('../../../../db/schema/index.js')
@@ -152,5 +157,54 @@ describe('DELETE /account/link/wallet/:id', () => {
     })
     expect(response.statusCode).toBe(400)
     expect(JSON.parse(response.body).code).toBe('LAST_SIGN_IN_METHOD')
+  })
+
+  it('should reject concurrent unlinks that would remove all sign-in methods', async () => {
+    const email = 'wallet-concurrent@test.ai'
+    const token = await getMagicLinkTokenRaw(fastify, email)
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token },
+    })
+    const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
+
+    const db = await (await import('../../../../db/index.js')).getDb()
+    const { users, walletIdentities } = await import('../../../../db/schema/index.js')
+    const { eq } = await import('drizzle-orm')
+    const userRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { Authorization: `Bearer ${jwt}` },
+    })
+    const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
+    await db.update(users).set({ email: null }).where(eq(users.id, userId))
+
+    const walletId1 = await linkWallet(jwt, anvilPrivateKeys[0])
+    const walletId2 = await linkWallet(jwt, anvilPrivateKeys[1])
+
+    const [first, second] = await Promise.all([
+      fastify.inject({
+        method: 'DELETE',
+        url: `/account/link/wallet/${walletId1}`,
+        headers: { Authorization: `Bearer ${jwt}` },
+      }),
+      fastify.inject({
+        method: 'DELETE',
+        url: `/account/link/wallet/${walletId2}`,
+        headers: { Authorization: `Bearer ${jwt}` },
+      }),
+    ])
+
+    const statuses = [first.statusCode, second.statusCode].toSorted()
+    expect(statuses).toEqual([204, 400])
+    const rejected = [first, second].find(res => res.statusCode === 400)
+    expect(JSON.parse(rejected?.body ?? '{}').code).toBe('LAST_SIGN_IN_METHOD')
+
+    const remaining = await db
+      .select({ id: walletIdentities.id })
+      .from(walletIdentities)
+      .where(eq(walletIdentities.userId, userId))
+    expect(remaining.length).toBeGreaterThanOrEqual(1)
   })
 })

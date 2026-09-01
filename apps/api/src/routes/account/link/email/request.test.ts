@@ -3,6 +3,7 @@ import {
   createApiKey,
   getOrCreateSession,
   getWeb3Session,
+  readLinkEmailToken,
 } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
@@ -37,7 +38,6 @@ describe('POST /account/link/email/request', () => {
 
   it('should send link email for web3-only user and return 200', async () => {
     const jwt = await getWeb3Session(fastify, { accountIndex: 0 })
-    fastify.fakeEmail?.clear()
 
     const response = await fastify.inject({
       method: 'POST',
@@ -51,6 +51,9 @@ describe('POST /account/link/email/request', () => {
     expect(response.statusCode).toBe(200)
     expect(JSON.parse(response.body)).toEqual({ ok: true })
 
+    const linkToken = await readLinkEmailToken(fastify, jwt, 'linked@test.ai')
+    expect(linkToken).toBeTruthy()
+
     const sentEmail = fastify.fakeEmail?.last()
     expect(sentEmail).toBeDefined()
     expect(sentEmail?.to).toBe('linked@test.ai')
@@ -62,21 +65,7 @@ describe('POST /account/link/email/request', () => {
   })
 
   it('should return EMAIL_ALREADY_IN_USE when email belongs to another user', async () => {
-    await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/request',
-      payload: {
-        email: 'other@test.ai',
-        callbackUrl: 'https://example.com/callback',
-      },
-    })
-    const otherToken = fastify.fakeEmail?.extractToken()
-    if (!otherToken) throw new Error('No token')
-    await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/verify',
-      payload: { email: 'other@test.ai', token: otherToken },
-    })
+    await getOrCreateSession(fastify, 'other@test.ai', { clearBefore: true })
 
     const jwt = await getWeb3Session(fastify, { accountIndex: 1 })
 
@@ -103,7 +92,6 @@ describe('POST /account/link/email/request', () => {
     })
     const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
     const apiKey = await createApiKey(fastify, userId)
-    fastify.fakeEmail?.clear()
 
     const response = await fastify.inject({
       method: 'POST',

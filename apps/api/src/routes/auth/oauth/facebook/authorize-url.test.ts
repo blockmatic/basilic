@@ -1,4 +1,18 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('../../../../lib/env.js', async importOriginal => {
+  const actual = (await importOriginal()) as { env: Record<string, unknown> }
+  return {
+    env: {
+      ...actual.env,
+      FACEBOOK_CLIENT_ID: undefined,
+      FACEBOOK_CLIENT_SECRET: undefined,
+      OAUTH_FACEBOOK_CALLBACK_URL: undefined,
+      OAUTH_FACEBOOK_CALLBACK_URLS: undefined,
+    },
+  }
+})
+
 import { fastify } from '../../oauth.spec.js'
 
 describe('GET /auth/oauth/facebook/authorize-url', () => {

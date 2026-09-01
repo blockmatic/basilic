@@ -4,7 +4,10 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { passkeyCredentials } from '../../../../db/schema/index.js'
-import { hasRemainingLoginMethod } from '../../../../lib/auth-guardrails.js'
+import {
+  hasRemainingLoginMethod,
+  withUserSignInMethodLock,
+} from '../../../../lib/auth-guardrails.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const passkeyDeleteRoute: FastifyPluginAsync = async fastify => {
@@ -37,33 +40,39 @@ const passkeyDeleteRoute: FastifyPluginAsync = async fastify => {
       const userId = request.session.user.id
       const db = await getDb()
 
-      const [passkeyRow] = await db
-        .select({ id: passkeyCredentials.id })
-        .from(passkeyCredentials)
-        .where(and(eq(passkeyCredentials.id, id), eq(passkeyCredentials.userId, userId)))
+      const result = await withUserSignInMethodLock(db, userId, async tx => {
+        const [passkeyRow] = await tx
+          .select({ id: passkeyCredentials.id })
+          .from(passkeyCredentials)
+          .where(and(eq(passkeyCredentials.id, id), eq(passkeyCredentials.userId, userId)))
 
-      if (!passkeyRow)
+        if (!passkeyRow) return { status: 404 as const }
+
+        const wouldHaveRemaining = await hasRemainingLoginMethod(tx, userId, {
+          excludePasskeyId: id,
+        })
+        if (!wouldHaveRemaining) return { status: 400 as const }
+
+        const deleted = await tx
+          .delete(passkeyCredentials)
+          .where(and(eq(passkeyCredentials.id, id), eq(passkeyCredentials.userId, userId)))
+          .returning()
+
+        if (deleted.length === 0) return { status: 404 as const }
+
+        return { status: 204 as const }
+      })
+
+      if (result.status === 404)
         return reply.code(404).send({
           code: 'NOT_FOUND',
           message: 'Passkey not found',
         })
 
-      const wouldHaveRemaining = await hasRemainingLoginMethod(db, userId, { excludePasskeyId: id })
-      if (!wouldHaveRemaining)
+      if (result.status === 400)
         return reply.code(400).send({
           code: 'LAST_SIGN_IN_METHOD',
           message: 'Cannot unlink the last sign-in method. Add another before unlinking.',
-        })
-
-      const deleted = await db
-        .delete(passkeyCredentials)
-        .where(and(eq(passkeyCredentials.id, id), eq(passkeyCredentials.userId, userId)))
-        .returning()
-
-      if (deleted.length === 0)
-        return reply.code(404).send({
-          code: 'NOT_FOUND',
-          message: 'Passkey not found',
         })
 
       return reply.code(204).send(null)

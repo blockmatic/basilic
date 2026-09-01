@@ -3,6 +3,20 @@ import type { getDb } from '../db/index.js'
 import { account, passkeyCredentials, users, walletIdentities } from '../db/schema/index.js'
 
 type Db = Awaited<ReturnType<typeof getDb>>
+type Tx = Parameters<Parameters<Db['transaction']>[0]>[0]
+type DbOrTx = Db | Tx
+
+/** Serialize sign-in-method mutations per user (check + delete in one transaction). */
+export async function withUserSignInMethodLock<T>(
+  db: Db,
+  userId: string,
+  fn: (tx: Tx) => Promise<T>,
+): Promise<T> {
+  return db.transaction(async tx => {
+    await tx.select({ id: users.id }).from(users).where(eq(users.id, userId)).for('update')
+    return fn(tx)
+  })
+}
 
 /**
  * Returns true if the user has at least one remaining sign-in method.
@@ -11,7 +25,7 @@ type Db = Awaited<ReturnType<typeof getDb>>
  * When checking before OAuth unlink, pass excludeProviderId to simulate removal of that account.
  */
 export async function hasRemainingLoginMethod(
-  db: Db,
+  db: DbOrTx,
   userId: string,
   options?: { excludeProviderId?: string; excludeWalletId?: string; excludePasskeyId?: string },
 ): Promise<boolean> {

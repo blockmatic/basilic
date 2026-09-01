@@ -1,4 +1,18 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('../../../../lib/env.js', async importOriginal => {
+  const actual = (await importOriginal()) as { env: Record<string, unknown> }
+  return {
+    env: {
+      ...actual.env,
+      GOOGLE_CLIENT_ID: undefined,
+      GOOGLE_CLIENT_SECRET: undefined,
+      OAUTH_GOOGLE_CALLBACK_URL: undefined,
+      OAUTH_GOOGLE_CALLBACK_URLS: undefined,
+    },
+  }
+})
+
 import { fastify } from '../../oauth.spec.js'
 
 describe('GET /auth/oauth/google/authorize-url', () => {

@@ -25,10 +25,11 @@ Runtime: request → Fastify validation → handler → Drizzle → JSON.
 
 ```typescript
 import { Type } from '@sinclair/typebox'
+import { isDbReady } from '../db/index.js'
 
 fastify.get('/health', {
   schema: { response: { 200: Type.Object({ ok: Type.Boolean(), dbReady: Type.Boolean() }) } },
-}, async (_request, reply) => reply.send({ ok: true, dbReady: true }))
+}, async (_request, reply) => reply.send({ ok: true, dbReady: isDbReady() }))
 ```
 
 `createClient` from `@repo/core` has three auth modes (see [Authentication](/docs/architecture/authentication)): no-auth, JWT (`getAuthToken` / refresh), API key.
