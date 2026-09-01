@@ -1,6 +1,6 @@
 # Next.js 16 App Router
 
-**Version 1.0.3**
+**Version 1.1.0**
 Next.js Community
 January 2026
 
@@ -14,7 +14,7 @@ January 2026
 
 ## Abstract
 
-Comprehensive Next.js 16 App Router guide for AI agents and LLMs. Contains **45 rules across 9 categories**, prioritized by impact from critical (build optimization, caching strategy) through to cross-cutting codebase hygiene (dedup, dead routes, boundary coherence). Reflects Next.js 16 changes: `'use cache'` directive (no implicit caching), `revalidateTag(tag, cacheLife)` requirement, `proxy.ts` replacing `middleware.ts`, Turbopack persistent caching.
+Comprehensive Next.js 16 App Router guide for AI agents and LLMs. Contains **45 rules across 9 categories**, prioritized by impact from critical (build optimization, caching strategy) through to cross-cutting codebase hygiene (dedup, dead routes, boundary coherence). Reflects Next.js 16 changes: two cache models (`cacheComponents` off → previous fetch/segment config; on → `'use cache'` + `cacheLife`), `revalidateTag(tag, cacheLife)` requirement, `proxy.ts` replacing `middleware.ts`, Turbopack as default bundler.
 
 Rule files describe **pattern shapes** rather than API names and open with a **"Shapes to recognize"** section listing 2–4 syntactic disguises the same break can wear. Selected high-value rules (where pattern-disguise is most common in practice) include a concrete **"In disguise"** incorrect/correct example pair.
 
@@ -33,7 +33,7 @@ The skill ships a category-major **review/refactor algorithm** ([`references/_re
 2. [Caching Strategy](references/_sections.md#2-caching-strategy) — **CRITICAL**
    - 2.1 [Make every server `fetch` declare its caching intent](references/cache-fetch-options.md) — HIGH
    - 2.2 [Declare route-level caching via segment-config exports](references/cache-segment-config.md) — MEDIUM-HIGH
-   - 2.3 [Mark cacheable Server Components/functions explicitly with `'use cache'`](references/cache-use-cache-directive.md) — CRITICAL
+   - 2.3 [Opt into cache explicitly — `'use cache'` only when Cache Components is on](references/cache-use-cache-directive.md) — CRITICAL
    - 2.4 [Call `revalidateTag(tag, cacheLife)` with a profile](references/cache-revalidate-tag.md) — CRITICAL
    - 2.5 [Every Server Action that mutates must invalidate the routes/tags that surface it](references/cache-revalidate-path.md) — HIGH
    - 2.6 [Wrap per-request fetchers with React `cache()` for dedup](references/cache-react-cache.md) — HIGH
@@ -58,8 +58,8 @@ The skill ships a category-major **review/refactor algorithm** ([`references/_re
    - 5.5 [Every Server Action invalidates the routes/tags that surface its data](references/action-revalidation.md) — MEDIUM
 6. [Streaming & Loading States](references/_sections.md#6-streaming--loading-states) — **MEDIUM**
    - 6.1 [Place Suspense around independently-paced subtrees](references/stream-suspense-boundaries.md) — MEDIUM
-   - 6.2 [Every route has a `loading.tsx` adjacent to its `page.tsx`](references/stream-loading-tsx.md) — MEDIUM
-   - 6.3 [Every route has an `error.tsx` next to it](references/stream-error-tsx.md) — MEDIUM
+   - 6.2 [Routes that await data should have a `loading.tsx` adjacent to their `page.tsx`](references/stream-loading-tsx.md) — MEDIUM
+   - 6.3 [Routes that await data should have an `error.tsx` next to them](references/stream-error-tsx.md) — MEDIUM
    - 6.4 [Skeletons match the dimensions of the content they replace](references/stream-skeleton-matching.md) — MEDIUM
    - 6.5 [Nest Suspense when content has a natural reveal order](references/stream-nested-suspense.md) — LOW-MEDIUM
 7. [Metadata & SEO](references/_sections.md#7-metadata--seo) — **MEDIUM**
@@ -85,5 +85,7 @@ The skill ships a category-major **review/refactor algorithm** ([`references/_re
 
 1. [Next.js Documentation](https://nextjs.org/docs)
 2. [Next.js 16 Release Notes](https://nextjs.org/blog/next-16)
-3. [React Documentation](https://react.dev)
-4. [Vercel Engineering Blog](https://vercel.com/blog)
+3. [Upgrade to 16](https://nextjs.org/docs/app/guides/upgrading/version-16)
+4. [Caching without Cache Components](https://nextjs.org/docs/app/guides/caching-without-cache-components)
+5. [`proxy.ts`](https://nextjs.org/docs/app/api-reference/file-conventions/proxy)
+6. [React Documentation](https://react.dev)

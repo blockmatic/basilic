@@ -1,13 +1,13 @@
 ---
-title: Every route should have a `loading.tsx` next to its `page.tsx` — never leave navigation showing a blank screen
+title: Routes that await data should have a `loading.tsx` next to their `page.tsx` — never leave navigation showing a blank screen
 impact: MEDIUM
 impactDescription: instant navigation feedback during async page renders; automatic Suspense wrapping with the loading component as fallback
 tags: stream, loading-tsx, route-level-skeleton, instant-feedback
 ---
 
-## Every route should have a `loading.tsx` next to its `page.tsx` — never leave navigation showing a blank screen
+## Routes that await data should have a `loading.tsx` next to their `page.tsx` — never leave navigation showing a blank screen
 
-**Pattern intent:** a route that fetches data during render shows nothing until that fetch lands — unless `loading.tsx` is present. Next.js auto-wraps the page in `<Suspense fallback={<Loading/>}>` so navigation feels instant.
+**Pattern intent:** a route whose `page.tsx` awaits data during render shows nothing until that fetch lands — unless `loading.tsx` is present. Static legal/marketing pages that render synchronously do not need one. Next.js auto-wraps the page in `<Suspense fallback={<Loading/>}>` so navigation feels instant.
 
 ### Shapes to recognize
 

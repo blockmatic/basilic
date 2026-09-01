@@ -7,6 +7,8 @@ tags: cache, fetch-options, explicit-cache-mode, no-store-vs-force-cache
 
 ## Make every server `fetch` declare its caching intent — never let the default behavior be the documentation
 
+> **Cache model:** `cache`, `next.revalidate`, and `next.tags` on `fetch` are the **previous model** (when `cacheComponents` is unset/false). Under Cache Components (`cacheComponents: true`), tag data with `cacheTag` inside a `'use cache'` scope instead.
+
 **Pattern intent:** every `fetch` in a Server Component or server function should declare what it wants — `cache: 'no-store'` for live data, `cache: 'force-cache'` for static, `next: { revalidate: N }` for time-based, or `next: { tags: [...] }` for tag-based. Leaving it implicit means the answer to "is this cached?" is "go read the framework changelog for the version we're on."
 
 ### Shapes to recognize

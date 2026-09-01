@@ -254,10 +254,9 @@
       "computedHash": "942ca557b6f8f382c1c1aff454018c20548f07e9ae36146d08c2d406a64bf4f8"
     },
     "next-v16": {
-      "source": "blockmatic/basilic-skills",
-      "sourceType": "github",
-      "skillPath": "skills/next-v16/SKILL.md",
-      "computedHash": "70d2d953a9d41fb7b5d7e71c23692952a5bb589bf76bfdfe3b2a5f00ace81925"
+      "source": "../basilic-skills",
+      "sourceType": "local",
+      "computedHash": "229c5feff8aedb27c3dae9d79f018f8b9fd31ce46532b7f638625b1622ec829e"
     },
     "nextjs-form": {
       "source": "blockmatic/basilic-skills",

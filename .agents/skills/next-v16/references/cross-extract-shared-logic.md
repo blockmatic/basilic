@@ -86,7 +86,7 @@ export default async function ProfileLayout({ children }) {
 }
 ```
 
-One module owns the cache semantics. `revalidateTag('session')` invalidates everyone. `react.cache` dedupes within a request; `unstable_cache` persists across requests.
+One module owns the cache semantics. `revalidateTag('session', 'max')` invalidates everyone. `react.cache` dedupes within a request; `unstable_cache` persists across requests.
 
 ### When NOT to extract
 

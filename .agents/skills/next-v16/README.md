@@ -4,40 +4,38 @@ Comprehensive performance optimization guide for Next.js 16 App Router applicati
 
 ## Overview
 
-This skill contains 40+ rules across 8 categories for optimizing Next.js 16 App Router applications. Rules are prioritized by impact from CRITICAL to LOW-MEDIUM.
+This skill contains **45 rules across 9 categories** (including codebase hygiene) for optimizing Next.js 16 App Router applications. Rules are prioritized by impact from CRITICAL to LOW-MEDIUM.
+
+Next.js 16 has **two cache models**: with `cacheComponents` unset/false, use the previous fetch-cache model (`cache: 'force-cache'`, `next.revalidate`, segment config). With `cacheComponents: true`, use `'use cache'` + `cacheLife` / `cacheTag`. Detect which model the app uses before generating cache APIs.
 
 ### Structure
 
 ```
-nextjs-16-app-router/
+next-v16/
 ├── SKILL.md              # Entry point with quick reference
 ├── AGENTS.md             # Compiled comprehensive guide
 ├── metadata.json         # Version and references
 ├── README.md             # This file
-└── rules/
+└── references/
     ├── _sections.md      # Category definitions
+    ├── _review-algorithm.md
     └── {prefix}-{slug}.md # Individual rules
 ```
 
 ## Getting Started
 
+From the basilic-skills repo root:
+
 ```bash
-# Install dependencies (if using build scripts)
-pnpm install
-
-# Build the compiled AGENTS.md
-pnpm build
-
-# Validate the skill
 pnpm validate
 ```
 
 ## Creating a New Rule
 
-1. Choose the appropriate category prefix from `_sections.md`
-2. Create a new file: `rules/{prefix}-{descriptive-name}.md`
+1. Choose the appropriate category prefix from `references/_sections.md`
+2. Create a new file: `references/{prefix}-{descriptive-name}.md`
 3. Follow the template structure below
-4. Run validation to ensure compliance
+4. Run `pnpm validate` to ensure compliance
 
 ### Prefix Reference
 
@@ -51,6 +49,7 @@ pnpm validate
 | Streaming & Loading States | `stream-` | MEDIUM |
 | Metadata & SEO | `meta-` | MEDIUM |
 | Client Components | `client-` | LOW-MEDIUM |
+| Codebase Hygiene | `cross-` | CROSS-CUTTING |
 
 ## Rule File Structure
 
@@ -104,11 +103,8 @@ Examples:
 ## Scripts
 
 ```bash
-# Validate skill structure and content
-node scripts/validate-skill.js ./skills/nextjs-16-app-router
-
-# Build AGENTS.md from rules
-node scripts/build-agents-md.js ./skills/nextjs-16-app-router
+# Validate skill structure and content (from basilic-skills repo root)
+pnpm validate
 ```
 
 ## Contributing
@@ -117,7 +113,7 @@ node scripts/build-agents-md.js ./skills/nextjs-16-app-router
 2. Include both incorrect and correct examples
 3. Quantify impact where possible
 4. Reference authoritative sources
-5. Run validation before submitting
+5. Run `pnpm validate` before submitting
 
 ## Acknowledgments
 

@@ -18,7 +18,7 @@ tags: cache, revalidate-path, mutation-invalidate, server-action-followup
 - A `redirect(...)` *before* `revalidatePath(...)` — `redirect` throws internally, so the invalidation never runs. Order matters.
 - A custom "cache buster" approach (router.refresh() in the client after the action returns) — works for client-rendered subtrees but loses the server-driven invalidation guarantee.
 
-The canonical resolution: call `revalidatePath(specificRoute)` or `revalidateTag(...)` after the mutation succeeds and *before* the `redirect()`. Prefer `revalidateTag` when multiple routes show the same data; `revalidatePath` is the coarser hammer.
+The canonical resolution: call `revalidatePath(specificRoute)`, `revalidateTag(tag, profile)`, or `updateTag(tag)` (Server Actions only, read-your-writes) after the mutation succeeds and *before* the `redirect()`. Prefer `revalidateTag` when multiple routes show the same data; `revalidatePath` is the coarser hammer.
 
 **Incorrect (forgetting to revalidate after mutation):**
 

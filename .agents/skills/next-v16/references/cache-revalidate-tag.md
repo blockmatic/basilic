@@ -7,7 +7,7 @@ tags: cache, revalidate-tag, cache-life-profile, swr
 
 ## Call `revalidateTag(tag, cacheLife)` with a profile — never invoke the old one-arg API
 
-**Pattern intent:** Next.js 16's `revalidateTag` requires a `cacheLife` profile (`'max' | 'hours' | 'days' | 'weeks'`) as its second argument. The profile controls *how stale* served content may be while the revalidation runs in background. Calls with one argument either throw at runtime or no-op silently depending on the codepath.
+**Pattern intent:** Next.js 16's `revalidateTag` requires a `cacheLife` profile as the second argument (`'max' | 'hours' | 'days'` or `{ expire: number }`). The profile controls stale-while-revalidate. One-arg form is deprecated.
 
 ### Shapes to recognize
 
@@ -17,9 +17,9 @@ tags: cache, revalidate-tag, cache-life-profile, swr
 - A Server Action that mutates and calls `revalidateTag` with no `'max'` profile when the user must see fresh data immediately — leaks stale content into the post-mutation render.
 - A code review comment ("we should pick a cacheLife here") followed by the author hardcoding `revalidate: 0` instead — sidesteps the API.
 
-The canonical resolution: `revalidateTag(tag, cacheLife)` where cacheLife is `'max'` (revalidate now), `'hours'` (stale up to 1h while revalidating), `'days'`, or `'weeks'`. Pick the profile based on how tolerable staleness is for the consumers of that tag.
+The canonical resolution: `revalidateTag(tag, profile)` where profile is a `cacheLife` name (`'max'`, `'hours'`, `'days'`) or `{ expire: number }`. `'max'` is stale-while-revalidate (serve cached, refresh in background) — not read-your-writes. For forms where the user must see the write immediately, call `updateTag(tag)` from a Server Action ([Next.js 16 blog](https://nextjs.org/blog/next-16)).
 
-Reference: [Next.js 16 Caching](https://nextjs.org/docs/app/building-your-application/caching)
+Reference: [Migrating to Cache Components](https://nextjs.org/docs/app/guides/migrating-to-cache-components), [Caching without Cache Components](https://nextjs.org/docs/app/guides/caching-without-cache-components)
 
 **Incorrect (old revalidateTag API):**
 
@@ -52,15 +52,22 @@ export async function updateProduct(id: string, data: FormData) {
   revalidateTag('products', 'hours')
 }
 
-// Cache profiles: 'max', 'hours', 'days', 'weeks'
-// 'max' = immediate revalidation
-// 'hours' = stale for up to 1 hour during revalidation
+// Profiles: 'max' | 'hours' | 'days' | { expire: seconds }
+// 'max' = SWR (serve stale, revalidate in background)
+// Read-your-writes in a Server Action: updateTag('products')
 ```
 
-**Tagging cached data:**
+**Tagging cached data (previous model):**
 
 ```typescript
-// lib/data.ts
+const data = await fetch('https://api.store.com/products', {
+  next: { tags: ['products'], revalidate: 3600 },
+})
+```
+
+**Tagging cached data (Cache Components — requires `cacheComponents: true`):**
+
+```typescript
 'use cache'
 
 import { cacheTag } from 'next/cache'

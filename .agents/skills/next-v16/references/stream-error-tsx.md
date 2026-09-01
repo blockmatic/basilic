@@ -1,13 +1,13 @@
 ---
-title: Every route should have an `error.tsx` next to it — a failed fetch must not kill the framework chrome
+title: Routes that await data should have an `error.tsx` next to them — a failed fetch must not kill the framework chrome
 impact: MEDIUM
 impactDescription: contains async failures to their route segment; user can `reset()` to retry without navigating away; preserves layout/header state across retries
 tags: stream, error-tsx, route-level-error, reset-retry
 ---
 
-## Every route should have an `error.tsx` next to it — a failed fetch must not kill the framework chrome
+## Routes that await data should have an `error.tsx` next to them — a failed fetch must not kill the framework chrome
 
-**Pattern intent:** a route that fetches data can fail. Without `error.tsx`, the failure bubbles up to the closest `global-error.tsx` (or Next's default), losing all surrounding chrome and navigation context.
+**Pattern intent:** a route whose `page.tsx` awaits data can fail. Without `error.tsx`, the failure bubbles up to the closest `global-error.tsx` (or Next's default), losing all surrounding chrome and navigation context. Static pages that do not await do not need a segment `error.tsx`.
 
 ### Shapes to recognize
 
