@@ -10,7 +10,9 @@ async function extractMagicLinkData(
   page: ReturnType<typeof test>['page'],
 ): Promise<{ token: string; verificationId: string } | null> {
   try {
-    const response = await page.request.get(`${apiUrl}/test/magic-link/last`)
+    const response = await page.request.get(
+      `${apiUrl}/test/magic-link/last?email=${encodeURIComponent(testEmail)}`,
+    )
     if (!response.ok()) return null
 
     const data = (await response.json()) as { token?: string; verificationId?: string }

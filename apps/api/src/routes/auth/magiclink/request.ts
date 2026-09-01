@@ -4,16 +4,17 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import MagicLinkLoginEmail from '@repo/email/emails/magic-link-login'
 import { render } from '@repo/email/render'
 import { Type } from '@sinclair/typebox'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { users, verification } from '../../../db/schema/index.js'
+import { authLoginRouteConfig } from '../../../lib/auth-login-route-config.js'
 import { isUniqueViolation } from '../../../lib/db-errors.js'
 import { env } from '../../../lib/env.js'
 import { generateLoginCode, hashToken } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
 import { generateUsernameForMagicLink } from '../../../lib/username.js'
-import { ErrorResponseSchema } from '../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 async function findOrCreateUserForMagicLink(
   db: Awaited<ReturnType<typeof getDb>>,
@@ -63,6 +64,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/request',
     {
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'magiclinkRequest',
         description: 'Request magic link for authentication',
@@ -73,6 +75,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: RequestResponseSchema,
           400: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
         },
       },
     },
@@ -106,6 +109,11 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         env.ALLOW_TEST === true &&
         typeof email === 'string' &&
         email.endsWith('@test.ai')
+
+      await db
+        .delete(verification)
+        .where(and(eq(verification.type, 'magic_link'), eq(verification.identifier, email)))
+
       await db.insert(verification).values({
         id: verificationId,
         type: 'magic_link',

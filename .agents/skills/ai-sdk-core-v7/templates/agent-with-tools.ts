@@ -2,9 +2,14 @@
 // AI SDK Core v7 - https://ai-sdk.dev/docs/reference/ai-sdk-core/tool-loop-agent
 
 import { anthropic } from '@ai-sdk/anthropic'
-import { logger } from '@repo/utils/logger'
 import { ToolLoopAgent, tool } from 'ai'
 import { z } from 'zod'
+
+const logger = {
+  info: (..._args: unknown[]) => {},
+  error: (..._args: unknown[]) => {},
+  debug: (..._args: unknown[]) => {},
+}
 
 const weatherAgent = new ToolLoopAgent({
   model: anthropic('claude-sonnet-4-5'),

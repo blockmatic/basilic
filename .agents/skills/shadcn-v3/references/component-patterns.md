@@ -8,8 +8,8 @@ Build complex components from smaller shadcn/ui primitives rather than creating 
 
 ✅ **GOOD:**
 ```tsx
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@repo/ui/components/card'
-import { Button } from '@repo/ui/components/button'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 function MetricCard({ title, value, action }) {
   return (
@@ -47,8 +47,8 @@ function MetricCard({ title, value, action, footer, header, ... }) {
 Extend base components without modifying originals. This preserves updateability and maintains separation of concerns.
 
 ```tsx
-import { Button, type ButtonProps } from '@repo/ui/components/button'
-import { cn } from '@repo/ui/lib/utils'
+import { Button, type ButtonProps } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type * as React from 'react'
 
 interface IconButtonProps extends ButtonProps {
@@ -91,7 +91,7 @@ Use CVA for type-safe variant systems that integrate with Tailwind.
 
 ```tsx
 import { cva, type VariantProps } from 'class-variance-authority'
-import { cn } from '@repo/ui/lib/utils'
+import { cn } from '@/lib/utils'
 import type * as React from 'react'
 
 const alertVariants = cva(
@@ -202,7 +202,7 @@ Always use `forwardRef` for components that need ref forwarding (especially form
 
 ```tsx
 import { forwardRef } from 'react'
-import { cn } from '@repo/ui/lib/utils'
+import { cn } from '@/lib/utils'
 import type * as React from 'react'
 
 interface InputProps extends React.ComponentProps<'input'> {
@@ -266,7 +266,7 @@ function CustomButton({ loading, children, ...props }: CustomButtonProps) {
 ### Extending shadcn Components
 
 ```tsx
-import { Button, type ButtonProps } from '@repo/ui/components/button'
+import { Button, type ButtonProps } from '@/components/ui/button'
 import type * as React from 'react'
 
 interface IconButtonProps extends ButtonProps {
@@ -412,7 +412,7 @@ Use Radix UI's `Slot` component for polymorphic components that can render as di
 
 ```tsx
 import { Slot } from '@radix-ui/react-slot'
-import { cn } from '@repo/ui/lib/utils'
+import { cn } from '@/lib/utils'
 import type * as React from 'react'
 
 interface ButtonProps extends React.ComponentProps<'button'> {
@@ -447,8 +447,8 @@ function Button({ asChild = false, className, ...props }: ButtonProps) {
 ### Card with Actions
 
 ```tsx
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@repo/ui/components/card'
-import { Button } from '@repo/ui/components/button'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 interface ActionCardProps {
   title: string
@@ -477,8 +477,8 @@ function ActionCard({ title, description, actionLabel, onAction }: ActionCardPro
 ### Form Field Composition
 
 ```tsx
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@repo/ui/components/form'
-import { Input } from '@repo/ui/components/input'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 function EmailField({ control, name }) {
   return (

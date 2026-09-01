@@ -2,8 +2,12 @@
 // AI SDK Core - streamText() with chat messages
 
 import { anthropic } from '@ai-sdk/anthropic'
-import { logger } from '@repo/utils/logger'
 import { streamText } from 'ai'
+
+const logger = {
+  info: (..._args: unknown[]) => {},
+  error: (..._args: unknown[]) => {},
+}
 
 async function main() {
   const stream = streamText({

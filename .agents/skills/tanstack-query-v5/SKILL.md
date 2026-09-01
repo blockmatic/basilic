@@ -15,13 +15,13 @@ description: TanStack Query (React Query) for async operations, data fetching, c
 - TanStack Query v5+
 - React 18+ with hooks support
 - TypeScript v5+ (for type inference)
-- `@lukemorales/query-key-factory` for query key management
+- Handwritten query-key tuples in shared query modules (query-key-factory is optional)
 - QueryClientProvider configured at app root
 
 ## Principles
 
 - Use TanStack Query for ANY async operation that benefits from caching or state management
-- Query key factory pattern for centralized, type-safe query keys
+- Prefer handwritten query-key tuples colocated with hooks or in a shared `queries/` module
 - Never manually manage `isLoading`, `error`, or `isError` states (provided by hooks)
 - `queryFn` can be any Promise-returning function (not just HTTP calls)
 - All TanStack features work identically regardless of data source: caching, deduping, background refetching, stale-while-revalidate
@@ -30,9 +30,8 @@ description: TanStack Query (React Query) for async operations, data fetching, c
 
 ### MUST
 
-- Use query key factory (`@lukemorales/query-key-factory`) for all query keys
+- Use stable, hierarchical query keys (handwritten tuples or optional query-key-factory)
 - Use TanStack Query hooks for async operations (never manually manage loading/error states)
-- Use namespace invalidation: `queryClient.invalidateQueries({ queryKey: users._def })`
 
 ### SHOULD
 
@@ -41,11 +40,11 @@ description: TanStack Query (React Query) for async operations, data fetching, c
 - Combine multiple queries into cohesive hooks
 - Use TypeScript generics for type-safe queries: `useQuery<ResponseType>(...)`
 - Configure QueryClient defaults (retry, staleTime) at provider level
+- Use `@lukemorales/query-key-factory` when the project already standardizes on it
 
 ### AVOID
 
-- Manually constructing query keys: `useQuery({ queryKey: ['users', id] })`
-- Hardcoding query keys in invalidations: `queryClient.invalidateQueries({ queryKey: ['users'] })`
+- Hardcoding unrelated query keys in invalidations without a shared prefix
 - Manually managing loading/error states (use hook-provided states)
 - Using for URL-shareable state (use nuqs instead)
 - Using for grouped synchronous state (use ahooks.useSetState instead)
@@ -53,16 +52,37 @@ description: TanStack Query (React Query) for async operations, data fetching, c
 
 ## Interactions
 
-- Complements nuqs for URL state management (queries can depend on URL params)
-- Complements ahooks for synchronous state (useSetState for form state, useLocalStorageState for persistence)
-- Works with generated API clients from OpenAPI specs (@repo/react)
+- Complements [nuqs-v2](../nuqs-v2/SKILL.md) for URL state management (queries can depend on URL params)
+- Complements [ahooks-v3](../ahooks-v3/SKILL.md) for synchronous state (useSetState for form state, useLocalStorageState for persistence)
+- Works with OpenAPI-generated API clients; React Query hooks are handwritten against those clients
 - Part of state management decision tree (see React rules)
 
 ## Patterns
 
-### Query Key Factory Pattern
+### Handwritten Query Keys
 
-Centralized, type-safe query keys:
+Colocated, stable query keys:
+
+```typescript
+export const userKeys = {
+  all: ['users'] as const,
+  detail: (id: string) => [...userKeys.all, id] as const,
+  list: (filters?: Filters) => [...userKeys.all, 'list', filters] as const,
+}
+
+// Usage
+import { useQuery } from '@tanstack/react-query'
+import { userKeys } from '@/queries/users'
+
+const { data, isLoading, error } = useQuery({
+  queryKey: userKeys.detail(userId),
+  queryFn: () => fetchUser(userId),
+})
+```
+
+### Optional Query Key Factory
+
+When the project already uses `@lukemorales/query-key-factory`:
 
 ```typescript
 import { createQueryKeys } from '@lukemorales/query-key-factory'
@@ -72,20 +92,8 @@ export const users = createQueryKeys('users', {
     queryKey: [id],
     queryFn: () => fetchUser(id),
   }),
-  list: (filters?: Filters) => ({
-    queryKey: [filters],
-    queryFn: () => fetchUsers(filters),
-  }),
 })
-
-// Usage
-import { useQuery } from '@tanstack/react-query'
-import { users } from '@/queries/users'
-
-const { data, isLoading, error } = useQuery(users.detail(userId))
 ```
-
-**File Organization**: `src/queries/users.ts` - Query key factory for users, `src/queries/articles.ts` - Query key factory for articles, `src/queries/index.ts` - Re-export all query keys
 
 ### Versatile queryFn Pattern
 
@@ -129,7 +137,7 @@ Mutations with automatic invalidation:
 
 ```typescript
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { users } from '@/queries/users'
+import { userKeys } from '@/queries/users'
 
 function useCreateUser() {
   const queryClient = useQueryClient()
@@ -140,15 +148,10 @@ function useCreateUser() {
       return response
     },
     onSuccess: () => {
-      // Namespace invalidation (recommended)
-      queryClient.invalidateQueries({ queryKey: users._def })
+      queryClient.invalidateQueries({ queryKey: userKeys.all })
     },
   })
 }
-
-// Usage
-const createUser = useCreateUser()
-createUser.mutate({ name: 'John', email: 'john@example.com' })
 ```
 
 ### Infinite Query Pattern
@@ -199,20 +202,19 @@ function Providers({ children }: { children: ReactNode }) {
 }
 ```
 
-### Generated API Client Integration
+### Handwritten Hook Pattern
 
-Use generated hooks from OpenAPI specs:
+Wrap the generated OpenAPI client in custom hooks:
 
 ```typescript
-import { useHealthCheck } from '@repo/react'
+import { useQuery } from '@tanstack/react-query'
+import { apiClient } from '@/lib/api-client'
 
-function HealthStatus() {
-  const { data, isLoading, error } = useHealthCheck()
-  
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error: {error.message}</div>
-  
-  return <div>Status: {data.status}</div>
+export function useHealthCheck() {
+  return useQuery({
+    queryKey: ['health'],
+    queryFn: () => apiClient.GET('/health').then(r => r.data),
+  })
 }
 ```
 
@@ -223,16 +225,13 @@ Extract query logic into reusable hooks:
 ```typescript
 // hooks/useUser.ts
 import { useQuery } from '@tanstack/react-query'
-import { users } from '@/queries/users'
+import { userKeys } from '@/queries/users'
 
 export function useUser(userId: string) {
-  return useQuery(users.detail(userId))
-}
-
-// Component usage
-function UserProfile({ userId }: { userId: string }) {
-  const { data: user, isLoading, error } = useUser(userId)
-  // ...
+  return useQuery({
+    queryKey: userKeys.detail(userId),
+    queryFn: () => fetchUser(userId),
+  })
 }
 ```
 

@@ -47,7 +47,7 @@ description: Utility hooks for React state management — grouped state and loca
 
 ## Interactions
 
-- Complements nuqs for URL state management (can sync bidirectionally)
+- Complements [nuqs-v2](../nuqs-v2/SKILL.md) for URL state management (can sync bidirectionally)
 - Complements TanStack Query for async operations (use TanStack Query for data fetching)
 - Part of state management decision tree (see React rules)
 - Works with React 18+ hooks architecture

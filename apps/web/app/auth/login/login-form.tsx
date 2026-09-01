@@ -18,6 +18,8 @@ import {
 import { cn } from '@repo/ui/lib/utils'
 import { useState } from 'react'
 import { z } from 'zod'
+import { getApiErrorCode, isRateLimitApiError } from '@/lib/auth/api-error'
+import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
 import { LoginCodeView } from './login-code-view'
 
 const emailSchema = z
@@ -79,7 +81,16 @@ export function LoginForm({
       }
     },
     onError: error => {
-      const errorMessage = error.message || 'Failed to send magic link'
+      if (isRateLimitApiError(error)) {
+        setCatalogError(
+          getAuthErrorMessage('rate_limit_exceeded') ??
+            'Too many attempts. Please wait a moment and try again.',
+        )
+        setEmailValidationError(null)
+        return
+      }
+
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send magic link'
       const errorWithCode = error as Error & { code?: string }
       const isValidationError =
         errorWithCode.code === 'VALIDATION_ERROR' ||
@@ -103,14 +114,13 @@ export function LoginForm({
       await onVerifySuccess?.({ token: data.token, refreshToken: data.refreshToken })
     },
     onError: error => {
-      const body =
-        error && typeof error === 'object' && 'body' in error
-          ? (error as { body?: { code?: string } }).body
-          : undefined
-      const code = body?.code
+      const code = getApiErrorCode(error)
       if (code === 'INVALID_TOKEN' || code === 'EXPIRED_TOKEN')
         setCodeError('Invalid or expired code. Please try again or request a new one.')
-      else setCodeError(error.message || 'Verification failed. Please try again.')
+      else
+        setCodeError(
+          error instanceof Error ? error.message : 'Verification failed. Please try again.',
+        )
     },
   })
 

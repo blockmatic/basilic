@@ -480,7 +480,7 @@ Comprehensive error handling with user-friendly messages:
 ```tsx
 import { useWriteContract } from 'wagmi'
 import { BaseError } from 'viem'
-import { captureError } from '@repo/error/nextjs'
+import { captureError } from '@/lib/error-reporting'
 import type { WriteContractParameters } from 'wagmi/actions'
 
 function useContractWriteWithErrorHandling() {
@@ -504,7 +504,7 @@ function useContractWriteWithErrorHandling() {
         userMessage = 'Gas estimation failed. Please try again.'
       }
 
-      // Report error via @repo/error/nextjs
+      // Report error via app error helper
       captureError({
         code: 'TRANSACTION_ERROR',
         error,

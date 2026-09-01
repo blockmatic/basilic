@@ -2,6 +2,7 @@ import { captureError } from '@repo/error/node'
 import { tool } from 'ai'
 import type { FastifyBaseLogger } from 'fastify'
 import { z } from 'zod'
+import { env } from '../../lib/env.js'
 
 const maxBraveResults = 8
 
@@ -15,6 +16,7 @@ export function createBraveSearchTool(apiKey: string, log: FastifyBaseLogger) {
         const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}`
         const res = await fetch(url, {
           headers: { 'X-Subscription-Token': apiKey },
+          signal: AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),
         })
         if (res.status === 401 || res.status === 403)
           return 'Brave Search API key invalid or missing.'

@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 Build production-ready Next.js 16 forms with Server Actions, progressive enhancement, comprehensive validation, and accessibility.
 
+**Override:** If the app already mutates through an API client (Fastify + TanStack Query), do not introduce Server Actions, `useFormStatus`, or `useOptimistic` for those flows.
+
 1. **Create shared Zod schema**: Define Zod schema for form validation, use schema for both client-side (UX) and server-side (security) validation, colocate schema with form component or in feature-specific schema file, infer TypeScript types from schema using `z.infer<typeof schema>`
 2. **Implement Server Action**: Create Server Action with `"use server"` directive, extract/validate FormData using shared Zod schema, return proper result objects with success/error states (never throw directly), use `revalidatePath`/`revalidateTag` for cache invalidation, support redirect after successful submission, ensure Server Action works with progressive enhancement
 3. **Build form component**: Use `useActionState` (React 19) for form state management/error display, use `useFormStatus` for pending submit status, handle initial state/state updates from Server Actions, display validation errors with field-level/form-level feedback, implement proper form reset after successful submission, use `useOptimistic` for immediate feedback where beneficial

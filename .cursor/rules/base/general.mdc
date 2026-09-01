@@ -4,7 +4,7 @@ alwaysApply: true
 ---
 
 ## Agent Behavior (CRITICAL)
-- Docs: `apps/docu/content/docs/`. **Read** the topic MDX for this task. Do not `@`-attach docs from rules or skills. Slash playbooks: `.agents/skills/` (`/name`)
+- Docs: `apps/docu/content/docs/`. **Read** the topic MDX for this task. Do not `@`-attach docs from rules or skills. Slash playbooks: `.agents/skills/workflow/` (`/name`)
 - After features/fixes: same change, update that MDX and nearest README if behavior, commands, or conventions changed; glob `.mdc` only if a constraint changed
 - When creating plans add a ## References section listing rules, skills, and MDX pages used
 - Summarize assumptions in 3–5 bullets

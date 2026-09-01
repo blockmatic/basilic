@@ -2,8 +2,12 @@
 // AI SDK Core - generateText() basic example
 
 import { openai } from '@ai-sdk/openai'
-import { logger } from '@repo/utils/logger'
 import { generateText } from 'ai'
+
+const logger = {
+  info: (..._args: unknown[]) => {},
+  error: (..._args: unknown[]) => {},
+}
 
 async function main() {
   const result = await generateText({

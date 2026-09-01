@@ -143,4 +143,51 @@ describe('POST /auth/magiclink/request', () => {
       expect(typeof verificationId).toBe('string')
     })
   })
+
+  describe('Code invalidation', () => {
+    it('should invalidate prior magic link when requesting again', async () => {
+      const email = 'invalidate@test.ai'
+      const callbackUrl = 'https://example.com/callback'
+
+      await fastify.inject({
+        method: 'POST',
+        url: '/auth/magiclink/request',
+        payload: { email, callbackUrl },
+      })
+
+      const firstSent = fastify.fakeEmail?.last()
+      const firstToken = firstSent ? fastify.fakeEmail?.extractToken(firstSent) : null
+      const firstVerificationId = firstSent
+        ? fastify.fakeEmail?.extractVerificationId(firstSent)
+        : null
+      if (!firstToken || !firstVerificationId) throw new Error('Missing first token')
+
+      await fastify.inject({
+        method: 'POST',
+        url: '/auth/magiclink/request',
+        payload: { email, callbackUrl },
+      })
+
+      const secondSent = fastify.fakeEmail?.last()
+      const secondToken = secondSent ? fastify.fakeEmail?.extractToken(secondSent) : null
+      const secondVerificationId = secondSent
+        ? fastify.fakeEmail?.extractVerificationId(secondSent)
+        : null
+      if (!secondToken || !secondVerificationId) throw new Error('Missing second token')
+
+      const firstVerify = await fastify.inject({
+        method: 'POST',
+        url: '/auth/magiclink/verify',
+        payload: { token: firstToken, verificationId: firstVerificationId },
+      })
+      expect(firstVerify.statusCode).toBe(401)
+
+      const secondVerify = await fastify.inject({
+        method: 'POST',
+        url: '/auth/magiclink/verify',
+        payload: { token: secondToken, verificationId: secondVerificationId },
+      })
+      expect(secondVerify.statusCode).toBe(200)
+    })
+  })
 })

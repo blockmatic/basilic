@@ -7,6 +7,7 @@ import * as schema from './schema/index.js'
 
 let db: ReturnType<typeof drizzle> | ReturnType<typeof drizzlePGLite> | null = null
 let pgLiteInstance: PGlite | null = null
+let pgPool: Pool | null = null
 
 function shouldUsePGLite(): boolean {
   if (env.PGLITE === true) return true
@@ -34,8 +35,8 @@ export async function getDb() {
     } else {
       if (!env.DATABASE_URL) throw new Error('DATABASE_URL is required when PGLITE is false')
 
-      const pool = new Pool({ connectionString: env.DATABASE_URL })
-      db = drizzle(pool, { schema })
+      if (!pgPool) pgPool = new Pool({ connectionString: env.DATABASE_URL })
+      db = drizzle(pgPool, { schema })
     }
 
   return db
@@ -55,4 +56,12 @@ export function isDbReady(): boolean {
 export function resetDbInstance() {
   db = null
   // Note: pgLiteInstance is managed by test utils, don't reset it here
+}
+
+export async function closeDb() {
+  if (pgPool) {
+    await pgPool.end()
+    pgPool = null
+  }
+  db = null
 }

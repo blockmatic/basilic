@@ -7,12 +7,12 @@ description: Drizzle ORM for TypeScript — type-safe SQL queries, schema defini
 
 ## Scope
 
-- Applies to: Drizzle ORM v0.44+ for PostgreSQL, MySQL, SQLite - schema definitions, type-safe queries, migrations, relations
+- Applies to: Drizzle ORM v0.45+ for PostgreSQL, MySQL, SQLite - schema definitions, type-safe queries, migrations
 - Does NOT cover: Database driver setup, connection pooling configuration, other ORMs
 
 ## Assumptions
 
-- Drizzle ORM v0.44+
+- Drizzle ORM v0.45+
 - Drizzle Kit v0.31+ (dev dependency) for migrations
 - PostgreSQL, MySQL, or SQLite database
 - TypeScript v5+ with strict mode
@@ -23,9 +23,8 @@ description: Drizzle ORM for TypeScript — type-safe SQL queries, schema defini
 - Schemas defined using table builders (`pgTable`, `mysqlTable`, `sqliteTable`) with typed columns
 - Column types match database constraints (`varchar` with length, `timestamp` with mode)
 - Indexes defined in table definition second parameter using `index()` helper
-- Identity columns (`generatedAlwaysAsIdentity`) preferred over `serial` in PostgreSQL
+- Text primary keys with `.references()` for foreign keys are a valid default
 - Query helpers (`eq`, `and`, `or`, `like`) provide type-safe SQL construction
-- Relational query builder (`db.query.*`) preferred for complex relations
 - Type inference via `$inferSelect` and `$inferInsert` eliminates manual types
 - Migrations generated with `drizzle-kit generate` (not `push` in production)
 - Prepared statements optimize frequently executed queries
@@ -42,18 +41,21 @@ description: Drizzle ORM for TypeScript — type-safe SQL queries, schema defini
 
 ### SHOULD
 
-- Use relations for type-safe joins
-- Use relational query builder for complex relations
 - Use transactions for multi-step operations
 - Use prepared statements for frequently executed queries
 - Export types via `$inferSelect` and `$inferInsert`
 - Handle `DrizzleQueryError` for structured error handling
 - Organize schemas by domain (one file per entity)
 - Use selective field loading (not full rows)
-- Use identity columns over `serial` in PostgreSQL
 - Specify length for `varchar` columns
 - Use `index()` helper in table definitions
 - Use PGLite for testing PostgreSQL schemas
+- Use `relations()` and relational query builder when the project already uses them
+
+### OPTIONAL
+
+- Identity columns (`generatedAlwaysAsIdentity`) instead of `serial` in PostgreSQL
+- Relational query builder (`db.query.*`) for complex joins when relations are defined
 
 ### AVOID
 

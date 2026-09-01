@@ -19,8 +19,8 @@ description: Build backend AI with Vercel AI SDK v7 — generateText, streamText
 
 ## Principles
 
-- `generateText` / `streamText`; `instructions` for system-style prompt
-- `ToolLoopAgent` + `generate()` / `stream()` — not hand-rolled loops, not `new Agent()`
+- `generateText` / `streamText` for request handlers and one-shot API routes; `instructions` for system-style prompt
+- `ToolLoopAgent` + `generate()` / `stream()` for durable agents — not hand-rolled loops, not `new Agent()`
 - New streaming UI: `createUIMessageStreamResponse` + `toUIMessageStream({ stream: result.stream })` from `'ai'`
 - Existing `result.toUIMessageStreamResponse()` still works in v7 (deprecated). Do not rewrite working handlers unless asked
 - Tool results must be JSON-serializable (no `Date`)

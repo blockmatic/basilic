@@ -1,6 +1,7 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
+import { assertTestRoutesEnabled } from './assert-test-routes-enabled.js'
 import {
   getLastVerification,
   isAllowedTestType,
@@ -30,10 +31,13 @@ const verificationTestRoute: FastifyPluginAsync = async fastify => {
         querystring: QuerystringSchema,
         response: {
           200: VerificationLastResponseSchema,
+          404: Type.Object({ code: Type.String(), message: Type.String() }),
         },
       },
     },
     async (request, reply) => {
+      if (!assertTestRoutesEnabled(reply)) return
+
       const { type, email } = request.query
       if (!isAllowedTestType(type) || !isTestEmailAllowed(email))
         return reply.code(200).send({ token: null, verificationId: null })

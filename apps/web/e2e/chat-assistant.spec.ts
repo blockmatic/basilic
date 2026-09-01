@@ -37,7 +37,7 @@ test.describe('Chat Assistant', () => {
         return
       }
       if (
-        /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET|Connection timed out|Error code 522|status_code: 522/i.test(
+        /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET|Connection timed out|Error code 522|status_code: 522|UPSTREAM_TIMEOUT|timed out/i.test(
           errorText,
         )
       ) {
@@ -45,7 +45,7 @@ test.describe('Chat Assistant', () => {
         return
       }
       if (
-        /AI provider request failed|upstream|Try again later|internal server error|status.?5\d{2}/i.test(
+        /AI provider request failed|upstream|UPSTREAM_TIMEOUT|timed out|Try again later|internal server error|status.?5\d{2}/i.test(
           errorText,
         )
       ) {

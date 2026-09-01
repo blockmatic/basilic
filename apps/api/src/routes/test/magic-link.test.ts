@@ -11,15 +11,13 @@ describe('GET /test/magic-link/last', () => {
     await db.delete(verification).where(like(verification.identifier, '%@test.ai'))
   })
 
-  it('should return null when no magic link has been sent', async () => {
+  it('should return 400 when email is missing', async () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/test/magic-link/last',
     })
 
-    expect(response.statusCode).toBe(200)
-    const body = response.json()
-    expect(body).toEqual({ token: null, verificationId: null })
+    expect(response.statusCode).toBe(400)
   })
 
   it('should return token after magic link is sent', async () => {
@@ -37,7 +35,7 @@ describe('GET /test/magic-link/last', () => {
 
     const response = await fastify.inject({
       method: 'GET',
-      url: '/test/magic-link/last',
+      url: `/test/magic-link/last?email=${encodeURIComponent(email)}`,
     })
 
     expect(response.statusCode).toBe(200)

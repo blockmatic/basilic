@@ -31,7 +31,7 @@ description: Set up Tailwind v4 with shadcn/ui using @theme inline pattern and C
 - Compose complex components from smaller shadcn primitives
 - Extend components via wrapper pattern (don't modify originals)
 - Use CVA (class-variance-authority) for variant systems
-- Always use `forwardRef` for form-compatible components
+- Use `forwardRef` only when a parent must attach a ref (React 19 does not require it by default)
 - Leverage Radix UI primitives for built-in accessibility
 
 ## Constraints
@@ -42,7 +42,7 @@ description: Set up Tailwind v4 with shadcn/ui using @theme inline pattern and C
 - Use `@theme inline` to map all CSS variables
 - Set `"tailwind.config": ""` in `components.json`
 - Delete `tailwind.config.ts` if it exists
-- Use `@tailwindcss/vite` plugin
+- Use CSS-first Tailwind v4 in Next apps (`@import "tailwindcss"` in CSS)
 
 ### SHOULD
 
@@ -52,10 +52,11 @@ description: Set up Tailwind v4 with shadcn/ui using @theme inline pattern and C
 - Compose components from smaller shadcn primitives
 - Use wrapper pattern to extend components (don't modify originals)
 - Use CVA for variant systems in custom components
-- Use `forwardRef` for components that need ref forwarding
+- Use `forwardRef` when a parent must attach a ref
 - Test accessibility with keyboard navigation and screen readers
 - Use Radix UI primitives for complex interactions (dialogs, dropdowns, etc.)
 - Provide ARIA labels for icon-only buttons and interactive elements
+- Use `@tailwindcss/vite` only when the app is Vite-based (not Next.js)
 
 ### AVOID
 
@@ -100,10 +101,10 @@ description: Set up Tailwind v4 with shadcn/ui using @theme inline pattern and C
 }
 ```
 
-### Vite Configuration
+### Vite Configuration (Vite apps only)
 
 ```typescript
-// vite.config.ts
+// vite.config.ts — skip for Next.js CSS-first setups
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({

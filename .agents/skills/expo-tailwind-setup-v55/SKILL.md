@@ -1,6 +1,6 @@
 ---
 name: expo-tailwind-setup-v55
-description: Framework (OSS). Set up Tailwind CSS v4 in Expo with react-native-css and NativeWind v5 for universal styling
+description: Framework (OSS). Set up Tailwind CSS v4 in Expo SDK 57 with react-native-css and NativeWind v5 for universal styling (upstream v55 naming)
 version: 1.0.0
 license: MIT
 ---

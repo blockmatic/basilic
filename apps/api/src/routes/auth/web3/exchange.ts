@@ -2,6 +2,7 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import { and, eq, gt } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
+import { decryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
 import { web3Callback } from '../../../db/schema/index.js'
 import { hashToken } from '../../../lib/jwt.js'
@@ -58,9 +59,16 @@ const web3ExchangeRoute: FastifyPluginAsync = async fastify => {
           message: 'Invalid or expired code',
         })
 
+      const tokens = decryptCallbackTokens(row)
+      if (!tokens)
+        return reply.code(401).send({
+          code: 'INVALID_OR_EXPIRED_CODE',
+          message: 'Invalid or expired code',
+        })
+
       return reply.code(200).send({
-        token: row.accessToken,
-        refreshToken: row.refreshToken,
+        token: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
       })
     },
   )

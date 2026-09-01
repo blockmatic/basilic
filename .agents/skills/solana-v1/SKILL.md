@@ -13,7 +13,8 @@ description: Solana dApp UI with kit and web3.js. Use when wallet connect, trans
 - Address validation and transaction patterns
 
 Does NOT cover:
-- EVM frontend development (see wagmi skill)
+- EVM frontend development (see [wagmi-v3](../wagmi-v3/SKILL.md))
+- Address-only backend validation without dApp UI (may use `@solana/web3.js` `PublicKey` only)
 - General blockchain concepts
 
 ## Assumptions
@@ -29,7 +30,7 @@ Does NOT cover:
 
 - Use Solana Foundation framework-kit (`@solana/client` + `@solana/react-hooks`) for React/Next.js UI
 - Use `@solana/kit` for client/RPC/transaction code
-- Validate addresses with `PublicKey` from `@solana/web3.js`
+- Validate addresses with `PublicKey` from `@solana/web3.js` (including backend-only routes that do not ship wallet UI)
 - Use Wallet Standard for wallet discovery and connection
 - Isolate `@solana/web3.js` to adapter boundaries when legacy dependencies require it
 

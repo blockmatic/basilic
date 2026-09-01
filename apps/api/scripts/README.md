@@ -30,7 +30,7 @@ pnpm generate:openapi
 - Before committing route changes
 - As part of CI/CD to verify spec consistency
 
-This script ensures the OpenAPI spec stays in sync with route implementations, enabling type-safe client generation via hey-api in `@repo/core` and `@repo/react`.
+This script ensures the OpenAPI spec stays in sync with route implementations, enabling type-safe client generation via hey-api in `@repo/core`. `@repo/react` hooks are handwritten on top of `@repo/core` — they are not generated from the OpenAPI spec.
 
 ## Related Documentation
 

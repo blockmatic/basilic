@@ -7,9 +7,12 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { logger } from '@repo/utils/logger'
 import { DefaultChatTransport } from 'ai'
 import { type FormEvent, useEffect, useRef, useState } from 'react'
+
+const logger = {
+  error: (..._args: unknown[]) => {},
+}
 
 export default function ChatPage() {
   const { messages, sendMessage, status, error, stop } = useChat({

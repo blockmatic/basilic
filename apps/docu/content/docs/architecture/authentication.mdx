@@ -47,6 +47,10 @@ Both/neither returns 400 `INVALID_INPUT`.
 
 `POST /account/apikeys` returns the raw `bask_` key once. The database stores `hashToken(secret)`, not the raw key.
 
+## Web3 callback storage
+
+EIP-155 and Solana verify routes store short-lived callback JWTs in `web3_callback` **encrypted at rest** (AES-GCM, same helpers as passkey callbacks). `POST /auth/web3/exchange` decrypts before returning tokens to the client. Decrypt failure returns 401 `INVALID_OR_EXPIRED_CODE`.
+
 ## Web (Next.js)
 
 Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. Client-side token persistence goes through `POST /api/auth/update-tokens`, which accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before writing `api.session`. After login, home includes link-wallet and link-email.

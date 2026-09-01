@@ -34,7 +34,7 @@ alwaysApply: false
 ## Auth helpers
 - Import `page` from `@playwright/test`; use `authHelpers` from `e2e/auth-helpers.ts`
 - Tokens: `GET /test/verification/last?type=magic_link|change_email&email=` (email required, `@test.ai` only)
-- Legacy: `GET /test/magic-link/last?email=` optional
+- `GET /test/magic-link/last?email=` (email required, `@test.ai` only)
 - TOTP in-progress code: `GET /test/totp/current` with Bearer from `extractSessionToken`
 
 ## Test email

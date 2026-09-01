@@ -1,6 +1,6 @@
 ---
 name: openapi-ts-v0
-description: Generate TypeScript clients from OpenAPI specs using @hey-api/openapi-ts — type-safe API clients with Zod schemas. Use when generating TypeScript clients from OpenAPI specifications for frontend or API consumers.
+description: Generate TypeScript clients from OpenAPI specs using @hey-api/openapi-ts — type-safe API clients. Use when generating TypeScript clients from OpenAPI specifications for frontend or API consumers.
 ---
 
 # Skill: openapi-ts
@@ -15,16 +15,16 @@ description: Generate TypeScript clients from OpenAPI specs using @hey-api/opena
 - `@hey-api/openapi-ts` v0+
 - OpenAPI 3.0 specification format
 - TypeScript v5+ with strict mode
-- Zod for runtime validation (when using Zod schemas)
+- Default output is types and client only; React Query hooks are handwritten in consuming apps
 
 ## Principles
 
 - Generate clients from OpenAPI specs (single source of truth)
-- Use generated Zod schemas for runtime validation
 - Client methods are fully typed from OpenAPI spec
 - Error responses are typed from OpenAPI error schemas
 - Use `createClient` factory for client instantiation
 - Configure output format and schema type in config file
+- Zod schemas and generated React Query plugins are optional add-ons
 
 ## Constraints
 
@@ -36,9 +36,11 @@ description: Generate TypeScript clients from OpenAPI specs using @hey-api/opena
 
 ### SHOULD
 
-- Use Zod schemas (`schemas.type: 'zod'`) for runtime validation
 - Use Prettier formatting (`output.format: 'prettier'`)
 - Generate TypeScript enums (`types.enums: 'typescript'`)
+- Write TanStack Query hooks by hand against the generated client
+- Add Zod schemas (`schemas.type: 'zod'`) only when runtime validation is required
+- Add generated React Query plugin only when the project opts into it
 
 ### AVOID
 
@@ -68,9 +70,6 @@ export default defineConfig({
   },
   types: {
     enums: 'typescript',
-  },
-  schemas: {
-    type: 'zod',
   },
 })
 ```

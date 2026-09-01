@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
+import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
 import { web3Callback } from '../../../db/schema/index.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
@@ -11,13 +12,17 @@ describe('POST /auth/web3/exchange', () => {
     const code = generateToken()
     const codeHash = hashToken(code)
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000)
+    const encrypted = encryptCallbackTokens({
+      accessToken: 'test-access-token',
+      refreshToken: 'test-refresh-token',
+    })
 
     const db = await getDb()
     await db.insert(web3Callback).values({
       id: randomUUID(),
       codeHash,
-      accessToken: 'test-access-token',
-      refreshToken: 'test-refresh-token',
+      accessToken: encrypted.accessToken,
+      refreshToken: encrypted.refreshToken,
       expiresAt,
     })
 
@@ -55,11 +60,15 @@ describe('POST /auth/web3/exchange', () => {
     const expiresAt = new Date(Date.now() - 60 * 1000)
 
     const db = await getDb()
+    const encrypted = encryptCallbackTokens({
+      accessToken: 'test-access-token',
+      refreshToken: 'test-refresh-token',
+    })
     await db.insert(web3Callback).values({
       id: randomUUID(),
       codeHash,
-      accessToken: 'test-access-token',
-      refreshToken: 'test-refresh-token',
+      accessToken: encrypted.accessToken,
+      refreshToken: encrypted.refreshToken,
       expiresAt,
     })
 
