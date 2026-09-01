@@ -12,11 +12,6 @@ test.describe('Security - Passkeys', () => {
   })
 
   test('should add passkey with CDP virtual authenticator and remove it', async ({ page }) => {
-    await page.goto('/settings/security/passkeys')
-    await expect(page.getByRole('button', { name: /add passkey/i })).toBeVisible({
-      timeout: 10_000,
-    })
-
     const cdp = await page.context().newCDPSession(page)
     await cdp.send('WebAuthn.enable')
     await cdp.send('WebAuthn.addVirtualAuthenticator', {
@@ -29,10 +24,23 @@ test.describe('Security - Passkeys', () => {
       },
     })
 
+    await page.goto('/settings/security/passkeys')
+    await expect(page.getByRole('button', { name: /add passkey/i })).toBeVisible({
+      timeout: 10_000,
+    })
+
     await page.getByRole('button', { name: /add passkey/i }).click()
     await expect(page.getByRole('dialog')).toBeVisible()
     await page.getByRole('button', { name: /^add$/i }).click()
-    await expect(page.getByText(/passkey added/i)).toBeVisible({ timeout: 10_000 })
+
+    const errorToast = page.getByText(/failed to add passkey|registration cancelled/i)
+    const successToast = page.getByText(/passkey added/i)
+    const outcome = await Promise.race([
+      successToast.waitFor({ state: 'visible', timeout: 10_000 }).then(() => 'success' as const),
+      errorToast.waitFor({ state: 'visible', timeout: 10_000 }).then(() => 'error' as const),
+    ])
+    if (outcome === 'error')
+      throw new Error(`Passkey registration failed: ${await errorToast.textContent()}`)
 
     await expect(page.getByRole('button', { name: /^remove /i })).toBeVisible({ timeout: 5000 })
     await page

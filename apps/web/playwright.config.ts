@@ -14,7 +14,7 @@ export default defineConfig({
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
   workers: 1,
-  reporter: isCi ? 'github' : 'list',
+  reporter: isCi ? [['github'], ['html']] : 'list',
   globalSetup: './e2e/playwright-global-setup.ts',
   globalTeardown: './e2e/playwright-global-teardown.ts',
   use: {

@@ -1,5 +1,11 @@
 import { env } from './env.js'
 
+export function getWebAuthnRpName(): string {
+  const rpName = env.WEBAUTHN_RP_NAME?.trim() || env.APP_NAME
+  if (!rpName) throw new Error('WebAuthn RP name is required: set WEBAUTHN_RP_NAME or APP_NAME')
+  return rpName
+}
+
 /**
  * Parses Origin header and validates against ALLOWED_ORIGINS.
  * Returns rpID (hostname) and expectedOrigin for WebAuthn.

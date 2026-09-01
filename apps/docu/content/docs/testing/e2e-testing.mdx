@@ -98,7 +98,7 @@ For protected previews: enable Protection Bypass for Automation on both projects
 
 ## Troubleshooting
 
-Ports in use: `bash scripts/kill-test-servers.sh`. Token extraction fails: confirm `ALLOW_TEST=true` and the correct `@test.ai` email query on `/test/verification/last`. Magic link `500` mid-suite: local/CI spawn sets `RATE_LIMIT_MAX=10000` (default API limit is 100/min per IP).
+Ports in use: `bash scripts/kill-test-servers.sh`. Token extraction fails: confirm `ALLOW_TEST=true` and the correct `@test.ai` email query on `/test/verification/last`. Magic link `500` mid-suite: local/CI spawn sets `RATE_LIMIT_MAX=10000` (default API limit is 100/min per IP). Passkey registration fails in CI: spawn scripts and `web-e2e.yml` set `WEBAUTHN_RP_NAME=Test App` when `.env.test` is absent.
 
 ## Related
 

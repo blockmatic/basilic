@@ -11,7 +11,7 @@ Path filters are used only for test workflows (app E2E and package unit tests) s
 
 ### Web (`web-e2e.yml`)
 
-Build → E2E. Triggers on pull request when `apps/web/**`, `apps/api/src/routes/test/**`, shared packages, or openapi change. Single job: build (with localhost API URL), `test` (E2E-only placeholder, no unit suite), then E2E via `test:e2e:local` (spawns Fastify + Next with `ALLOW_TEST=true` and `RATE_LIMIT_MAX=10000`).
+Build → E2E. Triggers on pull request when `apps/web/**`, `apps/api/src/routes/test/**`, shared packages, or openapi change. Single job: build (with localhost API URL), `test` (E2E-only placeholder, no unit suite), then E2E via `test:e2e:local` (spawns Fastify + Next with `ALLOW_TEST=true`, `RATE_LIMIT_MAX=10000`, and `WEBAUTHN_RP_NAME=Test App`).
 
 ### API (`api-e2e.yml`)
 
@@ -30,6 +30,16 @@ When `apps/api/**` changes, CI runs `pnpm generate && git diff --exit-code` on `
 No dedicated CI workflow. Docu deploys via Vercel from Git with `turbo-ignore`; builds run only when `apps/docu/**` or shared packages change.
 
 See [E2E Testing](/docs/testing/e2e-testing) for details.
+
+### Inspect with `gh`
+
+Use the GitHub CLI for PR checks and failed workflow logs — not GitHub MCP:
+
+```bash
+gh pr checks
+gh run list --branch "$(git branch --show-current)" --limit 5
+gh run view <run-id> --log-failed
+```
 
 ### Lint (`lint.yml`)
 

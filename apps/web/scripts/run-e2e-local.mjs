@@ -87,6 +87,7 @@ async function main() {
     PGLITE: 'true',
     NODE_ENV: 'test',
     RATE_LIMIT_MAX: '10000',
+    WEBAUTHN_RP_NAME: loaded.WEBAUTHN_RP_NAME ?? process.env.WEBAUTHN_RP_NAME ?? 'Test App',
     NEXT_PUBLIC_API_URL: 'http://localhost:3001',
     AI_PROVIDER: 'anthropic',
     JWT_SECRET:
