@@ -18,7 +18,7 @@ function NewsCardSkeleton() {
 }
 
 // eslint-disable-next-line import/no-default-export -- Next.js requires default export for loading.tsx
-export default function NewsLoading() {
+export default function NewsLoading(): React.JSX.Element {
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       {Array.from({ length: 4 }, (_, i) => (

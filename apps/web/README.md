@@ -18,7 +18,7 @@ Next.js 16 dashboard for the Basilic stack: news, markets, settings, and AI assi
 - **`@repo/core`** — Generated API client and types
 - **`@repo/react`** — TanStack Query hooks for API calls
 
-See the [monorepo documentation](@apps/docu/content/docs/architecture/monorepo.mdx) for package architecture.
+See the [monorepo documentation](../docu/content/docs/architecture/monorepo.mdx) for package architecture.
 
 ## Getting Started
 
@@ -67,11 +67,11 @@ pnpm build --filter=@repo/web
 - `pnpm dev` — Start development server
 - `pnpm build` — Build for production
 - `pnpm start` — Start production server
-- `pnpm lint` — Run ESLint
+- `pnpm lint` — Run Biome and ESLint
 - `pnpm test` — No-op (E2E only)
 - `pnpm test:e2e:local` — Build, spawn servers, run E2E, cleanup
 
-See [E2E Testing](@apps/docu/content/docs/testing/e2e-testing.mdx) for full details.
+See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx) for full details.
 
 ### Environment Variables
 
@@ -79,7 +79,7 @@ See `.env.local.example` (copy to `.env.local`) and `lib/env.ts`.
 
 ## Project Structure
 
-```
+```text
 apps/web/
 ├── app/
 │   ├── api/auth/          # Cookie update routes (update-tokens)
@@ -104,13 +104,13 @@ See `app/providers.tsx`.
 
 Auth callbacks exchange credentials with Fastify and set the `api.session` cookie. Clients call Fastify directly; Next.js routes exist for cookie integration only.
 
-See [Authentication Architecture](@apps/docu/content/docs/architecture/authentication.mdx).
+See [Authentication Architecture](../docu/content/docs/architecture/authentication.mdx).
 
 ## Testing
 
-Playwright E2E only (`e2e/**/*.spec.ts`). See [E2E Testing](@apps/docu/content/docs/testing/e2e-testing.mdx).
+Playwright E2E only (`e2e/**/*.spec.ts`). See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx).
 
 ## Related Documentation
 
-- [Monorepo Structure](@apps/docu/content/docs/architecture/monorepo.mdx)
-- [Frontend Architecture](@apps/docu/content/docs/architecture/frontend.mdx)
+- [Monorepo Structure](../docu/content/docs/architecture/monorepo.mdx)
+- [Frontend Architecture](../docu/content/docs/architecture/frontend.mdx)

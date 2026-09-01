@@ -73,7 +73,7 @@ function MarketsTableSkeleton() {
 }
 
 // eslint-disable-next-line import/no-default-export -- Next.js requires default export for loading.tsx
-export default function MarketsLoading() {
+export default function MarketsLoading(): React.JSX.Element {
   return (
     <div className="min-w-0 w-full max-w-full space-y-2">
       <div className="space-y-2 xl:hidden">

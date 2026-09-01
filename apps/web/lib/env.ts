@@ -23,6 +23,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
     NEXT_PUBLIC_API_URL: z.string().min(1),
+    NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().min(1).optional(),
     NEXT_PUBLIC_AUTH_COOKIE_NAME: z.string().default('api.session'),
     NEXT_PUBLIC_SENTRY_DSN: z.string().min(1).optional(),
@@ -41,6 +42,9 @@ export const env = createEnv({
     JWT_SECRET: process.env.JWT_SECRET,
     NEWSAPI_KEY: process.env.NEWSAPI_KEY,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_APP_URL:
+      process.env.NEXT_PUBLIC_APP_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined),
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     NEXT_PUBLIC_AUTH_COOKIE_NAME:
       process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME,
