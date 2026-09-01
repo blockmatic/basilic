@@ -44,6 +44,16 @@ Default to Server Components. Use `'use client'` only for interactivity, browser
 
 Stream with `loading.tsx` and Suspense. Mark search/filter updates as transitions when they would block the UI.
 
+### Caching
+
+`apps/web` uses the **legacy** Next 16 cache model: `cacheComponents` is off, so `'use cache'` is unused. Do not enable Cache Components without a migration.
+
+- Do not export `dynamic = 'force-dynamic'` from the root layout. That sets `fetchCache: 'force-no-store'` for the route and voids fetch-level `next.revalidate`.
+- [`proxy.ts`](/docs/architecture/authentication) gates requests. Cookie reads there do **not** make RSC segments dynamic. A page becomes dynamic when a Server Component calls `cookies()` (for example `getUserInfo` → `getServerAuthToken`).
+- Semi-static RSC data (news, markets): `fetch` with `next: { revalidate: N }`.
+- Auth / Fastify: `cache: 'no-store'`. Identical GET `fetch` calls are request-memoized; do not wrap them in `React.cache()`.
+- No `revalidateTag` until something is tagged. Mutations stay on Fastify, not Server Actions.
+
 ## Data and state
 
 | Concern | Library |

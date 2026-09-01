@@ -61,6 +61,7 @@ export async function refreshTokensWithRefreshToken({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
+      cache: 'no-store',
     })
     if (!response.ok) return null
     const parsed = authCookieSchema.safeParse(await response.json())
