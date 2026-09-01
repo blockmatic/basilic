@@ -18,7 +18,9 @@
         "ANTHROPIC_API_KEY",
         "OLLAMA_BASE_URL",
         "OPEN_ROUTER_API_KEY",
-        "AI_PROVIDER"
+        "AI_PROVIDER",
+        "ALLOWED_ORIGINS",
+        "APP_NAME"
       ]
     },
     "@repo/core#generate": {
