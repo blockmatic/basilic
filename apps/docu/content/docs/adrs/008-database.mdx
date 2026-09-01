@@ -141,7 +141,8 @@ Database migrations follow a host-agnostic strategy that works across all deploy
 ### Migration Execution
 
 **PostgreSQL (Production):**
-- Migrations run at **build time** via `pnpm build` → `pnpm db:migrate` → `tsc`
+- Migrations run at **build time** via `pnpm db:migrate` (Vercel: after `turbo run build`, skipped when `VERCEL_ENV=preview` unless `RUN_PG_MIGRATE=true`)
+- Concurrent migrators serialize with a PostgreSQL advisory lock
 - Migrations are **skipped at runtime** (already applied at build time)
 - Faster startup (migrations already applied)
 - Fails fast if migrations have issues

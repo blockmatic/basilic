@@ -182,7 +182,7 @@ pnpm setup:deepsec
 
 ### `setup:playwright` (package.json)
 
-Installs Playwright Chromium for web and API E2E tests (shared `~/.cache/ms-playwright` cache).
+Installs Playwright Chromium for web and API E2E tests. Default browser cache when `PLAYWRIGHT_BROWSERS_PATH` is unset: Linux `~/.cache/ms-playwright`, macOS `~/Library/Caches/ms-playwright`, Windows `%USERPROFILE%\AppData\Local\ms-playwright`.
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
 ```bash

@@ -55,14 +55,14 @@
         "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
         "NEXT_PUBLIC_LOG_ENABLED",
         "NEXT_PUBLIC_LOG_LEVEL",
-        "NEXT_PUBLIC_LEGAL_EMAIL"
+        "NEXT_PUBLIC_LEGAL_EMAIL",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT"
       ],
       "passThroughEnv": [
         "JWT_SECRET",
         "NEWSAPI_KEY",
-        "SENTRY_AUTH_TOKEN",
-        "SENTRY_ORG",
-        "SENTRY_PROJECT",
         "AUTH_COOKIE_NAME",
         "ALLOW_TEST",
         "SENTRY_DSN",
@@ -84,7 +84,7 @@
     "@repo/api#db:migrate": {
       "dependsOn": ["^build"],
       "cache": false,
-      "env": ["DATABASE_URL", "PGLITE", "RUN_PG_MIGRATE", "NODE_ENV"]
+      "env": ["DATABASE_URL", "PGLITE", "RUN_PG_MIGRATE", "NODE_ENV", "VERCEL_ENV"]
     },
     "lint": {},
     "lint:eslint": {

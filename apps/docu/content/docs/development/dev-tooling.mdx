@@ -19,7 +19,9 @@ Turborepo caches `build`, `checktypes`, `lint:eslint`, and `test`. Per-package `
 Measure before and after build-graph changes. Cold run (clear caches first):
 
 ```bash
-rm -rf .turbo **/dist **/.next **/*.tsbuildinfo
+rm -rf .turbo
+find . \( -name node_modules -o -name .git \) -prune -o \( -name dist -o -name .next \) -type d -prune -exec rm -rf {} +
+find . \( -name node_modules -o -name .git \) -prune -o -name '*.tsbuildinfo' -delete
 pnpm turbo run build --force --profile=turbo-profile.json --verbosity=1
 pnpm checktypes
 pnpm lint
