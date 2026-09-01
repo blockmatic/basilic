@@ -1,6 +1,9 @@
 'use client'
 
+import { captureError } from '@repo/error/nextjs'
+import { logger } from '@repo/utils/logger/client'
 import { env } from 'lib/env'
+import { useEffect } from 'react'
 
 // eslint-disable-next-line import/no-default-export -- Next.js requires default export for error.tsx
 export default function ErrorPage({
@@ -10,6 +13,17 @@ export default function ErrorPage({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    captureError({
+      code: 'UNEXPECTED_ERROR',
+      data: { digest: error.digest },
+      error,
+      label: 'Next.js error.tsx',
+      tags: { runtime: 'nextjs' },
+    })
+    logger.error({ digest: error.digest }, 'Unhandled error in route segment')
+  }, [error])
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="max-w-md space-y-4 text-center">
