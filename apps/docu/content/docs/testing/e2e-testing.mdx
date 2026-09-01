@@ -7,7 +7,7 @@ Frontend apps have no separate unit suite. Two Playwright suites: **Web** (`apps
 
 The Scalar page loads `@scalar/api-reference` from jsDelivr (pinned version in `reference/template.ts`). E2E depends on that CDN for the login button script.
 
-Install browsers with `pnpm exec playwright install` if Chromium is missing. Specs are not skipped.
+Install Chromium with `pnpm setup:playwright` (or `pnpm setup`) if browsers are missing. Specs are not skipped.
 
 Root `pnpm qa` ends with `pnpm test:e2e` (`scripts/run-e2e.mjs`). That script kills processes on ports 3000 and 3001 unless `SKIP_KILL_PORTS=1`.
 
