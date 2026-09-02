@@ -57,6 +57,22 @@ EIP-155 and Solana verify routes store short-lived callback JWTs in `web3_callba
 
 Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. Client-side token persistence goes through `POST /api/auth/update-tokens`, which accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before writing `api.session`. After login, home includes link-wallet and link-email.
 
+### Web auth gate
+
+[`apps/web/proxy.ts`](https://github.com/blockmatic/basilic/blob/main/apps/web/proxy.ts) is the only route gate. Matcher: `/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg$).*)`. Public paths: `/auth/callback/*`, `/auth/logout`, `/terms`, `/privacy`, `/auth/login`. Unauthenticated users → `/auth/login`; authenticated users on `/auth/login` → `/`. Refreshes tokens on navigation.
+
+### OAuth environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth |
+| `FACEBOOK_CLIENT_ID` / `FACEBOOK_CLIENT_SECRET` | Facebook OAuth |
+| `TWITTER_CLIENT_ID` / `TWITTER_CLIENT_SECRET` | Twitter / X OAuth |
+| `OAUTH_*_CALLBACK_URL` | Single callback URL per provider |
+| `OAUTH_*_CALLBACK_URLS` | Comma-separated callback URLs per provider |
+| `ENCRYPTION_KEY` | Token encryption and HMAC for magic-link codes |
+
 Magic link: request email → user clicks → verify → cookies. E2E uses `test@test.ai` when `ALLOW_TEST=true`. See [E2E Testing](/docs/testing/e2e-testing).
 
 ## Related

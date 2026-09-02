@@ -2,7 +2,7 @@
 
 export const operationMeta = {
   "healthCheck": {
-    "summary": "Returns server health status with current ISO datetime",
+    "summary": "Returns server health status",
     "description": "Health check endpoint",
     "pathParams": [],
     "bodyParams": []
@@ -207,9 +207,6 @@ export const operationMeta = {
       },
       {
         "name": "temperature"
-      },
-      {
-        "name": "tools"
       }
     ]
   },

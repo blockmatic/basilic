@@ -128,13 +128,16 @@ CI runs E2E against local servers only (no Vercel URLs). For manual E2E against 
 
 ## Migration to Other Platforms
 
-This project is designed to be portable. When you need to move away from Vercel:
+This project is designed to be portable. When you need to move away from Vercel, see [Portability Strategy](/docs/architecture/portability) for host options and `DATABASE_URL` configuration — not a step-by-step migration guide.
 
-- **Google Cloud Run** - Enterprise security and compliance
-- **AWS ECS/EC2** - AWS ecosystem integration
-- **Self-hosted** - Full control and customization
+## Docs host crawl
 
-See [Portability Strategy](/docs/architecture/portability) for detailed migration paths.
+The docs app (`apps/docu`) welcomes crawlers on HTML pages (opposite of the web app's disallow `/` policy).
+
+- `app/robots.ts` allows `/`, `/docs`, `/og`, `/llms.txt`, `/llms-full.txt`, and `/sitemap.xml`; disallows `/api/` (Orama search).
+- `app/sitemap.ts` lists `/` and every Fumadocs page from `source.getPages()` (HTML only — not LLM dump paths).
+- Absolute `loc` URLs use `NEXT_PUBLIC_SITE_URL`.
+- LLM crawlers: start at `/llms.txt`, then fetch `/llms-full.txt`.
 
 ## Troubleshooting
 

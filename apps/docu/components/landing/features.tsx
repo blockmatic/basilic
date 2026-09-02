@@ -16,7 +16,7 @@ const features = [
     icon: Zap,
     title: 'Production-Ready REST API',
     description:
-      'Fastify-powered backend with automatic OpenAPI documentation, JWT authentication, AI and Crypto wallet integration out of the box.',
+      'Fastify-powered backend with automatic OpenAPI documentation, JWT authentication, and optional AI and Web3 auth routes.',
   },
   {
     icon: PackageCheck,
@@ -34,14 +34,14 @@ const features = [
     icon: Blocks,
     title: 'Next.js and Expo Starters',
     description:
-      'Launch-ready boilerplates for AI applications, crypto wallet connectivity, and more. Build MVPs in days, not months.',
+      'Launch-ready boilerplates for web and mobile. Web is wired to `@repo/core` and `@repo/react`; mobile shares `@repo/ui` today.',
   },
 
   {
     icon: MessageCircle,
     title: 'AI Assistant Component',
     description:
-      'Streaming AI chat UI with Vercel AI SDK, connected to your Fastify backend. Drop-in conversation assistant—no setup required.',
+      'Streaming AI chat UI with Vercel AI SDK, backed by Fastify `POST /ai/chat` and provider env vars (Anthropic, OpenRouter, Ollama).',
   },
   {
     icon: ArrowRightLeft,
@@ -64,9 +64,9 @@ const features = [
   },
   {
     icon: Palette,
-    title: 'ShadcnUI Design System',
+    title: 'shadcn/ui Design System',
     description:
-      'Integrated ShadcnUI design system for consistent, reusable UI and theme support across all apps.',
+      'Integrated shadcn/ui design system for consistent, reusable UI and theme support across all apps.',
   },
 ]
 
@@ -74,7 +74,6 @@ export function Features() {
   return (
     <section id="features" className="px-4 py-16 sm:px-6 md:py-24 lg:py-32">
       <div className="mx-auto max-w-6xl">
-        {/* Section header */}
         <div className="mb-10 text-center md:mb-16">
           <p className="mb-3 text-sm font-medium uppercase tracking-widest text-primary">
             Features
@@ -88,7 +87,6 @@ export function Features() {
           </p>
         </div>
 
-        {/* Feature grid */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map(feature => (
             <Card

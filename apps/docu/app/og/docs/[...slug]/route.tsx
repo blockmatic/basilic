@@ -11,7 +11,12 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   if (!page) notFound()
 
   return new ImageResponse(
-    <DefaultImage title={page.data.title} description={page.data.description} site="Basilic" />,
+    <DefaultImage
+      title={page.data.title}
+      description={page.data.description}
+      site="Basilic"
+      primaryColor="#2dd4a8"
+    />,
     {
       width: 1200,
       height: 630,
@@ -21,7 +26,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
 
 export function generateStaticParams() {
   return source.getPages().map(page => ({
-    lang: page.locale,
     slug: getPageImage(page).segments,
   }))
 }
