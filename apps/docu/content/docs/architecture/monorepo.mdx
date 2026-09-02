@@ -45,4 +45,4 @@ flowchart TB
 
 **Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `notif` (unused scaffold), `error`, `utils`, `cli`.
 
-Dependency rule: `core` → `react`; apps depend on packages, never the reverse. Local dev imports TypeScript source; `prepack` switches to `dist/` for npm. See [Publishing](/docs/deployment/publishing).
+Dependency rule: `core` → `react`; apps depend on packages, never the reverse. Pattern A packages import `src/` in the workspace; Pattern B Node consumers (Fastify, serverless) use `dist/`. `prepack` switches to `dist/` for npm. See [Publishing](/docs/deployment/publishing) and [ESM & TypeScript](/docs/architecture/esm-strategy).

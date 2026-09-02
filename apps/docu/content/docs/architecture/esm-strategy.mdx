@@ -3,13 +3,19 @@ title: "ESM & TypeScript Strategy"
 description: "ESM-first packages, dual-mode exports, TypeScript 7 for tsc, TypeScript 6 for tools that need the compiler API."
 ---
 
-Packages are `"type": "module"`. Workspace apps import TypeScript source; `prepack` switches exports to `dist/` for npm. Details of the publish switch: [Publishing](/docs/deployment/publishing).
+Packages are `"type": "module"`. ESM-only — `tsup` uses `format: ['esm']`; no CJS emit.
+
+The same `@repo/*` graph is loaded by a bundler (Next: can compile TS) and by naked Node (Fastify / Vercel: native ESM, `.js` only). That split is Pattern A vs B. `prepack` switches remaining `src/` paths to `dist/` for npm. Details: [Publishing](/docs/deployment/publishing).
 
 ## Dual-mode exports
 
-**Pattern A** (`@repo/core`, `@repo/react`): `import` points at `src/` in the workspace.
+**Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): `import` points at `src/` in the workspace. Next.js lists them in `transpilePackages`. Workspace `build` is a no-op (`@repo/ui` never runs `tsup` locally).
 
-**Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`, `@repo/notif`): `source` for bundlers, `node` / `import` / `default` for compiled `dist/` so serverless resolvers do not hit `ERR_MODULE_NOT_FOUND`.
+**Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`, `@repo/notif`): `source` for bundlers → `src/`; `node` / `import` / `default` for compiled `dist/` so serverless resolvers do not hit `ERR_MODULE_NOT_FOUND`.
+
+**`@repo/cli`**: bin entry is `dist/` only (Node CLI, not imported by apps).
+
+Pattern B JS is `tsup` (`format: ['esm']`); `.d.ts` is `tsc --declaration` (`dts: false` on tsup).
 
 Prefer subpath imports (`@repo/utils/async`). Do not deep-import `src/`.
 
@@ -28,7 +34,17 @@ Shared configs live in `tools/typescript` (`base.json`, `nextjs.json`, `react-li
 | Next.js 16, React libraries | `bundler` | extensionless OK |
 | Fastify / Node | `NodeNext` | use `.js` in the import path (emit), never `.ts` |
 
+`from './env.js'` inside `env.ts` is the NodeNext emit specifier (the file on disk after `tsc` is `.js`). It is not CJS and not a second source file. Never write `.ts` in those import paths.
+
 Node dev: `tsx`. Next: `transpilePackages` plus webpack `conditionNames: ['source', …]` and `.js` → `.ts` `extensionAlias` (required in Next 16.3.3 — Turbopack lacks `resolveExtensionAlias`). Scripts pass `--webpack` until Turbopack supports workspace `.js` imports. Import `@repo/*`, not relative paths into `packages/`.
+
+## Until
+
+Delete these when the blocker ships:
+
+- **`--webpack` / `extensionAlias`** — until Turbopack `resolveExtensionAlias`
+- **TS 6 alias / `useTypeScriptCli: false`** — until Next.js and ESLint use the TypeScript 7 compiler API
+- **Pattern B `source` condition** — until Node can load workspace TypeScript through `exports` (type-stripping alone does not rewrite `.js` → `.ts`)
 
 Generated OpenAPI client (`packages/core/src/gen/`) and skill templates are excluded from hand-maintained TS rules. Conventions: `.cursor/rules/base/typescript.mdc`.
 

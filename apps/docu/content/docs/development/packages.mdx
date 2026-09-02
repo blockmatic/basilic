@@ -5,7 +5,7 @@ description: "Complete reference for all shared packages and their subpath expor
 
 This document is a reference for shared packages (`@repo/*`) and their **public entrypoints**.
 
-For architectural rules (boundaries, dependency strategy, API generation flow), see **[Package Conventions](/docs/development/package-conventions)**.
+For architectural rules (boundaries, dependency strategy, API generation flow), see **[Package Conventions](/docs/development/package-conventions)**. Export patterns (A / B / `dist` bin): **[ESM & TypeScript Strategy](/docs/architecture/esm-strategy)**.
 
 ## Import Rules
 
@@ -34,16 +34,16 @@ Examples:
 
 ## Package catalog
 
-| Package | What it is | Entrypoints |
-| --- | --- | --- |
-| `@repo/core` | Generated OpenAPI client + types | `@repo/core` |
-| `@repo/cli` | CLI for Basilic API (API key only) | `basilic` bin |
-| `@repo/react` | React Query hooks + React utilities | `@repo/react` |
-| `@repo/utils` | Cross-runtime utilities | `@repo/utils/*` (prefer subpaths) |
-| `@repo/ui` | Shared shadcn/ui components | `@repo/ui/components/*`, `@repo/ui/lib/*`, `@repo/ui/radix` |
-| `@repo/error` | Error reporting interface | `@repo/error/node`, `/nextjs`, `/browser`, `/react` |
-| `@repo/email` | Email templates + renderer | `@repo/email/emails/*`, `@repo/email/render` |
-| `@repo/notif` | Notification env/types (no root export) | `@repo/notif/node`, `@repo/notif/types/*` |
+| Package | What it is | Load | Entrypoints |
+| --- | --- | --- | --- |
+| `@repo/core` | Generated OpenAPI client + types | A | `@repo/core` |
+| `@repo/cli` | CLI for Basilic API (API key only) | `dist` bin | `basilic` bin |
+| `@repo/react` | React Query hooks + React utilities | A | `@repo/react` |
+| `@repo/utils` | Cross-runtime utilities | B | `@repo/utils/*` (prefer subpaths) |
+| `@repo/ui` | Shared shadcn/ui components | A | `@repo/ui/components/*`, `@repo/ui/lib/*`, `@repo/ui/radix` |
+| `@repo/error` | Error reporting interface | B | `@repo/error/node`, `/nextjs`, `/browser`, `/react` |
+| `@repo/email` | Email templates + renderer | B | `@repo/email/emails/*`, `@repo/email/render` |
+| `@repo/notif` | Notification env/types (no root export) | B | `@repo/notif/node`, `@repo/notif/types/*` |
 
 ## Core packages
 
