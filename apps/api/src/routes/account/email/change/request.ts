@@ -9,7 +9,7 @@ import { getDb } from '../../../../db/index.js'
 import { users, verification } from '../../../../db/schema/index.js'
 import { normalizeEmail } from '../../../../lib/email.js'
 import { env } from '../../../../lib/env.js'
-import { generateLoginCode, hashToken } from '../../../../lib/jwt.js'
+import { generateLoginCode, hashLoginCode } from '../../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../../lib/url.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
@@ -96,7 +96,7 @@ const changeEmailRequestRoute: FastifyPluginAsync = async fastify => {
         })
 
       const code = generateLoginCode()
-      const tokenHash = hashToken(code)
+      const tokenHash = hashLoginCode(code)
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
       const verificationId = randomUUID()
       const identifier = `${userId}:${normalizedEmail}`

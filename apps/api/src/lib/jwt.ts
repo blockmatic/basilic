@@ -1,4 +1,4 @@
-import { createHash, randomBytes, randomInt } from 'node:crypto'
+import { createHash, createHmac, randomBytes, randomInt } from 'node:crypto'
 import { env } from './env.js'
 
 type AccessTokenPayload = {
@@ -25,6 +25,13 @@ type RefreshTokenPayload = {
 
 export function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex')
+}
+
+/** HMAC-SHA256 for low-entropy 6-digit login codes (magic link, change email). */
+export function hashLoginCode(code: string): string {
+  return createHmac('sha256', Buffer.from(env.ENCRYPTION_KEY, 'hex'))
+    .update(`login-code:${code}`)
+    .digest('hex')
 }
 
 export function generateToken(): string {

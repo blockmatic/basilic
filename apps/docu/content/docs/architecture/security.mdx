@@ -52,7 +52,7 @@ Lockfile integrity (`--frozen-lockfile`), gitleaks, TruffleHog (filesystem + his
 - CORS: `ALLOWED_ORIGINS` must be explicit origins in production (boot fails on `*` or empty). Dev/test may use `*`. Config: `apps/api/src/plugins/cors.ts`.
 - Rate limit: in-memory per client IP (`RATE_LIMIT_MAX` / `RATE_LIMIT_TIME_WINDOW`). Behind a reverse proxy, set `TRUST_PROXY=true` so Fastify honors `X-Forwarded-For` (Fastify 5 treats numeric hop counts as fail-closed). Local-only, not shared across instances.
 - Validation: **TypeBox** on Fastify routes. Suspicious URL/user-agent patterns are logged in `apps/api/src/lib/security.ts` (not blocked; rate limits handle abuse).
-- API keys hashed SHA-256 at rest; timing-safe compare.
+- 6-digit login codes (magic link, change email): HMAC-SHA256 with `ENCRYPTION_KEY`. API keys and other high-entropy tokens: SHA-256 at rest with `timingSafeEqual` on verify.
 
 ## Login route rate limit (as shipped)
 

@@ -1,7 +1,7 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { captureError } from '@repo/error/node'
 import { Type } from '@sinclair/typebox'
-import { eq } from 'drizzle-orm'
+import { and, eq, gt } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { sessions } from '../../../db/schema/index.js'
@@ -45,7 +45,6 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       const { refreshToken: refreshTokenInput } = request.body
 
-      // Verify refresh JWT
       let decoded: {
         typ?: string
         sub?: string
@@ -58,91 +57,96 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
         return sendCatalogError({ reply, status: 401, code: 'INVALID_TOKEN' })
       }
 
-      // Validate token type
       if (decoded.typ !== 'refresh' || !decoded.sub || !decoded.sid || !decoded.jti)
         return sendCatalogError({ reply, status: 401, code: 'INVALID_TOKEN' })
 
       const db = await getDb()
-
-      // Load session
-      const [session] = await db.select().from(sessions).where(eq(sessions.id, decoded.sid))
-
-      if (!session) return sendCatalogError({ reply, status: 401, code: 'SESSION_NOT_FOUND' })
-
-      // Check expiration
-      if (session.expiresAt < new Date()) {
-        // Clean up expired session
-        await db.delete(sessions).where(eq(sessions.id, session.id))
-        return sendCatalogError({ reply, status: 401, code: 'EXPIRED_TOKEN' })
-      }
-
-      // Verify jti hash matches (reuse detection)
+      const now = new Date()
       const jtiHash = hashToken(decoded.jti)
-      if (session.token !== jtiHash) {
-        // Token reuse detected - revoke session
-        await db.delete(sessions).where(eq(sessions.id, session.id))
-
-        captureError({
-          code: 'SECURITY_VIOLATION',
-          error: new Error('Refresh token reuse detected'),
-          logger: request.log,
-          label: 'refresh token reuse detected',
-          data: {
-            sessionId: decoded.sid,
-            userId: decoded.sub,
-          },
-          tags: {
-            app: 'api',
-            module: 'auth-service',
-            route: request.url,
-            security: 'token-reuse',
-          },
-        })
-
-        return sendCatalogError({ reply, status: 401, code: 'TOKEN_REUSE_DETECTED' })
-      }
-
-      // Rotate refresh token
       const newRefreshJti = generateJti()
       const newRefreshJtiHash = hashToken(newRefreshJti)
       const newSessionExpiresAt = new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000)
 
-      await db
+      const [rotated] = await db
         .update(sessions)
         .set({
           token: newRefreshJtiHash,
           expiresAt: newSessionExpiresAt,
         })
-        .where(eq(sessions.id, session.id))
+        .where(
+          and(
+            eq(sessions.id, decoded.sid),
+            eq(sessions.token, jtiHash),
+            eq(sessions.userId, decoded.sub),
+            gt(sessions.expiresAt, now),
+          ),
+        )
+        .returning()
 
-      const wallet =
-        session.walletChain && session.walletAddress
-          ? { chain: session.walletChain, address: session.walletAddress }
-          : undefined
+      if (rotated) {
+        const wallet =
+          rotated.walletChain && rotated.walletAddress
+            ? { chain: rotated.walletChain, address: rotated.walletAddress }
+            : undefined
 
-      // Issue new JWTs
-      const accessPayload = createAccessTokenPayload({
-        userId: decoded.sub,
-        sessionId: decoded.sid,
-        wallet,
-      })
-      const refreshPayload = createRefreshTokenPayload({
-        userId: decoded.sub,
-        sessionId: decoded.sid,
-        jti: newRefreshJti,
+        const accessPayload = createAccessTokenPayload({
+          userId: decoded.sub,
+          sessionId: decoded.sid,
+          wallet,
+        })
+        const refreshPayload = createRefreshTokenPayload({
+          userId: decoded.sub,
+          sessionId: decoded.sid,
+          jti: newRefreshJti,
+        })
+
+        const accessToken = fastify.jwt.sign(accessPayload, {
+          expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
+        })
+        const newRefreshToken = fastify.jwt.sign(refreshPayload, {
+          expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
+        })
+
+        return reply.code(200).send({
+          token: accessToken,
+          refreshToken: newRefreshToken,
+        })
+      }
+
+      const [session] = await db.select().from(sessions).where(eq(sessions.id, decoded.sid))
+
+      if (!session) return sendCatalogError({ reply, status: 401, code: 'SESSION_NOT_FOUND' })
+
+      if (session.expiresAt < now) {
+        await db.delete(sessions).where(eq(sessions.id, session.id))
+        return sendCatalogError({ reply, status: 401, code: 'EXPIRED_TOKEN' })
+      }
+
+      if (session.userId !== decoded.sub) {
+        await db.delete(sessions).where(eq(sessions.id, session.id))
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_TOKEN' })
+      }
+
+      await db.delete(sessions).where(eq(sessions.id, session.id))
+
+      captureError({
+        code: 'SECURITY_VIOLATION',
+        error: new Error('Refresh token reuse detected'),
+        logger: request.log,
+        label: 'refresh token reuse detected',
+        data: {
+          sessionId: decoded.sid,
+          userId: decoded.sub,
+        },
+        tags: {
+          app: 'api',
+          module: 'auth-service',
+          route: request.url,
+          security: 'token-reuse',
+        },
       })
 
-      const accessToken = fastify.jwt.sign(accessPayload, {
-        expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
-      })
-      const newRefreshToken = fastify.jwt.sign(refreshPayload, {
-        expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
-      })
-
-      return reply.code(200).send({
-        token: accessToken,
-        refreshToken: newRefreshToken,
-      })
+      return sendCatalogError({ reply, status: 401, code: 'TOKEN_REUSE_DETECTED' })
     },
   )
 }

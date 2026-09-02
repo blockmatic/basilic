@@ -10,7 +10,7 @@ Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3**
 ## Tokens
 
 - **Access JWT** (`typ=access`): `sub`, `sid`, optional `wal` for wallet sessions. Lifetime: `ACCESS_JWT_EXPIRES_IN_SECONDS`. Fastify verifies JWT then loads the session.
-- **Refresh JWT** (`typ=refresh`): `sub`, `sid`, `jti`. Rotation at `POST /auth/session/refresh`. Reuse of a spent `jti` returns 401 `TOKEN_REUSE_DETECTED` and revokes the session; further refresh attempts return `SESSION_NOT_FOUND`.
+- **Refresh JWT** (`typ=refresh`): `sub`, `sid`, `jti`. Rotation at `POST /auth/session/refresh` uses a compare-and-swap `UPDATE` on `id`, `token` (hashed `jti`), and `userId` (`sub`). Reuse of a spent `jti` returns 401 `TOKEN_REUSE_DETECTED` and revokes the session; further refresh attempts return `SESSION_NOT_FOUND`.
 - **Session**: created on login, rotated on refresh, deleted on logout (`POST /auth/session/logout` returns **204**).
 
 ```mermaid
@@ -34,6 +34,8 @@ stateDiagram-v2
 - `{ token, email }` — code entry on the login page
 
 Both/neither returns 400 `INVALID_INPUT`.
+
+6-digit magic-link and change-email codes are stored as **HMAC-SHA256** keyed by `ENCRYPTION_KEY` (`hashLoginCode`), not unsalted SHA-256. High-entropy secrets (API keys, refresh `jti`, OAuth state) still use `hashToken` (SHA-256). Codes issued before a deploy that changes the algorithm fail verify until the user re-requests (15-minute TTL).
 
 ## Validate tokens
 

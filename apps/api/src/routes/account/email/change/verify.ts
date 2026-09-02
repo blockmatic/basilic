@@ -13,6 +13,7 @@ import {
   createAccessTokenPayload,
   createRefreshTokenPayload,
   generateJti,
+  hashLoginCode,
   hashToken,
 } from '../../../../lib/jwt.js'
 import { getTrustedClientIp } from '../../../../lib/request.js'
@@ -90,7 +91,7 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
         })
 
       const token = body.token
-      const tokenHash = hashToken(token)
+      const tokenHash = hashLoginCode(token)
       const db = await getDb()
       const ip = getTrustedClientIp(request)
       const userId = request.session.user.id
