@@ -44,7 +44,7 @@ export const skipIfProviderUnavailable = (
 ): boolean => {
   if (isProviderUnavailable(res)) {
     process.stderr.write(
-      `[AI test] ${name}: AI provider unreachable - passing without validation\n`,
+      `[AI test] ${name}: AI provider unreachable (${res.statusCode}) - passing without validation\n`,
     )
     return true
   }

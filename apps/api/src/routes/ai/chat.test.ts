@@ -217,7 +217,7 @@ describe('POST /ai/chat', () => {
         url: '/ai/chat',
         headers: { Authorization: `Bearer ${testToken}` },
         payload: {
-          messages: [{ role: 'user', content: 'Who am I?' }],
+          messages: [{ role: 'user', content: 'Who am I? Use getAccountInfo.' }],
         },
       })
       if (skipIfInsufficientCredits(response, 'who am I tool')) return
@@ -226,6 +226,8 @@ describe('POST /ai/chat', () => {
       const data = JSON.parse(response.body)
       expect(() => ChatResponseSchema.parse(data)).not.toThrow()
       expect(data.text).toBeTypeOf('string')
+      expect(data.text.length).toBeGreaterThan(0)
+      expect(data.text.toLowerCase()).toMatch(/test@test\.ai|joined|email/)
     }, 60000)
   })
 })

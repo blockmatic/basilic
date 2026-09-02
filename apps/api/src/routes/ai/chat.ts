@@ -4,6 +4,7 @@ import {
   consumeStream,
   convertToModelMessages,
   generateText,
+  isStepCount,
   type ModelMessage,
   smoothStream,
   streamText,
@@ -165,6 +166,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         model: resolvedModel,
         messages,
         tools: mergedTools,
+        stopWhen: isStepCount(env.AI_TOOL_MAX_STEPS),
         abortSignal,
         ...(temperature !== undefined && { temperature }),
       }

@@ -8,8 +8,8 @@
  *
  * ## AI Tests
  *
- * Chat tests call real AI API. Use ANTHROPIC_API_KEY in .env.test or CI secrets.
- * Overrides here: AI_PROVIDER=anthropic, Ollama/OpenRouter unset (tests use Anthropic Sonnet only).
+ * Chat tests call a real AI API. Use ANTHROPIC_API_KEY in .env.test or CI secrets.
+ * Overrides here: AI_PROVIDER=anthropic, Ollama/OpenRouter unset (tests use Anthropic Haiku).
  * When the AI provider is unreachable (5xx, ECONNREFUSED, etc.), tests pass gracefully via
  * skipIfProviderUnavailable. Set ANTHROPIC_API_KEY in .env.test or GitHub secrets for CI.
  */
