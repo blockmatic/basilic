@@ -32,7 +32,7 @@ describe('POST /auth/web3/eip155/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/eip155/verify',
-      payload: { message, signature },
+      payload: { message, signature, domain: 'localhost' },
     })
 
     expect(verifyRes.statusCode).toBe(200)
@@ -40,6 +40,36 @@ describe('POST /auth/web3/eip155/verify', () => {
     expect(body).toHaveProperty('token')
     expect(body).toHaveProperty('refreshToken')
     expect(body.token.length).toBeGreaterThan(0)
+  })
+
+  it('should return 400 when domain is omitted', async () => {
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/eip155/nonce',
+      query: { address: testAddress },
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+
+    const message = createSiweMessage({
+      address: testAddress,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+
+    const account = privateKeyToAccount(testPrivateKey)
+    const signature = await account.signMessage({ message })
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/eip155/verify',
+      payload: { message, signature },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).code).toBe('BAD_REQUEST')
   })
 
   it('should return 401 for invalid nonce', async () => {
@@ -58,7 +88,7 @@ describe('POST /auth/web3/eip155/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/eip155/verify',
-      payload: { message, signature },
+      payload: { message, signature, domain: 'localhost' },
     })
 
     expect(res.statusCode).toBe(401)
@@ -86,7 +116,7 @@ describe('POST /auth/web3/eip155/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/eip155/verify',
-      payload: { message, signature: '0xinvalid' },
+      payload: { message, signature: '0xinvalid', domain: 'localhost' },
     })
 
     expect(res.statusCode).toBe(401)
@@ -117,14 +147,11 @@ describe('POST /auth/web3/eip155/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/eip155/verify',
-      payload: { message, signature, callbackUrl: 'javascript:alert(1)' },
+      payload: { message, signature, callbackUrl: 'javascript:alert(1)', domain: 'localhost' },
     })
 
     expect(res.statusCode).toBe(400)
-    expect(res.json()).toMatchObject({
-      code: 'INVALID_CALLBACK_URL',
-      message: 'Callback URL origin is not allowed',
-    })
+    expect(res.json().code).toBe('INVALID_CALLBACK_URL')
   })
 
   it('should return 302 with encoded code when callbackUrl provided', async () => {
@@ -151,7 +178,7 @@ describe('POST /auth/web3/eip155/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/eip155/verify',
-      payload: { message, signature, callbackUrl },
+      payload: { message, signature, callbackUrl, domain: 'localhost' },
     })
 
     expect(verifyRes.statusCode).toBe(302)
@@ -186,7 +213,7 @@ describe('POST /auth/web3/eip155/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/eip155/verify',
-      payload: { message, signature, callbackUrl },
+      payload: { message, signature, callbackUrl, domain: 'localhost' },
     })
 
     expect(verifyRes.statusCode).toBe(302)
@@ -220,7 +247,7 @@ describe('POST /auth/web3/eip155/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/eip155/verify',
-      payload: { message, signature },
+      payload: { message, signature, domain: 'localhost' },
     })
     expect(verifyRes.statusCode).toBe(200)
     const { token } = JSON.parse(verifyRes.body)

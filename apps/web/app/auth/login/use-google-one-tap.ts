@@ -1,6 +1,9 @@
 'use client'
 
+import { ApiError } from '@repo/core'
+import { useReactApiConfig } from '@repo/react'
 import { logger } from '@repo/utils/logger/client'
+import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -93,11 +96,18 @@ export function useGoogleOneTap({
   enabled?: boolean
 } = {}) {
   const router = useRouter()
+  const { client, queryClientDefaults } = useReactApiConfig()
   const clientId = env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
   const [isReady, setIsReady] = useState(false)
-  const [isPending, setIsPending] = useState(false)
+  const [onCredentialPending, setOnCredentialPending] = useState(false)
   const [loadError, setLoadError] = useState(false)
   const handledRef = useRef(false)
+
+  const { mutateAsync: verifyIdToken, isPending: isVerifyPending } = useMutation({
+    mutationFn: (credential: string) =>
+      client.auth.oauth.google.verifyIdToken({ body: { credential }, throwOnError: true }),
+    ...queryClientDefaults,
+  })
 
   const handleMoment = useCallback(
     (notification: MomentNotification | undefined) => {
@@ -113,62 +123,35 @@ export function useGoogleOneTap({
     async (credential: string) => {
       if (handledRef.current) return
       handledRef.current = true
-      setIsPending(true)
 
       if (onCredential) {
+        setOnCredentialPending(true)
         try {
           await onCredential(credential)
         } catch (err) {
           handledRef.current = false
           throw err
         } finally {
-          setIsPending(false)
+          setOnCredentialPending(false)
         }
         return
       }
 
       try {
-        const baseUrl = env.NEXT_PUBLIC_API_URL
-        const res = await fetch(`${baseUrl}/auth/oauth/google/verify-id-token`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ credential }),
-          credentials: 'include',
-        })
-
-        const data = await res.json().catch(() => ({}))
-        if (res.status === 503) {
-          toast.error(getAuthErrorMessage('oauth_not_configured'))
-          handledRef.current = false
-          setIsPending(false)
-          return
-        }
-        if (!res.ok) {
-          toast.error(getAuthErrorMessage('oauth_failed_google'))
-          handledRef.current = false
-          setIsPending(false)
-          return
-        }
-        const tokens =
-          data?.token && data?.refreshToken
-            ? { token: data.token, refreshToken: data.refreshToken }
-            : null
-        if (!tokens) {
-          toast.error(getAuthErrorMessage('oauth_failed_google'))
-          handledRef.current = false
-          setIsPending(false)
-          return
-        }
-        await updateAuthTokens(tokens)
+        const data = await verifyIdToken(credential)
+        await updateAuthTokens({ token: data.token, refreshToken: data.refreshToken })
         router.push('/')
-      } catch {
-        toast.error(getAuthErrorMessage('oauth_failed_google'))
+      } catch (err) {
+        if (err instanceof ApiError)
+          if (err.status === 503) toast.error(getAuthErrorMessage('oauth_not_configured'))
+          else if (err.status === 429) toast.error(getAuthErrorMessage('rate_limit_exceeded'))
+          else toast.error(getAuthErrorMessage('oauth_failed_google'))
+        else toast.error(getAuthErrorMessage('oauth_failed_google'))
+
         handledRef.current = false
-      } finally {
-        setIsPending(false)
       }
     },
-    [onCredential, router],
+    [onCredential, router, verifyIdToken],
   )
 
   useEffect(() => {
@@ -212,7 +195,7 @@ export function useGoogleOneTap({
 
   return {
     isReady: !!clientId && isReady && !loadError,
-    isPending,
+    isPending: onCredential ? onCredentialPending : isVerifyPending,
     prompt,
     isConfigured: !!clientId,
   }

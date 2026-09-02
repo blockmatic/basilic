@@ -843,12 +843,33 @@ export type ChatData = {
       name?: string;
     } | {
       role: string;
-      parts: Array<unknown>;
+      parts: Array<{
+        type: 'text';
+        text: string;
+      } | {
+        type: 'reasoning';
+        text: string;
+        id?: string;
+      } | {
+        type: 'file';
+        mediaType: string;
+        url: string;
+        filename?: string;
+      } | {
+        type: 'step-start';
+      } | {
+        type: 'dynamic-tool' | 'tool-invocation';
+        toolName: string;
+        toolCallId: string;
+        state: string;
+        input?: unknown;
+        output?: unknown;
+        errorText?: string;
+      }>;
     }>;
     stream?: boolean;
     model?: string;
     temperature?: number;
-    tools?: unknown;
   };
   path?: never;
   query?: never;
@@ -1339,34 +1360,6 @@ export type OauthGithubAuthorizeUrlResponses = {
 
 export type OauthGithubAuthorizeUrlResponse = OauthGithubAuthorizeUrlResponses[keyof OauthGithubAuthorizeUrlResponses];
 
-export type OauthGithubAuthorizeData = {
-  body?: never;
-  path?: never;
-  query?: {
-    redirect_uri?: string;
-  };
-  url: '/auth/oauth/github/authorize';
-};
-
-export type OauthGithubAuthorizeErrors = {
-  /**
-   * Default Response
-   */
-  400: {
-    code: string;
-    message: string;
-  };
-  /**
-   * Default Response
-   */
-  503: {
-    code: string;
-    message: string;
-  };
-};
-
-export type OauthGithubAuthorizeError = OauthGithubAuthorizeErrors[keyof OauthGithubAuthorizeErrors];
-
 export type OauthGithubExchangeData = {
   body: {
     code: string;
@@ -1685,6 +1678,14 @@ export type OauthGoogleVerifyIdTokenErrors = {
   400: {
     code: string;
     message: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
   };
   /**
    * Default Response
@@ -2087,6 +2088,13 @@ export type LogoutErrors = {
   /**
    * Default Response
    */
+  400: {
+    code: string;
+    message: string;
+  };
+  /**
+   * Default Response
+   */
   401: {
     code: string;
     message: string;
@@ -2353,7 +2361,7 @@ export type Web3Eip155VerifyData = {
   body: {
     message: string;
     signature: string;
-    domain?: string;
+    domain: string;
     callbackUrl?: string;
   };
   path?: never;
@@ -2442,7 +2450,7 @@ export type Web3SolanaVerifyData = {
   body: {
     message: string;
     signature: string;
-    domain?: string;
+    domain: string;
     callbackUrl?: string;
   };
   path?: never;

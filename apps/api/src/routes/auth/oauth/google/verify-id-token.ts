@@ -5,10 +5,11 @@ import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import { OAuth2Client } from 'google-auth-library'
 import { getDb } from '../../../../db/index.js'
 import { account } from '../../../../db/schema/index.js'
+import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
 import { env } from '../../../../lib/env.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth/index.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
-import { ErrorResponseSchema } from '../../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const VerifyIdTokenSchema = Type.Object({
   credential: Type.String(),
@@ -64,6 +65,7 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/verify-id-token',
     {
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'oauthGoogleVerifyIdToken',
         description: 'Verify Google One Tap ID token and issue JWTs',
@@ -74,6 +76,7 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: VerifyIdTokenResponseSchema,
           400: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
           503: ErrorResponseSchema,
         },
       },

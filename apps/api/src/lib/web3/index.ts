@@ -1,4 +1,5 @@
 export { verifyWeb3Auth } from './auth.js'
+export { isAllowedWeb3Domain } from './domain.js'
 export {
   getCanonicalAddress,
   parseSignInMessage,

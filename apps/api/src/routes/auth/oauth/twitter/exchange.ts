@@ -3,6 +3,7 @@ import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
+import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { isUniqueViolation } from '../../../../lib/db-errors.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
@@ -63,10 +64,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       })
       const defaultUrl = allowedUrls[0]
       if (!twitterClientId || !twitterClientSecret || !defaultUrl)
-        return reply.code(503).send({
-          code: 'OAUTH_NOT_CONFIGURED',
-          message: 'Twitter OAuth is not configured',
-        })
+        return sendCatalogError({ reply, status: 503, code: 'OAUTH_NOT_CONFIGURED' })
 
       const { code, state } = request.body
       const stateHash = hashToken(state)
@@ -87,16 +85,9 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const meta = stateRecord.meta as OAuthStateMeta | undefined
       const redirectUri = meta?.redirectUri ?? defaultUrl
       if (!allowedUrls.includes(redirectUri))
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Invalid or tampered redirect URI',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
       const codeVerifier = meta?.codeVerifier
-      if (!codeVerifier)
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Missing code verifier for Twitter PKCE',
-        })
+      if (!codeVerifier) return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
 
       let accountId: string
       let name: string
@@ -114,28 +105,16 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         accountData = oauthData.accountData
       } catch (err) {
         if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
-          return reply.code(504).send({
-            code: 'UPSTREAM_TIMEOUT',
-            message: 'Token exchange or user fetch timed out',
-          })
+          return sendCatalogError({ reply, status: 504, code: 'UPSTREAM_TIMEOUT' })
         if (err instanceof OAuthUpstreamError) {
           const is4xx = err.status >= 400 && err.status < 500
           const errorCode =
             err.stage === 'user_fetch' ? 'FETCH_USER_FAILED' : 'UPSTREAM_SERVICE_ERROR'
           const statusCode: 400 | 401 | 502 = is4xx && err.status === 401 ? 401 : is4xx ? 400 : 502
-          return reply.code(statusCode).send({
-            code: errorCode,
-            message:
-              err.stage === 'user_fetch'
-                ? 'Invalid Twitter user response'
-                : 'Failed to exchange code for token or fetch user',
-          })
+          return sendCatalogError({ reply, status: statusCode, code: errorCode })
         }
         request.log.warn({ err }, 'Twitter OAuth fetch failed')
-        return reply.code(502).send({
-          code: 'UPSTREAM_SERVICE_ERROR',
-          message: 'Failed to exchange code for token or fetch user',
-        })
+        return sendCatalogError({ reply, status: 502, code: 'UPSTREAM_SERVICE_ERROR' })
       }
 
       const maxRetries = 5
@@ -152,20 +131,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           break
         } catch (err) {
           if (err instanceof Error && err.message === 'PROVIDER_ALREADY_LINKED')
-            return reply.code(409).send({
-              code: 'PROVIDER_ALREADY_LINKED',
-              message: 'This Twitter account is already linked to another user',
-            })
+            return sendCatalogError({ reply, status: 409, code: 'PROVIDER_ALREADY_LINKED' })
           if (err instanceof Error && err.message === 'USER_NOT_FOUND')
-            return reply.code(401).send({
-              code: 'INVALID_STATE',
-              message: 'User not found for link',
-            })
+            return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
           if (err instanceof Error && err.message === 'USER_CREATE_FAILED')
-            return reply.code(500).send({
-              code: 'USER_CREATE_FAILED',
-              message: 'Failed to create user',
-            })
+            return sendCatalogError({ reply, status: 500, code: 'USER_CREATE_FAILED' })
           if (isUniqueViolation(err) && attempt < maxRetries - 1) continue
           throw err
         }

@@ -60,7 +60,6 @@ auth: {
     },
     github: {
       authorizeUrl: gen.oauthGithubAuthorizeUrl,
-      authorize: gen.oauthGithubAuthorize,
       exchange: gen.oauthGithubExchange,
       linkAuthorizeUrl: gen.oauthGithubLinkAuthorizeUrl,
     },

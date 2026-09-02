@@ -10,7 +10,7 @@ export function createBraveSearchTool(apiKey: string, log: FastifyBaseLogger) {
   return tool({
     description:
       'Search the web for current information. Use when the user asks about recent events, news, facts, or anything that requires up-to-date web results.',
-    inputSchema: z.object({ query: z.string().min(1) }),
+    inputSchema: z.object({ query: z.string().min(1).max(256) }),
     execute: async ({ query }: { query: string }) => {
       try {
         const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}`

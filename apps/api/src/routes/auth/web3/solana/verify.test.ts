@@ -44,7 +44,7 @@ describe('POST /auth/web3/solana/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/solana/verify',
-      payload: { message, signature: signatureB58 },
+      payload: { message, signature: signatureB58, domain: 'localhost' },
     })
 
     expect(verifyRes.statusCode).toBe(200)
@@ -68,7 +68,7 @@ describe('POST /auth/web3/solana/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/solana/verify',
-      payload: { message, signature: signatureB58 },
+      payload: { message, signature: signatureB58, domain: 'localhost' },
     })
 
     expect(res.statusCode).toBe(401)
@@ -93,7 +93,7 @@ describe('POST /auth/web3/solana/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/solana/verify',
-      payload: { message, signature: bs58.encode(new Uint8Array(64).fill(0)) },
+      payload: { message, signature: bs58.encode(new Uint8Array(64).fill(0)), domain: 'localhost' },
     })
 
     expect(res.statusCode).toBe(401)
@@ -121,14 +121,16 @@ describe('POST /auth/web3/solana/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/solana/verify',
-      payload: { message, signature: signatureB58, callbackUrl: 'javascript:alert(1)' },
+      payload: {
+        message,
+        signature: signatureB58,
+        callbackUrl: 'javascript:alert(1)',
+        domain: 'localhost',
+      },
     })
 
     expect(res.statusCode).toBe(400)
-    expect(res.json()).toMatchObject({
-      code: 'INVALID_CALLBACK_URL',
-      message: 'Callback URL origin is not allowed',
-    })
+    expect(res.json().code).toBe('INVALID_CALLBACK_URL')
   })
 
   it('should return 302 with encoded code when callbackUrl provided', async () => {
@@ -152,7 +154,7 @@ describe('POST /auth/web3/solana/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/solana/verify',
-      payload: { message, signature: signatureB58, callbackUrl },
+      payload: { message, signature: signatureB58, callbackUrl, domain: 'localhost' },
     })
 
     expect(verifyRes.statusCode).toBe(302)
@@ -184,7 +186,7 @@ describe('POST /auth/web3/solana/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/solana/verify',
-      payload: { message, signature: signatureB58, callbackUrl },
+      payload: { message, signature: signatureB58, callbackUrl, domain: 'localhost' },
     })
 
     expect(verifyRes.statusCode).toBe(302)
@@ -215,7 +217,7 @@ describe('POST /auth/web3/solana/verify', () => {
     const verifyRes = await fastify.inject({
       method: 'POST',
       url: '/auth/web3/solana/verify',
-      payload: { message, signature: signatureB58 },
+      payload: { message, signature: signatureB58, domain: 'localhost' },
     })
     expect(verifyRes.statusCode).toBe(200)
     const { token } = JSON.parse(verifyRes.body)

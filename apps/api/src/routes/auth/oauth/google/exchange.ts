@@ -5,26 +5,25 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
-import { account, sessions, users } from '../../../../db/schema/index.js'
+import { account, users } from '../../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
+import { type ErrorCode, sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
+import { hashToken } from '../../../../lib/jwt.js'
 import {
-  createAccessTokenPayload,
-  createRefreshTokenPayload,
-  generateJti,
-  hashToken,
-} from '../../../../lib/jwt.js'
-import {
+  buildTokenExchangeError,
+  buildUserInfoError,
   fetchGoogleTokens,
   fetchGoogleUserInfo,
   findOrCreateUserByEmail,
   type GoogleTokenResponse,
   getOAuthAllowedCallbackUrls,
   type OAuthStateMeta,
+  toAllowedStatus,
   validateAndConsumeOAuthState,
 } from '../../../../lib/oauth/index.js'
+import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
-import { buildTokenExchangeError, buildUserInfoError, toAllowedStatus } from './exchange-helpers.js'
 
 const ExchangeSchema = Type.Object({
   code: Type.String(),
@@ -70,10 +69,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       })
       const defaultUrl = allowedUrls[0]
       if (!googleClientId || !googleClientSecret || !defaultUrl)
-        return reply.code(503).send({
-          code: 'OAUTH_NOT_CONFIGURED',
-          message: 'Google OAuth redirect is not configured',
-        })
+        return sendCatalogError({ reply, status: 503, code: 'OAUTH_NOT_CONFIGURED' })
 
       const { code, state } = request.body
       const stateHash = hashToken(state)
@@ -92,24 +88,14 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       if (!validated.ok) return
       const { isLinkMode, linkUserId, stateRecord } = validated
       if (isLinkMode && !linkUserId)
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Link mode requires user ID',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
       const meta = stateRecord.meta as OAuthStateMeta | undefined
       const redirectUri = meta?.redirectUri ?? defaultUrl
       if (!allowedUrls.includes(redirectUri))
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Invalid or tampered redirect URI',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
       // preConsumeCheck guarantees codeVerifier; this check narrows the type for TS
       const codeVerifier = meta?.codeVerifier
-      if (!codeVerifier)
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Missing code verifier for Google PKCE',
-        })
+      if (!codeVerifier) return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
 
       let tokenData: GoogleTokenResponse
       try {
@@ -122,12 +108,14 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         })
       } catch (err) {
         const tokenErr = buildTokenExchangeError(err)
-        if (tokenErr) {
-          const raw = tokenErr.status ?? (tokenErr.message.includes('timeout') ? 504 : 400)
-          return reply
-            .code(toAllowedStatus(raw))
-            .send({ code: tokenErr.code, message: tokenErr.message })
-        }
+        if (tokenErr)
+          return sendCatalogError({
+            reply,
+            status: toAllowedStatus(
+              tokenErr.status ?? (tokenErr.message.includes('timeout') ? 504 : 400),
+            ),
+            code: tokenErr.code as ErrorCode,
+          })
         throw err
       }
 
@@ -136,12 +124,14 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         gUser = await fetchGoogleUserInfo(tokenData.access_token)
       } catch (err) {
         const userErr = buildUserInfoError(err)
-        if (userErr) {
-          const raw = userErr.status ?? (userErr.message.includes('timeout') ? 504 : 400)
-          return reply
-            .code(toAllowedStatus(raw))
-            .send({ code: userErr.code, message: userErr.message })
-        }
+        if (userErr)
+          return sendCatalogError({
+            reply,
+            status: toAllowedStatus(
+              userErr.status ?? (userErr.message.includes('timeout') ? 504 : 400),
+            ),
+            code: userErr.code as ErrorCode,
+          })
         throw err
       }
       const accountId = gUser.id
@@ -150,10 +140,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const verifiedEmail = gUser.verified_email ?? false
 
       if (!email || !verifiedEmail)
-        return reply.code(400).send({
-          code: 'EMAIL_REQUIRED',
-          message: 'Could not retrieve verified email from Google',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'EMAIL_REQUIRED' })
 
       const [existingAccount] = await db
         .select()
@@ -162,35 +149,20 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
 
       if (isLinkMode)
         if (existingAccount && existingAccount.userId !== linkUserId)
-          return reply.code(409).send({
-            code: 'PROVIDER_ALREADY_LINKED',
-            message: 'This Google account is already linked to another user',
-          })
+          return sendCatalogError({ reply, status: 409, code: 'PROVIDER_ALREADY_LINKED' })
 
       let user: { id: string }
       if (isLinkMode && linkUserId) {
         const [u] = await db.select().from(users).where(eq(users.id, linkUserId))
-        if (!u)
-          return reply.code(401).send({
-            code: 'INVALID_STATE',
-            message: 'User not found for link',
-          })
+        if (!u) return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
         user = u
       } else if (existingAccount) {
         const [u] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
-        if (!u)
-          return reply.code(500).send({
-            code: 'USER_NOT_FOUND',
-            message: 'Account references missing user',
-          })
+        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_NOT_FOUND' })
         user = u
       } else {
         const u = await findOrCreateUserByEmail(db, { email, name, emailVerified: true })
-        if (!u)
-          return reply.code(500).send({
-            code: 'USER_CREATE_FAILED',
-            message: 'Failed to create or find user',
-          })
+        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_CREATE_FAILED' })
         user = u
       }
 
@@ -243,35 +215,15 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         await db.insert(account).values(toInsert)
       }
 
-      const sessionId = randomUUID()
-      const refreshJti = generateJti()
-      const refreshJtiHash = hashToken(refreshJti)
-      const sessionExpiresAt = new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000)
-
-      await db.insert(sessions).values({
-        id: sessionId,
+      const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+        fastify,
+        db,
         userId: user.id,
-        token: refreshJtiHash,
-        expiresAt: sessionExpiresAt,
-      })
-
-      const accessPayload = createAccessTokenPayload({ userId: user.id, sessionId })
-      const refreshPayload = createRefreshTokenPayload({
-        userId: user.id,
-        sessionId,
-        jti: refreshJti,
-      })
-
-      const jwtAccess = fastify.jwt.sign(accessPayload, {
-        expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
-      })
-      const jwtRefresh = fastify.jwt.sign(refreshPayload, {
-        expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
       })
 
       const payload: { token: string; refreshToken: string; redirectTo?: string } = {
-        token: jwtAccess,
-        refreshToken: jwtRefresh,
+        token: accessToken,
+        refreshToken,
       }
       if (isLinkMode) payload.redirectTo = '/settings?linked=ok'
       return reply.code(200).send(payload)

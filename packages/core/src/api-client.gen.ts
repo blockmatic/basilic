@@ -66,7 +66,6 @@ import type {
   OauthFacebookExchangeResponse,
   OauthFacebookLinkAuthorizeUrlData,
   OauthFacebookLinkAuthorizeUrlResponse,
-  OauthGithubAuthorizeData,
   OauthGithubAuthorizeUrlData,
   OauthGithubAuthorizeUrlResponse,
   OauthGithubExchangeData,
@@ -165,7 +164,6 @@ export type CoreApiClient = {
       };
       github: {
         authorizeUrl: (opts?: Options<OauthGithubAuthorizeUrlData>) => Promise<OauthGithubAuthorizeUrlResponse>;
-        authorize: (opts?: Options<OauthGithubAuthorizeData>) => Promise<unknown>;
         exchange: (opts: Options<OauthGithubExchangeData>) => Promise<OauthGithubExchangeResponse>;
         linkAuthorizeUrl: (opts?: Options<OauthGithubLinkAuthorizeUrlData>) => Promise<OauthGithubLinkAuthorizeUrlResponse>
       };

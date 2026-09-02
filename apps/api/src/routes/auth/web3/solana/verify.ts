@@ -7,10 +7,12 @@ import nacl from 'tweetnacl'
 import { encryptCallbackTokens } from '../../../../db/callback-tokens.js'
 import { getDb } from '../../../../db/index.js'
 import { web3Callback } from '../../../../db/schema/index.js'
+import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
+import { env } from '../../../../lib/env.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { appendCodeToCallbackUrl, isAllowedUrl } from '../../../../lib/url.js'
-import { verifyWeb3Auth } from '../../../../lib/web3/index.js'
+import { isAllowedWeb3Domain, verifyWeb3Auth } from '../../../../lib/web3/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { parseSiwsMessage } from '../siws-parse.js'
 import { validateSolanaAddress } from '../validate-address.js'
@@ -20,7 +22,7 @@ const callbackCodeExpiryMinutes = 5
 const VerifySchema = Type.Object({
   message: Type.String(),
   signature: Type.String(),
-  domain: Type.Optional(Type.String()),
+  domain: Type.String({ minLength: 1 }),
   callbackUrl: Type.Optional(Type.String()),
 })
 
@@ -50,19 +52,19 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      const { message, signature, domain: expectedDomain, callbackUrl } = request.body
+      const { message, signature, domain, callbackUrl } = request.body
+
+      if (!isAllowedWeb3Domain({ domain, allowedOrigins: env.ALLOWED_ORIGINS }))
+        return sendCatalogError({ reply, status: 400, code: 'INVALID_DOMAIN' })
 
       if (callbackUrl && !isAllowedUrl(callbackUrl))
-        return reply.code(400).send({
-          code: 'INVALID_CALLBACK_URL',
-          message: 'Callback URL origin is not allowed',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'INVALID_CALLBACK_URL' })
 
       const result = await verifyWeb3Auth({
         chain: 'solana',
         message,
         signature,
-        expectedDomain,
+        expectedDomain: domain,
         parseMessage: parseSiwsMessage,
         validateAddress: validateSolanaAddress,
         verifySignature: async ({ message: msg, signature: sig, validatedAddress }) => {

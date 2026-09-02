@@ -2365,6 +2365,7 @@
                               "type": "string"
                             },
                             "content": {
+                              "maxLength": 32000,
                               "type": "string"
                             },
                             "name": {
@@ -2383,8 +2384,141 @@
                               "type": "string"
                             },
                             "parts": {
+                              "maxItems": 64,
                               "type": "array",
-                              "items": {}
+                              "items": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "text"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "text"
+                                        ]
+                                      },
+                                      "text": {
+                                        "maxLength": 32000,
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "text"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "reasoning"
+                                        ]
+                                      },
+                                      "text": {
+                                        "maxLength": 32000,
+                                        "type": "string"
+                                      },
+                                      "id": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "mediaType",
+                                      "url"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "file"
+                                        ]
+                                      },
+                                      "mediaType": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      },
+                                      "url": {
+                                        "maxLength": 2048,
+                                        "type": "string"
+                                      },
+                                      "filename": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "step-start"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "toolName",
+                                      "toolCallId",
+                                      "state"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "anyOf": [
+                                          {
+                                            "type": "string",
+                                            "enum": [
+                                              "dynamic-tool"
+                                            ]
+                                          },
+                                          {
+                                            "type": "string",
+                                            "enum": [
+                                              "tool-invocation"
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      "toolName": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      },
+                                      "toolCallId": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      },
+                                      "state": {
+                                        "maxLength": 64,
+                                        "type": "string"
+                                      },
+                                      "input": {},
+                                      "output": {},
+                                      "errorText": {
+                                        "maxLength": 32000,
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
                             }
                           }
                         }
@@ -2401,8 +2535,7 @@
                     "minimum": 0,
                     "maximum": 2,
                     "type": "number"
-                  },
-                  "tools": {}
+                  }
                 }
               }
             }
@@ -3668,84 +3801,6 @@
         }
       }
     },
-    "/auth/oauth/github/authorize": {
-      "get": {
-        "operationId": "oauthGithubAuthorize",
-        "summary": "GitHub OAuth authorize",
-        "tags": [
-          "auth"
-        ],
-        "description": "Redirect to GitHub OAuth authorization",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "redirect_uri",
-            "required": false
-          }
-        ],
-        "security": [],
-        "responses": {
-          "302": {
-            "description": "Redirect to GitHub",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "description": "Redirect to GitHub"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "code",
-                    "message"
-                  ],
-                  "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "code",
-                    "message"
-                  ],
-                  "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/auth/oauth/github/exchange": {
       "post": {
         "operationId": "oauthGithubExchange",
@@ -4603,6 +4658,32 @@
                     },
                     "message": {
                       "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "retryAfter"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "retryAfter": {
+                      "type": "integer"
                     }
                   }
                 }
@@ -5680,6 +5761,28 @@
           "204": {
             "description": "Default Response"
           },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
             "description": "Default Response",
             "content": {
@@ -6366,7 +6469,8 @@
                 "type": "object",
                 "required": [
                   "message",
-                  "signature"
+                  "signature",
+                  "domain"
                 ],
                 "properties": {
                   "message": {
@@ -6376,6 +6480,7 @@
                     "type": "string"
                   },
                   "domain": {
+                    "minLength": 1,
                     "type": "string"
                   },
                   "callbackUrl": {
@@ -6596,7 +6701,8 @@
                 "type": "object",
                 "required": [
                   "message",
-                  "signature"
+                  "signature",
+                  "domain"
                 ],
                 "properties": {
                   "message": {
@@ -6606,6 +6712,7 @@
                     "type": "string"
                   },
                   "domain": {
+                    "minLength": 1,
                     "type": "string"
                   },
                   "callbackUrl": {
