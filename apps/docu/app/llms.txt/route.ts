@@ -3,7 +3,7 @@ import { source } from '@/lib/source'
 
 export const revalidate = false
 
-export async function GET() {
+export async function GET(): Promise<Response> {
   const origin = env.NEXT_PUBLIC_SITE_URL
   const fullDumpUrl = new URL('/llms-full.txt', origin).href
   const toc = source

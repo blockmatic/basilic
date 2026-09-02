@@ -4,7 +4,7 @@ export const size = { width: 32, height: 32 }
 export const contentType = 'image/png'
 
 // eslint-disable-next-line import/no-default-export -- Next.js requires default export for icon.tsx
-export default function Icon() {
+export default function Icon(): ImageResponse {
   return new ImageResponse(
     <div
       style={{

@@ -59,7 +59,7 @@ Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, red
 
 ### Web auth gate
 
-[`apps/web/proxy.ts`](https://github.com/blockmatic/basilic/blob/main/apps/web/proxy.ts) is the only route gate. Matcher: `/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg$).*)`. Public paths: `/auth/callback/*`, `/auth/logout`, `/terms`, `/privacy`, `/auth/login`. Unauthenticated users → `/auth/login`; authenticated users on `/auth/login` → `/`. Refreshes tokens on navigation.
+[`apps/web/proxy.ts`](https://github.com/blockmatic/basilic/blob/main/apps/web/proxy.ts) is the only route gate. Matcher: `/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg$).*)`. Public paths: `/auth/callback/*`, `/auth/logout`, `/terms`, `/privacy`, `/auth/login`, `/images/auth-login-hero.webp`. Unauthenticated users → `/auth/login`; authenticated users on `/auth/login` → `/`. Refreshes tokens on navigation.
 
 ### OAuth environment variables
 
