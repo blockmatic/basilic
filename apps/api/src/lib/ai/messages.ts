@@ -43,11 +43,19 @@ export async function resolveMessages(
     if (!allUIMessage)
       return { ok: false, message: 'Invalid request: mixed UIMessage and CoreMessage formats' }
 
-    const messages = await convertToModelMessages(
-      rawMessages as Parameters<typeof convertToModelMessages>[0],
-      { tools, ignoreIncompleteToolCalls: true },
-    )
-    return { ok: true, messages }
+    try {
+      const messages = await convertToModelMessages(
+        rawMessages as Parameters<typeof convertToModelMessages>[0],
+        { tools, ignoreIncompleteToolCalls: true },
+      )
+      return { ok: true, messages }
+    } catch {
+      return {
+        ok: false,
+        message:
+          'Invalid request: could not convert UIMessage parts (check file URLs and part shapes)',
+      }
+    }
   }
   if (isCoreMessage(first)) {
     const allCore = rawMessages.every(isCoreMessage)

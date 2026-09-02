@@ -1,15 +1,13 @@
-/** Skip 402 always — quota is an infrastructure concern, not a route bug. */
+import { isInsufficientCreditsResponse } from '../../src/lib/ai/upstream-error.js'
+
+/** Skip only upstream provider credit errors — other 402 responses still fail the suite. */
 export const skipIfInsufficientCredits = (
   res: { statusCode: number; body: string },
   name: string,
 ): boolean => {
-  if (res.statusCode === 402) {
-    process.stderr.write(
-      `[AI test] ${name}: 402 insufficient credits - passing without validation\n`,
-    )
-    return true
-  }
-  return false
+  if (!isInsufficientCreditsResponse(res)) return false
+  process.stderr.write(`[AI test] ${name}: 402 insufficient credits - passing without validation\n`)
+  return true
 }
 
 type ResponseLike = {

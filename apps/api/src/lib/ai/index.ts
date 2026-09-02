@@ -19,4 +19,7 @@ export {
   sendWebResponse,
 } from './runtime.js'
 export { getMergedTools } from './tools/index.js'
-export { isInsufficientCreditsError } from './upstream-error.js'
+export {
+  isInsufficientCreditsError,
+  isInsufficientCreditsResponse,
+} from './upstream-error.js'

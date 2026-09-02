@@ -8,7 +8,7 @@ import { isInsufficientCreditsError } from './upstream-error.js'
 
 export function createRequestAbortSignal(request: FastifyRequest): AbortSignal {
   const requestAbortController = new AbortController()
-  request.raw.once('aborted', () => requestAbortController.abort())
+  request.raw.once('close', () => requestAbortController.abort())
   return AbortSignal.any([
     requestAbortController.signal,
     AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),

@@ -9,11 +9,15 @@ import {
 } from './provider.js'
 
 describe('AI provider model resolution', () => {
-  it('defaults to Haiku when model is omitted', () => {
+  it('defaults Anthropic to Haiku when model is omitted', () => {
     expect(resolveAnthropicModel()).toBe(defaultAnthropicModel)
-    expect(resolveOpenRouterModel()).toBe(defaultOpenRouterModel)
     expect(defaultAnthropicModel).toBe('claude-haiku-4-5')
     expect(defaultOpenRouterModel).toBe('anthropic/claude-haiku-4.5')
+  })
+
+  it('uses AI_DEFAULT_MODEL for OpenRouter when set in vitest.setup', () => {
+    expect(process.env.AI_DEFAULT_MODEL).toBe('claude-haiku-4-5')
+    expect(resolveOpenRouterModel()).toBe(process.env.AI_DEFAULT_MODEL)
   })
 
   it('maps sonnet alias to Sonnet 4.6 not Sonnet 5', () => {
