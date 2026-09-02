@@ -5,11 +5,12 @@ import { type Static, Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { passkeyAuthChallenges } from '../../../db/schema/index.js'
+import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import {
   getWebAuthnOriginFromRequest,
   PublicKeyCredentialRequestOptionsJSONSchema,
 } from '../../../lib/passkey/index.js'
-import { ErrorResponseSchema } from '../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 const challengeMaxAge = 5 * 60 // 5 minutes
 
@@ -22,6 +23,7 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/start',
     {
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'authPasskeyStart',
         description: 'Start passkey authentication, returns options for startAuthentication',
@@ -31,6 +33,7 @@ const passkeyStartRoute: FastifyPluginAsync = async fastify => {
         response: {
           200: StartResponseSchema,
           400: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
         },
       },
     },

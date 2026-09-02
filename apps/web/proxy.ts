@@ -27,7 +27,12 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
       return { status: 'unauthenticated', shouldClearCookies: true }
 
     if (!isTokenExpired({ token })) {
-      const verified = await verifyJwtToken({ token, secret: env.JWT_SECRET })
+      const verified = await verifyJwtToken({
+        token,
+        secret: env.JWT_SECRET,
+        issuer: env.JWT_ISSUER,
+        audience: env.JWT_AUDIENCE,
+      })
       if (verified) return { status: 'authenticated', shouldClearCookies: false }
       return { status: 'unauthenticated', shouldClearCookies: true }
     }

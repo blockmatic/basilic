@@ -164,6 +164,58 @@ describe('POST /ai/chat', () => {
       expect(data.code).toBe('BAD_REQUEST')
     })
 
+    it.each([
+      ['http loopback', 'http://127.0.0.1/secret'],
+      ['cloud metadata', 'http://169.254.169.254/latest/meta-data/'],
+      ['file protocol', 'file:///etc/passwd'],
+      ['ftp protocol', 'ftp://example.com/x.png'],
+      ['blob protocol', 'blob:https://example.com/uuid'],
+    ])('should return 400 for UIMessage with %s file URL', async (_label, fileUrl) => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: { Authorization: `Bearer ${testToken}` },
+        payload: {
+          messages: [
+            {
+              role: 'user',
+              parts: [{ type: 'file', mediaType: 'image/png', url: fileUrl }],
+            },
+          ],
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(data.code).toBe('BAD_REQUEST')
+    })
+
+    it('should return 400 for overlong data: file URL', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: { Authorization: `Bearer ${testToken}` },
+        payload: {
+          messages: [
+            {
+              role: 'user',
+              parts: [
+                {
+                  type: 'file',
+                  mediaType: 'image/png',
+                  url: `data:image/png;base64,${'a'.repeat(2048)}`,
+                },
+              ],
+            },
+          ],
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(data.code).toBe('BAD_REQUEST')
+    })
+
     it('should return 400 for tool role messages', async () => {
       const response = await fastify.inject({
         method: 'POST',
@@ -220,8 +272,10 @@ describe('POST /ai/chat', () => {
       expect(() => ErrorSchema.parse(data)).not.toThrow()
       expect(data.code).toBe('BAD_REQUEST')
     })
+  })
 
-    it('should accept UIMessage text part within the limit', async () => {
+  describe('POST /ai/chat — remote', () => {
+    it('should accept UIMessage text part within the limit', async ctx => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/ai/chat',
@@ -238,12 +292,12 @@ describe('POST /ai/chat', () => {
         },
       })
 
-      expect(response.statusCode).not.toBe(400)
-    })
-  })
+      skipIfInsufficientCredits(ctx, response, 'UIMessage text within limit')
+      skipIfProviderUnavailable(ctx, response, 'UIMessage text within limit')
+      expect(response.statusCode).toBe(200)
+    }, 120000)
 
-  describe('POST /ai/chat — remote', () => {
-    it('should return 200 with stream (SSE data stream protocol)', async () => {
+    it('should return 200 with stream (SSE data stream protocol)', async ctx => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/ai/chat',
@@ -257,8 +311,8 @@ describe('POST /ai/chat', () => {
         },
       })
 
-      if (skipIfInsufficientCredits(response, 'stream')) return
-      if (skipIfProviderUnavailable(response, 'stream')) return
+      skipIfInsufficientCredits(ctx, response, 'stream')
+      skipIfProviderUnavailable(ctx, response, 'stream')
       expect(response.statusCode).toBe(200)
       const contentType = response.headers['content-type']
       expect(contentType).toBeDefined()
@@ -282,7 +336,7 @@ describe('POST /ai/chat', () => {
       }
     }, 60000)
 
-    it('should return 200 with default model', async () => {
+    it('should return 200 with default model', async ctx => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/ai/chat',
@@ -294,8 +348,8 @@ describe('POST /ai/chat', () => {
         },
       })
 
-      if (skipIfInsufficientCredits(response, 'default model')) return
-      if (skipIfProviderUnavailable(response, 'default model')) return
+      skipIfInsufficientCredits(ctx, response, 'default model')
+      skipIfProviderUnavailable(ctx, response, 'default model')
       expect(response.statusCode).toBe(200)
       const data = JSON.parse(response.body)
       expect(() => ChatResponseSchema.parse(data)).not.toThrow()
@@ -303,7 +357,7 @@ describe('POST /ai/chat', () => {
       expect(data.text.length).toBeGreaterThan(0)
     }, 120000)
 
-    it('should return 200 when authenticated via API key', async () => {
+    it('should return 200 when authenticated via API key', async ctx => {
       const apiKey = await getApiKeyToken(fastify, 'ai-chat-apikey@test.ai')
 
       const response = await fastify.inject({
@@ -315,15 +369,15 @@ describe('POST /ai/chat', () => {
         },
       })
 
-      if (skipIfInsufficientCredits(response, 'API key')) return
-      if (skipIfProviderUnavailable(response, 'API key')) return
+      skipIfInsufficientCredits(ctx, response, 'API key')
+      skipIfProviderUnavailable(ctx, response, 'API key')
       expect(response.statusCode).toBe(200)
       const data = JSON.parse(response.body)
       expect(() => ChatResponseSchema.parse(data)).not.toThrow()
       expect(data.text).toBeTypeOf('string')
     }, 60000)
 
-    it('should accept UIMessage format (useChat payload)', async () => {
+    it('should accept UIMessage format (useChat payload)', async ctx => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/ai/chat',
@@ -341,15 +395,15 @@ describe('POST /ai/chat', () => {
         },
       })
 
-      if (skipIfInsufficientCredits(response, 'UIMessage format')) return
-      if (skipIfProviderUnavailable(response, 'UIMessage format')) return
+      skipIfInsufficientCredits(ctx, response, 'UIMessage format')
+      skipIfProviderUnavailable(ctx, response, 'UIMessage format')
       expect(response.statusCode).toBe(200)
       const data = JSON.parse(response.body)
       expect(() => ChatResponseSchema.parse(data)).not.toThrow()
       expect(data.text).toBeTypeOf('string')
     })
 
-    it('should return 200 when user asks who am I (getAccountInfo tool)', async () => {
+    it('should return 200 when user asks who am I (getAccountInfo tool)', async ctx => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/ai/chat',
@@ -358,8 +412,8 @@ describe('POST /ai/chat', () => {
           messages: [{ role: 'user', content: 'Who am I? Use getAccountInfo.' }],
         },
       })
-      if (skipIfInsufficientCredits(response, 'who am I tool')) return
-      if (skipIfProviderUnavailable(response, 'who am I tool')) return
+      skipIfInsufficientCredits(ctx, response, 'who am I tool')
+      skipIfProviderUnavailable(ctx, response, 'who am I tool')
       expect(response.statusCode).toBe(200)
       const data = JSON.parse(response.body)
       expect(() => ChatResponseSchema.parse(data)).not.toThrow()

@@ -22,10 +22,8 @@ describe('POST /auth/passkey/verify', () => {
     })
     expect(res.statusCode).toBe(400)
     const body = res.json()
-    expect(body).toMatchObject({
-      code: expect.stringMatching(/BAD_REQUEST|FST_ERR_VALIDATION|VALIDATION/),
-      message: expect.any(String),
-    })
+    expect(body.code).toBe('BAD_REQUEST')
+    expect(body.message).toBeTypeOf('string')
   })
 
   it('should return 401 when sessionId does not match any challenge', async () => {
@@ -69,6 +67,37 @@ describe('POST /auth/passkey/verify', () => {
     expect(res.json()).toMatchObject({
       code: 'INVALID_CALLBACK_URL',
       message: 'Callback URL origin is not allowed',
+    })
+  })
+
+  it('should consume challenge on first verify and return EXPIRED_CHALLENGE on second', async () => {
+    const startRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/passkey/start',
+      headers: { origin: 'http://localhost:3000' },
+    })
+    expect(startRes.statusCode).toBe(200)
+    const { sessionId } = startRes.json() as { sessionId: string }
+
+    const first = await fastify.inject({
+      method: 'POST',
+      url: '/auth/passkey/verify',
+      headers: { origin: 'http://localhost:3000' },
+      payload: { assertion: minimalAssertion, sessionId },
+    })
+    expect(first.statusCode).toBe(401)
+    expect(first.json().code).not.toBe('EXPIRED_CHALLENGE')
+
+    const second = await fastify.inject({
+      method: 'POST',
+      url: '/auth/passkey/verify',
+      headers: { origin: 'http://localhost:3000' },
+      payload: { assertion: minimalAssertion, sessionId },
+    })
+    expect(second.statusCode).toBe(401)
+    expect(second.json()).toMatchObject({
+      code: 'EXPIRED_CHALLENGE',
+      message: 'Challenge expired or not found',
     })
   })
 })

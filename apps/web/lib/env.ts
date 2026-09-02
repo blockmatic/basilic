@@ -16,6 +16,11 @@ export const env = createEnv({
               'JWT_SECRET must not be the dev default in production',
             )
         : z.string().min(32).default('default-jwt-secret-min-32-chars-for-dev'),
+    JWT_ISSUER: z.string().default('api.yourapp.com'),
+    JWT_AUDIENCE: z
+      .string()
+      .default('api.yourapp.com')
+      .transform(val => val.split(',').map(aud => aud.trim())),
     NEWSAPI_KEY: z.string().optional(),
     SENTRY_DSN: z.string().min(1).optional(),
     SENTRY_ENVIRONMENT: z.string().min(1).optional(),
@@ -40,6 +45,8 @@ export const env = createEnv({
     ALLOW_TEST: process.env.ALLOW_TEST,
     AUTH_COOKIE_NAME: process.env.AUTH_COOKIE_NAME,
     JWT_SECRET: process.env.JWT_SECRET,
+    JWT_ISSUER: process.env.JWT_ISSUER,
+    JWT_AUDIENCE: process.env.JWT_AUDIENCE,
     NEWSAPI_KEY: process.env.NEWSAPI_KEY,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_APP_URL:

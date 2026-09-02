@@ -6,6 +6,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
 import { passkeyAuthChallenges, passkeyCallback } from '../../../db/schema/index.js'
+import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
 import {
@@ -15,7 +16,7 @@ import {
 } from '../../../lib/passkey/index.js'
 import { createSessionAndIssueTokens } from '../../../lib/session.js'
 import { appendCodeToCallbackUrl, isAllowedUrl } from '../../../lib/url.js'
-import { ErrorResponseSchema } from '../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 const callbackCodeExpiryMinutes = 5
 
@@ -38,6 +39,7 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/verify',
     {
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'authPasskeyVerify',
         description: 'Verify passkey assertion and create session',
@@ -49,29 +51,12 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
           200: Type.Union([VerifyResponseWithRedirectSchema, VerifyResponseWithTokensSchema]),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { assertion, sessionId, callbackUrl } = request.body
-
-      const db = await getDb()
-      const [challengeRow] = await db
-        .select()
-        .from(passkeyAuthChallenges)
-        .where(
-          and(
-            eq(passkeyAuthChallenges.sessionId, sessionId),
-            gt(passkeyAuthChallenges.expiresAt, new Date()),
-          ),
-        )
-        .limit(1)
-
-      if (!challengeRow)
-        return reply.code(401).send({
-          code: 'EXPIRED_CHALLENGE',
-          message: 'Challenge expired or not found',
-        })
 
       const origin = getWebAuthnOriginFromRequest(request.headers.origin)
       if (!origin)
@@ -84,6 +69,23 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
         return reply.code(400).send({
           code: 'INVALID_CALLBACK_URL',
           message: 'Callback URL origin is not allowed',
+        })
+
+      const db = await getDb()
+      const [challengeRow] = await db
+        .delete(passkeyAuthChallenges)
+        .where(
+          and(
+            eq(passkeyAuthChallenges.sessionId, sessionId),
+            gt(passkeyAuthChallenges.expiresAt, new Date()),
+          ),
+        )
+        .returning()
+
+      if (!challengeRow)
+        return reply.code(401).send({
+          code: 'EXPIRED_CHALLENGE',
+          message: 'Challenge expired or not found',
         })
 
       const result = await verifyPasskeyAuth({
@@ -100,15 +102,6 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
         const code = generateToken()
         const codeHash = hashToken(code)
         const expiresAt = new Date(Date.now() + callbackCodeExpiryMinutes * 60 * 1000)
-        const [deleted] = await db
-          .delete(passkeyAuthChallenges)
-          .where(eq(passkeyAuthChallenges.id, challengeRow.id))
-          .returning()
-        if (!deleted)
-          return reply.code(401).send({
-            code: 'EXPIRED_CHALLENGE',
-            message: 'Challenge already consumed',
-          })
         const { accessToken, refreshToken } = await createSessionAndIssueTokens({
           fastify,
           db,
@@ -128,15 +121,6 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const [deleted] = await db
-        .delete(passkeyAuthChallenges)
-        .where(eq(passkeyAuthChallenges.id, challengeRow.id))
-        .returning()
-      if (!deleted)
-        return reply.code(401).send({
-          code: 'EXPIRED_CHALLENGE',
-          message: 'Challenge already consumed',
-        })
       const { accessToken, refreshToken } = await createSessionAndIssueTokens({
         fastify,
         db,

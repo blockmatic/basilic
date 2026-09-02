@@ -84,7 +84,7 @@ describe('POST /ai/generate', () => {
   })
 
   describe('POST /ai/generate — remote', () => {
-    it('should return 200 non-streaming with text', async () => {
+    it('should return 200 non-streaming with text', async ctx => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/ai/generate',
@@ -92,8 +92,8 @@ describe('POST /ai/generate', () => {
         payload: { prompt: 'Say hi' },
       })
 
-      if (skipIfInsufficientCredits(response, 'non-streaming')) return
-      if (skipIfProviderUnavailable(response, 'non-streaming')) return
+      skipIfInsufficientCredits(ctx, response, 'non-streaming')
+      skipIfProviderUnavailable(ctx, response, 'non-streaming')
       expect(response.statusCode).toBe(200)
       const data = JSON.parse(response.body)
       expect(() => GenerateResponseSchema.parse(data)).not.toThrow()
@@ -101,7 +101,7 @@ describe('POST /ai/generate', () => {
       expect(data.text.length).toBeGreaterThan(0)
     }, 60000)
 
-    it('should return 200 streaming with SSE', async () => {
+    it('should return 200 streaming with SSE', async ctx => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/ai/generate',
@@ -112,8 +112,8 @@ describe('POST /ai/generate', () => {
         payload: { prompt: 'Say hi', stream: true },
       })
 
-      if (skipIfInsufficientCredits(response, 'streaming')) return
-      if (skipIfProviderUnavailable(response, 'streaming')) return
+      skipIfInsufficientCredits(ctx, response, 'streaming')
+      skipIfProviderUnavailable(ctx, response, 'streaming')
       expect(response.statusCode).toBe(200)
       const contentType = response.headers['content-type']
       expect(contentType).toBeDefined()
@@ -124,7 +124,7 @@ describe('POST /ai/generate', () => {
       expect(lines.length).toBeGreaterThan(0)
     }, 60000)
 
-    it('should return 200 when authenticated via API key', async () => {
+    it('should return 200 when authenticated via API key', async ctx => {
       const apiKey = await getApiKeyToken(fastify, 'ai-generate-apikey@test.ai')
 
       const response = await fastify.inject({
@@ -134,8 +134,8 @@ describe('POST /ai/generate', () => {
         payload: { prompt: 'Say hi' },
       })
 
-      if (skipIfInsufficientCredits(response, 'API key')) return
-      if (skipIfProviderUnavailable(response, 'API key')) return
+      skipIfInsufficientCredits(ctx, response, 'API key')
+      skipIfProviderUnavailable(ctx, response, 'API key')
       expect(response.statusCode).toBe(200)
       const data = JSON.parse(response.body)
       expect(() => GenerateResponseSchema.parse(data)).not.toThrow()

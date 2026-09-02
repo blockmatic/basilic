@@ -13,6 +13,10 @@
 process.env.NODE_ENV = 'test'
 // Force ALLOW_TEST for unit tests (fake email + DB-backed token for @test.ai)
 process.env.ALLOW_TEST = 'true'
+// Pin explicit origins when unset so passkey origin tests are not no-ops under *.
+// Include https://example.com for magic-link / auth-helper callback URLs in tests.
+process.env.ALLOWED_ORIGINS =
+  process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000,http://127.0.0.1:3000,https://example.com'
 
 import type { GlobalSetupContext } from 'vitest/node'
 

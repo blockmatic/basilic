@@ -67,6 +67,9 @@ Routes under this cap:
 - `POST /auth/magiclink/request`
 - OAuth `GET …/authorize-url` and `POST …/exchange` for GitHub, Google, Facebook, and Twitter
 - `POST /auth/oauth/google/verify-id-token`
+- `POST /auth/passkey/start`
+- `POST /auth/passkey/verify`
+- `POST /auth/passkey/exchange`
 - `POST /auth/passkey/resolve-user`
 
 Other controls (not the Fastify 10/min cap): magic-link **verify** uses `authAttempts` (5 per 15 minutes → `TOO_MANY_ATTEMPTS`); OAuth **link** authorize-url is Bearer-authenticated with 10 requests per user per hour in the database.

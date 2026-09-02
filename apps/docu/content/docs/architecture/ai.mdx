@@ -27,6 +27,7 @@ apps/api/src/lib/ai/
   index.ts           named re-exports
   provider.ts        getResolvedProvider, getProvider, model aliases
   messages.ts        UIMessage / CoreMessage → ModelMessage
+  download.ts        denyRemoteChatFileDownload (blocks non-data: fetches)
   runtime.ts         abort, SSE piping, upstream error mapping
   upstream-error.ts  isInsufficientCreditsError
   tools/
@@ -39,7 +40,7 @@ Chat uses `streamText` / `generateText` with `stopWhen: isStepCount(AI_TOOL_MAX_
 
 Client `{ role: 'system' }` messages are rejected with 400 — system prompt belongs server-side (`instructions`), not in client payloads. Client roles are limited to `user` and `assistant`; `tool` and other roles return 400.
 
-File parts in UIMessage payloads must use `data:` URLs only (`maxLength` 2048). Remote URLs (`http:`, `https:`, `file:`, etc.) are rejected at validation with 400 before the handler runs. The chat route also blocks server-side fetches of non-`data:` file URLs via `experimental_download`.
+File parts in UIMessage payloads must use `data:` URLs only (`maxLength` 2048). Remote URLs (`http:`, `https:`, `file:`, etc.) are rejected at validation with 400 before the handler runs. Defense in depth: TypeBox `^data:` pattern → `resolveMessages` / `isAllowedChatFileUrl` → `experimental_download` (`denyRemoteChatFileDownload`) so the AI SDK never fetches remote file URLs.
 
 ## Environment variables
 

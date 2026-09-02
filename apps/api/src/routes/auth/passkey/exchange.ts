@@ -5,9 +5,10 @@ import type { FastifyPluginAsync } from 'fastify'
 import { decryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
 import { passkeyCallback } from '../../../db/schema/index.js'
+import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { hashToken } from '../../../lib/jwt.js'
-import { ErrorResponseSchema } from '../../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 const ExchangeSchema = Type.Object({
   code: Type.String(),
@@ -22,6 +23,7 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/exchange',
     {
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'authPasskeyExchange',
         description: 'Exchange one-time code for tokens (passkey redirect flow)',
@@ -33,6 +35,7 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
           200: ExchangeResponseSchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
         },
       },
     },
@@ -57,10 +60,9 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
             .where(and(eq(passkeyCallback.codeHash, codeHash), gt(passkeyCallback.expiresAt, now)))
             .limit(1)
           if (!r) return null
-          if (r.callbackOrigin) {
-            if (!requestOrigin) throw new Error('MISSING_ORIGIN')
-            if (r.callbackOrigin !== requestOrigin) throw new Error('ORIGIN_MISMATCH')
-          }
+          if (!r.callbackOrigin?.trim()) throw new Error('MISSING_ORIGIN')
+          if (!requestOrigin) throw new Error('MISSING_ORIGIN')
+          if (r.callbackOrigin !== requestOrigin) throw new Error('ORIGIN_MISMATCH')
           const [deleted] = await tx
             .delete(passkeyCallback)
             .where(and(eq(passkeyCallback.codeHash, codeHash), eq(passkeyCallback.id, r.id)))

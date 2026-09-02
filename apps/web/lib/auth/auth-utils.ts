@@ -28,7 +28,12 @@ export async function getAuthStatus(): Promise<{
 
   if (!token) return { authenticated: false, userId: null, sessionId: null }
 
-  const decoded = await verifyJwtToken({ token, secret: env.JWT_SECRET })
+  const decoded = await verifyJwtToken({
+    token,
+    secret: env.JWT_SECRET,
+    issuer: env.JWT_ISSUER,
+    audience: env.JWT_AUDIENCE,
+  })
   if (decoded?.typ !== 'access' || !decoded.sub || !decoded.sid)
     return { authenticated: false, userId: null, sessionId: null }
 
