@@ -82,7 +82,9 @@ export function LoginForm({
     },
     onError: error => {
       if (isRateLimitApiError(error)) {
-        setCatalogError(getAuthErrorMessage('rate_limit_exceeded'))
+        const rateLimitMessage = getAuthErrorMessage('rate_limit_exceeded')
+        if (!rateLimitMessage) return
+        setCatalogError(rateLimitMessage)
         setEmailValidationError(null)
         return
       }

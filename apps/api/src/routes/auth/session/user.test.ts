@@ -11,7 +11,10 @@ function decodeJwtPayload<T extends Record<string, unknown>>(token: string) {
   return JSON.parse(Buffer.from(payload, 'base64url').toString()) as T
 }
 
-const signAccessToken = createSigner({ key: env.JWT_SECRET })
+const signAccessToken = createSigner({
+  key: env.JWT_SECRET,
+  expiresIn: env.ACCESS_JWT_EXPIRES_IN_SECONDS,
+})
 
 describe('GET /auth/session/user', () => {
   beforeEach(() => {
@@ -81,9 +84,7 @@ describe('GET /auth/session/user', () => {
     expect(userBRes.statusCode).toBe(200)
     const idB = userBRes.json().user.id as string
 
-    const forged = signAccessToken(createAccessTokenPayload({ userId: idB, sessionId: sidA }), {
-      expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
-    })
+    const forged = signAccessToken(createAccessTokenPayload({ userId: idB, sessionId: sidA }))
 
     const response = await fastify.inject({
       method: 'GET',

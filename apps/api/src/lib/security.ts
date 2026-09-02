@@ -65,7 +65,6 @@ export const detectSuspiciousActivity = (request: FastifyRequest): void => {
   }
 
   // Check user agent
-  if (suspiciousPatterns.some(pattern => pattern.test(userAgent))) {
+  if (suspiciousPatterns.some(pattern => pattern.test(userAgent)))
     logSecurityEvent(request, 'suspicious_user_agent', { userAgent })
-  }
 }
