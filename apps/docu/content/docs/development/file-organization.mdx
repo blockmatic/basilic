@@ -1,0 +1,52 @@
+---
+title: "File Organization"
+description: "Folder-plus-index grouping for related modules — when to use folders, index.ts, and named entries."
+---
+
+Related modules belong in a **folder with an index** when they share one concern and the same runtime. This is not a mega-barrel: group indexes are small, cohesive, and scoped to one feature. See [Next.js 16 build rules](/docs/development/cursor-skills) (`next-v16`) for lucide-style barrel anti-patterns.
+
+## When to group
+
+| Situation | Layout |
+| --- | --- |
+| One implementation file | Keep a single file (`env.ts`, `jwt.ts`); colocate tests |
+| 2+ files, same runtime | `feature/index.ts` + siblings without the folder prefix |
+| Mixed runtimes (server/client) | Folder with named entries, **no** unifying index (`logger/server.ts`, `logger/client.ts`) |
+| Named entry would cycle | Keep a separate file (e.g. `catalogs/mapper.ts` — do not re-export from `catalogs/index.ts`) |
+
+Directories are kebab-case. Outside the folder, import the group (`.../lib/oauth/index.js`). Inside, import siblings directly. Never add `lib/index.ts` at a parent level.
+
+## Decision tree
+
+1. **Two or more implementation files for one concern?** If no → single file.
+2. **Same runtime for all exports?** If yes → `folder/index.ts` with named re-exports (apps). If no → folder with named entry files only.
+3. **Parent already has `basename.ts`?** Rename or merge the file before creating `basename/`.
+4. **Fastify `routes/` or `plugins/`?** No `index.ts` — autoload would register it as a plugin.
+
+## Canonical examples in this repo
+
+- [`packages/utils/src/async/`](https://github.com/blockmatic/basilic/tree/main/packages/utils/src/async) — siblings + `index.ts`; consumed as `@repo/utils/async`
+- [`packages/error/src/node/`](https://github.com/blockmatic/basilic/tree/main/packages/error/src/node) — `capture.ts`, `sentry.ts`, `index.ts`
+- [`packages/utils/src/logger/`](https://github.com/blockmatic/basilic/tree/main/packages/utils/src/logger) — folder without unifying index (`server.ts`, `client.ts`)
+- [`apps/api/src/lib/catalogs/`](https://github.com/blockmatic/basilic/tree/main/apps/api/src/lib/catalogs) — grouped dictionaries; `mapper.ts` stays a named entry
+
+## Anti-patterns
+
+- Prefix soup at one level: `oauth-shared.ts`, `oauth-google.ts`, `oauth-user.ts`
+- Mega-barrel: `lib/index.ts`, `components/ui/index.ts`
+- Unifying index mixing `cookies` (server) and `document` (client)
+- `lib/auth.ts` beside `lib/auth/` (Node/TS resolution footgun)
+
+## Exceptions (do not add group indexes)
+
+- Fastify autoload: `apps/api/src/routes/`, `apps/api/src/plugins/`
+- shadcn: `@repo/ui/components/*`
+- Generated: `packages/core/src/gen`
+- Drizzle table barrel: `apps/api/src/db/schema/index.ts`
+- Package root barrels that are already public entrypoints (`@repo/react`, `@repo/utils` root)
+
+## Related
+
+- [Package Conventions](/docs/development/package-conventions)
+- [Monorepo](/docs/architecture/monorepo)
+- [Cursor Skills](/docs/development/cursor-skills) — `file-organization-v1` catalog skill

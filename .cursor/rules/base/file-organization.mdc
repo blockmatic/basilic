@@ -1,0 +1,12 @@
+---
+description: Folder-plus-index grouping for related modules
+alwaysApply: true
+---
+
+- Group 2+ related implementation files in a kebab-case folder; `index.ts` is the public API (named re-exports in apps, not `export *` mega-barrels)
+- Single-file modules stay files; colocate tests (`*.test.ts`, `*.spec.ts`) beside implementation
+- Drop the folder-name prefix inside the folder (`oauth-google.ts` → `oauth/google.ts`). Import the group from outside (`.../lib/oauth/index.js`); import siblings directly inside the folder
+- Never add a parent mega-barrel (`lib/index.ts`, `components/ui/index.ts`). Never `foo/foo.ts` plus a thin re-export index. Never `foo.ts` beside `foo/` (basename collision)
+- Same runtime for all exports → folder with unifying `index.ts`. Mixed runtimes (server/client) → folder with named entry files and no unifying index
+- Exceptions: Fastify autoload `routes/` and `plugins/` (no `index.ts` there); shadcn `@repo/ui/components/*`; generated `packages/core/src/gen`; Drizzle `db/schema/index.ts`; package subpath indexes that are the implementation (`packages/utils/src/data/index.ts`); named entries that would cycle (`catalogs/mapper.ts`)
+- Decision tree and examples: `apps/docu/content/docs/development/file-organization.mdx` (read when grouping or migrating modules)

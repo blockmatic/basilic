@@ -7,9 +7,11 @@ import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
 import { passkeyAuthChallenges, passkeyCallback } from '../../../db/schema/index.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
-import { getWebAuthnOriginFromRequest } from '../../../lib/passkey.js'
-import { verifyPasskeyAuth } from '../../../lib/passkey-auth.js'
-import { AuthenticationResponseJSONSchema } from '../../../lib/schemas/webauthn.js'
+import {
+  AuthenticationResponseJSONSchema,
+  getWebAuthnOriginFromRequest,
+  verifyPasskeyAuth,
+} from '../../../lib/passkey/index.js'
 import { createSessionAndIssueTokens } from '../../../lib/session.js'
 import { appendCodeToCallbackUrl, isAllowedUrl } from '../../../lib/url.js'
 import { ErrorResponseSchema } from '../../schemas.js'

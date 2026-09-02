@@ -427,7 +427,9 @@ export type AccountLinkPasskeyFinishData = {
         publicKey?: string;
       };
       authenticatorAttachment?: 'platform' | 'cross-platform';
-      clientExtensionResults?: unknown;
+      clientExtensionResults?: {
+        [key: string]: unknown;
+      };
       type: 'public-key';
     };
     name?: string;
@@ -533,7 +535,9 @@ export type AccountLinkPasskeyStartResponses = {
         userVerification?: 'discouraged' | 'preferred' | 'required';
       };
       attestation?: 'direct' | 'enterprise' | 'indirect' | 'none';
-      extensions?: unknown;
+      extensions?: {
+        [key: string]: unknown;
+      };
     };
   };
 };
@@ -1997,7 +2001,9 @@ export type AuthPasskeyStartResponses = {
         transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
       }>;
       userVerification?: 'discouraged' | 'preferred' | 'required';
-      extensions?: unknown;
+      extensions?: {
+        [key: string]: unknown;
+      };
     };
     sessionId: string;
   };
@@ -2017,7 +2023,9 @@ export type AuthPasskeyVerifyData = {
         userHandle?: string;
       };
       authenticatorAttachment?: 'platform' | 'cross-platform';
-      clientExtensionResults?: unknown;
+      clientExtensionResults?: {
+        [key: string]: unknown;
+      };
       type: 'public-key';
     };
     sessionId: string;

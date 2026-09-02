@@ -8,10 +8,10 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { users, verification } from '../../../db/schema/index.js'
-import { authLoginRouteConfig } from '../../../lib/auth-route-rate-limit.js'
+import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { isUniqueViolation } from '../../../lib/db-errors.js'
 import { env } from '../../../lib/env.js'
-import { generateLoginCode, hashToken } from '../../../lib/jwt.js'
+import { generateLoginCode, hashLoginCode } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
 import { generateUsernameForMagicLink } from '../../../lib/username.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
@@ -100,7 +100,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
 
       // Generate 6-digit login code (in email body and link for one-click; manual flow uses email+token)
       const code = generateLoginCode()
-      const tokenHash = hashToken(code)
+      const tokenHash = hashLoginCode(code)
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
       const verificationId = randomUUID()
 

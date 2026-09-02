@@ -1,7 +1,9 @@
+import { randomUUID } from 'node:crypto'
 import { eq } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { getDb } from '../../../../src/db/index.js'
 import { authAttempts, users, verification } from '../../../../src/db/schema/index.js'
+import { hashToken } from '../../../../src/lib/jwt.js'
 import { getStoredMagicLink } from '../../../../test/utils/auth-helper.js'
 import { fastify } from '../magiclink.spec.js'
 
@@ -162,6 +164,42 @@ describe('POST /auth/magiclink/verify', () => {
     })
     expect(locked.statusCode).toBe(429)
     expect(JSON.parse(locked.body).code).toBe('TOO_MANY_ATTEMPTS')
+  })
+
+  it('should reject legacy SHA-256 stored codes', async () => {
+    const email = 'legacy-hash@test.ai'
+    const code = '123456'
+    const db = await getDb()
+
+    const [user] = await db
+      .insert(users)
+      .values({
+        id: randomUUID(),
+        email,
+        emailVerified: false,
+        name: 'Legacy',
+        username: `legacy-${Date.now()}`,
+      })
+      .returning()
+
+    await db.insert(verification).values({
+      id: randomUUID(),
+      type: 'magic_link',
+      identifier: email,
+      value: hashToken(code),
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+    })
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token: code },
+    })
+    expect(res.statusCode).toBe(401)
+    expect(JSON.parse(res.body).code).toBe('INVALID_TOKEN')
+
+    await db.delete(verification).where(eq(verification.identifier, email))
+    await db.delete(users).where(eq(users.id, user.id))
   })
 
   it('should reject reused magic link token', async () => {

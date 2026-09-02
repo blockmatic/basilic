@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { passkeyCredentials, users } from '../../../db/schema/index.js'
-import { authLoginRouteConfig } from '../../../lib/auth-route-rate-limit.js'
+import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 const ResolveUserBodySchema = Type.Object({

@@ -4,7 +4,7 @@ import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { apiKeys } from '../../../db/schema/index.js'
-import { generateApiKey } from '../../../lib/api-keys.js'
+import { generateApiKey } from '../../../lib/api-keys/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const CreateSchema = Type.Object({

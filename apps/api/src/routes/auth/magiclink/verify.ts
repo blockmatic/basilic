@@ -4,8 +4,8 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { authAttempts, users, verification } from '../../../db/schema/index.js'
-import { recordAuthFailedAttempt } from '../../../lib/auth-attempts.js'
-import { hashToken } from '../../../lib/jwt.js'
+import { recordAuthFailedAttempt } from '../../../lib/auth/index.js'
+import { hashLoginCode } from '../../../lib/jwt.js'
 import { getTrustedClientIp } from '../../../lib/request.js'
 import { createSessionAndIssueTokens } from '../../../lib/session.js'
 import { ErrorResponseSchema } from '../../schemas.js'
@@ -28,7 +28,7 @@ export async function verifyMagicLinkAndIssueToken(
   request: FastifyRequest,
   { token, verificationId }: { token: string; verificationId: string },
 ): Promise<{ accessToken: string } | null> {
-  const tokenHash = hashToken(token)
+  const tokenHash = hashLoginCode(token)
   const db = await getDb()
   const ip = getTrustedClientIp(request)
 
@@ -124,7 +124,7 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
           message: 'Provide exactly one of verificationId (from link) or email (for code entry)',
         })
 
-      const tokenHash = hashToken(token)
+      const tokenHash = hashLoginCode(token)
       const db = await getDb()
       const ip = getTrustedClientIp(request)
 

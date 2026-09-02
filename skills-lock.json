@@ -73,6 +73,12 @@
       "skillPath": "skills/fastify-v5/SKILL.md",
       "computedHash": "31d7af2b1ab8cbbb59c904f0b7472698f968d01777e107b616e6127f6896d8ba"
     },
+    "file-organization-v1": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/file-organization-v1/SKILL.md",
+      "computedHash": "002c60ac87f283c2a489a512a7fc08543444beb73026d6b6f9c4f4ba7c27201a"
+    },
     "frontend-design-v1": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
@@ -155,7 +161,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/viem-v2/SKILL.md",
-      "computedHash": "8a90af359e137a5ff4d046ceda7fa10cfe5ccd86efb8d5eedb1c4aee1d68609c"
+      "computedHash": "e3f21b7daa1deedaadc392fa7dae1d89fbce244337503b512c4f5eebe0013398"
     },
     "vitest-v4": {
       "source": "blockmatic/basilic-skills",

@@ -6,13 +6,14 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { authAttempts, sessions, users, verification } from '../../../../db/schema/index.js'
-import { recordAuthFailedAttempt } from '../../../../lib/auth-attempts.js'
+import { recordAuthFailedAttempt } from '../../../../lib/auth/index.js'
 import { normalizeEmail } from '../../../../lib/email.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,
   createRefreshTokenPayload,
   generateJti,
+  hashLoginCode,
   hashToken,
 } from '../../../../lib/jwt.js'
 import { getTrustedClientIp } from '../../../../lib/request.js'
@@ -90,7 +91,7 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
         })
 
       const token = body.token
-      const tokenHash = hashToken(token)
+      const tokenHash = hashLoginCode(token)
       const db = await getDb()
       const ip = getTrustedClientIp(request)
       const userId = request.session.user.id
