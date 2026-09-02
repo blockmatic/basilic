@@ -16,12 +16,20 @@ export function decodeJwtToken({ token }: { token: string }): JwtPayload | null 
 export async function verifyJwtToken({
   token,
   secret,
+  issuer,
+  audience,
 }: {
   token: string
   secret: string
+  issuer: string
+  audience: string | string[]
 }): Promise<JwtPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(secret))
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(secret), {
+      algorithms: ['HS256'],
+      issuer,
+      audience,
+    })
     const parsed = jwtPayloadSchema.safeParse(payload)
     return parsed.success ? parsed.data : null
   } catch {

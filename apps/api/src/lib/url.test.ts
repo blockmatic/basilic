@@ -35,12 +35,16 @@ describe('appendCodeToCallbackUrl', () => {
 })
 
 describe('isAllowedUrl', () => {
-  it('accepts valid https URL when allowlist has *', () => {
+  it('accepts valid https URL when origin is allowlisted', () => {
     expect(isAllowedUrl('https://example.com/callback')).toBe(true)
   })
 
-  it('accepts valid http URL when allowlist has *', () => {
+  it('accepts valid http URL when origin is allowlisted', () => {
     expect(isAllowedUrl('http://localhost:3000/auth/callback')).toBe(true)
+  })
+
+  it('rejects URL whose origin is not allowlisted', () => {
+    expect(isAllowedUrl('https://evil.example/callback')).toBe(false)
   })
 
   it('rejects empty string', () => {

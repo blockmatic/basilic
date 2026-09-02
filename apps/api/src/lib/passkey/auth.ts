@@ -1,6 +1,6 @@
 import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { getDb } from '../../db/index.js'
 import { passkeyCredentials } from '../../db/schema/index.js'
 import { type ErrorCode, getError } from '../catalogs/mapper.js'
@@ -75,7 +75,7 @@ export async function verifyPasskeyAuth({
   const [updated] = await db
     .update(passkeyCredentials)
     .set({ counter: verification.authenticationInfo.newCounter })
-    .where(eq(passkeyCredentials.id, credential.id))
+    .where(and(eq(passkeyCredentials.id, credential.id), eq(passkeyCredentials.counter, counter)))
     .returning()
 
   if (!updated) return catalogFailure('COUNTER_UPDATE_FAILED')

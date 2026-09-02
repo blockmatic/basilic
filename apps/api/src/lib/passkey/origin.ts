@@ -1,5 +1,30 @@
 import { env } from '../env.js'
 
+const loopbackHosts = ['localhost', '127.0.0.1', '::1', '[::1]'] as const
+
+export function isAllowedCallbackOriginScheme({
+  origin,
+  nodeEnv,
+}: {
+  origin: string
+  nodeEnv: string
+}): boolean {
+  let parsed: URL
+  try {
+    parsed = new URL(origin.trim())
+  } catch {
+    return false
+  }
+
+  if (parsed.protocol === 'https:') return true
+
+  if (parsed.protocol !== 'http:') return false
+
+  if (nodeEnv === 'production') return false
+
+  return loopbackHosts.includes(parsed.hostname.toLowerCase() as (typeof loopbackHosts)[number])
+}
+
 export function getWebAuthnRpName(): string {
   const rpName = env.WEBAUTHN_RP_NAME?.trim() || env.APP_NAME
   if (!rpName) throw new Error('WebAuthn RP name is required: set WEBAUTHN_RP_NAME or APP_NAME')
@@ -29,8 +54,7 @@ export function getWebAuthnOriginFromRequest(originHeader: string | undefined): 
 
   if (parsed.protocol === 'http:') {
     const host = parsed.hostname.toLowerCase()
-    const allowedHosts = ['localhost', '127.0.0.1', '::1', '[::1]']
-    if (!allowedHosts.includes(host)) return null
+    if (!loopbackHosts.includes(host as (typeof loopbackHosts)[number])) return null
   }
 
   const allowed = env.ALLOWED_ORIGINS

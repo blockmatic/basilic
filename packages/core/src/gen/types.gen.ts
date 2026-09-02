@@ -1919,6 +1919,14 @@ export type AuthPasskeyExchangeErrors = {
     code: string;
     message: string;
   };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+  };
 };
 
 export type AuthPasskeyExchangeError = AuthPasskeyExchangeErrors[keyof AuthPasskeyExchangeErrors];
@@ -1990,6 +1998,14 @@ export type AuthPasskeyStartErrors = {
     code: string;
     message: string;
   };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+  };
 };
 
 export type AuthPasskeyStartError = AuthPasskeyStartErrors[keyof AuthPasskeyStartErrors];
@@ -2058,6 +2074,14 @@ export type AuthPasskeyVerifyErrors = {
   401: {
     code: string;
     message: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
   };
 };
 

@@ -35,7 +35,6 @@ describe('POST /auth/passkey/resolve-user', () => {
     })
     expect(res.statusCode).toBe(200)
     const body = res.json() as { maskedIdentifier: string }
-    expect(body.maskedIdentifier).toContain('@')
-    expect(body.maskedIdentifier).not.toBe('resolve-user@test.ai')
+    expect(body.maskedIdentifier).toBe('r***@t***t.ai')
   })
 })

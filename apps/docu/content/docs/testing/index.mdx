@@ -13,6 +13,8 @@ PGLite does not support concurrent writers. API Vitest runs with `fileParallelis
 
 Each `inject()` test should assert **one HTTP status**. Assert catalog `code` only on JSON error responses. Schema validation failures return `400` with `BAD_REQUEST`. Do not use `expect([A, B]).toContain(...)` for codes — remove unreachable handler branches instead.
 
+Remote AI tests may call `ctx.skip()` when the provider is unreachable or out of credits — never return early without `skip` (soft-pass-as-green is forbidden).
+
 ## Error contract
 
 HTTP errors use `{ code, message }` from the app catalog (`getError` / `sendCatalogError` in `apps/api/src/lib/catalogs/mapper.ts`). `INTERNAL_SERVER_ERROR` and `TOO_MANY_REQUESTS` are normalized to `SERVER_ERROR` and `RATE_LIMIT_EXCEEDED`. Global rate-limit 429 bodies include `{ code, message, retryAfter }`.
@@ -26,10 +28,19 @@ HTTP errors use `{ code, message }` from the app catalog (`getError` / `sendCata
 | `magiclink.spec.ts` | Magic link request/verify |
 | `oauth.spec.ts` | OAuth authorize/exchange and link-authorize-url (unconfigured 503 contract) |
 | `passkey.spec.ts` | Passkey start/verify/exchange/resolve-user |
-| `web3.spec.ts` | EIP-155 and Solana verify |
+| `web3.spec.ts` | EIP-155 and Solana verify + `lib/web3/domain` unit tests |
 | `health.spec.ts` | `/health` + security headers |
 | `reference.spec.ts` | `/reference` HTML + OpenAPI JSON (including `jwtFromServer` on magic-link callback) |
-| `ai.spec.ts` | AI chat (remote; may skip if provider down) |
+| `ai.spec.ts` | AI chat + generate (`messages.spec.ts` for `lib/ai` unit tests) |
+
+Vitest `include` is `**/*.spec.ts` only. Every `*.test.ts` must be imported by a group entry `*.spec.ts` or it never runs.
+
+## AI test split
+
+- **Contract (local, hard)** — `POST /ai/chat` and `/ai/generate` validation: 401 unauthenticated, 400 bad payloads, SSRF file-URL matrix (`data:` only). No provider calls; no soft skip.
+- **Remote (provider-dependent)** — Live Anthropic/Open Router/Ollama paths. Uses `ctx.skip()` via `test/utils/ai-remote.ts` on 402 credits or 502/503/504 when `ANTHROPIC_API_KEY` is missing or placeholder (`sk-ant-xxx`). With a real key, upstream failures fail the suite.
+
+Web chat E2E (`chat-assistant.spec.ts`) uses Playwright `test.skip` for provider outages — not SSRF coverage.
 
 ## Auth helpers
 
@@ -39,7 +50,9 @@ HTTP errors use `{ code, message }` from the app catalog (`getError` / `sendCata
 
 When `ALLOW_TEST=true` (non-production), magic-link and change-email flows for `*@test.ai` store plain tokens in `verification.token_plain`. E2E reads them via `GET /test/verification/last?type=&email=` or `GET /test/magic-link/last?email=` (both require a `@test.ai` email). Do not enable on production deployments.
 
+Vitest pins `ALLOWED_ORIGINS` to `http://localhost:3000,http://127.0.0.1:3000,https://example.com` unconditionally so passkey origin tests are not no-ops under `*` or inherited CI values.
+
 ## Known gaps
 
 - **OAuth IdP exchange** — Unit tests assert unconfigured 503 and link-authorize-url 401/503 only. No live GitHub/Google/Facebook/Twitter calls in CI.
-- **AI remote** — API Vitest (`ai.spec.ts`) skips 402 always. Skips 502/503/504/connection only with a missing or placeholder `ANTHROPIC_API_KEY` (`sk-ant-xxx`); a real key fails on 502. Web chat E2E (`chat-assistant.spec.ts`) still soft-passes on 402/upstream/502. Default model: `claude-haiku-4-5` (alias `sonnet` → `claude-sonnet-4-6`). See [AI Architecture](/docs/architecture/ai).
+- **AI remote** — Skips (not passes) on 402 or upstream errors when `ANTHROPIC_API_KEY` is missing or placeholder (`sk-ant-xxx`). Default model: `claude-haiku-4-5` (alias `sonnet` → `claude-sonnet-4-6`). See [AI Architecture](/docs/architecture/ai).
