@@ -838,11 +838,11 @@ export type AccountProfileUpdateResponse = AccountProfileUpdateResponses[keyof A
 export type ChatData = {
   body: {
     messages: Array<{
-      role: string;
+      role: 'user' | 'assistant';
       content: string;
       name?: string;
     } | {
-      role: string;
+      role: 'user' | 'assistant';
       parts: Array<{
         type: 'text';
         text: string;

@@ -3,6 +3,7 @@ import { verifyAuthenticationResponse } from '@simplewebauthn/server'
 import { eq } from 'drizzle-orm'
 import { getDb } from '../../db/index.js'
 import { passkeyCredentials } from '../../db/schema/index.js'
+import { type ErrorCode, getError } from '../catalogs/mapper.js'
 
 const validTransports = ['ble', 'cable', 'hybrid', 'internal', 'nfc', 'smart-card', 'usb'] as const
 type AuthenticatorTransportFuture = (typeof validTransports)[number]
@@ -15,9 +16,12 @@ function filterTransports(arr: string[] | null): AuthenticatorTransportFuture[] 
   )
 }
 
-export type VerifyPasskeyAuthResult =
-  | { ok: true; userId: string }
-  | { ok: false; code: string; message: string }
+export type VerifyPasskeyAuthResult = { ok: true; userId: string } | { ok: false; code: ErrorCode }
+
+function catalogFailure(code: ErrorCode): { ok: false; code: ErrorCode } {
+  getError(code)
+  return { ok: false, code }
+}
 
 export async function verifyPasskeyAuth({
   assertion,
@@ -31,8 +35,7 @@ export async function verifyPasskeyAuth({
   expectedRPID: string
 }): Promise<VerifyPasskeyAuthResult> {
   const credentialId = assertion.id
-  if (!credentialId)
-    return { ok: false, code: 'MISSING_CREDENTIAL_ID', message: 'Assertion missing credential id' }
+  if (!credentialId) return catalogFailure('MISSING_CREDENTIAL_ID')
 
   const db = await getDb()
   const [credential] = await db
@@ -41,16 +44,12 @@ export async function verifyPasskeyAuth({
     .where(eq(passkeyCredentials.credentialId, credentialId))
     .limit(1)
 
-  if (!credential) return { ok: false, code: 'UNKNOWN_CREDENTIAL', message: 'Credential not found' }
+  if (!credential) return catalogFailure('UNKNOWN_CREDENTIAL')
 
   const publicKey = Buffer.from(credential.publicKey, 'base64')
   const counter = credential.counter
   if (!Number.isInteger(counter) || Number.isNaN(counter) || counter < 0)
-    return {
-      ok: false,
-      code: 'INVALID_COUNTER',
-      message: 'Invalid credential counter',
-    }
+    return catalogFailure('INVALID_COUNTER')
 
   let verification: Awaited<ReturnType<typeof verifyAuthenticationResponse>>
   try {
@@ -66,16 +65,12 @@ export async function verifyPasskeyAuth({
         transports: filterTransports(credential.transports) ?? undefined,
       },
     })
-  } catch (err) {
-    return {
-      ok: false,
-      code: 'VERIFICATION_FAILED',
-      message: err instanceof Error ? err.message : 'Verification failed',
-    }
+  } catch {
+    return catalogFailure('VERIFICATION_FAILED')
   }
 
   if (!verification.verified || !verification.authenticationInfo)
-    return { ok: false, code: 'VERIFICATION_FAILED', message: 'Verification failed' }
+    return catalogFailure('VERIFICATION_FAILED')
 
   const [updated] = await db
     .update(passkeyCredentials)
@@ -83,12 +78,7 @@ export async function verifyPasskeyAuth({
     .where(eq(passkeyCredentials.id, credential.id))
     .returning()
 
-  if (!updated)
-    return {
-      ok: false,
-      code: 'COUNTER_UPDATE_FAILED',
-      message: 'Failed to update credential counter',
-    }
+  if (!updated) return catalogFailure('COUNTER_UPDATE_FAILED')
 
   return { ok: true, userId: credential.userId }
 }

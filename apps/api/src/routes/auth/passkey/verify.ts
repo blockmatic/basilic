@@ -6,6 +6,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
 import { passkeyAuthChallenges, passkeyCallback } from '../../../db/schema/index.js'
+import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
 import {
   AuthenticationResponseJSONSchema,
@@ -92,7 +93,7 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
         expectedRPID: origin.rpID,
       })
 
-      if (!result.ok) return reply.code(401).send({ code: result.code, message: result.message })
+      if (!result.ok) return sendCatalogError({ reply, status: 401, code: result.code })
 
       if (callbackUrl) {
         const callbackOrigin = new URL(callbackUrl).origin

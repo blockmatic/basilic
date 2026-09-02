@@ -58,12 +58,10 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
       const provider = getResolvedProvider()
-      if (!provider)
-        return reply.code(500).send({
-          code: 'SERVER_ERROR',
-          message:
-            'No AI provider configured. Set ANTHROPIC_API_KEY (default), OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL.',
-        })
+      if (!provider) {
+        request.log.warn('No AI provider configured')
+        return sendCatalogError({ reply, status: 500, code: 'SERVER_ERROR' })
+      }
 
       const { prompt: rawPrompt, stream, model, temperature } = request.body
       const prompt = rawPrompt.trim()

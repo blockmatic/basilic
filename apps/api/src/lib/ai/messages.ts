@@ -4,6 +4,14 @@ export type ResolveMessagesResult =
   | { ok: true; messages: ModelMessage[] }
   | { ok: false; message: string }
 
+export function isAllowedChatFileUrl({ url }: { url: string }): boolean {
+  try {
+    return new URL(url).protocol === 'data:'
+  } catch {
+    return false
+  }
+}
+
 function isUIMessage(msg: unknown): msg is { role: string; parts: unknown[] } {
   return (
     typeof msg === 'object' &&
@@ -30,6 +38,26 @@ function hasSystemRole(messages: unknown[]): boolean {
   })
 }
 
+function validateUIMessageFileUrls(messages: unknown[]): ResolveMessagesResult | null {
+  for (const msg of messages) {
+    if (!isUIMessage(msg)) continue
+    for (const part of msg.parts) {
+      if (
+        typeof part !== 'object' ||
+        part === null ||
+        !('type' in part) ||
+        (part as { type: string }).type !== 'file' ||
+        !('url' in part)
+      )
+        continue
+      const url = (part as { url: unknown }).url
+      if (typeof url !== 'string' || !isAllowedChatFileUrl({ url }))
+        return { ok: false, message: 'Invalid request: file URL must be a data: URL' }
+    }
+  }
+  return null
+}
+
 export async function resolveMessages(
   rawMessages: unknown[],
   tools: ToolSet,
@@ -42,6 +70,9 @@ export async function resolveMessages(
     const allUIMessage = rawMessages.every(isUIMessage)
     if (!allUIMessage)
       return { ok: false, message: 'Invalid request: mixed UIMessage and CoreMessage formats' }
+
+    const fileUrlError = validateUIMessageFileUrls(rawMessages)
+    if (fileUrlError) return fileUrlError
 
     try {
       const messages = await convertToModelMessages(

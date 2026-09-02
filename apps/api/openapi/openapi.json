@@ -2362,7 +2362,20 @@
                           ],
                           "properties": {
                             "role": {
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "user"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "assistant"
+                                  ]
+                                }
+                              ]
                             },
                             "content": {
                               "maxLength": 32000,
@@ -2381,7 +2394,20 @@
                           ],
                           "properties": {
                             "role": {
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "user"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "assistant"
+                                  ]
+                                }
+                              ]
                             },
                             "parts": {
                               "maxItems": 64,
@@ -2450,6 +2476,7 @@
                                       },
                                       "url": {
                                         "maxLength": 2048,
+                                        "pattern": "^data:",
                                         "type": "string"
                                       },
                                       "filename": {
