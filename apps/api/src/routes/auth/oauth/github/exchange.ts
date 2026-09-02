@@ -6,7 +6,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
 import { account, sessions, users } from '../../../../db/schema/index.js'
-import { authLoginRouteConfig } from '../../../../lib/auth-route-rate-limit.js'
+import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,
@@ -14,9 +14,12 @@ import {
   generateJti,
   hashToken,
 } from '../../../../lib/jwt.js'
-import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
-import { getOAuthAllowedCallbackUrls, type OAuthStateMeta } from '../../../../lib/oauth-shared.js'
-import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
+import {
+  findOrCreateUserByEmail,
+  getOAuthAllowedCallbackUrls,
+  type OAuthStateMeta,
+  validateAndConsumeOAuthState,
+} from '../../../../lib/oauth/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({

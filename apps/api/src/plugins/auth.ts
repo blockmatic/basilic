@@ -4,7 +4,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import { getDb } from '../db/index.js'
 import { sessions, users } from '../db/schema/index.js'
-import { authenticateWithApiKey } from '../lib/api-key-auth.js'
+import { authenticateWithApiKey } from '../lib/api-keys/index.js'
 
 declare module 'fastify' {
   interface FastifyRequest {

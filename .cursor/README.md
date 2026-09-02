@@ -4,7 +4,7 @@ Rules, skills, and MCP for AI-assisted development. Daily workflow: [AI Developm
 
 ## Layout
 
-- [`rules/`](rules/) — constraints. Glob-scoped except `base/general.mdc`, `base/naming.mdc`, `base/git.mdc` (always on).
+- [`rules/`](rules/) — constraints. Glob-scoped except `base/general.mdc`, `base/naming.mdc`, `base/git.mdc`, `base/file-organization.mdc` (always on).
 - [`skills/`](skills/) — on-demand expertise (`<topic>-v<major>/`) and slash playbooks under `workflow/`. Refresh: `pnpm dlx skills@latest add blockmatic/basilic-skills` ([Cursor Skills](../apps/docu/content/docs/development/cursor-skills.mdx)). Catalog: [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills).
 - [`mcp.json`](mcp.json) — MCP servers. Setup: [Cursor Setup](../apps/docu/content/docs/development/cursor-setup.mdx).
 

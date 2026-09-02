@@ -2,7 +2,7 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { env } from '../../../lib/env.js'
-import { getOAuthAllowedCallbackUrls } from '../../../lib/oauth-shared.js'
+import { getOAuthAllowedCallbackUrls } from '../../../lib/oauth/index.js'
 
 function hasRedirectConfig(opts: {
   urls?: string[]

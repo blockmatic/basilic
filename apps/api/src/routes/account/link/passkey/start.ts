@@ -6,8 +6,11 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { passkeyChallenges, passkeyCredentials } from '../../../../db/schema/index.js'
-import { getWebAuthnOriginFromRequest, getWebAuthnRpName } from '../../../../lib/passkey.js'
-import { PublicKeyCredentialCreationOptionsJSONSchema } from '../../../../lib/schemas/webauthn.js'
+import {
+  getWebAuthnOriginFromRequest,
+  getWebAuthnRpName,
+  PublicKeyCredentialCreationOptionsJSONSchema,
+} from '../../../../lib/passkey/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const StartResponseSchema = Type.Object({

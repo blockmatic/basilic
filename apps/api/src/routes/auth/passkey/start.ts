@@ -5,8 +5,10 @@ import { type Static, Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { passkeyAuthChallenges } from '../../../db/schema/index.js'
-import { getWebAuthnOriginFromRequest } from '../../../lib/passkey.js'
-import { PublicKeyCredentialRequestOptionsJSONSchema } from '../../../lib/schemas/webauthn.js'
+import {
+  getWebAuthnOriginFromRequest,
+  PublicKeyCredentialRequestOptionsJSONSchema,
+} from '../../../lib/passkey/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const challengeMaxAge = 5 * 60 // 5 minutes

@@ -8,6 +8,7 @@
     "cursor-setup",
     "cursor-skills",
     "openapi-generation",
+    "file-organization",
     "package-conventions",
     "packages",
     "cli"

@@ -3,7 +3,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { getDb } from '../../src/db/index.js'
 import { apiKeys, passkeyCredentials } from '../../src/db/schema/index.js'
-import { generateApiKey } from '../../src/lib/api-keys.js'
+import { generateApiKey } from '../../src/lib/api-keys/index.js'
 import type { TestApp } from './fastify.js'
 
 const sessionPool = new Map<string, string>()

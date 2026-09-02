@@ -6,7 +6,7 @@ import { OAuth2Client } from 'google-auth-library'
 import { getDb } from '../../../../db/index.js'
 import { account } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
-import { findOrCreateUserByEmail } from '../../../../lib/oauth-user.js'
+import { findOrCreateUserByEmail } from '../../../../lib/oauth/index.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 

@@ -6,7 +6,7 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { authAttempts, sessions, users, verification } from '../../../../db/schema/index.js'
-import { recordAuthFailedAttempt } from '../../../../lib/auth-attempts.js'
+import { recordAuthFailedAttempt } from '../../../../lib/auth/index.js'
 import { normalizeEmail } from '../../../../lib/email.js'
 import { env } from '../../../../lib/env.js'
 import {

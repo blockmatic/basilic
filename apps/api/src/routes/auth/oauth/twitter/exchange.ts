@@ -2,18 +2,19 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
-import { authLoginRouteConfig } from '../../../../lib/auth-route-rate-limit.js'
+import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
 import { isUniqueViolation } from '../../../../lib/db-errors.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
-import { validateAndConsumeOAuthState } from '../../../../lib/oauth-exchange-state.js'
-import { getOAuthAllowedCallbackUrls, type OAuthStateMeta } from '../../../../lib/oauth-shared.js'
 import {
   fetchTwitterOAuthData,
+  getOAuthAllowedCallbackUrls,
+  type OAuthStateMeta,
   OAuthUpstreamError,
   runTwitterExchangeTx,
   type TwitterAccountData,
-} from '../../../../lib/oauth-twitter.js'
+  validateAndConsumeOAuthState,
+} from '../../../../lib/oauth/index.js'
 import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 

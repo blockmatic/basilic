@@ -73,6 +73,11 @@
       "skillPath": "skills/fastify-v5/SKILL.md",
       "computedHash": "31d7af2b1ab8cbbb59c904f0b7472698f968d01777e107b616e6127f6896d8ba"
     },
+    "file-organization-v1": {
+      "source": "../basilic-skills",
+      "sourceType": "local",
+      "computedHash": "002c60ac87f283c2a489a512a7fc08543444beb73026d6b6f9c4f4ba7c27201a"
+    },
     "frontend-design-v1": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",

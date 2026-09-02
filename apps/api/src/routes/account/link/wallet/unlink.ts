@@ -4,10 +4,7 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { walletIdentities } from '../../../../db/schema/index.js'
-import {
-  hasRemainingLoginMethod,
-  withUserSignInMethodLock,
-} from '../../../../lib/auth-guardrails.js'
+import { hasRemainingLoginMethod, withUserSignInMethodLock } from '../../../../lib/auth/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const unlinkRoute: FastifyPluginAsync = async fastify => {

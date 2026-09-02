@@ -9,7 +9,7 @@ import {
   getCanonicalAddress,
   parseSignInMessage,
   verifyWalletSignature,
-} from '../../../../lib/web3-verify.js'
+} from '../../../../lib/web3/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const validChains = ['eip155', 'solana'] as const

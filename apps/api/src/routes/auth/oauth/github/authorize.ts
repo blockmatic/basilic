@@ -9,7 +9,7 @@ import { hashToken } from '../../../../lib/jwt.js'
 import {
   getOAuthAllowedCallbackUrls,
   resolveOAuthCallbackUrl,
-} from '../../../../lib/oauth-shared.js'
+} from '../../../../lib/oauth/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const AuthorizeQuerystringSchema = Type.Object({

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { getApiKeyToken, getOrCreateSession } from '../../../../test/utils/auth-helper.js'
 import { getDb } from '../../../db/index.js'
 import { apiKeys } from '../../../db/schema/index.js'
-import { parseApiKey } from '../../../lib/api-keys.js'
+import { parseApiKey } from '../../../lib/api-keys/index.js'
 import { hashToken } from '../../../lib/jwt.js'
 import { fastify } from '../account.spec.js'
 

@@ -4,13 +4,13 @@ import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { verification } from '../../../../db/schema/index.js'
-import { authLoginRouteConfig } from '../../../../lib/auth-route-rate-limit.js'
+import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
 import {
   getOAuthAllowedCallbackUrls,
   resolveOAuthCallbackUrl,
-} from '../../../../lib/oauth-shared.js'
+} from '../../../../lib/oauth/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const AuthorizeUrlResponseSchema = Type.Object({

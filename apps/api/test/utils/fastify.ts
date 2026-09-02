@@ -2,7 +2,7 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import type { FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
 import app from '../../src/app.js'
-import { setTestEmailProvider } from '../../src/lib/auth.js'
+import { setTestEmailProvider } from '../../src/lib/email.js'
 import { FakeEmailProvider } from './fake-email.js'
 
 export async function buildTestApp(): Promise<FastifyInstance> {

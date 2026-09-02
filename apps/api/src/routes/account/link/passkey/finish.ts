@@ -6,8 +6,10 @@ import { desc, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { passkeyChallenges, passkeyCredentials } from '../../../../db/schema/index.js'
-import { getWebAuthnOriginFromRequest } from '../../../../lib/passkey.js'
-import { RegistrationResponseJSONSchema } from '../../../../lib/schemas/webauthn.js'
+import {
+  getWebAuthnOriginFromRequest,
+  RegistrationResponseJSONSchema,
+} from '../../../../lib/passkey/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const FinishBodySchema = Type.Object({

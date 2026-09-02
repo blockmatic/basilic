@@ -7,3 +7,4 @@ alwaysApply: true
 - Uppercase allowed only for env var keys (e.g. `env.DATABASE_URL`, `process.env.NODE_ENV`)
 - Prefer collocation: keep data in the same file as its consumer; avoid separate `*-titles.ts`, `*-constants.ts` files
 - Use `const titles = {}` in the same file, not `const PAGE_TITLES` in a separate file
+- Related modules (2+ files, same concern): folder plus `index.ts` public API — see file-organization rule and `apps/docu/content/docs/development/file-organization.mdx`
