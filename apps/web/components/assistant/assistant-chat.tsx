@@ -211,7 +211,7 @@ export function AssistantChat({ className, header, hideHeader }: AssistantChatPr
               size="sm"
               className="text-xs"
               onClick={() => handleSuggestion(s)}
-              disabled={status === 'streaming' || status === 'submitted'}
+              disabled={status !== 'ready'}
             >
               {s}
             </Button>
@@ -223,7 +223,7 @@ export function AssistantChat({ className, header, hideHeader }: AssistantChatPr
               value={input}
               placeholder="Type a message..."
               onChange={e => setInput(e.currentTarget.value)}
-              disabled={status === 'streaming' || status === 'submitted'}
+              disabled={status !== 'ready'}
             />
             <PromptInputSubmit
               status={status}

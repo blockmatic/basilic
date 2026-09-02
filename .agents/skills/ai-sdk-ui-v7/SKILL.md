@@ -20,7 +20,7 @@ description: Build React chat UIs with Vercel AI SDK v7 — useChat, DefaultChat
 
 - `useChat` from `@ai-sdk/react`; `DefaultChatTransport` from `ai`
 - Local input state; `sendMessage({ text })`; `status` not `isLoading`; render `message.parts`
-- Server: see [ai-sdk-core](../ai-sdk-core-v7/SKILL.md). New code uses stateless stream helpers. Do not migrate existing `toUIMessageStreamResponse()` unless asked
+- Server: see [ai-sdk-core](../ai-sdk-core-v7/SKILL.md). Handlers use `createUIMessageStreamResponse` + `toUIMessageStream({ stream: result.stream })`. Leave deprecated `toUIMessageStreamResponse()` only when the task is unrelated to streaming or the SDK
 
 ## Constraints
 

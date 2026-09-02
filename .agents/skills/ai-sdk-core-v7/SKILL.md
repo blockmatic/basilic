@@ -20,10 +20,12 @@ description: Build backend AI with Vercel AI SDK v7 — generateText, streamText
 ## Principles
 
 - `generateText` / `streamText` for request handlers and one-shot API routes; `instructions` for system-style prompt
+- Request-handler tool loops: `stopWhen: isStepCount(n)` on `generateText` / `streamText` — not `maxSteps`, not `stepCountIs`
 - `ToolLoopAgent` + `generate()` / `stream()` for durable agents — not hand-rolled loops, not `new Agent()`
-- New streaming UI: `createUIMessageStreamResponse` + `toUIMessageStream({ stream: result.stream })` from `'ai'`
-- Existing `result.toUIMessageStreamResponse()` still works in v7 (deprecated). Do not rewrite working handlers unless asked
+- UI streams: `createUIMessageStreamResponse` + `toUIMessageStream({ stream: result.stream })` from `'ai'`. Use these for new handlers and for dedicated stream/SDK updates
+- `result.toUIMessageStreamResponse()` still works in v7 (deprecated). Leave it only when the task is unrelated to streaming or the SDK
 - Tool results must be JSON-serializable (no `Date`)
+- System prompt lives in `instructions`. Client `messages` must not include `{ role: 'system' }` unless the server fully trusts the payload
 
 ## Constraints
 
@@ -31,10 +33,12 @@ description: Build backend AI with Vercel AI SDK v7 — generateText, streamText
 
 - Read bundled docs before writing calls
 - `convertToModelMessages` when the client sends UI messages
+- Reject untrusted `{ role: 'system' }` in `messages`. Do not set `allowSystemInMessages: true` for client-supplied chat
 
 ### AVOID
 
 - `toDataStreamResponse` / `pipeDataStreamToResponse`
+- `stepCountIs` / `maxSteps` / `result.fullStream` / top-level `system:` (use `isStepCount`, `result.stream`, `instructions`)
 - Guessing model IDs
 
 ## Interactions
@@ -47,3 +51,7 @@ description: Build backend AI with Vercel AI SDK v7 — generateText, streamText
 - [generate-text-basic.ts](templates/generate-text-basic.ts)
 - [stream-text-chat.ts](templates/stream-text-chat.ts)
 - [agent-with-tools.ts](templates/agent-with-tools.ts)
+
+## References
+
+- [Request handlers](references/request-handlers.md) — tools + `isStepCount`, Fastify SSE, system-message reject

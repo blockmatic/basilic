@@ -108,9 +108,6 @@ importers:
       '@ai-sdk/anthropic':
         specifier: ^4.0.45
         version: 4.0.45(zod@4.5.2)
-      '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.5.2)
       '@faker-js/faker':
         specifier: ^10.6.0
         version: 10.6.0
@@ -1206,12 +1203,6 @@ packages:
 
   '@ai-sdk/mcp@2.0.40':
     resolution: {integrity: sha512-BMDJ50IHlMe/bSOQ9Pk46g/yybrN+TD3hz49ryMthBo0e+CQ54ZWOsU+x/Cl7zKYoZzRECD4CRm7iu76GVq17g==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
-
-  '@ai-sdk/openai@4.0.51':
-    resolution: {integrity: sha512-ByLpf4FrmiAFFV/hI2f3EwtuRR+e0AWttik2UsUgTpS10KIGEOvdO6RSMcMcDINQyqIQh8iCb9V7MC/6RtmDsg==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -12709,12 +12700,6 @@ snapshots:
       '@ai-sdk/provider-utils': 5.0.33(zod@4.5.2)
       cross-spawn: 7.0.6
       pkce-challenge: 5.0.1
-      zod: 4.5.2
-
-  '@ai-sdk/openai@4.0.51(zod@4.5.2)':
-    dependencies:
-      '@ai-sdk/provider': 4.0.8
-      '@ai-sdk/provider-utils': 5.0.33(zod@4.5.2)
       zod: 4.5.2
 
   '@ai-sdk/provider-utils@5.0.33(zod@4.5.2)':

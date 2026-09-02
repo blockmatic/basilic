@@ -11,13 +11,13 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/ai-sdk-core-v7/SKILL.md",
-      "computedHash": "3dc89237f7ee0d680afd3f3dc0727212349f7d11a2fe25265d1191cca21097d8"
+      "computedHash": "6d14211722eb1f6679cd3b05d17d80e56d17d58e943c578ad19715587dbc70a3"
     },
     "ai-sdk-ui-v7": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/ai-sdk-ui-v7/SKILL.md",
-      "computedHash": "562b1b2329be69739e3a90740feeccdfc9938536ef78196f5330d22b1e97e09a"
+      "computedHash": "2d909a358b697da27416f5db98605d9cbf366600437faaa0a3c0c9d1c108ebdd"
     },
     "drizzle-orm-v0": {
       "source": "blockmatic/basilic-skills",

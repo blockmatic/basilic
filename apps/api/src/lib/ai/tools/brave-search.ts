@@ -2,7 +2,7 @@ import { captureError } from '@repo/error/node'
 import { tool } from 'ai'
 import type { FastifyBaseLogger } from 'fastify'
 import { z } from 'zod'
-import { env } from '../../lib/env.js'
+import { env } from '../../env.js'
 
 const maxBraveResults = 8
 

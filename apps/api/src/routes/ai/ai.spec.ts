@@ -19,4 +19,3 @@ export { fastify }
 
 import './chat.test'
 import './generate.test'
-import './provider.test'

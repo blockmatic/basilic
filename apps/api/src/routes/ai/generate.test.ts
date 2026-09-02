@@ -113,7 +113,7 @@ describe('POST /ai/generate', () => {
       })
 
       if (skipIfInsufficientCredits(response, 'streaming')) return
-      if (skipIfProviderUnavailable(response, 'streaming', { expectStream: true })) return
+      if (skipIfProviderUnavailable(response, 'streaming')) return
       expect(response.statusCode).toBe(200)
       const contentType = response.headers['content-type']
       expect(contentType).toBeDefined()

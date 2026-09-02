@@ -1,9 +1,9 @@
 import { type ToolSet, tool } from 'ai'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { getDb } from '../../db/index.js'
-import { users } from '../../db/schema/index.js'
-import { env } from '../../lib/env.js'
+import { getDb } from '../../../db/index.js'
+import { users } from '../../../db/schema/index.js'
+import { env } from '../../env.js'
 import { createBraveSearchTool } from './brave-search.js'
 
 const userInfoSpecRoot = 'user-info-1'

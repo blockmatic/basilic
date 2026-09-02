@@ -10,6 +10,7 @@ import { openai } from '@ai-sdk/openai'
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
+  isStepCount,
   streamText,
   toUIMessageStream,
   type UIMessage,
@@ -22,6 +23,7 @@ export async function POST(req: Request) {
     model: openai('gpt-4.1'),
     instructions: 'You are a helpful assistant.',
     messages: await convertToModelMessages(messages),
+    stopWhen: isStepCount(5),
   })
 
   return createUIMessageStreamResponse({
