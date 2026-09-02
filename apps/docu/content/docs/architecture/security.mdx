@@ -54,6 +54,22 @@ Lockfile integrity (`--frozen-lockfile`), gitleaks, TruffleHog (filesystem + his
 - Validation: **TypeBox** on Fastify routes. Suspicious URL/user-agent patterns are logged in `apps/api/src/lib/security.ts` (not blocked; rate limits handle abuse).
 - API keys hashed SHA-256 at rest; timing-safe compare.
 
+## Login route rate limit (as shipped)
+
+A tighter cap applies only to routes that start login or exchange OAuth/passkey callback codes — not every unauthenticated auth mutation.
+
+`authLoginRouteConfig` wires `authRouteRateLimit`: in production, `productionLoginRateLimitMax` (10) requests per `RATE_LIMIT_TIME_WINDOW`; otherwise `RATE_LIMIT_MAX` (default 100; Vitest and E2E use 10000).
+
+Routes under this cap:
+
+- `POST /auth/magiclink/request`
+- OAuth `GET …/authorize-url` and `POST …/exchange` for GitHub, Google, Facebook, and Twitter
+- `POST /auth/passkey/resolve-user`
+
+Other controls (not the Fastify 10/min cap): magic-link **verify** uses `authAttempts` (5 per 15 minutes → `TOO_MANY_ATTEMPTS`); OAuth **link** authorize-url is Bearer-authenticated with 10 requests per user per hour in the database.
+
+Limits are in-memory per API instance, keyed by trusted client IP (`getTrustedClientIp` / `request.ip`). Behind a reverse proxy, set `TRUST_PROXY=true`.
+
 ## Session cookie (web)
 
 The Next.js `POST /api/auth/update-tokens` adapter writes `api.session` only for same-origin browser requests whose access/refresh pair Fastify has validated (`POST /auth/session/validate-tokens`). The cookie remains JS-readable (`httpOnly: false`) by design — this gate closes cross-site and forged writes, not same-origin XSS.

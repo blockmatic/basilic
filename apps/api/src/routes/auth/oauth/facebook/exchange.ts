@@ -6,7 +6,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
 import { account, sessions, users } from '../../../../db/schema/index.js'
-import { authLoginRouteConfig } from '../../../../lib/auth-login-route-config.js'
+import { authLoginRouteConfig } from '../../../../lib/auth-route-rate-limit.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,

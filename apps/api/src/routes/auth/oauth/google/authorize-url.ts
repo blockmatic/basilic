@@ -4,7 +4,7 @@ import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { verification } from '../../../../db/schema/index.js'
-import { authLoginRouteConfig } from '../../../../lib/auth-login-route-config.js'
+import { authLoginRouteConfig } from '../../../../lib/auth-route-rate-limit.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
 import {

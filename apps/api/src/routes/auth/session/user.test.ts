@@ -1,6 +1,20 @@
+import { createSigner } from 'fast-jwt'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createAuthenticatedUser, getWeb3Session } from '../../../../test/utils/auth-helper.js'
+import { env } from '../../../lib/env.js'
+import { createAccessTokenPayload } from '../../../lib/jwt.js'
 import { fastify } from '../session.spec.js'
+
+function decodeJwtPayload<T extends Record<string, unknown>>(token: string) {
+  const payload = token.split('.')[1]
+  if (!payload) throw new Error('Invalid JWT')
+  return JSON.parse(Buffer.from(payload, 'base64url').toString()) as T
+}
+
+const signAccessToken = createSigner({
+  key: env.JWT_SECRET,
+  expiresIn: env.ACCESS_JWT_EXPIRES_IN_SECONDS,
+})
 
 describe('GET /auth/session/user', () => {
   beforeEach(() => {
@@ -55,6 +69,31 @@ describe('GET /auth/session/user', () => {
     expect(response.statusCode).toBe(200)
     const body = response.json()
     expect(body.user.emailVerified).toBe(false)
+  })
+
+  it('should return 401 when access token sub does not match session user', async () => {
+    const { token: tokenA } = await createAuthenticatedUser(fastify, { email: 'bind-a@test.ai' })
+    const { token: tokenB } = await createAuthenticatedUser(fastify, { email: 'bind-b@test.ai' })
+
+    const { sid: sidA } = decodeJwtPayload<{ sid: string }>(tokenA)
+    const userBRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { authorization: `Bearer ${tokenB}` },
+    })
+    expect(userBRes.statusCode).toBe(200)
+    const idB = userBRes.json().user.id as string
+
+    const forged = signAccessToken(createAccessTokenPayload({ userId: idB, sessionId: sidA }))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { authorization: `Bearer ${forged}` },
+    })
+
+    expect(response.statusCode).toBe(401)
+    expect(response.json().code).toBe('UNAUTHORIZED')
   })
 
   it('should return user when authenticated via API key', async () => {

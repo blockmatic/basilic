@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { passkeyCredentials, users } from '../../../db/schema/index.js'
-import { env } from '../../../lib/env.js'
+import { authLoginRouteConfig } from '../../../lib/auth-route-rate-limit.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 const ResolveUserBodySchema = Type.Object({
@@ -32,9 +32,7 @@ const passkeyResolveUserRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/resolve-user',
     {
-      config: {
-        rateLimit: { max: 10, timeWindow: env.RATE_LIMIT_TIME_WINDOW },
-      },
+      config: authLoginRouteConfig,
       schema: {
         operationId: 'authPasskeyResolveUser',
         description: 'Resolve user email from passkey assertion userHandle (for discovery UX)',
