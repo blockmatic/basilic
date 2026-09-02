@@ -5,6 +5,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import {
   createRequestAbortSignal,
   createUiMessageStreamResponse,
+  denyRemoteChatFileDownload,
   getMergedTools,
   getProvider,
   getResolvedProvider,
@@ -18,6 +19,7 @@ import { ErrorResponseSchema } from '../schemas.js'
 
 const chatMessageTextMaxLength = 32_000
 const chatMessagePartsMaxItems = 64
+const chatMessageRoleSchema = Type.Union([Type.Literal('user'), Type.Literal('assistant')])
 
 const ChatMessagePartSchema = Type.Union([
   Type.Object({
@@ -32,7 +34,7 @@ const ChatMessagePartSchema = Type.Union([
   Type.Object({
     type: Type.Literal('file'),
     mediaType: Type.String({ maxLength: 256 }),
-    url: Type.String({ maxLength: 2048 }),
+    url: Type.String({ maxLength: 2048, pattern: '^data:' }),
     filename: Type.Optional(Type.String({ maxLength: 256 })),
   }),
   Type.Object({
@@ -51,12 +53,12 @@ const ChatMessagePartSchema = Type.Union([
 
 const ChatMessageItemSchema = Type.Union([
   Type.Object({
-    role: Type.String(),
+    role: chatMessageRoleSchema,
     content: Type.String({ maxLength: chatMessageTextMaxLength }),
     name: Type.Optional(Type.String()),
   }),
   Type.Object({
-    role: Type.String(),
+    role: chatMessageRoleSchema,
     parts: Type.Array(ChatMessagePartSchema, { maxItems: chatMessagePartsMaxItems }),
   }),
 ])
@@ -108,12 +110,10 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       if (!session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
       const provider = getResolvedProvider()
-      if (!provider)
-        return reply.code(500).send({
-          code: 'SERVER_ERROR',
-          message:
-            'No AI provider configured. Set ANTHROPIC_API_KEY (default), OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL.',
-        })
+      if (!provider) {
+        request.log.warn('No AI provider configured')
+        return sendCatalogError({ reply, status: 500, code: 'SERVER_ERROR' })
+      }
 
       const { messages: rawMessages, stream, model, temperature } = request.body
       const resolvedModel = getProvider(provider, model)
@@ -144,6 +144,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         tools: mergedTools,
         stopWhen: isStepCount(env.AI_TOOL_MAX_STEPS),
         abortSignal,
+        experimental_download: denyRemoteChatFileDownload,
         ...(temperature !== undefined && { temperature }),
       }
 

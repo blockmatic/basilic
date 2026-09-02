@@ -135,6 +135,53 @@ describe('POST /ai/chat', () => {
       expect(data.code).toBe('BAD_REQUEST')
     })
 
+    it('should return 400 for UIMessage with https file URL', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+        payload: {
+          messages: [
+            {
+              role: 'user',
+              parts: [
+                {
+                  type: 'file',
+                  mediaType: 'image/png',
+                  url: 'https://example.com/x.png',
+                },
+              ],
+            },
+          ],
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(() => ErrorSchema.parse(data)).not.toThrow()
+      expect(data.code).toBe('BAD_REQUEST')
+    })
+
+    it('should return 400 for tool role messages', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+        payload: {
+          messages: [{ role: 'tool', content: 'tool output' }],
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(() => ErrorSchema.parse(data)).not.toThrow()
+      expect(data.code).toBe('BAD_REQUEST')
+    })
+
     it('should return 400 for missing required messages field', async () => {
       const response = await fastify.inject({
         method: 'POST',

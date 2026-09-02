@@ -1,4 +1,5 @@
-export { type ResolveMessagesResult, resolveMessages } from './messages.js'
+export { denyRemoteChatFileDownload } from './download.js'
+export { isAllowedChatFileUrl, type ResolveMessagesResult, resolveMessages } from './messages.js'
 export {
   defaultAnthropicModel,
   defaultOllamaModel,
