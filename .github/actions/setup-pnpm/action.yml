@@ -1,0 +1,14 @@
+name: Setup pnpm
+description: Install pnpm, Node from .nvmrc, and dependencies with frozen lockfile
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 11.24.0
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+      shell: bash

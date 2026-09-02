@@ -35,6 +35,10 @@ HTTP errors use `{ code, message }` from the app catalog (`getError` / `sendCata
 
 Vitest `include` is `**/*.spec.ts` only. Every `*.test.ts` must be imported by a group entry `*.spec.ts` or it never runs.
 
+## Coverage
+
+`pnpm --filter @repo/api test:cov` runs the same Vitest suite with v8 coverage (`apps/api/coverage/`). CI uploads the report from the api-e2e **unit** job. Playwright is not included. Known gaps (OAuth IdP exchange, skipped AI remote paths) stay uncovered. No coverage floors in CI yet.
+
 ## AI test split
 
 - **Contract (local, hard)** — `POST /ai/chat` and `/ai/generate` validation: 401 unauthenticated, 400 bad payloads, SSRF file-URL matrix (`data:` only). No provider calls; no soft skip.
