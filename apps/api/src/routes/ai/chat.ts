@@ -16,15 +16,48 @@ import { sendCatalogError } from '../../lib/catalogs/mapper.js'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 
+const chatMessageTextMaxLength = 32_000
+const chatMessagePartsMaxItems = 64
+
+const ChatMessagePartSchema = Type.Union([
+  Type.Object({
+    type: Type.Literal('text'),
+    text: Type.String({ maxLength: chatMessageTextMaxLength }),
+  }),
+  Type.Object({
+    type: Type.Literal('reasoning'),
+    text: Type.String({ maxLength: chatMessageTextMaxLength }),
+    id: Type.Optional(Type.String({ maxLength: 256 })),
+  }),
+  Type.Object({
+    type: Type.Literal('file'),
+    mediaType: Type.String({ maxLength: 256 }),
+    url: Type.String({ maxLength: 2048 }),
+    filename: Type.Optional(Type.String({ maxLength: 256 })),
+  }),
+  Type.Object({
+    type: Type.Literal('step-start'),
+  }),
+  Type.Object({
+    type: Type.Union([Type.Literal('dynamic-tool'), Type.Literal('tool-invocation')]),
+    toolName: Type.String({ maxLength: 256 }),
+    toolCallId: Type.String({ maxLength: 256 }),
+    state: Type.String({ maxLength: 64 }),
+    input: Type.Optional(Type.Unknown()),
+    output: Type.Optional(Type.Unknown()),
+    errorText: Type.Optional(Type.String({ maxLength: chatMessageTextMaxLength })),
+  }),
+])
+
 const ChatMessageItemSchema = Type.Union([
   Type.Object({
     role: Type.String(),
-    content: Type.String({ maxLength: 32_000 }),
+    content: Type.String({ maxLength: chatMessageTextMaxLength }),
     name: Type.Optional(Type.String()),
   }),
   Type.Object({
     role: Type.String(),
-    parts: Type.Array(Type.Unknown()),
+    parts: Type.Array(ChatMessagePartSchema, { maxItems: chatMessagePartsMaxItems }),
   }),
 ])
 

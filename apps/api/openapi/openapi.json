@@ -2384,8 +2384,141 @@
                               "type": "string"
                             },
                             "parts": {
+                              "maxItems": 64,
                               "type": "array",
-                              "items": {}
+                              "items": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "text"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "text"
+                                        ]
+                                      },
+                                      "text": {
+                                        "maxLength": 32000,
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "text"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "reasoning"
+                                        ]
+                                      },
+                                      "text": {
+                                        "maxLength": 32000,
+                                        "type": "string"
+                                      },
+                                      "id": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "mediaType",
+                                      "url"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "file"
+                                        ]
+                                      },
+                                      "mediaType": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      },
+                                      "url": {
+                                        "maxLength": 2048,
+                                        "type": "string"
+                                      },
+                                      "filename": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "step-start"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "type",
+                                      "toolName",
+                                      "toolCallId",
+                                      "state"
+                                    ],
+                                    "properties": {
+                                      "type": {
+                                        "anyOf": [
+                                          {
+                                            "type": "string",
+                                            "enum": [
+                                              "dynamic-tool"
+                                            ]
+                                          },
+                                          {
+                                            "type": "string",
+                                            "enum": [
+                                              "tool-invocation"
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      "toolName": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      },
+                                      "toolCallId": {
+                                        "maxLength": 256,
+                                        "type": "string"
+                                      },
+                                      "state": {
+                                        "maxLength": 64,
+                                        "type": "string"
+                                      },
+                                      "input": {},
+                                      "output": {},
+                                      "errorText": {
+                                        "maxLength": 32000,
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
                             }
                           }
                         }

@@ -150,6 +150,49 @@ describe('POST /ai/chat', () => {
       expect(() => ErrorSchema.parse(data)).not.toThrow()
       expect(data.code).toBe('BAD_REQUEST')
     })
+
+    it('should return 400 for overlong UIMessage text part', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+        payload: {
+          messages: [
+            {
+              role: 'user',
+              parts: [{ type: 'text', text: 'x'.repeat(32_001) }],
+            },
+          ],
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(() => ErrorSchema.parse(data)).not.toThrow()
+      expect(data.code).toBe('BAD_REQUEST')
+    })
+
+    it('should accept UIMessage text part within the limit', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+        payload: {
+          messages: [
+            {
+              role: 'user',
+              parts: [{ type: 'text', text: 'x'.repeat(32_000) }],
+            },
+          ],
+        },
+      })
+
+      expect(response.statusCode).not.toBe(400)
+    })
   })
 
   describe('POST /ai/chat — remote', () => {
