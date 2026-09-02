@@ -1155,7 +1155,10 @@
                           }
                         ]
                       },
-                      "clientExtensionResults": {},
+                      "clientExtensionResults": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
                       "type": {
                         "type": "string",
                         "enum": [
@@ -1507,7 +1510,10 @@
                             }
                           ]
                         },
-                        "extensions": {}
+                        "extensions": {
+                          "type": "object",
+                          "additionalProperties": {}
+                        }
                       }
                     }
                   }
@@ -5415,7 +5421,10 @@
                             }
                           ]
                         },
-                        "extensions": {}
+                        "extensions": {
+                          "type": "object",
+                          "additionalProperties": {}
+                        }
                       }
                     },
                     "sessionId": {
@@ -5523,7 +5532,10 @@
                           }
                         ]
                       },
-                      "clientExtensionResults": {},
+                      "clientExtensionResults": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
                       "type": {
                         "type": "string",
                         "enum": [

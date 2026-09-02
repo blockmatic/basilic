@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-export function useWebAuthnAvailable() {
+export function useWebAuthnAvailable(): boolean {
   const [available, setAvailable] = useState(false)
 
   useEffect(() => {

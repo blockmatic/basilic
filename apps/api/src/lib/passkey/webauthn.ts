@@ -17,6 +17,8 @@ const AuthenticatorAssertionResponseJSONSchema = Type.Object({
   userHandle: Type.Optional(Type.String()),
 })
 
+const WebAuthnExtensionsSchema = Type.Optional(Type.Record(Type.String(), Type.Unknown()))
+
 export const AuthenticationResponseJSONSchema = Type.Object({
   id: Type.String(),
   rawId: Type.String(),
@@ -24,7 +26,7 @@ export const AuthenticationResponseJSONSchema = Type.Object({
   authenticatorAttachment: Type.Optional(
     Type.Union([Type.Literal('platform'), Type.Literal('cross-platform')]),
   ),
-  clientExtensionResults: Type.Optional(Type.Any()),
+  clientExtensionResults: WebAuthnExtensionsSchema,
   type: Type.Literal('public-key'),
 })
 
@@ -44,7 +46,7 @@ export const RegistrationResponseJSONSchema = Type.Object({
   authenticatorAttachment: Type.Optional(
     Type.Union([Type.Literal('platform'), Type.Literal('cross-platform')]),
   ),
-  clientExtensionResults: Type.Optional(Type.Any()),
+  clientExtensionResults: WebAuthnExtensionsSchema,
   type: Type.Literal('public-key'),
 })
 
@@ -62,7 +64,7 @@ export const PublicKeyCredentialRequestOptionsJSONSchema = Type.Object({
   userVerification: Type.Optional(
     Type.Union([Type.Literal('discouraged'), Type.Literal('preferred'), Type.Literal('required')]),
   ),
-  extensions: Type.Optional(Type.Any()),
+  extensions: WebAuthnExtensionsSchema,
 })
 
 const PublicKeyCredentialUserEntityJSONSchema = Type.Object({
@@ -110,5 +112,5 @@ export const PublicKeyCredentialCreationOptionsJSONSchema = Type.Object({
       Type.Literal('none'),
     ]),
   ),
-  extensions: Type.Optional(Type.Any()),
+  extensions: WebAuthnExtensionsSchema,
 })

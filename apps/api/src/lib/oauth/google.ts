@@ -1,6 +1,6 @@
 const fetchTimeoutMs = 15_000
 
-export type GoogleTokenResponse = {
+export interface GoogleTokenResponse {
   /* biome-ignore lint/style/useNamingConvention: OAuth API uses snake_case */
   access_token: string
   /* biome-ignore lint/style/useNamingConvention: OAuth API uses snake_case */
@@ -15,7 +15,7 @@ export type GoogleTokenResponse = {
   error?: string
 }
 
-export type GoogleUser = {
+export interface GoogleUser {
   id: string
   email?: string
   name?: string
@@ -23,14 +23,21 @@ export type GoogleUser = {
   verified_email?: boolean
 }
 
-export async function fetchGoogleTokens(input: {
+interface FetchGoogleTokensInput {
   code: string
   codeVerifier: string
   redirectUri: string
   clientId: string
   clientSecret: string
-}): Promise<GoogleTokenResponse> {
-  const { code, codeVerifier, redirectUri, clientId, clientSecret } = input
+}
+
+export async function fetchGoogleTokens({
+  code,
+  codeVerifier,
+  redirectUri,
+  clientId,
+  clientSecret,
+}: FetchGoogleTokensInput): Promise<GoogleTokenResponse> {
   const tokenBody = new URLSearchParams({
     code,
     // biome-ignore lint/style/useNamingConvention: OAuth spec uses snake_case
@@ -50,7 +57,18 @@ export async function fetchGoogleTokens(input: {
     body: tokenBody.toString(),
     signal: AbortSignal.timeout(fetchTimeoutMs),
   })
-  const tokenData = (await tokenRes.json()) as GoogleTokenResponse
+  let tokenData: GoogleTokenResponse
+  try {
+    tokenData = (await tokenRes.json()) as GoogleTokenResponse
+  } catch {
+    const err = new Error('Token exchange failed') as Error & {
+      status: number
+      tokenData: GoogleTokenResponse
+    }
+    err.status = tokenRes.status
+    err.tokenData = {} as GoogleTokenResponse
+    throw err
+  }
   if (!tokenRes.ok) {
     const err = new Error('Token exchange failed') as Error & {
       status: number
@@ -78,7 +96,15 @@ export async function fetchGoogleUserInfo(accessToken: string): Promise<GoogleUs
     headers: { Authorization: `Bearer ${accessToken}` },
     signal: AbortSignal.timeout(fetchTimeoutMs),
   })
-  const gUser = (await userRes.json()) as GoogleUser
+  let gUser: GoogleUser
+  try {
+    gUser = (await userRes.json()) as GoogleUser
+  } catch {
+    const err = new Error('User info fetch failed') as Error & { status: number; gUser: GoogleUser }
+    err.status = userRes.status
+    err.gUser = {} as GoogleUser
+    throw err
+  }
   if (!userRes.ok) {
     const err = new Error('User info fetch failed') as Error & { status: number; gUser: GoogleUser }
     err.status = userRes.status
