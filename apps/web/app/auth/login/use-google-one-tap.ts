@@ -143,6 +143,12 @@ export function useGoogleOneTap({
           setIsPending(false)
           return
         }
+        if (res.status === 429) {
+          toast.error(getAuthErrorMessage('rate_limit_exceeded'))
+          handledRef.current = false
+          setIsPending(false)
+          return
+        }
         if (!res.ok) {
           toast.error(getAuthErrorMessage('oauth_failed_google'))
           handledRef.current = false

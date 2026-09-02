@@ -5,6 +5,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { verification } from '../../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
+import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
 import {
@@ -61,19 +62,14 @@ const oauthAuthorizeUrlRoute: FastifyPluginAsync = async fastify => {
         requestedRedirectUri: (request.query as { redirect_uri?: string })?.redirect_uri,
       })
       if (!resolved.ok)
-        return reply.status(resolved.error === 'NOT_CONFIGURED' ? 503 : 400).send({
+        return sendCatalogError({
+          reply,
+          status: resolved.error === 'NOT_CONFIGURED' ? 503 : 400,
           code:
             resolved.error === 'NOT_CONFIGURED' ? 'OAUTH_NOT_CONFIGURED' : 'INVALID_REDIRECT_URI',
-          message:
-            resolved.error === 'NOT_CONFIGURED'
-              ? 'Google OAuth redirect is not configured'
-              : 'redirect_uri must be one of the configured callback URLs',
         })
       if (!googleClientId || !googleClientSecret)
-        return reply.status(503).send({
-          code: 'OAUTH_NOT_CONFIGURED',
-          message: 'Google OAuth redirect is not configured',
-        })
+        return sendCatalogError({ reply, status: 503, code: 'OAUTH_NOT_CONFIGURED' })
       const { redirectUri } = resolved
 
       const state = randomUUID() + randomUUID().replace(/-/g, '')

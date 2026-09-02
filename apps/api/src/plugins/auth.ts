@@ -9,6 +9,7 @@ import { authenticateWithApiKey } from '../lib/api-keys/index.js'
 declare module 'fastify' {
   interface FastifyRequest {
     session?: {
+      authKind: 'jwt' | 'api-key'
       user: {
         id: string
         email?: string | null
@@ -45,7 +46,7 @@ const authPlugin: FastifyPluginAsync = async fastify => {
       if (apiKeyToken) {
         const db = await getDb()
         const session = await authenticateWithApiKey(apiKeyToken, db)
-        request.session = session
+        request.session = session ? { ...session, authKind: 'api-key' as const } : null
         return
       }
 
@@ -97,6 +98,7 @@ const authPlugin: FastifyPluginAsync = async fastify => {
           : undefined
 
       request.session = {
+        authKind: 'jwt',
         user: {
           id: user.id,
           email: user.email ?? null,

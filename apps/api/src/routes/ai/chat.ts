@@ -19,7 +19,7 @@ import { ErrorResponseSchema } from '../schemas.js'
 const ChatMessageItemSchema = Type.Union([
   Type.Object({
     role: Type.String(),
-    content: Type.String(),
+    content: Type.String({ maxLength: 32_000 }),
     name: Type.Optional(Type.String()),
   }),
   Type.Object({
@@ -33,7 +33,6 @@ const ChatRequestSchema = Type.Object({
   stream: Type.Optional(Type.Boolean()),
   model: Type.Optional(Type.String()),
   temperature: Type.Optional(Type.Number({ minimum: 0, maximum: 2 })),
-  tools: Type.Optional(Type.Unknown()),
 })
 
 const ChatResponseSchema = Type.Object({

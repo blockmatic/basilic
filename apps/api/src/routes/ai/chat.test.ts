@@ -277,5 +277,22 @@ describe('POST /ai/chat', () => {
       expect(data.text.length).toBeGreaterThan(0)
       expect(data.text.toLowerCase()).toMatch(/test@test\.ai|joined|email/)
     }, 60000)
+
+    it('should return 400 for overlong message content', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+        payload: {
+          messages: [{ role: 'user', content: 'x'.repeat(32_001) }],
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(() => ErrorSchema.parse(data)).not.toThrow()
+    })
   })
 })

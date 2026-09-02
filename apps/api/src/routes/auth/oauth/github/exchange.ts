@@ -5,21 +5,18 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
-import { account, sessions, users } from '../../../../db/schema/index.js'
+import { account, users } from '../../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
+import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
-import {
-  createAccessTokenPayload,
-  createRefreshTokenPayload,
-  generateJti,
-  hashToken,
-} from '../../../../lib/jwt.js'
+import { hashToken } from '../../../../lib/jwt.js'
 import {
   findOrCreateUserByEmail,
   getOAuthAllowedCallbackUrls,
   type OAuthStateMeta,
   validateAndConsumeOAuthState,
 } from '../../../../lib/oauth/index.js'
+import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -41,6 +38,11 @@ type GitHubTokenResponse = {
 
 type GitHubUser = { id: number; login: string; email?: string | null; name?: string | null }
 type GitHubEmail = { email: string; primary: boolean; verified: boolean }
+
+export function resolveGitHubVerifiedEmail(emails: GitHubEmail[]): string {
+  const primary = emails.find(e => e.primary && e.verified)
+  return primary?.email ?? emails.find(e => e.verified)?.email ?? ''
+}
 
 const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
@@ -74,10 +76,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       })
       const defaultUrl = allowedUrls[0]
       if (!githubClientId || !githubClientSecret || !defaultUrl)
-        return reply.code(503).send({
-          code: 'OAUTH_NOT_CONFIGURED',
-          message: 'GitHub OAuth is not configured',
-        })
+        return sendCatalogError({ reply, status: 503, code: 'OAUTH_NOT_CONFIGURED' })
 
       const { code, state } = request.body
       const stateHash = hashToken(state)
@@ -89,10 +88,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const meta = stateRecord.meta as OAuthStateMeta | undefined
       const redirectUri = meta?.redirectUri ?? defaultUrl
       if (!allowedUrls.includes(redirectUri))
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Invalid or tampered redirect URI',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
 
       const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',
@@ -109,24 +105,15 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       })
 
       if (!tokenRes.ok)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: 'Failed to exchange code for token',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'TOKEN_EXCHANGE_FAILED' })
 
       const tokenData = (await tokenRes.json()) as GitHubTokenResponse & { error?: string }
       if (tokenData.error)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: tokenData.error,
-        })
+        return sendCatalogError({ reply, status: 400, code: 'TOKEN_EXCHANGE_FAILED' })
 
       const accessToken = tokenData.access_token
       if (!accessToken)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: 'No access token in response',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'TOKEN_EXCHANGE_FAILED' })
 
       const [userRes, emailsRes] = await Promise.all([
         fetch('https://api.github.com/user', {
@@ -140,31 +127,20 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         }),
       ])
 
-      if (!userRes.ok)
-        return reply.code(400).send({
-          code: 'FETCH_USER_FAILED',
-          message: 'Failed to fetch GitHub user',
-        })
+      if (!userRes.ok) return sendCatalogError({ reply, status: 400, code: 'FETCH_USER_FAILED' })
 
       const ghUser = (await userRes.json()) as GitHubUser
       const accountId = String(ghUser.id)
 
       let email: string
-      if (ghUser.email) {
-        email = ghUser.email
-      } else if (emailsRes.ok) {
+      if (emailsRes.ok) {
         const emails = (await emailsRes.json()) as GitHubEmail[]
-        const primary = emails.find(e => e.primary && e.verified)
-        email = primary?.email ?? emails.find(e => e.verified)?.email ?? ''
+        email = resolveGitHubVerifiedEmail(emails)
       } else {
         email = ''
       }
 
-      if (!email)
-        return reply.code(400).send({
-          code: 'EMAIL_REQUIRED',
-          message: 'Could not retrieve email from GitHub',
-        })
+      if (!email) return sendCatalogError({ reply, status: 400, code: 'EMAIL_REQUIRED' })
 
       const [existingAccount] = await db
         .select()
@@ -172,34 +148,19 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         .where(and(eq(account.providerId, 'github'), eq(account.accountId, accountId)))
 
       if (isLinkMode) {
-        if (!linkUserId)
-          return reply.code(401).send({
-            code: 'INVALID_STATE',
-            message: 'Invalid link state',
-          })
+        if (!linkUserId) return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
         if (existingAccount && existingAccount.userId !== linkUserId)
-          return reply.code(409).send({
-            code: 'PROVIDER_ALREADY_LINKED',
-            message: 'This GitHub account is already linked to another user',
-          })
+          return sendCatalogError({ reply, status: 409, code: 'PROVIDER_ALREADY_LINKED' })
       }
 
       let user: typeof users.$inferSelect | undefined
       if (isLinkMode && linkUserId) {
         const [u] = await db.select().from(users).where(eq(users.id, linkUserId))
         user = u
-        if (!user)
-          return reply.code(401).send({
-            code: 'INVALID_STATE',
-            message: 'User not found for link',
-          })
+        if (!user) return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
       } else if (existingAccount) {
         const [u] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
-        if (!u)
-          return reply.code(500).send({
-            code: 'USER_NOT_FOUND',
-            message: 'Account references missing user',
-          })
+        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_NOT_FOUND' })
         user = u
       } else {
         const u = await findOrCreateUserByEmail(db, {
@@ -207,11 +168,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           name: ghUser.name ?? ghUser.login,
           emailVerified: true,
         })
-        if (!u)
-          return reply.code(500).send({
-            code: 'USER_CREATE_FAILED',
-            message: 'Failed to create or find user',
-          })
+        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_CREATE_FAILED' })
         user = u
       }
 
@@ -256,31 +213,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         await db.insert(account).values(toInsert)
       }
 
-      const sessionId = randomUUID()
-      const refreshJti = generateJti()
-      const refreshJtiHash = hashToken(refreshJti)
-      const sessionExpiresAt = new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000)
-
-      await db.insert(sessions).values({
-        id: sessionId,
-        userId: user.id,
-        token: refreshJtiHash,
-        expiresAt: sessionExpiresAt,
-      })
-
-      const accessPayload = createAccessTokenPayload({ userId: user.id, sessionId })
-      const refreshPayload = createRefreshTokenPayload({
-        userId: user.id,
-        sessionId,
-        jti: refreshJti,
-      })
-
-      const jwtAccess = fastify.jwt.sign(accessPayload, {
-        expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
-      })
-      const jwtRefresh = fastify.jwt.sign(refreshPayload, {
-        expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
-      })
+      const { accessToken: jwtAccess, refreshToken: jwtRefresh } =
+        await createSessionAndIssueTokens({
+          fastify,
+          db,
+          userId: user.id,
+        })
 
       const payload: { token: string; refreshToken: string; redirectTo?: string } = {
         token: jwtAccess,

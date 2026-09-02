@@ -130,7 +130,7 @@ const root: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
     <h2>💡 Features</h2>
     <ul>
       <li><a href="#">Type-safe contracts</a> End-to-end type safety with OpenAPI and hey-api</li>
-      <li><a href="#">Zod validation</a> Runtime schema validation</li>
+      <li><a href="#">TypeBox validation</a> Runtime schema validation</li>
       <li><a href="#">OpenAPI generation</a> Auto-generated from contracts</li>
       <li><a href="#">Fast & efficient</a> Built on Fastify</li>
     </ul>

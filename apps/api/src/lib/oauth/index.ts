@@ -3,10 +3,13 @@ export {
   validateAndConsumeOAuthState,
 } from './exchange-state.js'
 export {
+  buildTokenExchangeError,
+  buildUserInfoError,
   fetchGoogleTokens,
   fetchGoogleUserInfo,
   type GoogleTokenResponse,
   type GoogleUser,
+  toAllowedStatus,
 } from './google.js'
 export {
   getOAuthAllowedCallbackUrls,

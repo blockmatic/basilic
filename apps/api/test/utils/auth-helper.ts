@@ -68,7 +68,7 @@ export async function getWeb3Session(
   const verifyRes = await app.inject({
     method: 'POST',
     url: '/auth/web3/eip155/verify',
-    payload: { message, signature },
+    payload: { message, signature, domain: 'localhost' },
   })
   if (verifyRes.statusCode !== 200) throw new Error(`web3 verify failed: ${verifyRes.body}`)
   const { token } = JSON.parse(verifyRes.body) as { token: string }

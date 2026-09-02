@@ -5,21 +5,18 @@ import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
-import { account, sessions, users } from '../../../../db/schema/index.js'
+import { account, users } from '../../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
+import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
-import {
-  createAccessTokenPayload,
-  createRefreshTokenPayload,
-  generateJti,
-  hashToken,
-} from '../../../../lib/jwt.js'
+import { hashToken } from '../../../../lib/jwt.js'
 import {
   findOrCreateUserByEmail,
   getOAuthAllowedCallbackUrls,
   type OAuthStateMeta,
   validateAndConsumeOAuthState,
 } from '../../../../lib/oauth/index.js'
+import { createSessionAndIssueTokens } from '../../../../lib/session.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -74,10 +71,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       })
       const defaultUrl = allowedUrls[0]
       if (!facebookClientId || !facebookClientSecret || !defaultUrl)
-        return reply.code(503).send({
-          code: 'OAUTH_NOT_CONFIGURED',
-          message: 'Facebook OAuth is not configured',
-        })
+        return sendCatalogError({ reply, status: 503, code: 'OAUTH_NOT_CONFIGURED' })
 
       const { code, state } = request.body
       const stateHash = hashToken(state)
@@ -89,10 +83,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const meta = stateRecord.meta as OAuthStateMeta | undefined
       const redirectUri = meta?.redirectUri ?? defaultUrl
       if (!allowedUrls.includes(redirectUri))
-        return reply.code(401).send({
-          code: 'INVALID_STATE',
-          message: 'Invalid or tampered redirect URI',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
 
       const tokenUrl = new URL('https://graph.facebook.com/v21.0/oauth/access_token')
       tokenUrl.searchParams.set('client_id', facebookClientId)
@@ -108,33 +99,21 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         })
       } catch (err) {
         if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
-          return reply.code(504).send({
-            code: 'TOKEN_EXCHANGE_FAILED',
-            message: 'Token exchange timed out',
-          })
+          return sendCatalogError({ reply, status: 504, code: 'TOKEN_EXCHANGE_FAILED' })
         throw err
       }
       if (!tokenRes.ok)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: 'Failed to exchange code for token',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'TOKEN_EXCHANGE_FAILED' })
 
       const tokenData = (await tokenRes.json()) as FacebookTokenResponse & {
         error?: { message: string }
       }
       if (tokenData.error)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: tokenData.error?.message ?? 'Token exchange failed',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'TOKEN_EXCHANGE_FAILED' })
 
       const accessToken = tokenData.access_token
       if (!accessToken)
-        return reply.code(400).send({
-          code: 'TOKEN_EXCHANGE_FAILED',
-          message: 'No access token in response',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'TOKEN_EXCHANGE_FAILED' })
 
       const userUrl = new URL('https://graph.facebook.com/me')
       userUrl.searchParams.set('fields', 'id,name,email')
@@ -147,28 +126,17 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         })
       } catch (err) {
         if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError'))
-          return reply.code(504).send({
-            code: 'USER_INFO_FAILED',
-            message: 'Failed to fetch Facebook user (timeout)',
-          })
+          return sendCatalogError({ reply, status: 504, code: 'USER_INFO_FAILED' })
         throw err
       }
-      if (!userRes.ok)
-        return reply.code(400).send({
-          code: 'USER_INFO_FAILED',
-          message: 'Failed to fetch Facebook user',
-        })
+      if (!userRes.ok) return sendCatalogError({ reply, status: 400, code: 'USER_INFO_FAILED' })
 
       const fbUser = (await userRes.json()) as FacebookUser
       const accountId = fbUser.id
       const email = fbUser.email ?? ''
       const name = fbUser.name ?? 'Facebook user'
 
-      if (!email)
-        return reply.code(400).send({
-          code: 'EMAIL_REQUIRED',
-          message: 'Could not retrieve email from Facebook',
-        })
+      if (!email) return sendCatalogError({ reply, status: 400, code: 'EMAIL_REQUIRED' })
 
       const [existingAccount] = await db
         .select()
@@ -177,35 +145,20 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
 
       if (isLinkMode)
         if (existingAccount && existingAccount.userId !== linkUserId)
-          return reply.code(409).send({
-            code: 'PROVIDER_ALREADY_LINKED',
-            message: 'This Facebook account is already linked to another user',
-          })
+          return sendCatalogError({ reply, status: 409, code: 'PROVIDER_ALREADY_LINKED' })
 
       let user: { id: string }
       if (isLinkMode && linkUserId) {
         const [u] = await db.select().from(users).where(eq(users.id, linkUserId))
-        if (!u)
-          return reply.code(401).send({
-            code: 'INVALID_STATE',
-            message: 'User not found for link',
-          })
+        if (!u) return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
         user = u
       } else if (existingAccount) {
         const [u] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
-        if (!u)
-          return reply.code(500).send({
-            code: 'USER_NOT_FOUND',
-            message: 'Account references missing user',
-          })
+        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_NOT_FOUND' })
         user = u
       } else {
         const u = await findOrCreateUserByEmail(db, { email, name, emailVerified: true })
-        if (!u)
-          return reply.code(500).send({
-            code: 'USER_CREATE_FAILED',
-            message: 'Failed to create or find user',
-          })
+        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_CREATE_FAILED' })
         user = u
       }
 
@@ -250,31 +203,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         await db.insert(account).values(toInsert)
       }
 
-      const sessionId = randomUUID()
-      const refreshJti = generateJti()
-      const refreshJtiHash = hashToken(refreshJti)
-      const sessionExpiresAt = new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000)
-
-      await db.insert(sessions).values({
-        id: sessionId,
-        userId: user.id,
-        token: refreshJtiHash,
-        expiresAt: sessionExpiresAt,
-      })
-
-      const accessPayload = createAccessTokenPayload({ userId: user.id, sessionId })
-      const refreshPayload = createRefreshTokenPayload({
-        userId: user.id,
-        sessionId,
-        jti: refreshJti,
-      })
-
-      const jwtAccess = fastify.jwt.sign(accessPayload, {
-        expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
-      })
-      const jwtRefresh = fastify.jwt.sign(refreshPayload, {
-        expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
-      })
+      const { accessToken: jwtAccess, refreshToken: jwtRefresh } =
+        await createSessionAndIssueTokens({
+          fastify,
+          db,
+          userId: user.id,
+        })
 
       const payload: { token: string; refreshToken: string; redirectTo?: string } = {
         token: jwtAccess,

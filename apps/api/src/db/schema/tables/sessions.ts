@@ -1,4 +1,4 @@
-import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { index, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
 import { users } from './users.js'
 
 export const sessions = pgTable(
@@ -20,7 +20,7 @@ export const sessions = pgTable(
   table => [
     index('sessions_user_id_idx').on(table.userId),
     index('sessions_expires_at_idx').on(table.expiresAt),
-    index('sessions_token_idx').on(table.token),
+    uniqueIndex('sessions_token_idx').on(table.token),
   ],
 )
 

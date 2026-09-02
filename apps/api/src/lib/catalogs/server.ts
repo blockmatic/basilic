@@ -23,6 +23,10 @@ export const serverErrors = {
     code: 'UNAUTHORIZED',
     message: 'Authentication required',
   },
+  USE_KEY_REVOKE: {
+    code: 'USE_KEY_REVOKE',
+    message: 'API keys cannot be logged out; revoke the key instead',
+  },
   FORBIDDEN: {
     code: 'FORBIDDEN',
     message: 'Access forbidden',
@@ -137,6 +141,10 @@ export const serverErrors = {
   INVALID_STATE: {
     code: 'INVALID_STATE',
     message: 'Invalid or expired state',
+  },
+  INVALID_REDIRECT_URI: {
+    code: 'INVALID_REDIRECT_URI',
+    message: 'redirect_uri must be one of the configured callback URLs',
   },
   EXPIRED_STATE: {
     code: 'EXPIRED_STATE',

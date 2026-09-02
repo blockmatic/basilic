@@ -1,42 +1,20 @@
-# Routes Folder
+# Routes
 
-Routes define the pathways within your application.
-Fastify's structure supports the modular monolith approach, where your
-application is organized into distinct, self-contained modules.
-This facilitates easier scaling and future transition to a microservice architecture.
-In the future you might want to independently deploy some of those.
+One Fastify plugin file per endpoint. Folder layout mirrors the URL path (e.g. `routes/auth/magiclink/request.ts` → `POST /auth/magiclink/request`). See [API architecture](/docs/architecture/api) and [ADR 009](/docs/adrs/009-api-architecture).
 
-In this folder you should define all the routes that define the endpoints
-of your web application.
-Each service is a [Fastify
-plugin](https://fastify.dev/docs/latest/Reference/Plugins/), it is
-encapsulated (it can have its own independent plugins) and it is
-typically stored in a file; be careful to group your routes logically,
-e.g. all `/users` routes in a `users.js` file. We have added
-a `root.js` file for you with a '/' root added.
+## Conventions
 
-If a single file becomes too large, create a folder and add a `index.js` file there:
-this file must be a Fastify plugin, and it will be loaded automatically
-by the application. You can now add as many files as you want inside that folder.
-In this way you can create complex routes within a single monolith,
-and eventually extract them.
+- Collocate TypeBox schemas with the route handler in the same file.
+- Group tests: `routes/{domain}/{group}.spec.ts` owns Fastify + DB lifecycle; `*.test.ts` files are imported by the spec entry.
+- Shared logic belongs in `lib/`, not under `routes/`.
+- Do not add `index.ts` barrels under `routes/` — Fastify autoload treats them as plugins.
 
-If you need to share functionality between routes, place that
-functionality into the `plugins` folder, and share it via
-[decorators](https://fastify.dev/docs/latest/Reference/Decorators/).
+## Schema
 
-If you're a bit confused about using `async/await` to write routes, you would
-better take a look at [Promise resolution](https://fastify.dev/docs/latest/Reference/Routes/#promise-resolution) for more details.
-
-## Schema Definition
-
-**Principle: Collocation** - Keep schemas with their routes, not in separate folders.
-
-### Simple Routes (single/few endpoints)
-Define TypeBox schemas directly in the route file:
+Use TypeBox for request/response schemas. Fastify validates automatically; handlers stay thin.
 
 ```typescript
-import { Type } from 'typebox'
+import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 
 const HealthResponseSchema = Type.Object({
@@ -44,37 +22,16 @@ const HealthResponseSchema = Type.Object({
   now: Type.String({ format: 'date-time' }),
 })
 
-const healthRoutes: FastifyPluginAsync = async (fastify) => {
+const healthRoute: FastifyPluginAsync = async fastify => {
   fastify.get('/health', {
-    schema: {
-      response: {
-        200: HealthResponseSchema,
-      },
-    },
-  }, async (_request, reply) => {
-    return reply.send({
-      ok: true,
-      now: new Date().toISOString(),
-    })
-  })
+    schema: { response: { 200: HealthResponseSchema } },
+  }, async () => ({ ok: true as const, now: new Date().toISOString() }))
 }
 
-export default healthRoutes
+export default healthRoute
 ```
 
-### Complex Routes (multiple endpoints, shared logic)
-For complex routes, you can optionally extract schemas to a separate file within the route folder:
+## Related
 
-```text
-routes/
-  └── ai/
-      ├── index.ts        # Route definitions
-      ├── schemas.ts      # Schemas (optional, if they get large)
-      └── services.ts     # Business logic (optional)
-```
-
-**Key points:**
-- ✅ Use TypeBox for all route schemas (native JSON Schema)
-- ✅ Keep schemas collocated with routes (same file or same folder)
-- ✅ Fastify validates automatically - no manual validation needed
-- ✅ Request/response types are automatically inferred with TypeBox type provider
+- [Error handling](/docs/architecture/error-handling) — `sendCatalogError` for catalog responses
+- [OpenAPI generation](/docs/development/openapi-generation) — run `pnpm generate` after schema changes

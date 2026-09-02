@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { sessions } from '../../../db/schema/index.js'
+import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const sessionLogoutRoute: FastifyPluginAsync = async fastify => {
@@ -17,21 +18,18 @@ const sessionLogoutRoute: FastifyPluginAsync = async fastify => {
         security: [{ bearerAuth: [] }],
         response: {
           204: Type.Null(),
+          400: ErrorResponseSchema,
           401: ErrorResponseSchema,
         },
       },
     },
     async (request, reply) => {
-      // Session is already attached by auth plugin
-      if (!request.session)
-        return reply.code(401).send({
-          code: 'UNAUTHORIZED',
-          message: 'Not authenticated',
-        })
+      if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
+
+      if (request.session.authKind === 'api-key')
+        return sendCatalogError({ reply, status: 400, code: 'USE_KEY_REVOKE' })
 
       const db = await getDb()
-
-      // Revoke session
       await db.delete(sessions).where(eq(sessions.id, request.session.session.id))
 
       return reply.code(204).send()

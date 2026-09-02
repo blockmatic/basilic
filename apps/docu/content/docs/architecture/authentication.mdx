@@ -11,7 +11,7 @@ Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3**
 
 - **Access JWT** (`typ=access`): `sub`, `sid`, optional `wal` for wallet sessions. Lifetime: `ACCESS_JWT_EXPIRES_IN_SECONDS`. Fastify verifies JWT then loads the session.
 - **Refresh JWT** (`typ=refresh`): `sub`, `sid`, `jti`. Rotation at `POST /auth/session/refresh` uses a compare-and-swap `UPDATE` on `id`, `token` (hashed `jti`), and `userId` (`sub`). Reuse of a spent `jti` returns 401 `TOKEN_REUSE_DETECTED` and revokes the session; further refresh attempts return `SESSION_NOT_FOUND`.
-- **Session**: created on login, rotated on refresh, deleted on logout (`POST /auth/session/logout` returns **204**).
+- **Session**: created on login, rotated on refresh, deleted on logout (`POST /auth/session/logout` returns **204** for JWT sessions).
 
 ```mermaid
 stateDiagram-v2
@@ -43,7 +43,7 @@ Both/neither returns 400 `INVALID_INPUT`.
 
 ## Logout
 
-`POST /auth/session/logout` (Bearer required) deletes the session row and returns **204**. Subsequent Bearer requests return 401.
+`POST /auth/session/logout` (Bearer required) deletes the JWT session row and returns **204**. API keys (`bask_` / `X-API-Key`) cannot be logged out via this route — revoke the key instead (**400** `USE_KEY_REVOKE`). Subsequent Bearer requests return 401.
 
 ## API keys
 
