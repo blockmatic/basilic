@@ -17,7 +17,7 @@ Build → E2E. Triggers on pull request when `apps/web/**`, `apps/api/src/routes
 
 Two parallel jobs when `apps/api/**` or shared packages change:
 
-- **unit** — OpenAPI drift check (`pnpm generate && git diff --exit-code`), then `pnpm --filter @repo/api test:cov`. Uploads `api-vitest-coverage` artifact. No API `tsc` build (Vitest runs TypeScript source; `lint.yml` runs `checktypes`).
+- **unit** — OpenAPI drift check (`pnpm generate && git diff --exit-code`), then `pnpm --filter @repo/api test:cov`. Uploads `api-vitest-coverage` artifact. No API `tsc` build (Vitest runs TypeScript source; `lint.yml` runs `checktypes`). Does not require `ANTHROPIC_API_KEY`; remote AI tests skip when the secret is absent.
 - **e2e** — Scalar login E2E via `test:e2e:local` (spawns API with `RATE_LIMIT_MAX=10000`; does not require `ANTHROPIC_API_KEY`).
 
 `cancel-in-progress: true`.

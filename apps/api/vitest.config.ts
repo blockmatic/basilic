@@ -142,7 +142,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**'],
-      exclude: ['**/*.{test,spec}.ts', 'src/db/migrations/**', 'src/routes/reference/template*.ts'],
+      exclude: [
+        '**/*.{test,spec}.ts',
+        '**/*.md',
+        'src/db/migrations/**',
+        'src/routes/reference/template*.ts',
+      ],
       reporter: ['text', 'html', 'lcov'],
     },
   },

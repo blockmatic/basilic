@@ -70,6 +70,7 @@ async function main() {
     NODE_ENV: 'test',
     RATE_LIMIT_MAX: '10000',
     WEBAUTHN_RP_NAME: loaded.WEBAUTHN_RP_NAME ?? process.env.WEBAUTHN_RP_NAME ?? 'Test App',
+    TOTP_ISSUER: loaded.TOTP_ISSUER ?? process.env.TOTP_ISSUER ?? 'Test App',
     JWT_SECRET: jwtSecret,
   }
   delete env.OPEN_ROUTER_API_KEY
@@ -81,7 +82,7 @@ async function main() {
   const fastify = spawn(process.execPath, ['--import', 'tsx', 'server.ts'], {
     cwd: fastifyDir,
     env,
-    stdio: 'ignore',
+    stdio: ['ignore', 'ignore', 'inherit'],
   })
 
   fastify.on('error', err => {
