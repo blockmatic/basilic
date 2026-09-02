@@ -843,7 +843,29 @@ export type ChatData = {
       name?: string;
     } | {
       role: string;
-      parts: Array<unknown>;
+      parts: Array<{
+        type: 'text';
+        text: string;
+      } | {
+        type: 'reasoning';
+        text: string;
+        id?: string;
+      } | {
+        type: 'file';
+        mediaType: string;
+        url: string;
+        filename?: string;
+      } | {
+        type: 'step-start';
+      } | {
+        type: 'dynamic-tool' | 'tool-invocation';
+        toolName: string;
+        toolCallId: string;
+        state: string;
+        input?: unknown;
+        output?: unknown;
+        errorText?: string;
+      }>;
     }>;
     stream?: boolean;
     model?: string;
