@@ -24,31 +24,32 @@ export function Hero() {
       />
 
       <div className="relative mx-auto max-w-4xl text-center">
-        {/* Version badge */}
         <Badge
           variant="outline"
           className="mb-6 gap-2 border-border/60 bg-secondary/50 px-3 py-1 text-xs font-normal text-muted-foreground md:mb-8"
+          asChild
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-          alpha now available
-          <ArrowRight className="h-3 w-3" />
+          <Link href="/docs">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+            alpha now available
+            <ArrowRight className="h-3 w-3" aria-hidden="true" />
+          </Link>
         </Badge>
 
         <h1 className="text-balance text-3xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-4xl md:text-6xl lg:text-7xl">
-          API-First TypeScript FullStack Starter
+          Basilic
         </h1>
 
         <p className="mx-auto mt-4 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base md:mt-6 md:text-lg">
-          Build production-ready APIs and apps with typed SDKs, out-of-the-box authentication, a
-          portable architecture, AI tooling, and crypto integrations.
-          <br /> Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
+          Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted
+          Web2/Web3 auth, and a Cursor-first AI workflow. Shared packages keep web, mobile, and docs
+          consistent.
         </p>
 
-        {/* CTA */}
         <div className="mt-8 flex justify-center md:mt-10">
           <Button size="lg" className="w-full sm:w-auto" asChild>
-            <Link href="/docs">
-              Get Started
+            <Link href="/docs/development">
+              Getting Started
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

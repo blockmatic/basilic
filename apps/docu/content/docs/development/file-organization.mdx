@@ -3,7 +3,7 @@ title: "File Organization"
 description: "Folder-plus-index grouping for related modules — when to use folders, index.ts, and named entries."
 ---
 
-Related modules belong in a **folder with an index** when they share one concern and the same runtime. This is not a mega-barrel: group indexes are small, cohesive, and scoped to one feature. See [Next.js 16 build rules](/docs/development/cursor-skills) (`next-v16`) for lucide-style barrel anti-patterns.
+Related modules belong in a **folder with an index** when they share one concern and the same runtime. This is not a mega-barrel: group indexes are small, cohesive, and scoped to one feature. Avoid lucide-style barrel imports at app boundaries — import icons directly or rely on Next.js `optimizePackageImports`.
 
 ## When to group
 

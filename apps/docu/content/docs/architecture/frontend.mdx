@@ -42,7 +42,7 @@ flowchart TB
 - Unauthenticated requests never reach the App Router 404: `apps/web/proxy.ts` redirects them to `/auth/login`. After auth, unmatched paths render `apps/web/app/not-found.tsx` with HTTP 404.
 - When dynamic resource routes exist, call `notFound()` for missing resources — not inline “not found” JSX with a 200 status.
 - No parallel (`@slot`) or intercepting routes until the product needs a multi-pane or modal-detail UI.
-- Crawl: `app/robots.ts` allows `/privacy`, `/terms`, `/auth/login`, and `/sitemap.xml`, disallows `/`, and advertises the sitemap at `NEXT_PUBLIC_APP_URL`. `app/sitemap.ts` emits absolute `loc` URLs from that origin.
+- Crawl (`apps/web` only): `app/robots.ts` allows `/privacy`, `/terms`, `/auth/login`, and `/sitemap.xml`, disallows `/`, and advertises the sitemap at `NEXT_PUBLIC_APP_URL`. `app/sitemap.ts` emits absolute `loc` URLs from that origin. Docs-host crawl policy: [Vercel Deployment — Docs host crawl](/docs/deployment/vercel#docs-host-crawl).
 
 ## Errors
 

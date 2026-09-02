@@ -222,7 +222,7 @@ We will use **Drizzle ORM** for database operations in the backend API.
 
 ### Schema Definition
 
-Schemas are defined using Drizzle's declarative syntax in `src/database/schema/`:
+Schemas are defined using Drizzle's declarative syntax in `apps/api/src/db/schema/`:
 
 ```typescript
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
@@ -239,7 +239,7 @@ export const users = pgTable('users', {
 Drizzle is integrated with the Fastify-based API through functional patterns:
 
 - Database connection (supports both PGLite and PostgreSQL)
-- Drizzle instance with schema exported from `src/database/`
+- Drizzle instance with schema exported from `apps/api/src/db/schema/`
 - Schema exports for type inference
 - Standard `DATABASE_URL` connection string
 
@@ -260,8 +260,8 @@ Queries use Drizzle's composable query builder:
 
 ## Notes
 
-- Schema files live in `src/database/schema/` directory
-- Migrations are stored in `src/database/migrations/`
+- Schema files live in `apps/api/src/db/schema/` directory
+- Migrations are stored in `apps/api/src/db/migrations/`
 - Drizzle configuration in `drizzle.config.ts`
 - Supports both PGLite (embedded) and Cloud SQL/Supabase (PostgreSQL)
 - Type inference works seamlessly across both database types

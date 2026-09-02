@@ -11,6 +11,21 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
+  title: {
+    default: 'Basilic',
+    template: '%s | Basilic',
+  },
+  description:
+    'Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and a Cursor-first AI workflow.',
+  openGraph: {
+    title: 'Basilic',
+    description:
+      'Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and a Cursor-first AI workflow.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 }
 
 export default function Layout({ children }: { children: ReactNode }) {

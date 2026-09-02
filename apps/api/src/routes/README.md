@@ -16,16 +16,17 @@ Use TypeBox for request/response schemas. Fastify validates automatically; handl
 ```typescript
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
+import { isDbReady } from '../db/index.js'
 
 const HealthResponseSchema = Type.Object({
-  ok: Type.Literal(true),
-  now: Type.String({ format: 'date-time' }),
+  ok: Type.Boolean(),
+  dbReady: Type.Boolean(),
 })
 
 const healthRoute: FastifyPluginAsync = async fastify => {
   fastify.get('/health', {
     schema: { response: { 200: HealthResponseSchema } },
-  }, async () => ({ ok: true as const, now: new Date().toISOString() }))
+  }, async () => ({ ok: true, dbReady: isDbReady() }))
 }
 
 export default healthRoute

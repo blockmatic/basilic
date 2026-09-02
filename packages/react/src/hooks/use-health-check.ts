@@ -6,7 +6,7 @@ import { useReactApiConfig } from '../context'
 /**
  * React Query hook for health check endpoint.
  *
- * Fetches server health status with current ISO datetime. Uses the API client
+ * Fetches server health status (`ok`, `dbReady`). Uses the API client
  * configured in `ReactApiProvider` and applies default query options from context.
  *
  * @param params - Optional health check parameters (query params, etc.)
@@ -21,35 +21,24 @@ import { useReactApiConfig } from '../context'
  *   if (isLoading) return <div>Checking health...</div>
  *   if (error) return <div>Health check failed</div>
  *
- *   return <div>Server is healthy: {data?.datetime}</div>
+ *   return (
+ *     <div>
+ *       API ok: {String(data?.ok)} — DB ready: {String(data?.dbReady)}
+ *     </div>
+ *   )
  * }
  * ```
  *
  * @example
  * ```tsx
  * // With custom query options
- * const { data } = useHealthCheck(
- *   { query: { include: 'details' } },
- *   { refetchInterval: 30000 }
- * )
+ * const { data } = useHealthCheck(undefined, { refetchInterval: 30000 })
  * ```
  *
  * @example
  * ```tsx
  * // With custom queryKey override
- * const { data } = useHealthCheck(
- *   undefined,
- *   { queryKey: ['custom-health-check'] }
- * )
- * ```
- *
- * @example
- * ```tsx
- * // With custom queryKey override
- * const { data } = useHealthCheck(
- *   undefined,
- *   { queryKey: ['custom-health-check'] }
- * )
+ * const { data } = useHealthCheck(undefined, { queryKey: ['custom-health-check'] })
  * ```
  */
 export function useHealthCheck(

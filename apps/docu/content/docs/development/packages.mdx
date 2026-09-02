@@ -121,7 +121,11 @@ export function HealthStatus() {
   const { data, isLoading, error } = useHealthCheck()
   if (isLoading) return <div>Loading…</div>
   if (error) return <div>Health check failed</div>
-  return <div>Server time: {data?.datetime}</div>
+  return (
+    <div>
+      API ok: {String(data?.ok)} — DB ready: {String(data?.dbReady)}
+    </div>
+  )
 }
 ```
 
