@@ -50,9 +50,9 @@ Web chat E2E (`chat-assistant.spec.ts`) uses Playwright `test.skip` for provider
 
 When `ALLOW_TEST=true` (non-production), magic-link and change-email flows for `*@test.ai` store plain tokens in `verification.token_plain`. E2E reads them via `GET /test/verification/last?type=&email=` or `GET /test/magic-link/last?email=` (both require a `@test.ai` email). Do not enable on production deployments.
 
-Vitest pins `ALLOWED_ORIGINS` to `http://localhost:3000,http://127.0.0.1:3000,https://example.com` when unset so passkey origin tests are not no-ops under `*`.
+Vitest pins `ALLOWED_ORIGINS` to `http://localhost:3000,http://127.0.0.1:3000,https://example.com` unconditionally so passkey origin tests are not no-ops under `*` or inherited CI values.
 
 ## Known gaps
 
 - **OAuth IdP exchange** — Unit tests assert unconfigured 503 and link-authorize-url 401/503 only. No live GitHub/Google/Facebook/Twitter calls in CI.
-- **AI remote** — Skips (not passes) on 402 or placeholder-key upstream errors. Default model: `claude-haiku-4-5` (alias `sonnet` → `claude-sonnet-4-6`). See [AI Architecture](/docs/architecture/ai).
+- **AI remote** — Skips (not passes) on 402 or upstream errors when `ANTHROPIC_API_KEY` is missing or placeholder (`sk-ant-xxx`). Default model: `claude-haiku-4-5` (alias `sonnet` → `claude-sonnet-4-6`). See [AI Architecture](/docs/architecture/ai).

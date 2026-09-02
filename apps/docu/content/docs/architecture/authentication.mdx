@@ -51,7 +51,11 @@ Both/neither returns 400 `INVALID_INPUT`.
 
 ## Web3 callback storage
 
-EIP-155 and Solana verify routes store short-lived callback JWTs in `web3_callback` **encrypted at rest** (AES-GCM, same helpers as passkey callbacks). `POST /auth/web3/exchange` decrypts before returning tokens to the client. Decrypt failure returns 401 `INVALID_OR_EXPIRED_CODE`. `POST /auth/passkey/exchange` uses the same encrypt helpers on `passkey_callback` and returns 401 `INVALID_OR_EXPIRED_CODE` when decrypt fails. Passkey **verify** consumes the auth challenge before WebAuthn verification (one-shot; concurrent reuse returns `EXPIRED_CHALLENGE`). Credential counters use compare-and-swap on update. Exchange requires a non-empty stored `callbackOrigin` and matching request `Origin` / `X-Callback-Origin`. See [Login route rate limit](/docs/architecture/security#login-route-rate-limit-as-shipped) for which auth routes share the tight Fastify cap.
+EIP-155 and Solana verify routes store short-lived callback JWTs in `web3_callback` **encrypted at rest** (AES-GCM). `POST /auth/web3/exchange` decrypts before returning tokens to the client. Decrypt failure returns 401 `INVALID_OR_EXPIRED_CODE`.
+
+## Passkey authentication
+
+Passkey **verify** consumes the auth challenge before WebAuthn verification (one-shot; concurrent reuse returns `EXPIRED_CHALLENGE`). Credential counters use compare-and-swap on update. Redirect flows store encrypted tokens in `passkey_callback` (same AES-GCM helpers as Web3). `POST /auth/passkey/exchange` decrypts before returning tokens; decrypt failure returns 401 `INVALID_OR_EXPIRED_CODE`. Exchange requires a non-empty stored `callbackOrigin` and a matching request `Origin` / `X-Callback-Origin`. Stored callback origins must use HTTPS in production; outside production, HTTP is allowed only for loopback hosts (`localhost`, `127.0.0.1`, `::1`). See [Login route rate limit](/docs/architecture/security#login-route-rate-limit-as-shipped) for which auth routes share the tight Fastify cap.
 
 ## Web (Next.js)
 

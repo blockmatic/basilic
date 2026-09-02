@@ -139,6 +139,73 @@ describe('POST /auth/passkey/exchange', () => {
     })
   })
 
+  it('should return 400 when stored callbackOrigin is empty', async () => {
+    const code = generateToken()
+    const codeHash = hashToken(code)
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000)
+    const encrypted = encryptCallbackTokens({
+      accessToken: 'test-access-token',
+      refreshToken: 'test-refresh-token',
+    })
+
+    const db = await getDb()
+    await db.insert(passkeyCallback).values({
+      id: randomUUID(),
+      codeHash,
+      accessToken: encrypted.accessToken,
+      refreshToken: encrypted.refreshToken,
+      callbackOrigin: '',
+      expiresAt,
+    })
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/passkey/exchange',
+      headers: { origin: testCallbackOrigin },
+      payload: { code },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.json()).toMatchObject({
+      code: 'MISSING_ORIGIN',
+      message: expect.stringContaining('Origin'),
+    })
+  })
+
+  it('should return 400 when stored callbackOrigin uses non-loopback http', async () => {
+    const code = generateToken()
+    const codeHash = hashToken(code)
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000)
+    const storedOrigin = 'http://example.com'
+    const encrypted = encryptCallbackTokens({
+      accessToken: 'test-access-token',
+      refreshToken: 'test-refresh-token',
+    })
+
+    const db = await getDb()
+    await db.insert(passkeyCallback).values({
+      id: randomUUID(),
+      codeHash,
+      accessToken: encrypted.accessToken,
+      refreshToken: encrypted.refreshToken,
+      callbackOrigin: storedOrigin,
+      expiresAt,
+    })
+
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/auth/passkey/exchange',
+      headers: { origin: storedOrigin },
+      payload: { code },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.json()).toMatchObject({
+      code: 'INVALID_ORIGIN',
+      message: 'Invalid origin',
+    })
+  })
+
   it('should return 400 when origin header is missing', async () => {
     const code = generateToken()
     const codeHash = hashToken(code)

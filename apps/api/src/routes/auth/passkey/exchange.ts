@@ -7,7 +7,9 @@ import { getDb } from '../../../db/index.js'
 import { passkeyCallback } from '../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
+import { env } from '../../../lib/env.js'
 import { hashToken } from '../../../lib/jwt.js'
+import { isAllowedCallbackOriginScheme } from '../../../lib/passkey/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -62,6 +64,8 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
           if (!r) return null
           if (!r.callbackOrigin?.trim()) throw new Error('MISSING_ORIGIN')
           if (!requestOrigin) throw new Error('MISSING_ORIGIN')
+          if (!isAllowedCallbackOriginScheme({ origin: r.callbackOrigin, nodeEnv: env.NODE_ENV }))
+            throw new Error('INVALID_ORIGIN')
           if (r.callbackOrigin !== requestOrigin) throw new Error('ORIGIN_MISMATCH')
           const [deleted] = await tx
             .delete(passkeyCallback)
@@ -86,6 +90,8 @@ const passkeyExchangeRoute: FastifyPluginAsync = async fastify => {
             code: 'MISSING_ORIGIN',
             message: 'Origin is required for code exchange (Origin or X-Callback-Origin header)',
           })
+        if (err instanceof Error && err.message === 'INVALID_ORIGIN')
+          return sendCatalogError({ reply, status: 400, code: 'INVALID_ORIGIN' })
         if (err instanceof Error && err.message === 'ORIGIN_MISMATCH')
           return reply.code(401).send({
             code: 'ORIGIN_MISMATCH',
