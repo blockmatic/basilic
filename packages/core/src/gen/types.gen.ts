@@ -961,6 +961,13 @@ export type GenerateErrors = {
     code: string;
     message: string;
   };
+  /**
+   * Default Response
+   */
+  504: {
+    code: string;
+    message: string;
+  };
 };
 
 export type GenerateError = GenerateErrors[keyof GenerateErrors];

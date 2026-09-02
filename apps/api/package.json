@@ -46,7 +46,6 @@
   "license": "ISC",
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.45",
-    "@ai-sdk/openai": "^4.0.51",
     "@faker-js/faker": "^10.6.0",
     "@fastify/autoload": "^6.5.0",
     "@fastify/cors": "^11.3.0",

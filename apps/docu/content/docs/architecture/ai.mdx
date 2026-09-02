@@ -1,0 +1,85 @@
+---
+title: "AI"
+description: "Fastify AI routes, lib/ai runtime, providers, streaming, and the web assistant contract."
+---
+
+The Fastify API exposes two AI endpoints under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; route files in `apps/api/src/routes/ai/` are thin handlers (schema + auth + delegation).
+
+## Routes
+
+| Route | Use case | Response |
+|-------|----------|----------|
+| `POST /ai/chat` | Web assistant, multi-turn messages, tools | JSON `{ text }` or UI-message SSE |
+| `POST /ai/generate` | CLI, scripts, single prompt | JSON `{ text }` or UI-message SSE |
+
+Both require Bearer auth (session JWT or API key). Set `Accept: text/event-stream` or `stream: true` for SSE.
+
+## Provider chain
+
+When `AI_PROVIDER` is unset, resolution order is **Anthropic → Open Router → Ollama** (`getResolvedProvider()` in `lib/ai/provider.ts`). Request alias `sonnet` maps to Claude Sonnet 4.6; default model is Haiku 4.5.
+
+For Ollama installation and ops, see [Self-Hosted LLM](/docs/deployment/self-hosted-llm). The example pull model there is `qwen2.5:3b`; the runtime default when using Ollama is `qwen3:8b`.
+
+## `lib/ai` layout
+
+```
+apps/api/src/lib/ai/
+  index.ts           named re-exports
+  provider.ts        getResolvedProvider, getProvider, model aliases
+  messages.ts        UIMessage / CoreMessage → ModelMessage
+  runtime.ts         abort, SSE piping, upstream error mapping
+  upstream-error.ts  isInsufficientCreditsError
+  tools/
+    index.ts         getMergedTools
+    account-info.ts  getAccountInfo tool
+    brave-search.ts  braveSearch tool (when BRAVE_SEARCH_API_KEY set)
+```
+
+Chat uses `streamText` / `generateText` with `stopWhen: isStepCount(AI_TOOL_MAX_STEPS)`. Generate is prompt-only (no tools). Shared runtime handles client abort + `AI_UPSTREAM_TIMEOUT_MS`, v7 UI streams (`toUIMessageStream` + `createUIMessageStreamResponse`), and catalog errors via `captureError` then `sendCatalogError`.
+
+Client `{ role: 'system' }` messages are rejected with 400 — system prompt belongs server-side (`instructions`), not in client payloads.
+
+## Environment variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `ANTHROPIC_API_KEY` | Conditional (preferred) | — | Anthropic direct API |
+| `OPEN_ROUTER_API_KEY` | Conditional (fallback) | — | Open Router when Anthropic unavailable |
+| `OLLAMA_BASE_URL` | Conditional | `http://localhost:11434` | Self-hosted Ollama |
+| `AI_PROVIDER` | No | Inferred | `anthropic`, `openrouter`, or `ollama` |
+| `AI_DEFAULT_MODEL` | No | Provider-specific | Haiku / `anthropic/claude-haiku-4.5` / `qwen3:8b` |
+| `AI_TOOL_MAX_STEPS` | No | `5` | Max tool-loop steps for chat |
+| `AI_UPSTREAM_TIMEOUT_MS` | No | `120000` | Upstream abort timeout (ms) |
+| `BRAVE_SEARCH_API_KEY` | No | — | Enables `braveSearch` tool |
+
+Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`.
+
+## Web assistant contract
+
+The web app uses `useChatFromConfig` (`@repo/react`) → `POST {baseUrl}/ai/chat` with Bearer auth and `DefaultChatTransport` (UI-message SSE).
+
+**Tool:** `getAccountInfo` — output shape:
+
+```json
+{ "__render": "user-info", "spec": { "root": "...", "elements": { ... } }, "summary": "..." }
+```
+
+`assistant-chat.tsx` matches `tool-getAccountInfo` parts and renders via `user-info-catalog.tsx`. Do not rename the tool or change the output shape without updating the web UI.
+
+Composer send (textarea + suggestions) is disabled while `status !== 'ready'`; stop remains available during `streaming`.
+
+## Errors
+
+Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`), 502 (`UPSTREAM_SERVICE_ERROR`), 504 (`UPSTREAM_TIMEOUT`). Response bodies use catalog messages only — never raw upstream `err.message`.
+
+## Testing
+
+- **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): `test/utils/ai-remote.ts` skips **402** only when the response is `INSUFFICIENT_CREDITS` (quota is infra). Skips 502/504/connection only when `ANTHROPIC_API_KEY` is missing or placeholder `sk-ant-xxx`. A real key → 502 fails the suite.
+- **Web E2E** (`chat-assistant.spec.ts`): still soft-passes on 402/upstream/502 when the provider is down. See [E2E Testing](/docs/testing/e2e-testing).
+
+## Related
+
+- [Self-Hosted LLM](/docs/deployment/self-hosted-llm) — Ollama ops
+- [Vercel Deployment](/docs/deployment/vercel) — env vars for hosted API
+- [API Architecture](/docs/architecture/api) — OpenAPI, `@repo/core`
+- [Error handling](/docs/architecture/error-handling) — catalog errors

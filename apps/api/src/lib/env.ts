@@ -76,6 +76,7 @@ export const env = createEnv({
     SENTRY_ENVIRONMENT: z.string().min(1).optional(),
     OLLAMA_BASE_URL: z.string().url().optional().default('http://localhost:11434'),
     AI_UPSTREAM_TIMEOUT_MS: z.coerce.number().int().positive().optional().default(120_000),
+    AI_TOOL_MAX_STEPS: z.coerce.number().int().min(1).max(20).optional().default(5),
     AI_PROVIDER: z.enum(['anthropic', 'openrouter', 'ollama']).optional(),
     ANTHROPIC_API_KEY: z.string().min(1).optional(),
     OPEN_ROUTER_API_KEY: z.string().min(1).optional(),

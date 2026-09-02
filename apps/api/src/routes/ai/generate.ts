@@ -2,10 +2,16 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import { generateText, streamText } from 'ai'
 import type { FastifyPluginAsync } from 'fastify'
-import { env } from '../../lib/env.js'
+import {
+  createRequestAbortSignal,
+  createUiMessageStreamResponse,
+  getProvider,
+  getResolvedProvider,
+  handleUpstreamError,
+  sendWebResponse,
+} from '../../lib/ai/index.js'
+import { sendCatalogError } from '../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../schemas.js'
-import { getProvider, getResolvedProvider } from './provider.js'
-import { isInsufficientCreditsError } from './upstream-error.js'
 
 const maxPromptLength = 32_000
 
@@ -44,15 +50,12 @@ const generateRoute: FastifyPluginAsync = async fastify => {
           402: ErrorResponseSchema,
           500: ErrorResponseSchema,
           502: ErrorResponseSchema,
+          504: ErrorResponseSchema,
         },
       },
     },
     async (request, reply) => {
-      if (!request.session)
-        return reply.code(401).send({
-          code: 'UNAUTHORIZED',
-          message: 'Authentication required',
-        })
+      if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
       const provider = getResolvedProvider()
       if (!provider)
@@ -64,11 +67,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
 
       const { prompt: rawPrompt, stream, model, temperature } = request.body
       const prompt = rawPrompt.trim()
-      if (!prompt)
-        return reply.code(400).send({
-          code: 'BAD_REQUEST',
-          message: 'Prompt must not be empty',
-        })
+      if (!prompt) return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
 
       const resolvedModel = getProvider(provider, model)
 
@@ -81,7 +80,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
         'Processing generate request',
       )
 
-      const abortSignal = AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS)
+      const abortSignal = createRequestAbortSignal(request)
       const baseOptions = {
         model: resolvedModel,
         prompt,
@@ -92,9 +91,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       try {
         if (shouldStream) {
           const result = streamText(baseOptions)
-          const response = result.toUIMessageStreamResponse()
-          for (const [k, v] of response.headers) reply.raw.setHeader(k, v)
-          reply.raw.statusCode = response.status
+          const response = createUiMessageStreamResponse(result)
           request.log.info(
             {
               route: '/ai/generate',
@@ -105,7 +102,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
             },
             'Generate stream started',
           )
-          return reply.send(response.body as never)
+          return sendWebResponse(reply, response)
         }
 
         const result = await generateText(baseOptions)
@@ -121,24 +118,13 @@ const generateRoute: FastifyPluginAsync = async fastify => {
         )
         return reply.code(200).send({ text: result.text })
       } catch (err) {
-        const errObj = err instanceof Error ? err : new Error(String(err))
-        request.log.warn(
-          {
-            route: '/ai/generate',
-            provider,
-            error: errObj.message,
-            durationMs: Date.now() - startMs,
-          },
-          'Generate upstream error',
-        )
-        if (isInsufficientCreditsError(err))
-          return reply.code(402).send({
-            code: 'INSUFFICIENT_CREDITS',
-            message: errObj.message.slice(0, 256) || 'Insufficient credits',
-          })
-        return reply.code(502).send({
-          code: 'UPSTREAM_SERVICE_ERROR',
-          message: 'AI provider request failed. Try again later.',
+        return handleUpstreamError({
+          reply,
+          err,
+          logger: request.log,
+          route: '/ai/generate',
+          provider,
+          startMs,
         })
       }
     },

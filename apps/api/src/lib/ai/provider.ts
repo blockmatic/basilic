@@ -2,7 +2,7 @@ import { createAnthropic } from '@ai-sdk/anthropic'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import type { LanguageModel } from 'ai'
 import { createOllama } from 'ai-sdk-ollama'
-import { env } from '../../lib/env.js'
+import { env } from '../env.js'
 
 export const defaultOllamaModel = 'qwen3:8b'
 export const defaultOpenRouterModel = 'anthropic/claude-haiku-4.5'
@@ -33,7 +33,6 @@ export function getResolvedProvider(): ResolvedProvider | null {
     if (env.OLLAMA_BASE_URL) return 'ollama'
     return null
   }
-  // Default: Anthropic direct API first, then Open Router, then Ollama
   if (env.ANTHROPIC_API_KEY) return defaultProvider
   if (env.OPEN_ROUTER_API_KEY) return 'openrouter'
   if (env.OLLAMA_BASE_URL) return 'ollama'
@@ -61,36 +60,61 @@ const anthropicModelAliases: Record<string, string> = {
   'claude-sonnet-4-20250514': upgradeSonnetAnthropicModel,
 }
 
-export function resolveAnthropicModel(modelParam?: string): string {
-  const defaultModel = env.AI_DEFAULT_MODEL ?? defaultAnthropicModel
+function resolveModelParam({
+  modelParam,
+  runtimeDefault,
+  defaultAliases,
+  aliases,
+  defaultModelOverride,
+}: {
+  modelParam?: string
+  runtimeDefault: string
+  defaultAliases: string[]
+  aliases: Record<string, string>
+  defaultModelOverride?: string
+}): string {
+  const defaultModel = defaultModelOverride ?? env.AI_DEFAULT_MODEL ?? runtimeDefault
   const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
   const useDefault =
-    m === undefined ||
-    m === defaultAnthropicModel ||
-    m === 'aurora-alpha' ||
-    m === 'default' ||
-    m === 'haiku'
-  return useDefault ? defaultModel : (anthropicModelAliases[m ?? ''] ?? m ?? defaultModel)
+    m === undefined || defaultAliases.includes(m) || m === defaultModel || m === runtimeDefault
+  const effective = useDefault ? defaultModel : (m ?? defaultModel)
+  return aliases[effective] ?? effective
 }
 
-function resolveOllamaModel(modelParam?: string): string {
-  const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOllamaModel
-  const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
-  const useDefault =
-    m === undefined || m === defaultOllamaModel || m === 'aurora-alpha' || m === 'default'
-  return useDefault ? defaultModel : (m ?? defaultModel)
+export function resolveAnthropicModel(
+  modelParam?: string,
+  opts?: { defaultModel?: string },
+): string {
+  return resolveModelParam({
+    modelParam,
+    runtimeDefault: defaultAnthropicModel,
+    defaultAliases: ['aurora-alpha', 'default', 'haiku'],
+    aliases: anthropicModelAliases,
+    defaultModelOverride: opts?.defaultModel,
+  })
 }
 
-export function resolveOpenRouterModel(modelParam?: string): string {
-  const defaultModel = env.AI_DEFAULT_MODEL ?? defaultOpenRouterModel
-  const m = (modelParam?.trim().length ?? 0) > 0 ? modelParam?.trim() : undefined
-  const useRuntimeDefault =
-    m === undefined ||
-    m === defaultOpenRouterModel ||
-    m === 'aurora-alpha' ||
-    m === 'default' ||
-    m === 'haiku'
-  const effective = useRuntimeDefault ? defaultModel : (m ?? defaultModel)
+function resolveOllamaModel(modelParam?: string, opts?: { defaultModel?: string }): string {
+  return resolveModelParam({
+    modelParam,
+    runtimeDefault: defaultOllamaModel,
+    defaultAliases: ['aurora-alpha', 'default'],
+    aliases: {},
+    defaultModelOverride: opts?.defaultModel,
+  })
+}
+
+export function resolveOpenRouterModel(
+  modelParam?: string,
+  opts?: { defaultModel?: string },
+): string {
+  const effective = resolveModelParam({
+    modelParam,
+    runtimeDefault: defaultOpenRouterModel,
+    defaultAliases: ['aurora-alpha', 'default', 'haiku'],
+    aliases: openRouterModelAliases,
+    defaultModelOverride: opts?.defaultModel,
+  })
   return (
     openRouterModelAliases[effective] ??
     (effective.startsWith('gpt') ? `openai/${effective}` : effective)
