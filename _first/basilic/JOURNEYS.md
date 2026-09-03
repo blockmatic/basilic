@@ -19,7 +19,7 @@ Actors, entry points, happy paths, alternates, error paths, permission gates, an
 - **Fact:** Actors: web end user; adopting developer; CLI/agent with API key; CI/CodeRabbit/DeepSec; mobile user (**deferred**)
 - **Fact:** Login methods: magic link (`token`+`verificationId` or `token`+`email`); OAuth GitHub/Google/Facebook/Twitter; passkey; Web3 EIP-155/Solana on the API. TOTP is 2FA only.
 - **Fact:** E2E magic link: `test@test.ai` when `ALLOW_TEST=true`
-- **Fact:** Session: access/refresh JWT, CAS rotation, `TOKEN_REUSE_DETECTED`, logout **204**. API keys cannot logout — `USE_KEY_REVOKE`. Cookie `api.session` (`httpOnly: false` — Security names the risk).
+- **Fact:** Session: access/refresh JWT, CAS rotation, `TOKEN_REUSE_DETECTED`, logout **204**. API keys cannot log out — `USE_KEY_REVOKE`. Cookie `api.session` (`httpOnly: false` — Security names the risk).
 - **Fact:** Account: last-method guardrail (`LAST_SIGN_IN_METHOD`); change/link email; OAuth/wallet/passkey link; API keys `bask_` shown once.
 - **Fact:** CLI: API key only; JWT auth endpoints excluded ([cli.mdx](../../apps/docu/content/docs/development/cli.mdx))
 - **Drift:** Web3 verify exists on Fastify; **web has no wallet UI**. Do not map a wallet-connect journey as shipped.

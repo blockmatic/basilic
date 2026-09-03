@@ -47,7 +47,7 @@ Copy `ABOUT.md` and `principles/` into the repository root. Do not copy other si
 
 The target repository's instructions override generic FIRST guidance. Adopt upstream FIRST changes deliberately by reviewing the diff rather than overwriting local instructions. The human pack—this README and `articles/`—is optional.
 
-Validate the complete source set with:
+Complete structural validation is for this source tree, not a drop-in copy. It needs `articles/` and `scripts/` in addition to `ABOUT.md` and `principles/`. From this directory:
 
 ```sh
 python3 scripts/validate_docs.py

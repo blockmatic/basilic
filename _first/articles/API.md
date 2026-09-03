@@ -42,7 +42,7 @@ I learned this on public HTTP, then on everything else. At Bitcash the matching 
 
 An API separates a useful capability from a particular interface.
 
-```
+```text
 capability
     ↓
 API / contract
