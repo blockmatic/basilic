@@ -21,3 +21,8 @@ reason = "Transitive sandbox, no fix available in ecosystem"
 [[IgnoredVulns]]
 id = "GHSA-gc25-3vc5-2jf9"
 reason = "Transitive sandbox, no fix available in ecosystem"
+
+# stream-json: jayson 4.x pins 1.9.1; patch is 3.5.0 (ESM breaking)
+[[IgnoredVulns]]
+id = "GHSA-528h-pc64-c93x"
+reason = "Transitive stream-json via jayson; fix is 3.5.0 (breaking), no 1.x patch"
