@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * E2E local: spawn Fastify API, poll until healthy, run Playwright, cleanup on exit.
- * No wait-on. Uses ALLOW_TEST, PGLITE, NODE_ENV=test.
- * Forces AI_PROVIDER=anthropic and strips Open Router/Ollama/AI_DEFAULT_MODEL (parity with Vitest + web E2E).
+ * No wait-on. Uses ALLOW_TEST, PGLITE, NODE_ENV=test, RATE_LIMIT_MAX=10000.
+ * Scalar login E2E does not call AI; Anthropic is not required for this spawn.
  */
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -62,32 +62,27 @@ async function main() {
   const loaded = loadEnvTest()
   const jwtSecret =
     loaded.JWT_SECRET ?? process.env.JWT_SECRET ?? 'e2e-jwt-secret-min-32-chars-for-tests'
-  const anthropicApiKey = loaded.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY
-  if (!anthropicApiKey) {
-    process.stderr.write(
-      'E2E local: ANTHROPIC_API_KEY must be set in .env.test or process.env when AI_PROVIDER is anthropic. Refusing to run without it.\n',
-    )
-    process.exit(1)
-  }
   const env = {
     ...process.env,
     ...loaded,
     ALLOW_TEST: 'true',
     PGLITE: 'true',
     NODE_ENV: 'test',
+    RATE_LIMIT_MAX: '10000',
     WEBAUTHN_RP_NAME: loaded.WEBAUTHN_RP_NAME ?? process.env.WEBAUTHN_RP_NAME ?? 'Test App',
+    TOTP_ISSUER: loaded.TOTP_ISSUER ?? process.env.TOTP_ISSUER ?? 'Test App',
     JWT_SECRET: jwtSecret,
-    AI_PROVIDER: 'anthropic',
-    ANTHROPIC_API_KEY: anthropicApiKey,
   }
   delete env.OPEN_ROUTER_API_KEY
   delete env.OLLAMA_BASE_URL
   delete env.AI_DEFAULT_MODEL
+  delete env.AI_PROVIDER
+  delete env.ANTHROPIC_API_KEY
 
   const fastify = spawn(process.execPath, ['--import', 'tsx', 'server.ts'], {
     cwd: fastifyDir,
     env,
-    stdio: 'ignore',
+    stdio: ['ignore', 'ignore', 'inherit'],
   })
 
   fastify.on('error', err => {

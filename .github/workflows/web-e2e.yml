@@ -20,7 +20,7 @@ on:
 
 concurrency:
   group: web-e2e-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   NODE_ENV: test
@@ -40,33 +40,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11.24.0
-      - name: Get pnpm store directory
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+      - uses: ./.github/actions/setup-pnpm
       - uses: actions/cache@v4
         with:
           path: apps/web/.next/cache
           key: ${{ runner.os }}-next-web-${{ hashFiles('**/pnpm-lock.yaml', 'apps/web/**', 'packages/ui/**', 'packages/core/**', 'packages/react/**', 'packages/utils/**', 'packages/error/**') }}
           restore-keys: |
             ${{ runner.os }}-next-web-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
       - name: Build
         run: pnpm turbo run build --filter=@repo/web...
-      - name: Web test script (E2E only placeholder)
-        run: pnpm turbo run test --filter=@repo/web
       - uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright

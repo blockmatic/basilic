@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 import {
+  hasRealAnthropicKey,
   skipIfInsufficientCredits,
   skipIfProviderUnavailable,
 } from '../../../test/utils/ai-remote.js'
@@ -274,7 +275,7 @@ describe('POST /ai/chat', () => {
     })
   })
 
-  describe('POST /ai/chat — remote', () => {
+  describe.skipIf(!hasRealAnthropicKey())('POST /ai/chat — remote', () => {
     it('should accept UIMessage text part within the limit', async ctx => {
       const response = await fastify.inject({
         method: 'POST',

@@ -57,15 +57,15 @@ const generateRoute: FastifyPluginAsync = async fastify => {
     async (request, reply) => {
       if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
+      const { prompt: rawPrompt, stream, model, temperature } = request.body
+      const prompt = rawPrompt.trim()
+      if (!prompt) return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
+
       const provider = getResolvedProvider()
       if (!provider) {
         request.log.warn('No AI provider configured')
         return sendCatalogError({ reply, status: 500, code: 'SERVER_ERROR' })
       }
-
-      const { prompt: rawPrompt, stream, model, temperature } = request.body
-      const prompt = rawPrompt.trim()
-      if (!prompt) return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
 
       const resolvedModel = getProvider(provider, model)
 

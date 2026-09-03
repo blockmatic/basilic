@@ -12,7 +12,7 @@ pnpm lint
 pnpm lint:fix
 ```
 
-Turborepo caches `build`, `checktypes`, `lint:eslint`, and `test`. Per-package `build.env` in `turbo.json` hashes only vars that change emitted output (e.g. `VERCEL_GIT_COMMIT_REF` on `@repo/web#build` only). Consumer app builds no longer run OpenAPI codegen — use `pnpm generate` when API routes change. Commands: root README.
+Turborepo caches `build`, `checktypes`, and `lint:eslint`. `test`, `test:unit`, and `test:e2e` are not cached (`cache: false` in `turbo.json`). Per-package `build.env` in `turbo.json` hashes only vars that change emitted output (e.g. `VERCEL_GIT_COMMIT_REF` on `@repo/web#build` only). Consumer app builds no longer run OpenAPI codegen — use `pnpm generate` when API routes change. Commands: root README.
 
 ## Build performance
 

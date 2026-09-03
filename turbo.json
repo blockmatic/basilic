@@ -196,6 +196,7 @@
     },
     "checktypes": { "env": ["NODE_ENV"] },
     "test": {
+      "cache": false,
       "env": [
         "NODE_ENV",
         "DATABASE_URL",
@@ -216,6 +217,7 @@
       ]
     },
     "@repo/web#test": {
+      "cache": false,
       "env": [
         "NODE_ENV",
         "DATABASE_URL",
@@ -236,6 +238,7 @@
       ]
     },
     "test:unit": {
+      "cache": false,
       "env": [
         "NODE_ENV",
         "DATABASE_URL",
@@ -259,6 +262,7 @@
       ]
     },
     "test:e2e": {
+      "cache": false,
       "env": [
         "NODE_ENV",
         "CI",

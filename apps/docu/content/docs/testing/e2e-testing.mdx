@@ -17,7 +17,7 @@ Root `pnpm qa` ends with `pnpm test:e2e` (`scripts/run-e2e.mjs`). That script ki
 | --- | --- |
 | `pnpm test:e2e` (root) | Fastify E2E, then Next E2E (spawns servers) |
 | `pnpm --filter @repo/web test:e2e:local` | Build (unless `SKIP_BUILD=1`), spawn API + Next, run web E2E |
-| `pnpm --filter @repo/api test:e2e:local` | Spawn API, run Scalar login E2E |
+| `pnpm --filter @repo/api test:e2e:local` | Spawn API (`RATE_LIMIT_MAX=10000`), run Scalar login E2E — no `ANTHROPIC_API_KEY` required |
 | `pnpm test:e2e:ui` / `test:e2e:debug` | Playwright UI or debug (in the app) |
 
 Pass URLs with `--app` / `--api`, or `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL`. Defaults: `http://localhost:3000` and `http://localhost:3001`.
@@ -41,7 +41,7 @@ test('shows dashboard when authenticated', async ({ page }) => {
 })
 ```
 
-Chat E2E needs `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). CI and `test:e2e:local` set `AI_PROVIDER=anthropic`. Web chat (`chat-assistant.spec.ts`) skips on provider infra failures (402, upstream/5xx, network errors). API remote tests (`ai.spec.ts`) use `test/utils/ai-remote.ts`: skip 402 always; skip 502/503/504 only with placeholder/missing key — real key fails on 502. See [AI Architecture](/docs/architecture/ai).
+Chat E2E needs `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). CI and web `test:e2e:local` set `AI_PROVIDER=anthropic` and verify the secret before E2E. API Scalar E2E (`pnpm --filter @repo/api test:e2e:local`) does not call AI and does not require Anthropic. Web chat (`chat-assistant.spec.ts`) skips on provider infra failures (402, upstream/5xx, network errors). API remote tests (`ai.spec.ts`) use `test/utils/ai-remote.ts`: skip 402 always; skip 502/503/504 only with placeholder/missing key — real key fails on 502. See [AI Architecture](/docs/architecture/ai).
 
 ## Test helpers
 

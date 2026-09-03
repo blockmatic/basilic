@@ -139,6 +139,17 @@ export default defineConfig({
     fileParallelism: false,
     maxWorkers: 1,
     sequence: { concurrent: false },
+    coverage: {
+      provider: 'v8',
+      include: ['src/**'],
+      exclude: [
+        '**/*.{test,spec}.ts',
+        '**/*.md',
+        'src/db/migrations/**',
+        'src/routes/reference/template*.ts',
+      ],
+      reporter: ['text', 'html', 'lcov'],
+    },
   },
   resolve: {
     // Order matters: try .ts first, then .js
