@@ -25,9 +25,8 @@
  * - `setupGroupDatabase()`: Creates DB instance, runs migrations, returns cleanup function
  * - `cleanupGroupDatabase()`: Closes DB instance and cleans up directory
  *
- * Each group entry file shares the worker database instance (maxWorkers: 1).
- * Tests within the same group share the same database instance.
- * Different groups run sequentially in the same worker with table truncation between groups.
+ * Each group entry file shares one PGLite instance per inject worker (maxWorkers: 1).
+ * Tables are truncated between group specs; PGLite is not reopened per test.
  */
 
 import { readdir, readFile } from 'node:fs/promises'

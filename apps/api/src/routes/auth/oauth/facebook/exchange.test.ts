@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fastify } from '../../oauth.spec.js'
+import { fastify } from '../oauth.spec.js'
 
 describe('POST /auth/oauth/facebook/exchange', () => {
   it('returns 503 when Facebook OAuth is not configured', async () => {

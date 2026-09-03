@@ -70,8 +70,7 @@
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
-    "postpack": "node ../../scripts/restore-publish.mjs",
-    "test": "echo \"no test\""
+    "postpack": "node ../../scripts/restore-publish.mjs"
   },
   "peerDependencies": {
     "ahooks": "*",

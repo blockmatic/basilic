@@ -58,8 +58,8 @@ test.describe('POST /api/auth/update-tokens', () => {
     expect(sessionHeader).toBeDefined()
 
     const parsed = parseSessionCookieValue(sessionHeader ?? '')
-    expect(parsed?.token).toBeTruthy()
-    expect(parsed?.refreshToken).toBeTruthy()
+    expect(parsed?.token).toMatch(/^eyJ[\w-]+\.[\w-]+\.[\w-]+$/)
+    expect(parsed?.refreshToken).toMatch(/^eyJ[\w-]+\.[\w-]+\.[\w-]+$/)
   })
 
   test('returns 400 for missing fields', async ({ request }) => {

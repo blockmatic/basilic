@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { fastify } from '../magiclink.spec.js'
+import { fastify } from './magiclink.spec.js'
 
 describe('POST /auth/magiclink/request', () => {
   beforeEach(() => {

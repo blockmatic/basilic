@@ -10,7 +10,7 @@ export default defineConfig({
   testMatch: /.*\.e2e\.spec\.ts$/,
   fullyParallel: false, // PGLite does not support concurrent writers; run tests in series
   forbidOnly: isCi,
-  retries: isCi ? 2 : 0,
+  retries: 0,
   workers: 1,
   reporter: isCi ? 'github' : 'list',
   globalSetup: './test/playwright-global-setup.ts',

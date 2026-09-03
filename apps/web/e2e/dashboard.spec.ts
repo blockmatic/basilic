@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Dashboard routes', () => {
-  test('home shows news heading or fallback copy', async ({ page }) => {
+  test('home shows news section for configured NewsAPI', async ({ page }) => {
     await page.goto('/')
     const newsHeading = page.getByRole('heading', { name: 'Latest News' })
     const fallback = page.getByText(/Add NEWSAPI_KEY|No headlines available/i)
-    await expect(newsHeading.or(fallback).first()).toBeVisible({ timeout: 15_000 })
+    if (process.env.NEWSAPI_KEY) await expect(newsHeading).toBeVisible({ timeout: 15_000 })
+    else await expect(fallback.first()).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('text=Signed In')).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('text=API OK')).toBeVisible({ timeout: 15_000 })
   })

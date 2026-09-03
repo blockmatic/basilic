@@ -5,7 +5,7 @@ import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
 import { web3Callback } from '../../../db/schema/index.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
-import { fastify } from '../web3.spec.js'
+import { fastify } from './web3.spec.js'
 
 describe('POST /auth/web3/exchange', () => {
   it('should return tokens for valid code and delete row', async () => {

@@ -36,7 +36,7 @@
     "setup:env": "node scripts/setup-env.mjs",
     "setup:database": "node scripts/setup-database.mjs",
     "setup:deepsec": "pnpm --dir=.deepsec install --frozen-lockfile",
-    "setup:playwright": "pnpm --filter @repo/web exec playwright install chromium",
+    "setup:playwright": "pnpm --filter @repo/api exec playwright install chromium && pnpm --filter @repo/web exec playwright install chromium",
     "reset": "pnpm --filter @repo/api reset",
     "update-deps": "pnpm self-update && pnpm update --latest --recursive"
   },

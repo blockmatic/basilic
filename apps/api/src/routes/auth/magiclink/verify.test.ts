@@ -5,7 +5,7 @@ import { getDb } from '../../../../src/db/index.js'
 import { authAttempts, users, verification } from '../../../../src/db/schema/index.js'
 import { hashToken } from '../../../../src/lib/jwt.js'
 import { getStoredMagicLink } from '../../../../test/utils/auth-helper.js'
-import { fastify } from '../magiclink.spec.js'
+import { fastify } from './magiclink.spec.js'
 
 describe('POST /auth/magiclink/verify', () => {
   beforeEach(() => {

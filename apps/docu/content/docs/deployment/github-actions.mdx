@@ -11,7 +11,7 @@ Path filters are used only for test workflows (app E2E and package unit tests) s
 
 ### Web (`web-e2e.yml`)
 
-Build → E2E. Triggers on pull request when `apps/web/**`, `apps/api/src/routes/test/**`, shared packages, or openapi change. Single job: build (with localhost API URL), then E2E via `test:e2e:local` (spawns Fastify + Next with `ALLOW_TEST=true`, `RATE_LIMIT_MAX=10000`, and `WEBAUTHN_RP_NAME=Test App`). Requires `ANTHROPIC_API_KEY` for the chat E2E project. `cancel-in-progress: true`.
+Build → E2E. Triggers on pull request when `apps/web/**`, API routes the suite exercises (`auth`, `account`, `ai`, `health`, `test`), shared packages, OpenAPI, or the workflow/action files change. Single job: build (with localhost API URL), then E2E via `test:e2e:local` with `SKIP_BUILD=1` (spawns Fastify + Next with `ALLOW_TEST=true`, `RATE_LIMIT_MAX=10000`, and `WEBAUTHN_RP_NAME=Test App`). Requires `ANTHROPIC_API_KEY` for the chat E2E project. `cancel-in-progress: true`. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
 
 ### API (`api-e2e.yml`)
 
@@ -24,7 +24,7 @@ Two parallel jobs when `apps/api/**` or shared packages change:
 
 ### Packages (`packages-test.yml`)
 
-Unit tests for shared packages (`core`, `react`, `error`, `utils`, …). Triggers on pull request when `packages/**`, `tools/**`, or `apps/api/openapi/**` change. Uses committed OpenAPI artifacts (no Fastify boot). Excludes app tests (handled by api-e2e, web-e2e).
+Unit tests for packages that define a `test` script (`core`, `react`, `error`). Triggers on pull request when `packages/**`, `tools/**`, `apps/api/openapi/**`, or the workflow/action files change. Uses committed OpenAPI artifacts (no Fastify boot). Excludes app tests (handled by api-e2e, web-e2e). Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
 
 ### API drift check (`api-e2e.yml`)
 
@@ -48,7 +48,7 @@ gh run view <run-id> --log-failed
 
 ### Lint (`lint.yml`)
 
-Linting and type checking on every PR (`pnpm lint`, then `pnpm exec turbo run checktypes`). Supports `workflow_dispatch` for manual runs.
+Linting and type checking on every PR (`pnpm lint`, then `pnpm exec turbo run checktypes`). Supports `workflow_dispatch` for manual runs. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
 
 ### Mobile (`mobile-build.yml`, `mobile-preview.yml`, `mobile-pr-preview.yml`)
 
@@ -90,10 +90,10 @@ See the complete `.coderabbit.yaml` in the repository root for full configuratio
 ## Caching
 
 - **pnpm** — `lint`, `packages-test`, `api-e2e`, `web-e2e`, and `security` use `.github/actions/setup-pnpm` (`actions/setup-node` with `cache: pnpm`).
-- **Playwright** — `web-e2e` and `api-e2e` **e2e** jobs cache `~/.cache/ms-playwright`.
+- **Playwright** — `web-e2e` uses `.github/actions/setup-playwright` (caches `~/.cache/ms-playwright`, installs Chromium for `@repo/api` and `@repo/web`). `api-e2e` **e2e** still installs Playwright inline with the same cache key.
 - **Next.js** — `web-e2e` caches `apps/web/.next/cache`.
 - **Turbo** — caches `build`, `checktypes`, and `lint:eslint`; **not** `test` / `test:unit` / `test:e2e`.
-- **Turbo remote cache** (optional) — set `TURBO_TOKEN` and `TURBO_TEAM` in GitHub Secrets after creating a Vercel Remote Cache token. Vercel deploys can reuse the same token. See [Development Tooling](/docs/development/dev-tooling#turbo-remote-cache-optional).
+- **Turbo remote cache** (optional) — set `TURBO_TOKEN` (secret) and `TURBO_TEAM` (variable) after creating a Vercel Remote Cache token. Wired on `lint.yml`, `packages-test.yml`, and `web-e2e.yml`. Vercel deploys can reuse the same token. See [Development Tooling](/docs/development/dev-tooling#turbo-remote-cache-optional).
 
 ## Pre-commit Hooks
 

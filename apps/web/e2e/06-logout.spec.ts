@@ -4,10 +4,10 @@ import { authHelpers } from './auth-helpers'
 test.describe('Logout', () => {
   test('header sign out revokes session and returns to login', async ({ page }) => {
     await authHelpers.loginAsTestUser(page)
-    await expect(page.getByRole('link', { name: 'Sign out' })).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible({ timeout: 10_000 })
 
     const token = await authHelpers.extractSessionToken(page)
-    expect(token).toBeTruthy()
+    expect(token).toMatch(/^eyJ[\w-]+\.[\w-]+\.[\w-]+$/)
 
     await page.getByRole('button', { name: 'Sign out' }).click()
     await expect

@@ -4,7 +4,7 @@ description: "Vitest for the API and packages; Playwright E2E for web. No fronte
 ---
 
 - **API** — Vitest + `fastify.inject()`, blackbox HTTP, in-memory PGlite. Group entry files are `*.spec.ts`; route tests are imported `*.test.ts` (see Fastify testing rules).
-- **Packages** — Vitest unit tests (`core`, `react`, `error`, …). CI: `packages-test.yml` when `packages/` or `tools/` change.
+- **Packages** — Vitest unit tests for packages with a `test` script (`core`, `react`, `error`). CI: `packages-test.yml` when `packages/` or `tools/` change.
 - **Web** — Playwright E2E only. Commands, fixtures, and specs: [E2E Testing](/docs/testing/e2e-testing).
 
 PGLite does not support concurrent writers. API Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false`. Between group entry files, `cleanupGroupDatabase()` truncates all 15 schema tables and clears the JWT session pool.
@@ -24,16 +24,16 @@ HTTP errors use `{ code, message }` from the app catalog (`getError` / `sendCata
 | Group entry | Routes covered |
 | --- | --- |
 | `account.spec.ts` | Account linking, API keys, email change, profile |
-| `session.spec.ts` | Logout, refresh, validate-tokens, user |
-| `magiclink.spec.ts` | Magic link request/verify |
-| `oauth.spec.ts` | OAuth authorize/exchange and link-authorize-url (unconfigured 503 contract) |
-| `passkey.spec.ts` | Passkey start/verify/exchange/resolve-user |
-| `web3.spec.ts` | EIP-155 and Solana verify + `lib/web3/domain` unit tests |
+| `auth/session/session.spec.ts` | Logout, refresh, validate-tokens, user |
+| `auth/magiclink/magiclink.spec.ts` | Magic link request/verify |
+| `auth/oauth/oauth.spec.ts` | OAuth authorize/exchange and link-authorize-url (unconfigured 503 contract) |
+| `auth/passkey/passkey.spec.ts` | Passkey start/verify/exchange/resolve-user |
+| `auth/web3/web3.spec.ts` | EIP-155 and Solana verify + `lib/web3/domain` unit tests |
 | `health.spec.ts` | `/health` + security headers |
-| `reference.spec.ts` | `/reference` HTML + OpenAPI JSON (including `jwtFromServer` on magic-link callback) |
-| `ai.spec.ts` | AI chat + generate (`messages.spec.ts` for `lib/ai` unit tests) |
+| `reference/reference.spec.ts` | `/reference` HTML + OpenAPI JSON (including `jwtFromServer` on magic-link callback) |
+| `ai.spec.ts` | AI chat + generate (`lib/ai/messages.spec.ts` inlines download + message unit tests) |
 
-Vitest `include` is `**/*.spec.ts` only. Every `*.test.ts` must be imported by a group entry `*.spec.ts` or it never runs.
+Vitest `include` is `**/*.spec.ts` only. Every `*.test.ts` must be imported by a group entry `*.spec.ts` or it never runs. `pnpm --filter @repo/api test:unit` runs `scripts/check-test-imports.mjs` first and fails on orphans.
 
 ## Coverage
 

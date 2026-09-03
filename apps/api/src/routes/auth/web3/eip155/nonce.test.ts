@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fastify } from '../../web3.spec.js'
+import { fastify } from '../web3.spec.js'
 
 describe('GET /auth/web3/eip155/nonce', () => {
   it('should return nonce for valid Ethereum address', async () => {

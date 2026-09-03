@@ -13,7 +13,7 @@ vi.mock('../../../../lib/env.js', async importOriginal => {
   }
 })
 
-import { fastify } from '../../oauth.spec.js'
+import { fastify } from '../oauth.spec.js'
 
 describe('GET /auth/oauth/google/authorize-url', () => {
   it('returns 503 when Google OAuth redirect is not configured', async () => {

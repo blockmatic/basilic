@@ -18,11 +18,11 @@ alwaysApply: false
 - Confirm dialogs use `getByRole('alertdialog')` (shadcn AlertDialog), not `dialog`
 
 ## Projects (dependency graph)
-`public` → `auth`; `public` → `setup` → `{chromium, security}`; `security` → `passkey-login`; `chromium` → `chat`
+`public` → `auth` → `setup` → `{chromium, security, passkey-login}`; `chromium` → `chat`
 
 - **public**: no storageState
 - **auth**: empty storageState; numbered `01-`…`06-` specs (file-name order is the convention — `testMatch` only selects files, it does not impose execution order)
-- **setup**: `auth.setup.ts` writes `test-results/.auth/user.json` (depends on public only)
+- **setup**: `auth.setup.ts` writes `test-results/.auth/user.json` (depends on auth)
 - **chromium** / **security** / **chat**: `storageState` from setup file
 - **passkey-login**: empty storageState; dedicated `e2e-passkey@test.ai`
 

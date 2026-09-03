@@ -21,61 +21,18 @@ describe('GET /health', () => {
     await cleanupGroupDatabase()
   })
 
-  it('should return 200 status', async () => {
+  it('should return 200 with ok and dbReady fields', async () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/health',
     })
 
     expect(response.statusCode).toBe(200)
-  })
-
-  it('should return response matching schema structure', async () => {
-    const response = await fastify.inject({
-      method: 'GET',
-      url: '/health',
-    })
-
     const data = JSON.parse(response.body)
-
     expect(data).toMatchObject({
       ok: true,
       dbReady: expect.any(Boolean),
     })
-  })
-
-  it('should return ok field as true', async () => {
-    const response = await fastify.inject({
-      method: 'GET',
-      url: '/health',
-    })
-
-    const data = JSON.parse(response.body)
-
-    expect(data.ok).toBe(true)
-  })
-
-  it('should return dbReady field as boolean', async () => {
-    const response = await fastify.inject({
-      method: 'GET',
-      url: '/health',
-    })
-
-    const data = JSON.parse(response.body)
-
-    expect(typeof data.dbReady).toBe('boolean')
-  })
-
-  it('should validate response against HealthResponseSchema', async () => {
-    const response = await fastify.inject({
-      method: 'GET',
-      url: '/health',
-    })
-
-    const data = JSON.parse(response.body)
-
-    expect(data.ok).toBe(true)
-    expect(typeof data.dbReady).toBe('boolean')
   })
 
   it('should include security headers but not HSTS in non-production', async () => {

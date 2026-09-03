@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fastify } from '../../oauth.spec.js'
+import { fastify } from '../oauth.spec.js'
 
 describe('POST /auth/oauth/twitter/exchange', () => {
   it('returns 503 when Twitter OAuth is not configured', async () => {

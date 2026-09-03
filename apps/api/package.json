@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "pnpm test:unit",
-    "test:unit": "NODE_OPTIONS='--import tsx' vitest run",
+    "test:unit": "node scripts/check-test-imports.mjs && NODE_OPTIONS='--import tsx' vitest run",
     "test:watch": "NODE_OPTIONS='--import tsx' vitest",
     "test:cov": "NODE_OPTIONS='--import tsx' vitest run --coverage",
     "test:e2e": "node scripts/run-e2e.mjs",
@@ -93,7 +93,6 @@
     "@types/react-dom": "^19.2.5",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^4.1.11",
-    "c8": "^12.0.0",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^10.0.5",
     "drizzle-kit": "^0.31.10",

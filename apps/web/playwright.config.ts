@@ -12,7 +12,7 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
   forbidOnly: isCi,
-  retries: isCi ? 2 : 0,
+  retries: 0,
   workers: 1,
   reporter: isCi ? [['github'], ['html']] : 'list',
   globalSetup: './e2e/playwright-global-setup.ts',
@@ -54,7 +54,7 @@ export default defineConfig({
       testMatch: ['**/auth.setup.ts'],
       timeout: 60_000,
       use: { ...devices['Desktop Chrome'], storageState: emptyStorage },
-      dependencies: ['public'],
+      dependencies: ['auth'],
     },
     {
       name: 'chromium',
@@ -79,7 +79,7 @@ export default defineConfig({
       testMatch: ['**/passkey-auth.spec.ts'],
       timeout: 60_000,
       use: { ...devices['Desktop Chrome'], storageState: emptyStorage },
-      dependencies: ['security'],
+      dependencies: ['setup'],
     },
     {
       name: 'chat',

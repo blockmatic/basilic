@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fastify } from '../oauth.spec.js'
+import { fastify } from './oauth.spec.js'
 
 describe('GET /auth/oauth/providers', () => {
   it('returns which OAuth providers are configured', async () => {

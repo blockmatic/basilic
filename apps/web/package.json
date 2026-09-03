@@ -24,7 +24,6 @@
     "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
     "format": "biome format . --write",
     "checktypes": "node ../../node_modules/@typescript/native/bin/tsc --noEmit",
-    "test": "echo 'E2E only'",
     "test:e2e": "node scripts/run-e2e.mjs",
     "test:e2e:local": "node scripts/run-e2e-local.mjs",
     "test:e2e:ui": "pnpm test:e2e -- --ui",

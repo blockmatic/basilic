@@ -2,7 +2,7 @@ import { Keypair } from '@solana/web3.js'
 import bs58 from 'bs58'
 import * as nacl from 'tweetnacl'
 import { describe, expect, it } from 'vitest'
-import { fastify } from '../../web3.spec.js'
+import { fastify } from '../web3.spec.js'
 
 function buildSiwsMessage({
   domain,
