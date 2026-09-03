@@ -34,9 +34,7 @@ test.describe('Chat Assistant', () => {
         test.skip(true, 'AI provider quota/credits (402)')
         return
       }
-      if (isCi) {
-        throw new Error(`Chat failed in CI: ${errorText || '(no error text)'}`)
-      }
+      if (isCi) throw new Error(`Chat failed in CI: ${errorText || '(no error text)'}`)
     }
     await expect(chatError, `Chat failed: ${errorText || '(no error text)'}`).not.toBeVisible()
     await expect(assistantLoc).toBeVisible({ timeout: 60_000 })

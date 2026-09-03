@@ -28,10 +28,11 @@ const specFiles = await walk(srcRoot).then(files =>
   ),
 )
 
-const specPaths = new Set()
-for (const entry of await readdir(srcRoot, { recursive: true })) {
-  if (typeof entry === 'string' && entry.endsWith('.spec.ts')) specPaths.add(join(srcRoot, entry))
-}
+const specPaths = new Set(
+  (await readdir(srcRoot, { recursive: true })).flatMap(entry =>
+    typeof entry === 'string' && entry.endsWith('.spec.ts') ? [join(srcRoot, entry)] : [],
+  ),
+)
 
 const imported = new Set()
 const importPattern = /import\s+['"](\.\.?\/[^'"]+\.test(?:\.(?:js|ts))?)['"]/g
