@@ -53,7 +53,7 @@ Run with `pnpm <script>`.
 **Setup**
   - `setup` — Full setup (install, hooks, gitleaks, osv, env templates, database, deepsec, Playwright Chromium)
   - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
-  - `setup:playwright` — Install Playwright Chromium for E2E tests
+  - `setup:playwright` — Install Playwright Chromium for API and web E2E
   - `setup:env` — Copy `.env.<qualifier>.example` templates to dest files when missing
   - `setup:database` — Database tools (Docker, Supabase CLI)
   - `setup:deepsec` — Install DeepSec workspace (`.deepsec/`)
@@ -62,7 +62,7 @@ Run with `pnpm <script>`.
 **Primary**
   - `build` — Build packages and apps
   - `dev` — Start dev (core, react, error, utils, api, web)
-  - `qa` — Full check: install → checktypes → lint → build → test (unit) → test:e2e (Fastify + Next, local spawn)
+  - `qa` — Full check: install (if needed) → checktypes → lint → OpenAPI drift → build → test (unit) → test:e2e (Fastify + Next, `SKIP_BUILD=1`)
 **Format / Lint**
   - `checktypes` — Type-check all packages
   - `format` — Format code (Biome)

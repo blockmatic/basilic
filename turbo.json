@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalPassThroughEnv": ["QA_SKIP_TESTS", "SKIP_KILL_PORTS"],
+  "globalPassThroughEnv": ["QA_SKIP_TESTS", "SKIP_KILL_PORTS", "SKIP_BUILD"],
   "tasks": {
     "generate": {
       "dependsOn": [],
@@ -138,7 +138,8 @@
         "WEBAUTHN_RP_NAME",
         "TOTP_ISSUER",
         "RATE_LIMIT_MAX",
-        "TEST_LOG_LEVEL"
+        "TEST_LOG_LEVEL",
+        "SKIP_BUILD"
       ]
     },
     "lint:eslint:fix": {
@@ -191,7 +192,8 @@
         "WEBAUTHN_RP_NAME",
         "TOTP_ISSUER",
         "RATE_LIMIT_MAX",
-        "TEST_LOG_LEVEL"
+        "TEST_LOG_LEVEL",
+        "SKIP_BUILD"
       ]
     },
     "checktypes": { "env": ["NODE_ENV"] },
@@ -202,39 +204,14 @@
         "DATABASE_URL",
         "PGLITE",
         "RUN_PG_MIGRATE",
-        "AI_DEFAULT_MODEL",
         "AI_PROVIDER",
         "ANTHROPIC_API_KEY",
-        "OLLAMA_BASE_URL",
-        "OPEN_ROUTER_API_KEY",
         "CI",
         "VITEST_WORKER_ID",
         "ALLOW_TEST",
-        "ALLOWED_ORIGINS",
-        "VITEST",
-        "AUTH_COOKIE_NAME",
-        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
-      ]
-    },
-    "@repo/web#test": {
-      "cache": false,
-      "env": [
-        "NODE_ENV",
-        "DATABASE_URL",
-        "PGLITE",
-        "RUN_PG_MIGRATE",
-        "AI_DEFAULT_MODEL",
-        "AI_PROVIDER",
-        "ANTHROPIC_API_KEY",
-        "OLLAMA_BASE_URL",
-        "OPEN_ROUTER_API_KEY",
-        "CI",
-        "VITEST_WORKER_ID",
-        "ALLOW_TEST",
-        "ALLOWED_ORIGINS",
-        "VITEST",
-        "AUTH_COOKIE_NAME",
-        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX"
       ]
     },
     "test:unit": {
@@ -284,7 +261,8 @@
         "PLAYWRIGHT_API_URL",
         "VERCEL_AUTOMATION_BYPASS_SECRET",
         "AUTH_COOKIE_NAME",
-        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
+        "SKIP_BUILD"
       ]
     },
     "dev": {

@@ -5,7 +5,7 @@ import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { getDb } from '../../../db/index.js'
 import { passkeyCallback } from '../../../db/schema/index.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
-import { fastify } from '../passkey.spec.js'
+import { fastify } from './passkey.spec.js'
 
 const testCallbackOrigin = 'http://localhost:3000'
 

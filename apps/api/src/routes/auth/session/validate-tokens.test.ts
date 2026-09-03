@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { getDb } from '../../../db/index.js'
 import { sessions } from '../../../db/schema/index.js'
 import { hashToken } from '../../../lib/jwt.js'
-import { fastify } from '../session.spec.js'
+import { fastify } from './session.spec.js'
 
 async function getTokenPair(email = 'validate-tokens@example.com') {
   await fastify.inject({

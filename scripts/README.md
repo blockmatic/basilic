@@ -6,7 +6,7 @@ Utility scripts for this monorepo.
 
 ### `run-qa.mjs`
 
-Runs the full QA pipeline sequentially: install, checktypes, lint:fix, build, test, test:e2e. Stops immediately on the first failure and prints a clear error banner.
+Runs the full QA pipeline sequentially: install (skipped when `node_modules` exists), checktypes, lint, OpenAPI generate + drift check, build, test, test:e2e (`SKIP_BUILD=1`). Stops immediately on the first failure and prints a clear error banner.
 
 **Usage**: Via pnpm at repository root:
 ```bash
@@ -182,7 +182,7 @@ pnpm setup:deepsec
 
 ### `setup:playwright` (package.json)
 
-Installs Playwright Chromium for web and API E2E tests. Default browser cache when `PLAYWRIGHT_BROWSERS_PATH` is unset: Linux `~/.cache/ms-playwright`, macOS `~/Library/Caches/ms-playwright`, Windows `%USERPROFILE%\AppData\Local\ms-playwright`.
+Installs Playwright Chromium for `@repo/api` and `@repo/web` E2E tests. Default browser cache when `PLAYWRIGHT_BROWSERS_PATH` is unset: Linux `~/.cache/ms-playwright`, macOS `~/Library/Caches/ms-playwright`, Windows `%USERPROFILE%\AppData\Local\ms-playwright`.
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
 ```bash

@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+const isCi = !!process.env.CI
+
 test.describe('Chat Assistant', () => {
   test.setTimeout(90_000)
 
@@ -32,26 +34,7 @@ test.describe('Chat Assistant', () => {
         test.skip(true, 'AI provider quota/credits (402)')
         return
       }
-      if (/invalid x-api-key|authentication_error|invalid.*api.*key|401/i.test(errorText)) {
-        test.skip(true, 'AI provider auth invalid (401/invalid API key)')
-        return
-      }
-      if (
-        /ECONNREFUSED|fetch failed|ENOTFOUND|ETIMEDOUT|ECONNRESET|Connection timed out|Error code 522|status_code: 522|UPSTREAM_TIMEOUT|timed out/i.test(
-          errorText,
-        )
-      ) {
-        test.skip(true, 'AI provider unreachable (network/timeout/522)')
-        return
-      }
-      if (
-        /AI provider request failed|upstream|UPSTREAM_TIMEOUT|timed out|Try again later|internal server error|status.?5\d{2}/i.test(
-          errorText,
-        )
-      ) {
-        test.skip(true, `AI provider upstream error: ${errorText.slice(0, 80)}`)
-        return
-      }
+      if (isCi) throw new Error(`Chat failed in CI: ${errorText || '(no error text)'}`)
     }
     await expect(chatError, `Chat failed: ${errorText || '(no error text)'}`).not.toBeVisible()
     await expect(assistantLoc).toBeVisible({ timeout: 60_000 })

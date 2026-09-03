@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fastify } from '../web3.spec.js'
+import { fastify } from './web3.spec.js'
 
 const validEthAddress = '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e'
 const validSolanaAddress = '4Cw1koUQtqybLFem7uqhzMBznMPGARbFS4cjaYbM9RnR'

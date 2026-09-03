@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { getApiKeyToken } from '../../../../test/utils/auth-helper.js'
 import { getDb } from '../../../db/index.js'
 import { sessions } from '../../../db/schema/index.js'
-import { fastify } from '../session.spec.js'
+import { fastify } from './session.spec.js'
 
 describe('POST /auth/session/logout', () => {
   beforeEach(() => {

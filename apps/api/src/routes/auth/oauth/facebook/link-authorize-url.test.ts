@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { getOrCreateSession } from '../../../../../test/utils/auth-helper.js'
-import { fastify } from '../../oauth.spec.js'
+import { fastify } from '../oauth.spec.js'
 
 describe('GET /auth/oauth/facebook/link-authorize-url', () => {
   it('returns 401 without Bearer token', async () => {

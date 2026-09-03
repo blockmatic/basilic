@@ -6,7 +6,7 @@ import { getDb } from '../../../db/index.js'
 import { sessions, users } from '../../../db/schema/index.js'
 import { env } from '../../../lib/env.js'
 import { hashToken } from '../../../lib/jwt.js'
-import { fastify } from '../session.spec.js'
+import { fastify } from './session.spec.js'
 
 function decodeJwtPayload<T extends Record<string, unknown>>(token: string) {
   const payload = token.split('.')[1]

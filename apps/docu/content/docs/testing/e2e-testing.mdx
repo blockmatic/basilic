@@ -7,9 +7,9 @@ Frontend apps have no separate unit suite. Two Playwright suites: **Web** (`apps
 
 The Scalar page loads `@scalar/api-reference` from jsDelivr (pinned version in `reference/template.ts`). E2E depends on that CDN for the login button script.
 
-Install Chromium with `pnpm setup:playwright` (or `pnpm setup`) if browsers are missing.
+Install Chromium for both suites with `pnpm setup:playwright` (or `pnpm setup`) if browsers are missing.
 
-Root `pnpm qa` ends with `pnpm test:e2e` (`scripts/run-e2e.mjs`). That script kills processes on ports 3000 and 3001 unless `SKIP_KILL_PORTS=1`.
+Root `pnpm qa` builds, then ends with `pnpm test:e2e` (`SKIP_BUILD=1`, `scripts/run-e2e.mjs`). That script kills processes on ports 3000 and 3001 unless `SKIP_KILL_PORTS=1`. Shared spawn env lives in `scripts/e2e-local-shared.mjs`.
 
 ## Commands
 
@@ -58,11 +58,11 @@ Local spawn scripts set `ALLOW_TEST`. The API process exits if `ALLOW_TEST` is t
 ## Playwright projects (order)
 
 1. **public** — legal pages, login smoke, robots/sitemap
-2. **auth** — `01-callbacks` … `06-logout` (empty storage; file-name order)
-3. **setup** — writes `user.json` (depends on public only)
+2. **auth** — `01-callbacks` … `06-logout` (empty storage; depends on public; file-name order)
+3. **setup** — writes `user.json` (depends on auth)
 4. **chromium** — dashboard smokes, 404 (storageState)
 5. **security** — TOTP, API keys, passkeys CRUD (storageState; never logout)
-6. **passkey-login** — passkey sign-in with `e2e-passkey@test.ai` (empty storage)
+6. **passkey-login** — passkey sign-in with `e2e-passkey@test.ai` (empty storage; depends on setup)
 7. **chat** — assistant (storageState; mobile viewport; last)
 
 Dedicated emails: `test@test.ai` (shared), `e2e-passkey@test.ai`, `e2e-email@test.ai` (change-email).

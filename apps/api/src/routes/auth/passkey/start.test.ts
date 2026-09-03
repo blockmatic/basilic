@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fastify } from '../passkey.spec.js'
+import { fastify } from './passkey.spec.js'
 
 describe('POST /auth/passkey/start', () => {
   it('should return 400 for missing Origin', async () => {

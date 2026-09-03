@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Run QA pipeline: install, checktypes, lint:fix, build, test, test:e2e.
+ * Run QA pipeline: install (if needed), checktypes, lint, OpenAPI drift, build, test, e2e.
  * Stops immediately on first failure and reports which phase failed.
- * Used by pnpm qa.
  */
 import { spawnSync } from 'node:child_process'
-import { dirname } from 'node:path'
+import { existsSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
@@ -16,21 +16,42 @@ const qaBuildEnv = process.env.JWT_SECRET
   : { JWT_SECRET: 'qa-build-placeholder-min-32-chars-to-pass-validation' }
 
 const skipTests = process.env.QA_SKIP_TESTS === '1' || process.env.QA_SKIP_TESTS === 'true'
+const hasNodeModules = existsSync(join(repoRoot, 'node_modules'))
 
 const phases = [
-  { name: 'install', cmd: 'pnpm', args: ['i', '--no-frozen-lockfile'] },
+  ...(hasNodeModules ? [] : [{ name: 'install', cmd: 'pnpm', args: ['i', '--frozen-lockfile'] }]),
   {
     name: 'checktypes',
     cmd: 'pnpm',
     args: ['exec', 'turbo', 'run', 'checktypes', '--concurrency=100%'],
   },
-  { name: 'lint:fix', cmd: 'pnpm', args: ['lint:fix'] },
+  { name: 'lint', cmd: 'pnpm', args: ['lint'] },
+  {
+    name: 'openapi-drift',
+    cmd: 'pnpm',
+    args: ['generate'],
+    env: qaBuildEnv,
+  },
+  {
+    name: 'openapi-drift-check',
+    cmd: 'git',
+    args: ['diff', '--exit-code', '--', 'apps/api/openapi/openapi.json', 'packages/core/src/gen'],
+  },
   { name: 'build', cmd: 'pnpm', args: ['build'], env: qaBuildEnv },
   ...(skipTests
     ? []
     : [
-        { name: 'test', cmd: 'pnpm', args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'] },
-        { name: 'test:e2e', cmd: 'pnpm', args: ['test:e2e'] },
+        {
+          name: 'test',
+          cmd: 'pnpm',
+          args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'],
+        },
+        {
+          name: 'test:e2e',
+          cmd: 'pnpm',
+          args: ['test:e2e'],
+          env: { SKIP_BUILD: '1', ...qaBuildEnv, NEXT_PUBLIC_API_URL: 'http://localhost:3001' },
+        },
       ]),
 ]
 

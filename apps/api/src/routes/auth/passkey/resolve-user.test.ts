@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { getOrCreateSession, insertTestPasskey } from '../../../../test/utils/auth-helper.js'
-import { fastify } from '../passkey.spec.js'
+import { fastify } from './passkey.spec.js'
 
 describe('POST /auth/passkey/resolve-user', () => {
   it('should return 400 for userHandle with no matching passkey user', async () => {

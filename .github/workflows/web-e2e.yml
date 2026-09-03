@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'apps/web/**'
+      - 'apps/api/src/routes/auth/**'
+      - 'apps/api/src/routes/account/**'
+      - 'apps/api/src/routes/ai/**'
+      - 'apps/api/src/routes/health/**'
       - 'apps/api/src/routes/test/**'
       - 'scripts/**'
       - 'packages/core/**'
@@ -11,9 +15,12 @@ on:
       - 'packages/ui/**'
       - 'packages/utils/**'
       - 'packages/error/**'
-      - 'tools/eslint-config/**'
-      - 'tools/typescript-config/**'
+      - 'tools/eslint/**'
+      - 'tools/typescript/**'
       - 'apps/api/openapi/**'
+      - '.github/workflows/web-e2e.yml'
+      - '.github/actions/setup-pnpm/**'
+      - '.github/actions/setup-playwright/**'
       - 'pnpm-lock.yaml'
       - 'package.json'
       - 'turbo.json'
@@ -34,6 +41,8 @@ env:
   NEXT_PUBLIC_API_URL: http://localhost:3001
   AI_PROVIDER: anthropic
   ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
   build-and-test:
@@ -49,14 +58,7 @@ jobs:
             ${{ runner.os }}-next-web-
       - name: Build
         run: pnpm turbo run build --filter=@repo/web...
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-      - name: Install Playwright
-        run: pnpm --filter @repo/web exec playwright install chromium --with-deps
+      - uses: ./.github/actions/setup-playwright
       - name: Verify ANTHROPIC_API_KEY for E2E (AI_PROVIDER=anthropic)
         shell: bash
         env:

@@ -6,6 +6,8 @@ on:
       - 'packages/**'
       - 'tools/**'
       - 'apps/api/openapi/**'
+      - '.github/workflows/packages-test.yml'
+      - '.github/actions/setup-pnpm/**'
       - 'pnpm-lock.yaml'
       - 'package.json'
       - 'turbo.json'
@@ -20,6 +22,8 @@ env:
   PGLITE: true
   DATABASE_URL: postgresql://localhost/test
   ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-dummy-for-packages-test' }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
   test:
@@ -28,6 +32,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-pnpm
       - name: Build packages
-        run: pnpm turbo run build --filter='!@repo/web' --filter='!@repo/api' --filter='!@repo/docu'
+        run: pnpm turbo run build --filter=@repo/error... --filter=@repo/core --filter=@repo/react
       - name: Unit tests (packages only)
-        run: pnpm turbo run test --filter='!@repo/web' --filter='!@repo/api' --filter='!@repo/docu'
+        run: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error

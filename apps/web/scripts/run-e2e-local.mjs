@@ -1,75 +1,28 @@
 #!/usr/bin/env node
 /**
  * E2E local: build, spawn Fastify + Next, poll until healthy, run Playwright, cleanup on exit.
- * No wait-on. Uses ALLOW_TEST, PGLITE, DB-backed token for @test.ai.
  * When SKIP_BUILD=1, skip build step (assumes .next exists with NEXT_PUBLIC_API_URL=http://localhost:3001).
  */
-import { spawn, spawnSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
+import { spawn } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  buildE2eSpawnEnv,
+  killTestServerPorts,
+  loadEnvTest,
+  repoRoot,
+  waitForUrl,
+} from '../../../scripts/e2e-local-shared.mjs'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const nextDir = dirname(scriptDir)
-const repoRoot = dirname(dirname(nextDir))
-
-function loadEnvTest() {
-  const path = join(repoRoot, 'apps/api/.env.test')
-  if (!existsSync(path)) return {}
-  const lines = readFileSync(path, 'utf8').split('\n')
-  const out = {}
-  for (const line of lines) {
-    const idx = line.indexOf('=')
-    if (idx < 0 || line.startsWith('#')) continue
-    const key = line.slice(0, idx).trim()
-    let val = line.slice(idx + 1).trim()
-    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
-      val = val.slice(1, -1)
-
-    out[key] = val
-  }
-  return out
-}
-
-function waitForUrl(url, timeoutMs = 60_000) {
-  const start = Date.now()
-  return new Promise(resolve => {
-    const check = async () => {
-      try {
-        const res = await fetch(url, { signal: AbortSignal.timeout(2000) })
-        if (res.ok || res.status === 307) return resolve(true)
-      } catch {
-        // continue
-      }
-      if (Date.now() - start > timeoutMs) return resolve(false)
-      setTimeout(check, 500)
-    }
-    check()
-  })
-}
 
 async function main() {
-  if (!process.env.SKIP_KILL_PORTS)
-    try {
-      spawnSync('bash', [join(repoRoot, 'scripts/kill-test-servers.sh')], {
-        cwd: repoRoot,
-        stdio: 'pipe',
-      })
-    } catch {
-      /* ignore - ports may not be in use or bash unavailable */
-    }
+  killTestServerPorts()
 
-  // eslint-disable-next-line turbo/no-undeclared-env-vars -- set by root test:e2e or user
   if (!process.env.SKIP_BUILD) {
     const loadedForBuild = loadEnvTest()
-    const buildEnv = {
-      ...process.env,
-      ...loadedForBuild,
-      JWT_SECRET:
-        loadedForBuild.JWT_SECRET ??
-        process.env.JWT_SECRET ??
-        'e2e-jwt-secret-min-32-chars-for-tests',
-    }
+    const buildEnv = buildE2eSpawnEnv({ loaded: loadedForBuild })
     const build = spawn('pnpm', ['-F', '@repo/web', 'run', 'build:e2e'], {
       cwd: repoRoot,
       stdio: 'inherit',
@@ -80,19 +33,13 @@ async function main() {
   }
 
   const loaded = loadEnvTest()
-  const env = {
-    ...process.env,
-    ...loaded,
-    ALLOW_TEST: 'true',
-    PGLITE: 'true',
-    NODE_ENV: 'test',
-    RATE_LIMIT_MAX: '10000',
-    WEBAUTHN_RP_NAME: loaded.WEBAUTHN_RP_NAME ?? process.env.WEBAUTHN_RP_NAME ?? 'Test App',
-    NEXT_PUBLIC_API_URL: 'http://localhost:3001',
-    AI_PROVIDER: 'anthropic',
-    JWT_SECRET:
-      loaded.JWT_SECRET ?? process.env.JWT_SECRET ?? 'e2e-jwt-secret-min-32-chars-for-tests',
-  }
+  const env = buildE2eSpawnEnv({
+    loaded,
+    extra: {
+      NEXT_PUBLIC_API_URL: 'http://localhost:3001',
+      AI_PROVIDER: 'anthropic',
+    },
+  })
   delete env.OPEN_ROUTER_API_KEY
   delete env.OLLAMA_BASE_URL
 
@@ -117,9 +64,7 @@ async function main() {
       new Promise(r => setTimeout(r, timeoutMs)),
     ])
 
-  const cleanup = () => {
-    killAll('SIGTERM')
-  }
+  const cleanup = () => killAll('SIGTERM')
   process.on('SIGINT', () => {
     cleanup()
     process.exit(130)

@@ -1,7 +1,7 @@
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { describe, expect, it } from 'vitest'
-import { fastify } from '../../web3.spec.js'
+import { fastify } from '../web3.spec.js'
 
 const testPrivateKey =
   '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as `0x${string}`

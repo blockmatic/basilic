@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { getStoredMagicLink } from '../../test/utils/auth-helper.js'
-import { cleanupGroupDatabase, setupGroupDatabase } from '../../test/utils/db-setup.js'
-import type { TestApp } from '../../test/utils/fastify.js'
-import { buildTestApp } from '../../test/utils/fastify.js'
+import { getStoredMagicLink } from '../../../test/utils/auth-helper.js'
+import { cleanupGroupDatabase, setupGroupDatabase } from '../../../test/utils/db-setup.js'
+import type { TestApp } from '../../../test/utils/fastify.js'
+import { buildTestApp } from '../../../test/utils/fastify.js'
 
 describe('GET /reference', () => {
   let fastify: TestApp

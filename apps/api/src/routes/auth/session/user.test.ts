@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createAuthenticatedUser, getWeb3Session } from '../../../../test/utils/auth-helper.js'
 import { env } from '../../../lib/env.js'
 import { createAccessTokenPayload } from '../../../lib/jwt.js'
-import { fastify } from '../session.spec.js'
+import { fastify } from './session.spec.js'
 
 function decodeJwtPayload<T extends Record<string, unknown>>(token: string) {
   const payload = token.split('.')[1]
