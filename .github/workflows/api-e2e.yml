@@ -55,6 +55,8 @@ jobs:
             ${{ runner.os }}-playwright-
       - name: Install Playwright
         run: pnpm --filter @repo/api exec playwright install chromium --with-deps
+      - name: Build API dependencies
+        run: pnpm turbo run build --filter=@repo/api...
       - name: E2E tests (local)
         run: pnpm --filter @repo/api test:e2e:local
       - name: Upload Playwright report
