@@ -24,6 +24,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Validate FIRST documentation
+        run: |
+          python3 _first/scripts/validate_docs.py
+          python3 -B _first/scripts/test_validate_docs.py
+
       - uses: ./.github/actions/setup-pnpm
 
       - name: Run lint

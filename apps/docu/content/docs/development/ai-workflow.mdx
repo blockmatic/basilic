@@ -7,6 +7,8 @@ Development is **Cursor-first**. Claude Code follows the same rules and skills v
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era). Index this site once — [Cursor Setup](/docs/development/cursor-setup). Versioning and how to update skills: [Cursor Skills](/docs/development/cursor-skills).
 
+The portable FIRST documentation in `_first/` is checked by the lint workflow. Run `python3 _first/scripts/validate_docs.py` locally to verify its station pairs, headings, front matter, principle parity, order, and local links. FIRST is a documentation artifact; it does not replace this repository's Cursor-first workflow.
+
 ## Sources of truth
 
 Always-on rules point at `apps/docu/content/docs/`. Glob rules are constraints only. **Read** the topic MDX for the task. Do not `@`-attach MDX from rules or skills. Root `AGENTS.md` is the cross-harness stub.
