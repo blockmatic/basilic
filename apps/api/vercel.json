@@ -1,11 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "fastify",
-  "functions": {
-    "server.ts": {
-      "excludeFiles": "{src/**/*.spec.ts,src/**/*.test.ts,test/**}"
-    }
-  },
   "ignoreCommand": "npx turbo-ignore @repo/api --fallback=HEAD^1",
   "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/api... && if [ \"$VERCEL_ENV\" != \"preview\" ] || [ \"$RUN_PG_MIGRATE\" = \"true\" ]; then pnpm turbo run db:migrate --filter=@repo/api; fi",
   "installCommand": "cd ../.. && pnpm install",
