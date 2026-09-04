@@ -1,7 +1,6 @@
 'use client'
 
 import { captureError } from '@repo/error/nextjs'
-import { logger } from '@repo/utils/logger/client'
 import { env } from 'lib/env'
 import { useEffect } from 'react'
 
@@ -21,7 +20,6 @@ export default function ErrorPage({
       label: 'Next.js error.tsx',
       tags: { runtime: 'nextjs' },
     })
-    logger.error({ digest: error.digest }, 'Unhandled error in route segment')
   }, [error])
 
   return (

@@ -7,7 +7,7 @@ import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
 import { account, users } from '../../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
-import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
+import { sendCatalogError, sendServerCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
 import {
@@ -160,7 +160,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         if (!user) return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
       } else if (existingAccount) {
         const [u] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
-        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_NOT_FOUND' })
+        if (!u) return sendServerCatalogError({ request, reply, code: 'USER_NOT_FOUND' })
         user = u
       } else {
         const u = await findOrCreateUserByEmail(db, {
@@ -168,7 +168,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           name: ghUser.name ?? ghUser.login,
           emailVerified: true,
         })
-        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_CREATE_FAILED' })
+        if (!u) return sendServerCatalogError({ request, reply, code: 'USER_CREATE_FAILED' })
         user = u
       }
 

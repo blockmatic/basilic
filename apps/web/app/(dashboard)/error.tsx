@@ -2,7 +2,6 @@
 
 import { captureError } from '@repo/error/nextjs'
 import { Button } from '@repo/ui/components/button'
-import { logger } from '@repo/utils/logger/client'
 import Link from 'next/link'
 import { useEffect } from 'react'
 
@@ -22,7 +21,6 @@ export default function DashboardError({
       label: 'Next.js dashboard error.tsx',
       tags: { runtime: 'nextjs' },
     })
-    logger.error({ digest: error.digest }, 'Unhandled error in dashboard segment')
   }, [error])
 
   return (

@@ -1,11 +1,9 @@
-import { ApiError, createClient } from '@repo/core'
+import { ApiError } from '@repo/core'
 import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
+import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
 import { extractTokens } from '@/lib/auth/callback-utils'
-import { env } from '@/lib/env'
-
-const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
 
 const sixDigitCode = /^\d{6}$/
 const uuidLike = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -61,7 +59,8 @@ export async function GET(request: Request) {
   const hasValidVerificationId = Boolean(verificationId && uuidLike.test(verificationId))
   const hasValidToken = Boolean(token && sixDigitCode.test(token))
 
-  if (hasValidVerificationId && hasValidToken && verificationId && token)
+  if (hasValidVerificationId && hasValidToken && verificationId && token) {
+    const { client, reqId } = createBffClient({ request })
     try {
       const response = await client.auth.magiclink.verify({
         body: { verificationId, token },
@@ -73,6 +72,7 @@ export async function GET(request: Request) {
       setAuthCookiesOnResponse(redirectResponse, tokens)
       return redirectResponse
     } catch (error) {
+      logAuthBffFailure({ error, reqId, method: 'magiclink' })
       const body =
         error instanceof ApiError ? (error.body as { code?: string } | undefined) : undefined
       const code =
@@ -88,6 +88,7 @@ export async function GET(request: Request) {
         303,
       )
     }
+  }
 
   if (hasValidVerificationId && verificationId)
     return renderCodeEntryForm(verificationId, callbackURL)
@@ -109,6 +110,7 @@ export async function POST(request: Request) {
     redirect(backUrl)
   }
 
+  const { client, reqId } = createBffClient({ request })
   try {
     const response = await client.auth.magiclink.verify({
       body: { verificationId, token },
@@ -120,6 +122,7 @@ export async function POST(request: Request) {
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {
+    logAuthBffFailure({ error, reqId, method: 'magiclink' })
     const code =
       error instanceof ApiError
         ? error.status === 401

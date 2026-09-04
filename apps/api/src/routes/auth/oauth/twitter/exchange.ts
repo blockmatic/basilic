@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
-import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
+import { sendCatalogError, sendServerCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { isUniqueViolation } from '../../../../lib/db-errors.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
@@ -135,7 +135,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           if (err instanceof Error && err.message === 'USER_NOT_FOUND')
             return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
           if (err instanceof Error && err.message === 'USER_CREATE_FAILED')
-            return sendCatalogError({ reply, status: 500, code: 'USER_CREATE_FAILED' })
+            return sendServerCatalogError({
+              request,
+              reply,
+              code: 'USER_CREATE_FAILED',
+              error: err,
+            })
           if (isUniqueViolation(err) && attempt < maxRetries - 1) continue
           throw err
         }

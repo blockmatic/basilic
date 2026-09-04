@@ -7,7 +7,8 @@ import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { authAttempts, sessions, users, verification } from '../../../../db/schema/index.js'
 import { recordAuthFailedAttempt } from '../../../../lib/auth/index.js'
-import { normalizeEmail } from '../../../../lib/email.js'
+import { logAuthLocked, logAuthVerifyFailed } from '../../../../lib/auth/signals.js'
+import { normalizeEmail, sendMail } from '../../../../lib/email.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,
@@ -102,11 +103,13 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
         .from(authAttempts)
         .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, 'change_email')))
 
-      if (attemptRow?.lockedUntil && attemptRow.lockedUntil > new Date())
+      if (attemptRow?.lockedUntil && attemptRow.lockedUntil > new Date()) {
+        logAuthLocked({ request, code: 'TOO_MANY_ATTEMPTS', signInMethod: 'change_email' })
         return reply.code(429).send({
           code: 'TOO_MANY_ATTEMPTS',
           message: 'Too many failed attempts. Try again later.',
         })
+      }
 
       let verificationWhere: ReturnType<typeof and>
       if (mode === 'link' && body.verificationId)
@@ -131,6 +134,7 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (!verificationRecord) {
         await recordChangeEmailFailedAttempt(db, ip)
+        logAuthVerifyFailed({ request, code: 'INVALID_TOKEN', signInMethod: 'change_email' })
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Invalid or expired token',
@@ -140,6 +144,7 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
       if (verificationRecord.expiresAt < new Date()) {
         await db.delete(verification).where(eq(verification.id, verificationRecord.id))
         await recordChangeEmailFailedAttempt(db, ip)
+        logAuthVerifyFailed({ request, code: 'EXPIRED_TOKEN', signInMethod: 'change_email' })
         return reply.code(401).send({
           code: 'EXPIRED_TOKEN',
           message: 'Token has expired',
@@ -149,11 +154,13 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
       const parts = verificationRecord.identifier.split(':')
       const targetUserId = parts[0]
       const newEmail = parts.slice(1).join(':')
-      if (targetUserId !== userId)
+      if (targetUserId !== userId) {
+        logAuthVerifyFailed({ request, code: 'INVALID_TOKEN', signInMethod: 'change_email' })
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Token does not match current session',
         })
+      }
 
       const [userRow] = await db.select().from(users).where(eq(users.id, userId))
       const oldEmail = userRow?.email ?? null
@@ -188,14 +195,17 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
             sessionsUrl: webAppPathUrl('/settings/security/sessions'),
           }),
         )
-        fastify.emailProvider.emails
-          .send({
+        void sendMail({
+          provider: fastify.emailProvider,
+          logger: request.log,
+          mode: 'fireAndForget',
+          message: {
             from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
             to: oldEmail,
             subject: `Your email was changed - ${env.APP_NAME}`,
             html,
-          })
-          .catch(err => fastify.log.warn({ err }, 'Failed to send email-changed notification'))
+          },
+        })
       }
 
       const accessPayload = createAccessTokenPayload({ userId, sessionId })

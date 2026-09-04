@@ -14,12 +14,12 @@ Production behavior is observable at the level the project needs. Logs are struc
 
 ## Artifacts
 
-- **Fact:** [logging.mdx](../../apps/docu/content/docs/architecture/logging.mdx) — Pino `@repo/utils/logger/server` and `/client`. Routes use `request.log`. Secrets redacted. Never `console.*` in app code.
-- **Fact:** [error-handling.mdx](../../apps/docu/content/docs/architecture/error-handling.mdx) — `@repo/error` + Sentry/GlitchTip; HTTP catalog `{ code, message }`
+- **Fact:** [logging.mdx](../../apps/docu/content/docs/architecture/logging.mdx) — Pino `@repo/utils/logger/server` and `/client`. HTTP: Fastify `request.log` with join key **`reqId`**. Secrets redacted. Never `console.*` in app code.
+- **Fact:** [error-handling.mdx](../../apps/docu/content/docs/architecture/error-handling.mdx) — `@repo/error` `captureError` is log-only; Sentry packages installed but **inactive**; HTTP catalog `{ code, message }`
 - **Fact:** `GET /health` → `{ ok: true, dbReady }` — no auth, no deep probes (Resend/AI/IdP)
 - **Fact:** Deploy: [vercel.mdx](../../apps/docu/content/docs/deployment/vercel.mdx), [self-hosted-llm.mdx](../../apps/docu/content/docs/deployment/self-hosted-llm.mdx)
 - **Fact:** Rate limits are in-memory per API instance (Security names the policy; this station names the multi-replica blind spot)
-- **Unresolved:** dashboards and alert rules; runbooks; request-id join-key standard for operators; verify-in-the-running-system after deploy
+- **Unresolved:** dashboards and alert rules; runbooks; verify-in-the-running-system after deploy
 - **Unresolved:** production identity/retries for in-product AI agents
 
 PostHog is Product, not operations. Do not file a missing success event as an ops ticket.
@@ -27,15 +27,15 @@ PostHog is Product, not operations. Do not file a missing success event as an op
 ## Minimum Useful Artifact
 
 - critical path: auth and API 500s that strand a user
-- signal: Pino `request.log`; Sentry/GlitchTip; `/health`
-- join key: **unresolved** as a named operator standard
+- signal: Pino `request.log` / `reqId`; `/health`; Sentry **inactive**
+- join key: **`reqId`** (`x-request-id`, Fastify LogController; Next BFF forwards the header)
 - alert/owner/escalation: **unresolved**
 - recovery: **unresolved** as runbooks
 - verify: **unresolved** (CI green is not this)
 
 ## Recipe
 
-1. Inspect logging MDX, error-handling MDX, `/health`, Sentry init, deploy docs.
+1. Inspect logging MDX, error-handling MDX, `/health`, captureError (log-only), deploy docs.
 2. Understand critical failure modes and who notices first.
 3. Identify a 500 with no useful log, a deploy that cannot be verified.
 4. Propose the smallest useful signal — one log field, one metric, one alert.
@@ -46,7 +46,7 @@ PostHog is Product, not operations. Do not file a missing success event as an op
 
 ## Validation
 
-- A developer can diagnose a common failure from Pino or Sentry without guessing.
+- A developer can diagnose a common failure from Pino without guessing. Sentry is not an active sink.
 - Alerts fire on real problems, or alerts are marked unresolved.
 - Recovery steps are documented and exercised, or marked unresolved.
 - Post-fix deploy was verified in production or staging. CI green is not that verification.

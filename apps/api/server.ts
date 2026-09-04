@@ -1,12 +1,13 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { initErrorReporting } from '@repo/error/node'
 import { logger } from '@repo/utils/logger/server'
-import Fastify, { LogController } from 'fastify'
+import Fastify from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
 import { closeDb, getDb } from './src/db/index.js'
 import { runMigrations } from './src/db/migrate.js'
 import { env } from './src/lib/env.js'
+import { createApiLoggerOptions } from './src/lib/http-logging.js'
 
 if (env.NODE_ENV === 'production' && env.ALLOW_TEST) {
   logger.error('ALLOW_TEST must not be true in production')
@@ -18,26 +19,11 @@ initErrorReporting({
   environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
 })
 
-const isTestOrCi = env.NODE_ENV === 'test' || env.CI
 const fastify = Fastify({
-  logger: {
-    level: isTestOrCi ? 'silent' : env.NODE_ENV === 'production' ? 'info' : 'debug',
-    transport:
-      env.NODE_ENV === 'development'
-        ? {
-            target: 'pino-pretty',
-            options: {
-              translateTime: 'HH:MM:ss Z',
-              ignore: 'pid,hostname',
-            },
-          }
-        : undefined,
-  },
+  ...createApiLoggerOptions({ pretty: env.NODE_ENV === 'development' }),
   trustProxy: env.TRUST_PROXY,
   bodyLimit: env.BODY_LIMIT,
   requestTimeout: env.REQUEST_TIMEOUT,
-  requestIdHeader: 'x-request-id',
-  logController: new LogController({ requestIdLogLabel: 'reqId', disableRequestLogging: false }),
 }).withTypeProvider<TypeBoxTypeProvider>()
 
 fastify.register(app)

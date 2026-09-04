@@ -48,6 +48,13 @@
       "node": "./dist/logger/types.js",
       "default": "./dist/logger/types.js"
     },
+    "./logger/pino-options": {
+      "types": "./src/logger/pino-options.ts",
+      "source": "./src/logger/pino-options.ts",
+      "import": "./dist/logger/pino-options.js",
+      "node": "./dist/logger/pino-options.js",
+      "default": "./dist/logger/pino-options.js"
+    },
     "./debug": {
       "types": "./src/debug/index.ts",
       "source": "./src/debug/index.ts",
@@ -69,6 +76,8 @@
     "dev": "tsup --watch",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "test": "vitest run",
+    "test:unit": "vitest run",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs"
   },
@@ -118,8 +127,10 @@
     "eslint": "^10.9.1",
     "nuqs": "^2.10.1",
     "react": "^19.2.8",
+    "pino": "^10.3.1",
     "tsup": "^8.5.1",
     "vconsole": "^3.15.1",
+    "vitest": "^4.1.11",
     "viem": "2.56.0",
     "zod": "^4.5.2",
     "zod-validation-error": "^5.0.0"

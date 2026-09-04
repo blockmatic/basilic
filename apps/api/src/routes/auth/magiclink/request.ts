@@ -10,6 +10,7 @@ import { getDb } from '../../../db/index.js'
 import { users, verification } from '../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { isUniqueViolation } from '../../../lib/db-errors.js'
+import { sendMail } from '../../../lib/email.js'
 import { env } from '../../../lib/env.js'
 import { generateLoginCode, hashLoginCode } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
@@ -137,17 +138,17 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
           expirationMinutes: 15,
         }),
       )
-      const emailResponse = await fastify.emailProvider.emails.send({
-        from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-        to: email,
-        subject: `${code} - ${env.APP_NAME} verification code`,
-        html,
+      await sendMail({
+        provider: fastify.emailProvider,
+        logger: request.log,
+        mode: 'throw',
+        message: {
+          from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
+          to: email,
+          subject: `${code} - ${env.APP_NAME} verification code`,
+          html,
+        },
       })
-
-      if ('error' in emailResponse && emailResponse.error)
-        throw new Error(
-          `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
-        )
 
       return reply.code(200).send({ ok: true })
     },

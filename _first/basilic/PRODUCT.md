@@ -20,7 +20,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** New-device sign-in alerts are transactional email via Fastify `emailProvider` + `@repo/email`, not a notification product
 - **Fact:** Not a billed SaaS in files. No `PRODUCT.md` / PRD. Do not invent one to fill TAM.
 - **Fact:** Observed non-goals in code/docs: mobile not an API client; no web wallet UI; Cache Components off; `@repo/react` hooks handwritten
-- **Drift:** PostHog **decided** ([ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx), [analytics.mdx](../../apps/docu/content/docs/architecture/analytics.mdx)) but **not installed**. ADR still mentions `@vercel/analytics` — neither package is in web/mobile `package.json`. Event taxonomy **unmeasured**.
+- **Fact:** PostHog **chosen, not shipped** ([ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx), [analytics.mdx](../../apps/docu/content/docs/architecture/analytics.mdx)). Event taxonomy **unmeasured**. No `@vercel/analytics`.
 - **Unresolved:** GTM (channel, first successful use); success metrics that can fail (not `pnpm qa`); TAM/LTV (toolkit — say so); named decision owners for the product bet
 - **Unresolved:** keep / iterate / kill board
 

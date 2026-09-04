@@ -1,11 +1,8 @@
-import { createClient } from '@repo/core'
 import { redirect, unstable_rethrow } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
+import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
 import { extractTokens } from '@/lib/auth/callback-utils'
-import { env } from '@/lib/env'
-
-const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -15,6 +12,8 @@ export async function GET(request: Request) {
     : null
 
   if (!code) redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
+
+  const { client, reqId } = createBffClient({ request })
 
   try {
     const response = await client.auth.web3.exchange({ body: { code } })
@@ -27,6 +26,7 @@ export async function GET(request: Request) {
     return redirectResponse
   } catch (error) {
     unstable_rethrow(error)
+    logAuthBffFailure({ error, reqId, method: 'web3' })
     redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
   }
 }

@@ -9,7 +9,7 @@ import {
   users,
   walletIdentities,
 } from '../../../db/schema/index.js'
-import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
+import { sendCatalogError, sendServerCatalogError } from '../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const LinkedWalletSchema = Type.Object({
@@ -116,8 +116,12 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           .from(users)
           .where(eq(users.id, userId))
       } catch (err) {
-        request.log.error({ err }, 'Failed to fetch user data')
-        return sendCatalogError({ reply, status: 500, code: 'SERVER_ERROR' })
+        return sendServerCatalogError({
+          request,
+          reply,
+          code: 'SERVER_ERROR',
+          error: err,
+        })
       }
 
       return reply.code(200).send({

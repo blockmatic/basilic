@@ -1,6 +1,13 @@
+import { ApiError } from '@repo/core'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { env } from '@/lib/env'
 import { authCookieSchema } from './auth-schemas'
 import { setAuthCookiesOnResponse } from './auth-server'
+import { createBffClient, logAuthBffFailure } from './bff-client'
+import { parseAuthCookie } from './parse-auth-cookie'
+
+type BffClient = ReturnType<typeof createBffClient>['client']
 
 export function extractTokens(response: unknown): { token: string; refreshToken: string } | null {
   const parsed = authCookieSchema.safeParse(response)
@@ -38,4 +45,47 @@ export function completeOAuthCallback({
   )
   setAuthCookiesOnResponse(redirectResponse, tokens)
   return redirectResponse
+}
+
+export async function handleOAuthBffGet({
+  request,
+  method,
+  failureMessage,
+  fallbackMessage,
+  exchange,
+  mapError,
+}: {
+  request: Request
+  method: string
+  failureMessage: string
+  fallbackMessage: string
+  exchange: (args: { client: BffClient; code: string; state: string }) => Promise<unknown>
+  mapError: (raw: string, body?: unknown) => string
+}) {
+  const { searchParams } = new URL(request.url)
+  const code = searchParams.get('code')
+  const state = searchParams.get('state')
+  if (!code || !state)
+    return NextResponse.redirect(
+      new URL(`/auth/login?message=${encodeURIComponent('missing_params')}`, request.url),
+      303,
+    )
+
+  const cookieStore = await cookies()
+  const { token } = parseAuthCookie(cookieStore.get(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)?.value)
+  const { client, reqId } = createBffClient({ request, token })
+
+  try {
+    const response = await exchange({ client, code, state })
+    return completeOAuthCallback({ request, response, failureMessage })
+  } catch (error) {
+    logAuthBffFailure({ error, reqId, method })
+    const rawMessage = error instanceof Error ? error.message : fallbackMessage
+    const body = error instanceof ApiError ? error.body : undefined
+    const errorCode = mapError(rawMessage, body)
+    return NextResponse.redirect(
+      new URL(`/auth/login?message=${encodeURIComponent(errorCode)}`, request.url),
+      303,
+    )
+  }
 }

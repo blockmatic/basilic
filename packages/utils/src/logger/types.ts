@@ -15,7 +15,7 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent'
  * logger.info({ userId: '123' }, 'User logged in')
  * logger.error({ err: error }, 'Failed to process request')
  *
- * const childLogger = logger.child({ requestId: 'abc' })
+ * const childLogger = logger.child({ reqId: 'abc' })
  * childLogger.debug('Processing request')
  * ```
  */
@@ -71,3 +71,12 @@ export const normalizeLevel = (v: string | undefined): LogLevel => {
   if (x === 'debug' || x === 'info' || x === 'warn' || x === 'error' || x === 'silent') return x
   return 'info'
 }
+
+export { normalizeLogArgs, toErrField } from './normalize.js'
+export {
+  isValidRequestId,
+  pathOnlyUrl,
+  pinoRedactPaths,
+  sanitizeLogData,
+  sensitiveKeys,
+} from './redact.js'

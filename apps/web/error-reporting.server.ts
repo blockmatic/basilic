@@ -1,4 +1,4 @@
-import { initErrorReporting } from '@repo/error/nextjs'
+import { initErrorReporting } from '@repo/error/nextjs/server'
 import { env } from './lib/env.js'
 
 initErrorReporting({

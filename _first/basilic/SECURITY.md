@@ -24,7 +24,7 @@ Trust boundaries are documented. Auth rules are consistent and enforced at bound
 - **Fact:** CORS SoT: Fastify `ALLOWED_ORIGINS` (`apps/api/src/plugins/cors.ts`). Prod fails on `*` or empty. Not `vercel.json`.
 - **Fact:** Login-route rate-limit subset as shipped in security MDX. In-memory per instance (Operations names the replica gap).
 - **Fact:** Cookie `api.session` is `httpOnly: false` by design so the browser client can read tokens. Same-origin `update-tokens` + Fastify `validate-tokens` before write.
-- **Fact:** Secrets: `ENCRYPTION_KEY`, `JWT_SECRET`, OAuth client secrets, `RESEND_API_KEY`, AI keys, `SENTRY_DSN`, `DATABASE_URL`, `AI_GATEWAY_API_KEY`, `EXPO_TOKEN`
+- **Fact:** Secrets: `ENCRYPTION_KEY`, `JWT_SECRET`, OAuth client secrets, `RESEND_API_KEY`, AI keys, `SENTRY_DSN` (unused until Sentry is re-enabled), `DATABASE_URL`, `AI_GATEWAY_API_KEY`, `EXPO_TOKEN`
 - **Unresolved:** named threat model; data classification list; in-product AI tool permission matrix
 - **Unresolved:** accepted-risk register with owner and next review
 

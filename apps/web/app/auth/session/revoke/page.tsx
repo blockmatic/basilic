@@ -1,10 +1,9 @@
-import { ApiError, createClient } from '@repo/core'
-import { cookies } from 'next/headers'
+import { ApiError } from '@repo/core'
+import { cookies, headers } from 'next/headers'
 import Link from 'next/link'
+import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
 import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
 import { env } from '@/lib/env'
-
-const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
 
 function errorMessage(code: string | undefined) {
   if (code === 'EXPIRED_TOKEN') return 'This sign-out link has expired.'
@@ -26,9 +25,11 @@ export default async function RevokeSessionPage({
       />
     )
 
+  const { client, reqId } = createBffClient({ headers: await headers() })
   try {
     await client.auth.sessions.revoke({ body: { token, verificationId } })
   } catch (error) {
+    logAuthBffFailure({ error, reqId, method: 'session_revoke' })
     const code =
       error instanceof ApiError ? (error.body as { code?: string } | undefined)?.code : undefined
     return <RevokeResult title="Could not sign out" body={errorMessage(code)} />
@@ -40,7 +41,7 @@ export default async function RevokeSessionPage({
   )
   if (accessToken) {
     const check = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/sessions`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: { Authorization: `Bearer ${accessToken}`, 'x-request-id': reqId },
       cache: 'no-store',
     })
     if (check.status === 401)

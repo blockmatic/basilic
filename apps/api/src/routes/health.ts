@@ -22,11 +22,7 @@ const healthRoutes: FastifyPluginAsync = async fastify => {
         },
       },
     },
-    async (request, reply) => {
-      fastify.log.info(
-        { origin: request.headers.origin, url: request.url },
-        'Health check request received',
-      )
+    async (_request, reply) => {
       const dbReady = isDbReady()
       return reply.code(200).send({
         ok: true,

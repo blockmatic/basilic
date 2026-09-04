@@ -13,7 +13,7 @@ import {
   resolveMessages,
   sendWebResponse,
 } from '../../lib/ai/index.js'
-import { sendCatalogError } from '../../lib/catalogs/mapper.js'
+import { sendCatalogError, sendServerCatalogError } from '../../lib/catalogs/mapper.js'
 import { env } from '../../lib/env.js'
 import { ErrorResponseSchema } from '../schemas.js'
 
@@ -110,10 +110,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       if (!session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
       const provider = getResolvedProvider()
-      if (!provider) {
-        request.log.warn('No AI provider configured')
-        return sendCatalogError({ reply, status: 500, code: 'SERVER_ERROR' })
-      }
+      if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
 
       const { messages: rawMessages, stream, model, temperature } = request.body
       const resolvedModel = getProvider(provider, model)

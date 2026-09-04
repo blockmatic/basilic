@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { parseBool } from '@repo/utils/logger/types'
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
@@ -72,6 +73,11 @@ export const env = createEnv({
     BODY_LIMIT: z.coerce.number().int().positive().default(1048576),
     REQUEST_TIMEOUT: z.coerce.number().int().positive().default(30000),
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).default('info'),
+    LOG_ENABLED: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, true)),
+    LOG_SERVICE: z.string().min(1).default('api'),
     SENTRY_DSN: z.string().min(1).optional(),
     SENTRY_ENVIRONMENT: z.string().min(1).optional(),
     OLLAMA_BASE_URL: z.string().url().optional().default('http://localhost:11434'),
@@ -161,3 +167,6 @@ export const env = createEnv({
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
 })
+
+/** Zod defaults `LOG_LEVEL` to info; tests stay silent unless the env var is set. */
+export const logLevelProvided = process.env.LOG_LEVEL != null && process.env.LOG_LEVEL !== ''

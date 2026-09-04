@@ -10,7 +10,7 @@ import {
   handleUpstreamError,
   sendWebResponse,
 } from '../../lib/ai/index.js'
-import { sendCatalogError } from '../../lib/catalogs/mapper.js'
+import { sendCatalogError, sendServerCatalogError } from '../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../schemas.js'
 
 const maxPromptLength = 32_000
@@ -62,10 +62,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       if (!prompt) return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
 
       const provider = getResolvedProvider()
-      if (!provider) {
-        request.log.warn('No AI provider configured')
-        return sendCatalogError({ reply, status: 500, code: 'SERVER_ERROR' })
-      }
+      if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
 
       const resolvedModel = getProvider(provider, model)
 

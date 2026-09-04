@@ -7,7 +7,7 @@ import { and, eq, gte, like, sql } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { users, verification } from '../../../../db/schema/index.js'
-import { normalizeEmail } from '../../../../lib/email.js'
+import { normalizeEmail, sendMail } from '../../../../lib/email.js'
 import { env } from '../../../../lib/env.js'
 import { generateLoginCode, hashLoginCode } from '../../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../../lib/url.js'
@@ -128,17 +128,17 @@ const changeEmailRequestRoute: FastifyPluginAsync = async fastify => {
             expirationMinutes: 15,
           }),
         )
-        const emailResponse = await fastify.emailProvider.emails.send({
-          from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-          to: normalizedEmail,
-          subject: `Update your email - ${env.APP_NAME}`,
-          html,
+        await sendMail({
+          provider: fastify.emailProvider,
+          logger: request.log,
+          mode: 'throw',
+          message: {
+            from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
+            to: normalizedEmail,
+            subject: `Update your email - ${env.APP_NAME}`,
+            html,
+          },
         })
-
-        if ('error' in emailResponse && emailResponse.error)
-          throw new Error(
-            `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
-          )
 
         return reply.code(200).send({ ok: true })
       } catch (err) {

@@ -1,0 +1,5 @@
+**/*.spec.ts
+**/*.test.ts
+test/**
+e2e/**
+coverage/**

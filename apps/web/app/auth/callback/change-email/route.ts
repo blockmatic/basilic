@@ -1,7 +1,8 @@
-import { ApiError, createClient } from '@repo/core'
+import { ApiError } from '@repo/core'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
+import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
 import { extractTokens } from '@/lib/auth/callback-utils'
 import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
 import { env } from '@/lib/env'
@@ -32,12 +33,12 @@ export async function GET(request: Request) {
   let refreshedToken = authToken
   let refreshedRefreshToken = refreshToken
 
-  const authedClient = createClient({
-    baseUrl: env.NEXT_PUBLIC_API_URL,
+  const { client: authedClient, reqId } = createBffClient({
+    request,
     getAuthToken: () => refreshedToken,
     getRefreshToken: () => refreshedRefreshToken,
-    onTokensRefreshed: async ({ token, refreshToken: rt }) => {
-      refreshedToken = token
+    onTokensRefreshed: async ({ token: nextToken, refreshToken: rt }) => {
+      refreshedToken = nextToken
       refreshedRefreshToken = rt
     },
   })
@@ -58,6 +59,7 @@ export async function GET(request: Request) {
     setAuthCookiesOnResponse(redirectResponse, tokens)
     return redirectResponse
   } catch (error) {
+    logAuthBffFailure({ error, reqId, method: 'change_email' })
     const code =
       error instanceof ApiError
         ? error.status === 401

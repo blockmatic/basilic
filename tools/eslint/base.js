@@ -140,16 +140,12 @@ export const config = [
             'Avoid enums. Use const objects or union types instead. See .cursor/rules/base/typescript.mdc',
         },
       ],
-      // Enforce subpath imports for @repo packages
+      // Enforce subpath imports for @repo packages (`@repo/error` root is message utils — allowed)
+
       '@typescript-eslint/no-restricted-imports': [
         'error',
         {
           paths: [
-            {
-              name: '@repo/error',
-              message:
-                'Use subpath imports: @repo/error/nextjs, @repo/error/node, @repo/error/react, etc.',
-            },
             {
               name: '@repo/utils',
               message:

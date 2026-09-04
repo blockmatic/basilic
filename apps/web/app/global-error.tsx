@@ -1,7 +1,6 @@
 'use client'
 
 import { captureError } from '@repo/error/nextjs'
-import { logger } from '@repo/utils/logger/client'
 import { useEffect } from 'react'
 
 import '@repo/ui/styles/globals.css'
@@ -24,7 +23,6 @@ export default function GlobalError({
       label: 'Next.js global-error.tsx',
       tags: { runtime: 'nextjs' },
     })
-    logger.error({ digest: error.digest }, 'Unhandled error in root layout')
   }, [error])
 
   return (

@@ -1,4 +1,6 @@
-import type { FastifyReply } from 'fastify'
+import { captureError } from '@repo/error/node'
+import { pathOnlyUrl } from '@repo/utils/logger/types'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 import { clientErrors, serverErrors, webErrors } from './index.js'
 
 type ServerErrorCode = keyof typeof serverErrors
@@ -32,6 +34,28 @@ export function sendCatalogError({
   const err = getError(code) ??
     getError('UNEXPECTED_ERROR') ?? { code: 'UNEXPECTED_ERROR', message: 'Unexpected error' }
   return reply.code(status).send(err)
+}
+
+export function sendServerCatalogError({
+  request,
+  reply,
+  code,
+  error,
+}: {
+  request: FastifyRequest
+  reply: FastifyReply
+  code: ErrorCode
+  error?: unknown
+}): FastifyReply {
+  captureError({
+    error: error instanceof Error ? error : new Error(code),
+    logger: request.log,
+    label: code,
+    code,
+    data: { method: request.method, url: pathOnlyUrl(request.url) },
+    tags: { app: 'api' },
+  })
+  return sendCatalogError({ reply, status: 500, code })
 }
 
 /**

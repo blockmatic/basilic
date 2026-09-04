@@ -1,11 +1,13 @@
 ---
 title: "Product Analytics"
-description: "Recommended approach for tracking product usage across web and mobile apps using PostHog."
+description: "PostHog is the chosen product analytics platform. It is not installed yet."
 ---
 
-We use **PostHog** for product analytics on web and mobile (events, funnels, replay, flags, experiments). Decision: [ADR 011](/docs/adrs/011-product-analytics).
+**PostHog is selected, not shipped.** There is no `posthog-js` / `posthog-react-native` dependency and no `apps/web/lib/analytics/` implementation. Auth success and feature-usage events must not be invented as Pino substitutes. Decision: [ADR 011](/docs/adrs/011-product-analytics). Operations logs are [Logging](/docs/architecture/logging).
 
-## PostHog Cloud Pricing
+When we install it, intended use is product analytics on web and mobile (events, funnels, replay, flags, experiments) — not engineering health.
+
+## PostHog Cloud Pricing (planned)
 
 ### Free Tier (No Credit Card)
 
@@ -17,43 +19,25 @@ We use **PostHog** for product analytics on web and mobile (events, funnels, rep
 | Surveys           | 1,500 responses        |
 | Error tracking    | 100K exceptions        |
 
-The free tier resets every month. Most companies stay within these limits. See [PostHog pricing](https://posthog.com/pricing) for full details.
+The free tier resets every month. See [PostHog pricing](https://posthog.com/pricing).
 
-### Usage-Based (Beyond Free Tier)
-
-Pay only when you exceed free limits. You can set billing limits per product to avoid unexpected costs. Rates start at roughly $0.00005/event for product analytics.
-
-## Integration
+## Integration (not installed)
 
 ### Web (Next.js)
 
 - Use `posthog-js` (or `posthog-node` for server-side events)
 - Defer loading with `next/dynamic` so analytics do not block the UI
-- See Vercel React skill: load analytics after hydration
 
 ### Mobile (Expo)
 
 - Use `posthog-react-native`
-- Peer deps: `expo-file-system`, `expo-application`, `expo-device`, `expo-localization`
 - Wrap the app with `PostHogProvider`
 
-### Events to Track
+### Events to track later
 
-- Page/screen views (often auto-captured)
-- Key actions: signup, feature usage, conversions
-- Custom properties for segmentation (e.g. plan, source)
-
-## Self-Hosting
-
-When data must stay on your infrastructure:
-
-- **Hardware**: ~4 vCPU, 16 GB RAM, 30+ GB storage (e.g. Hetzner VM)
-- **Stack**: Docker Compose (PostHog, ClickHouse, Kafka, Redis, PostgreSQL, MinIO, Caddy)
-- **Domain**: A record for Let's Encrypt SSL
-
-See [PostHog self-host docs](https://posthog.com/docs/self-host) for setup. Note: paid-plan features (e.g. advanced experiments) are Cloud-only.
+Taxonomy is unmeasured until install: `auth_method_selected`, `auth_succeeded`, `auth_failed`, `session_revoked`, `demo_feature_used`, plus journey events only with a mapping.
 
 ## Related Documentation
 
-- [ADR 011: Product Analytics](/docs/adrs/011-product-analytics) - Decision record and alternatives considered
-- [Logging](/docs/architecture/logging) - Server and client logging (distinct from product analytics)
+- [ADR 011: Product Analytics](/docs/adrs/011-product-analytics)
+- [Logging](/docs/architecture/logging)

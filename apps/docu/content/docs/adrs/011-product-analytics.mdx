@@ -14,7 +14,7 @@ The monorepo includes a Next.js web app (`apps/web`) and an Expo mobile app (`ap
 - **Respect privacy** with EU/US regions and optional self-hosting
 - **Stay within budget** with a generous free tier or predictable costs
 
-We currently use `@vercel/analytics` for basic web analytics only; it does not provide product-level metrics or cross-app coverage.
+We do **not** currently ship a product-analytics SDK. `@vercel/analytics` is not in the repo. PostHog is the **chosen** vendor and is **not installed** yet.
 
 ## Considered Options
 
@@ -84,7 +84,7 @@ Third-party hosted analytics.
 
 ## Decision
 
-We adopt **PostHog** for product analytics across web and mobile.
+We adopt **PostHog** for product analytics across web and mobile. **This ADR records the choice; the SDKs are not installed.** Do not treat docs or Pino `session_issued` as product analytics.
 
 ### TLDR: Comparison Table
 
