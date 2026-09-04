@@ -12,7 +12,7 @@ This is an agent-first factory, not an agent-autonomous one. Humans still decide
 ## Who this is for
 
 - **Users of the framework** — adopting FIRST in a product repo. Copy the user pack into `_first/`. Edit [FIRST.md](FIRST.md) and opted-in station files. Merge a pointer into root `AGENTS.md`.
-- **Maintainers of the framework** — evolving FIRST itself. Start at [maintainers/README.md](maintainers/README.md). Do not copy `maintainers/` or `scripts/`.
+- **Maintainers of the framework** — evolving FIRST itself. Start at [`blockmatic/first` maintainers](https://github.com/blockmatic/first/blob/main/_first/maintainers/README.md). Do not copy `maintainers/` or `instance/`.
 
 ## Audiences
 
@@ -33,7 +33,7 @@ Copy into `_first/` (not the repository root as loose files):
 - `principles/`
 - [FIRST.md](FIRST.md) — create this; list in and out
 
-[README.md](README.md) and `articles/` are the human pack. They are not required for an agent to operate. Skip `maintainers/`, `scripts/`, and `basilic/`. Layout and why: [maintainers/PACKAGING.md](maintainers/PACKAGING.md).
+[README.md](README.md) and `articles/` are the human pack. They are not required for an agent to operate. Skip `maintainers/` and `instance/`. Layout and why: [PACKAGING.md](https://github.com/blockmatic/first/blob/main/_first/maintainers/PACKAGING.md).
 
 ## Documentation inventory
 
@@ -48,7 +48,7 @@ User pack — copy these (plus `FIRST.md` you create):
 | `articles/X.md` | Users, humans | Argument for station X; points to `principles/X.md` |
 | `principles/X.md` | Users applying and agents operating | Operational spec for station X; points to `articles/X.md` |
 
-Maintainer pack — do not copy: [maintainers/](maintainers/README.md) and `scripts/`. `basilic/` is this repository’s instance only.
+Maintainer pack — do not copy: [maintainers/](https://github.com/blockmatic/first/tree/main/_first/maintainers). Skip the factory `instance/` overlays. The source-tree validator is `packages/validate` in [blockmatic/first](https://github.com/blockmatic/first).
 
 The canonical station order is Product → Journeys → Design → Architecture → Data → API → Documentation → Workflow → Pipelines → Quality → Security → Operations. The filenames are identical across `articles/` and `principles/`; the directory names distinguish argument from operation.
 
@@ -58,7 +58,7 @@ The canonical station order is Product → Journeys → Design → Architecture 
 - **Stable** means the essay and spec agree, precise claims and links were reviewed, and the documentation checks pass.
 - A version identifies the factory set. Project-specific decisions belong in the adopting repository, not in these generic files.
 
-This source set remains draft until its external references receive a publication review. [maintainers/FEEDBACK.md](maintainers/FEEDBACK.md) is an advisory review artifact, not part of the user pack.
+This source set remains draft until its external references receive a publication review. [FEEDBACK.md](https://github.com/blockmatic/first/blob/main/_first/maintainers/FEEDBACK.md) is an advisory review artifact, not part of the user pack.
 
 ## Composing stations
 

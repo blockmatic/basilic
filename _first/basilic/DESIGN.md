@@ -66,4 +66,4 @@ Reuse `@repo/ui`. Do not invent components, hex values, or typefaces without che
 
 **Design vs API:** API is the capability boundary. Design is the human-visible expression. `DESIGN.md` is an artifact, not the principle.
 
-**Navigation:** [Generic spec](../principles/DESIGN.md) · [Human essay](../articles/DESIGN.md) · [Factory map](../ABOUT.md) · [Frontend](../../apps/docu/content/docs/architecture/frontend.mdx) · [ADR 004](../../apps/docu/content/docs/adrs/004-design-system.mdx)
+**Navigation:** [Generic spec](../principles/DESIGN.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/DESIGN.md) · [Factory map](../ABOUT.md) · [Frontend](../../apps/docu/content/docs/architecture/frontend.mdx) · [ADR 004](../../apps/docu/content/docs/adrs/004-design-system.mdx)

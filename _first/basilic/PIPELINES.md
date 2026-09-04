@@ -15,13 +15,13 @@ Changes flow through an automated path: format → lint → typecheck → test �
 ## Artifacts
 
 - **Fact:** [github-actions.mdx](../../apps/docu/content/docs/deployment/github-actions.mdx)
-- **Fact:** [`.github/workflows/lint.yml`](../../.github/workflows/lint.yml) — Biome/ESLint/types plus `_first` docs validation
+- **Fact:** [`.github/workflows/lint.yml`](../../.github/workflows/lint.yml) — Biome/ESLint/types. FIRST factory validation lives in [`blockmatic/first`](https://github.com/blockmatic/first)
 - **Fact:** [`.github/workflows/security.yml`](../../.github/workflows/security.yml), [`.github/workflows/deepsec.yml`](../../.github/workflows/deepsec.yml)
 - **Fact:** Path-filtered: `api-e2e.yml` (OpenAPI drift + cov), `web-e2e.yml`, `packages-test.yml`
 - **Fact:** Mobile: `mobile-build.yml`, `mobile-preview.yml`, `mobile-pr-preview.yml` ([mobile-cicd.mdx](../../apps/docu/content/docs/deployment/mobile-cicd.mdx))
 - **Fact:** Local: `pnpm qa` via [`../../scripts/run-qa.mjs`](../../scripts/run-qa.mjs) — checktypes → lint → generate + drift → build → unit → e2e (`SKIP_BUILD=1`)
 - **Fact:** Vercel git deploys web/api/docu ([vercel.mdx](../../apps/docu/content/docs/deployment/vercel.mdx)). CI does **not** deploy. Preview migrate gated unless `RUN_PG_MIGRATE=true`.
-- **Fact:** `web-e2e` needs `ANTHROPIC_API_KEY`. FIRST validator: `python3 _first/scripts/validate_docs.py`
+- **Fact:** `web-e2e` needs `ANTHROPIC_API_KEY`
 - **Unresolved:** commit-stage artifact identity and promote-without-rebuild (hosts rebuild from git)
 
 ## Minimum Useful Artifact
@@ -72,4 +72,4 @@ When implementation completes, ensure CI would pass. Read failures with `gh` (no
 
 **Pipelines vs Operations:** Pipelines get changes into production. Operations runs what arrived.
 
-**Navigation:** [Generic spec](../principles/PIPELINES.md) · [Human essay](../articles/PIPELINES.md) · [Factory map](../ABOUT.md) · [GitHub Actions](../../apps/docu/content/docs/deployment/github-actions.mdx)
+**Navigation:** [Generic spec](../principles/PIPELINES.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PIPELINES.md) · [Factory map](../ABOUT.md) · [GitHub Actions](../../apps/docu/content/docs/deployment/github-actions.mdx)
