@@ -16,7 +16,7 @@ import {
   type OAuthStateMeta,
   validateAndConsumeOAuthState,
 } from '../../../../lib/oauth/index.js'
-import { createSessionAndIssueTokens } from '../../../../lib/session.js'
+import { createSessionAndIssueTokens } from '../../../../lib/session/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -217,7 +217,9 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         await createSessionAndIssueTokens({
           fastify,
           db,
-          userId: user.id,
+          request,
+          user: { id: user.id, email: user.email, name: user.name },
+          signInMethod: 'oauth_github',
         })
 
       const payload: { token: string; refreshToken: string; redirectTo?: string } = {

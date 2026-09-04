@@ -2269,6 +2269,136 @@ export type ValidateTokensResponses = {
 
 export type ValidateTokensResponse = ValidateTokensResponses[keyof ValidateTokensResponses];
 
+export type AuthSessionsDeleteData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/auth/sessions/{id}';
+};
+
+export type AuthSessionsDeleteErrors = {
+  /**
+   * Default Response
+   */
+  400: {
+    code: string;
+    message: string;
+  };
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+  };
+  /**
+   * Default Response
+   */
+  404: {
+    code: string;
+    message: string;
+  };
+};
+
+export type AuthSessionsDeleteError = AuthSessionsDeleteErrors[keyof AuthSessionsDeleteErrors];
+
+export type AuthSessionsDeleteResponses = {
+  /**
+   * Default Response
+   */
+  204: void;
+};
+
+export type AuthSessionsDeleteResponse = AuthSessionsDeleteResponses[keyof AuthSessionsDeleteResponses];
+
+export type AuthSessionsListData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/auth/sessions/';
+};
+
+export type AuthSessionsListErrors = {
+  /**
+   * Default Response
+   */
+  400: {
+    code: string;
+    message: string;
+  };
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+  };
+};
+
+export type AuthSessionsListError = AuthSessionsListErrors[keyof AuthSessionsListErrors];
+
+export type AuthSessionsListResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    sessions: Array<{
+      id: string;
+      signInMethod: string | unknown;
+      deviceLabel: string | unknown;
+      location: string | unknown;
+      ipAddress: string | unknown;
+      createdAt: string;
+      isCurrent: boolean;
+    }>;
+  };
+};
+
+export type AuthSessionsListResponse = AuthSessionsListResponses[keyof AuthSessionsListResponses];
+
+export type AuthSessionsRevokeData = {
+  body: {
+    token: string;
+    verificationId: string;
+  };
+  path?: never;
+  query?: never;
+  url: '/auth/sessions/revoke';
+};
+
+export type AuthSessionsRevokeErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+  };
+};
+
+export type AuthSessionsRevokeError = AuthSessionsRevokeErrors[keyof AuthSessionsRevokeErrors];
+
+export type AuthSessionsRevokeResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    ok: true;
+  };
+};
+
+export type AuthSessionsRevokeResponse = AuthSessionsRevokeResponses[keyof AuthSessionsRevokeResponses];
+
 export type Web3ExchangeData = {
   body: {
     code: string;

@@ -11,7 +11,7 @@ The same `@repo/*` graph is loaded by a bundler (Next: can compile TS) and by na
 
 **Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): `import` points at `src/` in the workspace. Next.js lists them in `transpilePackages`. Workspace `build` is a no-op (`@repo/ui` never runs `tsup` locally).
 
-**Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`, `@repo/notif`): `source` for bundlers → `src/`; `node` / `import` / `default` for compiled `dist/` so serverless resolvers do not hit `ERR_MODULE_NOT_FOUND`.
+**Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`): `source` for bundlers → `src/`; `node` / `import` / `default` for compiled `dist/` so serverless resolvers do not hit `ERR_MODULE_NOT_FOUND`.
 
 **`@repo/cli`**: bin entry is `dist/` only (Node CLI, not imported by apps).
 

@@ -9,7 +9,7 @@ import { web3Callback } from '../../../../db/schema/index.js'
 import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
-import { createSessionAndIssueTokens } from '../../../../lib/session.js'
+import { createSessionAndIssueTokensForUserId } from '../../../../lib/session/index.js'
 import { appendCodeToCallbackUrl, isAllowedUrl } from '../../../../lib/url.js'
 import { isAllowedWeb3Domain, verifyWeb3Auth } from '../../../../lib/web3/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
@@ -85,10 +85,12 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
 
       const db = await getDb()
       const walletInfo = { chain: 'eip155' as const, address: result.validatedAddress }
-      const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+      const { accessToken, refreshToken } = await createSessionAndIssueTokensForUserId({
         fastify,
         db,
+        request,
         userId: result.userId,
+        signInMethod: 'web3_eip155',
         wallet: walletInfo,
       })
 

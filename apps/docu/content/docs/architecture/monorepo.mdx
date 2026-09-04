@@ -14,7 +14,6 @@ flowchart TB
     Error["error — Sentry capture"]
     Utils["utils — logger, async, web3"]
     Email["email — React Email"]
-    Notif["notif — notification env"]
     Cli["cli — API key CLI"]
   end
 
@@ -42,6 +41,6 @@ flowchart TB
 
 **Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shared `@repo/ui` only, not wired to `@repo/core`/`@repo/react` yet), `docu` (Fumadocs).
 
-**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `notif` (unused scaffold), `error`, `utils`, `cli`.
+**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils`, `cli`.
 
 Dependency rule: `core` → `react`; apps depend on packages, never the reverse. Pattern A packages import `src/` in the workspace; Pattern B Node consumers (Fastify, serverless) use `dist/`. `prepack` switches to `dist/` for npm. See [Publishing](/docs/deployment/publishing) and [ESM & TypeScript](/docs/architecture/esm-strategy).

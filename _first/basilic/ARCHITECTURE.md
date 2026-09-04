@@ -18,7 +18,7 @@ The system has an inspectable structural model at the level its scale requires. 
 - **Fact:** [`../../apps/docu/content/docs/architecture/monorepo.mdx`](../../apps/docu/content/docs/architecture/monorepo.mdx) — apps vs packages
 - **Fact:** [`../../apps/docu/content/docs/adrs/`](../../apps/docu/content/docs/adrs/) — ADRs 001–011
 - **Fact:** Deployables: `apps/api` (system of record), `apps/web`, `apps/mobile` (UI scaffold), `apps/docu`
-- **Fact:** Packages: `core` (generated client), handwritten `react`, `ui`, `utils`, `error`, `cli`, `email`; `notif` unused
+- **Fact:** Packages: `core` (generated client), handwritten `react`, `ui`, `utils`, `error`, `cli`, `email`. Security mail is `@repo/email` + Fastify `emailProvider`.
 - **Fact:** Apps depend on packages, never the reverse. `react` depends on `core`. Clients call Fastify over HTTP.
 - **Fact:** Store: PostgreSQL via `DATABASE_URL`. PGLite when `PGLITE=true`. Supabase is the managed host, not the auth SDK.
 - **Fact:** Externals: Vercel, Resend, OAuth IdPs, AI providers, Sentry/GlitchTip, EAS, scanners

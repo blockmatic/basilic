@@ -62,9 +62,10 @@ export async function proxy(request: NextRequest) {
   const isAllowedImage = (allowedImagePaths as readonly string[]).includes(pathname)
 
   // Allow callbacks, logout, legal pages, and explicitly listed image assets without auth
-  const publicPaths = ['/auth/logout', '/terms', '/privacy'] as const
+  const publicPaths = ['/auth/logout', '/auth/session/revoke', '/terms', '/privacy'] as const
   if (
     pathname.startsWith('/auth/callback') ||
+    pathname.startsWith('/auth/session/revoke') ||
     (publicPaths as readonly string[]).includes(pathname) ||
     isAllowedImage
   )

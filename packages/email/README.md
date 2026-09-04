@@ -29,7 +29,7 @@ const html = await render(<WelcomeEmail fullName="John Doe" />)
 
 ### `LoginNotificationEmail`
 
-Login notification email sent when a user logs in.
+Sent when a **new browser/OS fingerprint** signs in (not on every login). One CTA signs that session out.
 
 ```tsx
 import { LoginNotificationEmail } from '@repo/email/emails/login-notification'
@@ -37,19 +37,61 @@ import { render } from '@repo/email/render'
 
 const html = await render(
   <LoginNotificationEmail
+    signInType="Email code"
+    device="Chrome on macOS"
     ipAddress="192.168.1.1"
-    location="San Francisco, CA"
-    device="Chrome on Windows"
     timestamp={new Date().toISOString()}
+    signOutUrl="https://app.example.com/auth/session/revoke?verificationId=...&token=..."
+    location="San Francisco, CA"
+    sessionsUrl="https://app.example.com/settings/security/sessions"
+    appName="Acme"
+  />
+)
+const text = await render(
+  <LoginNotificationEmail
+    signInType="Email code"
+    device="Chrome on macOS"
+    ipAddress="192.168.1.1"
+    timestamp={new Date().toISOString()}
+    signOutUrl="https://app.example.com/auth/session/revoke?verificationId=...&token=..."
+  />,
+  { plainText: true },
+)
+```
+
+**Props:**
+- `signInType` (string) - How they signed in
+- `device` (string) - Browser and OS label
+- `ipAddress` (string) - Client IP
+- `timestamp` (string) - ISO timestamp (formatted UTC in the body)
+- `signOutUrl` (string) - One-time revoke URL
+- `location` (string, optional)
+- `fullName` (string, optional)
+- `appName` (string, optional)
+- `sessionsUrl` (string, optional) - Settings sessions page
+
+### `EmailChangedNotification`
+
+Sent to the previous address after a successful email change.
+
+```tsx
+import { EmailChangedNotification } from '@repo/email/emails/email-changed-notification'
+import { render } from '@repo/email/render'
+
+const html = await render(
+  <EmailChangedNotification
+    newEmail="ada@example.com"
+    sessionsUrl="https://app.example.com/settings/security/sessions"
+    appName="Acme"
   />
 )
 ```
 
 **Props:**
-- `ipAddress` (string) - IP address of the login
-- `location` (string) - Location of the login
-- `device` (string) - Device/browser information
-- `timestamp` (string) - ISO timestamp of the login
+- `newEmail` (string)
+- `fullName` (string, optional)
+- `appName` (string, optional)
+- `sessionsUrl` (string, optional)
 
 ### `MagicLinkLoginEmail`
 
@@ -72,33 +114,6 @@ const html = await render(
 - `magicLink` (string) - Magic link URL
 - `expirationMinutes` (number, optional, default: 15) - Link expiration time in minutes
 - `fullName` (string, optional) - User's full name
-
-### `TransactionsEmail`
-
-Email notification for transaction events.
-
-```tsx
-import { TransactionsEmail } from '@repo/email/emails/transactions'
-import { render } from '@repo/email/render'
-
-const html = await render(
-  <TransactionsEmail
-    transactions={[
-      {
-        id: 'tx-1',
-        amount: '100.00',
-        currency: 'USD',
-        // ... other transaction fields
-      },
-    ]}
-    userName="John Doe"
-  />
-)
-```
-
-**Props:**
-- `transactions` (Transaction[]) - Array of transaction objects
-- `userName` (string) - User's name
 
 ## Usage
 

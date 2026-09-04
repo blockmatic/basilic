@@ -22,7 +22,7 @@ import {
   toAllowedStatus,
   validateAndConsumeOAuthState,
 } from '../../../../lib/oauth/index.js'
-import { createSessionAndIssueTokens } from '../../../../lib/session.js'
+import { createSessionAndIssueTokens } from '../../../../lib/session/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -151,7 +151,7 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         if (existingAccount && existingAccount.userId !== linkUserId)
           return sendCatalogError({ reply, status: 409, code: 'PROVIDER_ALREADY_LINKED' })
 
-      let user: { id: string }
+      let user: { id: string; email?: string | null; name?: string | null }
       if (isLinkMode && linkUserId) {
         const [u] = await db.select().from(users).where(eq(users.id, linkUserId))
         if (!u) return sendCatalogError({ reply, status: 401, code: 'INVALID_STATE' })
@@ -218,7 +218,9 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
       const { accessToken, refreshToken } = await createSessionAndIssueTokens({
         fastify,
         db,
-        userId: user.id,
+        request,
+        user: { id: user.id, email: user.email, name: user.name },
+        signInMethod: 'oauth_google',
       })
 
       const payload: { token: string; refreshToken: string; redirectTo?: string } = {

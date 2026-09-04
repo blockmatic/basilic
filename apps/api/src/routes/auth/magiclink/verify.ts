@@ -7,7 +7,7 @@ import { authAttempts, users, verification } from '../../../db/schema/index.js'
 import { recordAuthFailedAttempt } from '../../../lib/auth/index.js'
 import { hashLoginCode } from '../../../lib/jwt.js'
 import { getTrustedClientIp } from '../../../lib/request.js'
-import { createSessionAndIssueTokens } from '../../../lib/session.js'
+import { createSessionAndIssueTokens } from '../../../lib/session/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const magicLinkMaxAttempts = 5
@@ -75,7 +75,13 @@ export async function verifyMagicLinkAndIssueToken(
     .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, 'magic_link')))
   await db.delete(verification).where(eq(verification.id, verificationRecord.id))
 
-  const { accessToken } = await createSessionAndIssueTokens({ fastify, db, userId: user.id })
+  const { accessToken } = await createSessionAndIssueTokens({
+    fastify,
+    db,
+    request,
+    user: { id: user.id, email: user.email, name: user.name },
+    signInMethod: 'magic_link',
+  })
   return { accessToken }
 }
 
@@ -195,7 +201,9 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
       const { accessToken, refreshToken } = await createSessionAndIssueTokens({
         fastify,
         db,
-        userId: user.id,
+        request,
+        user: { id: user.id, email: user.email, name: user.name },
+        signInMethod: 'magic_link',
       })
 
       return reply.code(200).send({

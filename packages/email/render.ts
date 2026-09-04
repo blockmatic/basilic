@@ -57,8 +57,10 @@ ensureReactGlobal()
  * })
  * ```
  */
-export const render = async (component: ReactNode): Promise<string> => {
-  // Ensure React is set globally before rendering (defensive check)
+export const render = async (
+  component: ReactNode,
+  options?: { plainText?: boolean },
+): Promise<string> => {
   ensureReactGlobal()
-  return reactEmailRender(component)
+  return reactEmailRender(component, options?.plainText ? { plainText: true } : undefined)
 }

@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { getOrCreateSession } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
@@ -105,5 +105,14 @@ describe('POST /account/email/change/verify', () => {
     })
     expect(userRes.statusCode).toBe(200)
     expect(userRes.json().user.email).toBe('verified-new@test.ai')
+
+    const notice = await vi.waitFor(() => {
+      const found = (fastify.fakeEmail?.all() ?? []).find(
+        e => e.to === 'phase2-email@test.ai' && e.subject.includes('email was changed'),
+      )
+      expect(found).toBeDefined()
+      return found
+    })
+    expect(notice?.html).toContain('Review signed-in devices')
   })
 })

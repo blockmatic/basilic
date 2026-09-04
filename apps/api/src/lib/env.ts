@@ -107,6 +107,7 @@ export const env = createEnv({
           ),
       )
       .default('Your App'),
+    WEB_APP_URL: z.string().url().default('http://localhost:3000'),
     ALLOW_TEST: z.coerce.boolean().default(false),
     // GitHub OAuth (optional - OAuth routes return 503 when unset)
     GITHUB_CLIENT_ID: z.string().min(1).optional(),

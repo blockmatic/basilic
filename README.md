@@ -43,7 +43,6 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - **[@repo/utils](packages/utils/README.md)** — Shared utilities (async, data, debug, error, logger, web3)
 - **[@repo/error](packages/error/README.md)** — Error reporting and utilities (`captureError`, `getErrorMessage`)
 - **[@repo/email](packages/email/README.md)** — Email template library built with React Email
-- **[@repo/notif](packages/notif/README.md)** — Notification scaffold (unused; package kept for future work)
 
 
 ## Scripts
@@ -80,7 +79,7 @@ Run with `pnpm <script>`.
   - `security:secrets` — Scan staged files for secrets
   - `security:secrets:full` — Full Gitleaks scan
   - `security:osv` — OSV vulnerability scan
-  - `security:audit` — pnpm audit (high+)
+  - `security:audit` — pnpm audit (high+; registry errors ignored)
   - `security:check` — Run security check script
   - `security:deepsec:scan` — DeepSec regex scan (no AI)
   - `security:deepsec:process:diff` — DeepSec AI review vs `origin/main` (GPT-5.6 Sol)

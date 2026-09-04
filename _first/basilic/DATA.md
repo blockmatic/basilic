@@ -16,7 +16,7 @@ Core domain concepts have shared names and definitions. Each important dataset h
 
 - **Fact:** Owner is `apps/api` only. Schema: [`../../apps/api/src/db/schema/`](../../apps/api/src/db/schema/)
 - **Fact:** ADRs [007](../../apps/docu/content/docs/adrs/007-backend-orm.mdx) (Drizzle) and [008](../../apps/docu/content/docs/adrs/008-database.mdx) (Postgres)
-- **Fact:** Tables: `users`, `account`, `sessions`, `verification`, `auth_attempts`, `api_keys`, `wallet_identities`, `web3_nonce`, `web3_callback`, `passkey_credentials`, `passkey_challenges`, `passkey_auth_challenges`, `passkey_callback`, `totp`, `totp_setup`
+- **Fact:** Tables: `users`, `account`, `sessions` (IP, UA, `signInMethod`, `deviceLabel`, `location`, `deviceFingerprint`), `verification` (`session_revoke` among types), `auth_attempts`, `api_keys`, `wallet_identities`, `web3_nonce`, `web3_callback`, `passkey_credentials`, `passkey_challenges`, `passkey_auth_challenges`, `passkey_callback`, `totp`, `totp_setup`
 - **Fact:** `oauth_state` and `oauth_link_state` are `verification.type` values, not tables ([`verification.ts`](../../apps/api/src/db/schema/tables/verification.ts))
 - **Fact:** Sign-in methods: email, OAuth `account`, `wallet_identities`, `passkey_credentials`. TOTP is 2FA, not a sign-in method. Last-method guardrail on unlink.
 - **Fact:** Secrets at rest: API key and refresh `jti` via `hashToken`; magic-link/change-email codes HMAC-SHA256 with `ENCRYPTION_KEY`; OAuth tokens and web3/passkey callbacks AES-GCM

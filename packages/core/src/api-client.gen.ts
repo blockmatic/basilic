@@ -46,6 +46,12 @@ import type {
   AuthPasskeyStartResponse,
   AuthPasskeyVerifyData,
   AuthPasskeyVerifyResponse,
+  AuthSessionsDeleteData,
+  AuthSessionsDeleteResponse,
+  AuthSessionsListData,
+  AuthSessionsListResponse,
+  AuthSessionsRevokeData,
+  AuthSessionsRevokeResponse,
   ChatData,
   ChatResponse,
   GenerateData,
@@ -190,6 +196,11 @@ export type CoreApiClient = {
       refresh: (opts: Options<RefreshData>) => Promise<RefreshResponse>;
       user: (opts?: Options<GetUserData>) => Promise<GetUserResponse>;
       validateTokens: (opts: Options<ValidateTokensData>) => Promise<ValidateTokensResponse>
+    };
+    sessions: {
+      id: (opts: Options<AuthSessionsDeleteData>) => Promise<AuthSessionsDeleteResponse>;
+      list: (opts?: Options<AuthSessionsListData>) => Promise<AuthSessionsListResponse>;
+      revoke: (opts: Options<AuthSessionsRevokeData>) => Promise<AuthSessionsRevokeResponse>
     };
     web3: {
       exchange: (opts: Options<Web3ExchangeData>) => Promise<Web3ExchangeResponse>;

@@ -1,5 +1,6 @@
-import { Body, Container, Heading, Preview, Text } from '@react-email/components'
+import { Body, Container, Heading, Preview, Section, Text } from '@react-email/components'
 import 'react'
+import { Button } from '../components/button.js'
 import { Footer } from '../components/footer.js'
 import { Logo } from '../components/logo.js'
 import {
@@ -11,9 +12,16 @@ import {
 interface Props {
   newEmail: string
   fullName?: string
+  appName?: string
+  sessionsUrl?: string
 }
 
-export function EmailChangedNotification({ newEmail, fullName = '' }: Props) {
+export function EmailChangedNotification({
+  newEmail,
+  fullName = '',
+  appName = 'App',
+  sessionsUrl,
+}: Props) {
   const firstName = fullName ? fullName.split(' ').at(0) : ''
   const previewText = `${firstName ? `Hi ${firstName}, ` : ''}Your email was changed`
   const themeClasses = getEmailThemeClasses()
@@ -45,18 +53,52 @@ export function EmailChangedNotification({ newEmail, fullName = '' }: Props) {
             {firstName ? `Hi ${firstName}` : 'Hello'},
             <br />
             <br />
-            Your email address has been updated to <strong>{newEmail}</strong>.
-            <br />
-            <br />
-            If you didn&apos;t make this change, please contact support immediately.
+            Your email address has been updated. If you didn&apos;t make this change, review
+            signed-in devices and secure your account.
           </Text>
 
           <br />
-          <Footer />
+
+          <Section
+            className={`border border-solid ${themeClasses.border}`}
+            style={{
+              borderColor: lightStyles.container.borderColor,
+              padding: '16px',
+              borderRadius: '4px',
+            }}
+          >
+            <Text
+              className={`text-[14px] mb-2 ${themeClasses.text}`}
+              style={{ color: lightStyles.text.color }}
+            >
+              <strong>New email:</strong> {newEmail}
+            </Text>
+          </Section>
+
+          {sessionsUrl ? (
+            <Section className="text-center mt-[32px] mb-[32px]">
+              <Button href={sessionsUrl} variant="solid">
+                Review signed-in devices
+              </Button>
+            </Section>
+          ) : null}
+
+          <Footer
+            appName={appName}
+            href={sessionsUrl}
+            label={sessionsUrl ? 'Review signed-in devices' : undefined}
+          />
         </Container>
       </Body>
     </EmailThemeProvider>
   )
 }
+
+EmailChangedNotification.PreviewProps = {
+  newEmail: 'ada@example.com',
+  fullName: 'Ada Lovelace',
+  appName: 'Matcha',
+  sessionsUrl: 'https://example.com/settings/security/sessions',
+} satisfies Props
 
 export default EmailChangedNotification

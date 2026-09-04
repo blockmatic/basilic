@@ -19,7 +19,8 @@ Trust boundaries are documented. Auth rules are consistent and enforced at bound
 - **Fact:** Pre-commit: block-files → gitleaks → OSV → Biome. Commands: `pnpm security:check`
 - **Fact:** CI: [`.github/workflows/security.yml`](../../.github/workflows/security.yml) (every PR + main); [`.github/workflows/deepsec.yml`](../../.github/workflows/deepsec.yml) (trusted same-repo PRs)
 - **Fact:** Principals: session JWT (`typ=access` / `typ=refresh`); machine API key `bask_<prefix>_<secret>` hashed at rest
-- **Fact:** Web gate: [`../../apps/web/proxy.ts`](../../apps/web/proxy.ts) only. Do not duplicate in layouts.
+- **Fact:** Web gate: [`../../apps/web/proxy.ts`](../../apps/web/proxy.ts) only. Do not duplicate in layouts. Public includes `/auth/session/revoke`.
+- **Fact:** New-device mail: fingerprint on other session rows; `WEB_APP_URL` allowlisted; JWT-only session list/delete; public revoke token CAS.
 - **Fact:** CORS SoT: Fastify `ALLOWED_ORIGINS` (`apps/api/src/plugins/cors.ts`). Prod fails on `*` or empty. Not `vercel.json`.
 - **Fact:** Login-route rate-limit subset as shipped in security MDX. In-memory per instance (Operations names the replica gap).
 - **Fact:** Cookie `api.session` is `httpOnly: false` by design so the browser client can read tokens. Same-origin `update-tokens` + Fastify `validate-tokens` before write.

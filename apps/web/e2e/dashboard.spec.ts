@@ -21,9 +21,9 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible({ timeout: 15_000 })
   })
 
-  test('settings security redirects to passkeys', async ({ page }) => {
+  test('settings security redirects to sessions', async ({ page }) => {
     await page.goto('/settings/security')
-    await expect(page).toHaveURL(/\/settings\/security\/passkeys/, { timeout: 5000 })
+    await expect(page).toHaveURL(/\/settings\/security\/sessions/, { timeout: 5000 })
   })
 
   test('authed unknown path shows 404', async ({ page }) => {
