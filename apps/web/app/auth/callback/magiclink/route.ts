@@ -1,6 +1,7 @@
 import { ApiError } from '@repo/core'
 import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
+import { capture } from '@/lib/analytics'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
 import { extractTokens } from '@/lib/auth/callback-utils'
@@ -66,10 +67,14 @@ export async function GET(request: Request) {
         body: { verificationId, token },
       })
       const tokens = extractTokens(response)
-      if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
+      if (!tokens) {
+        capture({ name: 'auth_failed', method: 'magic_link', errorCode: 'FAILED_VERIFY' })
+        redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
+      }
 
       const redirectResponse = NextResponse.redirect(new URL(callbackURL ?? '/', request.url), 303)
       setAuthCookiesOnResponse(redirectResponse, tokens)
+      capture({ name: 'auth_succeeded', method: 'magic_link' })
       return redirectResponse
     } catch (error) {
       logAuthBffFailure({ error, reqId, method: 'magiclink' })
@@ -83,6 +88,7 @@ export async function GET(request: Request) {
               : 'INVALID_TOKEN'
             : 'FAILED_VERIFY'
           : 'FAILED_VERIFY'
+      capture({ name: 'auth_failed', method: 'magic_link', errorCode: code })
       return NextResponse.redirect(
         new URL(`/auth/login?message=${encodeURIComponent(code)}`, request.url),
         303,
@@ -93,6 +99,8 @@ export async function GET(request: Request) {
   if (hasValidVerificationId && verificationId)
     return renderCodeEntryForm(verificationId, callbackURL)
 
+  if (verificationId || token)
+    capture({ name: 'auth_failed', method: 'magic_link', errorCode: 'INVALID_TOKEN' })
   redirect(`/auth/login?message=${encodeURIComponent('INVALID_TOKEN')}`)
 }
 
@@ -104,6 +112,7 @@ export async function POST(request: Request) {
   const callbackURL = isSafeCallbackUrl(rawCallback ?? null, request.url)
 
   if (!verificationId || !token || !uuidLike.test(verificationId) || !sixDigitCode.test(token)) {
+    capture({ name: 'auth_failed', method: 'magic_link', errorCode: 'INVALID_CODE' })
     const backUrl = verificationId
       ? `/auth/callback/magiclink?verificationId=${encodeURIComponent(verificationId)}&callbackURL=${encodeURIComponent(callbackURL)}&message=${encodeURIComponent('INVALID_CODE')}`
       : `/auth/callback/magiclink?message=${encodeURIComponent('INVALID_CODE')}`
@@ -116,10 +125,14 @@ export async function POST(request: Request) {
       body: { verificationId, token },
     })
     const tokens = extractTokens(response)
-    if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
+    if (!tokens) {
+      capture({ name: 'auth_failed', method: 'magic_link', errorCode: 'FAILED_VERIFY' })
+      redirect(`/auth/login?message=${encodeURIComponent('FAILED_VERIFY')}`)
+    }
 
     const redirectResponse = NextResponse.redirect(new URL(callbackURL ?? '/', request.url), 303)
     setAuthCookiesOnResponse(redirectResponse, tokens)
+    capture({ name: 'auth_succeeded', method: 'magic_link' })
     return redirectResponse
   } catch (error) {
     logAuthBffFailure({ error, reqId, method: 'magiclink' })
@@ -129,6 +142,7 @@ export async function POST(request: Request) {
           ? 'INVALID_TOKEN'
           : 'FAILED_VERIFY'
         : 'FAILED_VERIFY'
+    capture({ name: 'auth_failed', method: 'magic_link', errorCode: code })
     return NextResponse.redirect(
       new URL(`/auth/login?message=${encodeURIComponent(code)}`, request.url),
       303,

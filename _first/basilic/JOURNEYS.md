@@ -24,7 +24,8 @@ Actors, entry points, happy paths, alternates, error paths, permission gates, an
 - **Fact:** Account: last-method guardrail (`LAST_SIGN_IN_METHOD`); change/link email; OAuth/wallet/passkey link; API keys `bask_` shown once.
 - **Fact:** CLI: API key only; JWT auth endpoints excluded ([cli.mdx](../../apps/docu/content/docs/development/cli.mdx))
 - **Drift:** Web3 verify exists on Fastify; **web has no wallet UI**. Do not map a wallet-connect journey as shipped.
-- **Unresolved:** named journey files beyond auth MDX; mobile completion; in-product AI assistant as a mapped job (chat chrome exists)
+- **Fact:** Assistant demo job (web, in-shell chat): entry = composer or suggestion; happy = `getAccountInfo` output with `__render: 'user-info'` rendered; errors = stream/tool failure or stop; completion = `assistant_turn` with `outcome: 'completed'` **and** `accountRender: true`. A text-only successful reply is **not** this job. No GenUI CTA (`actions: {}`).
+- **Unresolved:** named journey files beyond auth MDX; mobile completion
 
 ```mermaid
 stateDiagram-v2
@@ -49,6 +50,17 @@ stateDiagram-v2
 - errors: invalid/expired codes, `TOKEN_REUSE_DETECTED`, `SESSION_NOT_FOUND`
 - gates: proxy (web) and Fastify JWT/API key — policy in SECURITY.md
 - completion: authenticated session; home loads. Wallet link after login is optional, not required.
+
+Assistant job (demo, same shape):
+
+- actor: web end user (signed in)
+- job: retrieve account context in-conversation
+- entry: `/` assistant chrome; suggestions “Who am I?” / “What can you help with?”
+- happy path: user sends a turn → `getAccountInfo` → `__render: 'user-info'` card
+- alternates: text-only assistant reply (turn completed, account job not)
+- errors: stream error; user stop
+- gates: proxy + Bearer JWT
+- completion: `user-info` rendered. Not “the model replied.”
 
 ## Recipe
 
@@ -77,7 +89,7 @@ Apply Journeys First to Basilic.
 
 Read authentication and account-linking MDX, `apps/web/proxy.ts`, Fastify auth/account routes, web auth UI, CLI, and tests. Map actors, entry points, states, errors, and completion. Compare documentation to actual behavior.
 
-Do not invent UI (including wallet connect). Do not invent a mobile journey. Surface missing states before implementing. Policy stays in Security. Propose the smallest useful update to journey artifacts in `apps/docu`. Update this instance when flows change.
+Do not invent UI (including wallet connect). Do not invent a mobile journey. The in-shell assistant account-context job is mapped (completion = `user-info` rendered). Surface missing states before implementing. Policy stays in Security. Propose the smallest useful update to journey artifacts in `apps/docu`. Update this instance when flows change.
 
 Treat CLI and coding agents as actors. If an actor is unnamed, do not invent a tool for them.
 

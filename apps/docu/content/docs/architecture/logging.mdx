@@ -1,6 +1,6 @@
 ---
 title: "Logging"
-description: "Ops logging is Pino (API/Fastify, Next server) and a console wrapper (browser). Join key is reqId. Product analytics is separate and not installed."
+description: "Ops logging is Pino (API/Fastify, Next server) and a console wrapper (browser). Join key is reqId. Product analytics is a separate no-op capture(), not logs."
 ---
 
 ```ts
@@ -45,6 +45,6 @@ Shallow sanitize of top-level keys (`password`, `token`, `secret`, `email`, …)
 
 ## Operational signals (not product analytics)
 
-Auth/email lines (low cardinality): `session_issued`, `auth_verify_failed`, `auth_locked`, `email_skipped`, `email_send_failed`, `auth_callback_failed`, `auth_proxy_refresh_failed`. No success-send or `auth_succeeded` logs (those belong to PostHog later).
+Auth/email lines (low cardinality): `session_issued`, `auth_verify_failed`, `auth_locked`, `email_skipped`, `email_send_failed`, `auth_callback_failed`, `auth_proxy_refresh_failed`. No success-send or product `auth_succeeded` log lines — product auth events are no-op `capture()` calls, not Pino.
 
 Product analytics is not logging: [Analytics](/docs/architecture/analytics). Failures: [Error Handling](/docs/architecture/error-handling).

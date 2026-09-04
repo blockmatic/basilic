@@ -1,5 +1,6 @@
 import { redirect, unstable_rethrow } from 'next/navigation'
 import { NextResponse } from 'next/server'
+import { capture } from '@/lib/analytics'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
 import { extractTokens } from '@/lib/auth/callback-utils'
@@ -15,7 +16,10 @@ export async function GET(request: Request) {
       ? rawCallbackUrl
       : null
 
-  if (!code) redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
+  if (!code) {
+    capture({ name: 'auth_failed', method: 'passkey', errorCode: 'INVALID_OR_EXPIRED_CODE' })
+    redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
+  }
 
   const origin = new URL(request.url).origin
   const { client, reqId } = createBffClient({
@@ -28,15 +32,20 @@ export async function GET(request: Request) {
       body: { code },
     })
     const tokens = extractTokens(response)
-    if (!tokens) redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
+    if (!tokens) {
+      capture({ name: 'auth_failed', method: 'passkey', errorCode: 'INVALID_OR_EXPIRED_CODE' })
+      redirect(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`)
+    }
 
     const redirectUrl = callbackUrl ?? '/'
     const redirectResponse = NextResponse.redirect(new URL(redirectUrl, request.url), 303)
     setAuthCookiesOnResponse(redirectResponse, tokens)
+    capture({ name: 'auth_succeeded', method: 'passkey' })
     return redirectResponse
   } catch (err) {
     unstable_rethrow(err)
     logAuthBffFailure({ error: err, reqId, method: 'passkey' })
+    capture({ name: 'auth_failed', method: 'passkey', errorCode: 'INVALID_OR_EXPIRED_CODE' })
     return NextResponse.redirect(
       new URL(`/auth/login?message=${encodeURIComponent('INVALID_OR_EXPIRED_CODE')}`, request.url),
       303,

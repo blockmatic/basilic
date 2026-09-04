@@ -21,6 +21,7 @@ Core domain concepts have shared names and definitions. Each important dataset h
 - **Fact:** Sign-in methods: email, OAuth `account`, `wallet_identities`, `passkey_credentials`. TOTP is 2FA, not a sign-in method. Last-method guardrail on unlink.
 - **Fact:** Secrets at rest: API key and refresh `jti` via `hashToken`; magic-link/change-email codes HMAC-SHA256 with `ENCRYPTION_KEY`; OAuth tokens and web3/passkey callbacks AES-GCM
 - **Fact:** Migrations: [`../../apps/api/src/db/migrations/`](../../apps/api/src/db/migrations/) — generate from schema TypeScript; never hand-edit SQL
+- **Fact:** Product analytics events are not a store. `capture()` does not persist. No derived analytics copy is shipped (PostHog chosen, not installed).
 - **Unresolved:** domain glossary; retention, deletion, residency; identity/dedup beyond PK uniqueness
 - **Unresolved:** PostHog as a derived copy — decided, not installed (Product)
 
@@ -32,7 +33,7 @@ For `users` (and the same shape for any concept you touch):
 - identity: text primary key; email nullable (Web3-only accounts)
 - owner: Fastify API / PostgreSQL
 - writers: auth and account routes; readers: JWT session load, profile, `@repo/core` clients over HTTP
-- derived copies: none shipped (PostHog unmeasured)
+- derived copies: none shipped (product `capture()` is a no-op)
 - retention/deletion: **unresolved**
 - evolution: Drizzle migrations under `apps/api/src/db/migrations/`
 

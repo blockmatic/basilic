@@ -14,7 +14,7 @@ The monorepo includes a Next.js web app (`apps/web`) and an Expo mobile app (`ap
 - **Respect privacy** with EU/US regions and optional self-hosting
 - **Stay within budget** with a generous free tier or predictable costs
 
-We do **not** currently ship a product-analytics SDK. `@vercel/analytics` is not in the repo. PostHog is the **chosen** vendor and is **not installed** yet.
+We do **not** currently ship a product-analytics SDK. `@vercel/analytics` is not in the repo. PostHog is the **chosen** vendor and is **not installed**. The web app has a typed no-op `capture()` (`apps/web/lib/analytics.ts`): events are **instrumented, not collected**.
 
 ## Considered Options
 
@@ -84,7 +84,7 @@ Third-party hosted analytics.
 
 ## Decision
 
-We adopt **PostHog** for product analytics across web and mobile. **This ADR records the choice; the SDKs are not installed.** Do not treat docs or Pino `session_issued` as product analytics.
+We adopt **PostHog** for product analytics across web and mobile. **This ADR records the choice; the SDKs are not installed.** Do not treat Pino `session_issued` as product analytics. Web `capture()` is not a PostHog integration.
 
 ### TLDR: Comparison Table
 
@@ -117,7 +117,7 @@ We adopt **PostHog** for product analytics across web and mobile. **This ADR rec
 
 - **Web**: `posthog-js` (or `posthog-node`), deferred load via `next/dynamic`
 - **Mobile**: `posthog-react-native` with `PostHogProvider`
-- **Events**: Page/screen views (auto), key actions (signup, feature usage), custom properties for segmentation
+- **Events**: Typed `capture()` at the web boundary for auth success/failure and assistant turns. No autocapture, replay, or identify until a later install PR. Taxonomy: [Product analytics](/docs/architecture/analytics).
 
 ## Related Documentation
 

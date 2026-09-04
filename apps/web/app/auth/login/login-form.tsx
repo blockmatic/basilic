@@ -18,6 +18,7 @@ import {
 import { cn } from '@repo/ui/lib/utils'
 import { useState } from 'react'
 import { z } from 'zod'
+import { capture } from '@/lib/analytics'
 import { getApiErrorCode, isRateLimitApiError } from '@/lib/auth/api-error'
 import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
 import { LoginCodeView } from './login-code-view'
@@ -113,6 +114,11 @@ export function LoginForm({
     },
     onError: error => {
       const code = getApiErrorCode(error)
+      capture({
+        name: 'auth_failed',
+        method: 'magic_link',
+        errorCode: code ?? 'FAILED_VERIFY',
+      })
       if (code === 'INVALID_TOKEN' || code === 'EXPIRED_TOKEN')
         setCodeError('Invalid or expired code. Please try again or request a new one.')
       else

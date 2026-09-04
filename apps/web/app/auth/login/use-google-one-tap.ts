@@ -7,6 +7,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { capture } from '@/lib/analytics'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
 import { env } from '@/lib/env'
@@ -140,8 +141,18 @@ export function useGoogleOneTap({
       try {
         const data = await verifyIdToken(credential)
         await updateAuthTokens({ token: data.token, refreshToken: data.refreshToken })
+        capture({ name: 'auth_succeeded', method: 'oauth_google' })
         router.push('/')
       } catch (err) {
+        const errorCode =
+          err instanceof ApiError
+            ? err.status === 503
+              ? 'oauth_not_configured'
+              : err.status === 429
+                ? 'rate_limit_exceeded'
+                : 'oauth_failed_google'
+            : 'oauth_failed_google'
+        capture({ name: 'auth_failed', method: 'oauth_google', errorCode })
         if (err instanceof ApiError)
           if (err.status === 503) toast.error(getAuthErrorMessage('oauth_not_configured'))
           else if (err.status === 429) toast.error(getAuthErrorMessage('rate_limit_exceeded'))
