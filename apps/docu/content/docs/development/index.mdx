@@ -23,9 +23,11 @@ cd <project-name>
 pnpm run setup
 ```
 
-`setup` installs dependencies, git hooks, security tools, and the database. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Edit the copied files to set secrets.
+`setup` installs dependencies, git hooks, security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Edit the copied files to set secrets. `setup` does **not** start Postgres.
 
 ```bash
+pnpm --filter @repo/api db:start
+pnpm reset
 pnpm dev
 ```
 
@@ -38,11 +40,12 @@ pnpm dev
 
 **Packages:** `core`, `react`, `ui`, `utils`, `error`, `email`, `cli`. Catalog: [Packages](/docs/development/packages).
 
-Local Postgres via Supabase: `pnpm --filter @repo/api db:start`, then **`pnpm reset`** from the repo root. See [ADR 008](/docs/adrs/008-database).
+Local Postgres is Supabase CLI. `db:start` then **`pnpm reset`** (repo root) before `pnpm dev`. See [ADR 008](/docs/adrs/008-database) and [Product Ready](/docs/testing/product-ready).
 
 ## Next
 
 - [Product](/docs/product) — starter vs demo, feature map
+- [Product Ready](/docs/testing/product-ready) — fork-and-run bar (not CI green)
 - [Dev Environments](/docs/development/dev-environments) — ports, remote, Expo
 - [AI Workflow](/docs/development/ai-workflow) — Cursor-first; FIRST / `_first/` load order
 - FIRST adopter pack: repo `_first/README.md` (stations and overlays; not a second docs site)

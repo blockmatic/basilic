@@ -18,7 +18,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** [`../../README.md`](../../README.md) — fork-and-run TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo scaffold). No Wagmi, no first-class OpenAI SDK, no web wallet UI
 - **Fact:** [`../../apps/docu/content/docs/index.mdx`](../../apps/docu/content/docs/index.mdx) — toolkit intro; Product is in the docs nav
 - **Fact:** Two audiences: **adopters** (developers using the starter) and **demo users** (web news `/`, markets, settings, in-shell assistant; auth is the shipped job)
-- **Fact:** GTM: clone + [Getting Started](../../apps/docu/content/docs/development/index.mdx) + first local login. Finance **N/A** (toolkit)
+- **Fact:** GTM: clone + [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`) + first local login. Bar: [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). Finance **N/A** (toolkit)
 - **Fact:** Owner: Gabo Esquivel (named on product index)
 - **Fact:** New-device sign-in alerts are transactional email via Fastify `emailProvider` + `@repo/email`, not a notification product
 - **Fact:** Not a billed SaaS in files. Do not invent TAM/LTV
@@ -36,7 +36,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - users: adopting developers; demo end users on web auth and dashboard
 - goal: portable starter with self-hosted Web2 auth and Cursor-first workflow (Web3 on API only)
 - non-goals: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx) R0 list
-- audience/channel/first use: clone + Getting Started + first local login
+- audience/channel/first use: clone + Getting Started (`db:start`, `pnpm reset`) + first local login ([Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx))
 - metrics: auth and assistant jobs **instrumented, not collected**
 - events: `auth_succeeded`, `auth_failed`, `assistant_turn` — specified + instrumented, no sink
 - owners: Gabo Esquivel
@@ -56,7 +56,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 
 - A new contributor can answer what we are building from `apps/docu` Product pages + README without `__dev/`
 - Success metrics can fail. They are not CI green. Auth/assistant remain unmeasured (no sink)
-- GTM is clone + Getting Started. Finance N/A
+- GTM is clone + Getting Started. Product Ready is that path, not CI green. Finance N/A
 - No silent product decisions in code without a note or open question
 
 ## Definition of Done

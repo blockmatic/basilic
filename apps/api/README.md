@@ -4,7 +4,7 @@ Type-safe REST API built with Fastify & OpenAPI. Routes in `src/routes/` are the
 
 ## Development
 
-Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (gitignored). Start database first (`pnpm db:start`), then `pnpm dev`. Uses Supabase CLI for PostgreSQL, or `PGLITE=true` for in-memory. Dev server at [http://localhost:3001](http://localhost:3001).
+Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (gitignored). Start database first (`pnpm db:start`), then **`pnpm reset`** from the repo root (or `pnpm reset` here) before `pnpm dev`. Uses Supabase CLI for PostgreSQL, or `PGLITE=true` for in-memory. Dev server at [http://localhost:3001](http://localhost:3001). Adopter bar: [Product Ready](../docu/content/docs/testing/product-ready.mdx).
 
 **Switching project_id:** If you change `project_id` in `supabase/config.toml` (e.g. after a rebrand), run `pnpm db:stop` before `pnpm db:start`—only one Supabase instance runs per host.
 

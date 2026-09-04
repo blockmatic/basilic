@@ -1,6 +1,6 @@
 # Web App
 
-Next.js 16 dashboard for the Basilic stack: news, markets, settings, and AI assistant chrome. Uses `@repo/core` and `@repo/react` against the Fastify API.
+Next.js 16 dashboard for the Basilic stack: settings, auth chrome, and demo surfaces (news, markets, assistant). Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
 
 ## Tech Stack
 

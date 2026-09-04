@@ -14,6 +14,7 @@ Content is `content/docs/` (`product`, `architecture`, `development`, `testing`,
 
 - [Product](content/docs/product/index.mdx)
 - [Getting Started](content/docs/development/index.mdx)
+- [Product Ready](content/docs/testing/product-ready.mdx)
 - [AI Workflow](content/docs/development/ai-workflow.mdx)
 - [Architecture](content/docs/architecture/index.mdx)
 - [Security](content/docs/architecture/security.mdx)
