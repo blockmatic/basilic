@@ -6,6 +6,7 @@ export const verificationTypes = [
   'oauth_state',
   'change_email',
   'oauth_link_state',
+  'session_revoke',
 ] as const
 export type VerificationType = (typeof verificationTypes)[number]
 
@@ -22,6 +23,7 @@ export const verification = pgTable(
       codeVerifier?: string
       userId?: string
       redirectUri?: string
+      sessionId?: string
     }>(),
     consumedAt: timestamp('consumed_at'),
     createdAt: timestamp('created_at').defaultNow().notNull(),

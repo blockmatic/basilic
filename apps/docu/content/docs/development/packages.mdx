@@ -19,7 +19,6 @@ Only import from **exported entrypoints** (package root or documented subpaths).
 - **Subpath-only packages** (no root export):
   - `@repo/ui/*`
   - `@repo/email/*`
-  - `@repo/notif/*`
 - **Mixed**:
   - `@repo/error` — root exports (`getErrorMessage`, `tryCatch`, etc.); platform-specific modules require subpaths (`@repo/error/node`, `@repo/error/nextjs`, `@repo/error/browser`)
   - `@repo/utils` — root barrel **and** subpath exports; prefer subpaths for clarity and smaller import surfaces
@@ -43,7 +42,6 @@ Examples:
 | `@repo/ui` | Shared shadcn/ui components | A | `@repo/ui/components/*`, `@repo/ui/lib/*`, `@repo/ui/radix` |
 | `@repo/error` | Error reporting interface | B | `@repo/error/node`, `/nextjs`, `/browser`, `/react` |
 | `@repo/email` | Email templates + renderer | B | `@repo/email/emails/*`, `@repo/email/render` |
-| `@repo/notif` | Notification env/types (no root export) | B | `@repo/notif/node`, `@repo/notif/types/*` |
 
 ## Core packages
 
@@ -199,22 +197,4 @@ import { render } from '@repo/email/render'
 
 const html = await render(<WelcomeEmail fullName="John Doe" />)
 ```
-
-## Notifications
-
-### `@repo/notif` — env + types (no root export)
-
-This package does **not** currently export a root entrypoint.
-
-Entrypoints:
-- `@repo/notif/node` — server env schema (Resend/email configuration)
-- `@repo/notif/types/*` — notification type modules
-
-```typescript
-import { env } from '@repo/notif/node'
-
-env.RESEND_API_KEY
-```
-
-If you need to consume the notification service API from other packages/apps, the package’s `exports` map needs a root entrypoint (or an additional subpath) first.
 

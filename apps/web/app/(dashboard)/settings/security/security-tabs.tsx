@@ -2,11 +2,17 @@
 
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
 import { cn } from '@repo/ui/lib/utils'
-import { KeyRoundIcon, ShieldCheckIcon, TerminalIcon } from 'lucide-react'
+import { KeyRoundIcon, MonitorIcon, ShieldCheckIcon, TerminalIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const tabs = [
+  {
+    href: '/settings/security/sessions',
+    value: 'sessions',
+    icon: MonitorIcon,
+    label: 'Sessions',
+  },
   {
     href: '/settings/security/passkeys',
     value: 'passkeys',
@@ -22,6 +28,7 @@ const triggerStyles = 'min-w-0'
 function getActiveValue(pathname: string) {
   if (pathname.endsWith('/totp')) return 'totp'
   if (pathname.endsWith('/apikeys')) return 'apikeys'
+  if (pathname.endsWith('/sessions')) return 'sessions'
   return 'passkeys'
 }
 
@@ -31,7 +38,7 @@ export function SecurityTabs() {
 
   return (
     <Tabs value={active} className="w-full">
-      <TabsList className="grid w-full grid-cols-3 [&>[data-slot=tabs-trigger]]:min-w-0">
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 [&>[data-slot=tabs-trigger]]:min-w-0">
         {tabs.map(({ href, value, icon: Icon, label }) => (
           <TabsTrigger key={value} value={value} asChild>
             <Link

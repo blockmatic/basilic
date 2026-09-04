@@ -14,7 +14,7 @@ import {
   getWebAuthnOriginFromRequest,
   verifyPasskeyAuth,
 } from '../../../lib/passkey/index.js'
-import { createSessionAndIssueTokens } from '../../../lib/session.js'
+import { createSessionAndIssueTokensForUserId } from '../../../lib/session/index.js'
 import { appendCodeToCallbackUrl, isAllowedUrl } from '../../../lib/url.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 
@@ -102,10 +102,12 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
         const code = generateToken()
         const codeHash = hashToken(code)
         const expiresAt = new Date(Date.now() + callbackCodeExpiryMinutes * 60 * 1000)
-        const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+        const { accessToken, refreshToken } = await createSessionAndIssueTokensForUserId({
           fastify,
           db,
+          request,
           userId: result.userId,
+          signInMethod: 'passkey',
         })
         const encrypted = encryptCallbackTokens({ accessToken, refreshToken })
         await db.insert(passkeyCallback).values({
@@ -121,10 +123,12 @@ const passkeyVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+      const { accessToken, refreshToken } = await createSessionAndIssueTokensForUserId({
         fastify,
         db,
+        request,
         userId: result.userId,
+        signInMethod: 'passkey',
       })
       return reply.code(200).send({ token: accessToken, refreshToken })
     },

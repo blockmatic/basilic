@@ -69,6 +69,7 @@ export default defineConfig({
         '**/security/authenticator.spec.ts',
         '**/security/passkeys.spec.ts',
         '**/security/api-keys.spec.ts',
+        '**/security/sessions.spec.ts',
       ],
       timeout: 60_000,
       use: { ...devices['Desktop Chrome'], storageState: authFile },

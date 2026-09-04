@@ -189,7 +189,6 @@
         "**/lib/auth/**",
         "**/next.config.mjs",
         "**/packages/email/**",
-        "**/packages/notif/**",
         "**/apps/mobile/**/app/**/*.tsx"
       ],
       "linter": {

@@ -127,6 +127,13 @@
       "when": 1788359550348,
       "tag": "0017_luxuriant_risque",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1788489903036,
+      "tag": "0018_kind_starfox",
+      "breakpoints": true
     }
   ]
 }

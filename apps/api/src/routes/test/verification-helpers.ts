@@ -1,7 +1,7 @@
 import { and, desc, eq, isNotNull, sql } from 'drizzle-orm'
 import type { FastifyInstance } from 'fastify'
 import { getDb } from '../../db/index.js'
-import { verification } from '../../db/schema/index.js'
+import { sessions, users, verification } from '../../db/schema/index.js'
 import type { VerificationType } from '../../db/schema/tables/verification.js'
 import { env } from '../../lib/env.js'
 
@@ -35,8 +35,10 @@ export function isTestEmailAllowed(email: string | undefined): email is string {
   return typeof email === 'string' && email.endsWith('@test.ai')
 }
 
-export function isAllowedTestType(type: string | undefined): type is 'magic_link' | 'change_email' {
-  return type === 'magic_link' || type === 'change_email'
+export function isAllowedTestType(
+  type: string | undefined,
+): type is 'magic_link' | 'change_email' | 'session_revoke' {
+  return type === 'magic_link' || type === 'change_email' || type === 'session_revoke'
 }
 
 export async function getLastVerification({
@@ -51,6 +53,25 @@ export async function getLastVerification({
   if (!env.ALLOW_TEST || env.NODE_ENV === 'production') return emptyResult
 
   const db = await getDb()
+
+  if (type === 'session_revoke') {
+    const [row] = await db
+      .select({ id: verification.id, tokenPlain: verification.tokenPlain })
+      .from(verification)
+      .innerJoin(sessions, eq(verification.identifier, sessions.id))
+      .innerJoin(users, eq(sessions.userId, users.id))
+      .where(
+        and(
+          eq(verification.type, type),
+          eq(users.email, email),
+          isNotNull(verification.tokenPlain),
+        ),
+      )
+      .orderBy(desc(verification.createdAt))
+      .limit(1)
+    if (row) return { token: row.tokenPlain, verificationId: row.id }
+    return extractFromScopedFakeEmail({ fastify, email })
+  }
 
   const where =
     type === 'magic_link'

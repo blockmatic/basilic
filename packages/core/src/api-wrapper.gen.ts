@@ -87,6 +87,11 @@ auth: {
     user: gen.getUser,
     validateTokens: gen.validateTokens,
   },
+  sessions: {
+    id: gen.authSessionsDelete,
+    list: gen.authSessionsList,
+    revoke: gen.authSessionsRevoke,
+  },
   web3: {
     exchange: gen.web3Exchange,
     nonce: gen.web3Nonce,

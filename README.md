@@ -43,7 +43,6 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - **[@repo/utils](packages/utils/README.md)** — Shared utilities (async, data, debug, error, logger, web3)
 - **[@repo/error](packages/error/README.md)** — Error reporting and utilities (`captureError`, `getErrorMessage`)
 - **[@repo/email](packages/email/README.md)** — Email template library built with React Email
-- **[@repo/notif](packages/notif/README.md)** — Notification scaffold (unused; package kept for future work)
 
 
 ## Scripts

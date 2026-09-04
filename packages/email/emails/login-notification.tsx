@@ -1,4 +1,5 @@
-import { Body, Container, Heading, Preview, Section, Text } from '@react-email/components'
+import { Body, Container, Heading, Link, Preview, Section, Text } from '@react-email/components'
+import { format } from 'date-fns'
 import 'react'
 import { Button } from '../components/button.js'
 import { Footer } from '../components/footer.js'
@@ -10,41 +11,46 @@ import {
 } from '../components/theme.js'
 
 interface Props {
-  timestamp: string
+  signInType: string
+  device: string
   ipAddress: string
+  timestamp: string
+  signOutUrl: string
   location?: string
-  device?: string
-  userAgent?: string
   fullName?: string
-  secureAccountUrl?: string
-  thisWasMeUrl?: string
+  appName?: string
+  sessionsUrl?: string
+}
+
+function formatUtcTimestamp(iso: string) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return iso
+  const utcAsLocal = new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+  )
+  return format(utcAsLocal, "MMMM d, yyyy, hh:mm a 'UTC'")
 }
 
 export function LoginNotificationEmail({
-  timestamp,
-  ipAddress,
-  location,
+  signInType,
   device,
-  userAgent: _userAgent,
+  ipAddress,
+  timestamp,
+  signOutUrl,
+  location,
   fullName = '',
-  secureAccountUrl,
-  thisWasMeUrl,
+  appName = 'App',
+  sessionsUrl,
 }: Props) {
   const firstName = fullName ? fullName.split(' ').at(0) : ''
-  const previewText = `${firstName ? `Hi ${firstName}, ` : ''}New sign-in detected`
+  const previewText = `New sign-in from ${device}`
   const themeClasses = getEmailThemeClasses()
   const lightStyles = getEmailInlineStyles('light')
-
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleString(undefined, {
-        dateStyle: 'long',
-        timeStyle: 'short',
-      })
-    } catch {
-      return dateString
-    }
-  }
+  const detailStyle = { color: lightStyles.text.color }
 
   return (
     <EmailThemeProvider preview={<Preview>{previewText}</Preview>}>
@@ -62,7 +68,7 @@ export function LoginNotificationEmail({
             className={`text-[21px] font-normal text-center p-0 my-[30px] mx-0 ${themeClasses.heading}`}
             style={{ color: lightStyles.text.color }}
           >
-            New sign-in detected
+            New sign in to your account
           </Heading>
 
           <Text
@@ -71,8 +77,9 @@ export function LoginNotificationEmail({
           >
             {firstName ? `Hi ${firstName}` : 'Hello'},
             <br />
-            <br />
-            We noticed a new sign-in to your account
+            <br />A new device just signed in to your {appName} account. If you don&apos;t recognize
+            this device, please check your account for any unauthorized activity, and also make sure
+            that the sign in type used is secure.
           </Text>
 
           <br />
@@ -85,64 +92,78 @@ export function LoginNotificationEmail({
               borderRadius: '4px',
             }}
           >
-            <Text
-              className={`text-[14px] mb-2 ${themeClasses.text}`}
-              style={{ color: lightStyles.text.color }}
-            >
-              <strong>Time:</strong> {formatDate(timestamp)}
+            <Text className={`text-[14px] mb-2 ${themeClasses.text}`} style={detailStyle}>
+              <strong>Sign in type:</strong> {signInType}
             </Text>
-            <Text
-              className={`text-[14px] mb-2 ${themeClasses.text}`}
-              style={{ color: lightStyles.text.color }}
-            >
-              <strong>IP Address:</strong> {ipAddress}
+            <Text className={`text-[14px] mb-2 ${themeClasses.text}`} style={detailStyle}>
+              <strong>Device:</strong> {device}
             </Text>
-            {location && (
-              <Text
-                className={`text-[14px] mb-2 ${themeClasses.text}`}
-                style={{ color: lightStyles.text.color }}
-              >
+            {location ? (
+              <Text className={`text-[14px] mb-2 ${themeClasses.text}`} style={detailStyle}>
                 <strong>Location:</strong> {location}
               </Text>
-            )}
-            {device && (
-              <Text
-                className={`text-[14px] mb-2 ${themeClasses.text}`}
-                style={{ color: lightStyles.text.color }}
-              >
-                <strong>Device:</strong> {device}
-              </Text>
-            )}
+            ) : null}
+            <Text className={`text-[14px] mb-2 ${themeClasses.text}`} style={detailStyle}>
+              <strong>IP:</strong> {ipAddress}
+            </Text>
+            <Text className={`text-[14px] mb-2 ${themeClasses.text}`} style={detailStyle}>
+              <strong>Time:</strong> {formatUtcTimestamp(timestamp)}
+            </Text>
           </Section>
 
           <br />
 
-          {secureAccountUrl && (
-            <Text
-              className={`text-[14px] leading-[24px] ${themeClasses.text}`}
-              style={{ color: lightStyles.text.color }}
-            >
-              If this wasn&apos;t you, secure your account immediately
-            </Text>
-          )}
+          <Heading
+            className={`text-[16px] font-normal p-0 my-[16px] mx-0 ${themeClasses.heading}`}
+            style={{ color: lightStyles.text.color }}
+          >
+            Don&apos;t recognize this activity?
+          </Heading>
 
-          <br />
+          <Text
+            className={`text-[14px] leading-[24px] ${themeClasses.text}`}
+            style={{ color: lightStyles.text.color }}
+          >
+            To immediately sign out of this device, use the button below.
+            {sessionsUrl ? (
+              <>
+                {' '}
+                If the button does not work,{' '}
+                <Link href={sessionsUrl} style={{ color: lightStyles.text.color }}>
+                  sign out from the sessions page
+                </Link>
+                .
+              </>
+            ) : null}
+          </Text>
 
           <Section className="text-center mt-[32px] mb-[32px]">
-            {thisWasMeUrl && (
-              <Button href={thisWasMeUrl} variant="secondary" className="mr-2">
-                This was me
-              </Button>
-            )}
-            {secureAccountUrl && <Button href={secureAccountUrl}>Secure account</Button>}
+            <Button href={signOutUrl} variant="solid">
+              Sign out of this device
+            </Button>
           </Section>
 
-          <br />
-          <Footer />
+          <Footer
+            appName={appName}
+            href={sessionsUrl}
+            label={sessionsUrl ? 'Review signed-in devices' : undefined}
+          />
         </Container>
       </Body>
     </EmailThemeProvider>
   )
 }
+
+LoginNotificationEmail.PreviewProps = {
+  signInType: 'Email code',
+  device: 'Chrome on macOS',
+  ipAddress: '186.15.124.195',
+  timestamp: '2026-09-04T02:17:00.000Z',
+  signOutUrl: 'https://example.com/auth/session/revoke?verificationId=preview&token=preview',
+  location: 'Concepción, Costa Rica',
+  fullName: 'Ada Lovelace',
+  appName: 'Matcha',
+  sessionsUrl: 'https://example.com/settings/security/sessions',
+} satisfies Props
 
 export default LoginNotificationEmail

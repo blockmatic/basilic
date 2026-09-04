@@ -16,7 +16,7 @@ import {
   type TwitterAccountData,
   validateAndConsumeOAuthState,
 } from '../../../../lib/oauth/index.js'
-import { createSessionAndIssueTokens } from '../../../../lib/session.js'
+import { createSessionAndIssueTokensForUserId } from '../../../../lib/session/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const ExchangeSchema = Type.Object({
@@ -140,10 +140,12 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
           throw err
         }
 
-      const { accessToken, refreshToken } = await createSessionAndIssueTokens({
+      const { accessToken, refreshToken } = await createSessionAndIssueTokensForUserId({
         fastify,
         db,
+        request,
         userId: txResult.userId,
+        signInMethod: 'oauth_twitter',
       })
 
       const payload: { token: string; refreshToken: string; redirectTo?: string } = {

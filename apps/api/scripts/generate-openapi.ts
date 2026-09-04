@@ -101,6 +101,7 @@ async function generateOpenAPI() {
     JWT_SECRET: 'openapi-gen-jwt-secret-placeholder-32ch',
     ALLOWED_ORIGINS: 'https://openapi-gen.example',
     APP_NAME: 'OpenAPI Generation',
+    WEB_APP_URL: 'https://openapi-gen.example',
   }
   for (const [k, v] of Object.entries(stubs)) if (!process.env[k]) process.env[k] = v
 

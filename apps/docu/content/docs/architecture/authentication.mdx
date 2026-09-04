@@ -11,7 +11,15 @@ Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3**
 
 - **Access JWT** (`typ=access`): `sub`, `sid`, optional `wal` for wallet sessions. Lifetime: `ACCESS_JWT_EXPIRES_IN_SECONDS`. Fastify verifies JWT then loads the session.
 - **Refresh JWT** (`typ=refresh`): `sub`, `sid`, `jti`. Rotation at `POST /auth/session/refresh` uses a compare-and-swap `UPDATE` on `id`, `token` (hashed `jti`), and `userId` (`sub`). Reuse of a spent `jti` returns 401 `TOKEN_REUSE_DETECTED` and revokes the session; further refresh attempts return `SESSION_NOT_FOUND`.
-- **Session**: created on login, rotated on refresh, deleted on logout (`POST /auth/session/logout` returns **204** for JWT sessions).
+- **Session**: created on login, rotated on refresh, deleted on logout (`POST /auth/session/logout` returns **204** for JWT sessions) or via `DELETE /auth/sessions/:id` / public `POST /auth/sessions/revoke`.
+
+## New-device email
+
+`createSessionAndIssueTokens` writes IP, user-agent, `deviceLabel`, `location` (Vercel/Cloudflare geo headers only), and `deviceFingerprint` (`browserFamily|osFamily`). Fastify emails only when **no other session row** for that user shares the fingerprint (the new row is excluded). Users without email skip mail. `WEB_APP_URL` (default `http://localhost:3000`) must pass `isAllowedUrl` or the email is skipped. The CTA is `${WEB_APP_URL}/auth/session/revoke?verificationId=&token=` (`session_revoke` verification, `hashToken`, CAS consume). Send is fire-and-forget via `emailProvider`.
+
+`GET /auth/sessions` and `DELETE /auth/sessions/:id` are JWT-only (**400** `USE_KEY_REVOKE` for API keys). List never returns `userAgent` or `deviceFingerprint`.
+
+## Magic link verify
 
 ```mermaid
 stateDiagram-v2
@@ -59,11 +67,11 @@ Passkey **verify** consumes the auth challenge before WebAuthn verification (one
 
 ## Web (Next.js)
 
-Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. Client-side token persistence goes through `POST /api/auth/update-tokens`, which accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before writing `api.session`. After login, home includes link-wallet and link-email.
+Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Client-side token persistence goes through `POST /api/auth/update-tokens`, which accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before writing `api.session`. After login, home includes link-wallet and link-email.
 
 ### Web auth gate
 
-[`apps/web/proxy.ts`](https://github.com/blockmatic/basilic/blob/main/apps/web/proxy.ts) is the only route gate. Matcher: `/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg$).*)`. Public paths: `/auth/callback/*`, `/auth/logout`, `/terms`, `/privacy`, `/auth/login`, `/images/auth-login-hero.webp`. Unauthenticated users → `/auth/login`; authenticated users on `/auth/login` → `/`. Refreshes tokens on navigation.
+[`apps/web/proxy.ts`](https://github.com/blockmatic/basilic/blob/main/apps/web/proxy.ts) is the only route gate. Matcher: `/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg$).*)`. Public paths: `/auth/callback/*`, `/auth/logout`, `/auth/session/revoke`, `/terms`, `/privacy`, `/auth/login`, `/images/auth-login-hero.webp`. Unauthenticated users → `/auth/login`; authenticated users on `/auth/login` → `/`. Refreshes tokens on navigation.
 
 ### OAuth environment variables
 
@@ -76,6 +84,7 @@ Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, red
 | `OAUTH_*_CALLBACK_URL` | Single callback URL per provider |
 | `OAUTH_*_CALLBACK_URLS` | Comma-separated callback URLs per provider |
 | `ENCRYPTION_KEY` | Token encryption and HMAC for magic-link codes |
+| `WEB_APP_URL` | Origin for new-device revoke and sessions links (must be in `ALLOWED_ORIGINS`) |
 
 Magic link: request email → user clicks → verify → cookies. E2E uses `test@test.ai` when `ALLOW_TEST=true`. See [E2E Testing](/docs/testing/e2e-testing).
 

@@ -1,14 +1,23 @@
-import { Hr, Section, Text } from '@react-email/components'
+import { Hr, Link, Section, Text } from '@react-email/components'
 import { getEmailInlineStyles, getEmailThemeClasses } from './theme.js'
 
-export function Footer() {
+export function Footer({
+  href,
+  label,
+  appName = 'App',
+}: {
+  href?: string
+  label?: string
+  appName?: string
+}) {
   const themeClasses = getEmailThemeClasses()
   const lightStyles = getEmailInlineStyles('light')
+  const year = new Date().getFullYear()
 
   return (
     <Section className="w-full">
       <Hr
-        className={themeClasses.border}
+        className={`border-solid ${themeClasses.border}`}
         style={{ borderColor: lightStyles.container.borderColor }}
       />
 
@@ -18,17 +27,19 @@ export function Footer() {
         className={`text-xs ${themeClasses.secondaryText}`}
         style={{ color: lightStyles.secondaryText.color }}
       >
-        {process.env.APP_URL ? (
-          <a
-            href={`${process.env.APP_URL}/settings/notifications`}
-            style={{ color: lightStyles.mutedText.color }}
-          >
-            Notification preferences
-          </a>
-        ) : (
-          'Manage your notification preferences'
-        )}
+        {`© ${year} ${appName}`}
       </Text>
+
+      {href && label ? (
+        <Text
+          className={`text-xs ${themeClasses.secondaryText}`}
+          style={{ color: lightStyles.secondaryText.color }}
+        >
+          <Link href={href} style={{ color: lightStyles.mutedText.color }}>
+            {label}
+          </Link>
+        </Text>
+      ) : null}
 
       <br />
     </Section>

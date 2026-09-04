@@ -3,7 +3,7 @@ title: "Publishing Packages"
 description: "How to publish monorepo packages to npm using the dual-mode export strategy."
 ---
 
-Packages use **dual-mode exports**. **Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): workspace `import` is `src/`; `prepack` builds and rewrites to `dist/` for npm. **Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`, `@repo/notif`): workspace Node already uses `dist/`; `prepack` still rewrites remaining `src/` paths (`types`/`source`) and packs `files: ["dist"]`. ESM details: [ESM & TypeScript Strategy](/docs/architecture/esm-strategy).
+Packages use **dual-mode exports**. **Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): workspace `import` is `src/`; `prepack` builds and rewrites to `dist/` for npm. **Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`): workspace Node already uses `dist/`; `prepack` still rewrites remaining `src/` paths (`types`/`source`) and packs `files: ["dist"]`. ESM details: [ESM & TypeScript Strategy](/docs/architecture/esm-strategy).
 
 ## How It Works
 

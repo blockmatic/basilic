@@ -17,6 +17,7 @@ import {
   hashToken,
 } from '../../../../lib/jwt.js'
 import { getTrustedClientIp } from '../../../../lib/request.js'
+import { webAppPathUrl } from '../../../../lib/session/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const changeEmailMaxAttempts = 5
@@ -180,7 +181,12 @@ const changeEmailVerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (oldEmail && oldEmail !== newEmail) {
         const html = await render(
-          EmailChangedNotification({ newEmail, fullName: userRow?.name ?? undefined }),
+          EmailChangedNotification({
+            newEmail,
+            fullName: userRow?.name ?? undefined,
+            appName: env.APP_NAME,
+            sessionsUrl: webAppPathUrl('/settings/security/sessions'),
+          }),
         )
         fastify.emailProvider.emails
           .send({

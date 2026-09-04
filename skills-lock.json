@@ -121,6 +121,12 @@
       "skillPath": "skills/playwright-v1/SKILL.md",
       "computedHash": "90a72381b7d8a9c13899c193827cec28ca1eb3da97b6a581d5310eb6d2b4770f"
     },
+    "react-email": {
+      "source": "resend/react-email",
+      "sourceType": "github",
+      "skillPath": "skills/react-email/SKILL.md",
+      "computedHash": "da0feefc6ddf4aaeff930ab203d269774da464429e35b178d2403d69d2dc2fb3"
+    },
     "shadcn-v3": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",

@@ -1,14 +1,14 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
+import type { FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify'
 import { OAuth2Client } from 'google-auth-library'
 import { getDb } from '../../../../db/index.js'
 import { account } from '../../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
 import { env } from '../../../../lib/env.js'
 import { findOrCreateUserByEmail } from '../../../../lib/oauth/index.js'
-import { createSessionAndIssueTokens } from '../../../../lib/session.js'
+import { createSessionAndIssueTokens } from '../../../../lib/session/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../../schemas.js'
 
 const VerifyIdTokenSchema = Type.Object({
@@ -23,11 +23,12 @@ const VerifyIdTokenResponseSchema = Type.Object({
 async function runGoogleVerifyIdTokenTx(input: {
   fastify: FastifyInstance
   db: Awaited<ReturnType<typeof getDb>>
+  request: FastifyRequest
   accountId: string
   email: string
   name: string
 }): Promise<{ token: string; refreshToken: string }> {
-  const { fastify, db, accountId, email, name } = input
+  const { fastify, db, request, accountId, email, name } = input
   const user = await findOrCreateUserByEmail(db, {
     email,
     name,
@@ -55,7 +56,9 @@ async function runGoogleVerifyIdTokenTx(input: {
     const { accessToken, refreshToken } = await createSessionAndIssueTokens({
       fastify,
       db: tx,
-      userId: linkedUserId,
+      request,
+      user: { id: user.id, email: user.email, name: user.name },
+      signInMethod: 'oauth_google',
     })
     return { token: accessToken, refreshToken }
   })
@@ -128,7 +131,14 @@ const oauthVerifyIdTokenRoute: FastifyPluginAsync = async fastify => {
 
       const db = await getDb()
       const name = payload.name ?? email
-      const result = await runGoogleVerifyIdTokenTx({ fastify, db, accountId, email, name })
+      const result = await runGoogleVerifyIdTokenTx({
+        fastify,
+        db,
+        request,
+        accountId,
+        email,
+        name,
+      })
       return reply.code(200).send({ token: result.token, refreshToken: result.refreshToken })
     },
   )

@@ -71,10 +71,18 @@ Routes under this cap:
 - `POST /auth/passkey/verify`
 - `POST /auth/passkey/exchange`
 - `POST /auth/passkey/resolve-user`
+- `POST /auth/sessions/revoke`
 
 Other controls (not the Fastify 10/min cap): magic-link **verify** uses `authAttempts` (5 per 15 minutes → `TOO_MANY_ATTEMPTS`); OAuth **link** authorize-url is Bearer-authenticated with 10 requests per user per hour in the database.
 
 Limits are in-memory per API instance, keyed by trusted client IP (`getTrustedClientIp` / `request.ip`). Behind a reverse proxy, set `TRUST_PROXY=true`.
+
+## Session list, revoke, and new-device mail
+
+- `GET /auth/sessions` / `DELETE /auth/sessions/:id`: Bearer JWT only. API keys get **400** `USE_KEY_REVOKE`.
+- `POST /auth/sessions/revoke`: public (`security: []`), body `{ token, verificationId }`. Compare-and-swap consume of `session_revoke`. Idempotent **200** `{ ok: true }` on a second click. Wrong/expired token: `INVALID_TOKEN` / `EXPIRED_TOKEN`.
+- Revoke CTA origin is API `WEB_APP_URL`, not the request `Origin` (OAuth exchange is server-side). If `WEB_APP_URL` is not allowlisted, Fastify skips the email.
+- Web: `/auth/session/revoke` is a **public** proxy path (prefix match). Query `verificationId` + `token` call Fastify `POST /auth/sessions/revoke`. Rate-limited with other login routes (`authLoginRouteConfig`).
 
 ## Session cookie (web)
 
