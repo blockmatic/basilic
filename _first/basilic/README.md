@@ -2,7 +2,7 @@
 
 Operational specs for applying FIRST in this monorepo. Not a second factory. Durable facts live in `apps/docu/content/docs/`, ADRs, TypeBox routes, OpenAPI (generated), and package READMEs.
 
-This folder is this repository’s adoption pack. When copying FIRST into another repo, skip this directory, `maintainers/`, and `scripts/`. Copy `ABOUT.md`, `AGENTS.md`, and `principles/` into `_first/`. Add `FIRST.md`.
+This folder is this repository’s adoption pack. Factory source: [`blockmatic/first`](https://github.com/blockmatic/first). Skip this directory when copying FIRST elsewhere. Copy `ABOUT.md`, `AGENTS.md`, and `principles/` into `_first/`. Add `FIRST.md`. Do not copy this folder.
 
 ## Load order
 
@@ -21,12 +21,12 @@ Do not install a FIRST skill. Use existing tech and workflow skills.
 3. Inspect implementation and `apps/docu`. Distinguish facts, inferences, assumptions, questions.
 4. Propose the smallest useful update: portable factory wording, this instance, or a durable project file.
 5. Implement against that contract.
-6. Validate with this repo’s checks (`pnpm qa`, OpenAPI drift, targeted tests). Run `python3 _first/scripts/validate_docs.py` only when generic FIRST files changed.
+6. Validate with this repo’s checks (`pnpm qa`, OpenAPI drift, targeted tests). Factory wording is reviewed in `blockmatic/first` (`pnpm validate` there).
 7. Update this instance if a real path or check was learned. Update `../principles/X.md` only if the portable recipe was wrong.
 
 ## Format sync
 
-When `../principles/` headings change, update every station file here in the same session. Do not teach this folder to `../scripts/validate_docs.py`.
+When `../principles/` headings change, update every station file here in the same session. Do not teach this folder to the factory validator in `blockmatic/first`.
 
 Required `##` headings (copy of `principleHeadings`):
 
@@ -39,7 +39,7 @@ Filenames match the twelve stations in order: PRODUCT, JOURNEYS, DESIGN, ARCHITE
 From a station file in this folder:
 
 - Generic spec: `../principles/X.md`
-- Essay: `../articles/X.md`
+- Essay: `https://github.com/blockmatic/first/blob/main/_first/articles/X.md`
 - Instance map: `../FIRST.md`
 - Factory map: `../ABOUT.md`
 - Docs: `../../apps/docu/content/docs/…`

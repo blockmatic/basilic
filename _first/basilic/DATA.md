@@ -81,4 +81,4 @@ Preserve intentional existing models. Do not introduce a warehouse, event bus, o
 
 **Data vs Operations:** Data owns product state. Operations owns telemetry about runtime health.
 
-**Navigation:** [Generic spec](../principles/DATA.md) · [Human essay](../articles/DATA.md) · [Factory map](../ABOUT.md) · [ADR 008](../../apps/docu/content/docs/adrs/008-database.mdx)
+**Navigation:** [Generic spec](../principles/DATA.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/DATA.md) · [Factory map](../ABOUT.md) · [ADR 008](../../apps/docu/content/docs/adrs/008-database.mdx)

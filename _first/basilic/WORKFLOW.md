@@ -69,4 +69,4 @@ Stop and ask a human for product scope, security-sensitive changes, and destruct
 
 **Workflow vs Documentation:** Workflow determines when context is created. Documentation preserves it.
 
-**Navigation:** [Generic spec](../principles/WORKFLOW.md) · [Human essay](../articles/WORKFLOW.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)
+**Navigation:** [Generic spec](../principles/WORKFLOW.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/WORKFLOW.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)

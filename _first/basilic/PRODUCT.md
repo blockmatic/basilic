@@ -79,4 +79,4 @@ Separate `pnpm qa` from post-launch success. If a metric is named but not instru
 
 **Product vs Data:** Product names events and outcomes to measure. Data owns canonical domain meaning, authority, lifecycle, and evolution.
 
-**Navigation:** [Generic spec](../principles/PRODUCT.md) · [Human essay](../articles/PRODUCT.md) · [Factory map](../ABOUT.md) · [Introduction](../../apps/docu/content/docs/index.mdx) · [ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx)
+**Navigation:** [Generic spec](../principles/PRODUCT.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PRODUCT.md) · [Factory map](../ABOUT.md) · [Introduction](../../apps/docu/content/docs/index.mdx) · [ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx)

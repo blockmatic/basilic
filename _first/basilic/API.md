@@ -83,4 +83,4 @@ Propose the smallest useful boundary: one operation made explicit in TypeBox. Im
 
 **API vs Documentation:** TypeBox/OpenAPI is the contract. MDX explains why it looks that way.
 
-**Navigation:** [Generic spec](../principles/API.md) · [Human essay](../articles/API.md) · [Factory map](../ABOUT.md) · [API architecture](../../apps/docu/content/docs/architecture/api.mdx) · [OpenAPI generation](../../apps/docu/content/docs/development/openapi-generation.mdx)
+**Navigation:** [Generic spec](../principles/API.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/API.md) · [Factory map](../ABOUT.md) · [API architecture](../../apps/docu/content/docs/architecture/api.mdx) · [OpenAPI generation](../../apps/docu/content/docs/development/openapi-generation.mdx)

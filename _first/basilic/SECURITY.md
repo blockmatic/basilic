@@ -79,4 +79,4 @@ Propose the smallest useful security fix or documentation update. Use existing s
 
 **Security vs Data:** Data maps classification, copies, retention, and deletion. Security owns access and protection policy.
 
-**Navigation:** [Generic spec](../principles/SECURITY.md) · [Human essay](../articles/SECURITY.md) · [Factory map](../ABOUT.md) · [Security](../../apps/docu/content/docs/architecture/security.mdx) · [Authentication](../../apps/docu/content/docs/architecture/authentication.mdx)
+**Navigation:** [Generic spec](../principles/SECURITY.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/SECURITY.md) · [Factory map](../ABOUT.md) · [Security](../../apps/docu/content/docs/architecture/security.mdx) · [Authentication](../../apps/docu/content/docs/architecture/authentication.mdx)

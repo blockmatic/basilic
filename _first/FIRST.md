@@ -4,7 +4,7 @@ spec: 0.2-draft
 
 This repository’s instance map. Other users of the framework should list only the stations they opted into. Absent files beat empty stubs. Do not copy `basilic/` out.
 
-Durable product facts live in `apps/docu`. Station files under `basilic/` are inspection overlays (Fact, Drift, Unresolved), not a second docs site.
+Durable product facts live in `apps/docu`. Station files under `basilic/` are inspection overlays (Fact, Drift, Unresolved), not a second docs site. The factory lives in [`blockmatic/first`](https://github.com/blockmatic/first).
 
 ## In
 
@@ -23,4 +23,4 @@ Durable product facts live in `apps/docu`. Station files under `basilic/` are in
 
 ## Out
 
-None for this dogfood. A typical adopter omits stations they do not instantiate (for example Design with no UI, Operations before production).
+None for this adopter. A typical adopter omits stations they do not instantiate (for example Design with no UI, Operations before production).

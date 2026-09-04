@@ -19,7 +19,7 @@ Consequential decisions, conventions, setup steps, and domain context live in di
 - **Fact:** Agents: [`../../AGENTS.md`](../../AGENTS.md); constraints `.cursor/rules/`; skills `.agents/skills/`
 - **Fact:** Workflow index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
 - **Fact:** Public LLM indexes: `/llms.txt`, `/llms-full.txt` on the docs site
-- **Fact:** Portable factory: `../` (ABOUT, AGENTS, FIRST.md, principles, articles). This folder is the adoption pack, not a second docs site. Maintainers live in `../maintainers/`.
+- **Fact:** Portable factory: vendored `../AGENTS.md`, `../ABOUT.md`, `../principles/`. This folder is the Basilic adoption pack, not a second docs site. Essays live in [`blockmatic/first`](https://github.com/blockmatic/first/tree/main/_first/articles).
 - **Fact:** Same-change rule: update matching MDX when behavior, commands, or conventions change
 - **Drift:** named in sibling instances (PostHog, “API as source of truth”, portability vs Vercel). Fix MDX in the same work when you change the fact; do not leave load-bearing drift only in chat.
 
@@ -68,4 +68,4 @@ Document decisions and conventions — not obvious code. Propose the smallest us
 
 **Documentation vs Workflow:** Workflow determines when context is created. Documentation preserves it.
 
-**Navigation:** [Generic spec](../principles/DOCUMENTATION.md) · [Human essay](../articles/DOCUMENTATION.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)
+**Navigation:** [Generic spec](../principles/DOCUMENTATION.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/DOCUMENTATION.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)
