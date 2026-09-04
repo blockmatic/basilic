@@ -1,6 +1,6 @@
 import { captureError } from '@repo/error/node'
 import { pathOnlyUrl } from '@repo/utils/logger/types'
-import type { FastifyError, FastifyInstance } from 'fastify'
+import type { FastifyError, FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
 
@@ -21,7 +21,7 @@ function extractModuleFromRoute(routePath: string): string | null {
   return `${singular}-service`
 }
 
-export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
+const errorHandler: FastifyPluginAsync = async fastify => {
   fastify.setErrorHandler((error: FastifyError, request, reply) => {
     const routePath: string =
       'routerPath' in request && typeof request.routerPath === 'string'
@@ -64,4 +64,6 @@ export default fp<Record<string, never>>(async (fastify: FastifyInstance) => {
       message: catalogError.message,
     })
   })
-})
+}
+
+export default fp(errorHandler)

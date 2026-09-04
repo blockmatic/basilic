@@ -71,7 +71,7 @@ Monorepo apps use custom configs. Example for `apps/web`:
 
 Root Directory must be set in Vercel project settings (e.g. `apps/web`).
 
-**API (`apps/api`)** compiles via `turbo run build`, then runs `db:migrate` only when `VERCEL_ENV` is not `preview` (or when `RUN_PG_MIGRATE=true`):
+**API (`apps/api`)** compiles via `turbo run build`, then Vercel’s Fastify bundler type-checks `server.ts`. Colocated `*.spec.ts` / `*.test.ts` must stay out of that pass (`functions.server.ts.excludeFiles` in `apps/api/vercel.json`). Then `db:migrate` runs only when `VERCEL_ENV` is not `preview` (or when `RUN_PG_MIGRATE=true`):
 
 ```json
 {
