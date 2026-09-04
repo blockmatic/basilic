@@ -17,7 +17,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** Canonical product brief: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx) and [product/features.mdx](../../apps/docu/content/docs/product/features.mdx)
 - **Fact:** [`../../README.md`](../../README.md) — fork-and-run TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo scaffold). No Wagmi, no first-class OpenAI SDK, no web wallet UI
 - **Fact:** [`../../apps/docu/content/docs/index.mdx`](../../apps/docu/content/docs/index.mdx) — toolkit intro; Product is in the docs nav
-- **Fact:** Two audiences: **adopters** (developers using the starter) and **demo users** (web news `/`, markets, settings, in-shell assistant; auth is the shipped job)
+- **Fact:** Two audiences: **adopters** (developers using the starter) and **demo users** (web markets `/`, headlines strip, settings, in-shell assistant; auth is the shipped job)
 - **Fact:** GTM: clone + [Getting Started](../../apps/docu/content/docs/development/index.mdx) + first local login. Finance **N/A** (toolkit)
 - **Fact:** Owner: Gabo Esquivel (named on product index)
 - **Fact:** New-device sign-in alerts are transactional email via Fastify `emailProvider` + `@repo/email`, not a notification product
@@ -25,7 +25,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** Non-goals: mobile not an API client; no web wallet UI; Cache Components off; `@repo/react` hooks handwritten; PostHog not installed; Sentry inactive
 - **Fact:** PostHog **chosen, not installed**. Product events are **specified** in types + [analytics.mdx](../../apps/docu/content/docs/architecture/analytics.mdx) and **instrumented** via `apps/web/lib/analytics.ts` `capture()`. They are **not collected** and therefore **not measured**
 - **Fact:** Two demo questions are specified: (1) auth — `auth_succeeded` / `auth_failed` by `method`; (2) assistant — `__render: 'user-info'` (`assistant_turn` with `accountRender`). Unmeasured
-- **Fact:** PD (Markets + GenAI artifacts) is named on the feature map as **intended**, not shipped
+- **Fact:** PD (Markets + GenAI artifacts) is shipped on the feature map: CoinGecko or mock, `getMarketSnapshot` / `market-card`
 - **Unresolved:** PostHog install / consent / retention; keep / iterate / kill board; whether adopters copy `lib/analytics`
 
 `pnpm qa` going green is Quality/Pipelines, not product success.

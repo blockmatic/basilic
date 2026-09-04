@@ -19,11 +19,11 @@ Must work after clone → `pnpm setup` → `db:start` → `pnpm reset` → `pnpm
 - `@repo/email` for auth mail; CLI with API key only
 - Pino `reqId`; `GET /health` `{ ok, dbReady }`
 
-## Demo chrome (thin on purpose)
+## Demo chrome
 
-- News home (`/`) — NewsAPI or explicit empty state when the key is unset
-- Markets (`/markets`) — public CoinGecko table, not on-chain
-- In-shell assistant — `getAccountInfo` / `__render: 'user-info'` (needs an AI provider key; Ollama is the free local path)
+- Markets home (`/`) — CoinGecko public prices or a checked-in sample board (no CoinGecko key)
+- Headlines strip — NewsAPI or a one-line empty state
+- In-shell assistant — `getAccountInfo` / `__render: 'user-info'` and `getMarketSnapshot` / `__render: 'market-card'` (Ollama is the free local path)
 
 ## Shipped in API or packages, not in web UX
 
@@ -42,11 +42,9 @@ Must work after clone → `pnpm setup` → `db:start` → `pnpm reset` → `pnpm
 
 Wallet UI / Wagmi / Solana adapter in web · mobile as API client · PostHog install · Sentry on · Cache Components on · billed SaaS · first-class OpenAI SDK · GCP/AWS as first-class deploy · FIRST CLI / `first.json` / FIRST as a Cursor skill.
 
-## PD (intended — not shipped)
+## PD (shipped)
 
-Reshape the signed-in demo around **Markets + GenAI artifacts**: CoinGecko or a checked-in mock (no CoinGecko key required), one new chat tool and one json-render catalog, keep `getAccountInfo`. No wallet UI. No Fastify markets CRUD. No extra CI workflow. News stays thin or becomes supporting copy.
-
-Until PD ships, do not describe Basilic as a markets product or a wallet demo.
+Signed-in demo is **Markets + GenAI artifacts**: CoinGecko or mock, `getMarketSnapshot` + market-card catalog, `getAccountInfo` kept. No wallet UI. No Fastify markets CRUD. No extra CI workflow. News is a supporting headlines strip.
 
 ## Related
 

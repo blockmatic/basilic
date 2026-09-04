@@ -24,7 +24,7 @@ Actors, entry points, happy paths, alternates, error paths, permission gates, an
 - **Fact:** Account: last-method guardrail (`LAST_SIGN_IN_METHOD`); change/link email; OAuth/wallet/passkey link; API keys `bask_` shown once.
 - **Fact:** CLI: API key only; JWT auth endpoints excluded ([cli.mdx](../../apps/docu/content/docs/development/cli.mdx))
 - **Drift:** Web3 verify exists on Fastify; **web has no wallet UI**. Do not map a wallet-connect journey as shipped.
-- **Fact:** Assistant demo job (web, in-shell chat): entry = composer or suggestion; happy = `getAccountInfo` output with `__render: 'user-info'` rendered; errors = stream/tool failure or stop; completion = `assistant_turn` with `outcome: 'completed'` **and** `accountRender: true`. A text-only successful reply is **not** this job. No GenUI CTA (`actions: {}`).
+- **Fact:** Assistant demo jobs (web, in-shell chat): (1) account — `getAccountInfo` + `__render: 'user-info'`; (2) markets — `getMarketSnapshot` + `__render: 'market-card'`. Entry = composer or suggestion. Completion for (1) = `accountRender: true`. Completion for (2) = market card rendered. A text-only reply is **not** either job. No GenUI CTA (`actions: {}`).
 - **Unresolved:** named journey files beyond auth MDX; mobile completion
 
 ```mermaid
@@ -54,13 +54,13 @@ stateDiagram-v2
 Assistant job (demo, same shape):
 
 - actor: web end user (signed in)
-- job: retrieve account context in-conversation
-- entry: `/` assistant chrome; suggestions “Who am I?” / “What can you help with?”
-- happy path: user sends a turn → `getAccountInfo` → `__render: 'user-info'` card
-- alternates: text-only assistant reply (turn completed, account job not)
+- job: retrieve account context or a market snapshot in-conversation
+- entry: `/` assistant chrome; suggestions “What moved?” / “Explain BTC” / “Who am I?”
+- happy path: user sends a turn → `getAccountInfo` → `__render: 'user-info'` **or** `getMarketSnapshot` → `__render: 'market-card'`
+- alternates: text-only assistant reply (turn completed, demo job not)
 - errors: stream error; user stop
 - gates: proxy + Bearer JWT
-- completion: `user-info` rendered. Not “the model replied.”
+- completion: `user-info` **or** `market-card` rendered. Not “the model replied.”
 
 ## Recipe
 

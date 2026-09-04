@@ -14,7 +14,8 @@ The interface follows a coherent design system: tokens, primitives, composition 
 
 ## Artifacts
 
-- **Fact:** No agent-readable `DESIGN.md` yet. Do not invent a second palette to complete the template. When added, use [DESIGN.md Format](https://raw.githubusercontent.com/google-labs-code/design.md/refs/heads/main/docs/spec.md) at `_first/DESIGN.md` (or one path listed in [../FIRST.md](../FIRST.md)).
+- **Fact:** Demo shell brand is **Basilic** (sidebar). Markets home uses `@repo/ui` + `tokens.css` (`text-chart-2` / `text-destructive` for 24h change). No second palette.
+- **Fact:** No Google-format `_first/DESIGN.md` yet. Do not invent a second palette to complete the template. When added, use [DESIGN.md Format](https://raw.githubusercontent.com/google-labs-code/design.md/refs/heads/main/docs/spec.md) at `_first/DESIGN.md` (or one path listed in [../FIRST.md](../FIRST.md)).
 - **Fact:** Tokens: [`../../packages/ui/src/styles/tokens.css`](../../packages/ui/src/styles/tokens.css) — semantic colors, sidebar, radius, `@theme inline`, Inter / Poppins / mono
 - **Fact:** Components: `@repo/ui` (shadcn/ui, Radix, Tailwind 4). ADR [004](../../apps/docu/content/docs/adrs/004-design-system.mdx). Frontend: [frontend.mdx](../../apps/docu/content/docs/architecture/frontend.mdx)
 - **Fact:** Apps consume `@repo/ui`; app-only UI collocated in `apps/web` / `apps/mobile` / `apps/docu`

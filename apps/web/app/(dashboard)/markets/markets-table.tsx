@@ -54,8 +54,8 @@ function Change24hBadge({ value }: { value: number | null | undefined }) {
         isNeutral
           ? 'bg-muted/50 text-muted-foreground'
           : isPositive
-            ? 'bg-emerald-500/12 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400'
-            : 'bg-red-500/12 text-red-700 dark:bg-red-500/15 dark:text-red-400',
+            ? 'bg-chart-2/15 text-chart-2'
+            : 'bg-destructive/12 text-destructive',
       )}
     >
       {formatChange24h(value)}
@@ -182,8 +182,8 @@ export function MarketsTable({ coins, error }: MarketsTableProps) {
                     c.price_change_percentage_24h == null
                       ? 'text-muted-foreground'
                       : c.price_change_percentage_24h >= 0
-                        ? 'text-green-600'
-                        : 'text-red-600',
+                        ? 'text-chart-2'
+                        : 'text-destructive',
                   )}
                 >
                   {formatChange24h(c.price_change_percentage_24h)}

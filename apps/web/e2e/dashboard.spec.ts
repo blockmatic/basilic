@@ -1,18 +1,16 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Dashboard routes', () => {
-  test('home shows news section for configured NewsAPI', async ({ page }) => {
+  test('home shows markets board', async ({ page }) => {
     await page.goto('/')
-    const newsHeading = page.getByRole('heading', { name: 'Latest News' })
-    const fallback = page.getByText(/Add NEWSAPI_KEY|No headlines available/i)
-    if (process.env.NEWSAPI_KEY) await expect(newsHeading).toBeVisible({ timeout: 15_000 })
-    else await expect(fallback.first()).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: 'Markets' })).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('text=Signed In')).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('text=API OK')).toBeVisible({ timeout: 15_000 })
   })
 
-  test('markets page shows title', async ({ page }) => {
+  test('markets path redirects to home', async ({ page }) => {
     await page.goto('/markets')
+    await expect(page).toHaveURL(/\/$/, { timeout: 15_000 })
     await expect(page.getByRole('heading', { name: 'Markets' })).toBeVisible({ timeout: 15_000 })
   })
 

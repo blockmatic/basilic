@@ -135,7 +135,14 @@
       }
     },
     {
-      "includes": ["**/markets/**", "**/(news)/**", "**/settings/security/**"],
+      "includes": [
+        "**/markets/**",
+        "**/(news)/**",
+        "**/settings/security/**",
+        "**/market-snapshot.ts",
+        "**/market-snapshot.spec.ts",
+        "**/market-card-catalog.tsx"
+      ],
       "linter": {
         "rules": {
           "style": { "useNamingConvention": "off" },

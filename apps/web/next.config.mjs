@@ -72,7 +72,10 @@ const nextConfig = {
     ],
   },
   async redirects() {
-    return [{ source: '/dashboard', destination: '/', permanent: true }]
+    return [
+      { source: '/dashboard', destination: '/', permanent: true },
+      { source: '/markets', destination: '/', permanent: false },
+    ]
   },
   transpilePackages: [
     '@repo/ui',

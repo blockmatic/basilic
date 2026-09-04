@@ -25,7 +25,7 @@ function renderCodeEntryForm(verificationId: string, callbackURL: string): NextR
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Enter code - Acme</title>
+<title>Enter code - Basilic</title>
 <style>body{font-family:system-ui,sans-serif;max-width:24rem;margin:2rem auto;padding:0 1rem}
 input{padding:0.5rem;font-size:1rem;width:100%;box-sizing:border-box}
 button{width:100%;padding:0.5rem 1rem;margin-top:0.5rem;cursor:pointer}
