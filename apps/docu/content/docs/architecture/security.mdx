@@ -28,7 +28,7 @@ pnpm security:deepsec:process        # full-repo AI review (local)
 
 ## CI (`security.yml`)
 
-Lockfile integrity (`--frozen-lockfile`), gitleaks, TruffleHog (filesystem + history), OSV on `pnpm-lock.yaml`, `pnpm audit`. DeepSec is a separate workflow. See [GitHub Actions](/docs/deployment/github-actions).
+Lockfile integrity (`--frozen-lockfile`), gitleaks, TruffleHog (filesystem + history), OSV on `pnpm-lock.yaml`, `pnpm audit` (`--ignore-registry-errors` so a registry timeout is not a finding). DeepSec is a separate workflow. See [GitHub Actions](/docs/deployment/github-actions).
 
 ## DeepSec
 

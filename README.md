@@ -79,7 +79,7 @@ Run with `pnpm <script>`.
   - `security:secrets` — Scan staged files for secrets
   - `security:secrets:full` — Full Gitleaks scan
   - `security:osv` — OSV vulnerability scan
-  - `security:audit` — pnpm audit (high+)
+  - `security:audit` — pnpm audit (high+; registry errors ignored)
   - `security:check` — Run security check script
   - `security:deepsec:scan` — DeepSec regex scan (no AI)
   - `security:deepsec:process:diff` — DeepSec AI review vs `origin/main` (GPT-5.6 Sol)

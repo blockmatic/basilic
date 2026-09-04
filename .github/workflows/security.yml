@@ -71,7 +71,7 @@ jobs:
         run: |
           echo "🔍 Running pnpm audit for dependency vulnerabilities..."
           set +e
-          pnpm audit --audit-level=high
+          pnpm security:audit
           EXIT_CODE=$?
           set -e
           if [ $EXIT_CODE -ne 0 ]; then
@@ -81,4 +81,4 @@ jobs:
             echo "Run 'pnpm audit fix' or update affected packages"
             exit 1
           fi
-          echo "✅ No high or critical severity vulnerabilities found"
+          echo "✅ pnpm audit passed (high+). Registry timeouts and HTTP errors are ignored; OSV still gates CVEs."

@@ -22,7 +22,7 @@
     "security:secrets": "node scripts/scan-secrets-staged.mjs",
     "security:secrets:full": "gitleaks detect --redact --verbose --config .gitleaks.toml",
     "security:osv": "node scripts/scan-osv.mjs",
-    "security:audit": "pnpm audit --audit-level=high",
+    "security:audit": "pnpm audit --audit-level=high --ignore-registry-errors",
     "security:check": "node scripts/security-check.mjs",
     "security:deepsec:scan": "pnpm --dir=.deepsec exec deepsec scan",
     "security:deepsec:process": "pnpm --dir=.deepsec exec deepsec process --agent codex --model gpt-5.6-sol --thinking-level medium",

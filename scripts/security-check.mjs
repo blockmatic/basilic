@@ -69,7 +69,7 @@ function main() {
   // 4. Run pnpm audit
   try {
     console.log('4️⃣  Running pnpm audit...')
-    execSync('pnpm audit --audit-level=high', { stdio: 'inherit' })
+    execSync('pnpm security:audit', { stdio: 'inherit' })
     console.log('   ✅ Audit passed\n')
   } catch (_error) {
     console.log('   ⚠️  Audit found issues\n')

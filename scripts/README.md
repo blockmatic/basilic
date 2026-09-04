@@ -61,7 +61,7 @@ All security-related pnpm scripts are organized under the `security:` namespace:
 - **`pnpm security:secrets`** - Scan staged files for secrets (gitleaks)
 - **`pnpm security:secrets:full`** - Full repository secret scan (gitleaks)
 - **`pnpm security:osv`** - Scan dependencies for vulnerabilities (OSV Scanner)
-- **`pnpm security:audit`** - Run pnpm audit for dependency vulnerabilities
+- **`pnpm security:audit`** - Run pnpm audit for high+ vulnerabilities (`--ignore-registry-errors` so npm registry timeouts/HTTP errors do not fail the check)
 - **`pnpm security:check`** - Run all security checks (comprehensive)
 - **`pnpm security:deepsec:scan`** - DeepSec regex scan (no AI)
 - **`pnpm security:deepsec:process:diff`** - DeepSec AI review vs `origin/main` (GPT-5.6 Sol / Codex)
@@ -208,7 +208,7 @@ Comprehensive security check script that runs all security scans.
 1. Blocked secret files (via `block-secret-files.mjs`)
 2. Secrets in repository (via gitleaks)
 3. Dependency vulnerabilities (via osv-scanner)
-4. pnpm audit for high+ severity vulnerabilities
+4. pnpm audit for high+ severity vulnerabilities (`pnpm security:audit`; registry errors ignored)
 
 **Usage**: Run manually to perform all security checks:
 ```bash

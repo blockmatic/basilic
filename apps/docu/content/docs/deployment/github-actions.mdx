@@ -62,7 +62,7 @@ See [Mobile CI/CD](/docs/deployment/mobile-cicd) for setup, reviewer bootstrap, 
 
 ### Security (`security.yml`)
 
-Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main. DeepSec is not in this workflow; see DeepSec (`deepsec.yml`).
+Security scans (gitleaks, TruffleHog, OSV Scanner, pnpm audit) on every PR and push to main. `pnpm audit` uses `--ignore-registry-errors` so npm registry timeouts and HTTP errors are not treated as findings; OSV still fails the job on known CVEs. DeepSec is not in this workflow; see DeepSec (`deepsec.yml`).
 
 ### DeepSec (`deepsec.yml`)
 
