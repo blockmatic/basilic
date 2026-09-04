@@ -51,7 +51,7 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
       setAuthCookiesOnResponse(response, tokens)
       return { status: 'refreshed', response, shouldClearCookies: false }
     } catch {
-      logger.warn({ reqId }, 'auth_proxy_refresh_failed')
+      logger.warn({ reqId }, 'auth_proxy_cookie_failed')
       return { status: 'unauthenticated', shouldClearCookies: true }
     }
   } catch {

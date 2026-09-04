@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { sendMail } from './email.js'
 
 const logger = {
@@ -10,6 +10,10 @@ const logger = {
 }
 
 describe('sendMail', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('returns resendId and does not log on success', async () => {
     const provider = {
       emails: {
@@ -27,7 +31,7 @@ describe('sendMail', () => {
     expect(logger.info).not.toHaveBeenCalled()
   })
 
-  it('throws on provider error in throw mode without email_send_failed', async () => {
+  it('logs email_send_failed then throws on provider error in throw mode', async () => {
     const provider = {
       emails: {
         send: vi.fn().mockResolvedValue({
@@ -44,7 +48,34 @@ describe('sendMail', () => {
         message: { from: 'a@b.c', to: 'u@x.y', subject: 's', html: '<p>x</p>' },
       }),
     ).rejects.toThrow('bounce')
-    expect(logger.error).not.toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'validation_error' }),
+      'email_send_failed',
+    )
+    const payload = logger.error.mock.calls[0]?.[0] as { err?: { message?: string } }
+    expect(JSON.stringify(payload)).not.toContain('u@x.y')
+  })
+
+  it('logs email_send_failed then throws when the provider rejects in throw mode', async () => {
+    const provider = {
+      emails: {
+        send: vi.fn().mockRejectedValue(new Error('network down')),
+      },
+    }
+    await expect(
+      sendMail({
+        provider,
+        logger,
+        mode: 'throw',
+        message: { from: 'a@b.c', to: 'u@x.y', subject: 's', html: '<p>x</p>' },
+      }),
+    ).rejects.toThrow('network down')
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ err: expect.objectContaining({ message: 'network down' }) }),
+      'email_send_failed',
+    )
+    const payload = logger.error.mock.calls[0]?.[0] as { err?: { message?: string } }
+    expect(JSON.stringify(payload)).not.toContain('u@x.y')
   })
 
   it('logs email_send_failed in fireAndForget mode', async () => {

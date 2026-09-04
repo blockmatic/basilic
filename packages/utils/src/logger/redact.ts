@@ -59,9 +59,19 @@ export function pathOnlyUrl(url: string): string {
   }
 }
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return Object.prototype.toString.call(value) === '[object Object]'
+}
+
+function sanitizeValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(item => sanitizeValue(item))
+  if (!isPlainObject(value)) return value
+  return sanitizeLogData(value)
+}
+
 export function sanitizeLogData(data: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(data))
-    out[key] = sensitiveKeySet.has(key.toLowerCase()) ? redacted : value
+    out[key] = sensitiveKeySet.has(key.toLowerCase()) ? redacted : sanitizeValue(value)
   return out
 }

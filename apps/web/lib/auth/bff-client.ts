@@ -5,6 +5,11 @@ import { env } from '@/lib/env'
 import { getApiErrorCode } from './api-error'
 import { resolveRequestId } from './request-id'
 
+export type BffClientResult = {
+  reqId: string
+  client: ReturnType<typeof createClient>
+}
+
 export function createBffClient({
   request,
   headers,
@@ -21,7 +26,7 @@ export function createBffClient({
   getRefreshToken?: () => string | null | Promise<string | null>
   onTokensRefreshed?: (tokens: { token: string; refreshToken: string }) => void | Promise<void>
   extraHeaders?: Record<string, string>
-}) {
+}): BffClientResult {
   const reqId = resolveRequestId(request?.headers ?? headers)
   const getHeaders = () => ({ 'x-request-id': reqId, ...extraHeaders })
   const shared = { baseUrl: env.NEXT_PUBLIC_API_URL, getHeaders }
@@ -45,7 +50,7 @@ export function logAuthBffFailure({
   error: unknown
   reqId: string
   method: string
-}) {
+}): void {
   if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
     logger.warn(
       { reqId, method, code: getApiErrorCode(error) ?? String(error.status) },

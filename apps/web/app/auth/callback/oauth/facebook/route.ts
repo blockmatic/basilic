@@ -1,3 +1,4 @@
+import type { NextResponse } from 'next/server'
 import { handleOAuthBffGet } from '@/lib/auth/callback-utils'
 
 function mapAuthError(raw: string) {
@@ -13,7 +14,7 @@ function mapAuthError(raw: string) {
   return known[raw] ?? 'facebook_oauth_failed'
 }
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
   return handleOAuthBffGet({
     request,
     method: 'oauth_facebook',

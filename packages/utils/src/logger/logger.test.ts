@@ -75,9 +75,23 @@ describe('sanitizeLogData', () => {
     })
   })
 
-  it('does not walk nested objects', () => {
-    expect(sanitizeLogData({ nested: { password: 'x' } })).toEqual({
-      nested: { password: 'x' },
+  it('redacts nested token, email, and prompt keys', () => {
+    expect(
+      sanitizeLogData({
+        user: { token: 'abc', email: 'a@b.c', profile: { prompt: 'secret' } },
+        items: [{ token: 't' }, { email: 'n@x.y' }, { prompt: 'p' }],
+        userId: '1',
+      }),
+    ).toEqual({
+      user: { token: '[REDACTED]', email: '[REDACTED]', profile: { prompt: '[REDACTED]' } },
+      items: [{ token: '[REDACTED]' }, { email: '[REDACTED]' }, { prompt: '[REDACTED]' }],
+      userId: '1',
+    })
+  })
+
+  it('preserves nested non-sensitive values', () => {
+    expect(sanitizeLogData({ nested: { userId: '1', count: 2 } })).toEqual({
+      nested: { userId: '1', count: 2 },
     })
   })
 

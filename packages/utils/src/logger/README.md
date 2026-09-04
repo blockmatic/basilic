@@ -21,7 +21,7 @@ const reqLogger = logger.child({ reqId: 'abc' })
 reqLogger.debug('Processing request')
 ```
 
-`Error` values become `{ err: { type, message, stack? } }`. Structured context is shallow-sanitized (sensitive top-level keys only).
+`Error` values become `{ err: { type, message, stack? } }`. Structured context is sanitized (sensitive keys at any depth).
 
 ## Env (server)
 
@@ -42,6 +42,6 @@ Debug/info/warn follow those flags. **`error` still emits in production** when l
 
 ## Redaction
 
-- Pino path redaction (`pinoRedactPaths`) is separate from shallow `sanitizeLogData`.
+- Pino path redaction (`pinoRedactPaths`) is separate from recursive `sanitizeLogData`.
 - `pathOnlyUrl` strips query and hash. Log pathnames only, never query strings.
 - Join key field name is **`reqId`**, never `requestId`.

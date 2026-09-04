@@ -40,6 +40,19 @@ export type SendMailMessage = {
   text?: string
 }
 
+function logEmailSendFailed({
+  logger,
+  error,
+  code,
+}: {
+  logger: Logger
+  error: unknown
+  code?: string
+}): void {
+  const err = toErrField(error instanceof Error ? error : new Error(String(error)))
+  logger.error({ err, ...(code ? { code } : {}) }, 'email_send_failed')
+}
+
 export async function sendMail({
   provider,
   message,
@@ -51,28 +64,18 @@ export async function sendMail({
   logger: Logger
   mode: 'throw' | 'fireAndForget'
 }): Promise<{ resendId?: string }> {
+  let failure: { error: unknown; code?: string } | undefined
   try {
     const result = await provider.emails.send(message)
-    if (result.error) {
-      const error = new Error(result.error.message)
-      if (mode === 'fireAndForget') {
-        logger.error(
-          { err: toErrField(error), ...(result.error.name ? { code: result.error.name } : {}) },
-          'email_send_failed',
-        )
-        return {}
-      }
-      throw error
-    }
-    return { resendId: result.data.id }
+    if (!result.error) return { resendId: result.data.id }
+    failure = { error: new Error(result.error.message), code: result.error.name }
   } catch (error) {
-    if (mode === 'throw') throw error
-    logger.error(
-      {
-        err: toErrField(error instanceof Error ? error : new Error(String(error))),
-      },
-      'email_send_failed',
-    )
-    return {}
+    failure = { error }
   }
+
+  if (!failure) return {}
+  logEmailSendFailed({ logger, error: failure.error, code: failure.code })
+  if (mode === 'throw')
+    throw failure.error instanceof Error ? failure.error : new Error(String(failure.error))
+  return {}
 }
