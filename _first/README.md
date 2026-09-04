@@ -4,6 +4,11 @@ Some decisions are too consequential to become afterthoughts. This folder is a m
 
 It is agent-first, not agent-autonomous. Humans still decide product scope, security-sensitive changes, and anything that cannot be recovered from the repository.
 
+## Who this is for
+
+- **Users of the framework** — you. Copy the user pack into `_first/` in your repo. Edit [FIRST.md](FIRST.md) and the station files you opted into. Start with this README, then [ABOUT.md](ABOUT.md).
+- **Maintainers of the framework** — people evolving FIRST itself. Go to [maintainers/README.md](maintainers/README.md). Do not copy `maintainers/` or `scripts/` into a product repo.
+
 ## How to read this
 
 Start with the essays in `articles/`. Each one argues why a concern has to be named before implementation, chat, or a generated UI invents it. Essays are for humans. They do not contain an agent prompt.
@@ -11,8 +16,6 @@ Start with the essays in `articles/`. Each one argues why a concern has to be na
 When you want to apply that concern to a real project, open the matching file in `principles/`. Same filename. The spec is the working recipe: artifacts, steps, validation, and — last — an agent prompt you can skip if you are doing the work yourself.
 
 The twelve are stations, not a waterfall and not competing religions. Read them in order the first time. After that, open the station the work is actually touching.
-
-A repo that only needs the factory can drop in `AGENTS.md`, `ABOUT.md`, and `principles/`. This README and `articles/` are the human pack.
 
 Same filename in both folders: `articles/API.md` argues; `principles/API.md` operates. Do not merge those jobs. Do not look for `articles/index.md` or a FIRST skill.
 
@@ -43,11 +46,43 @@ This is not a methodology to install. It is not a waterfall. New stations need a
 
 ## Using FIRST in another repository
 
-Copy `ABOUT.md` and `principles/` into the repository root. Do not copy other sibling directories in this tree. Use `AGENTS.md` as the starting template only when the target has no agent instructions; otherwise merge the FIRST load guidance into the existing instructions without overwriting them. Keep project-specific product decisions, architecture, and operating facts in that repository's own durable files; do not edit the generic specs to encode one project's choices.
+Copy the user pack into `_first/` at the repository root (the folder name sorts first in listings):
 
-The target repository's instructions override generic FIRST guidance. Adopt upstream FIRST changes deliberately by reviewing the diff rather than overwriting local instructions. The human pack—this README and `articles/`—is optional.
+- [AGENTS.md](AGENTS.md)
+- [ABOUT.md](ABOUT.md)
+- `principles/`
+- this README if you want the human door
 
-Complete structural validation is for this source tree, not a drop-in copy. It needs `articles/` and `scripts/` in addition to `ABOUT.md` and `principles/`. From this directory:
+Optional: `articles/`. Skip `maintainers/`, `scripts/`, and `basilic/`.
+
+Add [FIRST.md](FIRST.md) listing which stations are in (path to the artifact) and which are out (one-line reason). Merge a pointer into the existing root `AGENTS.md`. Do not overwrite that file. Do not copy `ABOUT.md` and `principles/` into the repository root as loose files.
+
+```markdown
+- FIRST: `_first/AGENTS.md` then `_first/FIRST.md`; then `_first/principles/X.md` and the instance path listed in FIRST.md
+```
+
+Keep project-specific facts in `FIRST.md` and opted-in station files, or in docs those files point at. Do not edit the generic specs to encode one project's choices. Absent files beat empty stubs. Do not generate twelve skeletons.
+
+Example `FIRST.md`:
+
+```markdown
+# FIRST
+spec: 0.2-draft
+
+## In
+- product: _first/PRODUCT.md
+- design: _first/DESIGN.md
+- architecture: docs/architecture.md
+
+## Out
+- operations — not in production
+```
+
+When Design is in, the instance file follows [DESIGN.md Format](https://raw.githubusercontent.com/google-labs-code/design.md/refs/heads/main/docs/spec.md). Prefer `_first/DESIGN.md`. Lint with an explicit path if you use the Google CLI. Never two palettes.
+
+The target repository's instructions override generic FIRST guidance. Adopt upstream FIRST changes by replacing factory files (`AGENTS.md`, `ABOUT.md`, `principles/`) after reviewing the diff. Never overwrite `FIRST.md` or instance files.
+
+Complete structural validation is for this source tree, not a drop-in copy. From this directory:
 
 ```sh
 python3 scripts/validate_docs.py

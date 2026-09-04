@@ -14,7 +14,7 @@ The interface follows a coherent design system: tokens, primitives, composition 
 
 ## Artifacts
 
-- `DESIGN.md` when the project wants an agent-readable identity (YAML tokens plus rationale)
+- `DESIGN.md` when Design is in — [DESIGN.md Format](https://raw.githubusercontent.com/google-labs-code/design.md/refs/heads/main/docs/spec.md) (Google Labs, alpha): optional YAML frontmatter (tokens) plus markdown rationale. Tokens are the values; prose is how to apply them.
 - Design system in code: CSS variables, Tailwind `@theme`, component library
 - UI conventions and component definitions
 - Interaction specifications and interface state definitions
@@ -22,7 +22,11 @@ The interface follows a coherent design system: tokens, primitives, composition 
 - Content and copy patterns
 - Motion guidelines (duration, easing, when to animate)
 
-If `DESIGN.md` exists: YAML tokens are the values to use; markdown do's and don'ts are constraints. Token shape may follow W3C Design Tokens (DTCG). Export to Tailwind `@theme` or `tokens.json` if the project already does. Use the project's pinned lint command, or `npx @google/design.md lint DESIGN.md` when the CLI is already part of the toolchain. It reports broken token references and contrast warnings on component color pairs. A zero exit code is not an accessibility pass or browser verification.
+Prefer `_first/DESIGN.md` so the file lives in the user pack. Point `FIRST.md` at that one file. A root `DESIGN.md` only if existing tooling requires it. Never two palettes.
+
+If `DESIGN.md` exists: YAML tokens are the values to use; markdown do's and don'ts are constraints. Follow the spec’s `##` order when those sections apply: Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts. Omit unused visual sections with YAML `omitted` and a reason — do not invent a palette to complete the template. Unknown headings are preserved; use them for FIRST concerns the Google file does not own (interface states, copy, motion, accessibility beyond contrast). Do not fork a competing schema.
+
+Token groups may follow W3C Design Tokens (DTCG) conceptually. Export to Tailwind `@theme` or `tokens.json` if the project already does. Use the project's pinned lint command, or `npx @google/design.md lint _first/DESIGN.md` (explicit path) when the CLI is already part of the toolchain. It reports broken token references and contrast warnings on component color pairs. A zero exit code is not an accessibility pass or browser verification.
 
 Do not keep a palette in `DESIGN.md` and a different one in CSS.
 

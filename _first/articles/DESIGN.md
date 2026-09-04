@@ -94,5 +94,5 @@ Apply this: [principles/DESIGN.md](../principles/DESIGN.md). Return to the [fact
 
 - [Joshua Porter, "Writing Microcopy"](https://bokardo.com/archives/writing-microcopy/) — small functional text that gets someone through a moment; empty, error, and confirm copy are product decisions.
 - [Nielsen Norman Group, "Designing Empty States in Complex Applications"](https://www.nngroup.com/articles/empty-state-interface-design/) — loading versus empty versus error as communication, not illustration.
-- [google-labs-code/design.md](https://github.com/google-labs-code/design.md) — one artifact for an agent-readable identity. Currently `alpha`. Not the principle.
+- [DESIGN.md Format](https://raw.githubusercontent.com/google-labs-code/design.md/refs/heads/main/docs/spec.md) ([google-labs-code/design.md](https://github.com/google-labs-code/design.md)) — YAML tokens plus markdown sections; `omitted`; unknown headings preserved. Currently `alpha`. The artifact format, not the principle.
 - [W3C Design Tokens](https://www.designtokens.org/) — typed token groups and interchange.

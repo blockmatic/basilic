@@ -14,12 +14,12 @@ The interface follows a coherent design system: tokens, primitives, composition 
 
 ## Artifacts
 
-- **Fact:** No repo-root `DESIGN.md`. Do not invent a second palette to complete the template.
+- **Fact:** No agent-readable `DESIGN.md` yet. Do not invent a second palette to complete the template. When added, use [DESIGN.md Format](https://raw.githubusercontent.com/google-labs-code/design.md/refs/heads/main/docs/spec.md) at `_first/DESIGN.md` (or one path listed in [../FIRST.md](../FIRST.md)).
 - **Fact:** Tokens: [`../../packages/ui/src/styles/tokens.css`](../../packages/ui/src/styles/tokens.css) — semantic colors, sidebar, radius, `@theme inline`, Inter / Poppins / mono
 - **Fact:** Components: `@repo/ui` (shadcn/ui, Radix, Tailwind 4). ADR [004](../../apps/docu/content/docs/adrs/004-design-system.mdx). Frontend: [frontend.mdx](../../apps/docu/content/docs/architecture/frontend.mdx)
 - **Fact:** Apps consume `@repo/ui`; app-only UI collocated in `apps/web` / `apps/mobile` / `apps/docu`
 - **Fact:** Skills: `shadcn-v3`, `tailwind-design-system-v4`, `frontend-design-v1`; playbook `/audit-accessibility`, `/use-shadcn`
-- **Unresolved:** agent-readable `DESIGN.md`; motion guidelines; copy patterns beyond component defaults
+- **Unresolved:** Google-format `_first/DESIGN.md`; motion guidelines; copy patterns beyond component defaults
 
 ## Minimum Useful Artifact
 
@@ -31,7 +31,7 @@ The interface follows a coherent design system: tokens, primitives, composition 
 
 ## Recipe
 
-1. Inspect ADR 004, frontend MDX, `packages/ui`, `tokens.css`, and adjacent screens. There is no `DESIGN.md`.
+1. Inspect ADR 004, frontend MDX, `packages/ui`, `tokens.css`, and adjacent screens. There is no Google-format `DESIGN.md`.
 2. Understand required states for the feature.
 3. Identify missing states or values outside the system.
 4. Propose primitives from `@repo/ui`. New components only when nothing fits (`/use-shadcn`).
@@ -43,20 +43,20 @@ The interface follows a coherent design system: tokens, primitives, composition 
 ## Validation
 
 - New UI uses existing tokens and `@repo/ui` unless a gap is documented.
-- Tokens in CSS and usage agree. No second palette. Absent `DESIGN.md` is named, not silently filled.
+- Tokens in CSS and usage agree. No second palette. Absent Google-format `DESIGN.md` is named, not silently filled.
 - Required states render and behave.
 - Motion respects `prefers-reduced-motion`.
 - A screenshot of the default view is not verification.
 
 ## Definition of Done
 
-Interface behavior matches design intent. States are handled. Patterns are reusable or documented. Tokens in CSS are the system of record until a `DESIGN.md` exists.
+Interface behavior matches design intent. States are handled. Patterns are reusable or documented. Tokens in CSS are the system of record until a Google-format `DESIGN.md` exists.
 
 ## Agent Prompt
 
 Apply Design First to Basilic.
 
-Read ADR 004, frontend MDX, `packages/ui`, and `packages/ui/src/styles/tokens.css` before building UI. There is no repo `DESIGN.md` — do not create a second palette.
+Read ADR 004, frontend MDX, `packages/ui`, and `packages/ui/src/styles/tokens.css` before building UI. There is no Google-format `DESIGN.md` — do not create a second palette.
 
 Reuse `@repo/ui`. Do not invent components, hex values, or typefaces without checking the system. Define loading, empty, error, and success states. Validate in the browser across states. Update durable design artifacts when patterns change. Update this instance when paths change.
 

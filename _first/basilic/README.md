@@ -2,14 +2,15 @@
 
 Operational specs for applying FIRST in this monorepo. Not a second factory. Durable facts live in `apps/docu/content/docs/`, ADRs, TypeBox routes, OpenAPI (generated), and package READMEs.
 
-This folder is this repository’s adoption pack. When copying FIRST into another repo, copy only `ABOUT.md` and `principles/` — skip this directory.
+This folder is this repository’s adoption pack. When copying FIRST into another repo, skip this directory, `maintainers/`, and `scripts/`. Copy `ABOUT.md`, `AGENTS.md`, and `principles/` into `_first/`. Add `FIRST.md`.
 
 ## Load order
 
 1. [`../AGENTS.md`](../AGENTS.md)
 2. [`../ABOUT.md`](../ABOUT.md)
-3. Repo instructions ([`../../AGENTS.md`](../../AGENTS.md), `.cursor/rules`, `.agents/skills`) — these override generic FIRST
-4. [`../principles/X.md`](../principles/API.md) then `X.md` in this folder
+3. [`../FIRST.md`](../FIRST.md)
+4. Repo instructions ([`../../AGENTS.md`](../../AGENTS.md), `.cursor/rules`, `.agents/skills`) — these override generic FIRST
+5. [`../principles/X.md`](../principles/API.md) then `X.md` in this folder
 
 Do not install a FIRST skill. Use existing tech and workflow skills.
 
@@ -39,6 +40,7 @@ From a station file in this folder:
 
 - Generic spec: `../principles/X.md`
 - Essay: `../articles/X.md`
+- Instance map: `../FIRST.md`
 - Factory map: `../ABOUT.md`
 - Docs: `../../apps/docu/content/docs/…`
 - Repo root: `../../README.md`

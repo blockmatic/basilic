@@ -23,7 +23,13 @@ stations = [
     "SECURITY",
     "OPERATIONS",
 ]
-rootFiles = ["README.md", "ABOUT.md", "AGENTS.md"]
+rootFiles = ["README.md", "ABOUT.md", "AGENTS.md", "FIRST.md"]
+maintainerFiles = [
+    "maintainers/README.md",
+    "maintainers/PACKAGING.md",
+    "maintainers/IDEAS.md",
+    "maintainers/FEEDBACK.md",
+]
 principleHeadings = [
     "Principle",
     "Statement",
@@ -64,6 +70,10 @@ def validate() -> list[str]:
     for name in rootFiles:
         if not (root / name).is_file():
             errors.append(f"missing root file: {name}")
+
+    for name in maintainerFiles:
+        if not (root / name).is_file():
+            errors.append(f"missing maintainer file: {name}")
 
     expected = {f"{name}.md" for name in stations}
     for folder in ("articles", "principles"):
@@ -141,6 +151,7 @@ def validate() -> list[str]:
     markdownFiles = list(root.glob("*.md"))
     markdownFiles += list((root / "articles").glob("*.md"))
     markdownFiles += list((root / "principles").glob("*.md"))
+    markdownFiles += list((root / "maintainers").glob("*.md"))
     for path in markdownFiles:
         text = path.read_text(encoding="utf-8")
         for href in linkPattern.findall(text):
@@ -166,7 +177,7 @@ def main() -> int:
 
     print(
         "FIRST documentation validation passed: "
-        "12 essay/spec pairs, required structure, parity, order, and local links."
+        "12 essay/spec pairs, FIRST.md, maintainer files, required structure, parity, order, and local links."
     )
     return 0
 

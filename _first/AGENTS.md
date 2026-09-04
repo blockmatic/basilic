@@ -2,12 +2,16 @@
 
 This directory is a portable product factory in markdown. Load it before inventing a parallel method.
 
+Do not load `maintainers/` on a product task. That folder is for people evolving FIRST.
+
 ## Load order
 
 1. This file.
 2. [ABOUT.md](ABOUT.md) — map, loops, stations, boundaries, human gates.
-3. The target repository's own instructions and skills. They override generic FIRST guidance.
-4. `principles/X.md` for the primary station in scope. Load secondary specs only for boundaries the change actually crosses. Every spec has a same-named human essay in `articles/`.
+3. [FIRST.md](FIRST.md) — which stations this repository instantiates, and the path to each artifact.
+4. The target repository's own instructions and skills. They override generic FIRST guidance.
+5. `principles/X.md` for the primary station in scope. Load secondary specs only for boundaries the change actually crosses. Every spec has a same-named human essay in `articles/`.
+6. The instance path listed in FIRST.md for that station.
 
 Do not treat `articles/` as required input. Essays argue. Specs operate. If a human asked for the argument, read the matching article after the spec, not instead of it.
 
@@ -31,7 +35,7 @@ Apply the matching principle to this repository.
 
 Name the primary station for the decision. Load another station only when the change crosses a boundary it owns; do not duplicate one station's policy in another station's artifact.
 
-Read ABOUT.md and `principles/X.md` before changing code or docs. Compare the spec to what the implementation actually does. Do not assume documentation is correct.
+Read ABOUT.md, FIRST.md, and `principles/X.md` before changing code or docs. Compare the spec to what the implementation actually does. Do not assume documentation is correct.
 
 Preserve intentional existing decisions. Do not widen scope into a public platform, a new methodology, or a second analytics stack unless the product already is that.
 

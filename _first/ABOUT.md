@@ -9,35 +9,46 @@ This is an agent-first factory, not an agent-autonomous one. Humans still decide
 
 "First" means: make the concern explicit before implementation, chat, or a generated UI invents it. The twelve are stations on one factory, not a waterfall and not competing religions.
 
+## Who this is for
+
+- **Users of the framework** — adopting FIRST in a product repo. Copy the user pack into `_first/`. Edit [FIRST.md](FIRST.md) and opted-in station files. Merge a pointer into root `AGENTS.md`.
+- **Maintainers of the framework** — evolving FIRST itself. Start at [maintainers/README.md](maintainers/README.md). Do not copy `maintainers/` or `scripts/`.
+
 ## Audiences
 
+Inside the user pack:
+
 - **Humans reading:** start at [README.md](README.md), then `articles/`.
-- **Agents operating:** start at [AGENTS.md](AGENTS.md), then this file, then `principles/`.
+- **Agents operating:** start at [AGENTS.md](AGENTS.md), then this file, then [FIRST.md](FIRST.md), then `principles/`.
 - **Humans applying:** this file plus the matching `principles/X.md`. The essay is optional once you know the argument.
 
 Articles argue. Principles operate. Same filename in both folders.
 
 ## Drop-in
 
-A repo can run the factory from three things:
+Copy into `_first/` (not the repository root as loose files):
 
-- `AGENTS.md`
-- `ABOUT.md` (this file)
+- [AGENTS.md](AGENTS.md)
+- [ABOUT.md](ABOUT.md) (this file)
 - `principles/`
+- [FIRST.md](FIRST.md) — create this; list in and out
 
-`README.md` and `articles/` are the human pack. They are not required for an agent to operate.
+[README.md](README.md) and `articles/` are the human pack. They are not required for an agent to operate. Skip `maintainers/`, `scripts/`, and `basilic/`. Layout and why: [maintainers/PACKAGING.md](maintainers/PACKAGING.md).
 
 ## Documentation inventory
 
-The portable set has three entry-point documents and twelve one-to-one essay/spec pairs:
+User pack — copy these (plus `FIRST.md` you create):
 
 | Path | Audience | Relationship |
 |---|---|---|
-| [README.md](README.md) | Humans | Front door and complete station index |
-| [AGENTS.md](AGENTS.md) | Agents | Load order, operating rules, and reusable prompt |
-| [ABOUT.md](ABOUT.md) | Both | Canonical map of audiences, loops, stations, and boundaries |
-| `articles/X.md` | Humans | Argument for station X; points to `principles/X.md` |
-| `principles/X.md` | Humans applying and agents operating | Operational spec for station X; points to `articles/X.md` |
+| [README.md](README.md) | Users, humans | Front door, copy instructions, station index |
+| [AGENTS.md](AGENTS.md) | Users, agents | Load order, operating rules, reusable prompt |
+| [ABOUT.md](ABOUT.md) | Users, both | Canonical map of stations, loops, and boundaries |
+| [FIRST.md](FIRST.md) | Users, both | This repo’s in/out map and instance paths |
+| `articles/X.md` | Users, humans | Argument for station X; points to `principles/X.md` |
+| `principles/X.md` | Users applying and agents operating | Operational spec for station X; points to `articles/X.md` |
+
+Maintainer pack — do not copy: [maintainers/](maintainers/README.md) and `scripts/`. `basilic/` is this repository’s instance only.
 
 The canonical station order is Product → Journeys → Design → Architecture → Data → API → Documentation → Workflow → Pipelines → Quality → Security → Operations. The filenames are identical across `articles/` and `principles/`; the directory names distinguish argument from operation.
 
@@ -47,7 +58,7 @@ The canonical station order is Product → Journeys → Design → Architecture 
 - **Stable** means the essay and spec agree, precise claims and links were reviewed, and the documentation checks pass.
 - A version identifies the factory set. Project-specific decisions belong in the adopting repository, not in these generic files.
 
-This source set remains draft until its external references receive a publication review. `FEEDBACK.md` is an advisory review artifact, not part of the portable set.
+This source set remains draft until its external references receive a publication review. [maintainers/FEEDBACK.md](maintainers/FEEDBACK.md) is an advisory review artifact, not part of the user pack.
 
 ## Composing stations
 

@@ -7,7 +7,7 @@ Resolution pass: 2026-09-03
 
 FIRST has a strong core: a clear human/agent split, a memorable station model, consistent operational specs, and careful boundaries between neighboring concerns. “Articles argue; principles operate” gives the set a useful information architecture.
 
-The original review covered the 23-file, ten-station set. The resolution pass expands it to twelve stations and addresses the actionable structural findings. This file is an advisory review artifact, not another principle or part of the portable pack.
+The original review covered the 23-file, ten-station set. The resolution pass expands it to twelve stations and addresses the actionable structural findings. This file is an advisory review artifact in `maintainers/`, not another principle or part of the user pack.
 
 ## Resolution status
 
@@ -19,7 +19,7 @@ The original review covered the 23-file, ten-station set. The resolution pass ex
 | Draft lifecycle was undefined | Resolved | `ABOUT.md` defines draft/stable semantics, version, and review date. |
 | Multi-station composition was unclear | Resolved | `ABOUT.md` and `AGENTS.md` define primary/secondary station routing with an example. |
 | Specs lacked a minimum artifact shape | Resolved | Every operational spec includes `Minimum Useful Artifact`. |
-| Documentation invariants were manual | Resolved | `scripts/validate_docs.py` checks files, pairs, headings, front matter, parity, order, cross-links, and local links. Seven regression tests protect the validator; the root lint workflow runs both. |
+| Documentation invariants were manual | Resolved | `scripts/validate_docs.py` checks files, pairs, headings, front matter, parity, order, and local links. Regression tests protect the validator; the root lint workflow runs both. |
 | Installation and update behavior was implicit | Resolved | `README.md` documents the drop-in boundary, precedence, update behavior, and validation command. |
 | Essay set was uneven and repetitive | Improved | The longest essays received a focused redundancy pass; collection-wide editorial review remains part of stable publication. |
 | External claims and citations needed review | Link sweep complete; author review pending | All 46 unique external URLs were checked through direct retrieval or their primary-site index/search results. The Jeff Patton link was updated. The author's 2015 Continuous Delivery page appears in the blog index but could not be retrieved directly. Precise technical claims touched in this pass were checked; personal case-study claims still need author approval. |

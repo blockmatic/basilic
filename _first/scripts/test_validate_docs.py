@@ -16,7 +16,7 @@ class DocumentationValidationTests(unittest.TestCase):
         self.fixtureRoot = Path(self.temporary.name)
         for name in validate_docs.rootFiles:
             shutil.copy2(self.sourceRoot / name, self.fixtureRoot / name)
-        for name in ("articles", "principles"):
+        for name in ("articles", "principles", "maintainers", "basilic"):
             shutil.copytree(self.sourceRoot / name, self.fixtureRoot / name)
         validate_docs.root = self.fixtureRoot
 
@@ -56,6 +56,16 @@ class DocumentationValidationTests(unittest.TestCase):
     def testCanonicalOrder(self):
         self.replace("README.md", "| 4 | Architecture |", "| 4 | Data |")
         self.assertIn("canonical station list or order is wrong: README.md", validate_docs.validate())
+
+    def testMissingFirstMd(self):
+        (self.fixtureRoot / "FIRST.md").unlink()
+        self.assertTrue(any("missing root file: FIRST.md" in item for item in validate_docs.validate()))
+
+    def testMissingMaintainerFile(self):
+        (self.fixtureRoot / "maintainers/PACKAGING.md").unlink()
+        self.assertTrue(
+            any("missing maintainer file: maintainers/PACKAGING.md" in item for item in validate_docs.validate())
+        )
 
 
 if __name__ == "__main__":
