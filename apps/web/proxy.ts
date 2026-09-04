@@ -42,11 +42,17 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
     if (!refreshToken) return { status: 'unauthenticated', shouldClearCookies: true }
 
     const reqId = resolveRequestId(request.headers)
+    let tokens: Awaited<ReturnType<typeof refreshTokensWithRefreshToken>> | undefined
     try {
-      const tokens = await refreshTokensWithRefreshToken({ refreshToken, reqId })
+      tokens = await refreshTokensWithRefreshToken({ refreshToken, reqId })
+    } catch {
+      logger.warn({ reqId }, 'auth_proxy_refresh_failed')
+      return { status: 'unauthenticated', shouldClearCookies: true }
+    }
 
-      if (!tokens) return { status: 'unauthenticated', shouldClearCookies: true }
+    if (!tokens) return { status: 'unauthenticated', shouldClearCookies: true }
 
+    try {
       const response = NextResponse.next()
       setAuthCookiesOnResponse(response, tokens)
       return { status: 'refreshed', response, shouldClearCookies: false }

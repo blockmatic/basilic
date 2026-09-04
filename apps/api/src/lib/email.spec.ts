@@ -36,7 +36,7 @@ describe('sendMail', () => {
       emails: {
         send: vi.fn().mockResolvedValue({
           data: null,
-          error: { message: 'bounce', name: 'validation_error' },
+          error: { message: 'invalid recipient u@x.y', name: 'validation_error' },
         }),
       },
     }
@@ -47,12 +47,15 @@ describe('sendMail', () => {
         mode: 'throw',
         message: { from: 'a@b.c', to: 'u@x.y', subject: 's', html: '<p>x</p>' },
       }),
-    ).rejects.toThrow('bounce')
+    ).rejects.toThrow('invalid recipient u@x.y')
     expect(logger.error).toHaveBeenCalledWith(
       expect.objectContaining({ code: 'validation_error' }),
       'email_send_failed',
     )
-    const payload = logger.error.mock.calls[0]?.[0] as { err?: { message?: string } }
+    const payload = logger.error.mock.calls[0]?.[0] as {
+      err?: { message?: string; stack?: string }
+    }
+    expect(payload.err?.message).not.toContain('u@x.y')
     expect(JSON.stringify(payload)).not.toContain('u@x.y')
   })
 

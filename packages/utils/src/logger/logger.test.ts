@@ -98,6 +98,20 @@ describe('sanitizeLogData', () => {
   it('does not redact catalog code', () => {
     expect(sanitizeLogData({ code: 'INVALID_TOKEN' })).toEqual({ code: 'INVALID_TOKEN' })
   })
+
+  it('returns a stable placeholder for cyclic object graphs', () => {
+    const root: Record<string, unknown> = { userId: '1' }
+    root.self = root
+    expect(sanitizeLogData(root)).toEqual({ userId: '1', self: '[Circular]' })
+  })
+
+  it('sanitizes shared non-cyclic references on each path', () => {
+    const shared = { token: 'secret' }
+    expect(sanitizeLogData({ a: shared, b: shared })).toEqual({
+      a: { token: '[REDACTED]' },
+      b: { token: '[REDACTED]' },
+    })
+  })
 })
 
 describe('pinoRedactPaths', () => {

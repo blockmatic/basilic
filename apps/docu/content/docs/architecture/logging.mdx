@@ -10,9 +10,12 @@ import { logger } from '@repo/utils/logger/server'
 
 logger.info('message')
 logger.info({ userId: '123' }, 'User logged in')
+
+const reqId = 'abc'
+const err = new Error('timeout')
 logger.error({ err, reqId }, 'Request failed')
 
-const reqLogger = logger.child({ reqId: 'abc' })
+const reqLogger = logger.child({ reqId })
 reqLogger.debug('Processing request')
 ```
 
@@ -23,9 +26,12 @@ import { logger } from '@repo/utils/logger/client'
 
 logger.info('message')
 logger.info({ userId: '123' }, 'User logged in')
+
+const reqId = 'abc'
+const err = new Error('timeout')
 logger.error({ err, reqId }, 'Request failed')
 
-const reqLogger = logger.child({ reqId: 'abc' })
+const reqLogger = logger.child({ reqId })
 reqLogger.debug('Processing request')
 ```
 
