@@ -11,7 +11,7 @@ Do not edit the vendored files to encode Basilic facts. Put those in `FIRST.md` 
 
 ## Load
 
-Root [`AGENTS.md`](../AGENTS.md) points here. Agents then load `_first/AGENTS.md`, `_first/FIRST.md`, `_first/principles/X.md`, and the overlay listed in FIRST.md.
+Root [`AGENTS.md`](../AGENTS.md) points to [`AGENTS.md`](AGENTS.md). Canonical load order: `_first/AGENTS.md` → `_first/ABOUT.md` → `_first/FIRST.md` → this repository's instructions and skills → `_first/principles/X.md` → the instance path listed in FIRST.md.
 
 ## Update from upstream
 

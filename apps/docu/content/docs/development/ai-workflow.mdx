@@ -7,7 +7,7 @@ Development is **Cursor-first**. Claude Code follows the same rules and skills v
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era). Index this site once — [Cursor Setup](/docs/development/cursor-setup). Versioning and how to update skills: [Cursor Skills](/docs/development/cursor-skills).
 
-FIRST is vendored from [`blockmatic/first`](https://github.com/blockmatic/first). Copy `AGENTS.md`, `ABOUT.md`, and `principles/` into `_first/`; keep `FIRST.md` and `_first/basilic/` as this repo’s instance. Essays live on the FIRST site, not in this tree. Agents load `_first/AGENTS.md`, then `_first/FIRST.md`, then `principles/X.md` and the overlay listed in FIRST.md. FIRST is a documentation artifact; it does not replace this repository's Cursor-first workflow. Factory validation (`pnpm validate`) runs in the first repo.
+FIRST is vendored from [`blockmatic/first`](https://github.com/blockmatic/first). Copy `AGENTS.md`, `ABOUT.md`, and `principles/` into `_first/`; keep `FIRST.md` and `_first/basilic/` as this repo’s instance. Essays live on the FIRST site, not in this tree. Agents load `_first/AGENTS.md`, then `_first/ABOUT.md`, then `_first/FIRST.md`, then this repository's instructions and skills, then `_first/principles/X.md` for the station in scope, then the instance listed in FIRST.md. FIRST is a documentation artifact; it does not replace this repository's Cursor-first workflow. Factory validation (`pnpm validate`) runs in the first repo.
 
 ## Sources of truth
 
