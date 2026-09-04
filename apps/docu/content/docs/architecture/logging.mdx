@@ -3,15 +3,35 @@ title: "Logging"
 description: "Ops logging is Pino (API/Fastify, Next server) and a console wrapper (browser). Join key is reqId. Product analytics is a separate no-op capture(), not logs."
 ---
 
+Server (Next, scripts, pre-listen):
+
 ```ts
-import { logger } from '@repo/utils/logger/server'  // Next server, scripts, pre-listen
-import { logger } from '@repo/utils/logger/client'  // 'use client'
+import { logger } from '@repo/utils/logger/server'
 
 logger.info('message')
 logger.info({ userId: '123' }, 'User logged in')
+
+const reqId = 'abc'
+const err = new Error('timeout')
 logger.error({ err, reqId }, 'Request failed')
 
-const reqLogger = logger.child({ reqId: 'abc' })
+const reqLogger = logger.child({ reqId })
+reqLogger.debug('Processing request')
+```
+
+Browser (`'use client'`):
+
+```ts
+import { logger } from '@repo/utils/logger/client'
+
+logger.info('message')
+logger.info({ userId: '123' }, 'User logged in')
+
+const reqId = 'abc'
+const err = new Error('timeout')
+logger.error({ err, reqId }, 'Request failed')
+
+const reqLogger = logger.child({ reqId })
 reqLogger.debug('Processing request')
 ```
 
@@ -41,10 +61,10 @@ Config lives in each app `lib/env.ts`. Logger implementations also read `process
 
 ## Redaction
 
-Shallow sanitize of top-level keys (`password`, `token`, `secret`, `email`, …). Pino also redacts header paths. Log **path-only** URLs (`pathOnlyUrl`). Do not log request bodies, AI `prompt`/`messages` content, recipients, cookies, or authorization codes. Catalog `code` is a dedicated field — do not put raw tokens in `data.code`.
+Sanitize sensitive keys (`password`, `token`, `secret`, `email`, `prompt`, …) at any depth. Pino also redacts header paths. Log **path-only** URLs (`pathOnlyUrl`). Do not log request bodies, AI `prompt`/`messages` content, recipients, cookies, or authorization codes. Catalog `code` is a dedicated field — do not put raw tokens in `data.code`.
 
 ## Operational signals (not product analytics)
 
-Auth/email lines (low cardinality): `session_issued`, `auth_verify_failed`, `auth_locked`, `email_skipped`, `email_send_failed`, `auth_callback_failed`, `auth_proxy_refresh_failed`. No success-send or product `auth_succeeded` log lines — product auth events are no-op `capture()` calls, not Pino.
+Auth/email lines (low cardinality): `session_issued`, `auth_verify_failed`, `auth_locked`, `email_skipped`, `email_send_failed`, `auth_callback_failed`, `auth_proxy_refresh_failed`, `auth_proxy_cookie_failed`. No success-send or product `auth_succeeded` log lines — product auth events are no-op `capture()` calls, not Pino.
 
 Product analytics is not logging: [Analytics](/docs/architecture/analytics). Failures: [Error Handling](/docs/architecture/error-handling).

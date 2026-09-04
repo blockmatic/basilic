@@ -12,7 +12,7 @@ function toErr(error: unknown) {
  * Creates a captureError function bound to a default logger.
  * Logs only — no reporting adapter.
  */
-export function createCaptureError(defaultLogger: Logger) {
+export function createCaptureError(defaultLogger: Logger): (options: CaptureErrorOptions) => void {
   return function captureError(options: CaptureErrorOptions): void {
     if (options.report === false) return
 

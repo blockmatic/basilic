@@ -9,7 +9,19 @@ const rank: Record<Exclude<LogLevel, 'silent'>, number> = {
   error: 40,
 }
 
-export function createClientLogger(env: Record<string, string | undefined> = process.env): Logger {
+function defaultClientEnv(): Record<string, string | undefined> {
+  const env: Record<string, string | undefined> = {}
+  env.NEXT_PUBLIC_LOG_ENABLED = process.env.NEXT_PUBLIC_LOG_ENABLED
+  env.NEXT_PUBLIC_LOG_LEVEL = process.env.NEXT_PUBLIC_LOG_LEVEL
+  env.NODE_ENV = process.env.NODE_ENV
+  env.CI = process.env.CI
+  env.VITEST = process.env.VITEST
+  return env
+}
+
+export function createClientLogger(
+  env: Record<string, string | undefined> = defaultClientEnv(),
+): Logger {
   const isTestOrCi = env.CI === 'true' || env.NODE_ENV === 'test' || env.VITEST === 'true'
   const enabled = parseBool(env.NEXT_PUBLIC_LOG_ENABLED, env.NODE_ENV !== 'production')
   const rawLevel = env.NEXT_PUBLIC_LOG_LEVEL

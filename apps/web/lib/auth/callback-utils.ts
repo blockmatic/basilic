@@ -67,7 +67,7 @@ export async function handleOAuthBffGet({
   fallbackMessage: string
   exchange: (args: { client: BffClient; code: string; state: string }) => Promise<unknown>
   mapError: (raw: string, body?: unknown) => string
-}) {
+}): Promise<NextResponse> {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
   const state = searchParams.get('state')

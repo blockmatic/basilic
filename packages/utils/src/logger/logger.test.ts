@@ -75,14 +75,42 @@ describe('sanitizeLogData', () => {
     })
   })
 
-  it('does not walk nested objects', () => {
-    expect(sanitizeLogData({ nested: { password: 'x' } })).toEqual({
-      nested: { password: 'x' },
+  it('redacts nested token, email, and prompt keys', () => {
+    expect(
+      sanitizeLogData({
+        user: { token: 'abc', email: 'a@b.c', profile: { prompt: 'secret' } },
+        items: [{ token: 't' }, { email: 'n@x.y' }, { prompt: 'p' }],
+        userId: '1',
+      }),
+    ).toEqual({
+      user: { token: '[REDACTED]', email: '[REDACTED]', profile: { prompt: '[REDACTED]' } },
+      items: [{ token: '[REDACTED]' }, { email: '[REDACTED]' }, { prompt: '[REDACTED]' }],
+      userId: '1',
+    })
+  })
+
+  it('preserves nested non-sensitive values', () => {
+    expect(sanitizeLogData({ nested: { userId: '1', count: 2 } })).toEqual({
+      nested: { userId: '1', count: 2 },
     })
   })
 
   it('does not redact catalog code', () => {
     expect(sanitizeLogData({ code: 'INVALID_TOKEN' })).toEqual({ code: 'INVALID_TOKEN' })
+  })
+
+  it('returns a stable placeholder for cyclic object graphs', () => {
+    const root: Record<string, unknown> = { userId: '1' }
+    root.self = root
+    expect(sanitizeLogData(root)).toEqual({ userId: '1', self: '[Circular]' })
+  })
+
+  it('sanitizes shared non-cyclic references on each path', () => {
+    const shared = { token: 'secret' }
+    expect(sanitizeLogData({ a: shared, b: shared })).toEqual({
+      a: { token: '[REDACTED]' },
+      b: { token: '[REDACTED]' },
+    })
   })
 })
 
