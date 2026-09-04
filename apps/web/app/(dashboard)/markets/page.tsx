@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@repo/error/nextjs'
+import { getErrorMessage } from '@repo/error'
 import type { CoinMarket } from './markets-table'
 import { MarketsTable } from './markets-table'
 

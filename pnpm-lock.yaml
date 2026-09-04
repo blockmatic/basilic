@@ -601,6 +601,9 @@ importers:
       typescript:
         specifier: npm:@typescript/typescript6@^6.0.2
         version: '@typescript/typescript6@6.0.2'
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@2.4.0))(vite@8.2.2(@types/node@24.13.3)(esbuild@0.25.10)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
 
   packages/cli:
     dependencies:
@@ -1032,9 +1035,6 @@ importers:
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1
-      pino:
-        specifier: '*'
-        version: 10.3.1
       typescript:
         specifier: '>=5.0.0'
         version: 7.0.2
@@ -1066,6 +1066,9 @@ importers:
       nuqs:
         specifier: ^2.10.1
         version: 2.10.1(next@16.3.3(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.62.1)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -1078,6 +1081,9 @@ importers:
       viem:
         specifier: 2.56.0
         version: 2.56.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@6.0.6)(zod@4.5.2)
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@2.4.0))(vite@8.2.2(@types/node@24.13.3)(esbuild@0.25.10)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
       zod:
         specifier: ^4.5.2
         version: 4.5.2

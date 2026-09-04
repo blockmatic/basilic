@@ -1,17 +1,50 @@
 ---
 title: "Logging"
-description: "Server: Pino via @repo/utils/logger/server. Client: console wrapper via /logger/client. Never console.* in app code."
+description: "Ops logging is Pino (API/Fastify, Next server) and a console wrapper (browser). Join key is reqId. Product analytics is separate and not installed."
 ---
 
 ```ts
-import { logger } from '@repo/utils/logger/server'  // Fastify, Next server, scripts
+import { logger } from '@repo/utils/logger/server'  // Next server, scripts, pre-listen
 import { logger } from '@repo/utils/logger/client'  // 'use client'
 
+logger.info('message')
 logger.info({ userId: '123' }, 'User logged in')
+logger.error({ err, reqId }, 'Request failed')
+
+const reqLogger = logger.child({ reqId: 'abc' })
+reqLogger.debug('Processing request')
 ```
 
-Fastify routes should use `request.log` so request context is attached. Child loggers: `logger.child({ requestId })`. Server logs redact secrets. Client logs are off in production unless you raise the level.
+Two **processes**, one policy:
 
-In CI, `NODE_ENV=test`, or when `VITEST` is set, the default level is `silent`. Override with `LOG_LEVEL`. Config lives next to env validation in each app — not a global constants file.
+- **API HTTP:** Fastify owns the Pino root and request children (`request.log` / `fastify.log`) via `createPinoOptions()` from `@repo/utils/logger/pino-options`. Access logs include `reqId`, method, path (no query), status, latency.
+- **Next / scripts:** `@repo/utils/logger/server` singleton (same options factory, JSON in production). Browser: `/logger/client`.
 
-Product analytics (PostHog) is not logging: [Analytics](/docs/architecture/analytics). Failures go to [Error Handling](/docs/architecture/error-handling).
+Never `console.*` in app UI code. Fastify routes must not emit started/completed/status/latency/path/`reqId` — that is the access log. Domain events and `captureError` are extra lines on the same request.
+
+## Join key (`reqId`)
+
+Incoming `x-request-id` is accepted only if it matches `^[A-Za-z0-9._-]{1,128}$`; otherwise Fastify generates a UUID. The field name in logs is **`reqId`**, never `requestId`. Every API response echoes `x-request-id`. Next BFF/proxy calls forward the same header so web and API lines can join. They are two HTTP hops unless forwarded.
+
+## Env
+
+Truthiness uses `parseBool`: `1`, `true`, `yes`, `on` (case-insensitive). Do **not** use Zod `z.coerce.boolean()` for these flags (`"false"` would become `true`).
+
+| Runtime | Variables |
+| --- | --- |
+| API / Node | `LOG_ENABLED` (default on), `LOG_LEVEL` (`debug` \| `info` \| `warn` \| `error` \| `silent`, default `info`), `LOG_SERVICE` (default `api`) |
+| Browser | `NEXT_PUBLIC_LOG_ENABLED` (default off in production), `NEXT_PUBLIC_LOG_LEVEL` |
+
+In CI, `NODE_ENV=test`, or `VITEST`, the default level is `silent` unless `LOG_LEVEL` is set. Browser **`error` still emits** in production when other levels are off, unless `NEXT_PUBLIC_LOG_LEVEL=silent` or test/CI.
+
+Config lives in each app `lib/env.ts`. Logger implementations also read `process.env` at load.
+
+## Redaction
+
+Shallow sanitize of top-level keys (`password`, `token`, `secret`, `email`, …). Pino also redacts header paths. Log **path-only** URLs (`pathOnlyUrl`). Do not log request bodies, AI `prompt`/`messages` content, recipients, cookies, or authorization codes. Catalog `code` is a dedicated field — do not put raw tokens in `data.code`.
+
+## Operational signals (not product analytics)
+
+Auth/email lines (low cardinality): `session_issued`, `auth_verify_failed`, `auth_locked`, `email_skipped`, `email_send_failed`, `auth_callback_failed`, `auth_proxy_refresh_failed`. No success-send or `auth_succeeded` logs (those belong to PostHog later).
+
+Product analytics is not logging: [Analytics](/docs/architecture/analytics). Failures: [Error Handling](/docs/architecture/error-handling).

@@ -1,8 +1,8 @@
-import { createClient } from '@repo/core'
 import { cookies } from 'next/headers'
 import { redirect, unstable_rethrow } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
+import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
 import { extractTokens, getOAuthRedirectTarget } from '@/lib/auth/callback-utils'
 import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
 import { env } from '@/lib/env'
@@ -30,14 +30,7 @@ export async function GET(request: Request) {
 
   const cookieStore = await cookies()
   const { token } = parseAuthCookie(cookieStore.get(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)?.value)
-  const client = createClient({
-    baseUrl: env.NEXT_PUBLIC_API_URL,
-    ...(token && {
-      getAuthToken: () => token,
-      getRefreshToken: () => null,
-      onTokensRefreshed: async () => {},
-    }),
-  })
+  const { client, reqId } = createBffClient({ request, token })
 
   try {
     const response = await client.auth.oauth.twitter.exchange({
@@ -55,6 +48,7 @@ export async function GET(request: Request) {
     return redirectResponse
   } catch (error) {
     unstable_rethrow(error)
+    logAuthBffFailure({ error, reqId, method: 'oauth_twitter' })
     const rawMessage = error instanceof Error ? error.message : 'Twitter sign-in failed'
     const errorCode = mapAuthError(rawMessage)
     redirect(`/auth/login?message=${encodeURIComponent(errorCode)}`)

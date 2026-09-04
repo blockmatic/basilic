@@ -1,3 +1,4 @@
+import { parseBool } from '@repo/utils/logger/types'
 import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
@@ -34,7 +35,10 @@ export const env = createEnv({
     NEXT_PUBLIC_SENTRY_DSN: z.string().min(1).optional(),
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().min(1).optional(),
     // Logging configuration
-    NEXT_PUBLIC_LOG_ENABLED: z.coerce.boolean().optional(),
+    NEXT_PUBLIC_LOG_ENABLED: z
+      .string()
+      .optional()
+      .transform(v => (v == null ? undefined : parseBool(v, false))),
     NEXT_PUBLIC_LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).optional(),
     // Policy pages (privacy, terms)
     NEXT_PUBLIC_LEGAL_EMAIL: z.string().email().default('legal@example.com'),

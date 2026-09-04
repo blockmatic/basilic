@@ -19,7 +19,7 @@ Meaningful boundaries have explicit inputs, outputs, errors, and references to a
 - **Fact:** Generated client: `packages/core` via `pnpm generate`. Handwritten hooks: `packages/react`
 - **Fact:** Tags: `auth`, `account`, `ai`, `health`. Catalog: `/reference` and `/reference/openapi.json`
 - **Fact:** Consumers: `apps/web` (`@repo/core` + `@repo/react`); `packages/cli` (API key Bearer); other languages via OpenAPI. `apps/mobile` is not a consumer yet. `apps/docu` has no API.
-- **Fact:** Errors: catalog `{ code, message }` via `sendCatalogError` in `apps/api/src/lib/catalogs/mapper.ts`. Sentry gets the real error (`@repo/error`). Never leak stacks.
+- **Fact:** Errors: catalog `{ code, message }` via `sendCatalogError`. Real failures: `captureError` → Pino (`@repo/error/node`). Never leak stacks.
 - **Fact:** `createClient` modes: no-auth, JWT (`getAuthToken` / refresh), apiKey (`bask_…`)
 - **Fact:** Drift check: `pnpm generate && git diff --exit-code -- apps/api/openapi/openapi.json packages/core/src/gen` (also `api-e2e.yml`)
 - **Fact:** Generation how-to: [openapi-generation.mdx](../../apps/docu/content/docs/development/openapi-generation.mdx)

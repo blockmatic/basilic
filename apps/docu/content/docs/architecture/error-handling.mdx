@@ -1,21 +1,28 @@
 ---
 title: "Error Handling"
-description: "Two-track errors: capture the real failure, return a safe catalog to clients."
+description: "Two-track errors: captureError logs the real failure; HTTP clients get a catalog { code, message }."
 ---
 
-`@repo/error` reports failures (`captureError`) and extracts messages (`getErrorMessage`, `tryCatch`). Each app owns its **catalog** (`code` + user-safe `message`). Sentry/GlitchTip is initialized by the app, not by `@repo/error`. Import the platform subpath: `node`, `nextjs`, `browser`, `react`.
+`@repo/error` extracts messages (`getErrorMessage`, `tryCatch`) and logs failures (`captureError`). Each app owns its **catalog** (`code` + user-safe `message`). Import by runtime:
 
-Two tracks: reporting gets the real error (stack, internals); the HTTP response is `{ code, message }` from the app catalog. Never send connection strings or stack traces to clients.
+- `@repo/error` — `getErrorMessage` / `tryCatch` only (safe in RSC)
+- `@repo/error/node` — Fastify / Node (default server logger)
+- `@repo/error/nextjs` — browser (`error.tsx`); default client logger
+- `@repo/error/nextjs/server` — Route Handlers / server instrumentation
+- `@repo/error/browser`, `@repo/error/react` — SPA / ErrorBoundary
+
+`captureError` is **log-only** and synchronous. It does not call Sentry. `report: false` emits nothing (tests). `@sentry/*` packages stay installed; `initErrorReporting` is a no-op; Next `onRequestError` / `onRouterTransitionStart` are not wired to Sentry. `withSentryConfig` still gates on `SENTRY_AUTH_TOKEN`. To re-enable later: restore `Sentry.init` in `initErrorReporting` and a capture adapter — that is not current behavior.
+
+Two tracks: logs get `{ err, label, code, ... }`; the HTTP response is `{ code, message }` from the catalog. Never send connection strings or stack traces to clients.
 
 ```typescript
-import { captureError } from '@repo/error/node' // or /nextjs, /browser
+import { captureError } from '@repo/error/node'
 import { getErrorMessage } from '@repo/error'
 
 captureError({ error, label: 'Database', tags: { app: 'api' } })
-// reply with getError('SERVER_ERROR') — not error.message
 ```
 
-On the API, prefer `sendCatalogError({ reply, status, code })` from `apps/api/src/lib/catalogs/mapper.ts` so routes return catalog `{ code, message }` without duplicating strings. The import is relative to a route in `apps/api/src/routes/` (for example `health.ts`).
+On the API, `sendCatalogError` replies only and **never logs**. Thrown `status >= 500` is captured once in the error handler (method, path-only URL, `code`, `err` — no headers or body). Handled 500s use `sendServerCatalogError` (one `captureError` then catalog). AI 502/504/402: only `handleUpstreamError` captures.
 
 ```typescript
 import { sendCatalogError } from '../lib/catalogs/mapper.js'
@@ -23,6 +30,4 @@ import { sendCatalogError } from '../lib/catalogs/mapper.js'
 return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 ```
 
-Initialize the SDK in the app (`instrumentation.ts` on Next.js, bootstrap on Fastify). PII scrubbing is the SDK’s job. Fastify routes may throw; the global handler captures and maps status to catalog codes.
-
-React subtrees: `react-error-boundary` plus `captureError` from `@repo/error/react`. See [Frontend](/docs/architecture/frontend). Logging (Pino) is separate: [Logging](/docs/architecture/logging).
+React subtrees: `react-error-boundary` plus **only** `captureError` (no extra `logger.error`). See [Frontend](/docs/architecture/frontend). Logging: [Logging](/docs/architecture/logging).

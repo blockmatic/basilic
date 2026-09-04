@@ -5,6 +5,7 @@ import type { FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastif
 import { getDb } from '../../../db/index.js'
 import { authAttempts, users, verification } from '../../../db/schema/index.js'
 import { recordAuthFailedAttempt } from '../../../lib/auth/index.js'
+import { logAuthLocked, logAuthVerifyFailed } from '../../../lib/auth/signals.js'
 import { hashLoginCode } from '../../../lib/jwt.js'
 import { getTrustedClientIp } from '../../../lib/request.js'
 import { createSessionAndIssueTokens } from '../../../lib/session/index.js'
@@ -139,11 +140,13 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
         .from(authAttempts)
         .where(and(eq(authAttempts.key, ip), eq(authAttempts.type, 'magic_link')))
 
-      if (attemptRow?.lockedUntil && attemptRow.lockedUntil > new Date())
+      if (attemptRow?.lockedUntil && attemptRow.lockedUntil > new Date()) {
+        logAuthLocked({ request, code: 'TOO_MANY_ATTEMPTS', signInMethod: 'magic_link' })
         return reply.code(429).send({
           code: 'TOO_MANY_ATTEMPTS',
           message: 'Too many failed attempts. Try again later.',
         })
+      }
 
       const idOrEmail = (hasVerificationId ? verificationId : email) ?? ''
       const verificationWhere = hasVerificationId
@@ -161,6 +164,7 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (!verificationRecord) {
         await recordMagicLinkFailedAttempt(db, ip)
+        logAuthVerifyFailed({ request, code: 'INVALID_TOKEN', signInMethod: 'magic_link' })
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Invalid or expired token',
@@ -170,6 +174,7 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
       if (verificationRecord.expiresAt < new Date()) {
         await db.delete(verification).where(eq(verification.id, verificationRecord.id))
         await recordMagicLinkFailedAttempt(db, ip)
+        logAuthVerifyFailed({ request, code: 'EXPIRED_TOKEN', signInMethod: 'magic_link' })
         return reply.code(401).send({
           code: 'EXPIRED_TOKEN',
           message: 'Token has expired',

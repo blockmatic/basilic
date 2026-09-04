@@ -1,13 +1,6 @@
+import { normalizeLogArgs } from './normalize.js'
 import type { Logger, LogLevel } from './types.js'
 import { normalizeLevel, parseBool } from './types.js'
-
-// Off by default in production browser builds
-const enabledDefault = process.env.NODE_ENV !== 'production'
-const enabled = parseBool(process.env.NEXT_PUBLIC_LOG_ENABLED, enabledDefault)
-const isTestOrCi =
-  process.env.CI === 'true' || process.env.NODE_ENV === 'test' || process.env.VITEST === 'true'
-const rawLevel = process.env.NEXT_PUBLIC_LOG_LEVEL ?? (isTestOrCi ? 'silent' : undefined)
-const level: LogLevel = enabled ? normalizeLevel(rawLevel) : 'silent'
 
 const rank: Record<Exclude<LogLevel, 'silent'>, number> = {
   debug: 10,
@@ -16,66 +9,70 @@ const rank: Record<Exclude<LogLevel, 'silent'>, number> = {
   error: 40,
 }
 
-/**
- * Checks if a log level should be emitted based on current log level.
- *
- * @internal
- */
-const should = (kind: Exclude<LogLevel, 'silent'>): boolean =>
-  level !== 'silent' && rank[kind] >= rank[level as Exclude<LogLevel, 'silent'>]
+export function createClientLogger(env: Record<string, string | undefined> = process.env): Logger {
+  const isTestOrCi = env.CI === 'true' || env.NODE_ENV === 'test' || env.VITEST === 'true'
+  const enabled = parseBool(env.NEXT_PUBLIC_LOG_ENABLED, env.NODE_ENV !== 'production')
+  const rawLevel = env.NEXT_PUBLIC_LOG_LEVEL
+  const defaultLevel = isTestOrCi ? 'silent' : enabled ? 'info' : 'silent'
+  const level: LogLevel = normalizeLevel(rawLevel ?? defaultLevel)
+  const explicitSilent = (rawLevel ?? '').toLowerCase() === 'silent'
 
-/**
- * Emits a log message to the console.
- *
- * @internal
- */
-const emit = (kind: Exclude<LogLevel, 'silent'>, data?: unknown, msg?: string): void => {
-  if (!enabled) return
-  if (!should(kind)) return
+  const should = (kind: Exclude<LogLevel, 'silent'>): boolean =>
+    level !== 'silent' && rank[kind] >= rank[level as Exclude<LogLevel, 'silent'>]
 
-  // console is allowed ONLY here
-  // biome-ignore lint/suspicious/noConsole: logger is the only allowed console entrypoint
-  const consoleMethod = console[kind] as ((...args: unknown[]) => void) | undefined
-  consoleMethod?.(msg ?? '', data ?? '')
-}
+  const emit = (
+    bindings: Record<string, unknown>,
+    kind: Exclude<LogLevel, 'silent'>,
+    data?: unknown,
+    msg?: string,
+  ): void => {
+    const errorAlways = kind === 'error' && !isTestOrCi && !explicitSilent
+    if (!errorAlways) {
+      if (!enabled) return
+      if (!should(kind)) return
+    }
 
-/**
- * Creates a child logger with merged bindings.
- *
- * @internal
- */
-const makeChild = (bindings: Record<string, unknown>): Logger => {
-  const merge = (data?: unknown) =>
-    data && typeof data === 'object' && !Array.isArray(data)
-      ? { ...bindings, ...(data as Record<string, unknown>) }
-      : { ...bindings, data }
-
-  return {
-    debug: (d, m) => emit('debug', merge(d), m),
-    info: (d, m) => emit('info', merge(d), m),
-    warn: (d, m) => emit('warn', merge(d), m),
-    error: (d, m) => emit('error', merge(d), m),
-    child: b => makeChild({ ...bindings, ...b }),
+    const { obj, msg: message } = normalizeLogArgs(data, msg)
+    const merged = Object.keys(bindings).length > 0 || obj ? { ...bindings, ...obj } : undefined
+    // biome-ignore lint/suspicious/noConsole: logger is the only allowed console entrypoint
+    const consoleMethod = console[kind] as ((...args: unknown[]) => void) | undefined
+    if (merged) consoleMethod?.(message ?? '', merged)
+    else consoleMethod?.(message ?? '')
   }
+
+  const makeChild = (bindings: Record<string, unknown>): Logger => ({
+    debug: (d, m) => emit(bindings, 'debug', d, m),
+    info: (d, m) => emit(bindings, 'info', d, m),
+    warn: (d, m) => emit(bindings, 'warn', d, m),
+    error: (d, m) => emit(bindings, 'error', d, m),
+    child: b => makeChild({ ...bindings, ...b }),
+  })
+
+  return makeChild({})
 }
 
 /**
- * Browser/client-side logger implementation.
- *
- * Uses `console` API for logging. Logging is disabled by default in production
- * builds. Configure via `NEXT_PUBLIC_LOG_ENABLED` and `NEXT_PUBLIC_LOG_LEVEL`
- * environment variables.
+ * Browser/client-side logger. Console-backed. Production debug/info/warn are off
+ * unless `NEXT_PUBLIC_LOG_*` enables them. `error` still emits unless the level
+ * is explicitly `silent` or the process is test/CI.
  *
  * @example
  * ```ts
  * import { logger } from '@repo/utils/logger/client'
  *
  * logger.info({ userId: '123' }, 'User logged in')
- * logger.error({ err: error }, 'Request failed')
+ * logger.error({ err }, 'Request failed')
  *
- * const requestLogger = logger.child({ requestId: 'abc' })
+ * const requestLogger = logger.child({ reqId: 'abc' })
  * requestLogger.debug('Processing request')
  * ```
  */
-export const logger: Logger = makeChild({})
+export const logger: Logger = createClientLogger()
+export { normalizeLogArgs, toErrField } from './normalize.js'
+export {
+  isValidRequestId,
+  pathOnlyUrl,
+  sanitizeLogData,
+  sensitiveKeys,
+} from './redact.js'
 export type { Logger, LogLevel } from './types.js'

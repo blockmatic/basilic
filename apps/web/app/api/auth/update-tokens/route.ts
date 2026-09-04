@@ -1,12 +1,11 @@
-import { ApiError, createClient } from '@repo/core'
-import { captureError } from '@repo/error/nextjs'
+import { ApiError } from '@repo/core'
+import { captureError } from '@repo/error/nextjs/server'
 import { logger } from '@repo/utils/logger/server'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
-import { env } from '@/lib/env'
-
-const client = createClient({ baseUrl: env.NEXT_PUBLIC_API_URL })
+import { createBffClient } from '@/lib/auth/bff-client'
+import { resolveRequestId } from '@/lib/auth/request-id'
 
 const updateTokensSchema = z.object({ token: z.string(), refreshToken: z.string() })
 
@@ -33,8 +32,9 @@ function isSameOriginRequest(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const reqId = resolveRequestId(request.headers)
   if (!isSameOriginRequest(request)) {
-    logger.warn('update-tokens rejected: cross-origin or missing Origin')
+    logger.warn({ reqId }, 'update-tokens rejected: cross-origin or missing Origin')
     return new Response(JSON.stringify({ message: 'Forbidden' }), {
       status: 403,
       headers: { 'Content-Type': 'application/json' },
@@ -52,6 +52,7 @@ export async function POST(request: Request) {
       )
 
     const { token, refreshToken } = parsed.data
+    const { client } = createBffClient({ request })
 
     try {
       const authHeader = 'Authorization'
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
       })
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
-        logger.warn({ status: error.status }, 'update-tokens rejected: invalid token pair')
+        logger.warn({ reqId, status: error.status }, 'update-tokens rejected: invalid token pair')
         return new Response(JSON.stringify({ message: 'Unauthorized' }), {
           status: 401,
           headers: { 'Content-Type': 'application/json' },
@@ -72,7 +73,7 @@ export async function POST(request: Request) {
         code: 'INTERNAL_ERROR',
         error: error instanceof Error ? error : new Error(String(error)),
         label: 'update-tokens Fastify validation failed',
-        data: { status: error instanceof ApiError ? error.status : undefined },
+        data: { reqId, status: error instanceof ApiError ? error.status : undefined },
         tags: { app: 'web', module: 'auth', route: '/api/auth/update-tokens' },
       })
 
@@ -89,7 +90,12 @@ export async function POST(request: Request) {
     setAuthCookiesOnResponse(response, { token, refreshToken })
     return response
   } catch (error) {
-    logger.error({ error }, 'API auth route: update tokens failed')
+    captureError({
+      error: error instanceof Error ? error : new Error(String(error)),
+      label: 'update-tokens failed',
+      data: { reqId },
+      tags: { app: 'web', module: 'auth', route: '/api/auth/update-tokens' },
+    })
     return new Response(
       JSON.stringify({
         message: 'Failed to update tokens',

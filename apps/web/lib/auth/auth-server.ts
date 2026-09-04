@@ -1,3 +1,4 @@
+import { logger } from '@repo/utils/logger/server'
 import { cookies } from 'next/headers'
 import { env } from '@/lib/env'
 import type { AuthCookie } from './auth-schemas'
@@ -53,13 +54,15 @@ export async function getServerAuthToken(): Promise<{ token: string | null }> {
 
 export async function refreshTokensWithRefreshToken({
   refreshToken,
+  reqId,
 }: {
   refreshToken: string
+  reqId: string
 }): Promise<AuthCookie | null> {
   try {
     const response = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/session/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-request-id': reqId },
       body: JSON.stringify({ refreshToken }),
       cache: 'no-store',
     })
@@ -67,6 +70,7 @@ export async function refreshTokensWithRefreshToken({
     const parsed = authCookieSchema.safeParse(await response.json())
     return parsed.success ? parsed.data : null
   } catch {
+    logger.warn({ reqId }, 'auth_proxy_refresh_failed')
     return null
   }
 }

@@ -1,8 +1,10 @@
+import { logger } from '@repo/utils/logger/server'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { refreshTokensWithRefreshToken, setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { decodeJwtToken, isTokenExpired, verifyJwtToken } from '@/lib/auth/jwt-utils'
 import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
+import { resolveRequestId } from '@/lib/auth/request-id'
 import { env } from '@/lib/env'
 
 const cookieName = env.NEXT_PUBLIC_AUTH_COOKIE_NAME
@@ -39,8 +41,9 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
 
     if (!refreshToken) return { status: 'unauthenticated', shouldClearCookies: true }
 
+    const reqId = resolveRequestId(request.headers)
     try {
-      const tokens = await refreshTokensWithRefreshToken({ refreshToken })
+      const tokens = await refreshTokensWithRefreshToken({ refreshToken, reqId })
 
       if (!tokens) return { status: 'unauthenticated', shouldClearCookies: true }
 
@@ -48,6 +51,7 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
       setAuthCookiesOnResponse(response, tokens)
       return { status: 'refreshed', response, shouldClearCookies: false }
     } catch {
+      logger.warn({ reqId }, 'auth_proxy_refresh_failed')
       return { status: 'unauthenticated', shouldClearCookies: true }
     }
   } catch {

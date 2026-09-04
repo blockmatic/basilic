@@ -74,6 +74,8 @@ export async function createSessionAndIssueTokens({
     expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
   })
 
+  request.log.info({ userId: user.id, sessionId, signInMethod }, 'session_issued')
+
   return { accessToken, refreshToken }
 }
 

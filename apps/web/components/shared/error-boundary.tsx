@@ -1,7 +1,6 @@
 'use client'
 
 import { captureError } from '@repo/error/nextjs'
-import { logger } from '@repo/utils/logger/client'
 import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary'
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
@@ -35,7 +34,6 @@ export function ErrorBoundary({ children }: { children: React.ReactNode }) {
           label: 'App ErrorBoundary',
           tags: { runtime: 'nextjs' },
         })
-        logger.error(error, 'Error in ErrorBoundary')
       }}
     >
       {children}

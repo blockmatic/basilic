@@ -27,6 +27,13 @@
       "node": "./dist/nextjs.js",
       "default": "./dist/nextjs.js"
     },
+    "./nextjs/server": {
+      "types": "./src/nextjs/server.ts",
+      "source": "./src/nextjs/server.ts",
+      "import": "./dist/nextjs-server.js",
+      "node": "./dist/nextjs-server.js",
+      "default": "./dist/nextjs-server.js"
+    },
     "./browser": {
       "types": "./src/browser/index.ts",
       "source": "./src/browser/index.ts",

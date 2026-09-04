@@ -7,13 +7,13 @@ import { env } from './env.js'
  */
 export function isAllowedUrl(url: string): boolean {
   if (typeof url !== 'string' || url.trim().length === 0) {
-    logger.warn({ url: '[empty]' }, 'isAllowedUrl: empty or missing URL')
+    logger.warn('isAllowedUrl: empty or missing URL')
     return false
   }
 
   const trimmed = url.trim()
   if (trimmed.startsWith('/') || !trimmed.includes(':')) {
-    logger.warn({ url: trimmed }, 'isAllowedUrl: relative URL not allowed')
+    logger.warn({ reason: 'relative' }, 'isAllowedUrl: relative URL not allowed')
     return false
   }
 
@@ -21,13 +21,13 @@ export function isAllowedUrl(url: string): boolean {
   try {
     parsed = new URL(trimmed)
   } catch {
-    logger.warn({ url: trimmed }, 'isAllowedUrl: invalid URL format')
+    logger.warn({ reason: 'invalid' }, 'isAllowedUrl: invalid URL format')
     return false
   }
 
   const scheme = parsed.protocol.replace(/:$/, '')
   if (scheme !== 'http' && scheme !== 'https') {
-    logger.warn({ url: trimmed, scheme }, 'isAllowedUrl: non-HTTP(S) scheme rejected')
+    logger.warn({ scheme }, 'isAllowedUrl: non-HTTP(S) scheme rejected')
     return false
   }
 
@@ -36,7 +36,7 @@ export function isAllowedUrl(url: string): boolean {
 
   const origin = parsed.origin
   const ok = allowed.includes(origin)
-  if (!ok) logger.warn({ url: trimmed, origin, allowed }, 'isAllowedUrl: origin not in allowlist')
+  if (!ok) logger.warn({ origin }, 'isAllowedUrl: origin not in allowlist')
 
   return ok
 }

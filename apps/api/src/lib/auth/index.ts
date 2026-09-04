@@ -5,3 +5,4 @@ export {
   authRouteRateLimit,
   productionLoginRateLimitMax,
 } from './route-rate-limit.js'
+export { logAuthLocked, logAuthVerifyFailed } from './signals.js'

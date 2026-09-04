@@ -8,6 +8,7 @@ export default defineConfig({
     'src/logger/client.ts',
     'src/logger/server.ts',
     'src/logger/types.ts',
+    'src/logger/pino-options.ts',
     'src/debug/index.ts',
     'src/data/index.ts',
   ],

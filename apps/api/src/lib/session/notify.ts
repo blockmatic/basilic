@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import LoginNotificationEmail from '@repo/email/emails/login-notification'
 import { render } from '@repo/email/render'
-import { logger } from '@repo/utils/logger/server'
 import { and, eq, ne } from 'drizzle-orm'
 import type { FastifyInstance } from 'fastify'
 import type { getDb } from '../../db/index.js'
 import { sessions, verification } from '../../db/schema/index.js'
 import type { SignInMethod } from '../../db/schema/tables/sessions.js'
+import { sendMail } from '../email.js'
 import { env } from '../env.js'
 import { generateToken, hashToken } from '../jwt.js'
 import { isAllowedUrl } from '../url.js'
@@ -22,10 +22,7 @@ export type SessionNotifyUser = {
 
 export function allowlistedWebAppOrigin(webAppUrl = env.WEB_APP_URL): string | null {
   const base = webAppUrl.replace(/\/$/, '')
-  if (!isAllowedUrl(base)) {
-    logger.warn({ webAppUrl: base }, 'Skipping new-device email: WEB_APP_URL is not allowlisted')
-    return null
-  }
+  if (!isAllowedUrl(base)) return null
   return base
 }
 
@@ -58,10 +55,16 @@ export async function notifyNewDeviceSignIn({
   location?: string
   expiresAt: Date
 }): Promise<void> {
-  if (!user.email) return
+  if (!user.email) {
+    fastify.log.info({ reason: 'no_email' }, 'email_skipped')
+    return
+  }
 
   const origin = allowlistedWebAppOrigin()
-  if (!origin) return
+  if (!origin) {
+    fastify.log.info({ reason: 'allowlist' }, 'email_skipped')
+    return
+  }
 
   if (deviceFingerprint) {
     const others = await db
@@ -75,13 +78,19 @@ export async function notifyNewDeviceSignIn({
         ),
       )
       .limit(1)
-    if (others.length > 0) return
+    if (others.length > 0) {
+      fastify.log.info({ reason: 'known_fingerprint' }, 'email_skipped')
+      return
+    }
   }
 
   const token = generateToken()
   const verificationId = randomUUID()
   const ttlMs = Math.min(24 * 60 * 60 * 1000, Math.max(0, expiresAt.getTime() - Date.now()))
-  if (ttlMs === 0) return
+  if (ttlMs === 0) {
+    fastify.log.info({ reason: 'ttl' }, 'email_skipped')
+    return
+  }
 
   const storePlain = env.ALLOW_TEST && user.email.endsWith('@test.ai')
   await db.insert(verification).values({
@@ -112,14 +121,17 @@ export async function notifyNewDeviceSignIn({
   void (async () => {
     const html = await render(LoginNotificationEmail(emailProps))
     const text = await render(LoginNotificationEmail(emailProps), { plainText: true })
-    const emailResponse = await fastify.emailProvider.emails.send({
-      from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-      to: user.email as string,
-      subject: `New device signed in to your ${env.APP_NAME} account`,
-      html,
-      text,
+    await sendMail({
+      provider: fastify.emailProvider,
+      logger: fastify.log,
+      mode: 'fireAndForget',
+      message: {
+        from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
+        to: user.email as string,
+        subject: `New device signed in to your ${env.APP_NAME} account`,
+        html,
+        text,
+      },
     })
-    if ('error' in emailResponse && emailResponse.error)
-      fastify.log.warn({ err: emailResponse.error }, 'Failed to send new-device notification')
-  })().catch(err => fastify.log.warn({ err }, 'Failed to send new-device notification'))
+  })()
 }

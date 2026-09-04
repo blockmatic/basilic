@@ -4,6 +4,7 @@ import { and, eq, isNull } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { sessions, users, verification } from '../../../../db/schema/index.js'
+import { logAuthVerifyFailed } from '../../../../lib/auth/signals.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,
@@ -57,14 +58,17 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
         .from(verification)
         .where(and(eq(verification.value, tokenHash), eq(verification.type, 'link_email')))
 
-      if (!verificationRecord)
+      if (!verificationRecord) {
+        logAuthVerifyFailed({ request, code: 'INVALID_TOKEN', signInMethod: 'link_email' })
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Invalid or expired token',
         })
+      }
 
       if (verificationRecord.expiresAt < new Date()) {
         await db.delete(verification).where(eq(verification.id, verificationRecord.id))
+        logAuthVerifyFailed({ request, code: 'EXPIRED_TOKEN', signInMethod: 'link_email' })
         return reply.code(401).send({
           code: 'EXPIRED_TOKEN',
           message: 'Token has expired',
@@ -74,11 +78,13 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
       const parts = verificationRecord.identifier.split(':')
       const userId = parts[0]
       const email = parts.slice(1).join(':')
-      if (!userId || !email || userId !== request.session.user.id)
+      if (!userId || !email || userId !== request.session.user.id) {
+        logAuthVerifyFailed({ request, code: 'INVALID_TOKEN', signInMethod: 'link_email' })
         return reply.code(401).send({
           code: 'INVALID_TOKEN',
           message: 'Token does not match current session',
         })
+      }
 
       const [existingByEmail] = await db.select().from(users).where(eq(users.email, email))
       if (existingByEmail && existingByEmail.id !== userId)

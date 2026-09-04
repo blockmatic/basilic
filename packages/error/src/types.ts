@@ -52,16 +52,12 @@ export interface CaptureErrorOptions {
   level?: 'error' | 'warning' | 'info'
 
   /**
-   * Whether to report to the backend.
-   * Allows disabling reporting entirely without conditional logic.
-   * @default true
+   * When false, emit nothing (do not log). Default true.
    */
   report?: boolean
 
   /**
-   * Optional logger instance (for non-Fastify contexts).
-   * Used when reporting backend is not initialized (errors are logged instead).
-   * In Fastify, pass `request.log` for request context.
+   * Optional logger. Fastify request handlers should pass `request.log`.
    */
   logger?: Logger
 }

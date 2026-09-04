@@ -6,6 +6,7 @@ export default defineConfig({
     core: 'src/core/index.ts',
     node: 'src/node/index.ts',
     nextjs: 'src/nextjs/index.ts',
+    'nextjs-server': 'src/nextjs/server.ts',
     browser: 'src/browser/index.ts',
     react: 'src/react/index.ts',
   },

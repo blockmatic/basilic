@@ -7,7 +7,11 @@ import { encryptAccountTokens } from '../../../../db/account.js'
 import { getDb } from '../../../../db/index.js'
 import { account, users } from '../../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
-import { type ErrorCode, sendCatalogError } from '../../../../lib/catalogs/mapper.js'
+import {
+  type ErrorCode,
+  sendCatalogError,
+  sendServerCatalogError,
+} from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
 import {
@@ -158,11 +162,11 @@ const oauthExchangeRoute: FastifyPluginAsync = async fastify => {
         user = u
       } else if (existingAccount) {
         const [u] = await db.select().from(users).where(eq(users.id, existingAccount.userId))
-        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_NOT_FOUND' })
+        if (!u) return sendServerCatalogError({ request, reply, code: 'USER_NOT_FOUND' })
         user = u
       } else {
         const u = await findOrCreateUserByEmail(db, { email, name, emailVerified: true })
-        if (!u) return sendCatalogError({ reply, status: 500, code: 'USER_CREATE_FAILED' })
+        if (!u) return sendServerCatalogError({ request, reply, code: 'USER_CREATE_FAILED' })
         user = u
       }
 

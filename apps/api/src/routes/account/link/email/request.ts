@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { users, verification } from '../../../../db/schema/index.js'
+import { sendMail } from '../../../../lib/email.js'
 import { env } from '../../../../lib/env.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../../lib/url.js'
@@ -103,17 +104,17 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
       )
 
       try {
-        const emailResponse = await fastify.emailProvider.emails.send({
-          from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-          to: email,
-          subject: 'Link your email',
-          html,
+        await sendMail({
+          provider: fastify.emailProvider,
+          logger: request.log,
+          mode: 'throw',
+          message: {
+            from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
+            to: email,
+            subject: 'Link your email',
+            html,
+          },
         })
-
-        if ('error' in emailResponse && emailResponse.error)
-          throw new Error(
-            `Failed to send email: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`,
-          )
       } catch (err) {
         await db.delete(verification).where(eq(verification.id, verificationId))
         throw err
