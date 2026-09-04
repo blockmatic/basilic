@@ -1,7 +1,6 @@
 # Basilic: API-First TypeScript FullStack Starter
 
-Build production-ready APIs and apps with typed SDKs, out-of-the-box authentication, a portable architecture, AI tooling, and crypto integrations.
-Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
+Fork-and-run developer starter: typed SDKs, self-hosted auth, a portable architecture, Cursor-first workflow, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
 
 > 🚧 **Active development** — Explore, fork, and contribute. 🏗️
 
@@ -10,21 +9,21 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - 🤖 **AI-first dev workflow** — Agent rules, skills, MCP integrations, and automated CodeRabbit reviews
 - 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
-- 🧩 **Web3 & AI starters** — Ready-to-use templates for Next.js, React, Expo, and Fastify
+- 🧩 **Web + API starters** — Next.js demo, React hooks, Expo UI scaffold, Fastify API (not a wallet or OpenAI template)
 - 🔓 **Zero vendor lock-in** — Run on VPS, AWS, Vercel, or local
 - 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
 - 🛡️ **Security & quality** — Automated checks in CI (Gitleaks, OSV, DeepSec)
-- ⛓️ **Multichain** — EVM, Solana; shared validation and chain-specific tooling
+- ⛓️ **Multichain (API)** — EVM and Solana SIWE/SIWS on Fastify; shared `@repo/utils/web3` helpers — not a web wallet demo
 - 📐 **Conventions** — Cursor rules per domain, @repo/error, Pino logging, shared TS and style
 - 🧑‍💻 **TypeScript-first** — End-to-end types from database to frontend
 
 ## Technology stack
 
-- **AI:** AI SDK, OpenAI, Claude, Grok
+- **AI (in-app):** AI SDK — Anthropic, OpenRouter, Ollama (no first-class OpenAI SDK)
 - **Frontend:** Next.js 16, React 19, Tailwind, ShadcnUI
 - **Backend:** Fastify, PostgreSQL, Supabase
-- **Web3:** Viem, Wagmi, Solana wallet tooling in shared packages
+- **Web3:** Fastify SIWE/SIWS + `@repo/utils/web3` helpers. **No Wagmi and no wallet UI in `apps/web`**
 - **DevOps:** Node.js 24.x (LTS Krypton), pnpm, TurboRepo, TypeScript, Biome, ESLint
 
 ## Apps
@@ -32,7 +31,7 @@ Fastify • OpenAPI • Next.js • Expo — one stack, multiple platforms.
 - **[API](apps/api/README.md)** — Type-safe REST API built with Fastify & OpenAPI
 - **[Web App](apps/web/README.md)** — Next.js app with monorepo integration
 - **[Mobile App](apps/mobile/README.md)** — Expo UI scaffold (shared `@repo/ui`; not an API client yet)
-- **[Documentation](apps/docu/README.md)** — Fumadocs-based docs site for architecture, ADRs, and development workflows
+- **[Documentation](apps/docu/README.md)** — Fumadocs site ([Product](https://basilic-docs.vercel.app/docs/product), architecture, ADRs, development)
 
 ## Packages
 
@@ -96,5 +95,8 @@ Run with `pnpm <script>`.
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 
+- [Product](https://basilic-docs.vercel.app/docs/product) — what Basilic is, feature map, non-goals
+- [Getting Started](https://basilic-docs.vercel.app/docs/development) — clone, `pnpm setup`, `db:start`, `pnpm reset`
 - [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Local vs remote (ports 3000, 3001, 8081; `start:localhost`, `start:tunnel`)
+- FIRST factory (stations, overlays): [`_first/`](_first/README.md) — load `_first/AGENTS.md` then `_first/ABOUT.md` then `_first/FIRST.md`. See [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)
 

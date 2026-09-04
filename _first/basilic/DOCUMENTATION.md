@@ -14,7 +14,7 @@ Consequential decisions, conventions, setup steps, and domain context live in di
 
 ## Artifacts
 
-- **Fact:** Canonical: [`../../apps/docu/content/docs/`](../../apps/docu/content/docs/) — architecture, ADRs, development, testing, deployment
+- **Fact:** Canonical: [`../../apps/docu/content/docs/`](../../apps/docu/content/docs/) — product, architecture, ADRs, development, testing, deployment
 - **Fact:** How to run: [`../../README.md`](../../README.md) and app/package READMEs — link to docs, no duplication ([docs.mdc](../../.cursor/rules/base/docs.mdc))
 - **Fact:** Agents: [`../../AGENTS.md`](../../AGENTS.md); constraints `.cursor/rules/`; skills `.agents/skills/`
 - **Fact:** Workflow index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
