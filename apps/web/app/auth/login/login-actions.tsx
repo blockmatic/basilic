@@ -14,6 +14,8 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
+import { capture } from '@/lib/analytics'
+import { getApiErrorCode } from '@/lib/auth/api-error'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
 import { LoginForm } from './login-form'
 import { PasskeyShortcut } from './passkey-shortcut'
@@ -175,6 +177,13 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
     error: passkeyError,
     isPending: isPasskeyPending,
   } = usePasskeyAuth()
+  const capturePasskeyFailed = (err: unknown) => {
+    capture({
+      name: 'auth_failed',
+      method: 'passkey',
+      errorCode: getApiErrorCode(err) ?? 'PASSKEY_FAILED',
+    })
+  }
   const { email: discoveryEmail } = usePasskeyDiscovery()
   const webauthnAvailable = useWebAuthnAvailable()
   const anyPending = isOAuthPending || isPasskeyPending || isGooglePending
@@ -209,17 +218,21 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
           email={discoveryEmail}
           onUsePasskey={() => {
             setLastAuthMethod('passkey')
-            startPasskeyAuth({
-              onSuccess: async ({ token, refreshToken }) => {
-                try {
-                  await updateAuthTokens({ token, refreshToken })
-                } catch (err) {
-                  toast.error(err instanceof Error ? err.message : 'Failed to complete sign-in')
-                  return
-                }
-                router.push('/')
+            startPasskeyAuth(
+              {
+                onSuccess: async ({ token, refreshToken }) => {
+                  try {
+                    await updateAuthTokens({ token, refreshToken })
+                  } catch (err) {
+                    toast.error(err instanceof Error ? err.message : 'Failed to complete sign-in')
+                    return
+                  }
+                  capture({ name: 'auth_succeeded', method: 'passkey' })
+                  router.push('/')
+                },
               },
-            })
+              { onError: capturePasskeyFailed },
+            )
           }}
           onUseAnotherMethod={() =>
             discoveryEmail && setOptedOutEmails(prev => new Set(prev).add(discoveryEmail))
@@ -232,6 +245,7 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
         onVerifySuccess={async ({ token, refreshToken }) => {
           try {
             await updateAuthTokens({ token, refreshToken })
+            capture({ name: 'auth_succeeded', method: 'magic_link' })
             router.push('/')
           } catch (err) {
             toast.error(err instanceof Error ? err.message : 'Failed to complete sign-in')
@@ -252,7 +266,7 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
             isOAuthPending={isOAuthPending}
             isGooglePending={isGooglePending}
             webauthnAvailable={webauthnAvailable}
-            startPasskeyAuth={startPasskeyAuth}
+            startPasskeyAuth={opts => startPasskeyAuth(opts, { onError: capturePasskeyFailed })}
             isPasskeyPending={isPasskeyPending}
           />
         }

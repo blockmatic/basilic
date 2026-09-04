@@ -19,10 +19,11 @@ Production behavior is observable at the level the project needs. Logs are struc
 - **Fact:** `GET /health` → `{ ok: true, dbReady }` — no auth, no deep probes (Resend/AI/IdP)
 - **Fact:** Deploy: [vercel.mdx](../../apps/docu/content/docs/deployment/vercel.mdx), [self-hosted-llm.mdx](../../apps/docu/content/docs/deployment/self-hosted-llm.mdx)
 - **Fact:** Rate limits are in-memory per API instance (Security names the policy; this station names the multi-replica blind spot)
+- **Fact:** `session_issued` is ops (Pino). Product `auth_succeeded` / `auth_failed` are no-op `capture()` calls, not log lines.
 - **Unresolved:** dashboards and alert rules; runbooks; verify-in-the-running-system after deploy
 - **Unresolved:** production identity/retries for in-product AI agents
 
-PostHog is Product, not operations. Do not file a missing success event as an ops ticket.
+PostHog is Product, not operations. Pino `session_issued` is ops. Product `auth_succeeded` / `auth_failed` are `capture()` calls, not log lines. Do not file a missing collected product event as an ops ticket.
 
 ## Minimum Useful Artifact
 

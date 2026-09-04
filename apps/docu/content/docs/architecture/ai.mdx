@@ -67,7 +67,7 @@ The web app uses `useChatFromConfig` (`@repo/react`) → `POST {baseUrl}/ai/chat
 { "__render": "user-info", "spec": { "root": "...", "elements": { ... } }, "summary": "..." }
 ```
 
-`assistant-chat.tsx` matches `tool-getAccountInfo` parts and renders via `user-info-catalog.tsx`. Do not rename the tool or change the output shape without updating the web UI.
+`assistant-chat.tsx` matches `tool-getAccountInfo` parts and renders via `user-info-catalog.tsx`. Do not rename the tool or change the output shape without updating the web UI. `__render: 'user-info'` is the product name for the demo account-context job. Product analytics records `assistant_turn` with `accountRender` when that surface is present — not merely when the assistant replies. See [Product analytics](/docs/architecture/analytics).
 
 Composer send (textarea + suggestions) is disabled while `status !== 'ready'`; stop remains available during `streaming`.
 

@@ -20,9 +20,10 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** New-device sign-in alerts are transactional email via Fastify `emailProvider` + `@repo/email`, not a notification product
 - **Fact:** Not a billed SaaS in files. No `PRODUCT.md` / PRD. Do not invent one to fill TAM.
 - **Fact:** Observed non-goals in code/docs: mobile not an API client; no web wallet UI; Cache Components off; `@repo/react` hooks handwritten
-- **Fact:** PostHog **chosen, not shipped** ([ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx), [analytics.mdx](../../apps/docu/content/docs/architecture/analytics.mdx)). Event taxonomy **unmeasured**. No `@vercel/analytics`.
-- **Unresolved:** GTM (channel, first successful use); success metrics that can fail (not `pnpm qa`); TAM/LTV (toolkit — say so); named decision owners for the product bet
-- **Unresolved:** keep / iterate / kill board
+- **Fact:** PostHog **chosen, not installed**. No SDK, env keys, or sink. Product events are **specified** in types + [analytics.mdx](../../apps/docu/content/docs/architecture/analytics.mdx) and **instrumented** at the web boundary via `apps/web/lib/analytics.ts` `capture()`. They are **not collected** and therefore **not measured**. No `@vercel/analytics`.
+- **Fact:** Two demo questions are specified: (1) auth — did sign-in complete or did a visible attempt fail (`auth_succeeded` / `auth_failed` by `method`); (2) assistant — did this turn render `__render: 'user-info'` (`assistant_turn` with `accountRender`). Factory GTM, GenUI act, demo surfaces, session revoke, cost-per-job: **unmeasured** (not instrumented).
+- **Unresolved:** GTM (channel, first successful use); PostHog install / consent / retention; success metrics that can fail (not `pnpm qa`); TAM/LTV (toolkit — say so); named decision owners for the product bet
+- **Unresolved:** keep / iterate / kill board; whether adopters copy `lib/analytics` (qualitative — no event can evaluate that)
 
 `pnpm qa` going green is Quality/Pipelines, not product success.
 
@@ -33,8 +34,8 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - goal: portable starter with self-hosted Web2/Web3 auth and Cursor-first workflow
 - non-goals: listed above as observed, not a ratified PRD
 - audience/channel/first use: **unresolved** beyond “fork and run”
-- metrics: **unmeasured**
-- events: **unmeasured** (PostHog chosen, not shipped)
+- metrics: auth and assistant jobs **instrumented, not collected** (cannot be queried yet)
+- events: `auth_succeeded`, `auth_failed`, `assistant_turn` — specified + instrumented, no sink
 - owners: **unresolved**
 
 ## Recipe
@@ -52,7 +53,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 
 - A new contributor can answer what we are building from README + this file: a starter/toolkit with a demo web app. Who/why/how-we-will-know beyond that is unresolved.
 - Success metrics can fail. They are not CI green. Currently unmeasured.
-- Named metrics have events, or are marked unmeasured (PostHog).
+- Named metrics have events, or are marked unmeasured. Auth/assistant are instrumented without a sink (not measured).
 - GTM is named at the level the product needs, or marked unresolved.
 - No silent product decisions in code without a note or open question.
 
@@ -64,7 +65,7 @@ Product intent is documented or explicitly deferred with named owners. Implement
 
 Apply Product First to Basilic.
 
-Read root README, `apps/docu/content/docs/index.mdx`, analytics MDX and ADR 011, and what the web, mobile, and API actually do. Do not assume documentation is complete. PostHog is not installed — do not claim events fire.
+Read root README, `apps/docu/content/docs/index.mdx`, analytics MDX and ADR 011, and what the web, mobile, and API actually do. Do not assume documentation is complete. PostHog is not installed. `capture()` is a no-op — do not claim events are collected or measured.
 
 Preserve intentional existing product choices. Do not silently decide scope, priorities, pricing, TAM, LTV, event names, or GTM. This is a toolkit, not a billed product in files — say so rather than filling finance blanks.
 

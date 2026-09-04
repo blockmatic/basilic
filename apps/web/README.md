@@ -87,6 +87,7 @@ apps/web/
 │   └── (dashboard)/       # Authenticated routes
 ├── app/providers.tsx      # QueryClient, ApiProvider, createClient (JWT mode)
 ├── lib/auth/              # auth-client, auth-server, jwt-utils
+├── lib/analytics.ts       # typed capture() — no-op sink
 ├── lib/env.ts             # Environment validation
 └── proxy.ts               # Auth gate and token refresh on navigation
 ```
@@ -104,6 +105,8 @@ See `app/providers.tsx`.
 
 Auth callbacks exchange credentials with Fastify and set the `api.session` cookie. Clients call Fastify directly; Next.js routes exist for cookie integration only.
 
+Product events (`capture` in `lib/analytics.ts`) are typed no-ops — instrumented, not collected. See [Product analytics](../docu/content/docs/architecture/analytics.mdx).
+
 See [Authentication Architecture](../docu/content/docs/architecture/authentication.mdx).
 
 ## Testing
@@ -114,3 +117,4 @@ Playwright E2E only (`e2e/**/*.spec.ts`). See [E2E Testing](../docu/content/docs
 
 - [Monorepo Structure](../docu/content/docs/architecture/monorepo.mdx)
 - [Frontend Architecture](../docu/content/docs/architecture/frontend.mdx)
+- [Product analytics](../docu/content/docs/architecture/analytics.mdx)

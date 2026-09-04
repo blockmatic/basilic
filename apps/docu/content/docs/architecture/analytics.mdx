@@ -1,11 +1,49 @@
 ---
 title: "Product Analytics"
-description: "PostHog is the chosen product analytics platform. It is not installed yet."
+description: "PostHog is chosen, not installed. Web capture() is a typed no-op: specified and instrumented, not collected."
 ---
 
-**PostHog is selected, not shipped.** There is no `posthog-js` / `posthog-react-native` dependency and no `apps/web/lib/analytics/` implementation. Auth success and feature-usage events must not be invented as Pino substitutes. Decision: [ADR 011](/docs/adrs/011-product-analytics). Operations logs are [Logging](/docs/architecture/logging).
+**PostHog is selected, not shipped.** There is no `posthog-js` / `posthog-react-native` dependency and no PostHog env keys. Decision: [ADR 011](/docs/adrs/011-product-analytics). Operations logs are [Logging](/docs/architecture/logging).
 
-When we install it, intended use is product analytics on web and mobile (events, funnels, replay, flags, experiments) — not engineering health.
+Web product events go through `apps/web/lib/analytics.ts` `capture()`. That helper has **no sink**. Auth and assistant jobs are **specified** (types + this page) and **instrumented** (call sites exist). They are **not collected** and **not measured**. Do not invent Pino substitutes for product events. Do not treat a no-op `capture()` as measurement.
+
+| State | Meaning | Auth / assistant |
+| --- | --- | --- |
+| specified | Event and props named | yes |
+| instrumented | Call site exists | yes |
+| collected | A sink receives the event | no |
+| measured | Queryable; used to keep / iterate / kill | no |
+
+## Product questions
+
+1. **Auth:** Did sign-in complete, or did a visible attempt fail? (`auth_succeeded` / `auth_failed` by `method`)
+2. **Assistant:** Did this turn render the account surface (`__render: 'user-info'`)? Not “the model replied.”
+
+Observable facts only. Rendering `user-info` is not user acceptance.
+
+## Event contract (`capture()`)
+
+Discriminated union. Unknown names and invalid property combinations do not type-check. `method` uses the same literals as session `signInMethod` (`magic_link`, `oauth_google`, `oauth_github`, `oauth_facebook`, `oauth_twitter`, `passkey`, `web3_eip155`, `web3_solana`).
+
+| Event | Fields | When |
+| --- | --- | --- |
+| `auth_succeeded` | `method` | After login cookies/tokens are set. Not refresh, proxy rotation, change-email, or `update-tokens`. |
+| `auth_failed` | `method`, `errorCode` | Where a catalog `code` still exists (callback `catch`, magic verify fail). Not login-banner mount (`?message=` is display copy). |
+| `assistant_turn` | `outcome`: `completed` \| `stopped` \| `error`; `accountRender`: boolean | One event per submitted user turn. Account-context job = `completed` **and** `accountRender: true`. |
+
+No prompt text, email, or tokens in props.
+
+```ts
+import { capture } from '@/lib/analytics'
+
+capture({ name: 'auth_succeeded', method: 'magic_link' })
+```
+
+## Later (not in the TypeScript union)
+
+Documented here only until they ship: `auth_method_selected`, `session_revoked`, `demo_feature_used`, `genui_acted`; props such as TTFU, tool names, token usage, stream duration. Token/latency/tool execution stay [ops](/docs/architecture/logging) until a product question needs a copy on the event.
+
+When PostHog is installed (separate PR): SDK, env keys, privacy copy that matches collection. Call sites stay `capture()`.
 
 ## PostHog Cloud Pricing (planned)
 
@@ -25,19 +63,17 @@ The free tier resets every month. See [PostHog pricing](https://posthog.com/pric
 
 ### Web (Next.js)
 
-- Use `posthog-js` (or `posthog-node` for server-side events)
+- Use `posthog-js` (or `posthog-node` for server-side events) **inside** `capture()` later
 - Defer loading with `next/dynamic` so analytics do not block the UI
+- No autocapture or session replay in v1 of that PR
 
 ### Mobile (Expo)
 
-- Use `posthog-react-native`
+- Use `posthog-react-native` when mobile product questions exist
 - Wrap the app with `PostHogProvider`
-
-### Events to track later
-
-Taxonomy is unmeasured until install: `auth_method_selected`, `auth_succeeded`, `auth_failed`, `session_revoked`, `demo_feature_used`, plus journey events only with a mapping.
 
 ## Related Documentation
 
 - [ADR 011: Product Analytics](/docs/adrs/011-product-analytics)
 - [Logging](/docs/architecture/logging)
+- [AI](/docs/architecture/ai) — assistant `__render: 'user-info'` job

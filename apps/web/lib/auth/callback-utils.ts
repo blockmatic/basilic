@@ -1,6 +1,7 @@
 import { ApiError } from '@repo/core'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { capture, type SignInMethod } from '@/lib/analytics'
 import { env } from '@/lib/env'
 import { authCookieSchema } from './auth-schemas'
 import { setAuthCookiesOnResponse } from './auth-server'
@@ -27,23 +28,28 @@ export function completeOAuthCallback({
   request,
   response,
   failureMessage,
+  method,
 }: {
   request: Request
   response: unknown
   failureMessage: string
+  method: SignInMethod
 }): NextResponse {
   const tokens = extractTokens(response)
-  if (!tokens)
+  if (!tokens) {
+    capture({ name: 'auth_failed', method, errorCode: failureMessage })
     return NextResponse.redirect(
       new URL(`/auth/login?message=${encodeURIComponent(failureMessage)}`, request.url),
       303,
     )
+  }
 
   const redirectResponse = NextResponse.redirect(
     new URL(getOAuthRedirectTarget(response), request.url),
     303,
   )
   setAuthCookiesOnResponse(redirectResponse, tokens)
+  capture({ name: 'auth_succeeded', method })
   return redirectResponse
 }
 
@@ -56,7 +62,7 @@ export async function handleOAuthBffGet({
   mapError,
 }: {
   request: Request
-  method: string
+  method: SignInMethod
   failureMessage: string
   fallbackMessage: string
   exchange: (args: { client: BffClient; code: string; state: string }) => Promise<unknown>
@@ -65,11 +71,13 @@ export async function handleOAuthBffGet({
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
   const state = searchParams.get('state')
-  if (!code || !state)
+  if (!code || !state) {
+    capture({ name: 'auth_failed', method, errorCode: 'missing_params' })
     return NextResponse.redirect(
       new URL(`/auth/login?message=${encodeURIComponent('missing_params')}`, request.url),
       303,
     )
+  }
 
   const cookieStore = await cookies()
   const { token } = parseAuthCookie(cookieStore.get(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)?.value)
@@ -77,12 +85,13 @@ export async function handleOAuthBffGet({
 
   try {
     const response = await exchange({ client, code, state })
-    return completeOAuthCallback({ request, response, failureMessage })
+    return completeOAuthCallback({ request, response, failureMessage, method })
   } catch (error) {
     logAuthBffFailure({ error, reqId, method })
     const rawMessage = error instanceof Error ? error.message : fallbackMessage
     const body = error instanceof ApiError ? error.body : undefined
     const errorCode = mapError(rawMessage, body)
+    capture({ name: 'auth_failed', method, errorCode })
     return NextResponse.redirect(
       new URL(`/auth/login?message=${encodeURIComponent(errorCode)}`, request.url),
       303,
