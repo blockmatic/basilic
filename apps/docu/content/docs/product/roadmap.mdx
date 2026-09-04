@@ -1,0 +1,39 @@
+---
+title: Roadmap
+description: R0, R-demo, later bets, and not-now. Backlog is GitHub Issues, not a markdown file.
+---
+
+Horizons, not a sprint board. Work items live in [GitHub Issues](https://github.com/blockmatic/basilic/issues). `__dev/` is gitignored scratch — not Fact, not the backlog.
+
+R0 is **documentation alignment**. It does not need a semver bump or a GitHub Release. Pipelines still run on PRs; Quality is [Product Ready](/docs/testing/product-ready).
+
+## R0 — docs, honesty, onboarding
+
+- Product pages: what Basilic is, [feature map](/docs/product/features), this roadmap
+- Honesty in README and auth docs (starter, not wallet/OpenAI template)
+- [Product Ready](/docs/testing/product-ready): `db:start` + `pnpm reset` before `pnpm dev`
+
+## R-demo — Markets + GenAI artifacts
+
+Named even if the implementation PR is still in flight: CoinGecko or checked-in mock, `getMarketSnapshot` + market-card catalog, Markets as signed-in home. No wallet UI. No Fastify markets CRUD. No extra CI workflow. See [Features](/docs/product/features).
+
+## Later (ask before R0)
+
+Tracked as issues. Do not treat them as committed R1.
+
+- PostHog install — [#183](https://github.com/blockmatic/basilic/issues/183)
+- Turn Sentry on — [#184](https://github.com/blockmatic/basilic/issues/184)
+- Wallet connect UI — [#185](https://github.com/blockmatic/basilic/issues/185)
+- Mobile `@repo/core` client — [#186](https://github.com/blockmatic/basilic/issues/186)
+
+R1 is still a choice among wallet UI, mobile client, and observability — not all three.
+
+## Not now
+
+FIRST CLI, `first.json`, FIRST as a Cursor skill, billed SaaS / TAM-LTV, first-class OpenAI SDK, GCP/AWS as the shipped deploy path, Cache Components on, 13th FIRST station, root `PRODUCT.md` / `ROADMAP.md`.
+
+## Related
+
+- [Product](/docs/product)
+- [Feature map](/docs/product/features)
+- [Product Ready](/docs/testing/product-ready)

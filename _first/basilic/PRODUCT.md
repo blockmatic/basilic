@@ -14,7 +14,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 
 ## Artifacts
 
-- **Fact:** Canonical product brief: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx) and [product/features.mdx](../../apps/docu/content/docs/product/features.mdx)
+- **Fact:** Canonical product brief: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx), [product/features.mdx](../../apps/docu/content/docs/product/features.mdx), [product/roadmap.mdx](../../apps/docu/content/docs/product/roadmap.mdx)
 - **Fact:** [`../../README.md`](../../README.md) — fork-and-run TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo scaffold). No Wagmi, no first-class OpenAI SDK, no web wallet UI
 - **Fact:** [`../../apps/docu/content/docs/index.mdx`](../../apps/docu/content/docs/index.mdx) — toolkit intro; Product is in the docs nav
 - **Fact:** Two audiences: **adopters** (developers using the starter) and **demo users** (web news `/`, markets, settings, in-shell assistant; auth is the shipped job)
@@ -28,7 +28,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** PD (Markets + GenAI artifacts) is named on the feature map as **intended**, not shipped
 - **Unresolved:** PostHog install / consent / retention; keep / iterate / kill board; whether adopters copy `lib/analytics`
 
-`pnpm qa` going green is Quality/Pipelines, not product success.
+`pnpm qa` going green is Pipelines, not product success. Quality for R0 is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
 
 ## Minimum Useful Artifact
 
