@@ -23,7 +23,7 @@ cp ../first/_first/ABOUT.md _first/ABOUT.md
 rsync -a --delete ../first/_first/principles/ _first/principles/
 ```
 
-Or copy those paths from a tagged `first` release. Skip `instance/` and `maintainers/`. Essays are optional; this repo links to them on the FIRST site instead of vendoring `articles/`.
+Or copy those paths from a tagged `first` release. Skip `instance/` and `maintainers/`. Essays are not fully vendored: `_first/articles/` holds pointer stubs so principle Navigation links resolve. The arguments live on [GitHub](https://github.com/blockmatic/first/tree/main/_first/articles).
 
 ## Human door
 

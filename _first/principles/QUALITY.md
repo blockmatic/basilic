@@ -52,7 +52,7 @@ Choose the mechanism that matches the output. Deterministic code gets tests. Mod
 
 ## Definition of Done
 
-Stated quality criteria are met and verified by the project's existing validation. Regressions are caught or explicitly accepted with documented rationale.
+This station’s stated quality criteria are met and verified by the project's existing validation. Regressions are caught or explicitly accepted with documented rationale. CI going green is Pipelines. This is not Product success after use.
 
 ## Agent Prompt
 

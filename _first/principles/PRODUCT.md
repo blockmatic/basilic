@@ -31,14 +31,16 @@ When the product is a business, also:
 - Runway / burn / time to breakeven when the product is the company
 - AARRR as a prompt for acquisition through revenue, not a mandatory scorecard
 
+When the product is a **toolkit or starter** (fork-and-run, not a billed SaaS), skip TAM, LTV, CAC, and AARRR. Write **N/A (toolkit)** once. Do not invent a marketplace to complete the template.
+
 Do not invent TAM, LTV, or a fog of events to complete a template. An internal tool may have none of the finance fields. Then say so.
 
 ## Minimum Useful Artifact
 
-- problem, users, and business or organizational goal
+- problem, users, and business or organizational goal (toolkit: goal is first successful clone, not revenue)
 - requirements, constraints, and explicit non-goals
 - audience, channel, and first successful use
-- one to three metrics with definition, target, and timeframe
+- one to three metrics with definition, target, and timeframe — or **unmeasured** / **N/A (toolkit)**
 - events that make each metric observable, or `unmeasured`
 - assumptions, open questions, and named decision owners
 
@@ -63,7 +65,7 @@ Do not invent TAM, LTV, or a fog of events to complete a template. An internal t
 
 ## Definition of Done
 
-Product intent is documented or explicitly deferred with named owners. Implementation aligns with stated goals and non-goals, or the docs were updated. Success that was claimed is either instrumented or marked unmeasured.
+This station’s product artifact is documented or explicitly deferred with named owners. Implementation aligns with stated goals and non-goals, or the docs were updated. Success that was claimed is either instrumented or marked unmeasured. This is not “the whole repository is done.”
 
 ## Agent Prompt
 
