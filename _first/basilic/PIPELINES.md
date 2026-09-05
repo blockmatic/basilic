@@ -73,4 +73,4 @@ When implementation completes, ensure CI would pass. Read failures with `gh` (no
 
 **Pipelines vs Operations:** Pipelines get changes into production. Operations runs what arrived.
 
-**Navigation:** [Generic spec](../principles/PIPELINES.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PIPELINES.md) · [Factory map](../ABOUT.md) · [GitHub Actions](../../apps/docu/content/docs/deployment/github-actions.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/PIPELINES.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PIPELINES.md) · [Factory map](../ABOUT.md) · [GitHub Actions](../../apps/docu/content/docs/deployment/github-actions.mdx)

@@ -55,7 +55,7 @@ The change moved through an explicit path. State is updated. Durable context ref
 
 ## Agent Prompt
 
-Apply Workflow First to Basilic.
+Apply Workflow First to Basilic. Use `/f-workflow` plus basilic-skills playbooks.
 
 Read current issues/PRs, ai-workflow MDX, and `.agents/skills/workflow/` before acting. Do not rely on chat as the system of record.
 
@@ -69,4 +69,4 @@ Stop and ask a human for product scope, security-sensitive changes, and destruct
 
 **Workflow vs Documentation:** Workflow determines when context is created. Documentation preserves it.
 
-**Navigation:** [Generic spec](../principles/WORKFLOW.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/WORKFLOW.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/WORKFLOW.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/WORKFLOW.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)

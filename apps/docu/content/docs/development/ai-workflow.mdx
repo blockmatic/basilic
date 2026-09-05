@@ -7,7 +7,7 @@ Development is **Cursor-first**. Claude Code follows the same rules and skills v
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era). Index this site once — [Cursor Setup](/docs/development/cursor-setup). Versioning and how to update skills: [Cursor Skills](/docs/development/cursor-skills).
 
-FIRST is vendored from [`blockmatic/first`](https://github.com/blockmatic/first). Copy `AGENTS.md`, `ABOUT.md`, and `principles/` into `_first/`; keep `FIRST.md` and `_first/basilic/` as this repo’s instance. Essays live on the FIRST site, not in this tree. Agents load `_first/AGENTS.md`, then `_first/ABOUT.md`, then `_first/FIRST.md`, then this repository's instructions and skills, then `_first/principles/X.md` for the station in scope, then the instance listed in FIRST.md. FIRST is a documentation artifact; it does not replace this repository's Cursor-first workflow. Factory validation (`pnpm validate`) runs in the first repo. There is **no FIRST skill** under `.agents/`.
+FIRST is vendored from [`blockmatic/first`](https://github.com/blockmatic/first). Install `npx skills add blockmatic/first`. Copy `README.md`, `AGENTS.md`, `ABOUT.md`, and `templates/` into `_first/`; keep `FIRST.md` and `_first/basilic/` as this repo’s instance. Essays live on the FIRST site. Agents load `_first/AGENTS.md`, then `_first/ABOUT.md`, then `_first/FIRST.md`, then this repository's instructions and skills, then `/f-*` for the station in scope, then the instance listed in FIRST.md. FIRST does not replace this repository's Cursor-first workflow. Factory validation (`pnpm validate`) runs in the first repo. Two catalogs: `blockmatic/first` (`/f-*`) and `blockmatic/basilic-skills` (tech + `/workflow`).
 
 ## FIRST stations
 
@@ -23,6 +23,7 @@ Always-on rules point at `apps/docu/content/docs/` for technical topics and `_fi
 | --- | --- | --- |
 | **Rules** (`.cursor/rules/*.mdc`) | Constraints. Override everything else | Always on: `general`, `naming`, `git`. Other rules attach when matching files are in context |
 | **Workflow skills** (`.agents/skills/workflow/<name>/`) | Slash playbooks | Type `/name` |
+| **FIRST skills** | `/f-*` from `npx skills add blockmatic/first` | Type `/f-product`, `/f-designer`, … |
 | **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Patterns for a stack | Agent loads when relevant; `@` or `/` to force |
 | **Indexed docs** | Advisory | Never override rules or source |
 

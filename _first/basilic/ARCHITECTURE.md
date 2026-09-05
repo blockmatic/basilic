@@ -95,4 +95,4 @@ Propose the smallest useful structural change or ADR. Record rationale and trade
 
 **Architecture vs Operations:** Architecture names the running parts. Operations observes and recovers them.
 
-**Navigation:** [Generic spec](../principles/ARCHITECTURE.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/ARCHITECTURE.md) · [Factory map](../ABOUT.md) · [Monorepo](../../apps/docu/content/docs/architecture/monorepo.mdx) · [API](../../apps/docu/content/docs/architecture/api.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/ARCHITECTURE.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/ARCHITECTURE.md) · [Factory map](../ABOUT.md) · [Monorepo](../../apps/docu/content/docs/architecture/monorepo.mdx) · [API](../../apps/docu/content/docs/architecture/api.mdx)

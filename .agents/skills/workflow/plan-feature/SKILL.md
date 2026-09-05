@@ -7,7 +7,7 @@ disable-model-invocation: true
 Systematically set up new feature from planning through implementation structure.
 
 1. **List goals first**: Capture and display feature goals at the outset for user alignment before any planning. Output a ## Goals section (3–7 bullets) summarizing scope, success criteria, and constraints. Confirm or adjust with user before proceeding.
-2. **Gather context**: Matching glob rule and skill, then **Read** the topic MDX under `apps/docu/content/docs/` (or this repo’s docs path). Rules override skills. FIRST: `_first/AGENTS.md` → `_first/ABOUT.md` → `_first/FIRST.md` → principle → instance.
+2. **Gather context**: Matching glob rule and skill, then **Read** the topic MDX under `apps/docu/content/docs/` (or this repo’s docs path). Rules override skills. FIRST: `_first/AGENTS.md` → `_first/ABOUT.md` → `_first/FIRST.md` → `/f-*` → instance.
 3. **Define requirements**: Clarify scope, identify user stories/acceptance criteria, plan technical approach
 4. **Summarize assumptions**: List 3–5 bullets before detailed planning
 5. **Create feature branch**: Branch from main/develop, set up local dev, configure dependencies

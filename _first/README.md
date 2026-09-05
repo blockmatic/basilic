@@ -4,26 +4,23 @@ Basilic is an **adopter** of FIRST. The factory source is [`blockmatic/first`](h
 
 This folder holds:
 
-- Vendored user pack: [`AGENTS.md`](AGENTS.md), [`ABOUT.md`](ABOUT.md), [`principles/`](principles/)
+- Vendored user pack: [`README.md`](README.md), [`AGENTS.md`](AGENTS.md), [`ABOUT.md`](ABOUT.md), [`templates/`](templates/)
 - This repository’s instance: [`FIRST.md`](FIRST.md) and [`basilic/`](basilic/)
+- Installed station skills: `.agents/skills/f/` via `npx skills add blockmatic/first`
 
-Do not edit the vendored files to encode Basilic facts. Put those in `FIRST.md` and `basilic/`. When updating from upstream, replace `AGENTS.md`, `ABOUT.md`, and `principles/` after reviewing the diff. Never overwrite `FIRST.md` or `basilic/`.
+Do not edit the vendored files to encode Basilic facts. Put those in `FIRST.md` and `basilic/`. When updating from upstream, replace `README.md`, `AGENTS.md`, `ABOUT.md`, and `templates/` after reviewing the diff. Refresh `/f` with the skills CLI. Never overwrite `FIRST.md` or `basilic/`.
 
 ## Load
 
-Root [`AGENTS.md`](../AGENTS.md) points to [`AGENTS.md`](AGENTS.md). Canonical load order: `_first/AGENTS.md` → `_first/ABOUT.md` → `_first/FIRST.md` → this repository's instructions and skills → `_first/principles/X.md` → the instance path listed in FIRST.md.
+Root [`AGENTS.md`](../AGENTS.md) points to [`AGENTS.md`](AGENTS.md). Canonical load order: `_first/AGENTS.md` → `_first/ABOUT.md` → `_first/FIRST.md` → this repository's instructions and skills → `/f-*` → the instance path listed in FIRST.md.
 
 ## Update from upstream
 
-From a sibling checkout of `first`, copy:
-
 ```sh
-cp ../first/_first/AGENTS.md _first/AGENTS.md
-cp ../first/_first/ABOUT.md _first/ABOUT.md
-rsync -a --delete ../first/_first/principles/ _first/principles/
+npx skills add blockmatic/first
 ```
 
-Or copy those paths from a tagged `first` release. Skip `instance/` and `maintainers/`. Essays are not fully vendored: `_first/articles/` holds pointer stubs so principle Navigation links resolve. The arguments live on [GitHub](https://github.com/blockmatic/first/tree/main/_first/articles).
+Then replace `_first/README.md`, `_first/AGENTS.md`, `_first/ABOUT.md`, and `_first/templates/` from a first release after reviewing the diff. Skip `instance/`, `maintainers/`, `principles/`, and `articles/`. Essays live on [GitHub](https://github.com/blockmatic/first/tree/main/_first/articles).
 
 ## Human door
 

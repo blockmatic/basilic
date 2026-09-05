@@ -67,6 +67,12 @@
       "skillPath": "skills/expo-use-dom-v55/SKILL.md",
       "computedHash": "ca7a80679bc40c9b2798b29aa90b57b665871e97d02abc91c3d394786f4607af"
     },
+    "f": {
+      "source": "blockmatic/first",
+      "sourceType": "github",
+      "skillPath": "skills/f/SKILL.md",
+      "computedHash": "d9159235299ba7ff73bff2a886df5eae415fdce8e7ccdd4a5fbf18346dcb6c1e"
+    },
     "fastify-v5": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",

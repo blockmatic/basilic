@@ -20,7 +20,7 @@ Consequential decisions, conventions, setup steps, and domain context live in di
 - **Fact:** Agents: [`../../AGENTS.md`](../../AGENTS.md); constraints `.cursor/rules/`; skills `.agents/skills/`
 - **Fact:** Workflow index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
 - **Fact:** Public LLM indexes: `/llms.txt`, `/llms-full.txt` on the docs site
-- **Fact:** Portable factory: vendored `../AGENTS.md`, `../ABOUT.md`, `../principles/`. This folder is the Basilic adoption pack, not a second docs site. Essays live in [`blockmatic/first`](https://github.com/blockmatic/first/tree/main/_first/articles).
+- **Fact:** Portable factory: vendored `../AGENTS.md`, `../ABOUT.md`, `../templates/`. Station specs: `/f-*` from `npx skills add blockmatic/first`. This folder is the Basilic adoption pack, not a second docs site. Essays live in [`blockmatic/first`](https://github.com/blockmatic/first/tree/main/_first/articles).
 - **Fact:** Same-change rule: update matching MDX when behavior, commands, or conventions change; update [PRODUCT.md](PRODUCT.md) when goals, feature map, or horizons change
 - **Fact:** `__dev/` is gitignored scratch. Do not treat it as Fact or as the backlog. Remembered technical decisions go in `apps/docu` or ADRs. Product decisions go in [PRODUCT.md](PRODUCT.md).
 - **Drift:** named in sibling instances (PostHog, “API as source of truth”, portability vs Vercel). Fix MDX in the same work when you change the fact; do not leave load-bearing drift only in chat.
@@ -62,7 +62,7 @@ Apply Documentation First to Basilic.
 
 Read root README, `AGENTS.md`, [PRODUCT.md](PRODUCT.md), `apps/docu/content/docs/`, ADRs, and `.cursor/rules` before acting. Compare documentation to implementation.
 
-Document decisions and conventions — not obvious code. Propose the smallest useful PRODUCT.md, MDX, or README update. When you change behavior, update durable files in the same work. Do not leave load-bearing decisions only in chat. Do not encode this repo’s product facts in `../principles/` or `../ABOUT.md`. Do not write Basilic product intent into `apps/docu`.
+Document decisions and conventions — not obvious code. Propose the smallest useful PRODUCT.md, MDX, or README update. When you change behavior, update durable files in the same work. Do not leave load-bearing decisions only in chat. Do not encode this repo’s product facts in factory `principles/` or `../ABOUT.md`. Do not write Basilic product intent into `apps/docu`.
 
 ## Notes
 
@@ -70,4 +70,4 @@ Document decisions and conventions — not obvious code. Propose the smallest us
 
 **Documentation vs Workflow:** Workflow determines when context is created. Documentation preserves it.
 
-**Navigation:** [Generic spec](../principles/DOCUMENTATION.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/DOCUMENTATION.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/DOCUMENTATION.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/DOCUMENTATION.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)

@@ -9,9 +9,17 @@ Cursor requires `name` in each `SKILL.md` to match the folder that contains it. 
 
 Rules override skills. Skills override the model. Indexed docs are advisory.
 
-## Catalog
+## Catalogs
 
-Canonical source: [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills).
+Two catalogs. Do not merge them.
+
+**FIRST stations** — [blockmatic/first](https://github.com/blockmatic/first). Nested `/f-*` playbooks.
+
+```bash
+npx skills add blockmatic/first
+```
+
+**Tech and workflow** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills).
 
 Install or refresh (interactive — pick skills and agents):
 
@@ -27,9 +35,11 @@ pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --cop
 
 That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/workflow/<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
 
-Root `skills-lock.json` tracks catalog hashes (`source: blockmatic/basilic-skills`). Commit it with `.agents/skills/` after every refresh.
+Root `skills-lock.json` tracks catalog hashes. FIRST is `source: blockmatic/first`. Commit the lock with `.agents/skills/` after every refresh.
 
 ## Two kinds
+
+**FIRST** — `.agents/skills/f/` plus nested `f-<name>/`. Slash-only station and role skills. Refresh from `blockmatic/first`, not basilic-skills.
 
 **Tech** — `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
