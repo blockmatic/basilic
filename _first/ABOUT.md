@@ -1,7 +1,7 @@
 # First Principles
 
 Version: 0.2-draft  
-Last reviewed: 2026-09-03
+Last reviewed: 2026-09-04
 
 Some decisions are too consequential to become afterthoughts. Important project knowledge should live in files, not disappear into conversations.
 
@@ -13,6 +13,13 @@ This is an agent-first factory, not an agent-autonomous one. Humans still decide
 
 - **Users of the framework** — adopting FIRST in a product repo. Copy the user pack into `_first/`. Edit [FIRST.md](FIRST.md) and opted-in station files. Merge a pointer into root `AGENTS.md`.
 - **Maintainers of the framework** — evolving FIRST itself. Start at [`blockmatic/first` maintainers](https://github.com/blockmatic/first/blob/main/_first/maintainers/README.md). Do not copy `maintainers/` or `instance/`.
+
+## Dual audience (minimum)
+
+- **User of the framework:** copy the user pack, write `FIRST.md`, keep product facts in instance files or docs those files point at.
+- **Maintainer of the framework:** edit `principles/`, `articles/`, `maintainers/`, and `packages/validate`. Do not encode one adopter’s product into generic files.
+
+Each principle’s **Definition of Done** is that station’s artifact. It is not the whole factory, not CI green, and not Product success after use. Quality / Product / Pipelines qualify “done” differently — see Boundaries below.
 
 ## Audiences
 

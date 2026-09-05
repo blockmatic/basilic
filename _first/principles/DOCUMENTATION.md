@@ -54,7 +54,9 @@ Public documentation may include `llms.txt` as a selective, machine-readable ori
 
 ## Definition of Done
 
-Durable context is written, accurate, and discoverable. Documentation drift is resolved or explicitly tracked. Future work will not need to rediscover what was already decided.
+This station’s durable context is written, accurate, and discoverable. Documentation drift is resolved or explicitly tracked. Future work will not need to rediscover what was already decided. This is not “CI is green.”
+
+Scratch (`__dev/` or chat) **graduates** when a decision must survive a new session: write it into the canonical doc (or an ADR) in the same change. Do not leave load-bearing Fact only in gitignored scratch.
 
 ## Agent Prompt
 
