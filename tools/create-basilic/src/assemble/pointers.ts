@@ -48,7 +48,7 @@ function rewriteRelativeDocuLinks({ path, content }: { path: string; content: st
     /(\.\.\/)+docu\/content\/docs\/([^\s)"'`]+)/g,
     (_full, _dots, slug: string) => {
       const target = `docs/basilic/${slug.replace(/\.mdx$/, '.md')}`
-      return relative(dirname(path), target)
+      return relative(dirname(path), target).replaceAll('\\', '/')
     },
   )
 }
