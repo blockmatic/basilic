@@ -7,7 +7,7 @@ See /f-workflow.
 ## Artifacts
 
 - **Fact:** Work state: GitHub Issues and pull requests. There is no `BACKLOG.md`. `__dev/` is gitignored scratch, not the backlog.
-- **Fact:** Path: plan (`/plan-feature`) → review → `/build` → `/git-commit` → `/git-create-pr` → CI + CodeRabbit → `/retro`. Use `/exec-push` only when the full implementation-to-PR path is requested.
+- **Fact:** Path: plan (`/plan-feature`) → review → `/build` → `/git-commit` → `/git-create-pr` → CI + CodeRabbit → `/retro`. Use `/exec-push` only when the full implementation-to-PR path is requested. UI surfaces: `/workflow ui` (`/use-frontend`).
 - **Fact:** Index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
 - **Fact:** Playbooks: `.agents/skills/workflow/` — `/workflow` dispatcher and unprefixed children; shared authoring and completion references are packaged inside that tree
 - **Fact:** Consequential decisions: product intent in [PRODUCT.md](PRODUCT.md); technical in ADRs and `apps/docu`

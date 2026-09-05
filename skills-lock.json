@@ -183,6 +183,18 @@
       "skillPath": "skills/wagmi-v3/SKILL.md",
       "computedHash": "4fbe400f2d512bc1499e059db8f52e55078087409eb3ee68582c3feb7e5caf60"
     },
+    "web-design-guidelines-v1": {
+      "source": "../basilic-skills",
+      "sourceType": "local",
+      "skillPath": "skills/web-design-guidelines-v1/SKILL.md",
+      "computedHash": "03bacce94e4429c4b735869b1038ecaa2f65ae0aa183cc503743d311b195a676",
+      "guidelines": {
+        "source": "vercel-labs/web-interface-guidelines",
+        "path": "command.md",
+        "commit": "e3d624baaf29dc1fc645aff3e38f03e564d2d6b1",
+        "computedHash": "5a775e6411f790f518dbc9c1fa7c50a89e6873502d9a3530a6eb223a590bcfe8"
+      }
+    },
     "workflow": {
       "source": "../basilic-skills",
       "sourceType": "local",

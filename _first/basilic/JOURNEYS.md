@@ -27,9 +27,9 @@ Interface:
 - **Fact:** Tokens: [`../../packages/ui/src/styles/tokens.css`](../../packages/ui/src/styles/tokens.css) — semantic colors, sidebar, radius, `@theme inline`, Inter / Poppins / mono
 - **Fact:** Components: `@repo/ui` (shadcn/ui, Radix, Tailwind 4). ADR [004](../../apps/docu/content/docs/adrs/004-design-system.mdx). Frontend: [frontend.mdx](../../apps/docu/content/docs/architecture/frontend.mdx)
 - **Fact:** Apps consume `@repo/ui`; app-only UI collocated in `apps/web` / `apps/mobile` / `apps/docu`
-- **Fact:** Skills: `shadcn-v3`, `tailwind-design-system-v4`, `frontend-design-v1`; playbook `/audit-accessibility`, `/use-shadcn`
-- **Fact:** Browser verification across states is the UI bar — not a single default screenshot
-- **Unresolved:** Google-format `_first/DESIGN.md` (do not generate from `tokens.css` until written on purpose); motion guidelines; copy patterns beyond component defaults
+- **Fact:** Skills: `shadcn-v3`, `tailwind-design-system-v4`, `frontend-design-v1`, `web-design-guidelines-v1`, `composition-patterns-v1`; playbooks `/use-frontend`, `/audit-accessibility`, `/use-shadcn`
+- **Fact:** Browser verification is a bounded desktop + mobile screenshot pass plus keyboard — not visual-regression CI (Quality still unresolved for that)
+- **Unresolved:** Google-format `_first/DESIGN.md` (do not generate from `tokens.css` until written on purpose); motion guidelines beyond existing `emilkowal-animations-v1` / `motion-v13` skills; copy patterns beyond component defaults
 
 ```mermaid
 stateDiagram-v2

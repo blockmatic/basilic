@@ -151,7 +151,7 @@ This package follows the **Component Library** pattern:
 - **Peer Dependencies**: Framework dependencies only (`react`, `react-dom`) - consumers control React version
 - **Rationale**: Simpler developer experience - install `@repo/ui` and it works. Version consistency across all apps. Follows industry patterns (shadcn/ui, Material-UI, Chakra UI)
 
-See [Frontend Architecture](@apps/docu/content/docs/architecture/frontend.mdx) for design system details.
+See [Frontend Architecture](@apps/docu/content/docs/architecture/frontend.mdx) for design system details. Agent surfaces: `/use-frontend` in the installed workflow skills.
 
 ## Scripts
 

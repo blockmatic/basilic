@@ -15,6 +15,7 @@ See /f-quality.
 - **Fact:** Coverage: `pnpm --filter @repo/api test:cov` uploaded; **no floors** in CI
 - **Fact:** Playbooks: `write-api-test`, `write-unit-tests`, `use-tdd`, `run-all-tests-and-fix`
 - **Fact:** Product Ready (R0 bar) is the fork-and-run checklist on [product-ready.mdx](../../apps/docu/content/docs/testing/product-ready.mdx), not CI green. Workflow runs CI.
+- **Fact:** `/use-frontend` rendered verification is bounded screenshots and keyboard, not visual-regression CI
 - **Unresolved:** eval datasets for `/ai/chat` and `/ai/generate`; performance budgets; visual regression
 
 ## Minimum Useful Artifact
