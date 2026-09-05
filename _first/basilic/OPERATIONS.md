@@ -76,4 +76,4 @@ Propose the smallest useful logging, metric, or alert improvement. Use structure
 
 **Operations vs Data:** Data owns product-state meaning. Operations owns telemetry about runtime health.
 
-**Navigation:** [Generic spec](../principles/OPERATIONS.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/OPERATIONS.md) · [Factory map](../ABOUT.md) · [Logging](../../apps/docu/content/docs/architecture/logging.mdx) · [Error handling](../../apps/docu/content/docs/architecture/error-handling.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/OPERATIONS.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/OPERATIONS.md) · [Factory map](../ABOUT.md) · [Logging](../../apps/docu/content/docs/architecture/logging.mdx) · [Error handling](../../apps/docu/content/docs/architecture/error-handling.mdx)

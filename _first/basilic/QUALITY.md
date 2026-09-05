@@ -72,4 +72,4 @@ Write or update tests alongside implementation. Use existing commands. For `/ai/
 
 **Quality vs Data:** Data owns domain invariants. Quality owns release gates and eval datasets.
 
-**Navigation:** [Generic spec](../principles/QUALITY.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/QUALITY.md) · [Factory map](../ABOUT.md) · [Testing](../../apps/docu/content/docs/testing/index.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/QUALITY.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/QUALITY.md) · [Factory map](../ABOUT.md) · [Testing](../../apps/docu/content/docs/testing/index.mdx)

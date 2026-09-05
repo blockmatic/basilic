@@ -83,7 +83,7 @@ Separate `pnpm qa` from post-launch success. Propose the smallest useful update 
 
 **Product vs Data:** Product names events and outcomes to measure. Data owns canonical domain meaning, authority, lifecycle, and evolution.
 
-**Navigation:** [Generic spec](../principles/PRODUCT.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PRODUCT.md) · [Factory map](../ABOUT.md) · [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx) · [Analytics](../../apps/docu/content/docs/architecture/analytics.mdx) · [ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/PRODUCT.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PRODUCT.md) · [Factory map](../ABOUT.md) · [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx) · [Analytics](../../apps/docu/content/docs/architecture/analytics.mdx) · [ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx)
 
 ## Brief
 
@@ -109,7 +109,7 @@ A portable typed API plus web, mobile scaffold, and docs so an adopting develope
 - Next.js Cache Components on
 - First-class OpenAI SDK (chat uses Anthropic → OpenRouter → Ollama)
 - GCP/AWS as the shipped deploy path (Vercel + Supabase is documented)
-- FIRST CLI, `first.json`, or FIRST as a Cursor skill
+- FIRST CLI, `first.json`, or a 13th FIRST station. `npx skills add blockmatic/first` (`/f-*`) is in; do not ship a skill that mixes spec and instance
 - Billed SaaS metrics
 
 ### How we will know
@@ -190,4 +190,4 @@ R1 is still a choice among wallet UI, mobile client, and observability — not a
 
 ### Not now
 
-FIRST CLI, `first.json`, FIRST as a Cursor skill, billed SaaS / TAM-LTV, first-class OpenAI SDK, GCP/AWS as the shipped deploy path, Cache Components on, 13th FIRST station, root `PRODUCT.md` / `ROADMAP.md`.
+FIRST CLI, `first.json`, billed SaaS / TAM-LTV, first-class OpenAI SDK, GCP/AWS as the shipped deploy path, Cache Components on, 13th FIRST station, root `PRODUCT.md` / `ROADMAP.md`. `/f` via `npx skills add blockmatic/first` is in.

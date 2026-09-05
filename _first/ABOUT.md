@@ -7,17 +7,17 @@ Some decisions are too consequential to become afterthoughts. Important project 
 
 This is an agent-first factory, not an agent-autonomous one. Humans still decide product scope, security-sensitive changes, and anything that cannot be recovered from the repository. Agents inspect, propose, implement, and update durable context. They do not silently invent the goal.
 
-"First" means: make the concern explicit before implementation, chat, or a generated UI invents it. The twelve are stations on one factory, not a waterfall and not competing religions.
+"First" means: make the concern explicit before implementation, chat, or a generated UI invents it. FIRST is a spec-to-code factory: shared language between agents and domain experts, product and system design before code. The twelve are stations on one factory, not a waterfall and not competing religions.
 
 ## Who this is for
 
-- **Users of the framework** — adopting FIRST in a product repo. Copy the user pack into `_first/`. Edit [FIRST.md](FIRST.md) and opted-in station files. Merge a pointer into root `AGENTS.md`.
+- **Users of the framework** — adopting FIRST in a product repo. Install `npx skills add blockmatic/first`. Copy the user pack into `_first/`. Edit [FIRST.md](FIRST.md) and opted-in station files from [templates/](templates/). Merge a pointer into root `AGENTS.md`.
 - **Maintainers of the framework** — evolving FIRST itself. Start at [`blockmatic/first` maintainers](https://github.com/blockmatic/first/blob/main/_first/maintainers/README.md). Do not copy `maintainers/` or `instance/`.
 
 ## Dual audience (minimum)
 
-- **User of the framework:** copy the user pack, write `FIRST.md`, keep product facts in instance files or docs those files point at.
-- **Maintainer of the framework:** edit `principles/`, `articles/`, `maintainers/`, and `packages/validate`. Do not encode one adopter’s product into generic files.
+- **User of the framework:** install `/f`, copy the user pack, write `FIRST.md`, keep product facts in instance files or docs those files point at.
+- **Maintainer of the framework:** edit `principles/`, `articles/`, `skills/f/`, `maintainers/`, and `packages/validate`. Do not encode one adopter’s product into generic files.
 
 Each principle’s **Definition of Done** is that station’s artifact. It is not the whole factory, not CI green, and not Product success after use. Quality / Product / Pipelines qualify “done” differently — see Boundaries below.
 
@@ -26,21 +26,25 @@ Each principle’s **Definition of Done** is that station’s artifact. It is no
 Inside the user pack:
 
 - **Humans reading:** start at [README.md](README.md), then `articles/`.
-- **Agents operating:** start at [AGENTS.md](AGENTS.md), then this file, then [FIRST.md](FIRST.md), then `principles/`.
-- **Humans applying:** this file plus the matching `principles/X.md`. The essay is optional once you know the argument.
+- **Agents operating:** start at [AGENTS.md](AGENTS.md), then this file, then [FIRST.md](FIRST.md), then the matching `/f-*` skill.
+- **Humans applying:** this file plus the matching `/f-*` skill (or `principles/X.md` in this factory repo). The essay is optional once you know the argument.
 
 Articles argue. Principles operate. Same filename in both folders.
 
 ## Drop-in
 
-Copy into `_first/` (not the repository root as loose files):
+Install the skill, then copy into `_first/` (not the repository root as loose files):
+
+```bash
+npx skills add blockmatic/first
+```
 
 - [AGENTS.md](AGENTS.md)
 - [ABOUT.md](ABOUT.md) (this file)
-- `principles/`
+- [templates/](templates/) — copy only stations listed as In
 - [FIRST.md](FIRST.md) — create this; list in and out
 
-[README.md](README.md) and `articles/` are the human pack. They are not required for an agent to operate. Skip `maintainers/` and `instance/`. Layout and why: [PACKAGING.md](https://github.com/blockmatic/first/blob/main/_first/maintainers/PACKAGING.md).
+[README.md](README.md) and `articles/` are the human pack. They are not required for an agent to operate. Do not copy `principles/` or `articles/` into an adopter repo. Skip `maintainers/` and `instance/`. Layout and why: [PACKAGING.md](https://github.com/blockmatic/first/blob/main/_first/maintainers/PACKAGING.md).
 
 ## Documentation inventory
 
@@ -52,8 +56,9 @@ User pack — copy these (plus `FIRST.md` you create):
 | [AGENTS.md](AGENTS.md) | Users, agents | Load order, operating rules, reusable prompt |
 | [ABOUT.md](ABOUT.md) | Users, both | Canonical map of stations, loops, and boundaries |
 | [FIRST.md](FIRST.md) | Users, both | This repo’s in/out map and instance paths |
-| `articles/X.md` | Users, humans | Argument for station X; points to `principles/X.md` |
-| `principles/X.md` | Users applying and agents operating | Operational spec for station X; points to `articles/X.md` |
+| [templates/](templates/) | Users applying | Empty overlay structs; copy only opted-in stations |
+| `articles/X.md` | Factory / site humans | Argument for station X; points to `principles/X.md` |
+| Installed `/f-*` | Users applying and agents operating | Operational spec (copy of `principles/X.md` in this factory) |
 
 Maintainer pack — do not copy: [maintainers/](https://github.com/blockmatic/first/tree/main/_first/maintainers). Skip the factory `instance/` overlays. The source-tree validator is `packages/validate` in [blockmatic/first](https://github.com/blockmatic/first).
 
