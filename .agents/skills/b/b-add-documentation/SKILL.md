@@ -4,9 +4,13 @@ description: Add comprehensive documentation for current code/feature per projec
 disable-model-invocation: true
 ---
 
-Add documentation for the current code/feature. Follow `.cursor/rules/base/docs.mdc` and `.cursor/rules/base/readme.mdc`.
+## Purpose and inputs
 
-## Where to write
+Document the current code or feature. Follow `.cursor/rules/base/docs.mdc` and `.cursor/rules/base/readme.mdc`. Do not commit unless asked.
+
+## Steps
+
+Write to the layer that owns the change:
 
 | Layer | Role | Update when |
 | --- | --- | --- |
@@ -20,3 +24,13 @@ Inline comments only when the code is otherwise misleading. Do not copy MDX into
 2. **Write or patch MDX** if the canonical explanation changed
 3. **Patch README** only for run/setup/scripts; link the MDX
 4. **Patch the glob-matched `.mdc`** only if a constraint changed
+
+## Verification
+
+- [ ] The owning docs layer matches the kind of change.
+- [ ] READMEs link to MDX instead of duplicating it.
+- [ ] No unsolicited commit.
+
+## Handoff
+
+Report which files changed and which layers were intentionally left alone.

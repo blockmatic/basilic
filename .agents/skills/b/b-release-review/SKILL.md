@@ -4,6 +4,8 @@ description: Advisory review of release impact, changelog, and template contract
 disable-model-invocation: true
 ---
 
+## Purpose and inputs
+
 Advisory only. Do not bump versions, merge a release PR, or use publish credentials.
 
 ## Steps

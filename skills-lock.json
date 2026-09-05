@@ -22,7 +22,7 @@
     "b": {
       "source": "../basilic-skills",
       "sourceType": "local",
-      "computedHash": "3f4aef4c571b38332d3c35149cea30bacf3e2eacae3a8a9441dcd1d5f84158b1"
+      "computedHash": "567e629f532d85f4642c09fa93c523781a454279816a8ff19211e4d6963940c4"
     },
     "drizzle-orm-v0": {
       "source": "blockmatic/basilic-skills",

@@ -18,7 +18,13 @@ Reply in chat only—never create files unless the user asks to apply a change. 
 2. **Be specific**: Name files, APIs, grep patterns, leftover folders, APIs you taught vs what the app still calls. Skip items that were the right call
 3. **Actionable**: Each item implies a different next action (rewrite, delete, document, don't migrate). If you would not change it, omit it
 4. **Honest**: Include mistakes (broken snippets, substring grep, hunting dirs that were already gone)
-5. **Short**: A few bullets. No preamble. Do not offer to implement unless asked
+5. **Short**: A few bullets. Do not offer to implement unless asked
+
+## Verification
+
+- [ ] Reply is chat-only unless the user asked to apply a change.
+- [ ] Items are scoped to this work, not a generic process lecture.
+- [ ] No delivery-evidence claim and no unsolicited follow-up work.
 
 ## Handoff
 

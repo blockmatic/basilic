@@ -16,7 +16,7 @@ Comprehensive onboarding process to get new developer up and running quickly.
 4. **Run web/API**: `pnpm dev` (API + Next.js)
 5. **Run mobile (optional)**: `pnpm --filter @repo/mobile start` (or `start:localhost` / `start:tunnel` for remote). See the development-environments page from the technical docs path in `AGENTS.md`.
 6. **Verify**: Simulator/device can load the app and reach the API
-7. **Project familiarization**: Review project structure, understand architecture, read key documentation, set up local database, verify all tests passing, submit first PR
+7. **Project familiarization**: Review project structure, architecture, and key docs; set up the local database; verify tests pass. Point at `/b-git-create-pr` when they are ready. Do not open a PR unless asked.
 
 ## Completion
 
