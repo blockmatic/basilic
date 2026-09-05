@@ -28,7 +28,13 @@ Automated path:
 - **Fact:** Vercel git deploys web/api/docu ([vercel.mdx](../../apps/docu/content/docs/deployment/vercel.mdx)). CI does **not** deploy. Preview migrate gated unless `RUN_PG_MIGRATE=true`.
 - **Fact:** `web-e2e` chat project runs only when a non-placeholder Anthropic key is present (`hasRealAnthropicKey()`: empty, `sk-ant-xxx`, and `sk-ant-dummy*` omit it); auth/dashboard E2E still run on forks
 - **Fact:** R0 is documentation alignment. Basilic **distribution** uses GitHub Releases + npm after a maintainer merges the Release Please PR. Preview deploys still run from git as usual.
-- **Fact:** npm tarball identity is SHA-256 of the packed file (see [PIPELINES.md](PIPELINES.md)). Vercel and EAS still rebuild from git.
+- **Fact:** Vercel git deploys `apps/web`, `apps/api`, and `apps/docu`. EAS workflows deploy mobile. Those are app delivery, not Basilic npm distribution ([publishing.mdx](../../apps/docu/content/docs/deployment/publishing.mdx), [ADR 012](../../apps/docu/content/docs/adrs/012-scaffolding-and-releases.mdx)).
+- **Fact:** Version lives on the repo root (`package.json` `version`) and is synced into `tools/create-basilic/package.json`. Tag format `vX.Y.Z`.
+- **Fact:** After the tag, `publish-create-basilic.yml` assembles and packs **once**, tests that tarball, publishes it with npm trusted publishing (`id-token` only on that job), and attaches the same file to the GitHub Release.
+- **Fact:** Artifact identity: SHA-256 of the packed tarball. Do not rebuild at publish. Retry GitHub asset upload from the retained artifact; never overwrite an npm version. Vercel and EAS still rebuild from git.
+- **Fact:** Preview: manual `0.1.0-next.1` with npm dist-tag `next`, not `latest`. Stable `1.0.0` only after Product Ready from `npx create-basilic@<version>`.
+- **Fact:** Generated repos do not receive Release Please, the publish workflow, or npm credentials.
+- **Fact:** Product Ready does not require a GitHub Release. Distribution releases are a separate automated path.
 
 ## Minimum Useful Artifact
 
@@ -39,9 +45,10 @@ Automated path:
 - validation: Product Ready for adopter bar; CI for Workflow; learning: `/retro` and durable files when decisions changed
 - local mirror: `pnpm qa`, `pnpm lint`, `pnpm checktypes`
 - failures: `gh pr checks` / `gh run view` (`/fix-github-actions`); never GitHub MCP for Actions logs
+- commit-stage artifact: release tag SHA; packed tarball + SHA-256; promotion is maintainer merge → pack once → npm + GitHub asset; rollback is patch + deprecate, never rewrite tags
 
 ## Notes
 
 Quality names the bar. Workflow runs it. Architecture defines deployment units. Operations runs what arrived. Never `--no-verify`. A green local sandbox is not GitHub Actions.
 
-**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/WORKFLOW.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/WORKFLOW.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx) · [GitHub Actions](../../apps/docu/content/docs/deployment/github-actions.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/WORKFLOW.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/WORKFLOW.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx) · [GitHub Actions](../../apps/docu/content/docs/deployment/github-actions.mdx) · [Publishing](../../apps/docu/content/docs/deployment/publishing.mdx)

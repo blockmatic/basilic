@@ -74,7 +74,7 @@ Required `##` headings:
 
 Factory-only (do not copy into an adopter repo): `articles/X.md` and `principles/X.md`. Essays argue; principles operate. Same filenames.
 
-Maintainer pack — do not copy: [maintainers/](https://github.com/blockmatic/first/tree/main/_first/maintainers). Skip the factory `instance/` overlays. The source-tree validator is `packages/validate` in [blockmatic/first](https://github.com/blockmatic/first).
+Maintainer pack — do not copy: [maintainers/](https://github.com/blockmatic/first/tree/main/_first/maintainers). Skip the factory `instance/` overlays. `packages/validate` in [blockmatic/first](https://github.com/blockmatic/first) checks this source tree (`pnpm validate`). Opt-in adopter packs: `pnpm --filter @repo/validate validate:adopter -- <path-to-_first>`.
 
 The canonical station order is Product → Journeys → Architecture → Data → API → Documentation → Workflow → Quality → Security → Operations. The filenames are identical across `articles/` and `principles/`; the directory names distinguish argument from operation.
 
