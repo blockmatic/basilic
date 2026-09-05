@@ -53,7 +53,7 @@ export function clearAuthCookiesOnResponse(response: {
   response.cookies.set(cookieName, '', { ...cleanOpts, maxAge: 0 } as typeof opts)
 }
 
-export async function getServerAuthCookie() {
+export async function getServerAuthCookie(): Promise<ReturnType<typeof parseAuthCookie>> {
   const cookieStore = await cookies()
   return parseAuthCookie(cookieStore.get(cookieName)?.value)
 }

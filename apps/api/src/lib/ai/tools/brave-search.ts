@@ -6,11 +6,7 @@ import { env } from '../../env.js'
 
 const maxBraveResults = 8
 
-export function createBraveSearchTool(
-  apiKey: string,
-  log: FastifyBaseLogger,
-  abortSignal?: AbortSignal,
-) {
+function braveSearchTool(apiKey: string, log: FastifyBaseLogger, abortSignal?: AbortSignal) {
   return tool({
     description:
       'Search the web for current information. Use when the user asks about recent events, news, facts, or anything that requires up-to-date web results.',
@@ -57,4 +53,12 @@ export function createBraveSearchTool(
       }
     },
   })
+}
+
+export function createBraveSearchTool(
+  apiKey: string,
+  log: FastifyBaseLogger,
+  abortSignal?: AbortSignal,
+): ReturnType<typeof braveSearchTool> {
+  return braveSearchTool(apiKey, log, abortSignal)
 }

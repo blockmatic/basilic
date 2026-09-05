@@ -2,9 +2,7 @@ import { sql } from 'drizzle-orm'
 import { getDb } from './index.js'
 
 export const dbHealth = {
-  async probe() {
-    const override = (globalThis as { __basilicDbReady?: boolean }).__basilicDbReady
-    if (typeof override === 'boolean') return override
+  async probe(): Promise<boolean> {
     try {
       const db = await getDb()
       await db.execute(sql`select 1`)

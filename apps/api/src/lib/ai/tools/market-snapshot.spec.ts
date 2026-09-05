@@ -12,6 +12,10 @@ describe('loadMarketRows abort', () => {
     controller.abort()
     const { source } = await loadMarketRows(controller.signal)
     expect(source).toBe('mock')
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    )
     vi.unstubAllGlobals()
   })
 })

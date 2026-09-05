@@ -40,7 +40,13 @@ export async function refreshSessionViaNext(): Promise<{
 
   if (response.status === 401) return null
   if (!response.ok) throw new Error(`Token refresh failed (${response.status})`)
-  const parsed = tokensResponseSchema.safeParse(await response.json())
+  let body: unknown
+  try {
+    body = await response.json()
+  } catch {
+    return null
+  }
+  const parsed = tokensResponseSchema.safeParse(body)
   return parsed.success ? parsed.data : null
 }
 

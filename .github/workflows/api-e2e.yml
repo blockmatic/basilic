@@ -31,7 +31,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-pnpm
       - name: Check OpenAPI drift
-        run: pnpm generate && git diff --exit-code -- apps/api/openapi/openapi.json packages/core/src/gen packages/core/src/api-wrapper.gen.ts packages/core/src/api-client.gen.ts packages/cli/src/gen
+        run: |
+          pnpm generate
+          git diff --exit-code -- apps/api/openapi/openapi.json packages/core/src/gen packages/core/src/api-wrapper.gen.ts packages/core/src/api-client.gen.ts packages/cli/src/gen
+          untracked=$(git status --short --untracked-files=all -- packages/core/src/gen packages/cli/src/gen)
+          if [ -n "$untracked" ]; then
+            echo "$untracked"
+            exit 1
+          fi
       - name: Unit tests with coverage
         run: pnpm --filter @repo/api test:cov
       - name: Upload Vitest coverage

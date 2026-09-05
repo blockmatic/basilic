@@ -289,6 +289,13 @@ export type AccountLinkEmailRequestErrors = {
     code: string;
     message: string;
   };
+  /**
+   * Default Response
+   */
+  500: {
+    code: string;
+    message: string;
+  };
 };
 
 export type AccountLinkEmailRequestError = AccountLinkEmailRequestErrors[keyof AccountLinkEmailRequestErrors];
@@ -325,6 +332,13 @@ export type AccountLinkEmailVerifyErrors = {
    * Default Response
    */
   409: {
+    code: string;
+    message: string;
+  };
+  /**
+   * Default Response
+   */
+  500: {
     code: string;
     message: string;
   };
@@ -1042,6 +1056,13 @@ export type MagiclinkRequestErrors = {
     message: string;
     retryAfter: number;
   };
+  /**
+   * Default Response
+   */
+  500: {
+    code: string;
+    message: string;
+  };
 };
 
 export type MagiclinkRequestError = MagiclinkRequestErrors[keyof MagiclinkRequestErrors];
@@ -1103,6 +1124,13 @@ export type MagiclinkVerifyErrors = {
    * Default Response
    */
   429: {
+    code: string;
+    message: string;
+  };
+  /**
+   * Default Response
+   */
+  500: {
     code: string;
     message: string;
   };

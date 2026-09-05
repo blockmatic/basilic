@@ -9,7 +9,7 @@ import {
 import { resolveRequestId } from '@/lib/auth/request-id'
 import { isSameOriginRequest } from '@/lib/auth/same-origin'
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   const reqId = resolveRequestId(request.headers)
   if (!isSameOriginRequest(request)) {
     logger.warn({ reqId }, 'auth refresh rejected: cross-origin or missing Origin')

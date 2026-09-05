@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { users, verification } from '../../../../db/schema/index.js'
+import { sendServerCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { sendMail } from '../../../../lib/email.js'
 import { findUserByNormalizedEmail } from '../../../../lib/email-identity.js'
 import { env } from '../../../../lib/env.js'
@@ -39,6 +40,7 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           409: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -70,7 +72,10 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
           message: 'Account already has a primary email. Use change email instead.',
         })
 
-      const { user: existingUser, normalized } = await findUserByNormalizedEmail({ db, email })
+      const lookup = await findUserByNormalizedEmail({ db, email })
+      if (lookup.status === 'collision')
+        return sendServerCatalogError({ request, reply, code: 'UNEXPECTED_ERROR' })
+      const { user: existingUser, normalized } = lookup
       if (existingUser && existingUser.id !== request.session.user.id)
         return reply.code(409).send({
           code: 'EMAIL_ALREADY_IN_USE',

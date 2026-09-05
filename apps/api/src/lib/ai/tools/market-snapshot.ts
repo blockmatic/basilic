@@ -149,7 +149,7 @@ export async function loadMarketRows(abortSignal?: AbortSignal): Promise<{
   }
 }
 
-export function createMarketSnapshotTool(abortSignal?: AbortSignal) {
+function marketSnapshotTool(abortSignal?: AbortSignal) {
   return tool({
     description:
       'Returns a crypto market snapshot (prices and 24h change). Use when the user asks what moved, BTC, ETH, top coins, or a market overview. Optional query filters by symbol or name.',
@@ -170,4 +170,10 @@ export function createMarketSnapshotTool(abortSignal?: AbortSignal) {
       }
     },
   })
+}
+
+export function createMarketSnapshotTool(
+  abortSignal?: AbortSignal,
+): ReturnType<typeof marketSnapshotTool> {
+  return marketSnapshotTool(abortSignal)
 }

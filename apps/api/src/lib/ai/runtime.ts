@@ -14,21 +14,28 @@ export function createRequestAbortSignal({
   reply: FastifyReply
 }): AbortSignal {
   const requestAbortController = new AbortController()
-  function onPrematureClose() {
-    if (reply.raw.writableEnded) return
-    requestAbortController.abort()
-  }
+  const timeoutController = new AbortController()
+  const timeout = setTimeout(() => timeoutController.abort(), env.AI_UPSTREAM_TIMEOUT_MS)
   const socket = request.raw.socket
-  reply.raw.once('close', onPrematureClose)
-  socket?.once('close', onPrematureClose)
-  requestAbortController.signal.addEventListener('abort', () => {
+  function cleanup() {
+    clearTimeout(timeout)
     reply.raw.off('close', onPrematureClose)
     socket?.off('close', onPrematureClose)
-  })
-  return AbortSignal.any([
-    requestAbortController.signal,
-    AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),
-  ])
+    requestAbortController.signal.removeEventListener('abort', cleanup)
+    timeoutController.signal.removeEventListener('abort', cleanup)
+  }
+  function onPrematureClose() {
+    if (reply.raw.writableEnded) {
+      cleanup()
+      return
+    }
+    requestAbortController.abort()
+  }
+  reply.raw.once('close', onPrematureClose)
+  socket?.once('close', onPrematureClose)
+  requestAbortController.signal.addEventListener('abort', cleanup)
+  timeoutController.signal.addEventListener('abort', cleanup)
+  return AbortSignal.any([requestAbortController.signal, timeoutController.signal])
 }
 
 export function createUiMessageStreamResponse(result: {

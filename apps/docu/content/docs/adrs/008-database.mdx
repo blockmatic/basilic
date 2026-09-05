@@ -167,20 +167,17 @@ flowchart TD
     Start[Application Start] --> CheckEnv{Check PGLITE env var}
     CheckEnv -->|PGLITE=true| UsePGLite[Use PGLite]
     CheckEnv -->|PGLITE=false| UsePostgres[Use PostgreSQL]
-    
-    UsePGLite --> RuntimeMigrate[Run Migrations at Runtime]
+
+    UsePGLite --> RuntimeMigrate[PGLite migrations at runtime]
     RuntimeMigrate --> CreateInstance[Create PGLite Instance]
     CreateInstance --> AppReady[App Ready]
-    
-    UsePostgres --> BuildTimeMigrate{Run Migrations at Build Time?}
-    BuildTimeMigrate -->|Yes| BuildMigrate[Run Migrations via pnpm build]
-    BuildTimeMigrate -->|No| RuntimeMigratePG[Run Migrations at Runtime]
-    BuildMigrate --> ConnectPG[Connect to PostgreSQL]
-    RuntimeMigratePG --> ConnectPG
+
+    UsePostgres --> MigratePhase[pnpm db:migrate]
+    MigratePhase --> ConnectPG[Connect to PostgreSQL]
     ConnectPG --> AppReady
-    
-    BuildMigrate -.->|Host Agnostic| Deploy[Deploy to Any Platform]
-    Deploy -->|Vercel/Docker/Railway/etc| BuildMigrate
+
+    MigratePhase -.->|Separate from pnpm build| Deploy[Docker / Railway / Fly.io / Render / local]
+    Deploy --> MigratePhase
 ```
 
 ### Deployment Platform Examples
@@ -204,7 +201,7 @@ Run `pnpm db:stop` before switching to another project's Supabase instance (e.g.
 ### Key Benefits
 
 - **Host-agnostic**: No platform-specific code, standard npm scripts work everywhere
-- **Build-time migrations**: PostgreSQL migrations run during build for faster startup, skipped at runtime
+- **Separate PostgreSQL migrations**: run `pnpm db:migrate` as its own step (Docker migrate phase, Railway/Fly.io/Render, local). Not part of `pnpm build` / `tsc`
 - **Runtime migrations**: PGLite migrations run when instance is created
 - **Flexible**: Supports both PostgreSQL and PGLite based on environment configuration
 - **Test-friendly**: Tests always use PGLite via `NODE_ENV=test`

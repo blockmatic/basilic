@@ -4,7 +4,7 @@ function getRequestHost(request: Request) {
   return request.headers.get('Host') ?? undefined
 }
 
-export function isSameOriginRequest(request: Request) {
+export function isSameOriginRequest(request: Request): boolean {
   if (request.headers.get('Sec-Fetch-Site') === 'cross-site') return false
 
   const origin = request.headers.get('Origin')

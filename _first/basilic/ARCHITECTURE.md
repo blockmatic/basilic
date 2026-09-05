@@ -34,7 +34,6 @@ The system has an inspectable structural model at the level its scale requires. 
 flowchart LR
   web[apps/web]
   proxy[proxy.ts UI gate]
-  mobile[apps/mobile]
   cli[packages/cli]
   core[packages/core]
   api[apps/api]
@@ -45,7 +44,6 @@ flowchart LR
   cli --> core
   core -->|"HTTP"| api
   api --> db
-  mobile -.->|"tokens later"| core
 ```
 
 ## Minimum Useful Artifact

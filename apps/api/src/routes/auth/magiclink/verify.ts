@@ -6,6 +6,7 @@ import { getDb } from '../../../db/index.js'
 import { authAttempts, users, verification } from '../../../db/schema/index.js'
 import { recordAuthFailedAttempt } from '../../../lib/auth/index.js'
 import { logAuthLocked, logAuthVerifyFailed } from '../../../lib/auth/signals.js'
+import { sendServerCatalogError } from '../../../lib/catalogs/mapper.js'
 import { normalizeEmail } from '../../../lib/email.js'
 import { findUserByNormalizedEmail } from '../../../lib/email-identity.js'
 import { hashLoginCode } from '../../../lib/jwt.js'
@@ -30,7 +31,7 @@ export async function verifyMagicLinkAndIssueToken(
   fastify: FastifyInstance,
   request: FastifyRequest,
   { token, verificationId }: { token: string; verificationId: string },
-): Promise<{ accessToken: string } | null> {
+): Promise<{ accessToken: string } | { collision: true } | null> {
   const tokenHash = hashLoginCode(token)
   const db = await getDb()
   const ip = getTrustedClientIp(request)
@@ -64,11 +65,12 @@ export async function verifyMagicLinkAndIssueToken(
     return null
   }
 
-  const { user } = await findUserByNormalizedEmail({
+  const lookup = await findUserByNormalizedEmail({
     db,
     email: verificationRecord.identifier,
   })
-
+  if (lookup.status === 'collision') return { collision: true }
+  const { user } = lookup
   if (!user) return null
 
   await db
@@ -123,6 +125,7 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
           401: ErrorResponseSchema,
           404: ErrorResponseSchema,
           429: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -186,11 +189,13 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const { user } = await findUserByNormalizedEmail({
+      const lookup = await findUserByNormalizedEmail({
         db,
         email: verificationRecord.identifier,
       })
-
+      if (lookup.status === 'collision')
+        return sendServerCatalogError({ request, reply, code: 'UNEXPECTED_ERROR' })
+      const { user } = lookup
       if (!user)
         return reply.code(404).send({
           code: 'USER_NOT_FOUND',

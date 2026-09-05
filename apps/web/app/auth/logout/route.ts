@@ -8,7 +8,7 @@ import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
 import { isTokenExpired } from '@/lib/auth/jwt-utils'
 import { resolveRequestId } from '@/lib/auth/request-id'
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
   const { token, refreshToken } = await getServerAuthCookie()
   let accessToken = token
 
