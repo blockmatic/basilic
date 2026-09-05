@@ -25,7 +25,7 @@ Each principle’s **Definition of Done** is that station’s artifact. It is no
 
 Inside the user pack:
 
-- **Humans reading:** start at [README.md](README.md), then `articles/`.
+- **Humans reading:** start at [README.md](README.md). Essays live on the FIRST site, not in this pack.
 - **Agents operating:** start at [AGENTS.md](AGENTS.md), then this file, then [FIRST.md](FIRST.md), then the matching `/f-*` skill.
 - **Humans applying:** this file plus the matching `/f-*` skill (or `principles/X.md` in this factory repo). The essay is optional once you know the argument.
 
@@ -41,10 +41,11 @@ npx skills add blockmatic/first
 
 - [AGENTS.md](AGENTS.md)
 - [ABOUT.md](ABOUT.md) (this file)
+- [README.md](README.md) if you want the human door
 - [templates/](templates/) — copy only stations listed as In
 - [FIRST.md](FIRST.md) — create this; list in and out
 
-[README.md](README.md) and `articles/` are the human pack. They are not required for an agent to operate. Do not copy `principles/` or `articles/` into an adopter repo. Skip `maintainers/` and `instance/`. Layout and why: [PACKAGING.md](https://github.com/blockmatic/first/blob/main/_first/maintainers/PACKAGING.md).
+[README.md](README.md) is the human door in this pack. Essays live on the FIRST site. They are not required for an agent to operate. Do not copy `principles/` or `articles/` into an adopter repo. Skip `maintainers/` and `instance/`. Layout and why: [PACKAGING.md](https://github.com/blockmatic/first/blob/main/_first/maintainers/PACKAGING.md).
 
 ## Documentation inventory
 
@@ -57,8 +58,9 @@ User pack — copy these (plus `FIRST.md` you create):
 | [ABOUT.md](ABOUT.md) | Users, both | Canonical map of stations, loops, and boundaries |
 | [FIRST.md](FIRST.md) | Users, both | This repo’s in/out map and instance paths |
 | [templates/](templates/) | Users applying | Empty overlay structs; copy only opted-in stations |
-| `articles/X.md` | Factory / site humans | Argument for station X; points to `principles/X.md` |
-| Installed `/f-*` | Users applying and agents operating | Operational spec (copy of `principles/X.md` in this factory) |
+| Installed `/f-*` | Users applying and agents operating | Operational spec from `npx skills add blockmatic/first` |
+
+Factory-only (do not copy into an adopter repo): `articles/X.md` and `principles/X.md` in [blockmatic/first](https://github.com/blockmatic/first). Essays argue; principles operate. Same filenames.
 
 Maintainer pack — do not copy: [maintainers/](https://github.com/blockmatic/first/tree/main/_first/maintainers). Skip the factory `instance/` overlays. The source-tree validator is `packages/validate` in [blockmatic/first](https://github.com/blockmatic/first).
 

@@ -2,7 +2,7 @@
 
 Operational specs for applying FIRST in this monorepo. Not a second factory. Product intent lives in [PRODUCT.md](PRODUCT.md). Technical facts live in `apps/docu/content/docs/` (architecture, ADRs, how-to), TypeBox routes, OpenAPI (generated), and package READMEs. `apps/docu` is not a product site.
 
-This folder is this repository’s adoption pack. Factory source: [`blockmatic/first`](https://github.com/blockmatic/first). Skip this directory when copying FIRST elsewhere. Copy `ABOUT.md`, `AGENTS.md`, and `templates/` into `_first/`. Add `FIRST.md`. Install `npx skills add blockmatic/first`. Do not copy this folder.
+This folder is this repository’s adoption pack. Factory source: [`blockmatic/first`](https://github.com/blockmatic/first). Skip this directory when copying FIRST elsewhere. Copy `README.md`, `ABOUT.md`, `AGENTS.md`, and `templates/` into `_first/`. Add `FIRST.md`. Install `npx skills add blockmatic/first`. Do not copy this folder.
 
 ## Load order
 
