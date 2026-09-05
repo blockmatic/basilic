@@ -81,7 +81,7 @@ Propose the smallest useful update to product artifacts, including the tracking 
 
 ## Notes
 
-**Product vs Journeys:** Product names what, why, and how we will know. Journeys name how someone finishes.
+How someone finishes a job is part of the implementing change, not a station.
 
 **Product vs Quality:** Product names the outcome after use. Quality names the bar that gates a release.
 

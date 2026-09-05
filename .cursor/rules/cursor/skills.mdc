@@ -9,7 +9,7 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 
 ## Two kinds
 - **Tech** (`<topic>-v<major>/`, e.g. `fastify-v5`): agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions
-- **Workflow** (`.agents/skills/workflow/<name>/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned
+- **Workflow** (`.agents/skills/b/b-<name>/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Dispatcher: `.agents/skills/b/SKILL.md` (`/b`)
 
 ## Principles
 - One primary topic per skill; independent versions = separate skills
@@ -24,3 +24,5 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 Rules (constraints) > skills (patterns) > model
 
 Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Canonical catalog: `blockmatic/basilic-skills`.
+
+Workflow authoring: read `.agents/skills/b/references/authoring.md`. Shared references stay inside the installable `b` tree. Use explicit inputs, task-specific steps, observable verification, and a handoff; keep simple playbooks short.

@@ -1,6 +1,6 @@
 ---
 name: f-workflow
-description: Apply Workflow First with a workflow lens who inspects this repo as a data analyst. Use when the user types /f-workflow or /f workflow.
+description: Apply Workflow First with a workflow lens who inspects this repo as a data analyst. Use when the user types /f-workflow, /f workflow, /f-pipelines, or /f pipelines.
 disable-model-invocation: true
 ---
 

@@ -2,15 +2,7 @@
 
 ## Principle
 
-Identify what you are trusting, protecting, exposing, and allowing — proportionally to actual risk — before architecture makes security assumptions expensive to change.
-
-## Statement
-
-Security is not a phase at the end. It is a set of decisions about boundaries: who can access what, what data is sensitive, what inputs are untrusted, what an agent is allowed to touch. I scale rigor to risk — an internal tool and a regulated financial product do not get the same bar. I also do not pretend risk is zero.
-
-## Outcome
-
-Trust boundaries are documented. Auth rules are consistent and enforced at boundaries. Secrets are not committed and not logged. External inputs are validated. Agent permissions are scoped: read-only where possible, destructive actions gated, secrets minimized, human approval for high-risk operations.
+See /f-security.
 
 ## Artifacts
 
@@ -27,6 +19,7 @@ Trust boundaries are documented. Auth rules are consistent and enforced at bound
 - **Fact:** Secrets: `ENCRYPTION_KEY`, `JWT_SECRET`, OAuth client secrets, `RESEND_API_KEY`, AI keys, `SENTRY_DSN` (unused until Sentry is re-enabled), `DATABASE_URL`, `AI_GATEWAY_API_KEY`, `EXPO_TOKEN`
 - **Unresolved:** named threat model; data classification list; in-product AI tool permission matrix
 - **Unresolved:** accepted-risk register with owner and next review
+- **Unresolved:** refresh ownership / concurrency protocol (Architecture names the dual-path drift)
 
 Treat coding agents as a service account: least privilege, no secrets, human approval for destructive or trust-boundary edits.
 
@@ -38,46 +31,8 @@ Treat coding agents as a service account: least privilege, no secrets, human app
 - agent: read-only inspection default; stop for secrets, destructive ops, auth policy changes
 - accepted risks: `httpOnly: false` cookie (documented); in-memory rate limit; **unresolved** as a dated register
 
-## Recipe
-
-1. Inspect security MDX, auth MDX, `apps/web/proxy.ts`, Fastify auth/CORS/security plugins, scanners.
-2. Understand what is stored, transmitted, logged, and exposed to agents (coding and `/ai/*`).
-3. Identify auth drift across web/API/CLI, secrets in logs, untrusted input without TypeBox.
-4. Propose the smallest security fix or documentation update.
-5. Scope agent permissions like a role. Gate destructive work.
-6. Implement with existing scanners and auth patterns. Do not invent a parallel auth system.
-7. Validate with `pnpm security:check` and existing auth tests. Failures fixed or explicitly accepted.
-8. Update security MDX when the trust model changes; update this instance.
-
-## Validation
-
-- Auth enforced at proxy and Fastify, not ad hoc per handler.
-- No secrets in code, logs, or agent-accessible files without justification.
-- Destructive and high-risk operations require human approval.
-- Security scans pass, or failures are accepted with rationale.
-
-## Definition of Done
-
-Trust boundaries and permissions are documented and implemented consistently. Agent access is scoped. Identified risks are addressed or explicitly accepted at the appropriate level.
-
-## Agent Prompt
-
-Apply Security First to Basilic.
-
-Read security and authentication MDX, `apps/web/proxy.ts`, Fastify auth, CORS, and scanners before changing trust boundaries. Inspect implementation; do not assume docs match.
-
-Prefer read-only inspection. Avoid secrets. Require a human for destructive or security-consequential changes. Treat yourself as a service account. Do not define TypeBox shapes here (API) or journey maps (Journeys).
-
-Propose the smallest useful security fix or documentation update. Use existing scanners. Update durable security artifacts when the trust model changes. Update this instance when paths change.
-
 ## Notes
 
-**Security vs Operations:** Security defines trust, protection, and permissions. Operations defines runtime visibility and recovery.
-
-**Security vs API:** API defines contracts at boundaries. Security defines who may invoke them and what they may access.
-
-**Security vs Architecture:** Architecture maps trust boundaries. Security defines protection and authorization policy across them.
-
-**Security vs Data:** Data maps classification, copies, retention, and deletion. Security owns access and protection policy.
+Security defines trust, protection, and permissions. API defines contracts. Architecture maps trust boundaries. Operations defines runtime visibility. Do not define TypeBox shapes here or journey maps here.
 
 **Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/SECURITY.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/SECURITY.md) · [Factory map](../ABOUT.md) · [Security](../../apps/docu/content/docs/architecture/security.mdx) · [Authentication](../../apps/docu/content/docs/architecture/authentication.mdx)

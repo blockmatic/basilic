@@ -6,7 +6,7 @@ MIT licensed. Start a product with GitHub **Use this template**, or fork to cont
 
 ## Features
 
-- 🤖 **AI-first dev workflow** — Agent rules, skills, MCP integrations, and automated CodeRabbit reviews
+- 🤖 **AI-first dev workflow** — Agent rules, `/b` workflow skills, FIRST `/f-*` decisions, MCP integrations, and automated CodeRabbit reviews
 - 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
 - 🧩 **Web + API starters** — Next.js demo, React hooks, Expo UI scaffold, Fastify API (not a wallet or OpenAI template)

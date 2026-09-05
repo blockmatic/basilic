@@ -4,7 +4,7 @@ alwaysApply: true
 ---
 
 ## Agent Behavior (CRITICAL)
-- Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `_first/basilic/PRODUCT.md` (path from `_first/FIRST.md`). **Read** the matching file. Do not `@`-attach docs from rules or skills. Slash playbooks: `.agents/skills/workflow/` (`/name`)
+- Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `_first/basilic/PRODUCT.md` (path from `_first/FIRST.md`). **Read** the matching file. Do not `@`-attach docs from rules or skills. Slash playbooks: `.agents/skills/b/` (`/b-<name>`)
 - After features/fixes: same change, update that MDX and nearest README if behavior, commands, or conventions changed; patch `_first/basilic/PRODUCT.md` if goals, feature map, or horizons changed; glob `.mdc` only if a constraint changed
 - When creating plans add a ## References section listing rules, skills, and MDX pages used
 - Summarize assumptions in 3–5 bullets

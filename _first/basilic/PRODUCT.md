@@ -2,15 +2,7 @@
 
 ## Principle
 
-Define what you are building, for whom, why it is worth building, and how you will know — before implementation becomes the specification.
-
-## Statement
-
-I do not let the codebase become the product brief. Before I change meaningful behavior, I want a file that names the problem, who has it, why it is worth building, what we are not building, how it reaches people, and how we will know. Implementation can reveal a better option. It should not invent the goal.
-
-## Outcome
-
-The project has an inspectable answer to what, why, and how we will know. Non-goals, GTM, success metrics, and the tracking plan are written or explicitly unresolved. Named metrics have events, or are marked unmeasured. When the product is a business, market size and unit economics are stated as measured or as hypotheses.
+See /f-product.
 
 ## Artifacts
 
@@ -28,7 +20,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** PD (Markets + GenAI artifacts) is shipped on the feature map: CoinGecko or mock, `getMarketSnapshot` / `market-card`
 - **Unresolved:** PostHog install / consent / retention; keep / iterate / kill board; whether adopters copy `lib/analytics`
 
-`pnpm qa` going green is Pipelines, not product success. Quality for R0 is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
+`pnpm qa` going green is Workflow, not product success. Quality for R0 is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
 
 ## Minimum Useful Artifact
 
@@ -41,47 +33,9 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - events: `auth_succeeded`, `auth_failed`, `assistant_turn` — specified + instrumented, no sink
 - owners: Gabo Esquivel
 
-## Recipe
-
-1. Inspect README, this file, analytics ADR, issues, running web/API, and claimed metrics.
-2. Understand shipped vs claimed (starter vs product, GTM, measurement).
-3. Identify missing users, missing goal, success that cannot fail, named metrics with no events.
-4. Propose the smallest useful update to this file or README — not a parallel fake PRD, not `apps/docu` Product pages.
-5. Make decisions explicit, or name them unresolved. Do not hide them in code.
-6. When a change can move a metric, ship the event in the same work — or mark unmeasured.
-7. After use, compare metric to target and record keep / iterate / kill — when metrics exist.
-8. Update this file if the bet, GTM, feature map, or analytics changed.
-
-## Validation
-
-- A new maintainer can answer what we are building from this file + README without `__dev/` or Fumadocs Product pages
-- Success metrics can fail. They are not CI green. Auth/assistant remain unmeasured (no sink)
-- GTM is clone or Use this template + Getting Started. Product Ready is that path, not CI green. Finance N/A
-- No silent product decisions in code without a note or open question
-
-## Definition of Done
-
-Product intent is documented or explicitly deferred with named owners. Implementation aligns with stated goals and non-goals, or this file was updated. Success that was claimed is either instrumented or marked unmeasured.
-
-## Agent Prompt
-
-Apply Product First to Basilic.
-
-Read root README, this file, analytics MDX and ADR 011, and what the web, mobile, and API actually do. PostHog is not installed. `capture()` is a no-op — do not claim events are collected or measured. PD is shipped on the feature map.
-
-Preserve intentional existing product choices. Do not silently decide scope, priorities, pricing, TAM, LTV, or event names. This is a toolkit — say so rather than filling finance blanks.
-
-Separate `pnpm qa` from post-launch success. Propose the smallest useful update to this file or README. Do not write Basilic product intent into `apps/docu`.
-
 ## Notes
 
-**Product vs Journeys:** Product names what, why, and how we will know. Journeys name how someone finishes.
-
-**Product vs Quality:** Product names the outcome after use. Quality names the bar that gates a release.
-
-**Product vs Operations:** Product owns events, funnels, activation. Operations owns logs, traces, error rates, alerts, recovery.
-
-**Product vs Data:** Product names events and outcomes to measure. Data owns canonical domain meaning, authority, lifecycle, and evolution.
+Product names what, why, and how we will know. Journeys name how someone finishes. Quality names the bar that gates a release. Workflow runs `pnpm qa`. Do not write Basilic product intent into `apps/docu`. This is a toolkit — do not invent TAM or LTV.
 
 **Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/PRODUCT.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PRODUCT.md) · [Factory map](../ABOUT.md) · [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx) · [Analytics](../../apps/docu/content/docs/architecture/analytics.mdx) · [ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx)
 
@@ -109,12 +63,12 @@ A portable typed API plus web, mobile scaffold, and docs so an adopting develope
 - Next.js Cache Components on
 - First-class OpenAI SDK (chat uses Anthropic → OpenRouter → Ollama)
 - GCP/AWS as the shipped deploy path (Vercel + Supabase is documented)
-- FIRST CLI, `first.json`, or a 13th FIRST station. `npx skills add blockmatic/first` (`/f-*`) is in; do not ship a skill that mixes spec and instance
+- FIRST CLI, `first.json`, or an 11th FIRST station. `npx skills add blockmatic/first` (`/f-*`) is in; do not ship a skill that mixes spec and instance
 - Billed SaaS metrics
 
 ### How we will know
 
-`pnpm qa` going green is **Pipelines**, not product success. The R0 Quality bar is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). Horizons: Roadmap below.
+`pnpm qa` going green is **Workflow**, not product success. The R0 Quality bar is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). Horizons: Roadmap below.
 
 Auth (`auth_succeeded` / `auth_failed`) and assistant (`assistant_turn` with `accountRender`) are **instrumented** via `capture()` and **not collected** — PostHog is chosen, not installed. Those jobs are therefore **unmeasured**. Factory GTM, demo surface quality, and cost-per-job are unmeasured.
 
@@ -165,7 +119,7 @@ Signed-in demo is **Markets + GenAI artifacts**: CoinGecko or mock, `getMarketSn
 
 Horizons, not a sprint board. Work items live in [GitHub Issues](https://github.com/blockmatic/basilic/issues). `__dev/` is gitignored scratch — not Fact, not the backlog.
 
-R0 is **documentation alignment**. It does not need a semver bump or a GitHub Release. Pipelines still run on PRs; Quality is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
+R0 is **documentation alignment**. It does not need a semver bump or a GitHub Release. Workflow still runs CI on PRs; Quality is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
 
 ### R0 — docs, honesty, onboarding
 
@@ -191,4 +145,4 @@ R1 is still a choice among wallet UI, mobile client, and observability — not a
 
 ### Not now
 
-FIRST CLI, `first.json`, billed SaaS / TAM-LTV, first-class OpenAI SDK, GCP/AWS as the shipped deploy path, Cache Components on, 13th FIRST station, root `PRODUCT.md` / `ROADMAP.md`. `/f` via `npx skills add blockmatic/first` is in.
+FIRST CLI, `first.json`, billed SaaS / TAM-LTV, first-class OpenAI SDK, GCP/AWS as the shipped deploy path, Cache Components on, 11th FIRST station, root `PRODUCT.md` / `ROADMAP.md`. `/f` via `npx skills add blockmatic/first` is in.

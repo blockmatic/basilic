@@ -6,7 +6,7 @@ Define the capability and its boundary before consumers couple to an accidental 
 
 ## Statement
 
-I treat the capability and its boundary as a design decision, not an implementation leftover. Before a second consumer depends on a shape, I want to know what goes in, what comes out, what fails, which Security-owned authorization requirement applies, and how denial appears. That contract might be HTTP, a typed module, an event, a CLI, or an agent tool. The format matters less than making the boundary explicit on purpose.
+I treat the capability and its boundary as a design decision, not an implementation leftover. Before a second consumer depends on a shape, I want to know what goes in, what comes out, what fails, which Security-owned authorization requirement applies, and how denial appears. That contract might be HTTP, a typed module, an event, a CLI, or an agent tool. Export the capability as a self-contained boundary — a bound port or equivalent — rather than as a leak of the process that happens to implement it. The format matters less than making the boundary explicit on purpose.
 
 ## Outcome
 

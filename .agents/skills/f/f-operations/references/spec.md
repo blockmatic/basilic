@@ -10,7 +10,7 @@ Shipping is not the end of engineering work. It is when the system meets reality
 
 ## Outcome
 
-Production behavior is observable at the level the project needs. Logs are structured and useful. Metrics and alerts cover critical failure modes. Runbooks exist for known recovery paths. Product analytics are not the same dashboard as engineering health. A green pipeline after a fix is not verified recovery.
+Production behavior is observable at the level the project needs. Logs are structured and useful. A healthy HTTP status is not AI quality: log prompt, response, tool, and token signals at project scale. Metrics and alerts cover critical failure modes. Runbooks exist for known recovery paths. Product analytics are not the same dashboard as engineering health. User-feedback hooks are ops instrumentation, not Product funnels. A green pipeline after a fix is not verified recovery.
 
 ## Artifacts
 
@@ -59,20 +59,22 @@ Apply Operations First to this repository.
 
 Read operational documentation, logging configuration, metrics, alerts, and runbooks before changing runtime behavior. Inspect how the system reports errors and health. Identify blind spots in observability.
 
-Propose the smallest useful logging, metric, or alert improvement. When diagnosing production issues, use structured signals — not guesswork. Route fixes through the project's workflow and pipelines. Verify recovery after deploy in the running system.
+Propose the smallest useful logging, metric, or alert improvement. When diagnosing production issues, use structured signals — not guesswork. Route fixes through the project's workflow. Verify recovery after deploy in the running system.
 
 Product analytics — events, funnels, activation — belong with Product First. Do not file a missing success event as an ops ticket. Do not add observability complexity beyond project scale. Production agents need identity, logs, retries, and a trace of what they did.
 
 ## Notes
 
-**Operations vs Pipelines:** Pipelines move changes into production. Operations understands and runs the system after deployment.
+**Operations vs Workflow:** Workflow moves changes into production. Operations understands and runs the system after deployment.
 
 **Operations vs Security:** Security defines trust and protection. Operations defines visibility and recovery.
 
-**Operations vs Product:** Product owns whether the bet is working. Operations owns whether the system is healthy. Same warehouse is fine. Same dashboard is not.
+**Operations vs Product:** Product owns whether the bet is working and already owns success events. Operations owns whether the system is healthy. Same warehouse is fine. Same dashboard is not. Do not put funnels on the ops dashboard.
 
 **Operations vs Architecture:** Architecture names deployment units and topology. Operations observes, supports, and recovers them.
 
 **Operations vs Data:** Data owns product-state meaning and lineage. Operations owns telemetry about runtime health.
+
+**Operations vs Quality:** Quality already owns scored evals. Operations logs the runtime signals that make a 200 with a useless answer visible.
 
 **Navigation:** [Human essay](../articles/OPERATIONS.md) · [Factory map](../ABOUT.md)

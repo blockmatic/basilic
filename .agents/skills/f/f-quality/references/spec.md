@@ -14,7 +14,7 @@ Acceptance criteria exist for features that matter. Tests protect critical paths
 
 ## Artifacts
 
-- Acceptance criteria tied to journeys and product goals
+- Acceptance criteria tied to product goals and user-visible completion
 - Unit, integration, and end-to-end tests
 - AI evals and golden datasets where relevant
 - Performance budgets and regression checks
@@ -48,11 +48,11 @@ Choose the mechanism that matches the output. Deterministic code gets tests. Mod
 - Critical paths have automated protection where the project supports it.
 - Failures produce actionable signal, not noise.
 - AI evals cover the behaviors users actually depend on.
-- CI going green is Pipelines. Meeting the bar is Quality.
+- CI going green is Workflow. Meeting the bar is Quality.
 
 ## Definition of Done
 
-This station’s stated quality criteria are met and verified by the project's existing validation. Regressions are caught or explicitly accepted with documented rationale. CI going green is Pipelines. This is not Product success after use.
+This station’s stated quality criteria are met and verified by the project's existing validation. Regressions are caught or explicitly accepted with documented rationale. CI going green is Workflow. This is not Product success after use.
 
 ## Agent Prompt
 
@@ -66,7 +66,7 @@ Preserve intentional existing test patterns. Propose the smallest useful quality
 
 ## Notes
 
-**Quality vs Pipelines:** Quality defines what should be validated. Pipelines run the validation.
+**Quality vs Workflow:** Quality defines what should be validated. Workflow runs the validation.
 
 **Quality vs Product:** Product defines success after use and ships the analytics. Quality defines the bar that gates a release.
 

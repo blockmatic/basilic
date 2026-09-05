@@ -2,15 +2,7 @@
 
 ## Principle
 
-Map how someone finishes a job — including errors, permissions, and state — before implementation invents the path from whichever screen shipped first.
-
-## Statement
-
-The product is not a collection of screens. It is someone trying to finish a job. I map that job from entry to completion before I trust implementation to fill in the gaps. Happy paths are cheap. The product breaks in the alternates: the error nobody designed, the permission that exists on one route but not another, the state with no exit.
-
-## Outcome
-
-Actors, entry points, happy paths, alternates, error paths, permission gates, and completion criteria are documented or explicitly marked unknown. Missing states are visible before code hardens around an incomplete model.
+See /f-journeys.
 
 ## Artifacts
 
@@ -27,6 +19,17 @@ Actors, entry points, happy paths, alternates, error paths, permission gates, an
 - **Drift:** Web3 verify exists on Fastify; **web has no wallet UI**. Do not map a wallet-connect journey as shipped.
 - **Fact:** Assistant demo jobs (web, in-shell chat): (1) account — `getAccountInfo` + `__render: 'user-info'`; (2) markets — `getMarketSnapshot` + `__render: 'market-card'`. Entry = composer or suggestion. Completion for (1) = `accountRender: true`. Completion for (2) = market card rendered. A text-only reply is **not** either job. No GenUI CTA (`actions: {}`).
 - **Unresolved:** named journey files beyond auth MDX; mobile completion
+
+Interface:
+
+- **Fact:** Demo shell brand is **Basilic** (sidebar). Markets home uses `@repo/ui` + `tokens.css` (`text-chart-2` / `text-destructive` for 24h change). No second palette.
+- **Fact:** No Google-format `_first/DESIGN.md` yet. Do not invent a second palette. When added, use [DESIGN.md Format](https://raw.githubusercontent.com/google-labs-code/design.md/refs/heads/main/docs/spec.md) at `_first/DESIGN.md` (or one path listed in [../FIRST.md](../FIRST.md)).
+- **Fact:** Tokens: [`../../packages/ui/src/styles/tokens.css`](../../packages/ui/src/styles/tokens.css) — semantic colors, sidebar, radius, `@theme inline`, Inter / Poppins / mono
+- **Fact:** Components: `@repo/ui` (shadcn/ui, Radix, Tailwind 4). ADR [004](../../apps/docu/content/docs/adrs/004-design-system.mdx). Frontend: [frontend.mdx](../../apps/docu/content/docs/architecture/frontend.mdx)
+- **Fact:** Apps consume `@repo/ui`; app-only UI collocated in `apps/web` / `apps/mobile` / `apps/docu`
+- **Fact:** Skills: `shadcn-v3`, `tailwind-design-system-v4`, `frontend-design-v1`; playbook `/audit-accessibility`, `/use-shadcn`
+- **Fact:** Browser verification across states is the UI bar — not a single default screenshot
+- **Unresolved:** Google-format `_first/DESIGN.md` (do not generate from `tokens.css` until written on purpose); motion guidelines; copy patterns beyond component defaults
 
 ```mermaid
 stateDiagram-v2
@@ -51,6 +54,7 @@ stateDiagram-v2
 - errors: invalid/expired codes, `TOKEN_REUSE_DETECTED`, `SESSION_NOT_FOUND`
 - gates: proxy (web) and Fastify JWT/API key — policy in SECURITY.md
 - completion: authenticated session; home loads. Wallet link after login is optional, not required.
+- reuse: `@repo/ui` + `tokens.css`; browser across states
 
 Assistant job (demo, same shape):
 
@@ -63,45 +67,8 @@ Assistant job (demo, same shape):
 - gates: proxy + Bearer JWT
 - completion: `user-info` **or** `market-card` rendered. Not “the model replied.”
 
-## Recipe
-
-1. Inspect authentication and account-linking MDX, `apps/web/proxy.ts`, Fastify auth/account routes, web pages, CLI.
-2. Understand the actor and the job — not the screen.
-3. Identify missing error exits, permission drift across web/API/CLI, states with no resume.
-4. Propose the smallest useful map: one job, entries, gates, completion.
-5. Write happy path, then alternates, then errors, then permission gates.
-6. Compare the map to implementation. Flag Web3-without-UI and mobile as deferrals.
-7. Validate every mapped state traces to code or an explicit deferral.
-8. Update auth MDX when flow behavior changes; update this instance.
-
-## Validation
-
-- Critical flows have defined error and recovery (refresh fail → login; reuse → revoke).
-- Permission checks are consistent across proxy, Fastify, and CLI exclusions.
-- Every mapped state traces to implemented behavior or an explicit deferral (mobile, wallet UI).
-
-## Definition of Done
-
-Critical flows are mapped with happy, alternate, and error paths documented or explicitly deferred. Implementation matches the map, or the map was updated to reflect a deliberate change.
-
-## Agent Prompt
-
-Apply Journeys First to Basilic.
-
-Read authentication and account-linking MDX, `apps/web/proxy.ts`, Fastify auth/account routes, web auth UI, CLI, and tests. Map actors, entry points, states, errors, and completion. Compare documentation to actual behavior.
-
-Do not invent UI (including wallet connect). Do not invent a mobile journey. The in-shell assistant account-context job is mapped (completion = `user-info` rendered). Surface missing states before implementing. Policy stays in Security. Propose the smallest useful update to journey artifacts in `apps/docu`. Update this instance when flows change.
-
-Treat CLI and coding agents as actors. If an actor is unnamed, do not invent a tool for them.
-
 ## Notes
 
-**Journeys vs Product:** Product answers what and why. Journeys answer how someone finishes.
+Product answers what and why. Journeys answer how someone finishes and how the interface expresses it. Security owns permission policy. Do not invent wallet-connect or mobile journeys.
 
-**Journeys vs Design:** Journeys describe behavior and flow. Design describes how the interface expresses it.
-
-**Journeys vs Security:** Journeys show where a permission gate occurs. Security owns the permission policy.
-
-**Journeys vs Data:** Journeys describe actor-visible states. Data owns persisted meaning and lifecycle.
-
-**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/JOURNEYS.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/JOURNEYS.md) · [Factory map](../ABOUT.md) · [Authentication](../../apps/docu/content/docs/architecture/authentication.mdx) · [Account linking](../../apps/docu/content/docs/architecture/account-linking.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/JOURNEYS.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/JOURNEYS.md) · [Factory map](../ABOUT.md) · [Authentication](../../apps/docu/content/docs/architecture/authentication.mdx) · [Account linking](../../apps/docu/content/docs/architecture/account-linking.mdx) · [Frontend](../../apps/docu/content/docs/architecture/frontend.mdx) · [ADR 004](../../apps/docu/content/docs/adrs/004-design-system.mdx)

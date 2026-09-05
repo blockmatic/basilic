@@ -1,8 +1,8 @@
 # Basilic instances
 
-Operational specs for applying FIRST in this monorepo. Not a second factory. Product intent lives in [PRODUCT.md](PRODUCT.md). Technical facts live in `apps/docu/content/docs/` (architecture, ADRs, how-to), TypeBox routes, OpenAPI (generated), and package READMEs. `apps/docu` is not a product site.
+Operational overlays for applying FIRST in this monorepo. Not a second factory. Product intent lives in [PRODUCT.md](PRODUCT.md). Technical facts live in `apps/docu/content/docs/` (architecture, ADRs, how-to), TypeBox routes, OpenAPI (generated), and package READMEs. `apps/docu` is not a product site.
 
-This folder is this repository’s adoption pack. Factory source: [`blockmatic/first`](https://github.com/blockmatic/first). Skip this directory when copying FIRST elsewhere. Copy `README.md`, `ABOUT.md`, `AGENTS.md`, and `templates/` into `_first/`. Add `FIRST.md`. Install `npx skills add blockmatic/first`. Do not copy this folder.
+This folder is this repository’s adoption pack. Factory source: [`blockmatic/first`](https://github.com/blockmatic/first). Skip this directory when copying FIRST elsewhere. Copy `README.md`, `ABOUT.md`, and `AGENTS.md` into `_first/`. Add `FIRST.md`. Write overlays only for stations listed as In. Install `npx skills add blockmatic/first`. Do not copy this folder.
 
 ## Load order
 
@@ -26,15 +26,13 @@ Use `/f-*` for the operational spec. Essays live on the FIRST site.
 
 ## Format sync
 
-When factory template headings change, update every station file here in the same session. Do not teach this folder to the factory validator in `blockmatic/first`.
-
-Required overlay `##` headings:
+Required overlay `##` headings (see [`../ABOUT.md`](../ABOUT.md)):
 
 `Principle` · `Artifacts` · `Minimum Useful Artifact` · `Notes`
 
-Existing files in this folder may still carry the full factory spec headings until they are thinned. Product adds Brief, Feature map, and Roadmap after Notes.
+Product adds Brief, Feature map, and Roadmap after Notes. Do **not** paste Recipe, Statement, Outcome, Validation, Definition of Done, or Agent Prompt from the `/f-*` spec.
 
-Filenames match the twelve stations in order: PRODUCT, JOURNEYS, DESIGN, ARCHITECTURE, DATA, API, DOCUMENTATION, WORKFLOW, PIPELINES, QUALITY, SECURITY, OPERATIONS.
+Filenames match the ten stations in order: PRODUCT, JOURNEYS, ARCHITECTURE, DATA, API, DOCUMENTATION, WORKFLOW, QUALITY, SECURITY, OPERATIONS.
 
 ## Link convention
 
@@ -53,19 +51,17 @@ From a station file in this folder:
 |---:|---|---|
 | 1 | Product | [PRODUCT.md](PRODUCT.md) |
 | 2 | Journeys | [JOURNEYS.md](JOURNEYS.md) |
-| 3 | Design | [DESIGN.md](DESIGN.md) |
-| 4 | Architecture | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| 5 | Data | [DATA.md](DATA.md) |
-| 6 | API | [API.md](API.md) |
-| 7 | Documentation | [DOCUMENTATION.md](DOCUMENTATION.md) |
-| 8 | Workflow | [WORKFLOW.md](WORKFLOW.md) |
-| 9 | Pipelines | [PIPELINES.md](PIPELINES.md) |
-| 10 | Quality | [QUALITY.md](QUALITY.md) |
-| 11 | Security | [SECURITY.md](SECURITY.md) |
-| 12 | Operations | [OPERATIONS.md](OPERATIONS.md) |
+| 3 | Architecture | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| 4 | Data | [DATA.md](DATA.md) |
+| 5 | API | [API.md](API.md) |
+| 6 | Documentation | [DOCUMENTATION.md](DOCUMENTATION.md) |
+| 7 | Workflow | [WORKFLOW.md](WORKFLOW.md) |
+| 8 | Quality | [QUALITY.md](QUALITY.md) |
+| 9 | Security | [SECURITY.md](SECURITY.md) |
+| 10 | Operations | [OPERATIONS.md](OPERATIONS.md) |
 
-Do not invent TAM, event taxonomies, or SLOs to complete a template. Label **Fact**, **Drift**, and **Unresolved** under Artifacts.
+Do not invent TAM, event taxonomies, or SLOs to complete an overlay. Label **Fact**, **Drift**, and **Unresolved** under Artifacts.
 
 ## Overlay as delta
 
-Keep the required `##` headings. Fill Artifacts with pointers and facts. Do **not** paste the generic Recipe, Agent Prompt, or Statement from the `/f-*` spec. Product is the exception: [PRODUCT.md](PRODUCT.md) is overlay and canonical brief (Brief, Feature map, Roadmap after Notes). Other stations point at `apps/docu` for technical facts. `__dev/` is scratch until it graduates into docs or this overlay.
+Keep the required `##` headings. Fill Artifacts with pointers and facts. Product is the exception: [PRODUCT.md](PRODUCT.md) is overlay and canonical brief. Other stations point at `apps/docu` for technical facts. `__dev/` is scratch until it graduates into docs or this overlay.

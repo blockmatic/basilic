@@ -27,8 +27,9 @@ and tests instead of relying on memory or assuming that documentation is current
 ## FIRST decisions
 
 Use FIRST when a task invokes `/f-*` or requires a durable product, journey,
-design, architecture, data, API, documentation, workflow, pipeline, quality,
-security, or operations decision.
+architecture, data, API, documentation, workflow, quality, security, or
+operations decision. Interface expression is Journeys. Automated delivery is
+Workflow.
 
 Load FIRST in this order:
 
@@ -87,7 +88,7 @@ without creating conflicting edits or duplicate work.
 - When behavior, architecture, commands, or conventions change, update the
   matching MDX page and nearest README in the same work.
 - Update `_first/basilic/PRODUCT.md` only when product goals, feature status,
-  non-goals, metrics, or roadmap horizons change. Passing `pnpm qa` is pipeline
+  non-goals, metrics, or roadmap horizons change. Passing `pnpm qa` is Workflow
   evidence, not product success.
 - When creating a plan, include a `## References` section listing the rules,
   skills, and documentation used.

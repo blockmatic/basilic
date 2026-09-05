@@ -1,0 +1,160 @@
+---
+title: "ADR 012: Scaffolding and Releases"
+description: "Proposed Basilic generator, template boundaries, conventional-commit versioning, and AI-assisted releases."
+---
+
+Status: **Proposed — implementation plan, not shipped behavior.** September 5, 2026.
+
+## Recommendation
+
+Ship **`create-basilic`** from **`tools/create-basilic`**. Generate an independent repository containing API, web, mobile, shared packages, and development tooling; exclude the documentation application and the generator. Bundle a tested template inside each published generator version. Use **Release Please** to propose versions and changelogs from conventional commits, with a maintainer merging the release PR to authorize publication. AI reviews release impact and drafts explanations; deterministic rules calculate versions.
+
+Use the existing `tools/` directory. Adding `tooling/` would duplicate a boundary already represented in `pnpm-workspace.yaml`.
+
+### Assumptions
+
+- “MPX … init” means an `npx`-style project creation command. Examples below describe the proposed interface and are not available yet.
+- “Releasing Emberation” means Basilic release/version automation. No separate product named Emberation is assumed.
+- “Exclude the CLI itself” means the new generator. The existing API client CLI remains part of the starter.
+- Version one delivers the complete starter, with no app picker or automatic upgrades of existing projects.
+
+## Current repository facts
+
+| Evidence | Implication |
+| --- | --- |
+| `pnpm-workspace.yaml` includes `apps/*`, `packages/*`, `tools/*` | Reuse the workspace layout. |
+| `packages/cli` is private `@repo/cli`, with a `basilic` executable | A generator called `basilic` would collide with the API CLI. |
+| `tools/eslint` and `tools/typescript` provide workspace dependencies | Copying only `apps/`, or excluding all `tools/`, produces an incomplete project. |
+| Root README and After fork describe GitHub template/fork adoption | CLI onboarding is new; current instructions remain valid until launch. |
+| Publishing documentation describes package packing and manual publishing | Packing support exists, but is not an automated release policy. |
+| Checked-in workflows cover quality, security, and mobile delivery | No Release Please, Changesets, or npm release workflow was found. Conventional commits are documented; no dedicated commit-message gate was found. |
+
+## Naming and component boundaries
+
+| Component | Location / name | Responsibility |
+| --- | --- | --- |
+| Scaffold generator | `tools/create-basilic`; npm `create-basilic`; bin `create-basilic` | Create a new project. Never included in its output. |
+| API CLI | Keep `packages/cli`, `@repo/cli`, bin `basilic` initially | Call the generated project's API through `@repo/core`. |
+| Template assembly | Inside `tools/create-basilic` | Select files, apply explicit transforms, validate, and bundle the template. |
+| Release automation | Upstream `.github/workflows/` and release configuration | Version and publish Basilic; excluded from generated projects. |
+
+Preferred command: `npx create-basilic@latest my-app`; pnpm equivalent: `pnpm dlx create-basilic@latest my-app`. The positional directory is sufficient; no redundant `init` subcommand is needed. An optional alias can be added later. Exact-version usage, for example `npx create-basilic@1.2.3 my-app`, selects that version's bundled template; this is an illustrative version.
+
+Check npm ownership before implementation. If the unscoped name is unavailable, use an owned scope such as `@blockmatic/create-basilic` **only after verifying ownership**. Neither name has been reserved or verified here. Avoid publishing multiple aliases initially.
+
+Keep the API CLI's internal package name to avoid changing Turbo filters and generation scripts. Describe it consistently as “API CLI” and the new package as “project generator.” A later rename of the API binary must also address its help text, `BASILIC_API_KEY`, config directory, documentation, and compatibility; a folder rename alone would not resolve those identities.
+
+## Define what gets generated
+
+Maintain one version-controlled **include-and-transform manifest**, colocated with the generator. Assemble from a clean source revision, not a developer's working directory. Fail CI when a newly tracked path has no classification: included, transformed, or excluded. This prevents future maintainer tooling from silently entering templates.
+
+| Source | Initial policy |
+| --- | --- |
+| `apps/api`, `apps/web`, `apps/mobile` | Include source, tests, assets, migrations, and safe configuration. |
+| `apps/docu` | Exclude the application, its build dependencies, and its Turbo tasks. |
+| Existing `packages/*`, including `packages/cli` | Include. Preserve `@repo/*` names and `workspace:*` links. |
+| `tools/eslint`, `tools/typescript` | Include; generated projects need these. |
+| `tools/create-basilic` and future maintainer-only tools | Exclude. |
+| Root package/workspace/Turbo/lint configuration and `scripts/` | Include required files; remove references to excluded components. |
+| Lockfile | Produce and validate a lockfile for the assembled workspace using pinned pnpm. Do not hand-edit YAML dependency resolutions. |
+| `.github` | Include portable quality workflows and their local actions; omit Basilic publication workflows, release state, and maintainer ownership metadata. Deployment workflows require adopter configuration and must not target upstream projects. |
+| `.cursor`, `.agents`, `AGENTS.md`, safe `.deepsec` configuration | Retain the shared workflow; replace upstream project bindings and repair documentation pointers. |
+| FIRST user pack | Retain reusable guidance/templates; replace `_first/basilic` with an unfilled adopter instance and retarget `FIRST.md` and agent pointers. Do not fabricate product decisions. |
+| `LICENSE` | Preserve MIT copyright and license text. |
+| Git history, caches, dependency installs, build output, credentials, local environment files | Exclude. Include approved `.env.<qualifier>.example` files and audited non-secret defaults. |
+
+The FIRST reset is an additional recommendation beyond the two application exclusions: `_first/FIRST.md` explicitly says not to copy `basilic/` out. Generated projects should not inherit Basilic's roadmap as their own.
+
+**Documentation needs special treatment.** Existing agent rules require local files under `apps/docu/content/docs`. Excluding that whole tree without repairing those references would break the development workflow. Recommended v1: derive a lightweight `docs/basilic/` reference snapshot from the canonical technical MDX during assembly, strip site-only presentation syntax, and rewrite generated pointers to it. It has no documentation app, dependencies, or build. Keep links to hosted docs for browsing. The snapshot is generated output, not a second upstream authoring source. Acceptance tests must verify every mandatory agent read resolves. If absolutely no documentation content should ship, revise the generated instructions to use remote references explicitly and accept the network dependency.
+
+### Explicit transforms
+
+Change root project name and write an adopter README with setup steps, customization guidance, and upstream references. Keep internal package names stable. Use an audited mapping for app display names and optional mobile identifiers; never globally replace `basilic` or `blockmatic`. Preserve upstream links, license notices, API compatibility names, and generated source contracts deliberately.
+
+Remove upstream MCP/project bindings, EAS project IDs, deployment ownership, and repository-specific security-review URLs. Preserve safe example placeholders. Rewrite scripts, CI filters, Turbo tasks, and documentation links that target excluded files. Reuse the documented OpenAPI generator when contracts change; do not edit generated clients or migration SQL.
+
+## Generation behavior and artifact design
+
+1. Validate project name, destination, and supported Node version before writing. Initial baseline follows the repository's Node 24 engine and exact `packageManager` version.
+2. Refuse non-empty destinations. Noninteractive `--yes` accepts safe defaults, never overwrites. Support paths containing spaces and clear exit codes.
+3. Copy the bundled template into a temporary sibling directory. Prevent path traversal and escaping symlinks; apply typed, targeted transforms.
+4. Check workspace dependencies, required files, and prohibited output. Record generator version, template source SHA, template digest, and selected inputs under a `basilic` field in root `package.json`; this is provenance, not a new configuration framework.
+5. Move the completed tree to the destination atomically where supported. On failure, clean only temporary files created by this run.
+6. Print the destination and existing setup sequence: `pnpm setup`, database start, `pnpm reset`, then `pnpm dev`, with a link to Product Ready. Do not automatically reset databases, create remotes, publish, deploy, or commit. Installation/setup remains an explicit next step in v1.
+
+Bundle compiled generator code and the sanitized template in **one npm tarball**. The running generator must not depend on unresolved workspace packages, Git, GitHub API availability, or downloading `main`. Use a package `files` allowlist covering the executable and template; the existing package pack helper's `files: ["dist"]` policy cannot be reused blindly. Test the actual tarball outside the monorepo.
+
+Tradeoff: the package is larger, and template changes require publishing a generator release. This is preferable initially to operating separate CLI/template versions and download verification. Revisit separate immutable template artifacts only if package size or independent release cadence becomes a measured problem. Exact-version generation reproduces source output, not external services or mutable dependency registries.
+
+## Versioning policy and tool choice
+
+Use one **Basilic distribution version** for the generator and its bundled template. Shared starter packages keep their existing independent metadata; this proposal does not publish every `@repo/*` package. Generated products start with their own version, independent of Basilic provenance.
+
+Release Please fits the existing conventional-commit workflow and prepares reviewable release PRs. Changesets is a good alternative when multiple public packages need coordinated dependency bumps, but would add separate release-intent files here. Reconsider it when independently published SDK packages become an actual requirement. See [Release Please](https://github.com/googleapis/release-please) and [Changesets](https://github.com/changesets/changesets).
+
+Configure a **root release component**, so changes in copied apps, packages, tools, and scripts count toward the distribution. Synchronize its version into `tools/create-basilic/package.json` through Release Please's configured extra-file support. Scoping release detection only to the generator directory would miss template updates. Pin and test the configuration, including manifest state, changelog, tag format `vX.Y.Z`, bootstrap SHA, and exclusion rules.
+
+| Change | Proposed release impact |
+| --- | --- |
+| `fix`: generator bug, template defect, security/dependency correction | Patch. |
+| `feat`: backward-compatible generator option or starter capability | Minor. |
+| `!` / `BREAKING CHANGE`: removed option, changed default contract, raised runtime floor, incompatible starter contract | Major once stable. |
+| Docs-only, internal tests, maintenance with no shipped effect | No release by default. |
+
+Classify dependency upgrades by impact, not the word “deps.” A copied rule/docs change that fixes generated behavior deserves a release-bearing commit. CI should flag payload changes hidden behind non-releasing commit types and require a correction or an explicit reviewed explanation. Conventional syntax cannot prove semantic compatibility.
+
+Recommend stable `1.0.0` only after the acceptance gates below pass; use a manual `0.1.0-next.1` preview if needed before then. Configure pre-1.0 breaking-change behavior explicitly and test it. Keep preview publishing manual initially; exclude prereleases from npm `latest` and GitHub's latest stable release. Do not derive a bootstrap version from every existing workspace's `0.0.0` or `0.1.0` value.
+
+Require conventional PR titles, squash merges, and preservation of breaking-change footers in the final commit message. Set an explicit initial baseline so historical commits do not unexpectedly determine the first release. Routine releases batch automatically in one open release PR; merging that PR is the release decision.
+
+## Automated release path
+
+1. **Feature PR:** run current relevant checks plus generator tests, template classification, and conventional-title validation. Keep the release check always reportable; do not let path filters leave required checks pending.
+2. **Merge to main:** Release Please updates one release PR containing the proposed version and changelog. AI may add a separate review summary, which must not be overwritten by bot regeneration.
+3. **Release PR:** run the full scaffold acceptance checks against its exact content. A maintainer reviews the version, migration notes, and results, then merges.
+4. **Release commit:** check out the exact release SHA; assemble and pack once, record SHA-256, and test that tarball. Do not rebuild during publication. Serialize releases and retain the artifact for retry.
+5. **Publish:** publish the validated tarball to npm with a configured trusted publisher; attach the same artifact/checksum to the matching GitHub Release. Verify public installation by exact version and verify provenance. Announce completion only after both distribution surfaces are verified.
+
+Release Please creates a GitHub Release when the release PR merges; it does not make npm publication transactional. Mark a release as pending distribution verification until the publish check succeeds. A GitHub Release alone is not success.
+
+Use a repository-scoped GitHub App credential for the release bot if downstream PR/tag events must run checks. The default `GITHUB_TOKEN` does not trigger ordinary follow-on workflows for bot-created resources; explicitly test this trigger chain. Keep publication separate from PR execution. See the [Release Please Action credential guidance](https://github.com/googleapis/release-please-action#github-credentials).
+
+Prefer npm OIDC trusted publishing on a supported GitHub-hosted runner, with the exact repository, workflow, and environment configured in npm. Give only the publishing job `id-token: write`; retain normal `pnpm` workspace commands and verify that the pinned publishing client supports OIDC before rollout. npm documents current client requirements and automatic provenance for supported public repositories in [Trusted publishing](https://docs.npmjs.com/trusted-publishers/). Package ownership, initial publication/bootstrap, GitHub App installation, and protected environment setup are one-time maintainer tasks; do not assume an unpublished package is already configured.
+
+Pin Actions to reviewed commit SHAs. Verify release-tag ancestry and artifact identity on manual retries. If npm succeeded but GitHub asset upload failed, repair the release using the retained artifact; never attempt to overwrite an existing npm version. For a defective release, publish a patch, deprecate the affected version where appropriate, and move `latest` to a verified version if necessary. Never rewrite published tags or promise to undo already generated projects. Document emergency publication recovery with the normal checks intact.
+
+This lifecycle governs **Basilic distribution**, separately from existing Vercel/EAS app deployments. Generated repositories do not receive Basilic's npm credentials, release bot, or release state. Adopter release management can be an explicit later option.
+
+## AI assistance with bounded authority
+
+Extend the existing Cursor-first review workflow before introducing another agent service. At PR time, ask AI to compare the diff with public CLI/template contracts and suggest a conventional title, release impact, migration notes, and evidence paths. Run automatic analysis on every relevant PR if desired, but label the result advisory.
+
+At release-PR time, provide merged PRs since the previous tag and test results. Ask for concise user-facing improvements, breaking changes, required actions, and known limitations, with links to each supporting PR. Keep the deterministic changelog; publish reviewed AI prose as supplemental release notes. Cache analysis by head SHA, bound cost/time, and fall back to deterministic notes if the model fails.
+
+AI must not choose an unreviewed major bump, edit authoritative version files independently of Release Please, merge releases, or possess publication credentials. Treat PR text and source comments as untrusted input. Separate analysis from the narrowly authorized bot that posts results. Human review resolves disagreement between the diff, commit classification, and suggested release impact. No new recurring agent service or external posting is enabled by this document.
+
+## Implementation sequence and acceptance
+
+| Stage | Deliverable | Exit evidence |
+| --- | --- | --- |
+| 1. Contract | Final package identity, manifest, documentation snapshot policy, release baseline | Every tracked path classified; all generated agent pointers resolvable. |
+| 2. Generator | `tools/create-basilic`, assembly transforms, packaged executable | Tarball runs outside the workspace; exact-version fixture output is stable. |
+| 3. Generated-project checks | Dedicated CI coverage and portable defaults | Fresh install with frozen lockfile, types, lint, build, unit tests, OpenAPI drift, and API/web E2E pass without docu or generator. |
+| 4. Release automation | Release Please config, release/publish workflow, recovery instructions | Dry run proves version propagation, bot triggers, tarball identity, and retry behavior. Controlled preview installs successfully. |
+| 5. Launch | Stable release and onboarding updates | Product Ready exercised from the published package; docs accurately describe shipped behavior. |
+
+Test invalid names, existing/non-empty paths, paths with spaces, interruption, permission failures, traversal/symlink handling, no-network template copying, and execution from outside Git. Test generation on Linux, macOS, and Windows; distinguish generator support from platform requirements of the full development stack.
+
+Scan packed and generated files for secrets and forbidden paths. Verify workspace dependency closure, portable workflows, license retention, excluded Turbo targets, and lockfile consistency. Reuse root `pnpm qa` for the generated workspace once its transforms are complete, plus `pnpm --filter @repo/docu checktypes` for upstream documentation. Add generator/fixture scripts to package manifests before advertising new validation commands.
+
+At launch, update root and generator READMEs, Getting Started, After fork, CLI, Publishing, GitHub Actions, and Monorepo documentation together. Update `_first/basilic/PRODUCT.md` with the delivered adoption capability and the architecture/workflow overlays with verified implementation facts. Keep forks documented for upstream contributions; new products use the generator. Existing copies remain owner-managed: offer changelogs and migration guidance before considering a future upgrade command.
+
+**Decisions remaining before implementation:** verified npm identity/owner; acceptance of the lightweight docs snapshot and FIRST reset; stable-release baseline and preview need; maintainers authorized to approve releases. These are review items, not claims that accounts or infrastructure have already been configured.
+
+## References
+
+- Repository constraints: root `AGENTS.md`; `.cursor/rules/base/{general,file-organization,git,github-actions,naming,docs,readme}.mdc`.
+- FIRST: `_first/{AGENTS,ABOUT,FIRST}.md`; `_first/basilic/{ARCHITECTURE,WORKFLOW,PRODUCT}.md`; `.agents/skills/f/f-architecture/SKILL.md`, `.agents/skills/f/f-workflow/SKILL.md`, and their analyst/spec references.
+- Local evidence: root `README.md`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`; `packages/cli/{README.md,package.json}`; `tools/{eslint,typescript}`; `.github/workflows/`.
+- Existing technical guidance: [Monorepo](/docs/architecture/monorepo), [After fork](/docs/development/after-fork), [AI workflow](/docs/development/ai-workflow), [Publishing](/docs/deployment/publishing), [GitHub Actions](/docs/deployment/github-actions), [Product Ready](/docs/testing/product-ready).
+- Tool references: [Release Please manifest configuration](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md), [Release Please Action](https://github.com/googleapis/release-please-action), [Changesets](https://github.com/changesets/changesets), [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/). Consulted September 5, 2026; pin and verify selected versions during implementation.

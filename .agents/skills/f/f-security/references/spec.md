@@ -10,7 +10,7 @@ Security is not a phase at the end. It is a set of decisions about boundaries: w
 
 ## Outcome
 
-Trust boundaries are documented. Auth rules are consistent and enforced at boundaries. Secrets are not committed and not logged. External inputs are validated. Agent permissions are scoped: read-only where possible, destructive actions gated, secrets minimized, human approval for high-risk operations.
+Trust boundaries are documented. Auth rules are consistent and enforced at boundaries. Secrets are not committed and not logged. External inputs are validated. Agent permissions are scoped: read-only where possible, destructive actions gated, secrets minimized, human approval for high-risk operations. Defense in depth on the agent: sanitize untrusted text, constrain outputs, scope tools by principal, least privilege on the agent identity. Prompt injection is one surface, not the whole principle.
 
 ## Artifacts
 
@@ -67,10 +67,12 @@ Propose the smallest useful security fix or documentation update. Use existing p
 
 **Security vs Operations:** Security defines trust, protection, and permissions. Operations defines runtime visibility and recovery.
 
-**Security vs API:** API defines contracts at boundaries. Security defines who may invoke them and what they may access.
+**Security vs API:** API defines contracts at boundaries and shows denial at the contract. Security defines who may invoke them and what they may access.
 
 **Security vs Architecture:** Architecture maps trust boundaries and dependencies. Security defines the protection and authorization policy across them.
 
 **Security vs Data:** Data maps classification, copies, retention, and deletion. Security owns access and protection policy.
+
+**Security vs Journeys:** Journeys places the permission gate in the job. Security owns the policy and the agent guardrails.
 
 **Navigation:** [Human essay](../articles/SECURITY.md) · [Factory map](../ABOUT.md)

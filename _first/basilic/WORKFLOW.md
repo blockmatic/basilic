@@ -2,71 +2,44 @@
 
 ## Principle
 
-Make the path from intent to validated change explicit enough that humans, agents, and automation can cooperate without reconstructing the process every time.
-
-## Statement
-
-I care less about which methodology name is on the wall and more about whether work can move from idea to shipped, validated change. Who decides what? Where does state live? When does a human approve? If the path is only in people's heads, agents cannot help and humans cannot scale.
-
-## Outcome
-
-Work flows through a recognizable path: idea → plan → implement → review → pipeline signals → approval → release → learning. Handoffs have inputs and outputs. Work state lives in issues, tasks, or PRs — not only in chat. Human approval is explicit for destructive, security-sensitive, or product-consequential changes.
+See /f-workflow.
 
 ## Artifacts
 
 - **Fact:** Work state: GitHub Issues and pull requests. There is no `BACKLOG.md`. `__dev/` is gitignored scratch, not the backlog.
-- **Fact:** Path: plan (`/plan-feature`) → review → implement → `/git-commit` → `/git-create-pr` → CI + CodeRabbit → `/retro`. Prefer `/git-create-pr` (description + labels) over `/exec-push`.
+- **Fact:** Path: plan (`/b-plan-feature`) → review → `/b-build` → `/b-git-commit` → `/b-git-create-pr` → CI + CodeRabbit → `/b-retro`. Use `/b-exec-push` only when the full implementation-to-PR path is requested.
 - **Fact:** Index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
-- **Fact:** Playbooks: `.agents/skills/workflow/` — `plan-feature`, `exec-push`, `git-commit`, `code-review`, `deslop`, `retro`, `git-create-pr`
+- **Fact:** Playbooks: `.agents/skills/b/` — `/b` dispatcher and `/b-*` children; shared authoring and completion references are packaged inside that tree
 - **Fact:** Consequential decisions: product intent in [PRODUCT.md](PRODUCT.md); technical in ADRs and `apps/docu`
 - **Fact:** Git: default global user; Conventional Commits; never `--no-verify`; never Co-authored-by trailers ([git.mdc](../../.cursor/rules/base/git.mdc))
 - **Fact:** Human gates: product scope, secrets/trust boundaries, destructive ops ([`../AGENTS.md`](../AGENTS.md))
 - **Fact:** Models (docs): Grok 4.6 plan/implement; Sol long-horizon; Composer 2.5 mechanical. In-app chat is a product model, not this workflow.
 
+Automated path:
+
+- **Fact:** [github-actions.mdx](../../apps/docu/content/docs/deployment/github-actions.mdx)
+- **Fact:** [`.github/workflows/lint.yml`](../../.github/workflows/lint.yml) — Biome/ESLint/types. FIRST factory validation lives in [`blockmatic/first`](https://github.com/blockmatic/first)
+- **Fact:** [`.github/workflows/security.yml`](../../.github/workflows/security.yml), [`.github/workflows/deepsec.yml`](../../.github/workflows/deepsec.yml)
+- **Fact:** Path-filtered: `api-e2e.yml` (OpenAPI drift + cov), `web-e2e.yml`, `packages-test.yml`
+- **Fact:** Mobile: `mobile-build.yml`, `mobile-preview.yml`, `mobile-pr-preview.yml` ([mobile-cicd.mdx](../../apps/docu/content/docs/deployment/mobile-cicd.mdx))
+- **Fact:** Local: `pnpm qa` via [`../../scripts/run-qa.mjs`](../../scripts/run-qa.mjs) — checktypes → lint → generate + drift → build → unit → e2e (`SKIP_BUILD=1`)
+- **Fact:** Vercel git deploys web/api/docu ([vercel.mdx](../../apps/docu/content/docs/deployment/vercel.mdx)). CI does **not** deploy. Preview migrate gated unless `RUN_PG_MIGRATE=true`.
+- **Fact:** `web-e2e` chat project runs only when a non-placeholder Anthropic key is present (`hasRealAnthropicKey()`: empty, `sk-ant-xxx`, and `sk-ant-dummy*` omit it); auth/dashboard E2E still run on forks
+- **Fact:** R0 is documentation alignment. It does not require a GitHub Release or a version bump. Preview deploys still run from git as usual.
+- **Unresolved:** commit-stage artifact identity and promote-without-rebuild (hosts rebuild from git)
+
 ## Minimum Useful Artifact
 
 - intent, owner, visible state: issue or PR
-- plan and acceptance criteria: `/plan-feature` for non-trivial work
+- plan and acceptance criteria: `/b-plan-feature` for non-trivial work
 - actors: human, agent, CI, CodeRabbit
 - gates: product, security, destructive — ask a human
-- validation: Product Ready for adopter bar; CI for Pipelines; learning: `/retro` and durable files when decisions changed
-
-## Recipe
-
-1. Inspect issues, PRs, branch, CI, and any plan.
-2. Understand the actor for this step.
-3. Identify missing plan, missing owner, approval only in chat.
-4. Propose before implementing on non-trivial work. Surface assumptions.
-5. Implement in small, reviewable chunks. Keep state in the issue or PR.
-6. Hand off to review with enough context (`/code-review`).
-7. Run validation through existing pipelines. Fix or escalate.
-8. Obtain approval for consequential changes. Release. Capture learning in files.
-
-## Validation
-
-- Work state is visible without asking in chat.
-- Handoffs include enough context for the next actor.
-- Consequential decisions are in [PRODUCT.md](PRODUCT.md), `apps/docu`, or ADRs — not only merged code.
-- Failed validation routes to a clear owner and next action.
-
-## Definition of Done
-
-The change moved through an explicit path. State is updated. Durable context reflects what was decided. The next actor can continue without reconstruction.
-
-## Agent Prompt
-
-Apply Workflow First to Basilic. Use `/f-workflow` plus basilic-skills playbooks.
-
-Read current issues/PRs, ai-workflow MDX, and `.agents/skills/workflow/` before acting. Do not rely on chat as the system of record.
-
-Propose before implementing on non-trivial work. Implement in reviewable chunks. Use `/git-commit` and `/git-create-pr`. Never `--no-verify`. Use the default global git user.
-
-Stop and ask a human for product scope, security-sensitive changes, and destructive operations. Update issues, PRs, and documentation as work progresses. Preserve intentional existing process.
+- validation: Product Ready for adopter bar; CI for Workflow; learning: `/b-retro` and durable files when decisions changed
+- local mirror: `pnpm qa`, `pnpm lint`, `pnpm checktypes`
+- failures: `gh pr checks` / `gh run view` (`/b-fix-github-actions`); never GitHub MCP for Actions logs
 
 ## Notes
 
-**Workflow vs Pipelines:** Workflow is how actors respond. Pipelines are the automated format, test, build, and deploy mechanics.
+Quality names the bar. Workflow runs it. Architecture defines deployment units. Operations runs what arrived. Never `--no-verify`. A green local sandbox is not GitHub Actions.
 
-**Workflow vs Documentation:** Workflow determines when context is created. Documentation preserves it.
-
-**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/WORKFLOW.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/WORKFLOW.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx)
+**Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/WORKFLOW.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/WORKFLOW.md) · [Factory map](../ABOUT.md) · [AI workflow](../../apps/docu/content/docs/development/ai-workflow.mdx) · [GitHub Actions](../../apps/docu/content/docs/deployment/github-actions.mdx)

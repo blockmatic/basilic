@@ -10,7 +10,7 @@ I document decisions and context, not obvious code. If someone will need to redi
 
 ## Outcome
 
-Consequential decisions, conventions, setup steps, and domain context live in discoverable project files. Documentation matches current behavior or explicitly notes drift. When behavior or assumptions change, the files change in the same work.
+Consequential decisions, conventions, setup steps, domain context, prompt templates, and behavioral specs live in discoverable project files. Documentation matches current behavior or explicitly notes drift. When behavior or assumptions change, the files change in the same work.
 
 ## Artifacts
 
@@ -19,6 +19,7 @@ Consequential decisions, conventions, setup steps, and domain context live in di
 - Architecture documentation and ADRs
 - Project conventions and operational notes
 - Domain documentation and setup guides
+- Prompt templates, behavioral specs, and context-engineering notes as versioned project files
 - Changelog entries for behavior changes worth remembering
 - `llms.txt` for selective public-site orientation when the product publishes substantial web documentation
 
@@ -70,6 +71,6 @@ Document decisions and conventions — not obvious code. Preserve intentional ex
 
 **Documentation vs everything:** Other stations produce decisions. Documentation decides which context must stay durable.
 
-**Documentation vs Workflow:** Workflow determines when context is created and handed off. Documentation preserves it.
+**Documentation vs Workflow:** Workflow determines when context is created and handed off, and runs CI. Documentation preserves it, including prompt files. Quality already owns eval datasets. Architecture already owns application structure if context-engineering is a structural boundary.
 
 **Navigation:** [Human essay](../articles/DOCUMENTATION.md) · [Factory map](../ABOUT.md)

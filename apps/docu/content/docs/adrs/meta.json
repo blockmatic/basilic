@@ -12,6 +12,7 @@
     "008-database",
     "009-api-architecture",
     "010-expo-cicd",
-    "011-product-analytics"
+    "011-product-analytics",
+    "012-scaffolding-and-releases"
   ]
 }

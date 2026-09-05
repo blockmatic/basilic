@@ -10,7 +10,7 @@ I treat architecture as the small set of decisions that are expensive to reverse
 
 ## Outcome
 
-The system has an inspectable structural model at the level its scale requires. Components have named responsibilities and owners. Dependency direction, external systems, data stores, and deployment units are visible. Consequential choices have rationale and known tradeoffs. Implementation conforms, or the model is updated deliberately.
+The system has an inspectable structural model at the level its scale requires. Components have named responsibilities and owners. Dependency direction, external systems, data stores, and deployment units are visible. Application processes are stateless; durable state lives in attached backing services that can be swapped without rewriting the app. Consequential choices have rationale and known tradeoffs. Implementation conforms, or the model is updated deliberately.
 
 ## Artifacts
 
@@ -74,8 +74,10 @@ Propose the smallest useful structural change or artifact. Record rationale and 
 
 **Architecture vs API:** Architecture decides which components communicate. API defines the contract across a boundary.
 
-**Architecture vs Pipelines:** Architecture describes deployment units and topology. Pipelines build, validate, and deliver them.
+**Architecture vs Workflow:** Architecture describes deployment units and topology. Workflow builds, validates, and delivers them.
 
 **Architecture vs Operations:** Architecture names the running parts. Operations observes and recovers them.
+
+**Architecture vs Documentation:** If context-engineering is a structural boundary, it is application structure, not a notebook string. Documentation versions the prompt files.
 
 **Navigation:** [Human essay](../articles/ARCHITECTURE.md) · [Factory map](../ABOUT.md)

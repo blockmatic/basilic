@@ -14,7 +14,8 @@ Content is `content/docs/` (`architecture`, `development`, `testing`, `deploymen
 
 - [Getting Started](content/docs/development/index.mdx)
 - [Product Ready](content/docs/testing/product-ready.mdx)
-- [AI Workflow](content/docs/development/ai-workflow.mdx)
+- [AI Workflow](content/docs/development/ai-workflow.mdx) — `/b` catalog, `/b-*` playbooks, checklists, and migration
 - [Architecture](content/docs/architecture/index.mdx)
 - [Security](content/docs/architecture/security.mdx)
 - [Deployment](content/docs/deployment/index.mdx)
+- [Scaffolding and Releases proposal](content/docs/adrs/012-scaffolding-and-releases.mdx)
