@@ -63,3 +63,8 @@ From a station file in this folder:
 | 12 | Operations | [OPERATIONS.md](OPERATIONS.md) |
 
 Do not invent TAM, event taxonomies, or SLOs to complete a template. Label **Fact**, **Drift**, and **Unresolved** under Artifacts.
+
+## Overlay as delta
+
+Keep the required `##` headings. Fill Artifacts with pointers and facts. Do **not** paste the generic Recipe, Agent Prompt, or Statement from `../principles/X.md`. Canonical briefs live in `apps/docu`. `__dev/` is scratch until it graduates into docs or this overlay.
+
