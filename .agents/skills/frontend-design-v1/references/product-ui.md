@@ -30,6 +30,6 @@ Do not reject the project's committed fonts, neutrals, or component library beca
 
 ## Related
 
-- UI code checklist: [../web-design-guidelines-v1/SKILL.md](../web-design-guidelines-v1/SKILL.md)
-- Component APIs: [../composition-patterns-v1/SKILL.md](../composition-patterns-v1/SKILL.md)
-- Motion: [../emilkowal-animations-v1/SKILL.md](../emilkowal-animations-v1/SKILL.md), [../motion-v13/SKILL.md](../motion-v13/SKILL.md)
+- UI code checklist: [../../web-design-guidelines-v1/SKILL.md](../../web-design-guidelines-v1/SKILL.md)
+- Component APIs: [../../composition-patterns-v1/SKILL.md](../../composition-patterns-v1/SKILL.md)
+- Motion: [../../emilkowal-animations-v1/SKILL.md](../../emilkowal-animations-v1/SKILL.md), [../../motion-v13/SKILL.md](../../motion-v13/SKILL.md)
