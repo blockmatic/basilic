@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import LoginNotificationEmail from '@repo/email/emails/login-notification'
-import { render } from '@repo/email/render'
+import { render as renderSessionEmail } from '@repo/email/render'
 import { captureError } from '@repo/error/node'
 import { and, eq, ne } from 'drizzle-orm'
 import type { FastifyInstance } from 'fastify'
@@ -12,6 +12,8 @@ import { env } from '../env.js'
 import { generateToken, hashToken } from '../jwt.js'
 import { isAllowedUrl } from '../url.js'
 import { signInTypeLabel } from './device.js'
+
+export { renderSessionEmail }
 
 type NotifyDb = Pick<Awaited<ReturnType<typeof getDb>>, 'insert' | 'select'>
 
@@ -121,8 +123,10 @@ export async function notifyNewDeviceSignIn({
 
   void (async () => {
     try {
-      const html = await render(LoginNotificationEmail(emailProps))
-      const text = await render(LoginNotificationEmail(emailProps), { plainText: true })
+      const html = await renderSessionEmail(LoginNotificationEmail(emailProps))
+      const text = await renderSessionEmail(LoginNotificationEmail(emailProps), {
+        plainText: true,
+      })
       await sendMail({
         provider: fastify.emailProvider,
         logger: fastify.log,

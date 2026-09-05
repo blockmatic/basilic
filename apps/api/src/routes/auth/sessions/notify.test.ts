@@ -1,7 +1,7 @@
-import * as emailRender from '@repo/email/render'
 import { describe, expect, it, vi } from 'vitest'
 import { getStoredMagicLink } from '../../../../test/utils/auth-helper.js'
 import { allowlistedWebAppOrigin } from '../../../lib/session/index.js'
+import * as sessionNotify from '../../../lib/session/notify.js'
 import { fastify } from './sessions.spec.js'
 
 const chromeUa =
@@ -99,7 +99,9 @@ describe('new-device notify', () => {
   })
 
   it('does not crash the process when notification render rejects', async () => {
-    const spy = vi.spyOn(emailRender, 'render').mockRejectedValue(new Error('render failed'))
+    const spy = vi
+      .spyOn(sessionNotify, 'renderSessionEmail')
+      .mockRejectedValue(new Error('render failed'))
     const email = 'sessions-notify-render-fail@test.ai'
     try {
       const verifyRes = await login({ email, userAgent: chromeUa })
