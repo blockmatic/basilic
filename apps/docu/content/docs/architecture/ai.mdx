@@ -30,10 +30,11 @@ apps/api/src/lib/ai/
   download.ts        denyRemoteChatFileDownload (blocks non-data: fetches)
   runtime.ts         abort, SSE piping, upstream error mapping
   upstream-error.ts  isInsufficientCreditsError
-  tools/
-    index.ts         getMergedTools
-    account-info.ts  getAccountInfo tool
-    brave-search.ts  braveSearch tool (when BRAVE_SEARCH_API_KEY set)
+    tools/
+    index.ts              getMergedTools
+    account-info.ts       getAccountInfo tool
+    market-snapshot.ts    getMarketSnapshot tool
+    brave-search.ts       braveSearch tool (when BRAVE_SEARCH_API_KEY set)
 ```
 
 Chat uses `streamText` / `generateText` with `stopWhen: isStepCount(AI_TOOL_MAX_STEPS)`. Generate is prompt-only (no tools). Shared runtime handles client abort + `AI_UPSTREAM_TIMEOUT_MS`, v7 UI streams (`toUIMessageStream` + `createUIMessageStreamResponse`), and catalog errors via `captureError` then `sendCatalogError`.
@@ -61,13 +62,23 @@ Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`.
 
 The web app uses `useChatFromConfig` (`@repo/react`) → `POST {baseUrl}/ai/chat` with Bearer auth and `DefaultChatTransport` (UI-message SSE).
 
-**Tool:** `getAccountInfo` — output shape:
+**Tools:** `getAccountInfo` and `getMarketSnapshot`.
+
+`getAccountInfo` output:
 
 ```json
 { "__render": "user-info", "spec": { "root": "...", "elements": { ... } }, "summary": "..." }
 ```
 
-`assistant-chat.tsx` matches `tool-getAccountInfo` parts and renders via `user-info-catalog.tsx`. Do not rename the tool or change the output shape without updating the web UI. `__render: 'user-info'` is the product name for the demo account-context job. Product analytics records `assistant_turn` with `accountRender` when that surface is present — not merely when the assistant replies. See [Product analytics](/docs/architecture/analytics).
+`getMarketSnapshot` output:
+
+```json
+{ "__render": "market-card", "spec": { "root": "...", "elements": { ... } }, "summary": "..." }
+```
+
+`assistant-chat.tsx` matches `tool-getAccountInfo` → `user-info-catalog.tsx` and `tool-getMarketSnapshot` → `market-card-catalog.tsx`. Do not rename a tool or change the output shape without updating the web UI. `__render: 'user-info'` is the account-context demo job; `__render: 'market-card'` is the markets demo job. Product analytics records `assistant_turn` with `accountRender` when the account surface is present — not merely when the assistant replies. See [Product analytics](/docs/architecture/analytics).
+
+`getMarketSnapshot` reads the same public CoinGecko markets URL as the web board. On 429 or network failure it returns a checked-in mock so fork-and-run does not need a CoinGecko key.
 
 Composer send (textarea + suggestions) is disabled while `status !== 'ready'`; stop remains available during `streaming`.
 

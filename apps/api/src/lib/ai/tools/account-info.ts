@@ -5,6 +5,7 @@ import { getDb } from '../../../db/index.js'
 import { users } from '../../../db/schema/index.js'
 import { env } from '../../env.js'
 import { createBraveSearchTool } from './brave-search.js'
+import { createMarketSnapshotTool } from './market-snapshot.js'
 
 const userInfoSpecRoot = 'user-info-1'
 
@@ -64,6 +65,7 @@ function createAccountInfoTool(userId: string) {
 export function getMergedTools(userId: string, log: import('fastify').FastifyBaseLogger): ToolSet {
   return {
     getAccountInfo: createAccountInfoTool(userId),
+    getMarketSnapshot: createMarketSnapshotTool(),
     ...(env.BRAVE_SEARCH_API_KEY && {
       braveSearch: createBraveSearchTool(env.BRAVE_SEARCH_API_KEY, log),
     }),

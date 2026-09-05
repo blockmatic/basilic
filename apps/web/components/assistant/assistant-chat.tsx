@@ -15,6 +15,7 @@ import {
   ConversationContent,
   ConversationEmptyState,
 } from 'components/assistant/conversation'
+import { marketCardRegistry } from 'components/assistant/market-card-catalog'
 import { Message, MessageContent, MessageResponse } from 'components/assistant/message'
 import { Input, PromptInputSubmit, PromptInputTextarea } from 'components/assistant/prompt-input'
 import { userInfoRegistry } from 'components/assistant/user-info-catalog'
@@ -22,16 +23,27 @@ import { MessageCircleIcon } from 'lucide-react'
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 import { capture } from '@/lib/analytics'
 
-const suggestions = ['Who am I?', 'What can you help with?']
+const suggestions = ['What moved?', 'Explain BTC', 'Who am I?']
 
 function isUserInfoSpecOutput(
   output: unknown,
 ): output is { __render: 'user-info'; spec: { root: string; elements: Record<string, unknown> } } {
+  return isRenderSpec(output, 'user-info')
+}
+
+function isMarketCardSpecOutput(output: unknown): output is {
+  __render: 'market-card'
+  spec: { root: string; elements: Record<string, unknown> }
+} {
+  return isRenderSpec(output, 'market-card')
+}
+
+function isRenderSpec(output: unknown, render: string) {
   return (
     typeof output === 'object' &&
     output !== null &&
     '__render' in output &&
-    (output as { __render?: unknown }).__render === 'user-info' &&
+    (output as { __render?: unknown }).__render === render &&
     'spec' in output &&
     typeof (output as { spec?: unknown }).spec === 'object' &&
     (output as { spec?: object }).spec !== null
@@ -202,6 +214,21 @@ export function AssistantChat({ className, header, hideHeader }: AssistantChatPr
                         <VisibilityProvider>
                           <ActionProvider>
                             <Renderer spec={output.spec as Spec} registry={userInfoRegistry} />
+                          </ActionProvider>
+                        </VisibilityProvider>
+                      </StateProvider>,
+                    )
+                  } else if (
+                    toolName === 'getMarketSnapshot' &&
+                    isMarketCardSpecOutput(output) &&
+                    output.spec
+                  ) {
+                    hasContent = true
+                    elements.push(
+                      <StateProvider key={`${message.id}-tool-${i}`} initialState={{}}>
+                        <VisibilityProvider>
+                          <ActionProvider>
+                            <Renderer spec={output.spec as Spec} registry={marketCardRegistry} />
                           </ActionProvider>
                         </VisibilityProvider>
                       </StateProvider>,

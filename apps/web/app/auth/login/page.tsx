@@ -26,7 +26,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-4" />
               </div>
-              Acme Inc.
+              Basilic
             </a>
           </div>
           <div className="flex gap-2">

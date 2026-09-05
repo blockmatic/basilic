@@ -17,10 +17,12 @@ type NewsListProps = {
   articles?: NewsListArticle[]
   error?: string
   fallback?: ReactNode
+  compact?: boolean
 }
 
-export function NewsList({ articles, error, fallback }: NewsListProps) {
-  if (fallback) return <div className="mx-auto max-w-2xl space-y-4">{fallback}</div>
+export function NewsList({ articles, error, fallback, compact }: NewsListProps) {
+  if (fallback)
+    return <div className={compact ? 'space-y-2' : 'mx-auto max-w-2xl space-y-4'}>{fallback}</div>
   if (error)
     return (
       <div className="mx-auto max-w-2xl">
@@ -29,9 +31,27 @@ export function NewsList({ articles, error, fallback }: NewsListProps) {
     )
   if (!articles?.length)
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className={compact ? '' : 'mx-auto max-w-2xl'}>
         <p className="text-muted-foreground text-sm">No headlines available.</p>
       </div>
+    )
+
+  if (compact)
+    return (
+      <ul className="space-y-2">
+        {articles.map((a, i) => (
+          <li key={a.url ?? i} className="text-sm">
+            {a.url ? (
+              <a href={a.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                {a.title ?? 'Untitled'}
+              </a>
+            ) : (
+              <span>{a.title ?? 'Untitled'}</span>
+            )}
+            <span className="text-muted-foreground ml-2 text-xs">{a.source?.name ?? ''}</span>
+          </li>
+        ))}
+      </ul>
     )
 
   return (

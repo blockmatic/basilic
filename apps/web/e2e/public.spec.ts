@@ -15,7 +15,7 @@ test.describe('Public routes', () => {
 
   test('login page shows welcome and email form', async ({ page }) => {
     await page.goto('/auth/login')
-    await expect(page.getByText('Welcome to Acme')).toBeVisible()
+    await expect(page.getByText('Welcome to Basilic')).toBeVisible()
     await expect(page.locator('input[type="email"]')).toBeVisible()
     await expect(page.getByTestId('send-magic-link')).toBeVisible()
   })

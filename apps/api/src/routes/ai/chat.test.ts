@@ -423,6 +423,24 @@ describe('POST /ai/chat', () => {
       expect(data.text.toLowerCase()).toMatch(/test@test\.ai|joined|email/)
     }, 60000)
 
+    it('should return 200 when user asks what moved (getMarketSnapshot tool)', async ctx => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: { Authorization: `Bearer ${testToken}` },
+        payload: {
+          messages: [{ role: 'user', content: 'What moved? Use getMarketSnapshot.' }],
+        },
+      })
+      skipIfInsufficientCredits(ctx, response, 'what moved tool')
+      skipIfProviderUnavailable(ctx, response, 'what moved tool')
+      expect(response.statusCode).toBe(200)
+      const data = JSON.parse(response.body)
+      expect(() => ChatResponseSchema.parse(data)).not.toThrow()
+      expect(data.text).toBeTypeOf('string')
+      expect(data.text.length).toBeGreaterThan(0)
+    }, 60000)
+
     it('should return 400 for overlong message content', async () => {
       const response = await fastify.inject({
         method: 'POST',

@@ -12,21 +12,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@repo/ui/components/sidebar'
-import {
-  BarChart3Icon,
-  GalleryVerticalEnd,
-  LogOut,
-  NewspaperIcon,
-  ShieldIcon,
-  UserIcon,
-} from 'lucide-react'
+import { BarChart3Icon, GalleryVerticalEnd, LogOut, ShieldIcon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const navItems = [
-  { href: '/', label: 'News', icon: NewspaperIcon },
-  { href: '/markets', label: 'Markets', icon: BarChart3Icon },
-] as const
+const navItems = [{ href: '/', label: 'Markets', icon: BarChart3Icon }] as const
 
 const settingsItems: Array<{
   href: string
@@ -53,7 +43,7 @@ export function DashboardSidebar() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            Acme Inc.
+            Basilic
           </Link>
         </div>
       </SidebarHeader>

@@ -205,7 +205,7 @@ export function LoginForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-xl font-heading font-bold md:text-3xl">Welcome to Acme</h1>
+          <h1 className="text-xl font-heading font-bold md:text-3xl">Welcome to Basilic</h1>
           <p className="text-muted-foreground text-sm text-balance">
             Enter your email below to continue
           </p>
