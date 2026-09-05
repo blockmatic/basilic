@@ -19,11 +19,6 @@
       "skillPath": "skills/ai-sdk-ui-v7/SKILL.md",
       "computedHash": "2d909a358b697da27416f5db98605d9cbf366600437faaa0a3c0c9d1c108ebdd"
     },
-    "b": {
-      "source": "../basilic-skills",
-      "sourceType": "local",
-      "computedHash": "567e629f532d85f4642c09fa93c523781a454279816a8ff19211e4d6963940c4"
-    },
     "drizzle-orm-v0": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
@@ -187,6 +182,11 @@
       "sourceType": "github",
       "skillPath": "skills/wagmi-v3/SKILL.md",
       "computedHash": "4fbe400f2d512bc1499e059db8f52e55078087409eb3ee68582c3feb7e5caf60"
+    },
+    "workflow": {
+      "source": "../basilic-skills",
+      "sourceType": "local",
+      "computedHash": "b647861130dfa4b7e9585f270423e60624f7e607f7508fb1b54b22567983935f"
     }
   }
 }

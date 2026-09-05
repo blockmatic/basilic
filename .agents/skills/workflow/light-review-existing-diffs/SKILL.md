@@ -1,0 +1,19 @@
+---
+name: light-review-existing-diffs
+description: Perform quick quality pass on current diffs to surface risky areas, ensure polish, and flag follow-up actions for deeper review. Use when the user types /light-review-existing-diffs.
+disable-model-invocation: true
+---
+
+## Purpose
+
+Perform quick quality pass on current diffs to surface risky areas, ensure polish, and flag follow-up actions for deeper review.
+
+## Steps
+
+1. **Scan recent changes**: List open branches or pending commits requiring review, skim side-by-side diffs focusing on new/modified files, note files/modules with large/complex edits
+2. **Assess quality signals**: Watch for TODOs/debug code/commented blocks needing cleanup, verify naming/formatting/imports follow project standards, check that tests/documentation were updated when behavior changed
+3. **Flag next actions**: Mark sections warranting full review, capture questions for the author, and list quick fixes. Apply edits only if the user asked for them.
+
+## Completion
+
+Read [completion evidence](../references/completion.md) before reporting completion.

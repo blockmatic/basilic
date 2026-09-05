@@ -19,7 +19,7 @@ Two catalogs. Do not merge them.
 npx skills add blockmatic/first
 ```
 
-**Tech** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). **Workflow `b`** is a local preview until that catalog's `main` publishes it (GitHub still ships `workflow`).
+**Tech** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). **Workflow** (`workflow`) is a local preview until that catalog's `main` publishes the restored unprefixed tags.
 
 Install or refresh tech skills (interactive — pick skills and agents):
 
@@ -27,13 +27,13 @@ Install or refresh tech skills (interactive — pick skills and agents):
 pnpm dlx skills@latest add blockmatic/basilic-skills
 ```
 
-Do not use `--skill '*'` from GitHub during this preview — that reinstalls `workflow`. Refresh playbooks from the local catalog:
+Do not use `--skill '*'` from GitHub during this preview if `main` still ships a different workflow package. Refresh playbooks from the local catalog:
 
 ```bash
-pnpm dlx skills@latest add /path/to/basilic-skills --skill b -a cursor --copy -y
+pnpm dlx skills@latest add /path/to/basilic-skills --skill workflow -a cursor --copy -y
 ```
 
-That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/b/b-<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
+That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/workflow/<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
 
 Root `skills-lock.json` tracks catalog hashes. FIRST is `source: blockmatic/first`. Commit the lock with `.agents/skills/` after every refresh.
 
@@ -43,7 +43,7 @@ Root `skills-lock.json` tracks catalog hashes. FIRST is `source: blockmatic/firs
 
 **Tech** — `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
-**Workflow** — install the parent `b` skill; nested children are not independent install targets. `.agents/skills/b/b-<name>/` (example: `b/b-plan-feature`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/b-<name>` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
+**Workflow** — install the parent `workflow` skill; nested children are not independent install targets. `.agents/skills/workflow/<name>/` (example: `workflow/plan-feature`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/plan-feature` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name.
 
@@ -51,17 +51,17 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 ## Workflow migration
 
-The local workflow package is now `b`: `.agents/skills/b/SKILL.md` dispatches to 50 `/b-*` children, including `/b-build`. Shared authoring and completion references travel inside this tree. FIRST and technology skill names are unchanged.
+The local workflow package is `workflow`: `.agents/skills/workflow/SKILL.md` dispatches to 50 unprefixed children, including `/build`. Shared authoring and completion references travel inside this tree. FIRST and technology skill names are unchanged.
 
 The catalog changes are prepared in the local `basilic-skills` checkout and are not yet published. Until they reach the canonical source, preview from that checkout:
 
 ```bash
-pnpm dlx skills@latest add /path/to/basilic-skills --skill b -a cursor --copy -y
+pnpm dlx skills@latest add /path/to/basilic-skills --skill workflow -a cursor --copy -y
 ```
 
-After publication, substitute `blockmatic/basilic-skills` for the local path. Inspect the generated lockfile and installed files; do not assign an unpublished local preview a made-up GitHub hash. Avoid refreshing from the old remote revision during this preview because it still provides `workflow`.
+After publication, substitute `blockmatic/basilic-skills` for the local path. Inspect the generated lockfile and installed files; do not assign an unpublished local preview a made-up GitHub hash.
 
-After verifying the new install, remove the old `workflow` package with the skills CLI, preserving any local edits first. This repository should have one workflow tree. Update `/workflow` to `/b`, `/plan-feature` to `/b-plan-feature`, and other standalone playbook names to their `b-` forms in saved prompts. `/b plan` is a shortcut to the same child; old names are not separate installed aliases.
+After verifying the new install, remove any leftover `b` package with the skills CLI, preserving local edits first. This repository should have one workflow tree. Slash tags are `/workflow` and `/plan-feature` (not `/b` or `/b-plan-feature`). `/workflow plan` is a dispatcher shortcut to `/plan-feature`. Names from `/b-*` chats can be translated; they are not separate installed aliases.
 
 Packaging validation runs in the catalog with `pnpm validate`. It checks metadata, counts, grouping, and workflow reference targets. These checks do not prove that an agent follows the workflow or that a particular desktop menu has refreshed.
 
@@ -78,13 +78,13 @@ This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is 
 
 ## Update procedure
 
-Until `b` is on GitHub `main`, refresh playbooks from the local catalog (do not `add blockmatic/basilic-skills --skill b` or `--skill '*'` from GitHub):
+Until `workflow` with unprefixed playbooks is on GitHub `main`, refresh playbooks from the local catalog (do not `add blockmatic/basilic-skills --skill b` or `--skill '*'` from GitHub):
 
 ```bash
-pnpm dlx skills@latest add /path/to/basilic-skills --skill b -a cursor --copy -y
+pnpm dlx skills@latest add /path/to/basilic-skills --skill workflow -a cursor --copy -y
 ```
 
-Tech skills that already exist on GitHub may still refresh from `blockmatic/basilic-skills` by name. After publication, a GitHub `--skill '*'` (or `--skill b`) refresh is valid.
+Tech skills that already exist on GitHub may still refresh from `blockmatic/basilic-skills` by name. After publication, a GitHub `--skill '*'` (or `--skill workflow`) refresh is valid.
 
 Review the diff; commit `.agents/skills/` and `skills-lock.json`.
 

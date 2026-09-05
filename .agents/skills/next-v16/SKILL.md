@@ -68,7 +68,7 @@ Next.js 16 App Router (GA October 2025). Prefer the version-matched docs in `nod
 
 - React 19 concurrent UI: [vercel-react-v1](../vercel-react-v1/SKILL.md)
 - Client data after hydration: [tanstack-query-v5](../tanstack-query-v5/SKILL.md)
-- Forms that stay on the Next server: [b/b-nextjs-form](../b/b-nextjs-form/SKILL.md)
+- Forms that stay on the Next server: [workflow/nextjs-form](../workflow/nextjs-form/SKILL.md)
 
 ## Two cache models (do not mix)
 

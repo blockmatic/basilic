@@ -7,12 +7,12 @@ See /f-workflow.
 ## Artifacts
 
 - **Fact:** Work state: GitHub Issues and pull requests. There is no `BACKLOG.md`. `__dev/` is gitignored scratch, not the backlog.
-- **Fact:** Path: plan (`/b-plan-feature`) → review → `/b-build` → `/b-git-commit` → `/b-git-create-pr` → CI + CodeRabbit → `/b-retro`. Use `/b-exec-push` only when the full implementation-to-PR path is requested.
+- **Fact:** Path: plan (`/plan-feature`) → review → `/build` → `/git-commit` → `/git-create-pr` → CI + CodeRabbit → `/retro`. Use `/exec-push` only when the full implementation-to-PR path is requested.
 - **Fact:** Index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
-- **Fact:** Playbooks: `.agents/skills/b/` — `/b` dispatcher and `/b-*` children; shared authoring and completion references are packaged inside that tree
+- **Fact:** Playbooks: `.agents/skills/workflow/` — `/workflow` dispatcher and unprefixed children; shared authoring and completion references are packaged inside that tree
 - **Fact:** Consequential decisions: product intent in [PRODUCT.md](PRODUCT.md); technical in ADRs and `apps/docu`
 - **Fact:** Git: default global user; Conventional Commits; never `--no-verify`; never Co-authored-by trailers ([git.mdc](../../.cursor/rules/base/git.mdc)). Squash-merge uses `PR_TITLE` + `PR_BODY` so `BREAKING CHANGE:` footers survive. Conventional PR titles are gated.
-- **Fact:** Advisory `/b-release-review` playbook. AI does not bump versions, merge release PRs, or hold npm credentials.
+- **Fact:** Advisory `/release-review` playbook. AI does not bump versions, merge release PRs, or hold npm credentials.
 - **Fact:** Human gates: product scope, secrets/trust boundaries, destructive ops ([`../AGENTS.md`](../AGENTS.md))
 - **Fact:** Models (docs): Grok 4.6 plan/implement; Sol long-horizon; Composer 2.5 mechanical. In-app chat is a product model, not this workflow.
 
@@ -33,12 +33,12 @@ Automated path:
 ## Minimum Useful Artifact
 
 - intent, owner, visible state: issue or PR
-- plan and acceptance criteria: `/b-plan-feature` for non-trivial work
+- plan and acceptance criteria: `/plan-feature` for non-trivial work
 - actors: human, agent, CI, CodeRabbit
 - gates: product, security, destructive — ask a human
-- validation: Product Ready for adopter bar; CI for Workflow; learning: `/b-retro` and durable files when decisions changed
+- validation: Product Ready for adopter bar; CI for Workflow; learning: `/retro` and durable files when decisions changed
 - local mirror: `pnpm qa`, `pnpm lint`, `pnpm checktypes`
-- failures: `gh pr checks` / `gh run view` (`/b-fix-github-actions`); never GitHub MCP for Actions logs
+- failures: `gh pr checks` / `gh run view` (`/fix-github-actions`); never GitHub MCP for Actions logs
 
 ## Notes
 
