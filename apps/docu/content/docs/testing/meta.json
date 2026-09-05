@@ -1,4 +1,4 @@
 {
   "title": "Testing",
-  "pages": ["index", "e2e-testing"]
+  "pages": ["index", "product-ready", "e2e-testing"]
 }

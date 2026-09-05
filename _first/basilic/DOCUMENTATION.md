@@ -21,6 +21,7 @@ Consequential decisions, conventions, setup steps, and domain context live in di
 - **Fact:** Public LLM indexes: `/llms.txt`, `/llms-full.txt` on the docs site
 - **Fact:** Portable factory: vendored `../AGENTS.md`, `../ABOUT.md`, `../principles/`. This folder is the Basilic adoption pack, not a second docs site. Essays live in [`blockmatic/first`](https://github.com/blockmatic/first/tree/main/_first/articles).
 - **Fact:** Same-change rule: update matching MDX when behavior, commands, or conventions change
+- **Fact:** `__dev/` is gitignored scratch. Do not treat it as Fact or as the backlog. Remembered decisions go in `apps/docu` or ADRs.
 - **Drift:** named in sibling instances (PostHog, “API as source of truth”, portability vs Vercel). Fix MDX in the same work when you change the fact; do not leave load-bearing drift only in chat.
 
 ## Minimum Useful Artifact

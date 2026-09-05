@@ -14,10 +14,10 @@ Work flows through a recognizable path: idea → plan → implement → review �
 
 ## Artifacts
 
-- **Fact:** Path: plan (`/plan-feature`) → review → implement (`/exec-push`) → `/git-commit` → PR → CI + CodeRabbit → `/retro`
+- **Fact:** Work state: GitHub Issues and pull requests. There is no `BACKLOG.md`. `__dev/` is gitignored scratch, not the backlog.
+- **Fact:** Path: plan (`/plan-feature`) → review → implement → `/git-commit` → `/git-create-pr` → CI + CodeRabbit → `/retro`. Prefer `/git-create-pr` (description + labels) over `/exec-push`.
 - **Fact:** Index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
 - **Fact:** Playbooks: `.agents/skills/workflow/` — `plan-feature`, `exec-push`, `git-commit`, `code-review`, `deslop`, `retro`, `git-create-pr`
-- **Fact:** Work state: GitHub issues and pull requests
 - **Fact:** Consequential decisions: ADRs and `apps/docu`
 - **Fact:** Git: default global user; Conventional Commits; never `--no-verify`; never Co-authored-by trailers ([git.mdc](../../.cursor/rules/base/git.mdc))
 - **Fact:** Human gates: product scope, secrets/trust boundaries, destructive ops ([`../AGENTS.md`](../AGENTS.md))
@@ -29,7 +29,7 @@ Work flows through a recognizable path: idea → plan → implement → review �
 - plan and acceptance criteria: `/plan-feature` for non-trivial work
 - actors: human, agent, CI, CodeRabbit
 - gates: product, security, destructive — ask a human
-- validation: CI; learning: `/retro` and durable files when decisions changed
+- validation: Product Ready for adopter bar; CI for Pipelines; learning: `/retro` and durable files when decisions changed
 
 ## Recipe
 
@@ -59,7 +59,7 @@ Apply Workflow First to Basilic.
 
 Read current issues/PRs, ai-workflow MDX, and `.agents/skills/workflow/` before acting. Do not rely on chat as the system of record.
 
-Propose before implementing on non-trivial work. Implement in reviewable chunks. Use `/exec-push` and `/git-commit`. Never `--no-verify`. Use the default global git user.
+Propose before implementing on non-trivial work. Implement in reviewable chunks. Use `/git-commit` and `/git-create-pr`. Never `--no-verify`. Use the default global git user.
 
 Stop and ask a human for product scope, security-sensitive changes, and destructive operations. Update issues, PRs, and documentation as work progresses. Preserve intentional existing process.
 

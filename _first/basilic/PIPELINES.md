@@ -22,6 +22,7 @@ Changes flow through an automated path: format → lint → typecheck → test �
 - **Fact:** Local: `pnpm qa` via [`../../scripts/run-qa.mjs`](../../scripts/run-qa.mjs) — checktypes → lint → generate + drift → build → unit → e2e (`SKIP_BUILD=1`)
 - **Fact:** Vercel git deploys web/api/docu ([vercel.mdx](../../apps/docu/content/docs/deployment/vercel.mdx)). CI does **not** deploy. Preview migrate gated unless `RUN_PG_MIGRATE=true`.
 - **Fact:** `web-e2e` needs `ANTHROPIC_API_KEY`
+- **Fact:** R0 is documentation alignment. It does not require a GitHub Release or a version bump. Preview deploys still run from git as usual.
 - **Unresolved:** commit-stage artifact identity and promote-without-rebuild (hosts rebuild from git)
 
 ## Minimum Useful Artifact
