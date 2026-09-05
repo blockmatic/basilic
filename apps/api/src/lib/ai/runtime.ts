@@ -6,13 +6,36 @@ import { env } from '../env.js'
 import type { ResolvedProvider } from './provider.js'
 import { isInsufficientCreditsError } from './upstream-error.js'
 
-export function createRequestAbortSignal(request: FastifyRequest): AbortSignal {
+export function createRequestAbortSignal({
+  request,
+  reply,
+}: {
+  request: FastifyRequest
+  reply: FastifyReply
+}): AbortSignal {
   const requestAbortController = new AbortController()
-  request.raw.once('close', () => requestAbortController.abort())
-  return AbortSignal.any([
-    requestAbortController.signal,
-    AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),
-  ])
+  const timeoutController = new AbortController()
+  const timeout = setTimeout(() => timeoutController.abort(), env.AI_UPSTREAM_TIMEOUT_MS)
+  const socket = request.raw.socket
+  function cleanup() {
+    clearTimeout(timeout)
+    reply.raw.off('close', onPrematureClose)
+    socket?.off('close', onPrematureClose)
+    requestAbortController.signal.removeEventListener('abort', cleanup)
+    timeoutController.signal.removeEventListener('abort', cleanup)
+  }
+  function onPrematureClose() {
+    if (reply.raw.writableEnded) {
+      cleanup()
+      return
+    }
+    requestAbortController.abort()
+  }
+  reply.raw.once('close', onPrematureClose)
+  socket?.once('close', onPrematureClose)
+  requestAbortController.signal.addEventListener('abort', cleanup)
+  timeoutController.signal.addEventListener('abort', cleanup)
+  return AbortSignal.any([requestAbortController.signal, timeoutController.signal])
 }
 
 export function createUiMessageStreamResponse(result: {

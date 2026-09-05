@@ -16,7 +16,7 @@ Production behavior is observable at the level the project needs. Logs are struc
 
 - **Fact:** [logging.mdx](../../apps/docu/content/docs/architecture/logging.mdx) — Pino `@repo/utils/logger/server` and `/client`. HTTP: Fastify `request.log` with join key **`reqId`**. Secrets redacted. Never `console.*` in app code.
 - **Fact:** [error-handling.mdx](../../apps/docu/content/docs/architecture/error-handling.mdx) — `@repo/error` `captureError` is log-only; Sentry packages installed but **inactive**; HTTP catalog `{ code, message }`
-- **Fact:** `GET /health` → `{ ok: true, dbReady }` — no auth, no deep probes (Resend/AI/IdP)
+- **Fact:** `GET /health` is readiness: **200** `{ ok: true, dbReady: true }` when `SELECT 1` succeeds; **503** `{ ok: false, dbReady: false }` when the store is down. No Resend/AI/IdP probes.
 - **Fact:** Deploy: [vercel.mdx](../../apps/docu/content/docs/deployment/vercel.mdx), [self-hosted-llm.mdx](../../apps/docu/content/docs/deployment/self-hosted-llm.mdx)
 - **Fact:** Rate limits are in-memory per API instance (Security names the policy; this station names the multi-replica blind spot)
 - **Fact:** `session_issued` is ops (Pino). Product `auth_succeeded` / `auth_failed` are no-op `capture()` calls, not log lines.

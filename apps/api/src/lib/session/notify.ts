@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import LoginNotificationEmail from '@repo/email/emails/login-notification'
-import { render } from '@repo/email/render'
+import { render as renderSessionEmail } from '@repo/email/render'
+import { captureError } from '@repo/error/node'
 import { and, eq, ne } from 'drizzle-orm'
 import type { FastifyInstance } from 'fastify'
 import type { getDb } from '../../db/index.js'
@@ -11,6 +12,8 @@ import { env } from '../env.js'
 import { generateToken, hashToken } from '../jwt.js'
 import { isAllowedUrl } from '../url.js'
 import { signInTypeLabel } from './device.js'
+
+export { renderSessionEmail }
 
 type NotifyDb = Pick<Awaited<ReturnType<typeof getDb>>, 'insert' | 'select'>
 
@@ -119,19 +122,31 @@ export async function notifyNewDeviceSignIn({
   }
 
   void (async () => {
-    const html = await render(LoginNotificationEmail(emailProps))
-    const text = await render(LoginNotificationEmail(emailProps), { plainText: true })
-    await sendMail({
-      provider: fastify.emailProvider,
-      logger: fastify.log,
-      mode: 'fireAndForget',
-      message: {
-        from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-        to: user.email as string,
-        subject: `New device signed in to your ${env.APP_NAME} account`,
-        html,
-        text,
-      },
-    })
+    try {
+      const html = await renderSessionEmail(LoginNotificationEmail(emailProps))
+      const text = await renderSessionEmail(LoginNotificationEmail(emailProps), {
+        plainText: true,
+      })
+      await sendMail({
+        provider: fastify.emailProvider,
+        logger: fastify.log,
+        mode: 'fireAndForget',
+        message: {
+          from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
+          to: user.email as string,
+          subject: `New device signed in to your ${env.APP_NAME} account`,
+          html,
+          text,
+        },
+      })
+    } catch (error) {
+      captureError({
+        error: error instanceof Error ? error : new Error(String(error)),
+        logger: fastify.log,
+        label: 'session notify render or send failed',
+        data: { sessionId, userId: user.id },
+        tags: { app: 'api', module: 'auth-service' },
+      })
+    }
   })()
 }

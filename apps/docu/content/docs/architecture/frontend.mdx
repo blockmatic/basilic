@@ -3,7 +3,7 @@ title: "Frontend Architecture"
 description: "Next.js 16 (App Router, RSC-first), React 19, Tailwind 4, and handwritten TanStack Query hooks in @repo/react."
 ---
 
-`apps/web` and `apps/mobile` consume shared UI and API types through monorepo packages. `apps/docu` uses `@repo/ui` only — it does not depend on `@repo/core` or `@repo/react`.
+`apps/web` consumes `@repo/core` and `@repo/ui`. `apps/mobile` is a UI scaffold: it may share **tokens** later, not components or generated API types today. `apps/docu` uses `@repo/ui` only — it does not depend on `@repo/core` or `@repo/react`. Web → Core; Error → Web.
 
 ## Layout
 
@@ -38,7 +38,7 @@ flowchart TB
 
 ## Routing
 
-- [`proxy.ts`](/docs/architecture/authentication) is the only auth gate. Do not duplicate redirects in layouts or pages.
+- [`proxy.ts`](/docs/architecture/authentication) is the UI auth gate (shared `JWT_SECRET`). Fastify remains session issuer and revocation. Web auth/session/cookie: Next client → Next route → SDK → Fastify. Domain data: browser SDK → Fastify Bearer.
 - Unauthenticated requests never reach the App Router 404: `apps/web/proxy.ts` redirects them to `/auth/login`. After auth, unmatched paths render `apps/web/app/not-found.tsx` with HTTP 404.
 - When dynamic resource routes exist, call `notFound()` for missing resources — not inline “not found” JSX with a 200 status.
 - No parallel (`@slot`) or intercepting routes until the product needs a multi-pane or modal-detail UI.
@@ -66,7 +66,7 @@ Stream with `loading.tsx` and Suspense. Mark search/filter updates as transition
 
 ## Mutations
 
-Forms and hooks call the shared API client (`@repo/core`, `@repo/react`) which hits Fastify directly. Next.js routes exist only for SSR and cookie integration — auth callbacks, logout, and `POST /api/auth/update-tokens` (same-origin, Fastify-validated before `Set-Cookie`). Do not migrate login or settings mutations to `'use server'`.
+Forms and hooks call the shared API client (`@repo/core`, `@repo/react`) which hits Fastify directly. Next.js routes exist only for SSR and cookie integration — auth callbacks, logout, `POST /api/auth/refresh` (browser 401 hop; never Fastify refresh from the browser), and `POST /api/auth/update-tokens` (same-origin, Fastify-validated before `Set-Cookie`). Do not migrate login or settings mutations to `'use server'`.
 
 Pending and optimistic UI for mutations stays on TanStack mutation flags (`isPending`, `isError`); do not rewrite forms to `useFormStatus` or `useOptimistic`.
 

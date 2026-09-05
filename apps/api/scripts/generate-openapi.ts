@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import swagger from '@fastify/swagger'
 import Fastify from 'fastify'
+import { openapiSecurity } from '../src/lib/openapi-security.js'
 
 const scriptPath = fileURLToPath(import.meta.url)
 const scriptDir = dirname(scriptPath)
@@ -123,20 +124,7 @@ async function generateOpenAPI() {
           version: '1.0.0',
           description: 'Basilic API documentation',
         },
-        components: {
-          securitySchemes: {
-            bearerAuth: {
-              type: 'http',
-              scheme: 'bearer',
-            },
-            apiKeyAuth: {
-              type: 'apiKey',
-              in: 'header',
-              name: 'X-API-Key',
-            },
-          },
-        },
-        security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
+        ...openapiSecurity,
       },
     })
 

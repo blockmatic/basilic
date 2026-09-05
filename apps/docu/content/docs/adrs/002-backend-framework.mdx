@@ -163,7 +163,8 @@ We will use **Node.js LTS** as our runtime and **Fastify** as our backend API fr
 ## Notes
 
 - **Deployment flexibility**: Fastify runs as standard Node.js process with no platform-specific code
-- **Migration path**: Vercel (development) → Google Cloud Run/Cloud SQL or AWS ECS/RDS (production)
+- **Shipped path**: Vercel + Fastify. GCP/AWS remain an unresolved **adopter** choice, not Basilic’s destination.
+- **Migration path**: application code stays portable via Node + Fastify; changing hosts is an Operations/adopter decision
 - Consider framework-agnostic patterns when building shared utilities
 - OpenAPI generation via `@fastify/swagger` enables AI tool integration and typed SDK generation
 - Functional patterns provide consistent, composable architecture without decorator complexity

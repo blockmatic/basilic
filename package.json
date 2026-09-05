@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "turbo run build",
-    "generate": "turbo run generate --filter=@repo/core",
+    "generate": "turbo run generate --filter=@repo/core --filter=@repo/cli",
     "dev": "turbo run dev",
     "qa": "node scripts/run-qa.mjs",
     "checktypes": "turbo checktypes",

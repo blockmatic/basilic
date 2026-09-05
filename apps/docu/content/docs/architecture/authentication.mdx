@@ -1,21 +1,22 @@
 ---
 title: Authentication
-description: JWT access + refresh. Magic link, OAuth, Web3, passkeys, TOTP, and API keys. Clients call Fastify directly.
+description: JWT access + refresh. Magic link, OAuth, Web3, passkeys, TOTP, and API keys.
 ---
 
-Auth lives in `apps/api` as JWT Bearer over Drizzle sessions. One token model for web, mobile, CLI, and servers. `@repo/react` is framework-agnostic (token from cookie or storage — no Next.js APIs in the package). Next.js only sets cookies on callback/logout pages and via the validated `update-tokens` adapter; API calls go to `NEXT_PUBLIC_API_URL`. The core client refreshes via `POST /auth/session/refresh` on 401.
+Auth lives in `apps/api` as JWT Bearer over Drizzle sessions. Fastify is the only issuer and revocation authority. Web cookie work uses **Next client → Next route → `@repo/core` SDK → Fastify**; the Next `api.session` cookie is an SSR/security copy, not a second session store. Domain data (profile, API keys, AI) stays browser SDK → Fastify Bearer. Next.js `proxy.ts` is a UI gate that verifies JWTs with the shared `JWT_SECRET`. It does not revoke sessions.
 
 Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3** (EIP-155 / Solana), **passkeys**, **TOTP** (2FA only — not a standalone sign-in method), **API keys** (`bask_<prefix>_<secret>`, hashed at rest). Linking (email, wallet, OAuth) is [Account linking](/docs/architecture/account-linking). Exact paths: `/reference` or [OpenAPI](/docs/development/openapi-generation).
 
 ## Tokens
 
 - **Access JWT** (`typ=access`): `sub`, `sid`, optional `wal` for wallet sessions. Lifetime: `ACCESS_JWT_EXPIRES_IN_SECONDS`. Fastify verifies JWT then loads the session.
-- **Refresh JWT** (`typ=refresh`): `sub`, `sid`, `jti`. Rotation at `POST /auth/session/refresh` uses a compare-and-swap `UPDATE` on `id`, `token` (hashed `jti`), and `userId` (`sub`). Reuse of a spent `jti` returns 401 `TOKEN_REUSE_DETECTED` and revokes the session; further refresh attempts return `SESSION_NOT_FOUND`.
+- **Refresh JWT** (`typ=refresh`): `sub`, `sid`, `jti`. Rotation at `POST /auth/session/refresh` uses a compare-and-swap `UPDATE` on `id`, `token` (hashed `jti`), and `userId` (`sub`). Overlapping presents of the previous `jti` within `REFRESH_REUSE_GRACE_SECONDS` (default 10s) receive the same new tokens. Replay after the window returns 401 `TOKEN_REUSE_DETECTED` and revokes the session; further refresh attempts return `SESSION_NOT_FOUND`.
+- **Web refresh hop:** the browser never calls Fastify refresh. On 401, `createClient` calls same-origin `POST /api/auth/refresh`, which uses `createBffClient` → Fastify refresh and `Set-Cookie`. `proxy.ts` shares `refreshTokensWithRefreshToken`. Non-Next JWT consumers still call Fastify refresh directly. `httpOnly` stays false so the browser can send Bearer to Fastify for domain data.
 - **Session**: created on login, rotated on refresh, deleted on logout (`POST /auth/session/logout` returns **204** for JWT sessions) or via `DELETE /auth/sessions/:id` / public `POST /auth/sessions/revoke`.
 
 ## New-device email
 
-`createSessionAndIssueTokens` writes IP, user-agent, `deviceLabel`, `location` (Vercel/Cloudflare geo headers only), and `deviceFingerprint` (`browserFamily|osFamily`). Fastify emails only when **no other session row** for that user shares the fingerprint (the new row is excluded). Users without email skip mail. `WEB_APP_URL` (default `http://localhost:3000`) must pass `isAllowedUrl` or the email is skipped. The CTA is `${WEB_APP_URL}/auth/session/revoke?verificationId=&token=` (`session_revoke` verification, `hashToken`, CAS consume). Send is fire-and-forget via `emailProvider`.
+`createSessionAndIssueTokens` writes IP, user-agent, `deviceLabel`, `location` (Vercel/Cloudflare geo headers only), and `deviceFingerprint` (`browserFamily|osFamily`). Fastify emails only when **no other session row** for that user shares the fingerprint (the new row is excluded). Users without email skip mail. `WEB_APP_URL` (default `http://localhost:3000`) must pass `isAllowedUrl` or the email is skipped. The CTA is `${WEB_APP_URL}/auth/session/revoke?verificationId=&token=` (`session_revoke` verification, `hashToken`, CAS consume). Send is fire-and-forget via `emailProvider` (render + send errors are caught and logged). There is no queue; completion is not guaranteed under serverless freeze.
 
 `GET /auth/sessions` and `DELETE /auth/sessions/:id` are JWT-only (**400** `USE_KEY_REVOKE` for API keys). List never returns `userAgent` or `deviceFingerprint`.
 
@@ -32,7 +33,7 @@ stateDiagram-v2
   Refreshing --> Unauthenticated: Refresh fail
 ```
 
-`createClient` modes: no-auth, JWT (`getAuthToken` / `getRefreshToken` / `onTokensRefreshed`), API key. See [Packages](/docs/development/packages).
+`createClient` modes: no-auth, JWT (`getAuthToken` / `getRefreshToken` / `onTokensRefreshed`, optional `refreshTokens`), API key. See [Packages](/docs/development/packages).
 
 ## Magic link verify
 
@@ -47,7 +48,7 @@ Both/neither returns 400 `INVALID_INPUT`.
 
 ## Validate tokens
 
-`POST /auth/session/validate-tokens` checks an access + refresh pair before Next.js writes cookies. Same-origin Next adapter only; Fastify remains issuer and revocation authority.
+`POST /auth/session/validate-tokens` checks an access + refresh pair before Next.js writes cookies from in-page issuance (magic-link code, passkey, Google one-tap). Refresh itself does not use that adapter. Same-origin Next routes only; Fastify remains issuer and revocation authority.
 
 ## Logout
 
@@ -67,7 +68,7 @@ Passkey **verify** consumes the auth challenge before WebAuthn verification (one
 
 ## Web (Next.js)
 
-Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Client-side token persistence goes through `POST /api/auth/update-tokens`, which accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before writing `api.session`. After login, home is the news dashboard. Settings covers profile, sessions, and API keys. Change-email lives in Settings. Link-email and Web3 link exist on the API and in `@repo/react` — **web has no link-wallet or link-email UI**. See [Frontend](/docs/architecture/frontend).
+Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session (refresh first if the access JWT is expired) and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Browser 401 refresh uses same-origin `POST /api/auth/refresh` (cookie → SDK → Fastify); it does not call Fastify refresh from the browser. In-page issuance still uses `POST /api/auth/update-tokens` (same-origin, Fastify `POST /auth/session/validate-tokens` before `Set-Cookie`). After login, home is the news dashboard. Settings covers profile, sessions, and API keys. Change-email lives in Settings. Link-email and Web3 link exist on the API and in `@repo/react` — **web has no link-wallet or link-email UI**. See [Frontend](/docs/architecture/frontend).
 
 ### Web auth gate
 

@@ -216,7 +216,7 @@ We will use **Drizzle ORM** for database operations in the backend API.
 - **Migration path**: Easy to move from Supabase → AWS RDS → Google Cloud SQL → on-premises
 - **No proprietary APIs**: Standard `DATABASE_URL`, no platform-specific code
 - **Security flexibility**: Can migrate to environments with KMS encryption, VPC isolation, HSMs
-- **Chosen for portability**: Enables migration from Vercel-Supabase to GCP/AWS for production security
+- **Chosen for portability**: SQL + Drizzle stay host-agnostic. Basilic’s shipped path is Vercel + `DATABASE_URL` Postgres; GCP/AWS remain unresolved adopter choices.
 
 ## Implementation Details
 
@@ -269,7 +269,7 @@ Queries use Drizzle's composable query builder:
 - No runtime code generation required
 - Regular schema reviews and migrations as requirements evolve
 - **Portability**: Migration between database hosts requires only changing `DATABASE_URL`
-- **Complements Fastify**: Both chosen for portability and ability to migrate from Vercel to GCP/AWS
+- **Complements Fastify**: Both stay portable; Basilic ships on Vercel. GCP/AWS are adopter options, not a Basilic destination.
 
 ## Related Documentation
 

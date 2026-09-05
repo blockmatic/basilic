@@ -118,7 +118,8 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
       const shouldStream = stream === true || acceptHeader.includes('text/event-stream')
 
-      const mergedTools = getMergedTools(session.user.id, request.log)
+      const abortSignal = createRequestAbortSignal({ request, reply })
+      const mergedTools = getMergedTools(session.user.id, request.log, abortSignal)
 
       const resolved = await resolveMessages(rawMessages as unknown[], mergedTools)
       if (!resolved.ok)
@@ -134,7 +135,6 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         'Processing chat request',
       )
 
-      const abortSignal = createRequestAbortSignal(request)
       const baseOptions = {
         model: resolvedModel,
         messages: resolved.messages,

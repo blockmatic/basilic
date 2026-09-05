@@ -62,12 +62,16 @@ function createAccountInfoTool(userId: string) {
   })
 }
 
-export function getMergedTools(userId: string, log: import('fastify').FastifyBaseLogger): ToolSet {
+export function getMergedTools(
+  userId: string,
+  log: import('fastify').FastifyBaseLogger,
+  abortSignal?: AbortSignal,
+): ToolSet {
   return {
     getAccountInfo: createAccountInfoTool(userId),
-    getMarketSnapshot: createMarketSnapshotTool(),
+    getMarketSnapshot: createMarketSnapshotTool(abortSignal),
     ...(env.BRAVE_SEARCH_API_KEY && {
-      braveSearch: createBraveSearchTool(env.BRAVE_SEARCH_API_KEY, log),
+      braveSearch: createBraveSearchTool(env.BRAVE_SEARCH_API_KEY, log, abortSignal),
     }),
   }
 }

@@ -3,7 +3,7 @@
 export const operationMeta = {
   "healthCheck": {
     "summary": "Returns server health status",
-    "description": "Health check endpoint",
+    "description": "Readiness: process is up and the database answers SELECT 1",
     "pathParams": [],
     "bodyParams": []
   },

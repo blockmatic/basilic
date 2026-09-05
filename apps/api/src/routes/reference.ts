@@ -46,6 +46,8 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
           token: urlToken,
           verificationId,
         })
+        if (result && 'collision' in result)
+          return reply.code(500).type('text/plain').send('Authentication failed')
         jwtToken = result?.accessToken ?? null
       }
 

@@ -18,7 +18,7 @@
     "@repo/core#generate": {
       "dependsOn": ["@repo/api#generate:openapi"],
       "inputs": ["$TURBO_DEFAULT$", "../../apps/api/openapi/openapi.json"],
-      "outputs": ["src/gen/**"],
+      "outputs": ["src/gen/**", "src/api-wrapper.gen.ts", "src/api-client.gen.ts"],
       "env": ["NODE_ENV"]
     },
     "@repo/cli#generate": {

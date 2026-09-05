@@ -20,25 +20,30 @@ The system has an inspectable structural model at the level its scale requires. 
 - **Fact:** Deployables: `apps/api` (system of record), `apps/web`, `apps/mobile` (UI scaffold), `apps/docu`
 - **Fact:** Packages: `core` (generated client), handwritten `react`, `ui`, `utils`, `error`, `cli`, `email`. Security mail is `@repo/email` + Fastify `emailProvider`.
 - **Fact:** Apps depend on packages, never the reverse. `react` depends on `core`. Clients call Fastify over HTTP.
-- **Fact:** Store: PostgreSQL via `DATABASE_URL`. PGLite when `PGLITE=true`. Supabase is the managed host, not the auth SDK.
-- **Fact:** Externals: Vercel, Resend, OAuth IdPs, AI providers, Sentry/GlitchTip, EAS, scanners
-- **Fact:** Contract source is TypeBox on Fastify routes; OpenAPI is generated ([api.mdx](../../apps/docu/content/docs/architecture/api.mdx), [ADR 009](../../apps/docu/content/docs/adrs/009-api-architecture.mdx))
-- **Fact:** Shipped deploy path is Vercel + Supabase ([portability.mdx](../../apps/docu/content/docs/architecture/portability.mdx))
+- **Fact:** Store: PostgreSQL via `DATABASE_URL`. PGLite when `PGLITE=true` **or** `NODE_ENV=test`. Compiled PGLite requires SQL copied into `dist`. Supabase is the managed host, not the auth SDK.
+- **Fact:** Externals: Vercel, Resend, OAuth IdPs, AI providers, Sentry/GlitchTip (**installed, inactive**), EAS, scanners
+- **Fact:** Contract source is TypeBox on Fastify routes; OpenAPI is generated; core internals **and** public wrappers plus CLI metadata; React hooks handwritten
+- **Fact:** Shipped deploy path is Vercel + `DATABASE_URL` Postgres ([portability.mdx](../../apps/docu/content/docs/architecture/portability.mdx))
+- **Fact:** Web auth hop: browser → Next cookie route → SDK → Fastify. Cookie is SSR/security copy. Fastify is session SoT and revocation. Refresh reuse-grace on previous `jti`.
+- **Fact:** Next `proxy.ts` is a JWT UI gate (shared `JWT_SECRET`), not revocation.
+- **Fact:** `/health` is readiness: 503 when DB probe fails; no deep third-party probes
 - **Unresolved:** GCP/AWS as first-class deploy targets; mobile as an API consumer
+- **Unresolved:** dedicated ADRs for custom JWT + cookie BFF (rationale lives in authentication MDX)
 
 ```mermaid
 flowchart LR
   web[apps/web]
-  mobile[apps/mobile]
+  proxy[proxy.ts UI gate]
   cli[packages/cli]
   core[packages/core]
   api[apps/api]
   db[(PostgreSQL)]
-  web --> core
+  web --> proxy
+  proxy -->|"JWT_SECRET verify"| web
+  web -->|"auth hop"| core
   cli --> core
   core -->|"HTTP"| api
   api --> db
-  mobile -.->|"not wired"| core
 ```
 
 ## Minimum Useful Artifact

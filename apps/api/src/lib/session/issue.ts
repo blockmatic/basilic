@@ -41,6 +41,7 @@ export async function createSessionAndIssueTokens({
     id: sessionId,
     userId: user.id,
     token: refreshJtiHash,
+    currentJti: refreshJti,
     expiresAt: sessionExpiresAt,
     ipAddress: device.ipAddress,
     userAgent: device.userAgent,

@@ -130,9 +130,16 @@ export function buildMarketCardSpec({
   } as const
 }
 
-export async function loadMarketRows(): Promise<{ rows: MarketRow[]; source: 'live' | 'mock' }> {
+export async function loadMarketRows(abortSignal?: AbortSignal): Promise<{
+  rows: MarketRow[]
+  source: 'live' | 'mock'
+}> {
   try {
-    const res = await fetch(coingeckoMarketsUrl, { signal: AbortSignal.timeout(8_000) })
+    const res = await fetch(coingeckoMarketsUrl, {
+      signal: abortSignal
+        ? AbortSignal.any([abortSignal, AbortSignal.timeout(8_000)])
+        : AbortSignal.timeout(8_000),
+    })
     if (!res.ok) return { rows: marketSnapshotMock, source: 'mock' }
     const rows = toMarketRows(await res.json())
     if (rows.length === 0) return { rows: marketSnapshotMock, source: 'mock' }
@@ -142,7 +149,7 @@ export async function loadMarketRows(): Promise<{ rows: MarketRow[]; source: 'li
   }
 }
 
-export function createMarketSnapshotTool() {
+function marketSnapshotTool(abortSignal?: AbortSignal) {
   return tool({
     description:
       'Returns a crypto market snapshot (prices and 24h change). Use when the user asks what moved, BTC, ETH, top coins, or a market overview. Optional query filters by symbol or name.',
@@ -150,7 +157,7 @@ export function createMarketSnapshotTool() {
       query: z.string().max(64).optional(),
     }),
     execute: async ({ query }: { query?: string }) => {
-      const { rows, source } = await loadMarketRows()
+      const { rows, source } = await loadMarketRows(abortSignal)
       const movers = pickMovers(rows, query)
       const spec = buildMarketCardSpec({ movers, source })
       const summary = movers
@@ -163,4 +170,10 @@ export function createMarketSnapshotTool() {
       }
     },
   })
+}
+
+export function createMarketSnapshotTool(
+  abortSignal?: AbortSignal,
+): ReturnType<typeof marketSnapshotTool> {
+  return marketSnapshotTool(abortSignal)
 }

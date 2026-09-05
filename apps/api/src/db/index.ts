@@ -16,6 +16,13 @@ function shouldUsePGLite(): boolean {
 }
 
 export async function getDb() {
+  const testOverride = (globalThis as { __basilicGetDb?: () => ReturnType<typeof loadDb> })
+    .__basilicGetDb
+  if (testOverride) return testOverride()
+  return loadDb()
+}
+
+async function loadDb() {
   if (!db)
     if (shouldUsePGLite()) {
       if (env.NODE_ENV === 'test') {

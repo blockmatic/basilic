@@ -6,30 +6,9 @@ import { z } from 'zod'
 import { setAuthCookiesOnResponse } from '@/lib/auth/auth-server'
 import { createBffClient } from '@/lib/auth/bff-client'
 import { resolveRequestId } from '@/lib/auth/request-id'
+import { isSameOriginRequest } from '@/lib/auth/same-origin'
 
 const updateTokensSchema = z.object({ token: z.string(), refreshToken: z.string() })
-
-function getRequestHost(request: Request) {
-  const forwarded = request.headers.get('X-Forwarded-Host')
-  if (forwarded) return forwarded.split(',')[0]?.trim()
-  return request.headers.get('Host') ?? undefined
-}
-
-function isSameOriginRequest(request: Request) {
-  if (request.headers.get('Sec-Fetch-Site') === 'cross-site') return false
-
-  const origin = request.headers.get('Origin')
-  if (!origin) return false
-
-  const host = getRequestHost(request)
-  if (!host) return false
-
-  try {
-    return new URL(origin).host === host
-  } catch {
-    return false
-  }
-}
 
 export async function POST(request: Request) {
   const reqId = resolveRequestId(request.headers)

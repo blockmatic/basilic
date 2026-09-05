@@ -23,7 +23,7 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 ## pnpm commands
 
 - `pnpm dev` — Dev server with hot reload (requires db)
-- `pnpm build` — Migrations + TypeScript build
+- `pnpm build` — OpenAPI generate + TypeScript compile (copies PGLite SQL into `dist`). PostgreSQL migrate is a separate `pnpm db:migrate` / Vercel phase
 - `pnpm start` — Production server
 - `pnpm test` — Unit tests (Vitest)
 - `pnpm test:e2e` — E2E (expects API URL via env or `--api`)

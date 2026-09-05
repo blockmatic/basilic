@@ -9,7 +9,7 @@ import { env } from '@/lib/env'
 
 const cookieName = env.NEXT_PUBLIC_AUTH_COOKIE_NAME
 
-type AuthStatus = 'authenticated' | 'unauthenticated' | 'refreshed'
+type AuthStatus = 'authenticated' | 'unauthenticated' | 'refreshed' | 'unavailable'
 
 type AuthCheckResult = {
   status: AuthStatus
@@ -42,19 +42,21 @@ async function checkAuthStatus(request: NextRequest): Promise<AuthCheckResult> {
     if (!refreshToken) return { status: 'unauthenticated', shouldClearCookies: true }
 
     const reqId = resolveRequestId(request.headers)
-    let tokens: Awaited<ReturnType<typeof refreshTokensWithRefreshToken>> | undefined
+    let result: Awaited<ReturnType<typeof refreshTokensWithRefreshToken>>
     try {
-      tokens = await refreshTokensWithRefreshToken({ refreshToken, reqId })
+      result = await refreshTokensWithRefreshToken({ refreshToken, request, reqId })
     } catch {
       logger.warn({ reqId }, 'auth_proxy_refresh_failed')
-      return { status: 'unauthenticated', shouldClearCookies: true }
+      return { status: 'unauthenticated', shouldClearCookies: false }
     }
 
-    if (!tokens) return { status: 'unauthenticated', shouldClearCookies: true }
+    if (result.status === 'unavailable') return { status: 'unavailable', shouldClearCookies: false }
+
+    if (result.status !== 'ok') return { status: 'unauthenticated', shouldClearCookies: true }
 
     try {
       const response = NextResponse.next()
-      setAuthCookiesOnResponse(response, tokens)
+      setAuthCookiesOnResponse(response, result.tokens)
       return { status: 'refreshed', response, shouldClearCookies: false }
     } catch {
       logger.warn({ reqId }, 'auth_proxy_cookie_failed')
@@ -105,6 +107,9 @@ export async function proxy(request: NextRequest) {
     if (shouldClearCookies) response.cookies.set(cookieName, '', { maxAge: 0, path: '/' })
     return response
   }
+
+  if (authStatus === 'unavailable')
+    return new NextResponse('Auth service unavailable', { status: 503 })
 
   if (authStatus === 'unauthenticated') {
     // Redirect unauthenticated users to login

@@ -35,7 +35,16 @@ const phases = [
   {
     name: 'openapi-drift-check',
     cmd: 'git',
-    args: ['diff', '--exit-code', '--', 'apps/api/openapi/openapi.json', 'packages/core/src/gen'],
+    args: [
+      'diff',
+      '--exit-code',
+      '--',
+      'apps/api/openapi/openapi.json',
+      'packages/core/src/gen',
+      'packages/core/src/api-wrapper.gen.ts',
+      'packages/core/src/api-client.gen.ts',
+      'packages/cli/src/gen',
+    ],
   },
   { name: 'build', cmd: 'pnpm', args: ['build'], env: qaBuildEnv },
   ...(skipTests

@@ -190,4 +190,28 @@ describe('POST /auth/magiclink/request', () => {
       expect(secondVerify.statusCode).toBe(200)
     })
   })
+
+  describe('Email identity', () => {
+    it('resolves mixed-case emails to one identity', async () => {
+      const mixed = 'User.Case@test.ai'
+      const lower = 'user.case@test.ai'
+      const callbackUrl = 'https://example.com/callback'
+
+      const requestRes = await fastify.inject({
+        method: 'POST',
+        url: '/auth/magiclink/request',
+        payload: { email: mixed, callbackUrl },
+      })
+      expect(requestRes.statusCode).toBe(200)
+      expect(fastify.fakeEmail?.last()?.to).toBe(lower)
+
+      const token = fastify.fakeEmail?.extractToken()
+      const verifyRes = await fastify.inject({
+        method: 'POST',
+        url: '/auth/magiclink/verify',
+        payload: { email: lower, token },
+      })
+      expect(verifyRes.statusCode).toBe(200)
+    })
+  })
 })

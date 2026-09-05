@@ -92,6 +92,7 @@ export const env = createEnv({
     JWT_SECRET: jwtSecretSchema,
     ACCESS_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(900),
     REFRESH_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(604800),
+    REFRESH_REUSE_GRACE_SECONDS: z.coerce.number().int().nonnegative().default(10),
     JWT_ISSUER: z.string().default('api.yourapp.com'),
     JWT_AUDIENCE: z
       .string()

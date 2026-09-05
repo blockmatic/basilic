@@ -7,32 +7,35 @@ alwaysApply: false
 ## Cookie Storage
 
 - Single cookie `api.session` (env: `AUTH_COOKIE_NAME` / `NEXT_PUBLIC_AUTH_COOKIE_NAME`) stores JSON `{ token, refreshToken }`
-- No legacy dual-cookie names (`better-auth.*`)
+- Next is the only process that **writes** `api.session`. Fastify is the only process that **creates, rotates, or deletes** the session row
 - Config in `lib/env.ts` via createEnv
+- `httpOnly: false` stays so the browser can send Bearer to Fastify for domain data
 
 ## createClient Auth Modes
 
 | Mode | Config | Refresh on 401 |
 | --- | --- | --- |
 | **apiKey** | `apiKey: 'bask_xxx'` | Never |
-| **JWT** | `getAuthToken`, `getRefreshToken`, `onTokensRefreshed` (all three required) | Yes—calls Fastify `POST /auth/session/refresh` directly |
+| **JWT (Next web)** | `getAuthToken`, `getRefreshToken`, `onTokensRefreshed`, `refreshTokens` → `POST /api/auth/refresh` | Yes—Next cookie hop, not Fastify from the browser |
+| **JWT (CLI / other)** | `getAuthToken`, `getRefreshToken`, `onTokensRefreshed` | Yes—Fastify `POST /auth/session/refresh` |
 | **no-auth** | `baseUrl` only | Never |
 
-## Refresh Flow
+## Web auth hop
 
-- Core calls Fastify `POST /auth/session/refresh` directly on 401 (no BFF proxy)
-- `onTokensRefreshed` → `updateAuthTokens` → `POST /api/auth/update-tokens` persists new tokens in cookie
-- Before `Set-Cookie`, `update-tokens` requires same-origin `Origin` and Fastify `POST /auth/session/validate-tokens` approval of the access/refresh pair
-- Proxy (`proxy.ts`) refreshes on navigation; core refreshes on client-side 401 (e.g. `useUser`)
+- Browser never calls Fastify refresh. 401 → same-origin `POST /api/auth/refresh` → SDK `auth.session.refresh` → `Set-Cookie` → `{ token, refreshToken }`
+- `proxy.ts` and `/api/auth/refresh` share `refreshTokensWithRefreshToken` / `createBffClient`. Do not duplicate fetch-to-Fastify in the proxy
+- Discriminated refresh: clear cookies only on `invalid`; `unavailable` (429/5xx/network) leaves the cookie
+- Logout, callbacks, and in-page issuance (magic-link code, passkey, Google one-tap) use Next route → SDK → Fastify → `Set-Cookie`. Keep `update-tokens` for in-page Fastify token pairs
+- Domain mutations stay `client SDK → Fastify`. Do not rewrite them as Server Actions or a general BFF
 
 ## Mutations
 
 - Login, profile, passkeys, TOTP, and API keys mutate via `@repo/core` / `@repo/react` → Fastify. Do **not** rewrite them as Next.js Server Actions.
 - Pending/optimistic UI stays on TanStack mutation flags; do **not** rewrite to `useFormStatus` / `useOptimistic`.
-- Next API routes exist only for SSR/cookie integration (`update-tokens`, auth callbacks, logout).
+- Next API routes exist only for cookie + SSR + auth exchange.
 
 ## Auth Protection (proxy.ts)
 
-- Proxy (`proxy.ts`) is the single source of truth for route-level auth: unauthenticated users → `/auth/login`; authenticated on `/auth/login` → `/`
+- Proxy (`proxy.ts`) is the UI gate: unauthenticated users → `/auth/login`; authenticated on `/auth/login` → `/`. It is not the revocation authority
 - **Never** add `getAuthStatus()` + `redirect()` in layouts or pages for auth gating—proxy already enforces this
 - Use `getAuthStatus()` or `getUserInfo()` only when you need user/session data for rendering (e.g. shell, profile), not for redirect logic

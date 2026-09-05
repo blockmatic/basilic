@@ -1,9 +1,9 @@
 import swagger from '@fastify/swagger'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
+import { openapiSecurity } from '../lib/openapi-security.js'
 
 const openapi: FastifyPluginAsync = async fastify => {
-  // Register Swagger plugin to generate OpenAPI spec
   await fastify.register(swagger, {
     openapi: {
       info: {
@@ -11,15 +11,7 @@ const openapi: FastifyPluginAsync = async fastify => {
         version: '1.0.0',
         description: 'Basilic API documentation',
       },
-      components: {
-        securitySchemes: {
-          bearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-          },
-        },
-      },
-      security: [{ bearerAuth: [] }],
+      ...openapiSecurity,
     },
   })
 

@@ -5,6 +5,9 @@ import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { sessions, users, verification } from '../../../../db/schema/index.js'
 import { logAuthVerifyFailed } from '../../../../lib/auth/signals.js'
+import { sendServerCatalogError } from '../../../../lib/catalogs/mapper.js'
+import { normalizeEmail } from '../../../../lib/email.js'
+import { findUserByNormalizedEmail } from '../../../../lib/email-identity.js'
 import { env } from '../../../../lib/env.js'
 import {
   createAccessTokenPayload,
@@ -38,6 +41,7 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
           200: VerifyResponseSchema,
           401: ErrorResponseSchema,
           409: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -86,7 +90,10 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const [existingByEmail] = await db.select().from(users).where(eq(users.email, email))
+      const lookup = await findUserByNormalizedEmail({ db, email })
+      if (lookup.status === 'collision')
+        return sendServerCatalogError({ request, reply, code: 'UNEXPECTED_ERROR' })
+      const { user: existingByEmail } = lookup
       if (existingByEmail && existingByEmail.id !== userId)
         return reply.code(409).send({
           code: 'EMAIL_ALREADY_IN_USE',
@@ -105,7 +112,7 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
 
         const [updated] = await tx
           .update(users)
-          .set({ email, emailVerified: true, updatedAt: new Date() })
+          .set({ email: normalizeEmail(email), emailVerified: true, updatedAt: new Date() })
           .where(and(eq(users.id, userId), isNull(users.email)))
           .returning()
 
@@ -113,7 +120,12 @@ const linkEmailVerifyRoute: FastifyPluginAsync = async fastify => {
 
         await tx
           .update(sessions)
-          .set({ token: refreshJtiHash, expiresAt: sessionExpiresAt })
+          .set({
+            token: refreshJtiHash,
+            currentJti: refreshJti,
+            rotatedAt: new Date(),
+            expiresAt: sessionExpiresAt,
+          })
           .where(eq(sessions.id, sessionId))
 
         return 'ok' as const

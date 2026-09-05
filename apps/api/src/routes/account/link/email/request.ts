@@ -7,7 +7,9 @@ import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb } from '../../../../db/index.js'
 import { users, verification } from '../../../../db/schema/index.js'
+import { sendServerCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { sendMail } from '../../../../lib/email.js'
+import { findUserByNormalizedEmail } from '../../../../lib/email-identity.js'
 import { env } from '../../../../lib/env.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../../lib/url.js'
@@ -38,6 +40,7 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           409: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -69,7 +72,10 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
           message: 'Account already has a primary email. Use change email instead.',
         })
 
-      const [existingUser] = await db.select().from(users).where(eq(users.email, email))
+      const lookup = await findUserByNormalizedEmail({ db, email })
+      if (lookup.status === 'collision')
+        return sendServerCatalogError({ request, reply, code: 'UNEXPECTED_ERROR' })
+      const { user: existingUser, normalized } = lookup
       if (existingUser && existingUser.id !== request.session.user.id)
         return reply.code(409).send({
           code: 'EMAIL_ALREADY_IN_USE',
@@ -82,15 +88,12 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
       const verificationId = randomUUID()
 
       const storePlain =
-        env.NODE_ENV !== 'production' &&
-        env.ALLOW_TEST === true &&
-        typeof email === 'string' &&
-        email.endsWith('@test.ai')
+        env.NODE_ENV !== 'production' && env.ALLOW_TEST === true && normalized.endsWith('@test.ai')
 
       await db.insert(verification).values({
         id: verificationId,
         type: 'link_email',
-        identifier: `${request.session.user.id}:${email}`,
+        identifier: `${request.session.user.id}:${normalized}`,
         value: tokenHash,
         ...(storePlain && { tokenPlain: token }),
         expiresAt,
@@ -110,7 +113,7 @@ const linkEmailRequestRoute: FastifyPluginAsync = async fastify => {
           mode: 'throw',
           message: {
             from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-            to: email,
+            to: normalized,
             subject: 'Link your email',
             html,
           },

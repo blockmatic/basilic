@@ -22,6 +22,33 @@ export async function getRefreshToken(): Promise<string | null> {
 }
 
 const errorResponseSchema = z.object({ message: z.string().optional() })
+const tokensResponseSchema = z.object({ token: z.string(), refreshToken: z.string() })
+
+export async function refreshSessionViaNext(): Promise<{
+  token: string
+  refreshToken: string
+} | null> {
+  let response: Response
+  try {
+    response = await fetch('/api/auth/refresh', {
+      method: 'POST',
+      credentials: 'include',
+    })
+  } catch (err) {
+    throw new Error('Token refresh request failed', { cause: err })
+  }
+
+  if (response.status === 401) return null
+  if (!response.ok) throw new Error(`Token refresh failed (${response.status})`)
+  let body: unknown
+  try {
+    body = await response.json()
+  } catch {
+    return null
+  }
+  const parsed = tokensResponseSchema.safeParse(body)
+  return parsed.success ? parsed.data : null
+}
 
 export async function updateAuthTokens({
   token,
