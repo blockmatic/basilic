@@ -1,0 +1,36 @@
+---
+title: Product Ready
+description: Fork-and-run bar for Basilic. CI green is Pipelines, not this bar.
+---
+
+**Product Ready** is a local fork that a new developer can clone, start, and sign into without tribal knowledge. It is **not** “CI is green.” Pipelines prove the repo on GitHub Actions. This page is the adopter bar.
+
+Canonical commands: [Getting Started](/docs/development). Playbook: `/onboard-new-developer`.
+
+## Checklist
+
+Do these in order. `pnpm setup` installs tools and copies env templates. It does **not** start Postgres.
+
+1. **Node 24 + pnpm** — `.nvmrc` / `packageManager` (`11.24.0`). `corepack enable` then `corepack prepare pnpm@11.24.0 --activate`.
+2. **Clone** the repo.
+3. **`pnpm setup`** at the repo root (install, hooks, scanners, env templates, Docker/Supabase CLI, Playwright Chromium).
+4. **`pnpm --filter @repo/api db:start`** — local Supabase Postgres. One instance per host; `pnpm db:stop` before changing `project_id`.
+5. **`pnpm reset`** at the repo root — Supabase reset + Drizzle migrate + seed. See [ADR 008](/docs/adrs/008-database) and `apps/api/README.md`.
+6. **`pnpm dev`** — API at http://localhost:3001 (`GET /health`, `/reference`), web at http://localhost:3000.
+7. **First login** — magic link, or `ALLOW_TEST=true` and `test@test.ai`. Land on `/`.
+8. **Optional mobile** — `pnpm --filter @repo/mobile start`. Not required for Product Ready.
+
+Stop if any step fails. Do not skip `db:start` or `pnpm reset` and treat a hanging API as a product bug.
+
+## What this bar is not
+
+- A GitHub Actions green check
+- Production deploy, Sentry, or PostHog
+- Wallet UI or a mobile `@repo/core` client
+- Coverage floors
+
+Those are Pipelines, later bets, or non-goals. See [Product](/docs/product).
+
+## After first login
+
+Auth, sessions, API keys, and settings are the shipped job. Demo chrome (news, markets, assistant) is extra. The feature map names what is intended vs shipped: [Features](/docs/product/features).

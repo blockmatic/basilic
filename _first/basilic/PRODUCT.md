@@ -14,11 +14,11 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 
 ## Artifacts
 
-- **Fact:** Canonical product brief: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx) and [product/features.mdx](../../apps/docu/content/docs/product/features.mdx)
+- **Fact:** Canonical product brief: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx), [product/features.mdx](../../apps/docu/content/docs/product/features.mdx), [product/roadmap.mdx](../../apps/docu/content/docs/product/roadmap.mdx)
 - **Fact:** [`../../README.md`](../../README.md) — fork-and-run TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo scaffold). No Wagmi, no first-class OpenAI SDK, no web wallet UI
 - **Fact:** [`../../apps/docu/content/docs/index.mdx`](../../apps/docu/content/docs/index.mdx) — toolkit intro; Product is in the docs nav
 - **Fact:** Two audiences: **adopters** (developers using the starter) and **demo users** (web markets `/`, headlines strip, settings, in-shell assistant; auth is the shipped job)
-- **Fact:** GTM: clone + [Getting Started](../../apps/docu/content/docs/development/index.mdx) + first local login. Finance **N/A** (toolkit)
+- **Fact:** GTM: clone + [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`) + first local login. Bar: [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). Finance **N/A** (toolkit)
 - **Fact:** Owner: Gabo Esquivel (named on product index)
 - **Fact:** New-device sign-in alerts are transactional email via Fastify `emailProvider` + `@repo/email`, not a notification product
 - **Fact:** Not a billed SaaS in files. Do not invent TAM/LTV
@@ -28,7 +28,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** PD (Markets + GenAI artifacts) is shipped on the feature map: CoinGecko or mock, `getMarketSnapshot` / `market-card`
 - **Unresolved:** PostHog install / consent / retention; keep / iterate / kill board; whether adopters copy `lib/analytics`
 
-`pnpm qa` going green is Quality/Pipelines, not product success.
+`pnpm qa` going green is Pipelines, not product success. Quality for R0 is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
 
 ## Minimum Useful Artifact
 
@@ -36,7 +36,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - users: adopting developers; demo end users on web auth and dashboard
 - goal: portable starter with self-hosted Web2 auth and Cursor-first workflow (Web3 on API only)
 - non-goals: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx) R0 list
-- audience/channel/first use: clone + Getting Started + first local login
+- audience/channel/first use: clone + Getting Started (`db:start`, `pnpm reset`) + first local login ([Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx))
 - metrics: auth and assistant jobs **instrumented, not collected**
 - events: `auth_succeeded`, `auth_failed`, `assistant_turn` — specified + instrumented, no sink
 - owners: Gabo Esquivel
@@ -56,7 +56,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 
 - A new contributor can answer what we are building from `apps/docu` Product pages + README without `__dev/`
 - Success metrics can fail. They are not CI green. Auth/assistant remain unmeasured (no sink)
-- GTM is clone + Getting Started. Finance N/A
+- GTM is clone + Getting Started. Product Ready is that path, not CI green. Finance N/A
 - No silent product decisions in code without a note or open question
 
 ## Definition of Done
@@ -67,7 +67,7 @@ Product intent is documented or explicitly deferred with named owners. Implement
 
 Apply Product First to Basilic.
 
-Read root README, `apps/docu/content/docs/product/`, analytics MDX and ADR 011, and what the web, mobile, and API actually do. PostHog is not installed. `capture()` is a no-op — do not claim events are collected or measured. PD is named on the feature map, not shipped.
+Read root README, `apps/docu/content/docs/product/`, analytics MDX and ADR 011, and what the web, mobile, and API actually do. PostHog is not installed. `capture()` is a no-op — do not claim events are collected or measured. PD is shipped on the feature map.
 
 Preserve intentional existing product choices. Do not silently decide scope, priorities, pricing, TAM, LTV, or event names. This is a toolkit — say so rather than filling finance blanks.
 

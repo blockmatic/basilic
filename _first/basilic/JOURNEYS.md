@@ -16,6 +16,7 @@ Actors, entry points, happy paths, alternates, error paths, permission gates, an
 
 - **Fact:** [authentication.mdx](../../apps/docu/content/docs/architecture/authentication.mdx), [account-linking.mdx](../../apps/docu/content/docs/architecture/account-linking.mdx)
 - **Fact:** Web gate: [`../../apps/web/proxy.ts`](../../apps/web/proxy.ts). Public: `/auth/login`, `/auth/callback/*`, `/auth/logout`, `/auth/session/revoke`, `/terms`, `/privacy`, `/images/auth-login-hero.webp`. Unauthenticated → login. Authenticated on login → `/`. Token refresh on navigation.
+- **Fact:** Adopter first-success: [product-ready.mdx](../../apps/docu/content/docs/testing/product-ready.mdx) (`db:start` + `pnpm reset` + `pnpm dev` + first login). Not CI green.
 - **Fact:** Actors: web end user; adopting developer; CLI/agent with API key; CI/CodeRabbit/DeepSec; mobile user (**deferred**)
 - **Fact:** Login methods: magic link (`token`+`verificationId` or `token`+`email`); OAuth GitHub/Google/Facebook/Twitter; passkey; Web3 EIP-155/Solana on the API. TOTP is 2FA only.
 - **Fact:** E2E magic link: `test@test.ai` when `ALLOW_TEST=true`

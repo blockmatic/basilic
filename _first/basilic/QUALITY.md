@@ -14,7 +14,7 @@ Acceptance criteria exist for features that matter. Tests protect critical paths
 
 ## Artifacts
 
-- **Fact:** [testing/index.mdx](../../apps/docu/content/docs/testing/index.mdx), [e2e-testing.mdx](../../apps/docu/content/docs/testing/e2e-testing.mdx)
+- **Fact:** [testing/index.mdx](../../apps/docu/content/docs/testing/index.mdx), [product-ready.mdx](../../apps/docu/content/docs/testing/product-ready.mdx), [e2e-testing.mdx](../../apps/docu/content/docs/testing/e2e-testing.mdx)
 - **Fact:** API: Vitest + `fastify.inject()`, group `*.spec.ts` imports `*.test.ts`, PGLite, serial workers, orphan import check
 - **Fact:** Packages: Vitest for `core`, `react`, `error`
 - **Fact:** Web: Playwright only (no frontend unit suite). Maestro deferred in CI.
@@ -22,12 +22,13 @@ Acceptance criteria exist for features that matter. Tests protect critical paths
 - **Fact:** AI: contract tests hard; remote may `ctx.skip()` when key missing or 402 — never return early without skip (soft-pass forbidden). With real key, 502/503/504 fail.
 - **Fact:** Coverage: `pnpm --filter @repo/api test:cov` uploaded; **no floors** in CI
 - **Fact:** Playbooks: `write-api-test`, `write-unit-tests`, `use-tdd`, `run-all-tests-and-fix`
-- **Unresolved:** named release bar beyond “CI green”; eval datasets for `/ai/chat` and `/ai/generate`; performance budgets; visual regression
+- **Fact:** Product Ready (R0 bar) is the fork-and-run checklist on [product-ready.mdx](../../apps/docu/content/docs/testing/product-ready.mdx), not CI green. Pipelines run CI.
+- **Unresolved:** eval datasets for `/ai/chat` and `/ai/generate`; performance budgets; visual regression
 
 ## Minimum Useful Artifact
 
 - risk: auth, health, catalog errors, OpenAPI drift
-- criterion: API test or Playwright spec asserting behavior
+- criterion: API test or Playwright spec asserting behavior; adopter bar is [product-ready.mdx](../../apps/docu/content/docs/testing/product-ready.mdx)
 - eval/budget: **unresolved** for probabilistic AI and perf
 - command: `pnpm --filter @repo/api test:unit`, `pnpm test:e2e`
 - on fail: fix or escalate; do not skip remote AI without `ctx.skip()`
