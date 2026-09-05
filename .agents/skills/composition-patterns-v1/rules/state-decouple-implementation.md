@@ -86,11 +86,13 @@ function Channel({ channelId }: { channelId: string }) {
 function ForwardMessageProvider({ children }) {
   const [state, setState] = useState(initialState)
   const forwardMessage = useForwardMessage()
+  const inputRef = useRef(null)
 
   return (
     <Composer.Provider
       state={state}
       actions={{ update: setState, submit: forwardMessage }}
+      meta={{ inputRef }}
     >
       {children}
     </Composer.Provider>
@@ -100,9 +102,14 @@ function ForwardMessageProvider({ children }) {
 // Global synced state for channels
 function ChannelProvider({ channelId, children }) {
   const { state, update, submit } = useGlobalChannel(channelId)
+  const inputRef = useRef(null)
 
   return (
-    <Composer.Provider state={state} actions={{ update, submit }}>
+    <Composer.Provider
+      state={state}
+      actions={{ update, submit }}
+      meta={{ inputRef }}
+    >
       {children}
     </Composer.Provider>
   )

@@ -26,4 +26,4 @@ context providers.
 ## 4. React 19 APIs (react19)
 
 **Impact:** MEDIUM  
-**Description:** React 19+ only. Don't use `forwardRef`; use `use()` instead of `useContext()`.
+**Description:** React 19+ only. Don't use `forwardRef` for new components (existing `forwardRef` remains supported). `use()` is optional for conditional context reads; `useContext()` remains supported.

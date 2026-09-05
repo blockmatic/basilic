@@ -48,9 +48,9 @@ const ComposerContext = createContext<ComposerContextValue | null>(null)
 
 function ComposerProvider({ children, state, actions, meta }: ProviderProps) {
   return (
-    <ComposerContext value={{ state, actions, meta }}>
+    <ComposerContext.Provider value={{ state, actions, meta }}>
       {children}
-    </ComposerContext>
+    </ComposerContext.Provider>
   )
 }
 
@@ -63,7 +63,7 @@ function ComposerInput() {
     state,
     actions: { update },
     meta: { inputRef },
-  } = use(ComposerContext)
+  } = useContext(ComposerContext)
   return (
     <TextInput
       ref={inputRef}
@@ -76,7 +76,7 @@ function ComposerInput() {
 function ComposerSubmit() {
   const {
     actions: { submit },
-  } = use(ComposerContext)
+  } = useContext(ComposerContext)
   return <Button onPress={submit}>Send</Button>
 }
 

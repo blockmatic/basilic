@@ -61,7 +61,7 @@ function ComposerInput() {
     state,
     actions: { update },
     meta,
-  } = use(ComposerContext)
+  } = useContext(ComposerContext)
 
   // This component works with ANY provider that implements the interface
   return (
@@ -84,7 +84,7 @@ function ForwardMessageProvider({ children }: { children: React.ReactNode }) {
   const submit = useForwardMessage()
 
   return (
-    <ComposerContext
+    <ComposerContext.Provider
       value={{
         state,
         actions: { update: setState, submit },
@@ -92,7 +92,7 @@ function ForwardMessageProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </ComposerContext>
+    </ComposerContext.Provider>
   )
 }
 
@@ -102,7 +102,7 @@ function ChannelProvider({ channelId, children }: Props) {
   const inputRef = useRef(null)
 
   return (
-    <ComposerContext
+    <ComposerContext.Provider
       value={{
         state,
         actions: { update, submit },
@@ -110,7 +110,7 @@ function ChannelProvider({ channelId, children }: Props) {
       }}
     >
       {children}
-    </ComposerContext>
+    </ComposerContext.Provider>
   )
 }
 ```
@@ -172,13 +172,13 @@ function ForwardMessageDialog() {
 function ForwardButton() {
   const {
     actions: { submit },
-  } = use(ComposerContext)
+  } = useContext(ComposerContext)
   return <Button onPress={submit}>Forward</Button>
 }
 
 // This preview lives OUTSIDE Composer.Frame but can read composer's state!
 function MessagePreview() {
-  const { state } = use(ComposerContext)
+  const { state } = useContext(ComposerContext)
   return <Preview message={state.input} attachments={state.attachments} />
 }
 ```

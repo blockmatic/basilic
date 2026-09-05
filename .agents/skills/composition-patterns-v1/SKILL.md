@@ -97,7 +97,7 @@ Apply these only where the Constraints above allow. Do not lift server-owned dat
 
 React 19+ only. Skip this section on React 18 or earlier.
 
-- `react19-no-forwardref` — Don't use `forwardRef`; use `use()` instead of `useContext()`
+- `react19-no-forwardref` — Don't use `forwardRef` for new components. `use()` is optional for conditional context reads; `useContext()` remains supported.
 
 ## How to use
 

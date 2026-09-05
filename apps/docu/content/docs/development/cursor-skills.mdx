@@ -35,7 +35,7 @@ pnpm dlx skills@latest add /path/to/basilic-skills --skill workflow -a cursor --
 
 That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/workflow/<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
 
-Root `skills-lock.json` tracks catalog hashes. FIRST is `source: blockmatic/first`. Commit the lock with `.agents/skills/` after every refresh.
+Root `skills-lock.json` tracks catalog hashes. FIRST is `source: blockmatic/first`. The `web-design-guidelines-v1` entry also records the pinned `command.md` commit digest. Commit the lock with `.agents/skills/` after every refresh.
 
 ## Two kinds
 
@@ -105,7 +105,7 @@ Catalog copies may differ from upstream. Original sources:
 - `expo-upgrading-v55` ← `expo-upgrade`
 - `expo-use-dom-v55` ← `expo-dom`
 - `vercel-react-v1` ← `react-best-practices` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
-- `web-design-guidelines-v1` ← `web-design-guidelines` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (fetches [web-interface-guidelines `command.md`](https://github.com/vercel-labs/web-interface-guidelines) each review)
+- `web-design-guidelines-v1` ← `web-design-guidelines` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (fetches a pinned [web-interface-guidelines `command.md`](https://github.com/vercel-labs/web-interface-guidelines/blob/e3d624baaf29dc1fc645aff3e38f03e564d2d6b1/command.md) revision)
 - `composition-patterns-v1` ← `composition-patterns` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
 - `next-v16` ← `nextjs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
 - `nuqs-v2` ← `nuqs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
