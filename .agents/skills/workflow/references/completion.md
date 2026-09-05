@@ -9,6 +9,7 @@ Use the rows relevant to the requested deliverable. Mark passed, failed, not run
 | Implementation | Changed behavior, affected checks against the final change, original scenario where relevant, and documentation updates |
 | Commit or push | Intended diff, required checks/hooks, commit or remote result, and preserved unrelated work |
 | Pull request | Correct branch/base, standalone description, observed verification, and PR link |
+| UI surface | Desktop and mobile viewport evidence, keyboard path, named loading/empty/error/success states as applicable, and a separate line for visual inspection vs automated checks (Playwright or typecheck is not visual QA) |
 
 ## Common failure checks
 

@@ -15,6 +15,7 @@ Build shadcn/ui components following monorepo structure and coding standards.
 3. **Follow monorepo import patterns**: Import from `@repo/ui/components/*` never directly from packages/ui, use `@repo/ui/lib/utils` for utilities like `cn`, import Radix primitives from `@repo/ui/radix` never directly from `@radix-ui/react-*`
 4. **Apply coding standards**: Follow TypeScript rules (interfaces, type inference, RORO pattern), use class-variance-authority (cva) for variants, apply mobile-first responsive design, follow linting rules (Biome + ESLint)
 5. **Verify and test**: Run `pnpm lint:fix` to ensure code quality, verify imports work correctly in consuming apps, test component functionality and responsiveness
+6. **Surfaces, not only primitives**: After the component is installed, reshape screens with `/use-frontend` — do not treat a new primitive as the whole UI job
 
 ## Completion
 

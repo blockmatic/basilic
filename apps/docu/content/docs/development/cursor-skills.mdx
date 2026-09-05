@@ -51,7 +51,7 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 ## Workflow migration
 
-The local workflow package is `workflow`: `.agents/skills/workflow/SKILL.md` dispatches to 50 unprefixed children, including `/build`. Shared authoring and completion references travel inside this tree. FIRST and technology skill names are unchanged.
+The local workflow package is `workflow`: `.agents/skills/workflow/SKILL.md` dispatches to 51 unprefixed children, including `/build` and `/use-frontend`. Shared authoring and completion references travel inside this tree. FIRST and technology skill names are unchanged.
 
 The catalog changes are prepared in the local `basilic-skills` checkout and are not yet published. Until they reach the canonical source, preview from that checkout:
 
@@ -105,6 +105,8 @@ Catalog copies may differ from upstream. Original sources:
 - `expo-upgrading-v55` ← `expo-upgrade`
 - `expo-use-dom-v55` ← `expo-dom`
 - `vercel-react-v1` ← `react-best-practices` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
+- `web-design-guidelines-v1` ← `web-design-guidelines` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (fetches [web-interface-guidelines `command.md`](https://github.com/vercel-labs/web-interface-guidelines) each review)
+- `composition-patterns-v1` ← `composition-patterns` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
 - `next-v16` ← `nextjs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
 - `nuqs-v2` ← `nuqs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
 - `vitest-v4` ← `vitest` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
@@ -116,6 +118,10 @@ Catalog copies may differ from upstream. Original sources:
 Basilic-maintained in the catalog: `fastify-v5`, `file-organization-v1`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks.
 
 **Intended unused stack** (catalog skills for future work, not installed app deps yet): `wagmi-v3`, `motion-v13`, `emilkowal-animations-v1`.
+
+**Omitted from the catalog** (and why): Vercel `writing-guidelines` (conflicts with docs sentence case); `react-view-transitions` (extra animation API); `react-native-guidelines` (Expo skills already cover native). [Impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0) is not a skill: competing PRODUCT/DESIGN generators, CLI, and detector hooks are out of scope. A few craft ideas (harden loading/empty/error/success; bounded screenshot critique) are adapted in original wording in `/use-frontend` and `frontend-design-v1` `references/product-ui.md`.
+
+New or reshaped UI: `/use-frontend` or `/workflow ui`. Visual direction only: `@frontend-design-v1` (tokens win when present). Component APIs: `@composition-patterns-v1`. UI code audit: `@web-design-guidelines-v1`. Quality a11y report: `/audit-accessibility`. Runtime bugs: `/debug-browser`.
 
 ## Related
 

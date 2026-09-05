@@ -25,6 +25,7 @@ Direct `/<name>` loads the same child. Names in an old conversation such as `/b-
 | `/workflow push` | [git-push](git-push/SKILL.md) |
 | `/workflow pr` | [git-create-pr](git-create-pr/SKILL.md) |
 | `/workflow retro` | [retro](retro/SKILL.md) |
+| `/workflow ui` | [use-frontend](use-frontend/SKILL.md) |
 
 `build` ends at verified local changes. `commit`, `push`, `pr`, and `exec-push` request their named Git actions; none requests merging or deploying. Use `/git-push` to publish an already-committed branch; `/fix-push` after fixing a failed push; `/exec-push` only when the user asked for implement through a described PR.
 
@@ -73,6 +74,7 @@ Direct `/<name>` loads the same child. Names in an old conversation such as `/b-
 - [/run-all-tests-and-fix](run-all-tests-and-fix/SKILL.md)
 - [/security-audit](security-audit/SKILL.md)
 - [/security-review](security-review/SKILL.md)
+- [/use-frontend](use-frontend/SKILL.md)
 - [/use-shadcn](use-shadcn/SKILL.md)
 - [/use-tdd](use-tdd/SKILL.md)
 - [/use-v0](use-v0/SKILL.md)
