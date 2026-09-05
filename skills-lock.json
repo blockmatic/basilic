@@ -19,6 +19,12 @@
       "skillPath": "skills/ai-sdk-ui-v7/SKILL.md",
       "computedHash": "2d909a358b697da27416f5db98605d9cbf366600437faaa0a3c0c9d1c108ebdd"
     },
+    "b": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/b/SKILL.md",
+      "computedHash": "5f7f062df2681c100f2e05f8a546842603412cd4f56dff706fcda81419ff6f47"
+    },
     "drizzle-orm-v0": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",

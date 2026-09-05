@@ -18,6 +18,7 @@ Durable product facts live in [basilic/PRODUCT.md](basilic/PRODUCT.md). That ove
 - quality: [basilic/QUALITY.md](basilic/QUALITY.md)
 - security: [basilic/SECURITY.md](basilic/SECURITY.md)
 - operations: [basilic/OPERATIONS.md](basilic/OPERATIONS.md)
+- pipelines: [basilic/PIPELINES.md](basilic/PIPELINES.md)
 
 Optional `_first/DESIGN.md` is not a station and is not written yet. Tokens live in `packages/ui`. When added, use [DESIGN.md Format](https://raw.githubusercontent.com/google-labs-code/design.md/refs/heads/main/docs/spec.md).
 

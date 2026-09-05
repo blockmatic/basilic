@@ -1,0 +1,55 @@
+{
+  "name": "create-basilic",
+  "version": "0.0.0",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "description": "Scaffold an independent Basilic API, web, and mobile monorepo",
+  "bin": {
+    "create-basilic": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "template",
+    "README.md",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/cli.ts",
+      "import": "./dist/cli.js",
+      "default": "./dist/cli.js"
+    }
+  },
+  "scripts": {
+    "assemble": "tsx src/assemble/run.ts",
+    "build": "tsup",
+    "checktypes": "tsc --noEmit",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "test": "pnpm test:unit",
+    "test:unit": "vitest run",
+    "prepack": "node -e \"require('node:fs').accessSync('template/package.json')\""
+  },
+  "dependencies": {
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.13.3",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "eslint": "^10.9.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.12",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "vitest": "^4.1.11"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "packageManager": "pnpm@11.24.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}

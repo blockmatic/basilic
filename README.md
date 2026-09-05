@@ -2,7 +2,7 @@
 
 Fork-and-run developer starter: typed SDKs, self-hosted auth, a portable architecture, Cursor-first workflow, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
 
-MIT licensed. Start a product with GitHub **Use this template**, or fork to contribute back. First successful use is [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) (`pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`, `test@test.ai`). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).
+MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tools/create-basilic/README.md). Clone or GitHub **Use this template** still works. **Fork** to contribute back. First successful use is [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) (`pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`, `test@test.ai`). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).
 
 ## Features
 

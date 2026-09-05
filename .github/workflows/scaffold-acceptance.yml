@@ -1,0 +1,69 @@
+name: Scaffold acceptance
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: scaffold-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  acceptance:
+    name: Generated tree QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      NODE_ENV: test
+      CI: true
+      PGLITE: true
+      ALLOW_TEST: true
+      RATE_LIMIT_MAX: 10000
+      WEBAUTHN_RP_NAME: Test App
+      DATABASE_URL: postgresql://localhost/test
+      JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-dummy-for-scaffold' }}
+    steps:
+      - name: Skip on feature PRs
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please--')
+        run: echo 'Full generated QA runs on release-please PRs and workflow_dispatch.'
+
+      - if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Assemble template
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
+        env:
+          CREATE_BASILIC_LOCKFILE: '1'
+          CREATE_BASILIC_TEMPLATE_DIR: ${{ runner.temp }}/basilic-template
+        run: pnpm --filter create-basilic assemble
+
+      - name: Assert generated tree
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
+        run: node scripts/assert-generated-tree.mjs "$RUNNER_TEMP/basilic-template"
+
+      - name: Secret scan assembled tree
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
+        run: |
+          node scripts/setup-gitleaks.mjs
+          gitleaks detect --source "$RUNNER_TEMP/basilic-template" --no-git --redact --verbose --config .gitleaks.toml
+
+      - name: Git init and install generated workspace
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
+        run: |
+          cd "$RUNNER_TEMP/basilic-template"
+          git init
+          git add -A
+          git -c user.name=basilic-ci -c user.email=ci@basilic.local commit -m 'chore: assembled template' --no-verify
+          pnpm install --frozen-lockfile
+          pnpm --filter @repo/api exec playwright install chromium
+          pnpm --filter @repo/web exec playwright install chromium
+
+      - name: Generated pnpm qa
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
+        working-directory: ${{ runner.temp }}/basilic-template
+        run: pnpm qa

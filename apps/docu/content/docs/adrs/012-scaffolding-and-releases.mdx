@@ -1,9 +1,9 @@
 ---
 title: "ADR 012: Scaffolding and Releases"
-description: "Proposed Basilic generator, template boundaries, conventional-commit versioning, and AI-assisted releases."
+description: "Accepted Basilic generator, template boundaries, conventional-commit versioning, and AI-assisted releases."
 ---
 
-Status: **Proposed — implementation plan, not shipped behavior.** September 5, 2026.
+Status: **Accepted.** Implementation landed September 5, 2026. Human gates (npm trusted publisher, GitHub App, squash settings, Product Ready from the published package before announcing 1.0.0) remain maintainer-owned.
 
 ## Recommendation
 
@@ -13,7 +13,7 @@ Use the existing `tools/` directory. Adding `tooling/` would duplicate a boundar
 
 ### Assumptions
 
-- “MPX … init” means an `npx`-style project creation command. Examples below describe the proposed interface and are not available yet.
+- “MPX … init” means an `npx`-style project creation command. The shipped interface is `npx create-basilic@latest my-app`.
 - “Releasing Emberation” means Basilic release/version automation. No separate product named Emberation is assumed.
 - “Exclude the CLI itself” means the new generator. The existing API client CLI remains part of the starter.
 - Version one delivers the complete starter, with no app picker or automatic upgrades of existing projects.
@@ -25,9 +25,9 @@ Use the existing `tools/` directory. Adding `tooling/` would duplicate a boundar
 | `pnpm-workspace.yaml` includes `apps/*`, `packages/*`, `tools/*` | Reuse the workspace layout. |
 | `packages/cli` is private `@repo/cli`, with a `basilic` executable | A generator called `basilic` would collide with the API CLI. |
 | `tools/eslint` and `tools/typescript` provide workspace dependencies | Copying only `apps/`, or excluding all `tools/`, produces an incomplete project. |
-| Root README and After fork describe GitHub template/fork adoption | CLI onboarding is new; current instructions remain valid until launch. |
+| Root README and After fork describe generator-first adoption; clone and GitHub template remain for contributors | New products use `create-basilic`. |
 | Publishing documentation describes package packing and manual publishing | Packing support exists, but is not an automated release policy. |
-| Checked-in workflows cover quality, security, and mobile delivery | No Release Please, Changesets, or npm release workflow was found. Conventional commits are documented; no dedicated commit-message gate was found. |
+| Checked-in workflows cover quality, security, mobile, scaffold classification, Release Please, and npm publish | Conventional PR titles are gated. Release Please is upstream-only. |
 
 ## Naming and component boundaries
 
@@ -59,7 +59,7 @@ Maintain one version-controlled **include-and-transform manifest**, colocated wi
 | Lockfile | Produce and validate a lockfile for the assembled workspace using pinned pnpm. Do not hand-edit YAML dependency resolutions. |
 | `.github` | Include portable quality workflows and their local actions; omit Basilic publication workflows, release state, and maintainer ownership metadata. Deployment workflows require adopter configuration and must not target upstream projects. |
 | `.cursor`, `.agents`, `AGENTS.md`, safe `.deepsec` configuration | Retain the shared workflow; replace upstream project bindings and repair documentation pointers. |
-| FIRST user pack | Retain reusable guidance/templates; replace `_first/basilic` with an unfilled adopter instance and retarget `FIRST.md` and agent pointers. Do not fabricate product decisions. |
+| FIRST user pack | Retain reusable guidance; create an unfilled adopter instance only for stations listed in `FIRST.md`; retarget `FIRST.md` and agent pointers. Do not copy `_first/basilic` or fabricate product decisions. |
 | `LICENSE` | Preserve MIT copyright and license text. |
 | Git history, caches, dependency installs, build output, credentials, local environment files | Exclude. Include approved `.env.<qualifier>.example` files and audited non-secret defaults. |
 
@@ -149,7 +149,7 @@ Scan packed and generated files for secrets and forbidden paths. Verify workspac
 
 At launch, update root and generator READMEs, Getting Started, After fork, CLI, Publishing, GitHub Actions, and Monorepo documentation together. Update `_first/basilic/PRODUCT.md` with the delivered adoption capability and the architecture/workflow overlays with verified implementation facts. Keep forks documented for upstream contributions; new products use the generator. Existing copies remain owner-managed: offer changelogs and migration guidance before considering a future upgrade command.
 
-**Decisions remaining before implementation:** verified npm identity/owner; acceptance of the lightweight docs snapshot and FIRST reset; stable-release baseline and preview need; maintainers authorized to approve releases. These are review items, not claims that accounts or infrastructure have already been configured.
+**Maintainer gates still open:** claim npm `create-basilic` (or an owned scope) and bind trusted publishing; install the GitHub App and protected `release` environment; squash-merge with `PR_TITLE` + `PR_BODY`; authorize who may merge release PRs; announce **1.0.0** only after Product Ready from `npx create-basilic@<version>`.
 
 ## References
 

@@ -8,8 +8,8 @@ See /f-architecture.
 
 - **Fact:** [`../../apps/docu/content/docs/architecture/index.mdx`](../../apps/docu/content/docs/architecture/index.mdx) — stack overview
 - **Fact:** [`../../apps/docu/content/docs/architecture/monorepo.mdx`](../../apps/docu/content/docs/architecture/monorepo.mdx) — apps vs packages
-- **Fact:** [`../../apps/docu/content/docs/adrs/`](../../apps/docu/content/docs/adrs/) — ADRs 001–011
-- **Fact:** Deployables: `apps/api` (system of record), `apps/web`, `apps/mobile` (UI scaffold), `apps/docu`
+- **Fact:** [`../../apps/docu/content/docs/adrs/`](../../apps/docu/content/docs/adrs/) — ADRs 001–012
+- **Fact:** Deployables: `apps/api` (system of record), `apps/web`, `apps/mobile` (UI scaffold), `apps/docu`. Generator: `tools/create-basilic` (not a generated-app deployable).
 - **Fact:** Packages: `core` (generated client), handwritten `react`, `ui`, `utils`, `error`, `cli`, `email`. Security mail is `@repo/email` + Fastify `emailProvider`.
 - **Fact:** Apps depend on packages, never the reverse. `react` depends on `core`. Clients call Fastify over HTTP.
 - **Fact:** Store: PostgreSQL via `DATABASE_URL`. PGLite when `PGLITE=true` **or** `NODE_ENV=test`. Compiled PGLite requires SQL copied into `dist`. Supabase is the managed host, not the auth SDK.
@@ -48,7 +48,7 @@ flowchart LR
 - deployable units: Fastify API, Next.js web, Expo mobile, Fumadocs
 - data store: PostgreSQL (Drizzle in `apps/api`)
 - dependencies: clients → `@repo/core` → HTTP → Fastify/TypeBox → Drizzle
-- consequential decisions: ADRs 001 (monorepo), 002 (Fastify), 003 (Next), 004 (shadcn), 007/008 (Drizzle/Postgres), 009 (routes generate OpenAPI)
+- consequential decisions: ADRs 001 (monorepo), 002 (Fastify), 003 (Next), 004 (shadcn), 007/008 (Drizzle/Postgres), 009 (routes generate OpenAPI), 012 (create-basilic + Release Please)
 
 ## Notes
 

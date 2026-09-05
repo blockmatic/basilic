@@ -28,7 +28,7 @@ Prefer `_first/DESIGN.md` so the file lives in the user pack. Point `FIRST.md` a
 
 If `DESIGN.md` exists: YAML tokens are the values to use; markdown do's and don'ts are constraints. Follow the spec’s `##` order when those sections apply. Omit unused visual sections with YAML `omitted` and a reason. Unknown headings are preserved; use them for interface states, copy, motion, and accessibility beyond contrast. Do not fork a competing schema.
 
-Token groups may follow W3C Design Tokens (DTCG) conceptually. Use the project's pinned lint command, or `npx @google/design.md lint _first/DESIGN.md` (explicit path) when the CLI is already part of the toolchain. A zero exit code is not an accessibility pass or browser verification.
+Token groups may follow W3C Design Tokens (DTCG) conceptually. Use the project's pinned lint command, or `npx -p @google/design.md designmd lint _first/DESIGN.md` (explicit path) when the CLI is not already part of the toolchain. A zero exit code is not an accessibility pass or browser verification.
 
 Do not keep a palette in `DESIGN.md` and a different one in CSS.
 

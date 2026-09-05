@@ -43,7 +43,7 @@ Root `skills-lock.json` tracks catalog hashes. FIRST is `source: blockmatic/firs
 
 **Tech** — `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
-**Workflow** — install the parent `b` skill; nested children are not independent install targets.  `.agents/skills/b/b-<name>/` (example: `b/b-plan-feature`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/b-<name>` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
+**Workflow** — install the parent `b` skill; nested children are not independent install targets. `.agents/skills/b/b-<name>/` (example: `b/b-plan-feature`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/b-<name>` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name.
 
@@ -51,7 +51,7 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 ## Workflow migration
 
-The local workflow package is now `b`: `.agents/skills/b/SKILL.md` dispatches to 49 `/b-*` children, including `/b-build`. Shared authoring and completion references travel inside this tree. FIRST and technology skill names are unchanged.
+The local workflow package is now `b`: `.agents/skills/b/SKILL.md` dispatches to 50 `/b-*` children, including `/b-build`. Shared authoring and completion references travel inside this tree. FIRST and technology skill names are unchanged.
 
 The catalog changes are prepared in the local `basilic-skills` checkout and are not yet published. Until they reach the canonical source, preview from that checkout:
 

@@ -8,6 +8,7 @@ See /f-info-architect.
 
 - **Fact:** Product intent: [PRODUCT.md](PRODUCT.md) — brief, feature map, roadmap. Not in `apps/docu`
 - **Fact:** Adopter technical docs: [`../../apps/docu/content/docs/`](../../apps/docu/content/docs/) — architecture, ADRs, development, testing, deployment
+- **Fact:** Generated-project docs snapshot: `docs/basilic/` is assembled from `apps/docu/content/docs` at pack time. Canonical authoring stays in `apps/docu`. The snapshot is not a second source.
 - **Fact:** How to run: [`../../README.md`](../../README.md) and app/package READMEs — link to docs, no duplication ([docs.mdc](../../.cursor/rules/base/docs.mdc))
 - **Fact:** Agents: [`../../AGENTS.md`](../../AGENTS.md); constraints `.cursor/rules/`; skills `.agents/skills/`
 - **Fact:** Workflow index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)

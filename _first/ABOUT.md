@@ -25,7 +25,7 @@ Each principle’s **Definition of Done** is that station’s artifact. It is no
 
 Inside the user pack:
 
-- **Humans reading:** start at [README.md](README.md), then `articles/`.
+- **Humans reading:** start at [README.md](README.md). Essays in `articles/` are factory-only upstream; adopters use instance overlays and docs their pack points at ([articles on GitHub](https://github.com/blockmatic/first/tree/main/_first/articles) if you want the argument).
 - **Agents operating:** start at [AGENTS.md](AGENTS.md), then this file, then [FIRST.md](FIRST.md), then the matching `/f-*` skill.
 - **Humans applying:** this file plus the matching `/f-*` skill (or `principles/X.md` in this factory repo). The essay is optional once you know the argument.
 

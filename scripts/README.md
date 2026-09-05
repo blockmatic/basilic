@@ -49,6 +49,22 @@ Runs during `postpack` lifecycle hook (after packing):
 
 **Package Configuration**: Packages using these scripts should have development exports pointing to `src/` in `package.json`. See [Publishing Guide](@apps/docu/content/docs/deployment/publishing.mdx) for complete configuration details.
 
+`create-basilic` does **not** use these scripts. Pack it with `npm pack` from `tools/create-basilic`.
+
+## Generator
+
+### `assert-generated-tree.mjs`
+
+Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please) or is missing required agent/docs files.
+
+```bash
+node scripts/assert-generated-tree.mjs /path/to/assembled-template
+```
+
+### `release-impact.mjs`
+
+Fails when starter payload paths change behind a `docs`/`chore`/`test`/`ci`/`style` PR title unless the body has `skip-release: true`. Used by `.github/workflows/release-impact.yml`.
+
 ## Security Scripts
 
 Scripts that prevent committing secrets, scan for vulnerabilities, and install security tools.

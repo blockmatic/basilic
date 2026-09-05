@@ -3,13 +3,14 @@ title: After fork
 description: Template vs fork, Product Ready, and what to replace when the copy is your product.
 ---
 
-Basilic stays the starter brand. This page is for after GitHub **Use this template** or a fork. First run is still [Product Ready](/docs/testing/product-ready). There is no rename script.
+Basilic stays the starter brand. **New products** use `npx create-basilic@latest my-app`. This page is also for GitHub **Use this template** or a fork. First run is still [Product Ready](/docs/testing/product-ready). There is no rename script and no upgrade CLI.
 
 Enable **Template repository** in GitHub settings so **Use this template** appears. Maintainers do that; agents cannot. Clone still works without the flag.
 
-## Template vs fork
+## Generator vs template vs fork
 
-- **Use this template** — start a product. New history, no obligation to merge upstream.
+- **`npx create-basilic@latest`** — start a product. Independent git history; no docu app; no generator; local docs snapshot in `docs/basilic/`.
+- **Use this template** — start a product from GitHub. Includes the documentation app and generator until you remove them.
 - **Fork** — contribute back to Basilic. Keep the upstream remote.
 
 ## Run
@@ -32,7 +33,9 @@ Do not sweep every `blockmatic` docs URL. Those point at the upstream starter.
 
 ## FIRST
 
-`_first/basilic/` is this starter’s filled instance. Keep it as the example, or write overlays only for stations listed as In in [`_first/FIRST.md`](https://github.com/blockmatic/basilic/blob/main/_first/FIRST.md) and retarget those paths. Absent files beat empty stubs. Specs stay `/f-*` from `npx skills add blockmatic/first`.
+Generated projects get an **unfilled** `_first/PRODUCT.md` and a retargeted `_first/FIRST.md`. Do not copy `_first/basilic/` out — that overlay is this starter’s filled instance.
+
+In this repository, `_first/basilic/` stays the Basilic adoption pack. Specs stay `/f-*` from `npx skills add blockmatic/first`. Absent files beat empty stubs.
 
 ## CI secrets
 

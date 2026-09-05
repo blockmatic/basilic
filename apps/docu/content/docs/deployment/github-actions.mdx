@@ -7,7 +7,7 @@ GitHub Actions workflows automate quality checks on pull requests (opened and up
 
 ## Workflows
 
-Path filters are used only for test workflows (app E2E and package unit tests) so they run when relevant code changes. Lint and `security.yml` run on every PR. DeepSec runs on same-repo PRs from OWNER, MEMBER, or COLLABORATOR. Path patterns are defined in each workflow file.
+Path filters are used only for test workflows (app E2E and package unit tests) so they run when relevant code changes. Lint, `security.yml`, conventional **PR title**, **template classification**, **generator tests**, and **release-impact** run on every PR (always reportable; they do not use path filters that leave required checks pending). DeepSec runs on same-repo PRs from OWNER, MEMBER, or COLLABORATOR. Path patterns are defined in each workflow file.
 
 ### Web (`web-e2e.yml`)
 
@@ -49,6 +49,21 @@ gh run view <run-id> --log-failed
 ### Lint (`lint.yml`)
 
 Linting and type checking on every PR (`pnpm lint`, then `pnpm exec turbo run checktypes`). Supports `workflow_dispatch` for manual runs. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
+
+### Scaffold (`pr-title.yml`, `scaffold.yml`, `release-impact.yml`, `scaffold-acceptance.yml`)
+
+Always report on pull requests:
+
+- **PR title** — conventional types (`feat`, `fix`, `perf`, …).
+- **Template classification** — every `git ls-files` path is include / transform / exclude.
+- **Generator tests** — `create-basilic` unit tests on Ubuntu, macOS, and Windows (copy/generate). Full-stack Product Ready remains Unix-oriented.
+- **Release impact** — payload path changes behind `docs`/`chore`/`test`/`ci`/`style` titles fail unless the body has `skip-release: true`.
+
+**Generated tree QA** (`scaffold-acceptance.yml`) runs the assembled template’s `pnpm qa` (types, lint, OpenAPI drift, build, unit, API/web E2E) on **release-please PRs** and `workflow_dispatch`. Feature PRs skip that job with success so the required check is not pending.
+
+### Release Please and publish
+
+Upstream only (excluded from generated trees): `release-please.yml` on `main` (GitHub App token), `publish-create-basilic.yml` on `v*` tags (OIDC npm publish + GitHub Release asset). See [Publishing](/docs/deployment/publishing).
 
 ### Mobile (`mobile-build.yml`, `mobile-preview.yml`, `mobile-pr-preview.yml`)
 

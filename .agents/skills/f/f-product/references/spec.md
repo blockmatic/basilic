@@ -81,7 +81,7 @@ Propose the smallest useful update to product artifacts, including the tracking 
 
 ## Notes
 
-How someone finishes a job is part of the implementing change, not a station.
+Product owns what and why. Journeys owns how someone finishes the job and how the interface expresses it. Do not treat completion paths as implementation detail outside Journeys.
 
 **Product vs Quality:** Product names the outcome after use. Quality names the bar that gates a release.
 

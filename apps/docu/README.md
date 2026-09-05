@@ -18,4 +18,4 @@ Content is `content/docs/` (`architecture`, `development`, `testing`, `deploymen
 - [Architecture](content/docs/architecture/index.mdx)
 - [Security](content/docs/architecture/security.mdx)
 - [Deployment](content/docs/deployment/index.mdx)
-- [Scaffolding and Releases proposal](content/docs/adrs/012-scaffolding-and-releases.mdx)
+- [Scaffolding and Releases](content/docs/adrs/012-scaffolding-and-releases.mdx)

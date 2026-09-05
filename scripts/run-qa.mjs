@@ -46,7 +46,12 @@ const phases = [
       'packages/cli/src/gen',
     ],
   },
-  { name: 'build', cmd: 'pnpm', args: ['build'], env: qaBuildEnv },
+  {
+    name: 'build',
+    cmd: 'pnpm',
+    args: ['build'],
+    env: { ...qaBuildEnv, NEXT_PUBLIC_API_URL: 'http://localhost:3001' },
+  },
   ...(skipTests
     ? []
     : [

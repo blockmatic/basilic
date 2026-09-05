@@ -1,6 +1,6 @@
 ---
 title: "Getting Started"
-description: "Node 24, pnpm 11.24.0, clone, setup, and run the apps."
+description: "Node 24, pnpm 11.24.0, create-basilic, setup, and run the apps."
 ---
 
 ## Prerequisites
@@ -18,12 +18,12 @@ corepack prepare pnpm@11.24.0 --activate
 ## Setup
 
 ```bash
-git clone <repository-url>
-cd <project-name>
+npx create-basilic@latest my-app
+cd my-app
 pnpm run setup
 ```
 
-Or GitHub **Use this template**, then clone your new repo. [After fork](/docs/development/after-fork) lists what to replace when the copy is your product.
+Or clone this repository / GitHub **Use this template**, then `cd` into it. [After fork](/docs/development/after-fork) lists what to replace when the copy is your product. Forks are for contributing upstream.
 
 `setup` installs dependencies, git hooks, security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
@@ -35,7 +35,7 @@ pnpm dev
 
 - API: http://localhost:3001 (`GET /health`, `/reference`)
 - Web: http://localhost:3000 — first login is `/auth/login` with `test@test.ai` (copied env has `ALLOW_TEST=true`; Resend optional)
-- Docs: `pnpm --filter @repo/docu dev` (http://localhost:3002)
+- Docs: hosted [basilic-docs](https://basilic-docs.vercel.app/docs); in this repo `pnpm --filter @repo/docu dev` (http://localhost:3002). Generated projects use `docs/basilic/` instead.
 - Mobile: `pnpm --filter @repo/mobile start`
 
 **Apps:** `apps/api` (Fastify 5), `apps/web` (Next.js 16), `apps/mobile` (Expo 57), `apps/docu` (Fumadocs).

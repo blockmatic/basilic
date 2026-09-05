@@ -3,7 +3,11 @@ title: "CLI Package"
 description: "TypeScript CLI to interact with the Basilic API via API key. Ideal for agentic integrations."
 ---
 
-The `@repo/cli` package provides a command-line interface to the Basilic Fastify API. It uses `@repo/core` for all requests and supports only API key auth. Auth endpoints (magic link, OAuth, passkey, etc.) are excluded.
+The `@repo/cli` package is the **API CLI** (`basilic` binary): call the Fastify API with an API key. It is not the project generator.
+
+The **project generator** is `create-basilic` (`npx create-basilic@latest my-app`). See [Getting Started](/docs/development) and [`tools/create-basilic/README.md`](https://github.com/blockmatic/basilic/blob/main/tools/create-basilic/README.md).
+
+The `@repo/cli` package uses `@repo/core` for all requests and supports only API key auth. Auth endpoints (magic link, OAuth, passkey, etc.) are excluded.
 
 ## Auth
 
