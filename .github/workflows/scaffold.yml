@@ -1,0 +1,32 @@
+name: Scaffold
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: scaffold-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  classify:
+    name: Template classification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-pnpm
+      - name: Classify every tracked path
+        run: pnpm --filter create-basilic exec vitest run src/assemble/classify.test.ts
+
+  generator:
+    name: Generator tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-pnpm
+      - name: Unit tests
+        run: pnpm --filter create-basilic test

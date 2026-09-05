@@ -1,17 +1,17 @@
 # First Principles
 
-Version: 0.2-draft  
-Last reviewed: 2026-09-04
+Version: 0.3-draft  
+Last reviewed: 2026-09-05
 
 Some decisions are too consequential to become afterthoughts. Important project knowledge should live in files, not disappear into conversations.
 
 This is an agent-first factory, not an agent-autonomous one. Humans still decide product scope, security-sensitive changes, and anything that cannot be recovered from the repository. Agents inspect, propose, implement, and update durable context. They do not silently invent the goal.
 
-"First" means: make the concern explicit before implementation, chat, or a generated UI invents it. FIRST is a spec-to-code factory: shared language between agents and domain experts, product and system design before code. The twelve are stations on one factory, not a waterfall and not competing religions.
+"First" means: make the concern explicit before implementation, chat, or a generated UI invents it. FIRST is a spec-to-code factory: shared language between agents and domain experts, product and system design before code. The ten are stations on one factory, not a waterfall and not competing religions.
 
 ## Who this is for
 
-- **Users of the framework** — adopting FIRST in a product repo. Install `npx skills add blockmatic/first`. Copy the user pack into `_first/`. Edit [FIRST.md](FIRST.md) and opted-in station files from [templates/](templates/). Merge a pointer into root `AGENTS.md`.
+- **Users of the framework** — adopting FIRST in a product repo. Install `npx skills add blockmatic/first`. Copy the user pack into `_first/`. Edit [FIRST.md](FIRST.md) and write overlays only for stations listed as In. Merge a pointer into root `AGENTS.md`.
 - **Maintainers of the framework** — evolving FIRST itself. Start at [`blockmatic/first` maintainers](https://github.com/blockmatic/first/blob/main/_first/maintainers/README.md). Do not copy `maintainers/` or `instance/`.
 
 ## Dual audience (minimum)
@@ -19,13 +19,13 @@ This is an agent-first factory, not an agent-autonomous one. Humans still decide
 - **User of the framework:** install `/f`, copy the user pack, write `FIRST.md`, keep product facts in instance files or docs those files point at.
 - **Maintainer of the framework:** edit `principles/`, `articles/`, `skills/f/`, `maintainers/`, and `packages/validate`. Do not encode one adopter’s product into generic files.
 
-Each principle’s **Definition of Done** is that station’s artifact. It is not the whole factory, not CI green, and not Product success after use. Quality / Product / Pipelines qualify “done” differently — see Boundaries below.
+Each principle’s **Definition of Done** is that station’s artifact. It is not the whole factory, not CI green, and not Product success after use. Quality / Product / Workflow qualify “done” differently — see Boundaries below.
 
 ## Audiences
 
 Inside the user pack:
 
-- **Humans reading:** start at [README.md](README.md). Essays live on the FIRST site, not in this pack.
+- **Humans reading:** start at [README.md](README.md). Essays in `articles/` are factory-only upstream; adopters use instance overlays and docs their pack points at ([articles on GitHub](https://github.com/blockmatic/first/tree/main/_first/articles) if you want the argument).
 - **Agents operating:** start at [AGENTS.md](AGENTS.md), then this file, then [FIRST.md](FIRST.md), then the matching `/f-*` skill.
 - **Humans applying:** this file plus the matching `/f-*` skill (or `principles/X.md` in this factory repo). The essay is optional once you know the argument.
 
@@ -42,10 +42,9 @@ npx skills add blockmatic/first
 - [AGENTS.md](AGENTS.md)
 - [ABOUT.md](ABOUT.md) (this file)
 - [README.md](README.md) if you want the human door
-- [templates/](templates/) — copy only stations listed as In
 - [FIRST.md](FIRST.md) — create this; list in and out
 
-[README.md](README.md) is the human door in this pack. Essays live on the FIRST site. They are not required for an agent to operate. Do not copy `principles/` or `articles/` into an adopter repo. Skip `maintainers/` and `instance/`. Layout and why: [PACKAGING.md](https://github.com/blockmatic/first/blob/main/_first/maintainers/PACKAGING.md).
+[README.md](README.md) and `articles/` are the human pack in this factory. They are not required for an agent to operate. Do not copy `principles/` or `articles/` into an adopter repo. Skip `maintainers/` and `instance/`. Layout and why: [PACKAGING.md](https://github.com/blockmatic/first/blob/main/_first/maintainers/PACKAGING.md).
 
 ## Documentation inventory
 
@@ -55,16 +54,29 @@ User pack — copy these (plus `FIRST.md` you create):
 |---|---|---|
 | [README.md](README.md) | Users, humans | Front door, copy instructions, station index |
 | [AGENTS.md](AGENTS.md) | Users, agents | Load order, operating rules, reusable prompt |
-| [ABOUT.md](ABOUT.md) | Users, both | Canonical map of stations, loops, and boundaries |
+| [ABOUT.md](ABOUT.md) | Users, both | Canonical map of stations, loops, boundaries, overlay contract |
 | [FIRST.md](FIRST.md) | Users, both | This repo’s in/out map and instance paths |
-| [templates/](templates/) | Users applying | Empty overlay structs; copy only opted-in stations |
-| Installed `/f-*` | Users applying and agents operating | Operational spec from `npx skills add blockmatic/first` |
+| Installed `/f-*` | Users applying and agents operating | Operational spec (copy of `principles/X.md` in this factory) |
 
-Factory-only (do not copy into an adopter repo): `articles/X.md` and `principles/X.md` in [blockmatic/first](https://github.com/blockmatic/first). Essays argue; principles operate. Same filenames.
+## Overlay contract
+
+Overlays are deltas, not a second copy of `/f-*`. Create a file only for a station listed as In. Absent files beat empty stubs. Do not generate ten skeletons.
+
+Required `##` headings:
+
+`Principle` · `Artifacts` · `Minimum Useful Artifact` · `Notes`
+
+- **Principle:** `See /f-<station>`.
+- **Artifacts:** label **Fact**, **Drift**, and **Unresolved**. Point at canonical docs. Do not paste Recipe, Statement, Outcome, Validation, Definition of Done, or Agent Prompt from the spec.
+- Product may add `Brief` · `Feature map` · `Roadmap` after Notes when the overlay is also the canonical brief.
+
+`FIRST.md` In keys are the ten stations. A Google-format `DESIGN.md` is a Journeys artifact, not a station; point at it under Journeys when the file exists.
+
+Factory-only (do not copy into an adopter repo): `articles/X.md` and `principles/X.md`. Essays argue; principles operate. Same filenames.
 
 Maintainer pack — do not copy: [maintainers/](https://github.com/blockmatic/first/tree/main/_first/maintainers). Skip the factory `instance/` overlays. The source-tree validator is `packages/validate` in [blockmatic/first](https://github.com/blockmatic/first).
 
-The canonical station order is Product → Journeys → Design → Architecture → Data → API → Documentation → Workflow → Pipelines → Quality → Security → Operations. The filenames are identical across `articles/` and `principles/`; the directory names distinguish argument from operation.
+The canonical station order is Product → Journeys → Architecture → Data → API → Documentation → Workflow → Quality → Security → Operations. The filenames are identical across `articles/` and `principles/`; the directory names distinguish argument from operation.
 
 ## Lifecycle
 
@@ -92,42 +104,38 @@ Inspect before generating. Preserve intentional existing decisions. Distinguish 
 
 idea → plan → implement → review → pipeline signals → approval → release → learning
 
-Pipelines are the automated stretch of that loop. Do not keep a third loop in this file.
+The automated stretch of that loop lives here too. Do not keep a third loop in this file.
 
-## The twelve
+## The ten
 
 1. **Product** — what we are building, for whom, why it is worth building, and how we will know
-2. **Journeys** — how someone finishes a job, including errors, permissions, and state
-3. **Design** — how the product behaves and communicates through its interface
-4. **Architecture** — how the system is divided, depends, and deploys before local choices harden into structure
-5. **Data** — the canonical domain model, ownership, lifecycle, and evolution before stores proliferate competing truths
-6. **API** — the capability and its boundary, before consumers couple to an accident
-7. **Documentation** — which context must remain durable and discoverable
-8. **Workflow** — how work moves between humans, agents, tools, and decisions
-9. **Pipelines** — how a change reaches a validated, deployable state
-10. **Quality** — what "good" means before anyone optimizes toward an undefined target
-11. **Security** — what we are trusting, protecting, exposing, and allowing
-12. **Operations** — how we see, support, and recover the running system
+2. **Journeys** — how someone finishes a job, including errors, permissions, state, and how the interface expresses it
+3. **Architecture** — how the system is divided, depends, and deploys before local choices harden into structure
+4. **Data** — the canonical domain model, ownership, lifecycle, and evolution before stores proliferate competing truths
+5. **API** — the capability and its boundary, before consumers couple to an accident
+6. **Documentation** — which context must remain durable and discoverable
+7. **Workflow** — how work moves, including how a change reaches a validated, deployable state
+8. **Quality** — what "good" means before anyone optimizes toward an undefined target
+9. **Security** — what we are trusting, protecting, exposing, and allowing
+10. **Operations** — how we see, support, and recover the running system
 
-Event taxonomy is Product. Domain concepts, ownership, retention, and schema evolution are Data. External capability schemas are API. Eval datasets are Quality. Telemetry is Operations. Deployment topology is Architecture; deployment execution is Pipelines.
+Event taxonomy is Product. Domain concepts, ownership, retention, and schema evolution are Data. External capability schemas are API. Eval datasets are Quality. Telemetry is Operations. Deployment topology is Architecture; deployment execution is Workflow.
 
 ## Boundaries
 
 Each station may point at a sibling in one sentence. It may not re-teach it.
 
 - **Product** owns what, why, how we will know, the event taxonomy, and GTM as a field. Not release bars, not error rates, not marketing automation.
-- **Journeys** owns what happens: actors, states, where permission gates occur, and completion. Security owns the permission policy. Not pixels. Not GTM acquisition maps.
-- **Design** owns how the interface expresses the job. Not the state model.
+- **Journeys** owns what happens and how the interface expresses the job: actors, states, where permission gates occur, and completion. Security owns the permission policy. Not GTM acquisition maps.
 - **Architecture** owns system decomposition, dependency direction, deployment topology, and structural tradeoffs. Not endpoint shape or runtime health.
 - **Data** owns canonical domain concepts, data ownership, lifecycle, retention, lineage, and schema evolution. Not product event goals or external contract shape.
 - **API** owns capability and contract shape, including how Security-owned authorization requirements and denials appear at the boundary. Not the authorization policy.
 - **Documentation** owns durable memory. Owns "chat is not the system of record" once.
-- **Workflow** owns actors, handoffs, issue/PR state, and human gates.
-- **Pipelines** owns the automated path, the commit-stage build, and readable failures. Not what "good" means.
+- **Workflow** owns actors, handoffs, issue/PR state, human gates, the automated path, the commit-stage build, and readable failures. Not what "good" means.
 - **Quality** owns the release bar: tests, evals, budgets. Not funnels, not "CI ran."
 - **Security** owns trust, identities, authorization policy, secrets, classification, and the agent as a principal. Not contract shape.
 - **Operations** owns runtime health, recovery, and verify-in-the-running-system. Not product analytics.
 
-"Done" is always qualified. Quality: the bar was met. Product: observation after use. Pipelines: the bar actually ran.
+"Done" is always qualified. Quality: the bar was met. Product: observation after use. Workflow: the bar actually ran.
 
 Human gates — product scope, security-sensitive changes, destructive operations — are Workflow and Security. The other stations point at them. They do not reprint them.

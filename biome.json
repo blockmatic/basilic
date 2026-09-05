@@ -35,7 +35,8 @@
       "!**/next-env.d.ts",
       "!**/openapi/*.json",
       "!**/src/db/migrations/meta",
-      "!**/.deepsec"
+      "!**/.deepsec",
+      "!**/tools/create-basilic/template"
     ],
     "maxSize": 1048576
   },
@@ -175,6 +176,14 @@
         "rules": {
           "suspicious": { "noConsole": "off" },
           "style": { "noNonNullAssertion": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/tools/create-basilic/src/**"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noConsole": "off" }
         }
       }
     },

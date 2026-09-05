@@ -7,4 +7,4 @@ alwaysApply: true
 - Never `--no-verify` or `--trailer` (e.g. Co-authored-by)
 - Fix lint, type-check, and test failures before committing
 - Conventional Commits: `<type>(<scope>): <short summary>` — type/scope lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`, `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit
-- Branch/validate/commit/push/PR: `/exec-push` (@.agents/skills/workflow/exec-push/SKILL.md). Commit message: `/git-commit`
+- Branch/validate/commit/push/PR: `/b-exec-push` (read `.agents/skills/b/b-exec-push/SKILL.md`). Commit message: `/b-git-commit`

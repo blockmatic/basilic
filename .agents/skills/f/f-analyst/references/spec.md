@@ -10,7 +10,7 @@ I treat data as durable product state with meaning, ownership, and a lifecycleâ€
 
 ## Outcome
 
-Core domain concepts have shared names and definitions. Each important dataset has an owner and authoritative source. Identity, constraints, retention, deletion, lineage, and schema evolution are explicit at the level the product needs. Migrations preserve or deliberately transform meaning. Copies do not silently become competing sources of truth.
+Core domain concepts have shared names and definitions. Each important dataset has an owner and authoritative source. Identity, constraints, retention, deletion, lineage, and schema evolution are explicit at the level the product needs. Session and long-term conversational memory are backing-service state with an owner, retention, and deletion â€” not process memory and not eval datasets. Migrations preserve or deliberately transform meaning. Copies do not silently become competing sources of truth.
 
 ## Artifacts
 
@@ -73,7 +73,9 @@ Propose the smallest useful data decision. Implement constraints and migrations 
 
 **Data vs Product:** Product owns event taxonomy and the outcomes to measure. Data owns the meaning, authority, and lifecycle of the resulting records.
 
-**Data vs Architecture:** Architecture places stores and data flows. Data defines what the state means and which source is authoritative.
+**Data vs Architecture:** Architecture places stores and requires a stateless process. Data defines what the state means and which source is authoritative, including conversational memory in a backing store.
+
+**Data vs Journeys:** Journeys owns resume and turn-taking in the job. Data owns the memory store.
 
 **Data vs API:** Data owns the canonical domain model. API owns the external representation and compatibility contract.
 

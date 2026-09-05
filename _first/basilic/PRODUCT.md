@@ -2,15 +2,7 @@
 
 ## Principle
 
-Define what you are building, for whom, why it is worth building, and how you will know — before implementation becomes the specification.
-
-## Statement
-
-I do not let the codebase become the product brief. Before I change meaningful behavior, I want a file that names the problem, who has it, why it is worth building, what we are not building, how it reaches people, and how we will know. Implementation can reveal a better option. It should not invent the goal.
-
-## Outcome
-
-The project has an inspectable answer to what, why, and how we will know. Non-goals, GTM, success metrics, and the tracking plan are written or explicitly unresolved. Named metrics have events, or are marked unmeasured. When the product is a business, market size and unit economics are stated as measured or as hypotheses.
+See /f-product.
 
 ## Artifacts
 
@@ -18,7 +10,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** [`../../README.md`](../../README.md) — MIT fork-and-run TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo scaffold). No Wagmi, no first-class OpenAI SDK, no web wallet UI
 - **Fact:** [`../../apps/docu/content/docs/`](../../apps/docu/content/docs/) — adopter technical docs (architecture, ADRs, development, testing, deployment). Not a product site
 - **Fact:** Two audiences: **adopters** (developers using the starter) and **demo users** (web markets `/`, headlines strip, settings, in-shell assistant; auth is the shipped job)
-- **Fact:** GTM: clone or GitHub **Use this template** + [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`) + first local login (`ALLOW_TEST` + `test@test.ai`). Bar: [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). After you own the copy: [After fork](../../apps/docu/content/docs/development/after-fork.mdx). Finance **N/A** (toolkit)
+- **Fact:** GTM: `npx create-basilic@latest my-app` for a new product; clone or GitHub **Use this template** still works; **fork** to contribute upstream. Then [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`) + first local login (`ALLOW_TEST` + `test@test.ai`). Bar: [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). After you own the copy: [After fork](../../apps/docu/content/docs/development/after-fork.mdx). Finance **N/A** (toolkit)
 - **Fact:** Owner: Gabo Esquivel
 - **Fact:** New-device sign-in alerts are transactional email via Fastify `emailProvider` + `@repo/email`, not a notification product
 - **Fact:** Not a billed SaaS in files. Do not invent TAM/LTV
@@ -28,7 +20,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - **Fact:** PD (Markets + GenAI artifacts) is shipped on the feature map: CoinGecko or mock, `getMarketSnapshot` / `market-card`
 - **Unresolved:** PostHog install / consent / retention; keep / iterate / kill board; whether adopters copy `lib/analytics`
 
-`pnpm qa` going green is Pipelines, not product success. Quality for R0 is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
+`pnpm qa` going green is Workflow, not product success. Quality for R0 is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
 
 ## Minimum Useful Artifact
 
@@ -36,52 +28,14 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - users: adopting developers; demo end users on web auth and dashboard
 - goal: portable starter with self-hosted Web2 auth and Cursor-first workflow (Web3 on API only)
 - non-goals: Brief → Non-goals (R0) in this file
-- audience/channel/first use: clone or Use this template + Getting Started (`db:start`, `pnpm reset`) + first local login (`ALLOW_TEST` + `test@test.ai`) ([Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx))
+- audience/channel/first use: `npx create-basilic@latest` (new product) or clone/template + Getting Started (`db:start`, `pnpm reset`) + first local login (`ALLOW_TEST` + `test@test.ai`) ([Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx))
 - metrics: auth and assistant jobs **instrumented, not collected**
 - events: `auth_succeeded`, `auth_failed`, `assistant_turn` — specified + instrumented, no sink
 - owners: Gabo Esquivel
 
-## Recipe
-
-1. Inspect README, this file, analytics ADR, issues, running web/API, and claimed metrics.
-2. Understand shipped vs claimed (starter vs product, GTM, measurement).
-3. Identify missing users, missing goal, success that cannot fail, named metrics with no events.
-4. Propose the smallest useful update to this file or README — not a parallel fake PRD, not `apps/docu` Product pages.
-5. Make decisions explicit, or name them unresolved. Do not hide them in code.
-6. When a change can move a metric, ship the event in the same work — or mark unmeasured.
-7. After use, compare metric to target and record keep / iterate / kill — when metrics exist.
-8. Update this file if the bet, GTM, feature map, or analytics changed.
-
-## Validation
-
-- A new maintainer can answer what we are building from this file + README without `__dev/` or Fumadocs Product pages
-- Success metrics can fail. They are not CI green. Auth/assistant remain unmeasured (no sink)
-- GTM is clone or Use this template + Getting Started. Product Ready is that path, not CI green. Finance N/A
-- No silent product decisions in code without a note or open question
-
-## Definition of Done
-
-Product intent is documented or explicitly deferred with named owners. Implementation aligns with stated goals and non-goals, or this file was updated. Success that was claimed is either instrumented or marked unmeasured.
-
-## Agent Prompt
-
-Apply Product First to Basilic.
-
-Read root README, this file, analytics MDX and ADR 011, and what the web, mobile, and API actually do. PostHog is not installed. `capture()` is a no-op — do not claim events are collected or measured. PD is shipped on the feature map.
-
-Preserve intentional existing product choices. Do not silently decide scope, priorities, pricing, TAM, LTV, or event names. This is a toolkit — say so rather than filling finance blanks.
-
-Separate `pnpm qa` from post-launch success. Propose the smallest useful update to this file or README. Do not write Basilic product intent into `apps/docu`.
-
 ## Notes
 
-**Product vs Journeys:** Product names what, why, and how we will know. Journeys name how someone finishes.
-
-**Product vs Quality:** Product names the outcome after use. Quality names the bar that gates a release.
-
-**Product vs Operations:** Product owns events, funnels, activation. Operations owns logs, traces, error rates, alerts, recovery.
-
-**Product vs Data:** Product names events and outcomes to measure. Data owns canonical domain meaning, authority, lifecycle, and evolution.
+Product names what, why, and how we will know. Journeys name how someone finishes. Quality names the bar that gates a release. Workflow runs `pnpm qa`. Do not write Basilic product intent into `apps/docu`. This is a toolkit — do not invent TAM or LTV.
 
 **Navigation:** [Generic spec](https://github.com/blockmatic/first/blob/main/_first/principles/PRODUCT.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PRODUCT.md) · [Factory map](../ABOUT.md) · [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx) · [Analytics](../../apps/docu/content/docs/architecture/analytics.mdx) · [ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx)
 
@@ -93,7 +47,7 @@ Owner until this file says otherwise: **Gabo Esquivel**.
 
 ### Two audiences
 
-**Adopters** clone the repo or use GitHub **Use this template**, run the stack locally, and copy patterns. First successful use is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx): clone → [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`, `pnpm dev`) → `ALLOW_TEST` + `test@test.ai` to `/`. After they own the copy: [After fork](../../apps/docu/content/docs/development/after-fork.mdx).
+**Adopters** run `npx create-basilic@latest my-app` (or clone / GitHub **Use this template**), run the stack locally, and copy patterns. First successful use is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx): generate or clone → [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`, `pnpm dev`) → `ALLOW_TEST` + `test@test.ai` to `/`. After they own the copy: [After fork](../../apps/docu/content/docs/development/after-fork.mdx). Forks remain the path to contribute to Basilic.
 
 **Demo users** sign in to the web app. The shipped job is auth (sessions, API keys, settings). Markets, a headlines strip, and the in-shell assistant are demo chrome. See Feature map below.
 
@@ -109,12 +63,12 @@ A portable typed API plus web, mobile scaffold, and docs so an adopting develope
 - Next.js Cache Components on
 - First-class OpenAI SDK (chat uses Anthropic → OpenRouter → Ollama)
 - GCP/AWS as the shipped deploy path (Vercel + Supabase is documented)
-- FIRST CLI, `first.json`, or a 13th FIRST station. `npx skills add blockmatic/first` (`/f-*`) is in; do not ship a skill that mixes spec and instance
+- FIRST CLI, `first.json`, or an 11th FIRST station. `npx skills add blockmatic/first` (`/f-*`) is in; do not ship a skill that mixes spec and instance
 - Billed SaaS metrics
 
 ### How we will know
 
-`pnpm qa` going green is **Pipelines**, not product success. The R0 Quality bar is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). Horizons: Roadmap below.
+`pnpm qa` going green is **Workflow**, not product success. The R0 Quality bar is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). Horizons: Roadmap below.
 
 Auth (`auth_succeeded` / `auth_failed`) and assistant (`assistant_turn` with `accountRender`) are **instrumented** via `capture()` and **not collected** — PostHog is chosen, not installed. Those jobs are therefore **unmeasured**. Factory GTM, demo surface quality, and cost-per-job are unmeasured.
 
@@ -126,9 +80,10 @@ Status is what the tree does today, not a wish list. Horizons: Roadmap below.
 
 ### Spine (fork-and-run)
 
-Must work after clone → `pnpm setup` → `db:start` → `pnpm reset` → `pnpm dev`.
+Must work after `npx create-basilic@latest` (or clone) → `pnpm setup` → `db:start` → `pnpm reset` → `pnpm dev`.
 
 - Fastify TypeBox API → generated OpenAPI → `@repo/core` / handwritten `@repo/react`
+- **create-basilic** generator (`tools/create-basilic`) — new products; forks stay for upstream contributions
 - Auth: magic link (Resend **or** copied local `ALLOW_TEST=true` + `test@test.ai`) → cookies → `/`
 - Optional OAuth (unconfigured = disabled / 503)
 - Passkeys, sessions, API keys `bask_`, Settings profile and security
@@ -165,7 +120,7 @@ Signed-in demo is **Markets + GenAI artifacts**: CoinGecko or mock, `getMarketSn
 
 Horizons, not a sprint board. Work items live in [GitHub Issues](https://github.com/blockmatic/basilic/issues). `__dev/` is gitignored scratch — not Fact, not the backlog.
 
-R0 is **documentation alignment**. It does not need a semver bump or a GitHub Release. Pipelines still run on PRs; Quality is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
+R0 is **documentation alignment**. It does not need a semver bump or a GitHub Release. Workflow still runs CI on PRs; Quality is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
 
 ### R0 — docs, honesty, onboarding
 
@@ -173,6 +128,13 @@ R0 is **documentation alignment**. It does not need a semver bump or a GitHub Re
 - Honesty in README and auth docs (starter, not wallet/OpenAI template)
 - MIT `LICENSE`; GitHub Template; [After fork](../../apps/docu/content/docs/development/after-fork.mdx)
 - [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx): `db:start` + `pnpm reset` before `pnpm dev`; copied env `ALLOW_TEST=true`
+
+### R-launch — generator and distribution
+
+- `npx create-basilic@latest` ships an independent API/web/mobile repo (no docu app, no generator)
+- Release Please versions Basilic; maintainer merge publishes the npm tarball
+- Stable **1.0.0** only after Product Ready from the published package
+- Human gates: npm `create-basilic` trusted publisher, GitHub App, squash `PR_TITLE`+`PR_BODY`, who may merge release PRs
 
 ### R-demo — Markets + GenAI artifacts
 
@@ -191,4 +153,4 @@ R1 is still a choice among wallet UI, mobile client, and observability — not a
 
 ### Not now
 
-FIRST CLI, `first.json`, billed SaaS / TAM-LTV, first-class OpenAI SDK, GCP/AWS as the shipped deploy path, Cache Components on, 13th FIRST station, root `PRODUCT.md` / `ROADMAP.md`. `/f` via `npx skills add blockmatic/first` is in.
+FIRST CLI, `first.json`, billed SaaS / TAM-LTV, first-class OpenAI SDK, GCP/AWS as the shipped deploy path, Cache Components on, 11th FIRST station, root `PRODUCT.md` / `ROADMAP.md`. `/f` via `npx skills add blockmatic/first` is in.

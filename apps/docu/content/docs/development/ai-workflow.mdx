@@ -7,11 +7,11 @@ Development is **Cursor-first**. Claude Code follows the same rules and skills v
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era). Index this site once — [Cursor Setup](/docs/development/cursor-setup). Versioning and how to update skills: [Cursor Skills](/docs/development/cursor-skills).
 
-FIRST is vendored from [`blockmatic/first`](https://github.com/blockmatic/first). Install `npx skills add blockmatic/first`. Copy `README.md`, `AGENTS.md`, `ABOUT.md`, and `templates/` into `_first/`; keep `FIRST.md` and `_first/basilic/` as this repo’s instance. Essays live on the FIRST site. Agents load `_first/AGENTS.md`, then `_first/ABOUT.md`, then `_first/FIRST.md`, then this repository's instructions and skills, then `/f-*` for the station in scope, then the instance listed in FIRST.md. FIRST does not replace this repository's Cursor-first workflow. Factory validation (`pnpm validate`) runs in the first repo. Two catalogs: `blockmatic/first` (`/f-*`) and `blockmatic/basilic-skills` (tech + `/workflow`).
+FIRST is vendored from [`blockmatic/first`](https://github.com/blockmatic/first). Install `npx skills add blockmatic/first`. Copy `README.md`, `AGENTS.md`, and `ABOUT.md` into `_first/`; keep `FIRST.md` and `_first/basilic/` as this repo’s instance. Write overlays only for stations listed as In. Essays live on the FIRST site. Agents load `_first/AGENTS.md`, then `_first/ABOUT.md`, then `_first/FIRST.md`, then this repository's instructions and skills, then `/f-*` for the station in scope, then the instance listed in FIRST.md. FIRST does not replace this repository's Cursor-first workflow. Factory validation (`pnpm validate`) runs in the first repo. Two catalogs: `blockmatic/first` (`/f-*`) and `blockmatic/basilic-skills` (tech + workflow). The `/b` dispatcher is a local preview of the catalog migration; installed playbooks live under `.agents/skills/b/` (`/b-*`, same behavior as the former `/workflow` tree).
 
 ## FIRST stations
 
-Product, Journeys, Design, Architecture, Data, API, Documentation, Workflow, Pipelines, Quality, Security, Operations. Pick one primary station. Overlays are deltas in `_first/basilic/`. Durable product facts: `_first/basilic/PRODUCT.md`. `apps/docu` is technical docs for adopters.
+Product, Journeys, Architecture, Data, API, Documentation, Workflow, Quality, Security, Operations. Pick one primary station. Overlays are deltas in `_first/basilic/`. Durable product facts: `_first/basilic/PRODUCT.md`. `apps/docu` is technical docs for adopters.
 
 ## Sources of truth
 
@@ -22,8 +22,8 @@ Always-on rules point at `apps/docu/content/docs/` for technical topics and `_fi
 | Layer | Role | How it loads |
 | --- | --- | --- |
 | **Rules** (`.cursor/rules/*.mdc`) | Constraints. Override everything else | Always on: `general`, `naming`, `git`. Other rules attach when matching files are in context |
-| **Workflow skills** (`.agents/skills/workflow/<name>/`) | Slash playbooks | Type `/name` |
-| **FIRST skills** | `/f-*` from `npx skills add blockmatic/first` | Type `/f-product`, `/f-designer`, … |
+| **Workflow skills** (`.agents/skills/b/b-<name>/`) | Slash playbooks | Type `/b-<name>` |
+| **FIRST skills** | `/f-*` from `npx skills add blockmatic/first` | Type `/f-product`, `/f-journeys`, … |
 | **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Patterns for a stack | Agent loads when relevant; `@` or `/` to force |
 | **Indexed docs** | Advisory | Never override rules or source |
 
@@ -34,20 +34,44 @@ In Cursor chat, type `/` then the skill name.
 - **Enter** — attach for this message only
 - **Option+Enter** (Alt+Enter) — pin for the session
 
-Daily set: `/plan-feature`, `/exec-push`, `/git-commit`, `/code-review`, `/deslop`, `/retro`. `/` lists the rest. Names match the folder under `.agents/skills/workflow/` (`audit-accessibility`, not the old typo).
+Use `/b` (local preview dispatcher) to list the catalog, `/b <shortcut>` to route a task, or the full `/b-<name>` to load a playbook directly. FIRST `/f-*` remains the separate decision catalog.
 
-Do not `@.cursor/commands/…` — that directory is gone.
+| Task | Shortcut | Direct skill |
+| --- | --- | --- |
+| Plan a feature | `/b plan` | `/b-plan-feature` |
+| Implement and verify locally | `/b build` | `/b-build` |
+| Review a change | `/b review` | `/b-code-review` |
+| Diagnose or fix a failure | `/b debug` | `/b-debug-issue` |
+| Run tests and fix failures | `/b test` | `/b-run-all-tests-and-fix` |
+| Commit intended changes | `/b commit` | `/b-git-commit` |
+| Push the intended branch | `/b push` | `/b-git-push` |
+| Create a described PR | `/b pr` | `/b-git-create-pr` |
+| Reflect on completed work | `/b retro` | `/b-retro` |
 
-Claude Code has no `/` menu. Read `.agents/skills/workflow/<name>/SKILL.md` instead.
+An empty `/b` lists options; an unknown token reports the available names. Neither starts work. `/b-build` ends with verified local changes. `/b-exec-push` explicitly requests implementation, full validation, commit, push, and a described PR. No workflow implies merge or deployment.
+
+Names match folders under `.agents/skills/b/`, such as `b-plan-feature`. This is a rename: old standalone names such as `/plan-feature` are not registered aliases. Update pinned prompts and reload discovery after installing. When a harness does not expose the slash menu, read `.agents/skills/b/SKILL.md` and the named child directly. Do not create another skills tree.
 
 ## Workflow
 
-1. **Plan** — Plan mode, then `/plan-feature` (Grok 4.6, or Sol for large/ambiguous work). List goals first. Surface edge cases before coding.
-2. **Review** — Read the plan. Check scope, dependencies, approach. `/review-plan` if you want a structured pass.
-3. **Execute** — `/exec-push` (or implement in small steps). Composer 2.5 is fine for mechanical multi-file edits; stay on Grok 4.6 or Sol when judgment is still required. Test between steps.
-4. **Commit** — `/git-commit`. Ship &lt;30-minute chunks.
+1. **Plan** — `/b plan` for non-trivial work. Read existing implementation and docs; list goals, assumptions, acceptance conditions, dependencies, and verification per slice. Planning alone does not create a branch or implement code.
+2. **Review the plan** — `/b-review-plan` checks scope and ordering. Resolve consequential decisions through FIRST; continue routine work already authorized.
+3. **Implement** — `/b build` delivers complete slices and runs affected checks. Preserve unrelated changes and generated-source ownership. Update matching docs when behavior changes.
+4. **Review the change** — `/b review` returns evidenced findings and verification limits. Reviews stay read-only unless fixes are requested.
+5. **Publish when requested** — `/b commit`, `/b push`, or `/b pr` perform their named actions. `/b-exec-push` combines the implementation-to-PR path and requires `pnpm qa`.
+6. **Learn** — `/b retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
 
-Tech skills (`fastify-v5`, `next-v16`, `vercel-react-v1`) usually attach themselves. Force with `@.agents/skills/fastify-v5` or `/fastify-v5`.
+Tech skills (`fastify-v5`, `next-v16`, `vercel-react-v1`) load when relevant. FIRST owns product and cross-cutting decisions; the workflow does not add another backlog or quality policy.
+
+The generator retains this catalog and rewrites its documentation pointers to the adopter’s local docs snapshot. `/b-release-review` is advisory and preserves the release tooling’s human gates.
+
+## Checklists and evidence
+
+The core playbooks use inputs, steps, verification, and a handoff. Reviews inspect correctness, clarity, architecture, security, performance, and the verification claims. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
+
+Shared completion evidence lives inside the installed `b/references/` directory. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/b-use-tdd` or repository requirements.
+
+The selective adaptation of [Addy's skills](https://skills.addy.ie/) is documented in the basilic-skills checkout (not yet published on GitHub). See [Cursor Skills](/docs/development/cursor-skills#workflow-migration) for local preview and publication status.
 
 ## Models (30 Aug 2026)
 

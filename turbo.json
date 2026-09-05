@@ -1,7 +1,19 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalPassThroughEnv": ["QA_SKIP_TESTS", "SKIP_KILL_PORTS", "SKIP_BUILD"],
+  "globalPassThroughEnv": [
+    "QA_SKIP_TESTS",
+    "SKIP_KILL_PORTS",
+    "SKIP_BUILD",
+    "PR_TITLE",
+    "PR_BODY",
+    "PR_BASE_SHA",
+    "PR_HEAD_SHA",
+    "CREATE_BASILIC_LOCKFILE",
+    "CREATE_BASILIC_ALLOW_DIRTY",
+    "CREATE_BASILIC_TEMPLATE_DIR",
+    "CREATE_BASILIC_PACK_TEST"
+  ],
   "tasks": {
     "generate": {
       "dependsOn": [],

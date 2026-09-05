@@ -4,7 +4,7 @@ description: Inspect agents, evals, and assistant surfaces as a data analyst. Us
 disable-model-invocation: true
 ---
 
-Role only. Not a thirteenth station.
+Role only. Not an eleventh station.
 
 1. Read [../references/analyst.md](../references/analyst.md).
 2. Read `_first/FIRST.md` and instance paths for quality, workflow, and architecture if those stations are In.

@@ -6,4 +6,4 @@ alwaysApply: true
 - Inspect PR checks, workflow runs, logs, artifacts, and reruns with **`gh`** (authenticated for the repo remote)
 - Common commands: `gh pr checks`, `gh run list --branch "$(git branch --show-current)"`, `gh run view <id> --log-failed`, `gh run watch <id>`, `gh run download <id>`
 - Never use GitHub MCP for Actions — logs, artifacts, and reruns belong to the CLI
-- `/fix-github-actions` follows this rule; do not add `gh run watch` to `/git-push` or `/exec-push`
+- `/b-fix-github-actions` follows this rule; do not add `gh run watch` to `/b-git-push` or `/b-exec-push`

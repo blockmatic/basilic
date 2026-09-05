@@ -3,7 +3,28 @@ title: "Publishing Packages"
 description: "How to publish monorepo packages to npm using the dual-mode export strategy."
 ---
 
-Packages use **dual-mode exports**. **Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): workspace `import` is `src/`; `prepack` builds and rewrites to `dist/` for npm. **Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`): workspace Node already uses `dist/`; `prepack` still rewrites remaining `src/` paths (`types`/`source`) and packs `files: ["dist"]`. ESM details: [ESM & TypeScript Strategy](/docs/architecture/esm-strategy).
+## Basilic distribution (`create-basilic`)
+
+The public npm package is **`create-basilic`**, built from `tools/create-basilic`. Do **not** run `scripts/prepare-publish.mjs` for it (`files: ["dist"]` would drop the bundled template).
+
+1. Release Please opens a release PR from conventional commits (root version + `tools/create-basilic/package.json`).
+2. Maintainers merge that PR after scaffold acceptance. The tag is `vX.Y.Z`.
+3. `publish-create-basilic.yml` checks out that SHA, assembles and packs **once**, tests the tarball, publishes with npm trusted publishing (`id-token` only on that job), and attaches the same tarball + SHA-256 to the GitHub Release.
+4. Prerelease versions (`0.1.0-next.1`) use npm dist-tag `next`, not `latest`.
+
+### Maintainer setup (one-time)
+
+- Claim npm `create-basilic` (or an owned scope) and bind a trusted publisher to this repo, `publish-create-basilic.yml`, and the `release` environment.
+- Install a GitHub App for Release Please (`RELEASE_PLEASE_APP_ID` / `RELEASE_PLEASE_APP_PRIVATE_KEY`) so follow-on checks run. Default `GITHUB_TOKEN` does not chain.
+- Protect the `release` environment. Squash-merge with `PR_TITLE` + `PR_BODY`. Authorize who may merge release PRs.
+
+### Recovery
+
+Defective release → patch + deprecate; never rewrite tags; never promise to un-generate adopter repos. If npm succeeded and the GitHub asset failed, re-attach the retained artifact. Never overwrite an npm version.
+
+## Dual-mode `@repo/*` packing
+
+Packages use **dual-mode exports**. **Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): workspace `import` is `src/`; `prepack` builds and rewrites to `dist/` for npm. **Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`): workspace Node already uses `dist/`; `prepack` still rewrites remaining `src/` paths (`types`/`source`) and packs `files: ["dist"]`. ESM details: [ESM & TypeScript Strategy](/docs/architecture/esm-strategy). This path is **not** how `create-basilic` is published. v1 does not publish every `@repo/*` package.
 
 ## How It Works
 
