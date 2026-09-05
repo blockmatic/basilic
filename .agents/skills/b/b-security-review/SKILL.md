@@ -1,20 +1,26 @@
 ---
 name: b-security-review
-description: Perform comprehensive security review of current code and provide specific remediation steps with code examples for each security issue identified. Use when the user types /b-security-review.
+description: Review current code against the repository Security overlay; report evidence and remedies. Use when the user types /b-security-review.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Perform comprehensive security review of current code and provide specific remediation steps with code examples for each security issue identified.
+Review the specified diff or tree for security defects against the repo Security overlay and existing tests. Read-only unless fixes are requested. Do not invent CORS, encryption, or password policy.
 
 ## Steps
 
-1. **Authentication & Authorization**: Verify proper authentication mechanisms, check authorization controls/permission systems, review session management/token handling, ensure secure password policies/storage
-2. **Input Validation & Sanitization**: Identify SQL injection vulnerabilities, check for XSS/CSRF attack vectors, validate all user inputs/API parameters, review file upload/processing security
-3. **Data Protection**: Ensure sensitive data encryption at rest/in transit, check for data exposure in logs/error messages, review API responses for information leakage, verify proper secrets management
-4. **Infrastructure Security**: Review dependency security/known vulnerabilities, check HTTPS configuration/certificate validation, analyze CORS policies/security headers, review environment variable/configuration security
+1. Load `/f-security` and `SECURITY.md` (or the instance path). Use that bar.
+2. Check authn/authz, input validation, secret handling, and data exposure on the changed paths.
+3. Validate each suspected issue with a trigger and consequence. Skip invented CVEs and timings.
+4. If a finding implies a new policy, escalate to `/f-security` instead of encoding it here.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Findings have file/line and an execution path.
+- [ ] Overlay thresholds were not expanded.
+- [ ] No unsolicited commit.
+
+## Handoff
+
+Report defects, suggested remedies, and policy questions for `/f-security`.

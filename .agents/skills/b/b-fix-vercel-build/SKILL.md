@@ -1,19 +1,26 @@
 ---
 name: b-fix-vercel-build
-description: Retrieve Vercel build logs, analyze failures, and fix deployment issues. Use when the user types /b-fix-vercel-build.
+description: Retrieve Vercel build logs, analyze failures, and fix the local build. Use when the user types /b-fix-vercel-build.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Retrieve Vercel build logs, analyze failures, and fix deployment issues. MUST use Vercel MCP tools.
+Triage a Vercel build failure for the current branch. Use Vercel MCP when available. Fix the local build. Do not deploy. Do not commit unless the user asked.
 
 ## Steps
 
-1. **Get build logs**: Use current branch (unless explicitly told otherwise), use Vercel MCP tools to retrieve build logs
-2. **Analyze errors**: Parse logs for TypeScript/ESLint errors, missing dependencies, env vars, imports, config issues
-3. **Fix issues**: Read affected files, apply fixes per project rules, resolve types/imports/lint errors, add missing deps, fix env/config, commit changes
+1. Retrieve build logs for the current branch via Vercel MCP (or the user-supplied log).
+2. Parse TypeScript, ESLint, missing deps, env, imports, and config errors.
+3. Apply the owning fix. Run the app or package build script from `package.json`.
+4. Stop at verified local build. Commit and push only via the Git playbooks when requested.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] The log error maps to a file that was changed.
+- [ ] The local build command for that app passed, failed, or was not applicable with a reason.
+- [ ] No deployment and no unsolicited commit.
+
+## Handoff
+
+Report the build error, the fix, and the local build result.

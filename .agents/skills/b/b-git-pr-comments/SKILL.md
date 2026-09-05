@@ -1,20 +1,26 @@
 ---
 name: b-git-pr-comments
-description: Process outstanding reviewer feedback, apply required fixes, and draft clear responses for each GitHub pull-request comment. Use when the user types /b-git-pr-comments.
+description: Process reviewer feedback, apply required fixes, and draft replies without unsolicited commits. Use when the user types /b-git-pr-comments.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Process outstanding reviewer feedback, apply required fixes, and draft clear responses for each GitHub pull-request comment. Use global git user for commits—never cursor/system identity. Never use `--trailer` for Co-authored-by or similar.
+Read unresolved PR comments, apply targeted fixes, and draft replies. Use the global git user if a commit is later requested. Never `--trailer`. Do not commit unless the user asked.
 
 ## Steps
 
-1. **Sync and audit comments**: Pull latest branch changes, open PR conversation view and read every unresolved comment, group comments by affected files/themes
-2. **Plan resolutions**: List requested code edits for each thread, identify clarifications/additional context needed, note dependencies/blockers before implementing changes
-3. **Implement fixes**: Apply targeted updates addressing one comment thread at a time, run relevant tests/linters after impactful changes, stage changes with commits referencing addressed feedback
-4. **Draft responses**: Summarize action taken/reasoning for each comment, link to commits/lines when clarification helps reviewers verify, highlight remaining questions/follow-up needs
+1. Pull latest and read every unresolved comment. Group by file or theme.
+2. List requested edits, clarifications, and blockers before changing code.
+3. Apply one thread at a time. Run the affected tests or linters. Preserve unrelated work. Do not blanket-stage.
+4. Draft a reply per comment: what changed, how to verify, remaining questions.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Each addressed thread maps to a file change or a written reply.
+- [ ] Affected checks were run.
+- [ ] No commit unless the user invoked `/b-git-commit`.
+
+## Handoff
+
+Return the reply drafts and remaining open threads. Point at `/b-git-commit` when the user wants to publish the fixes.

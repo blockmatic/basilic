@@ -13,10 +13,10 @@ Next.js 16 has **two cache models**: with `cacheComponents` unset/false, use the
 ```text
 next-v16/
 ├── SKILL.md              # Entry point with quick reference
-├── AGENTS.md             # Compiled comprehensive guide
 ├── metadata.json         # Version and references
 ├── README.md             # This file
 └── references/
+    ├── compiled.md       # Compiled comprehensive guide
     ├── _sections.md      # Category definitions
     ├── _review-algorithm.md
     └── {prefix}-{slug}.md # Individual rules

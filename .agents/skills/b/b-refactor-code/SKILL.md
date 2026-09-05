@@ -1,19 +1,26 @@
 ---
 name: b-refactor-code
-description: Refactor selected code to improve quality while maintaining same functionality, providing refactored code with explanations. Use when the user types /b-refactor-code.
+description: Refactor selected code while preserving behavior, then verify. Use when the user types /b-refactor-code.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Refactor selected code to improve quality while maintaining same functionality, providing refactored code with explanations.
+Use the selected files or a named concern. Capture current behavior with tests, types, or a manual scenario before editing. Refactor does not authorize commit, push, or PR.
 
 ## Steps
 
-1. **Code Quality**: Extract reusable functions/components, eliminate duplication, improve naming, simplify complex logic/reduce nesting
-2. **Performance**: Identify/fix bottlenecks, optimize algorithms/data structures, reduce unnecessary computations, improve memory usage
-3. **Maintainability**: Make code readable/self-documenting, add appropriate comments, follow SOLID principles/design patterns, improve error handling/edge case coverage
+1. Record a baseline: what callers depend on, which checks prove it, and what must not change.
+2. Improve structure in the smallest useful diff: extract duplication, clarify names, reduce nesting. Reuse existing packages. Do not add comments that restate the code.
+3. Change algorithms or data structures only with measured evidence from the repository's profiler, tests, or traces. Do not invent timings or impact percentages.
+4. Run the affected checks from the baseline. Restore behavior if they fail.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Observable behavior matches the baseline.
+- [ ] Affected checks were run and recorded as passed, failed, or not applicable.
+- [ ] No commit or push was created.
+
+## Handoff
+
+Explain what changed and why, with the verification evidence. Stop at local edits unless the user asked to publish via `/b-git-commit`.

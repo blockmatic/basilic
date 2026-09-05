@@ -19,18 +19,18 @@ Two catalogs. Do not merge them.
 npx skills add blockmatic/first
 ```
 
-**Tech and workflow** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills).
+**Tech** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). **Workflow `b`** is a local preview until that catalog's `main` publishes it (GitHub still ships `workflow`).
 
-Install or refresh (interactive — pick skills and agents):
+Install or refresh tech skills (interactive — pick skills and agents):
 
 ```bash
 pnpm dlx skills@latest add blockmatic/basilic-skills
 ```
 
-Basilic refresh (Cursor, all skills, copies, non-interactive):
+Do not use `--skill '*'` from GitHub during this preview — that reinstalls `workflow`. Refresh playbooks from the local catalog:
 
 ```bash
-pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
+pnpm dlx skills@latest add /path/to/basilic-skills --skill b -a cursor --copy -y
 ```
 
 That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/b/b-<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
@@ -78,20 +78,15 @@ This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is 
 
 ## Update procedure
 
-1. Edit and push [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on GitHub.
-2. Verify from a local catalog clone when racing GitHub (optional):
+Until `b` is on GitHub `main`, refresh playbooks from the local catalog (do not `add blockmatic/basilic-skills --skill b` or `--skill '*'` from GitHub):
 
 ```bash
-pnpm dlx skills@latest add /path/to/basilic-skills --skill '*' -a cursor --copy -y
+pnpm dlx skills@latest add /path/to/basilic-skills --skill b -a cursor --copy -y
 ```
 
-3. After the catalog is on GitHub `main`, refresh from the canonical source:
+Tech skills that already exist on GitHub may still refresh from `blockmatic/basilic-skills` by name. After publication, a GitHub `--skill '*'` (or `--skill b`) refresh is valid.
 
-```bash
-pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
-```
-
-4. Review the diff; commit `.agents/skills/` and `skills-lock.json`.
+Review the diff; commit `.agents/skills/` and `skills-lock.json`.
 
 Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
 

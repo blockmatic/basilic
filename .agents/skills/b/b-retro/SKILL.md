@@ -4,13 +4,13 @@ description: After finishing work, answer "anything you would do better in retro
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
 Answer this question about the work just completed (this session, the last plan, or the diff in context):
 
 anything you would do better in retrospect ?
 
-Reply in chat only—never create files unless the user asks to apply a change.
+Reply in chat only—never create files unless the user asks to apply a change. This is not a delivery-evidence report.
 
 ## Steps
 
@@ -20,6 +20,6 @@ Reply in chat only—never create files unless the user asks to apply a change.
 4. **Honest**: Include mistakes (broken snippets, substring grep, hunting dirs that were already gone)
 5. **Short**: A few bullets. No preamble. Do not offer to implement unless asked
 
-## Completion
+## Handoff
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+Chat bullets only. Do not claim checks passed. Do not start follow-up work unless asked.

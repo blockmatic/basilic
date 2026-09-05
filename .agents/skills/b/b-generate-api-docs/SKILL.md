@@ -1,20 +1,26 @@
 ---
 name: b-generate-api-docs
-description: Create comprehensive API documentation for current endpoints formatted as OpenAPI/Swagger specification or following project's documentation standards. Use when the user types /b-generate-api-docs.
+description: Refresh API docs from the owning schema source; never edit generated OpenAPI by hand. Use when the user types /b-generate-api-docs.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Create comprehensive API documentation for current endpoints formatted as OpenAPI/Swagger specification or following project's documentation standards.
+Update API documentation from the source of truth (TypeBox/Fastify routes, or the repo's documented generator). Never edit generated OpenAPI, generated clients, or generated SQL directly.
 
 ## Steps
 
-1. **API Overview**: Service description/purpose, base URL/versioning information, authentication/authorization requirements, rate limiting/usage policies
-2. **Endpoint Documentation**: HTTP method/URL path, request parameters (path/query/body), request/response schemas with data types, example requests/responses, possible error codes/messages
-3. **Data Models**: Define all data models/schemas, include field descriptions/constraints, show relationships between models, provide example payloads
-4. **Usage Examples**: Common use case scenarios, SDK/client library examples, CURL command examples, error handling examples
+1. Read the API docs MDX and the generator README. Identify the owning source and the generate script in package.json.
+2. Change the owning schema or route, not the generated artifact.
+3. Run the documented generate command. Check drift scripts if the repo has them.
+4. Update adopter MDX only for behavior that changed. Do not invent auth, rate-limit, or versioning policy.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Generated files were produced by the generator, not hand-edited.
+- [ ] The generate or drift check was run.
+- [ ] No unsolicited commit.
+
+## Handoff
+
+Report the source files, generator command, and remaining doc gaps.

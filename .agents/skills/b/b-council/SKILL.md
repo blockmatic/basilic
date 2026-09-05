@@ -1,19 +1,26 @@
 ---
 name: b-council
-description: Based on the given area of interest, dig around the codebase to gather information, spawn multiple task agents for deeper exploration with variance, then use the collected information to accomplish. Use when the user types /b-council.
+description: Explore a codebase with parallel agents, then hand off findings. Use when the user types /b-council.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Based on the given area of interest, dig around the codebase to gather information, spawn multiple task agents for deeper exploration with variance, then use the collected information to accomplish what the user wants.
+Gather architecture and keywords for the requested area, then spawn a small set of varied explorers. This playbook inspects. It does not commit, push, or open a PR. Implementation continues only when the user already asked for it.
 
 ## Steps
 
-1. **Gather information**: Dig around the codebase in terms of given area of interest, gather general information such as keywords and architecture overview
-2. **Spawn task agents**: Spawn off n=10 (unless specified otherwise) task agents to dig deeper into the codebase, some should be out of the box for variance
-3. **Use information**: Once the task agents are done, use the information to do what the user wants (if user is in plan mode, create the plan per @.cursor/rules/base/general.mdc: References, assumptions, deferrals)
+1. Inspect the area yourself first: owning packages, README/scripts, and current behavior. Record keywords and the architecture sketch the agents will use.
+2. Spawn explorers only as needed. Default to 3; the user may raise the count. Cap at 6 unless they name a higher number. Give each a distinct angle; include one out-of-the-box probe.
+3. Reconcile reports against the tree. Prefer file evidence over agent summaries. If the working tree changed underfoot, re-verify before using a finding.
+4. If the user asked only to investigate or plan, hand off. If they also asked to implement, follow [b-build](../b-build/SKILL.md) after the inspection — do not publish.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Findings cite paths that still exist.
+- [ ] No Git publish happened from this playbook.
+- [ ] Implementation, if any, was already authorized by the user.
+
+## Handoff
+
+Return a short evidence list, contradictions, and the next named playbook (`/b-plan-feature`, `/b-build`, or stop). For plans, include References, 3–5 assumptions, and deferrals per [b-plan-feature](../b-plan-feature/SKILL.md).

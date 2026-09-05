@@ -1,21 +1,26 @@
 ---
 name: b-audit-accessibility
-description: Perform comprehensive accessibility audit of current UI code to ensure compliance with WCAG guidelines and provide inclusive user experience. Use when the user types /b-audit-accessibility.
+description: Audit UI against repository Quality/a11y gates; do not invent a WCAG level. Use when the user types /b-audit-accessibility.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Perform comprehensive accessibility audit of current UI code to ensure compliance with WCAG guidelines and provide inclusive user experience.
+Audit the specified UI against `_first/.../QUALITY.md`, accessibility docs, and existing a11y tests. The Quality station owns the bar. Stay report-only unless the user asked to fix.
 
 ## Steps
 
-1. **WCAG Compliance**: Check conformance to WCAG 2.1 guidelines (A, AA, AAA levels), verify proper semantic HTML structure, ensure keyboard navigation support, review color contrast/visual accessibility
-2. **Screen Reader Support**: Validate ARIA labels/descriptions, check heading hierarchy/structure, ensure form labels/error messages accessible, review dynamic content announcements
-3. **Interactive Elements**: Verify focus management/visible focus indicators, check tab order/keyboard shortcuts, ensure interactive elements properly sized, review modal/dialog accessibility
-4. **Testing & Tools**: Suggest automated accessibility testing tools, provide manual testing procedures, create accessibility test cases, recommend browser extensions/validators
-5. **Remediation**: Provide specific code fixes for each issue, include ARIA attributes/semantic improvements, suggest alternative approaches for complex interactions, create accessible component patterns
+1. Load `/f-quality` and the Quality overlay. Use the named a11y gate. If none exists, report that and run only existing repo tests.
+2. Inspect semantic structure, keyboard access, names, and focus on changed UI.
+3. Run the repository's a11y or component tests. Do not declare WCAG A/AA/AAA unless the overlay names that level.
+4. If fixes are authorized, apply the smallest semantic/ARIA change that meets the overlay.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Findings cite overlay, test, or rendered behavior.
+- [ ] No WCAG level was invented.
+- [ ] No unsolicited commit.
+
+## Handoff
+
+List issues, the gate used, and remaining manual checks.

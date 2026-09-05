@@ -19,9 +19,10 @@ Capture expected versus actual behavior, reproduction conditions, relevant logs,
 ## Verification
 
 - [ ] Evidence connects the original symptom to the identified cause.
-- [ ] The fix, if requested, resolves the reproduction and preserves adjacent behavior.
-- [ ] Relevant regression checks pass against the final implementation.
+- [ ] The original scenario was re-run after a fix; the symptom is gone or the diagnosis is still open.
+- [ ] The fix, if requested, preserves adjacent behavior and relevant regression checks pass.
+- [ ] Inconclusive diagnosis is reported as unresolved. Do not claim success or apply a speculative fix.
 
 ## Handoff and stopping condition
 
-Report cause, evidence, changes, and remaining uncertainty. If reproduction is unavailable, label the diagnosis provisional. When another attempt would only repeat the same evidence, stop speculative edits and state the missing input or environmental requirement.
+Report cause, evidence, changes, and remaining uncertainty. If reproduction is unavailable, label the diagnosis provisional and unresolved. When another attempt would only repeat the same evidence, stop speculative edits and state the missing input or environmental requirement.

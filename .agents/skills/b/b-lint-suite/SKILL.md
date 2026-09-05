@@ -1,19 +1,25 @@
 ---
 name: b-lint-suite
-description: Run project linters, apply fixes, and ensure codebase meets formatting/style requirements before merging changes. Use when the user types /b-lint-suite.
+description: Run project linters, apply fixes, and re-run until the suite is clean. Use when the user types /b-lint-suite.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Run project linters, apply fixes, and ensure codebase meets formatting/style requirements before merging changes.
+Run the repository lint scripts and apply the smallest idiomatic fixes. This is not a merge gate and does not commit.
 
 ## Steps
 
-1. **Execute linters**: Run standard lint command with autofix enabled if available, capture remaining errors/warnings, identify files requiring manual attention
-2. **Resolve findings**: Apply targeted fixes keeping edits minimal/idiomatic, refactor repeated issues (unused variables, long functions), update configuration/suppressions only when justified
-3. **Verify cleanliness**: Re-run lint command to ensure zero-issue result, spot-check key files for formatting/readability, stage changes with clear commit messages when satisfied
+1. Run the documented lint command with autofix when the repo provides one. Capture remaining errors.
+2. Fix remaining issues with minimal diffs. Change suppressions or config only with evidence they belong.
+3. Re-run lint. Spot-check the diff. Do not stage or commit.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Lint was re-run after edits.
+- [ ] Remaining failures are listed with files.
+- [ ] Working tree was not committed.
+
+## Handoff
+
+Report lint result. Use `/b-git-commit` only if the user asked to publish.

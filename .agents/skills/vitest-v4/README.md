@@ -24,10 +24,10 @@ This skill contains 44 rules across 8 categories, organized by impact level to h
 ```
 vitest/
 ├── SKILL.md              # Entry point with quick reference
-├── AGENTS.md             # Compiled comprehensive guide
 ├── metadata.json         # Version and references
 ├── README.md             # This file
 ├── references/
+│   ├── compiled.md       # Compiled comprehensive guide
 │   ├── _sections.md      # Category definitions
 │   ├── async-*.md        # Async pattern rules
 │   ├── setup-*.md        # Setup and isolation rules
@@ -45,7 +45,7 @@ vitest/
 
 ### For AI Agents
 
-Reference `SKILL.md` for quick navigation or `AGENTS.md` for the complete compiled guide.
+Reference `SKILL.md` for quick navigation or `references/compiled.md` for the complete compiled guide.
 
 ### For Humans
 

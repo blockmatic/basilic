@@ -1,21 +1,26 @@
 ---
 name: b-fix-github-actions
-description: Retrieve GitHub Actions workflow logs for the current branch PR, analyze failures, and fix CI/CD errors. Use when the user types /b-fix-github-actions.
+description: Retrieve GitHub Actions logs with gh, analyze failures, and fix CI errors locally. Use when the user types /b-fix-github-actions.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Retrieve GitHub Actions workflow logs for the current branch PR, analyze failures, and fix CI/CD errors. Use **`gh`**, never GitHub MCP for Actions.
+Fix failing GitHub Actions for the current branch. Use **`gh`**, never GitHub MCP for Actions logs. Do not commit unless the user asked.
 
 ## Steps
 
-1. **Get current branch**: `git branch --show-current`; confirm pushed (`git status -sb`); `gh pr view` or `gh pr list --head "$(git branch --show-current)"`
-2. **Retrieve Actions logs**: `gh pr checks`; `gh run list --branch "$(git branch --show-current)" --limit 10`; failed run → `gh run view <id> --log-failed`; artifacts → `gh run download <id>`
-3. **Analyze errors**: Parse logs for test failures, lint errors, build errors, missing dependencies, environment variables, configuration issues, timeout errors
-4. **Fix issues**: Read affected files, apply fixes per project rules (TypeScript, ESLint, Biome), resolve test failures, fix build errors, add missing dependencies, update config files, address timeout issues, commit changes
-5. **Verify**: Push if needed; `gh pr checks` or `gh run watch <id>` for the relevant workflow — do not block every push with watch (validation only)
+1. `git branch --show-current`; confirm pushed (`git status -sb`); `gh pr view` or `gh pr list --head "$(git branch --show-current)"`
+2. `gh pr checks`; `gh run list --branch "$(git branch --show-current)" --limit 10`; failed run → `gh run view <id> --log-failed`; artifacts → `gh run download <id>`
+3. Parse logs for tests, lint, build, missing deps, env, timeouts. Change the owning cause.
+4. Re-run the same local commands the workflow uses. Push and `gh pr checks` only when the user asked to publish. Do not add `gh run watch` to every push.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] The failing check's log is the evidence, not a guess.
+- [ ] Local equivalent of the failed job was re-run.
+- [ ] No commit or push unless the user requested `/b-git-commit` or `/b-git-push`.
+
+## Handoff
+
+Report the failed job, cause, local result, and whether the remote check still needs a push.

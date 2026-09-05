@@ -1,22 +1,26 @@
 ---
 name: b-roadmap
-description: Analyze codebase and generate visual roadmap of potential features and improvements. Use when the user types /b-roadmap.
+description: Diff the codebase against existing PRODUCT horizons; do not invent a backlog. Use when the user types /b-roadmap.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Analyze codebase and generate visual roadmap of potential features and improvements. Track progress with todos.
+Compare implementation to the repository's product overlay (`_first/.../PRODUCT.md` or equivalent). Durable goals, priorities, and horizons belong to `/f-product`. Chat only unless the user names a file.
 
 ## Steps
 
-1. **Scan codebase**: Scan codebase architecture, patterns, conventions, look for opportunities (missing common patterns, performance optimization opportunities, developer experience improvements, user-facing feature enhancements, code quality/refactoring candidates)
-2. **Identify opportunities**: Identify feature gaps and improvement opportunities
-3. **Create timeline diagram**: Create phased overview showing features by effort level (Quick Wins, Medium Effort, Strategic)
-4. **Create current vs proposed flowchart**: Show integration points (solid borders for existing features, dashed orange borders for proposed features)
-5. **Ask user**: Ask "Would you like me to create a plan for any of these features?" (plans follow @.cursor/rules/base/general.mdc: References, assumptions, deferrals)
-6. **Output**: Render directly in chat (don't write files) - brief assessment of current codebase state, prioritized feature list (5-8 items with rationale), timeline diagram, current vs proposed flowchart
+1. Load FIRST in the repository's order and read the product overlay. If it is missing, stop and point at `/f-product`.
+2. Diff code against named horizons and the feature map. List shipped, in-progress, and overlay items with no matching code.
+3. Do not invent features, effort buckets, or a second backlog. Optional diagrams may illustrate the overlay, not a new roadmap.
+4. Ask whether the user wants `/f-product` (durable change) or `/b-plan-feature` (implementation slices for an already-authorized item).
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Every listed item cites PRODUCT.md or an existing issue/PR.
+- [ ] No new priorities were minted from a codebase scan.
+- [ ] No files were written unless requested.
+
+## Handoff
+
+Return overlay gaps and the owning station. Do not offer a feature plan unless the user asked.

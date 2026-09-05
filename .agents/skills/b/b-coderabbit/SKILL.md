@@ -1,22 +1,26 @@
 ---
 name: b-coderabbit
-description: Fetch CodeRabbit review comments for current PR, analyze all issues, apply fixes automatically, and commit changes. Use when the user types /b-coderabbit.
+description: Fetch CodeRabbit review comments, apply authorized fixes, and stop at local verification. Use when the user types /b-coderabbit.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Fetch CodeRabbit review comments for current PR, analyze all issues, apply fixes automatically, and commit changes. Integrates CodeRabbit's AI code review directly into workflow.
+Fetch CodeRabbit comments for the current PR or uncommitted diff. Apply high-confidence fixes. Do not commit; use [b-git-commit](../b-git-commit/SKILL.md) only when the user asked to publish.
 
 ## Steps
 
-1. **Identify PR context**: Get current branch name, determine associated GitHub PR (if exists), if no PR exists check for uncommitted changes to review
-2. **Fetch CodeRabbit review**: Use CodeRabbit MCP to fetch review comments for PR, if no PR exists create review context from current changes, group comments by file/severity (critical/high/medium/low)
-3. **Analyze and prioritize**: Review each CodeRabbit comment for context/reasoning, categorize issues (bugs/security/performance/style/documentation), prioritize critical/high-severity issues first, note issues requiring clarification or cannot be auto-fixed
-4. **Apply fixes**: Fix issues file by file starting with highest priority, follow project coding standards/rules (see `.cursor/rules/`), ensure fixes address root cause not symptoms, run linting after each significant change: `pnpm lint:fix`, verify fixes don't introduce new issues
-5. **Verify changes**: Run linting: `pnpm lint` (skip if only markdown files changed), check for compilation errors, ensure tests still pass (if applicable), review diff to confirm all issues addressed
-6. **Commit fixes**: Stage all fixed files, create commit with descriptive message: `fix: address CodeRabbit review comments`, include summary of fixes applied, reference specific issues if helpful
+1. Identify the branch and PR with `gh`. If there is no PR, review the current task diff.
+2. Fetch CodeRabbit comments via the available CodeRabbit MCP. Group by file and severity.
+3. Fix root causes starting with critical/high. Follow repository rules. Run the repo lint/type/test commands that match the change.
+4. Leave style-only or unclear items as a list. Do not invent security or quality bars.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Fixes address named comments with file evidence.
+- [ ] Affected checks were run.
+- [ ] No commit was created unless the user asked for `/b-git-commit`.
+
+## Handoff
+
+Summarize applied fixes, skipped items, and remaining comments. Point at `/b-git-commit` if the user wants to publish.

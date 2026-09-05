@@ -12,7 +12,7 @@ This skill provides 42 rules across 8 categories to help AI agents and developer
 # Install dependencies (if any)
 pnpm install
 
-# Build AGENTS.md from references
+# Build references/compiled.md from references
 pnpm build
 
 # Validate the skill
@@ -38,7 +38,7 @@ pnpm validate
 2. Use the template from `assets/templates/_template.md`
 3. Include YAML frontmatter with `title`, `impact`, `impactDescription`, `tags`
 4. Add **Incorrect** and **Correct** code examples
-5. Run `pnpm build` to regenerate AGENTS.md
+5. Run `pnpm build` to regenerate `references/compiled.md`
 6. Run `pnpm validate` to check for errors
 
 ## Rule File Structure
@@ -86,7 +86,7 @@ Reference: [Link](url)
 
 ## Scripts
 
-- `pnpm build` - Regenerate AGENTS.md from references
+- `pnpm build` - Regenerate `references/compiled.md` from references
 - `pnpm validate` - Check skill against quality guidelines
 
 ## Contributing

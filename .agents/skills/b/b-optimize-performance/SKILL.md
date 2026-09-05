@@ -1,19 +1,26 @@
 ---
 name: b-optimize-performance
-description: Analyze current code for performance bottlenecks and provide optimization recommendations, focusing on measurable improvements while maintaining code quality/readability. Use when the user types /b-optimize-performance.
+description: Measure bottlenecks with repository tools, then recommend or apply evidenced optimizations. Use when the user types /b-optimize-performance.
 disable-model-invocation: true
 ---
 
-## Purpose
+## Purpose and inputs
 
-Analyze current code for performance bottlenecks and provide optimization recommendations, focusing on measurable improvements while maintaining code quality/readability.
+Find performance issues with a measured baseline. Quality budgets live in `/f-quality`. Do not invent SLOs or impact percentages. Report-only unless the user asked to implement.
 
 ## Steps
 
-1. **Performance Analysis**: Identify slow algorithms/inefficient data structures, find memory leaks/excessive allocations, detect unnecessary computations/redundant operations, analyze database queries/API calls
-2. **Optimization Strategies**: Suggest algorithm improvements/better data structures, recommend caching strategies, propose lazy loading/pagination, identify parallel processing opportunities
-3. **Implementation**: Provide optimized code with explanations, include performance impact estimates, suggest profiling/monitoring approaches, consider performance/maintainability trade-offs
+1. Read Quality overlay budgets if present. Capture a baseline with the repo profiler, traces, tests, or `gh` job timing — not estimates.
+2. Locate the owning hot path (query, render, allocation) with that evidence.
+3. Recommend the smallest change. Implement only when authorized. Re-measure after a change.
+4. If a new budget is required, defer to `/f-quality`.
 
-## Completion
+## Verification
 
-Read [completion evidence](../references/completion.md) before reporting completion.
+- [ ] Recommendations cite a baseline measurement or an explicit "not measured" label.
+- [ ] No fabricated timings or percentages.
+- [ ] No unsolicited commit.
+
+## Handoff
+
+Report baseline, suspected cause, and proposed change. Say when measurement is still missing.

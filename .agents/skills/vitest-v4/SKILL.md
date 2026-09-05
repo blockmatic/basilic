@@ -122,4 +122,4 @@ Read individual reference files for detailed explanations and code examples:
 
 ## Full Compiled Document
 
-For the complete guide with all rules expanded: `AGENTS.md`
+For the complete guide with all rules expanded: `references/compiled.md`
