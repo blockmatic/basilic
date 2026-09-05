@@ -3,7 +3,7 @@ title: "Architecture Overview"
 description: "Technical stack and design decisions."
 ---
 
-Principles: composability, API as source of truth, multiple clients, no vendor lock-in, tooling with long-term support.
+Principles: composability, TypeBox on Fastify routes generate OpenAPI, multiple clients, documented Vercel + Supabase path, tooling with long-term support.
 
 ```mermaid
 sequenceDiagram
@@ -28,12 +28,12 @@ sequenceDiagram
 - [AI](/docs/architecture/ai) — Providers, `/ai/chat`, `/ai/generate`, web assistant
 - [Authentication](/docs/architecture/authentication) — Magic link, OAuth, Web3
 - [Account linking](/docs/architecture/account-linking) — Email change, OAuth, wallets
-- [Frontend](/docs/architecture/frontend) — Next.js 16, React 19, Tailwind 4, Web3 hooks
+- [Frontend](/docs/architecture/frontend) — Next.js 16, React 19, Tailwind 4. No wallet UI in `apps/web`.
 - [Error handling](/docs/architecture/error-handling) — `@repo/error`, log-only capture (Sentry installed, inactive)
 - [Logging](/docs/architecture/logging) — Pino / console, `reqId`
 - [Product analytics](/docs/architecture/analytics) — PostHog chosen, not shipped; web instrumented, not collected
 - [Security](/docs/architecture/security) — Secrets, CVE scans, DeepSec
 - [ESM & TypeScript](/docs/architecture/esm-strategy) — TypeScript 7, dual-mode exports
-- [Portability](/docs/architecture/portability) — Host anywhere
+- [Portability](/docs/architecture/portability) — shipped Vercel + Supabase; GCP/AWS not first-class
 
 Decisions: [ADRs](/docs/adrs).

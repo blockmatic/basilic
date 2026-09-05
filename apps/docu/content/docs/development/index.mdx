@@ -23,7 +23,9 @@ cd <project-name>
 pnpm run setup
 ```
 
-`setup` installs dependencies, git hooks, security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Edit the copied files to set secrets. `setup` does **not** start Postgres.
+Or GitHub **Use this template**, then clone your new repo. [After fork](/docs/development/after-fork) lists what to replace when the copy is your product.
+
+`setup` installs dependencies, git hooks, security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
 ```bash
 pnpm --filter @repo/api db:start
@@ -32,7 +34,7 @@ pnpm dev
 ```
 
 - API: http://localhost:3001 (`GET /health`, `/reference`)
-- Web: http://localhost:3000
+- Web: http://localhost:3000 — first login is `/auth/login` with `test@test.ai` (copied env has `ALLOW_TEST=true`; Resend optional)
 - Docs: `pnpm --filter @repo/docu dev` (http://localhost:3002)
 - Mobile: `pnpm --filter @repo/mobile start`
 
@@ -45,6 +47,7 @@ Local Postgres is Supabase CLI. `db:start` then **`pnpm reset`** (repo root) bef
 ## Next
 
 - [Product Ready](/docs/testing/product-ready) — fork-and-run bar (not CI green)
+- [After fork](/docs/development/after-fork) — template vs fork, identity, CI secrets, FIRST overlays
 - [Dev Environments](/docs/development/dev-environments) — ports, remote, Expo
 - [AI Workflow](/docs/development/ai-workflow) — Cursor-first; FIRST / `_first/` load order
 - FIRST adopter pack: repo `_first/README.md` (stations and overlays; not a second docs site)

@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test'
+import { hasRealAnthropicKey } from './anthropic-key'
 
 const isCi = !!process.env.CI
 
 test.describe('Chat Assistant', () => {
+  test.skip(!hasRealAnthropicKey(), 'ANTHROPIC_API_KEY unset or placeholder — chat E2E omitted')
   test.setTimeout(90_000)
 
   test('should send message via Who am I? and show assistant response', async ({ page }) => {

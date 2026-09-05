@@ -15,10 +15,10 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 ## Artifacts
 
 - **Fact:** This file is the canonical product brief (Brief, Feature map, Roadmap below). Do not put Basilic intent, feature map, or horizons in `apps/docu`
-- **Fact:** [`../../README.md`](../../README.md) — fork-and-run TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo scaffold). No Wagmi, no first-class OpenAI SDK, no web wallet UI
+- **Fact:** [`../../README.md`](../../README.md) — MIT fork-and-run TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo scaffold). No Wagmi, no first-class OpenAI SDK, no web wallet UI
 - **Fact:** [`../../apps/docu/content/docs/`](../../apps/docu/content/docs/) — adopter technical docs (architecture, ADRs, development, testing, deployment). Not a product site
 - **Fact:** Two audiences: **adopters** (developers using the starter) and **demo users** (web markets `/`, headlines strip, settings, in-shell assistant; auth is the shipped job)
-- **Fact:** GTM: clone + [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`) + first local login. Bar: [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). Finance **N/A** (toolkit)
+- **Fact:** GTM: clone or GitHub **Use this template** + [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`) + first local login (`ALLOW_TEST` + `test@test.ai`). Bar: [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). After you own the copy: [After fork](../../apps/docu/content/docs/development/after-fork.mdx). Finance **N/A** (toolkit)
 - **Fact:** Owner: Gabo Esquivel
 - **Fact:** New-device sign-in alerts are transactional email via Fastify `emailProvider` + `@repo/email`, not a notification product
 - **Fact:** Not a billed SaaS in files. Do not invent TAM/LTV
@@ -36,7 +36,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 - users: adopting developers; demo end users on web auth and dashboard
 - goal: portable starter with self-hosted Web2 auth and Cursor-first workflow (Web3 on API only)
 - non-goals: Brief → Non-goals (R0) in this file
-- audience/channel/first use: clone + Getting Started (`db:start`, `pnpm reset`) + first local login ([Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx))
+- audience/channel/first use: clone or Use this template + Getting Started (`db:start`, `pnpm reset`) + first local login (`ALLOW_TEST` + `test@test.ai`) ([Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx))
 - metrics: auth and assistant jobs **instrumented, not collected**
 - events: `auth_succeeded`, `auth_failed`, `assistant_turn` — specified + instrumented, no sink
 - owners: Gabo Esquivel
@@ -56,7 +56,7 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 
 - A new maintainer can answer what we are building from this file + README without `__dev/` or Fumadocs Product pages
 - Success metrics can fail. They are not CI green. Auth/assistant remain unmeasured (no sink)
-- GTM is clone + Getting Started. Product Ready is that path, not CI green. Finance N/A
+- GTM is clone or Use this template + Getting Started. Product Ready is that path, not CI green. Finance N/A
 - No silent product decisions in code without a note or open question
 
 ## Definition of Done
@@ -93,7 +93,7 @@ Owner until this file says otherwise: **Gabo Esquivel**.
 
 ### Two audiences
 
-**Adopters** clone the repo, run the stack locally, and copy patterns. First successful use is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx): clone → [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`, `pnpm dev`) → magic-link (or `ALLOW_TEST` + `test@test.ai`) to `/`.
+**Adopters** clone the repo or use GitHub **Use this template**, run the stack locally, and copy patterns. First successful use is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx): clone → [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`, `pnpm dev`) → `ALLOW_TEST` + `test@test.ai` to `/`. After they own the copy: [After fork](../../apps/docu/content/docs/development/after-fork.mdx).
 
 **Demo users** sign in to the web app. The shipped job is auth (sessions, API keys, settings). Markets, a headlines strip, and the in-shell assistant are demo chrome. See Feature map below.
 
@@ -129,7 +129,7 @@ Status is what the tree does today, not a wish list. Horizons: Roadmap below.
 Must work after clone → `pnpm setup` → `db:start` → `pnpm reset` → `pnpm dev`.
 
 - Fastify TypeBox API → generated OpenAPI → `@repo/core` / handwritten `@repo/react`
-- Auth: magic link (Resend **or** `ALLOW_TEST` + `test@test.ai`) → cookies → `/`
+- Auth: magic link (Resend **or** copied local `ALLOW_TEST=true` + `test@test.ai`) → cookies → `/`
 - Optional OAuth (unconfigured = disabled / 503)
 - Passkeys, sessions, API keys `bask_`, Settings profile and security
 - Next 16 web app gated by `apps/web/proxy.ts`
@@ -171,7 +171,8 @@ R0 is **documentation alignment**. It does not need a semver bump or a GitHub Re
 
 - This file: what Basilic is, feature map, this roadmap
 - Honesty in README and auth docs (starter, not wallet/OpenAI template)
-- [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx): `db:start` + `pnpm reset` before `pnpm dev`
+- MIT `LICENSE`; GitHub Template; [After fork](../../apps/docu/content/docs/development/after-fork.mdx)
+- [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx): `db:start` + `pnpm reset` before `pnpm dev`; copied env `ALLOW_TEST=true`
 
 ### R-demo — Markets + GenAI artifacts
 

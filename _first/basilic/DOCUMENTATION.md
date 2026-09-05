@@ -23,7 +23,7 @@ Consequential decisions, conventions, setup steps, and domain context live in di
 - **Fact:** Portable factory: vendored `../AGENTS.md`, `../ABOUT.md`, `../templates/`. Station specs: `/f-*` from `npx skills add blockmatic/first`. This folder is the Basilic adoption pack, not a second docs site. Essays live in [`blockmatic/first`](https://github.com/blockmatic/first/tree/main/_first/articles).
 - **Fact:** Same-change rule: update matching MDX when behavior, commands, or conventions change; update [PRODUCT.md](PRODUCT.md) when goals, feature map, or horizons change
 - **Fact:** `__dev/` is gitignored scratch. Do not treat it as Fact or as the backlog. Remembered technical decisions go in `apps/docu` or ADRs. Product decisions go in [PRODUCT.md](PRODUCT.md).
-- **Drift:** named in sibling instances (PostHog, “API as source of truth”, portability vs Vercel). Fix MDX in the same work when you change the fact; do not leave load-bearing drift only in chat.
+- **Fact:** Architecture MDX matches this overlay: TypeBox on Fastify generates OpenAPI; shipped path is Vercel + Supabase; PostHog is chosen not installed. Named remaining drift: mobile vs web, PostHog not in the runtime.
 
 ## Minimum Useful Artifact
 

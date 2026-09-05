@@ -23,7 +23,7 @@ Meaningful boundaries have explicit inputs, outputs, errors, and references to a
 - **Fact:** `createClient` modes: no-auth, JWT (`getAuthToken` / refresh), apiKey (`bask_…`)
 - **Fact:** Drift check: `pnpm generate && git diff --exit-code -- apps/api/openapi/openapi.json packages/core/src/gen` (also `api-e2e.yml`)
 - **Fact:** Generation how-to: [openapi-generation.mdx](../../apps/docu/content/docs/development/openapi-generation.mdx)
-- **Drift:** Architecture index “API as source of truth” vs routes/TypeBox generate OpenAPI. Follow TypeBox. ADR 009 already says Fastify routes are the source.
+- **Fact:** Architecture index matches this overlay: TypeBox on Fastify routes generate OpenAPI. ADR 009: Fastify routes are the source.
 - **Unresolved:** public versioning/idempotency policy beyond regenerate-on-change; MCP server as a shipped app; GraphQL secondary interface (ADR 009 optional)
 
 Who may call is Security. This station owns how credentials and denial appear on the contract.

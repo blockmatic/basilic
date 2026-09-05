@@ -1,0 +1,53 @@
+---
+title: After fork
+description: Template vs fork, Product Ready, and what to replace when the copy is your product.
+---
+
+Basilic stays the starter brand. This page is for after GitHub **Use this template** or a fork. First run is still [Product Ready](/docs/testing/product-ready). There is no rename script.
+
+Enable **Template repository** in GitHub settings so **Use this template** appears. Maintainers do that; agents cannot. Clone still works without the flag.
+
+## Template vs fork
+
+- **Use this template** — start a product. New history, no obligation to merge upstream.
+- **Fork** — contribute back to Basilic. Keep the upstream remote.
+
+## Run
+
+Follow [Getting Started](/docs/development): `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`. Copied env sets `ALLOW_TEST=true`. Sign in with `test@test.ai`. Production refuses `ALLOW_TEST`.
+
+The in-shell assistant is optional. Leave Anthropic unset so Ollama can be the free path, or set a real key. Do not use a truthy placeholder.
+
+## Replace when you ship as you
+
+Keep Basilic names until you care. Then:
+
+- `APP_NAME`, `WEB_APP_URL`, `EMAIL_FROM` in API env
+- OAuth client ids (unconfigured providers stay 503)
+- [`.cursor/mcp.json`](https://github.com/blockmatic/basilic/blob/main/.cursor/mcp.json) Vercel MCP URLs (`mcp.vercel.com/gaboesquivel/basilic-*`) — comment them out until you have your own projects
+- Mobile `appId` `com.blockmatic.basilic`
+- DeepSec `githubUrl` in `.deepsec/deepsec.config.ts`
+
+Do not sweep every `blockmatic` docs URL. Those point at the upstream starter.
+
+## FIRST
+
+`_first/basilic/` is this starter’s filled instance. Keep it as the example, or copy [`_first/templates/`](https://github.com/blockmatic/basilic/tree/main/_first/templates) to `_first/<your-product>/` and retarget [`_first/FIRST.md`](https://github.com/blockmatic/basilic/blob/main/_first/FIRST.md). Do not add a 13th station. Specs stay `/f-*` from `npx skills add blockmatic/first`.
+
+## CI secrets
+
+Lint, `security.yml`, package tests, and API unit/Scalar E2E run without org secrets. Fork PRs do not get upstream secrets.
+
+- **Chat E2E** (`web-e2e` chat project) skips when `ANTHROPIC_API_KEY` is empty. Set the secret later if you want that project.
+- **DeepSec** already skips untrusted and fork PRs.
+- Vercel and EAS are not Product Ready.
+
+## License
+
+MIT. Root [`LICENSE`](https://github.com/blockmatic/basilic/blob/main/LICENSE). Keep the copyright notice in copies.
+
+## Related
+
+- [Product Ready](/docs/testing/product-ready)
+- [Getting Started](/docs/development)
+- [GitHub Actions](/docs/deployment/github-actions)

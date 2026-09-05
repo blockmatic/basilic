@@ -12,7 +12,7 @@ Comprehensive onboarding process to get a new developer up and running quickly. 
 4. **Start local Postgres**: `pnpm --filter @repo/api db:start` (`setup` does not start Supabase)
 5. **Reset and seed**: `pnpm reset` from repo root (Supabase reset + Drizzle migrate + seed). See `apps/api/README.md` and ADR 008
 6. **Run web/API**: `pnpm dev` (API + Next.js)
-7. **First login**: Magic link, or `ALLOW_TEST=true` + `test@test.ai`. Signed-in home is `/`
+7. **First login**: Copied env has `ALLOW_TEST=true`. Use `test@test.ai`. Signed-in home is `/`. Resend is optional.
 8. **Run mobile (optional)**: `pnpm --filter @repo/mobile start` (or `start:localhost` / `start:tunnel` for remote). See `apps/docu/content/docs/development/dev-environments.mdx`
 9. **Verify**: Web loads, API `GET /health` succeeds, simulator/device can reach the API if running mobile
 10. **Project familiarization**: Review `_first/basilic/PRODUCT.md` and architecture MDX; run tests when changing code; submit first PR

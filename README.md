@@ -2,7 +2,7 @@
 
 Fork-and-run developer starter: typed SDKs, self-hosted auth, a portable architecture, Cursor-first workflow, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
 
-> 🚧 **Active development** — Explore, fork, and contribute. 🏗️
+MIT licensed. Start a product with GitHub **Use this template**, or fork to contribute back. First successful use is [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) (`pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`, `test@test.ai`). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).
 
 ## Features
 
@@ -95,8 +95,9 @@ Run with `pnpm <script>`.
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 
-- [Getting Started](https://basilic-docs.vercel.app/docs/development) — clone, `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`
+- [Getting Started](https://basilic-docs.vercel.app/docs/development) — clone or Use this template, `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`
 - [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) — fork-and-run bar (not CI green)
+- [After fork](https://basilic-docs.vercel.app/docs/development/after-fork) — template vs fork, what to replace, CI secrets
 - Maintainers: [`_first/basilic/PRODUCT.md`](_first/basilic/PRODUCT.md) — intent, feature map, roadmap
 - [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Local vs remote (ports 3000, 3001, 8081; `start:localhost`, `start:tunnel`)
 - FIRST factory (stations, overlays): [`_first/`](_first/README.md) — load `_first/AGENTS.md` then `_first/ABOUT.md` then `_first/FIRST.md`. See [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)

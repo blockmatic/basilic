@@ -3,21 +3,21 @@ title: Product Ready
 description: Fork-and-run bar for Basilic. CI green is Pipelines, not this bar.
 ---
 
-**Product Ready** is a local fork that a new developer can clone, start, and sign into without tribal knowledge. It is **not** “CI is green.” Pipelines prove the repo on GitHub Actions. This page is the adopter bar.
+**Product Ready** is a local clone or template that a new developer can start and sign into without tribal knowledge. It is **not** “CI is green.” Pipelines prove the repo on GitHub Actions. This page is the adopter bar.
 
-Canonical commands: [Getting Started](/docs/development). Playbook: `/onboard-new-developer`.
+Canonical commands: [Getting Started](/docs/development). After you own the copy: [After fork](/docs/development/after-fork). Playbook: `/onboard-new-developer`.
 
 ## Checklist
 
 Do these in order. `pnpm setup` installs tools and copies env templates. It does **not** start Postgres.
 
 1. **Node 24 + pnpm** — `.nvmrc` / `packageManager` (`11.24.0`). `corepack enable` then `corepack prepare pnpm@11.24.0 --activate`.
-2. **Clone** the repo.
-3. **`pnpm setup`** at the repo root (install, hooks, scanners, env templates, Docker/Supabase CLI, Playwright Chromium).
+2. **Clone** the repo, or GitHub **Use this template**.
+3. **`pnpm setup`** at the repo root (install, hooks, scanners, env templates, Docker/Supabase CLI, Playwright Chromium). Copied API/web env sets `ALLOW_TEST=true` for local login. Setup copies templates only when dest files are **missing**; an existing `apps/api/.env` / `apps/web/.env.local` is left alone — set `ALLOW_TEST=true` yourself if those files predate this default.
 4. **`pnpm --filter @repo/api db:start`** — local Supabase Postgres. One instance per host; `pnpm db:stop` before changing `project_id`.
 5. **`pnpm reset`** at the repo root — Supabase reset + Drizzle migrate + seed. See [ADR 008](/docs/adrs/008-database) and `apps/api/README.md`.
 6. **`pnpm dev`** — API at http://localhost:3001 (`GET /health`, `/reference`), web at http://localhost:3000.
-7. **First login** — magic link, or `ALLOW_TEST=true` and `test@test.ai`. Land on `/`.
+7. **First login** — copied env has `ALLOW_TEST=true`. Use `test@test.ai` on `/auth/login`. Land on `/`. Resend is optional for real mail. Production refuses `ALLOW_TEST`.
 8. **Optional mobile** — `pnpm --filter @repo/mobile start`. Not required for Product Ready.
 
 Stop if any step fails. Do not skip `db:start` or `pnpm reset` and treat a hanging API as a product bug.
@@ -28,8 +28,9 @@ Stop if any step fails. Do not skip `db:start` or `pnpm reset` and treat a hangi
 - Production deploy, Sentry, or PostHog
 - Wallet UI or a mobile `@repo/core` client
 - Coverage floors
+- In-shell assistant (needs a real Anthropic/OpenRouter key or local Ollama)
 
-Those are Pipelines, later bets, or non-goals.
+Those are Pipelines, later bets, optional demo chrome, or non-goals.
 
 ## After first login
 
