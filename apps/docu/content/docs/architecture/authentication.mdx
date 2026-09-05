@@ -67,7 +67,7 @@ Passkey **verify** consumes the auth challenge before WebAuthn verification (one
 
 ## Web (Next.js)
 
-Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Client-side token persistence goes through `POST /api/auth/update-tokens`, which accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before writing `api.session`. After login, home includes link-wallet and link-email.
+Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Client-side token persistence goes through `POST /api/auth/update-tokens`, which accepts same-origin requests only and calls Fastify `POST /auth/session/validate-tokens` before writing `api.session`. After login, home is the news dashboard. Settings covers profile, sessions, and API keys. Change-email lives in Settings. Link-email and Web3 link exist on the API and in `@repo/react` — **web has no link-wallet or link-email UI**. See [Frontend](/docs/architecture/frontend).
 
 ### Web auth gate
 

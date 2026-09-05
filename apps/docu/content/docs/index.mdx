@@ -3,13 +3,27 @@ title: "Introduction"
 description: "App development toolkit: starters, conventions, and tooling for web, API, and mobile."
 ---
 
-Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and a Cursor-first AI workflow. Shared packages keep web, mobile, and docs consistent.
+Developer starter: a Fastify REST API with OpenAPI-generated clients, self-hosted Web2 auth (Web3 on the API, no web wallet UI), and a Cursor-first workflow. Shared packages keep web, mobile, and docs consistent. Product intent: [Product](/docs/product).
 
 LLM-friendly index: [`/llms.txt`](/llms.txt) (table of contents) and [`/llms-full.txt`](/llms-full.txt) (full text dump).
 
 ## Explore the docs
 
 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 my-8">
+  <div className="rounded-lg border border-border bg-card p-6">
+    <div className="mb-2 flex items-center gap-2">
+      <h3 className="text-lg font-semibold">Product</h3>
+    </div>
+    <p className="text-sm text-muted-foreground">
+      Starter vs demo, feature map, goals, and roadmap.
+    </p>
+    <div className="mt-4">
+      <a href="/docs/product" className="text-sm font-medium text-primary hover:underline">
+        Learn more →
+      </a>
+    </div>
+  </div>
+
   <div className="rounded-lg border border-border bg-card p-6">
     <div className="mb-2 flex items-center gap-2">
       <h3 className="text-lg font-semibold">Architecture</h3>
@@ -43,7 +57,7 @@ LLM-friendly index: [`/llms.txt`](/llms.txt) (table of contents) and [`/llms-ful
       <h3 className="text-lg font-semibold">Testing</h3>
     </div>
     <p className="text-sm text-muted-foreground">
-      Vitest for the API and packages; Playwright E2E for web.
+      Vitest, Playwright, and the Product Ready fork-and-run bar.
     </p>
     <div className="mt-4">
       <a href="/docs/testing" className="text-sm font-medium text-primary hover:underline">

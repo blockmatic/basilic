@@ -14,29 +14,32 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 
 ## Artifacts
 
-- **Fact:** [`../../README.md`](../../README.md) — API-first TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo)
-- **Fact:** [`../../apps/docu/content/docs/index.mdx`](../../apps/docu/content/docs/index.mdx) — toolkit intro
+- **Fact:** Canonical product brief: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx), [product/features.mdx](../../apps/docu/content/docs/product/features.mdx), [product/roadmap.mdx](../../apps/docu/content/docs/product/roadmap.mdx)
+- **Fact:** [`../../README.md`](../../README.md) — fork-and-run TypeScript fullstack starter (Fastify, OpenAPI, Next, Expo scaffold). No Wagmi, no first-class OpenAI SDK, no web wallet UI
+- **Fact:** [`../../apps/docu/content/docs/index.mdx`](../../apps/docu/content/docs/index.mdx) — toolkit intro; Product is in the docs nav
 - **Fact:** Two audiences: **adopters** (developers using the starter) and **demo users** (web news `/`, markets, settings, in-shell assistant; auth is the shipped job)
+- **Fact:** GTM: clone + [Getting Started](../../apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`) + first local login. Bar: [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx). Finance **N/A** (toolkit)
+- **Fact:** Owner: Gabo Esquivel (named on product index)
 - **Fact:** New-device sign-in alerts are transactional email via Fastify `emailProvider` + `@repo/email`, not a notification product
-- **Fact:** Not a billed SaaS in files. No `PRODUCT.md` / PRD. Do not invent one to fill TAM.
-- **Fact:** Observed non-goals in code/docs: mobile not an API client; no web wallet UI; Cache Components off; `@repo/react` hooks handwritten
-- **Fact:** PostHog **chosen, not installed**. No SDK, env keys, or sink. Product events are **specified** in types + [analytics.mdx](../../apps/docu/content/docs/architecture/analytics.mdx) and **instrumented** at the web boundary via `apps/web/lib/analytics.ts` `capture()`. They are **not collected** and therefore **not measured**. No `@vercel/analytics`.
-- **Fact:** Two demo questions are specified: (1) auth — did sign-in complete or did a visible attempt fail (`auth_succeeded` / `auth_failed` by `method`); (2) assistant — did this turn render `__render: 'user-info'` (`assistant_turn` with `accountRender`). Factory GTM, GenUI act, demo surfaces, session revoke, cost-per-job: **unmeasured** (not instrumented).
-- **Unresolved:** GTM (channel, first successful use); PostHog install / consent / retention; success metrics that can fail (not `pnpm qa`); TAM/LTV (toolkit — say so); named decision owners for the product bet
-- **Unresolved:** keep / iterate / kill board; whether adopters copy `lib/analytics` (qualitative — no event can evaluate that)
+- **Fact:** Not a billed SaaS in files. Do not invent TAM/LTV
+- **Fact:** Non-goals: mobile not an API client; no web wallet UI; Cache Components off; `@repo/react` hooks handwritten; PostHog not installed; Sentry inactive
+- **Fact:** PostHog **chosen, not installed**. Product events are **specified** in types + [analytics.mdx](../../apps/docu/content/docs/architecture/analytics.mdx) and **instrumented** via `apps/web/lib/analytics.ts` `capture()`. They are **not collected** and therefore **not measured**
+- **Fact:** Two demo questions are specified: (1) auth — `auth_succeeded` / `auth_failed` by `method`; (2) assistant — `__render: 'user-info'` (`assistant_turn` with `accountRender`). Unmeasured
+- **Fact:** PD (Markets + GenAI artifacts) is named on the feature map as **intended**, not shipped
+- **Unresolved:** PostHog install / consent / retention; keep / iterate / kill board; whether adopters copy `lib/analytics`
 
-`pnpm qa` going green is Quality/Pipelines, not product success.
+`pnpm qa` going green is Pipelines, not product success. Quality for R0 is [Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx).
 
 ## Minimum Useful Artifact
 
 - problem: bootstrap a typed API + web/mobile/docs without inventing the stack
-- users: adopting developers (inferred); demo end users on web auth and dashboard
-- goal: portable starter with self-hosted Web2/Web3 auth and Cursor-first workflow
-- non-goals: listed above as observed, not a ratified PRD
-- audience/channel/first use: **unresolved** beyond “fork and run”
-- metrics: auth and assistant jobs **instrumented, not collected** (cannot be queried yet)
+- users: adopting developers; demo end users on web auth and dashboard
+- goal: portable starter with self-hosted Web2 auth and Cursor-first workflow (Web3 on API only)
+- non-goals: [product/index.mdx](../../apps/docu/content/docs/product/index.mdx) R0 list
+- audience/channel/first use: clone + Getting Started (`db:start`, `pnpm reset`) + first local login ([Product Ready](../../apps/docu/content/docs/testing/product-ready.mdx))
+- metrics: auth and assistant jobs **instrumented, not collected**
 - events: `auth_succeeded`, `auth_failed`, `assistant_turn` — specified + instrumented, no sink
-- owners: **unresolved**
+- owners: Gabo Esquivel
 
 ## Recipe
 
@@ -51,11 +54,10 @@ The project has an inspectable answer to what, why, and how we will know. Non-go
 
 ## Validation
 
-- A new contributor can answer what we are building from README + this file: a starter/toolkit with a demo web app. Who/why/how-we-will-know beyond that is unresolved.
-- Success metrics can fail. They are not CI green. Currently unmeasured.
-- Named metrics have events, or are marked unmeasured. Auth/assistant are instrumented without a sink (not measured).
-- GTM is named at the level the product needs, or marked unresolved.
-- No silent product decisions in code without a note or open question.
+- A new contributor can answer what we are building from `apps/docu` Product pages + README without `__dev/`
+- Success metrics can fail. They are not CI green. Auth/assistant remain unmeasured (no sink)
+- GTM is clone + Getting Started. Product Ready is that path, not CI green. Finance N/A
+- No silent product decisions in code without a note or open question
 
 ## Definition of Done
 
@@ -65,11 +67,11 @@ Product intent is documented or explicitly deferred with named owners. Implement
 
 Apply Product First to Basilic.
 
-Read root README, `apps/docu/content/docs/index.mdx`, analytics MDX and ADR 011, and what the web, mobile, and API actually do. Do not assume documentation is complete. PostHog is not installed. `capture()` is a no-op — do not claim events are collected or measured.
+Read root README, `apps/docu/content/docs/product/`, analytics MDX and ADR 011, and what the web, mobile, and API actually do. PostHog is not installed. `capture()` is a no-op — do not claim events are collected or measured. PD is named on the feature map, not shipped.
 
-Preserve intentional existing product choices. Do not silently decide scope, priorities, pricing, TAM, LTV, event names, or GTM. This is a toolkit, not a billed product in files — say so rather than filling finance blanks.
+Preserve intentional existing product choices. Do not silently decide scope, priorities, pricing, TAM, LTV, or event names. This is a toolkit — say so rather than filling finance blanks.
 
-Separate `pnpm qa` from post-launch success. If a metric is named but not instrumented, implement the event or mark it unmeasured. Do not file that as operations work. Propose the smallest useful update to README or `apps/docu`. Update this instance when paths or unresolved items change.
+Separate `pnpm qa` from post-launch success. Propose the smallest useful update to Product MDX or README. Update this instance when paths or unresolved items change.
 
 ## Notes
 
@@ -81,4 +83,4 @@ Separate `pnpm qa` from post-launch success. If a metric is named but not instru
 
 **Product vs Data:** Product names events and outcomes to measure. Data owns canonical domain meaning, authority, lifecycle, and evolution.
 
-**Navigation:** [Generic spec](../principles/PRODUCT.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PRODUCT.md) · [Factory map](../ABOUT.md) · [Introduction](../../apps/docu/content/docs/index.mdx) · [ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx)
+**Navigation:** [Generic spec](../principles/PRODUCT.md) · [Human essay](https://github.com/blockmatic/first/blob/main/_first/articles/PRODUCT.md) · [Factory map](../ABOUT.md) · [Product](../../apps/docu/content/docs/product/index.mdx) · [Feature map](../../apps/docu/content/docs/product/features.mdx) · [ADR 011](../../apps/docu/content/docs/adrs/011-product-analytics.mdx)
