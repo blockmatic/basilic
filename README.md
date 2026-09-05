@@ -31,7 +31,7 @@ Fork-and-run developer starter: typed SDKs, self-hosted auth, a portable archite
 - **[API](apps/api/README.md)** — Type-safe REST API built with Fastify & OpenAPI
 - **[Web App](apps/web/README.md)** — Next.js app with monorepo integration
 - **[Mobile App](apps/mobile/README.md)** — Expo UI scaffold (shared `@repo/ui`; not an API client yet)
-- **[Documentation](apps/docu/README.md)** — Fumadocs site ([Product](https://basilic-docs.vercel.app/docs/product), architecture, ADRs, development)
+- **[Documentation](apps/docu/README.md)** — Fumadocs site (architecture, ADRs, development)
 
 ## Packages
 
@@ -95,9 +95,9 @@ Run with `pnpm <script>`.
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 
-- [Product](https://basilic-docs.vercel.app/docs/product) — what Basilic is, feature map, roadmap
 - [Getting Started](https://basilic-docs.vercel.app/docs/development) — clone, `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`
 - [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) — fork-and-run bar (not CI green)
+- Maintainers: [`_first/basilic/PRODUCT.md`](_first/basilic/PRODUCT.md) — intent, feature map, roadmap
 - [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Local vs remote (ports 3000, 3001, 8081; `start:localhost`, `start:tunnel`)
 - FIRST factory (stations, overlays): [`_first/`](_first/README.md) — load `_first/AGENTS.md` then `_first/ABOUT.md` then `_first/FIRST.md`. See [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)
 

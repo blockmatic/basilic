@@ -1,6 +1,6 @@
 # Basilic instances
 
-Operational specs for applying FIRST in this monorepo. Not a second factory. Durable facts live in `apps/docu/content/docs/`, ADRs, TypeBox routes, OpenAPI (generated), and package READMEs.
+Operational specs for applying FIRST in this monorepo. Not a second factory. Product intent lives in [PRODUCT.md](PRODUCT.md). Technical facts live in `apps/docu/content/docs/` (architecture, ADRs, how-to), TypeBox routes, OpenAPI (generated), and package READMEs. `apps/docu` is not a product site.
 
 This folder is this repository’s adoption pack. Factory source: [`blockmatic/first`](https://github.com/blockmatic/first). Skip this directory when copying FIRST elsewhere. Copy `ABOUT.md`, `AGENTS.md`, and `principles/` into `_first/`. Add `FIRST.md`. Do not copy this folder.
 
@@ -66,5 +66,5 @@ Do not invent TAM, event taxonomies, or SLOs to complete a template. Label **Fac
 
 ## Overlay as delta
 
-Keep the required `##` headings. Fill Artifacts with pointers and facts. Do **not** paste the generic Recipe, Agent Prompt, or Statement from `../principles/X.md`. Canonical briefs live in `apps/docu`. `__dev/` is scratch until it graduates into docs or this overlay.
+Keep the required `##` headings. Fill Artifacts with pointers and facts. Do **not** paste the generic Recipe, Agent Prompt, or Statement from `../principles/X.md`. Product is the exception: [PRODUCT.md](PRODUCT.md) is overlay and canonical brief (Brief, Feature map, Roadmap after Notes). Other stations point at `apps/docu` for technical facts. `__dev/` is scratch until it graduates into docs or this overlay.
 

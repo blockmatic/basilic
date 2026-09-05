@@ -15,4 +15,4 @@ Comprehensive onboarding process to get a new developer up and running quickly. 
 7. **First login**: Magic link, or `ALLOW_TEST=true` + `test@test.ai`. Signed-in home is `/`
 8. **Run mobile (optional)**: `pnpm --filter @repo/mobile start` (or `start:localhost` / `start:tunnel` for remote). See `apps/docu/content/docs/development/dev-environments.mdx`
 9. **Verify**: Web loads, API `GET /health` succeeds, simulator/device can reach the API if running mobile
-10. **Project familiarization**: Review `_first/`, Product docs, architecture MDX; run tests when changing code; submit first PR
+10. **Project familiarization**: Review `_first/basilic/PRODUCT.md` and architecture MDX; run tests when changing code; submit first PR

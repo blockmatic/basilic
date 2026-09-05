@@ -24,6 +24,6 @@ alwaysApply: false
 - Task-based guides, separate reference from tutorials, modular
 
 ## Layers
-- This MDX is canonical (architecture, ADRs, how-to). Rules do not `@`-attach it
+- This MDX is canonical **technical** docs (architecture, ADRs, how-to). Product intent lives in `_first/basilic/PRODUCT.md`, not Fumadocs. Rules do not `@`-attach MDX
 - READMEs are how to run the app/package; they link here, no duplication
 - Update this page when behavior, architecture, commands, or conventions change (same change as the code)

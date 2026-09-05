@@ -14,20 +14,21 @@ Consequential decisions, conventions, setup steps, and domain context live in di
 
 ## Artifacts
 
-- **Fact:** Canonical: [`../../apps/docu/content/docs/`](../../apps/docu/content/docs/) — product, architecture, ADRs, development, testing, deployment
+- **Fact:** Product intent: [PRODUCT.md](PRODUCT.md) — brief, feature map, roadmap. Not in `apps/docu`
+- **Fact:** Adopter technical docs: [`../../apps/docu/content/docs/`](../../apps/docu/content/docs/) — architecture, ADRs, development, testing, deployment
 - **Fact:** How to run: [`../../README.md`](../../README.md) and app/package READMEs — link to docs, no duplication ([docs.mdc](../../.cursor/rules/base/docs.mdc))
 - **Fact:** Agents: [`../../AGENTS.md`](../../AGENTS.md); constraints `.cursor/rules/`; skills `.agents/skills/`
 - **Fact:** Workflow index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
 - **Fact:** Public LLM indexes: `/llms.txt`, `/llms-full.txt` on the docs site
 - **Fact:** Portable factory: vendored `../AGENTS.md`, `../ABOUT.md`, `../principles/`. This folder is the Basilic adoption pack, not a second docs site. Essays live in [`blockmatic/first`](https://github.com/blockmatic/first/tree/main/_first/articles).
-- **Fact:** Same-change rule: update matching MDX when behavior, commands, or conventions change
-- **Fact:** `__dev/` is gitignored scratch. Do not treat it as Fact or as the backlog. Remembered decisions go in `apps/docu` or ADRs.
+- **Fact:** Same-change rule: update matching MDX when behavior, commands, or conventions change; update [PRODUCT.md](PRODUCT.md) when goals, feature map, or horizons change
+- **Fact:** `__dev/` is gitignored scratch. Do not treat it as Fact or as the backlog. Remembered technical decisions go in `apps/docu` or ADRs. Product decisions go in [PRODUCT.md](PRODUCT.md).
 - **Drift:** named in sibling instances (PostHog, “API as source of truth”, portability vs Vercel). Fix MDX in the same work when you change the fact; do not leave load-bearing drift only in chat.
 
 ## Minimum Useful Artifact
 
 - reader: future human or agent on this task
-- canonical location: usually `apps/docu/content/docs/…`; README points there
+- canonical location: product intent → [PRODUCT.md](PRODUCT.md); technical → `apps/docu/content/docs/…`; README points at both
 - decision or procedure that cannot be inferred safely
 - implementation links
 - trigger for next review: the same PR that changes behavior
@@ -38,7 +39,7 @@ Consequential decisions, conventions, setup steps, and domain context live in di
 2. Compare those files to implementation. Flag contradictions.
 3. Identify missing decisions, constraints, setup, domain rules.
 4. Propose the smallest useful doc — ADR, MDX section, README pointer.
-5. Write it in `apps/docu` (or the collocated README). One canonical source.
+5. Write product intent in [PRODUCT.md](PRODUCT.md). Write technical docs in `apps/docu` (or the collocated README). One canonical source per fact.
 6. Update docs in the same change if behavior or assumptions changed.
 7. Remove or archive docs that are wrong.
 8. Validate that a new contributor can set up and orient from files without asking in chat.
@@ -59,9 +60,9 @@ Durable context is written, accurate, and discoverable. Documentation drift is r
 
 Apply Documentation First to Basilic.
 
-Read root README, `AGENTS.md`, `apps/docu/content/docs/`, ADRs, and `.cursor/rules` before acting. Compare documentation to implementation.
+Read root README, `AGENTS.md`, [PRODUCT.md](PRODUCT.md), `apps/docu/content/docs/`, ADRs, and `.cursor/rules` before acting. Compare documentation to implementation.
 
-Document decisions and conventions — not obvious code. Propose the smallest useful MDX or README update. When you change behavior, update durable files in the same work. Do not leave load-bearing decisions only in chat. Do not encode this repo’s product facts in `../principles/` or `../ABOUT.md`.
+Document decisions and conventions — not obvious code. Propose the smallest useful PRODUCT.md, MDX, or README update. When you change behavior, update durable files in the same work. Do not leave load-bearing decisions only in chat. Do not encode this repo’s product facts in `../principles/` or `../ABOUT.md`. Do not write Basilic product intent into `apps/docu`.
 
 ## Notes
 

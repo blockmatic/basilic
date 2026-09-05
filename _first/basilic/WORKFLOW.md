@@ -18,7 +18,7 @@ Work flows through a recognizable path: idea → plan → implement → review �
 - **Fact:** Path: plan (`/plan-feature`) → review → implement → `/git-commit` → `/git-create-pr` → CI + CodeRabbit → `/retro`. Prefer `/git-create-pr` (description + labels) over `/exec-push`.
 - **Fact:** Index: [ai-workflow.mdx](../../apps/docu/content/docs/development/ai-workflow.mdx)
 - **Fact:** Playbooks: `.agents/skills/workflow/` — `plan-feature`, `exec-push`, `git-commit`, `code-review`, `deslop`, `retro`, `git-create-pr`
-- **Fact:** Consequential decisions: ADRs and `apps/docu`
+- **Fact:** Consequential decisions: product intent in [PRODUCT.md](PRODUCT.md); technical in ADRs and `apps/docu`
 - **Fact:** Git: default global user; Conventional Commits; never `--no-verify`; never Co-authored-by trailers ([git.mdc](../../.cursor/rules/base/git.mdc))
 - **Fact:** Human gates: product scope, secrets/trust boundaries, destructive ops ([`../AGENTS.md`](../AGENTS.md))
 - **Fact:** Models (docs): Grok 4.6 plan/implement; Sol long-horizon; Composer 2.5 mechanical. In-app chat is a product model, not this workflow.
@@ -46,7 +46,7 @@ Work flows through a recognizable path: idea → plan → implement → review �
 
 - Work state is visible without asking in chat.
 - Handoffs include enough context for the next actor.
-- Consequential decisions are in `apps/docu` or ADRs, not only merged code.
+- Consequential decisions are in [PRODUCT.md](PRODUCT.md), `apps/docu`, or ADRs — not only merged code.
 - Failed validation routes to a clear owner and next action.
 
 ## Definition of Done

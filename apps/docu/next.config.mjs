@@ -51,6 +51,9 @@ const config = {
         destination: '/docs/development/dev-tooling',
         permanent: true,
       },
+      { source: '/docs/product', destination: '/docs', permanent: true },
+      { source: '/docs/product/features', destination: '/docs', permanent: true },
+      { source: '/docs/product/roadmap', destination: '/docs', permanent: true },
     ]
   },
 }
