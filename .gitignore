@@ -36,6 +36,8 @@ cypress/downloads/
 next-env.d.ts
 out/
 build
+!.agents/skills/workflow/build/
+!.agents/skills/workflow/build/**
 dist
 bin
 
