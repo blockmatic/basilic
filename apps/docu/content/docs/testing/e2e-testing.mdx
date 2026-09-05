@@ -41,7 +41,7 @@ test('shows dashboard when authenticated', async ({ page }) => {
 })
 ```
 
-Chat E2E needs a real `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). Playwright **omits** the chat project when `hasRealAnthropicKey()` is false (empty, `sk-ant-xxx`, `sk-ant-dummy*`), so fork CI without org secrets still runs auth and dashboard E2E. When the key is set, `chat-assistant.spec.ts` skips on provider infra failures (402, upstream/5xx, network errors). API Scalar E2E (`pnpm --filter @repo/api test:e2e:local`) does not call AI and does not require Anthropic. API remote tests (`ai.spec.ts`) use `test/utils/ai-remote.ts`: skip 402 always; skip 502/503/504 only with placeholder/missing key — real key fails on 502. See [AI Architecture](/docs/architecture/ai).
+Chat E2E needs a real `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). Playwright **omits** the chat project when `hasRealAnthropicKey()` is false (empty, `sk-ant-xxx`, `sk-ant-dummy*`), so fork CI without org secrets still runs auth and dashboard E2E. When the key is set, `chat-assistant.spec.ts` skips only quota or credit errors; upstream 5xx and network failures fail the test run. API Scalar E2E (`pnpm --filter @repo/api test:e2e:local`) does not call AI and does not require Anthropic. API remote tests (`ai.spec.ts`) use `test/utils/ai-remote.ts`: skip 402 always; skip 502/503/504 only with placeholder/missing key — real key fails on 502. See [AI Architecture](/docs/architecture/ai).
 
 ## Test helpers
 

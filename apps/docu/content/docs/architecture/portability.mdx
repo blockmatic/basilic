@@ -12,8 +12,8 @@ Do not read this page as “configure GCP or AWS from this repo.” Those remain
 - **Runtime (Node.js 24.x, LTS Krypton)**: Runs on Vercel, a VPS, or a container with no platform-specific application code.
 - **API (Fastify)**: Standard HTTP. Serverless function, container, or VM.
 - **Web (Next.js)**: Vercel or self-hosted Node. Avoid vendor-only features if you expect to leave Vercel.
-- **Database (PostgreSQL + Drizzle)**: Switch `DATABASE_URL`. Local Product Ready uses Supabase CLI Postgres.
+- **Database (PostgreSQL + Drizzle)**: Switch `DATABASE_URL`. Local Product Ready uses Supabase CLI Postgres. Preview migrations require `RUN_PG_MIGRATE=true` and an isolated `DATABASE_URL`; they cannot target a shared database.
 
 ## Deployment options
 
-Configure environment variables and deploy via the documented Vercel and Supabase flows. Preview migrate stays gated unless `RUN_PG_MIGRATE=true`.
+Preview migrate requires `RUN_PG_MIGRATE=true` and an isolated `DATABASE_URL`. Configure environment variables and deploy via the documented Vercel and Supabase flows.
