@@ -20,10 +20,9 @@
       "computedHash": "2d909a358b697da27416f5db98605d9cbf366600437faaa0a3c0c9d1c108ebdd"
     },
     "b": {
-      "source": "blockmatic/basilic-skills",
-      "sourceType": "github",
-      "skillPath": "skills/b/SKILL.md",
-      "computedHash": "5f7f062df2681c100f2e05f8a546842603412cd4f56dff706fcda81419ff6f47"
+      "source": "../basilic-skills",
+      "sourceType": "local",
+      "computedHash": "9c83dc85534592382478ee0d886a0430722f641e68c4d7975182f150a5b55f88"
     },
     "drizzle-orm-v0": {
       "source": "blockmatic/basilic-skills",
@@ -104,10 +103,9 @@
       "computedHash": "942ca557b6f8f382c1c1aff454018c20548f07e9ae36146d08c2d406a64bf4f8"
     },
     "next-v16": {
-      "source": "blockmatic/basilic-skills",
-      "sourceType": "github",
-      "skillPath": "skills/next-v16/SKILL.md",
-      "computedHash": "230365194e69a6949797349b54aeaaca3b6db4c91c5351d278a0293cdbad85c5"
+      "source": "../basilic-skills",
+      "sourceType": "local",
+      "computedHash": "cc26706e21057639f9d131ebf7ee903b5bdf1dfa66f8ccaca43737aee11df66b"
     },
     "nodejs-keccak256-v1": {
       "source": "blockmatic/basilic-skills",
@@ -192,12 +190,6 @@
       "sourceType": "github",
       "skillPath": "skills/wagmi-v3/SKILL.md",
       "computedHash": "4fbe400f2d512bc1499e059db8f52e55078087409eb3ee68582c3feb7e5caf60"
-    },
-    "workflow": {
-      "source": "blockmatic/basilic-skills",
-      "sourceType": "github",
-      "skillPath": "skills/workflow/SKILL.md",
-      "computedHash": "634035249f98ddaa65542d282a0a3d2ab87dd7ae8113c3a45dda7fd94aa5414b"
     }
   }
 }
