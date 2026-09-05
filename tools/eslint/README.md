@@ -297,4 +297,4 @@ If you need to allow default exports elsewhere, override the rule in your local 
 
 ## License
 
-PROPRIETARY
+MIT. See the repository root `LICENSE`.

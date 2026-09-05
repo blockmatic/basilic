@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "description": "Error reporting and utilities",
-  "license": "PROPRIETARY",
+  "license": "MIT",
   "exports": {
     ".": {
       "types": "./src/utils/index.ts",

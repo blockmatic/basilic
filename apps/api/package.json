@@ -43,7 +43,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.45",
     "@faker-js/faker": "^10.6.0",

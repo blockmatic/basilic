@@ -22,8 +22,8 @@ The system has an inspectable structural model at the level its scale requires. 
 - **Fact:** Apps depend on packages, never the reverse. `react` depends on `core`. Clients call Fastify over HTTP.
 - **Fact:** Store: PostgreSQL via `DATABASE_URL`. PGLite when `PGLITE=true`. Supabase is the managed host, not the auth SDK.
 - **Fact:** Externals: Vercel, Resend, OAuth IdPs, AI providers, Sentry/GlitchTip, EAS, scanners
-- **Drift:** Architecture index says “API as source of truth.” [api.mdx](../../apps/docu/content/docs/architecture/api.mdx) and [ADR 009](../../apps/docu/content/docs/adrs/009-api-architecture.mdx) say Fastify routes / TypeBox generate OpenAPI. Follow TypeBox/routes.
-- **Drift:** [portability.mdx](../../apps/docu/content/docs/architecture/portability.mdx) describes host-anywhere. Shipped path is Vercel + Supabase.
+- **Fact:** Contract source is TypeBox on Fastify routes; OpenAPI is generated ([api.mdx](../../apps/docu/content/docs/architecture/api.mdx), [ADR 009](../../apps/docu/content/docs/adrs/009-api-architecture.mdx))
+- **Fact:** Shipped deploy path is Vercel + Supabase ([portability.mdx](../../apps/docu/content/docs/architecture/portability.mdx))
 - **Unresolved:** GCP/AWS as first-class deploy targets; mobile as an API consumer
 
 ```mermaid
@@ -64,7 +64,7 @@ flowchart LR
 ## Validation
 
 - A new contributor can name apps, packages, responsibilities, and dependency direction from architecture MDX.
-- Diagrams match code and deployment, or discrepancies are named (mobile, PostHog, portability).
+- Diagrams match code and deployment, or discrepancies are named (mobile, PostHog).
 - New dependencies follow apps → packages; generated client from OpenAPI; no app-to-app imports.
 - Consequential choices have ADRs, not only a technology name.
 - Architecture stays proportional to a starter toolkit.

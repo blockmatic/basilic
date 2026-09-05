@@ -11,7 +11,7 @@ Path filters are used only for test workflows (app E2E and package unit tests) s
 
 ### Web (`web-e2e.yml`)
 
-Build → E2E. Triggers on pull request when `apps/web/**`, API routes the suite exercises (`auth`, `account`, `ai`, `health`, `test`), shared packages, OpenAPI, or the workflow/action files change. Single job: build (with localhost API URL), then E2E via `test:e2e:local` with `SKIP_BUILD=1` (spawns Fastify + Next with `ALLOW_TEST=true`, `RATE_LIMIT_MAX=10000`, and `WEBAUTHN_RP_NAME=Test App`). Requires `ANTHROPIC_API_KEY` for the chat E2E project. `cancel-in-progress: true`. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
+Build → E2E. Triggers on pull request when `apps/web/**`, API routes the suite exercises (`auth`, `account`, `ai`, `health`, `test`), shared packages, OpenAPI, or the workflow/action files change. Single job: build (with localhost API URL), then E2E via `test:e2e:local` with `SKIP_BUILD=1` (spawns Fastify + Next with `ALLOW_TEST=true`, `RATE_LIMIT_MAX=10000`, and `WEBAUTHN_RP_NAME=Test App`). The chat Playwright project runs only with a real `ANTHROPIC_API_KEY` (empty and `sk-ant-xxx` omit it); forks without that secret still run auth and dashboard E2E. `cancel-in-progress: true`. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
 
 ### API (`api-e2e.yml`)
 

@@ -89,7 +89,7 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 ## Testing
 
 - **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): `test/utils/ai-remote.ts` skips **402** only when the response is `INSUFFICIENT_CREDITS` (quota is infra). Skips 502/504/connection only when `ANTHROPIC_API_KEY` is missing or placeholder `sk-ant-xxx`. A real key → 502 fails the suite.
-- **Web E2E** (`chat-assistant.spec.ts`): still soft-passes on 402/upstream/502 when the provider is down. See [E2E Testing](/docs/testing/e2e-testing).
+- **Web E2E** (`chat-assistant.spec.ts`): Playwright omits the chat project when `hasRealAnthropicKey()` is false (empty, `sk-ant-xxx`, `sk-ant-dummy*`). With a real key, skips 402/quota. See [E2E Testing](/docs/testing/e2e-testing).
 
 ## Related
 

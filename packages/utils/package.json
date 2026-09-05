@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "description": "Shared utility functions and helpers",
-  "license": "PROPRIETARY",
+  "license": "MIT",
   "exports": {
     ".": {
       "types": "./src/index.ts",

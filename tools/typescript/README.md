@@ -226,4 +226,4 @@ Packages that don't override `include` will automatically get `reset.d.ts` from 
 
 ## License
 
-PROPRIETARY
+MIT. See the repository root `LICENSE`.

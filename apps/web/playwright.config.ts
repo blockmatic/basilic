@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
+import { hasRealAnthropicKey } from './e2e/anthropic-key'
 
 const isCi = !!process.env.CI
 const appUrl =
@@ -82,16 +83,20 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], storageState: emptyStorage },
       dependencies: ['setup'],
     },
-    {
-      name: 'chat',
-      testMatch: ['**/chat-assistant.spec.ts'],
-      timeout: 90_000,
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: authFile,
-        viewport: { width: 375, height: 667 },
-      },
-      dependencies: ['chromium'],
-    },
+    ...(hasRealAnthropicKey()
+      ? [
+          {
+            name: 'chat',
+            testMatch: ['**/chat-assistant.spec.ts'],
+            timeout: 90_000,
+            use: {
+              ...devices['Desktop Chrome'],
+              storageState: authFile,
+              viewport: { width: 375, height: 667 },
+            },
+            dependencies: ['chromium'],
+          },
+        ]
+      : []),
   ],
 })

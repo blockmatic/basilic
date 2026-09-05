@@ -1,24 +1,19 @@
 ---
 title: "Portability Strategy"
-description: "Zero vendor lock-in architecture designed for rapid iteration and deployments without code changes."
+description: "Shipped deploy path is Vercel + Supabase. The stack is standard HTTP, Node, and Postgres so you can move later."
 ---
 
-This stack is built on standard, widely supported technologies so you can move between deployment platforms without code changes. 
-Start with Vercel + Supabase for speed, then migrate to Google Cloud or AWS when you need stronger production security controls.
+The **shipped** path is [Vercel](/docs/deployment/vercel) + Supabase. GCP and AWS are not first-class deploy targets (product non-goal). The runtime is still ordinary Node, Fastify HTTP, Next.js, and PostgreSQL, so a later move is a host change, not a rewrite.
 
-Portability keeps options open as requirements change: you can pick the right provider for security (KMS/VPC/HSM), cost, and compliance without rewriting the system.
+Do not read this page as “configure GCP or AWS from this repo.” Those remain unresolved.
 
+## What is portable
 
-Technology choices for portability: 
-
-- **Runtime (Node.js 24.x, LTS Krypton)**: Runs on Vercel, GCP, AWS, or on-prem with no platform-specific code.
-- **API (Fastify)**: Standard HTTP service that can be deployed as a serverless function, container, or VM.
-- **Web (Next.js)**: Runs on Vercel or self-hosted Node.js; avoid vendor-only features if you need easy migration.
-- **Database (PostgreSQL + Drizzle)**: Standard Postgres and plain SQL; migration is typically switching `DATABASE_URL`.
-
+- **Runtime (Node.js 24.x, LTS Krypton)**: Runs on Vercel, a VPS, or a container with no platform-specific application code.
+- **API (Fastify)**: Standard HTTP. Serverless function, container, or VM.
+- **Web (Next.js)**: Vercel or self-hosted Node. Avoid vendor-only features if you expect to leave Vercel.
+- **Database (PostgreSQL + Drizzle)**: Switch `DATABASE_URL`. Local Product Ready uses Supabase CLI Postgres.
 
 ## Deployment options
 
-Vercel and Supabase are supported out of the box. Configure environment variables and deploy via the standard Vercel or Supabase flows.
-
-{/* Future targets: Google Cloud / AWS with Pulumi */} 
+Configure environment variables and deploy via the documented Vercel and Supabase flows. Preview migrate stays gated unless `RUN_PG_MIGRATE=true`.

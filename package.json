@@ -1,6 +1,7 @@
 {
   "name": "basilic",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "build": "turbo run build",
     "generate": "turbo run generate --filter=@repo/core",
