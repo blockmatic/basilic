@@ -2,7 +2,7 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { captureError } from '@repo/error/node'
 import { Type } from '@sinclair/typebox'
 import { and, eq, gt } from 'drizzle-orm'
-import type { FastifyPluginAsync } from 'fastify'
+import type { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyReply } from 'fastify'
 import { getDb } from '../../../db/index.js'
 import { sessions } from '../../../db/schema/index.js'
 import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
@@ -23,6 +23,73 @@ const RefreshResponseSchema = Type.Object({
   token: Type.String(),
   refreshToken: Type.String(),
 })
+
+function signSessionTokens({
+  fastify,
+  userId,
+  sessionId,
+  refreshJti,
+  wallet,
+}: {
+  fastify: FastifyInstance
+  userId: string
+  sessionId: string
+  refreshJti: string
+  wallet?: { chain: string; address: string }
+}) {
+  const accessPayload = createAccessTokenPayload({ userId, sessionId, wallet })
+  const refreshPayload = createRefreshTokenPayload({ userId, sessionId, jti: refreshJti })
+  return {
+    token: fastify.jwt.sign(accessPayload, {
+      expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
+    }),
+    refreshToken: fastify.jwt.sign(refreshPayload, {
+      expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
+    }),
+  }
+}
+
+function sessionWallet(session: { walletChain: string | null; walletAddress: string | null }) {
+  return session.walletChain && session.walletAddress
+    ? { chain: session.walletChain, address: session.walletAddress }
+    : undefined
+}
+
+function isWithinReuseGrace({ rotatedAt, now }: { rotatedAt: Date | null; now: Date }) {
+  if (!rotatedAt) return false
+  return now.getTime() - rotatedAt.getTime() < env.REFRESH_REUSE_GRACE_SECONDS * 1000
+}
+
+async function sendReuseDetected({
+  reply,
+  requestUrl,
+  logger,
+  sessionId,
+  userId,
+}: {
+  reply: FastifyReply
+  requestUrl: string
+  logger: FastifyBaseLogger
+  sessionId: string
+  userId: string
+}) {
+  const db = await getDb()
+  await db.delete(sessions).where(eq(sessions.id, sessionId))
+  captureError({
+    code: 'SECURITY_VIOLATION',
+    error: new Error('Refresh token reuse detected'),
+    logger,
+    label: 'refresh token reuse detected',
+    data: { sessionId, userId },
+    tags: {
+      app: 'api',
+      module: 'auth-service',
+      route: requestUrl,
+      security: 'token-reuse',
+    },
+  })
+  return sendCatalogError({ reply, status: 401, code: 'TOKEN_REUSE_DETECTED' })
+}
 
 const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
@@ -71,6 +138,9 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
         .update(sessions)
         .set({
           token: newRefreshJtiHash,
+          previousToken: jtiHash,
+          currentJti: newRefreshJti,
+          rotatedAt: now,
           expiresAt: newSessionExpiresAt,
         })
         .where(
@@ -84,33 +154,14 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
         .returning()
 
       if (rotated) {
-        const wallet =
-          rotated.walletChain && rotated.walletAddress
-            ? { chain: rotated.walletChain, address: rotated.walletAddress }
-            : undefined
-
-        const accessPayload = createAccessTokenPayload({
+        const tokens = signSessionTokens({
+          fastify,
           userId: decoded.sub,
           sessionId: decoded.sid,
-          wallet,
+          refreshJti: newRefreshJti,
+          wallet: sessionWallet(rotated),
         })
-        const refreshPayload = createRefreshTokenPayload({
-          userId: decoded.sub,
-          sessionId: decoded.sid,
-          jti: newRefreshJti,
-        })
-
-        const accessToken = fastify.jwt.sign(accessPayload, {
-          expiresIn: `${env.ACCESS_JWT_EXPIRES_IN_SECONDS}s`,
-        })
-        const newRefreshToken = fastify.jwt.sign(refreshPayload, {
-          expiresIn: `${env.REFRESH_JWT_EXPIRES_IN_SECONDS}s`,
-        })
-
-        return reply.code(200).send({
-          token: accessToken,
-          refreshToken: newRefreshToken,
-        })
+        return reply.code(200).send(tokens)
       }
 
       const [session] = await db.select().from(sessions).where(eq(sessions.id, decoded.sid))
@@ -127,26 +178,28 @@ const sessionRefreshRoute: FastifyPluginAsync = async fastify => {
         return sendCatalogError({ reply, status: 401, code: 'INVALID_TOKEN' })
       }
 
-      await db.delete(sessions).where(eq(sessions.id, session.id))
-
-      captureError({
-        code: 'SECURITY_VIOLATION',
-        error: new Error('Refresh token reuse detected'),
-        logger: request.log,
-        label: 'refresh token reuse detected',
-        data: {
-          sessionId: decoded.sid,
+      if (
+        session.previousToken === jtiHash &&
+        session.currentJti &&
+        isWithinReuseGrace({ rotatedAt: session.rotatedAt, now })
+      ) {
+        const tokens = signSessionTokens({
+          fastify,
           userId: decoded.sub,
-        },
-        tags: {
-          app: 'api',
-          module: 'auth-service',
-          route: request.url,
-          security: 'token-reuse',
-        },
-      })
+          sessionId: decoded.sid,
+          refreshJti: session.currentJti,
+          wallet: sessionWallet(session),
+        })
+        return reply.code(200).send(tokens)
+      }
 
-      return sendCatalogError({ reply, status: 401, code: 'TOKEN_REUSE_DETECTED' })
+      return sendReuseDetected({
+        reply,
+        requestUrl: request.url,
+        logger: request.log,
+        sessionId: decoded.sid,
+        userId: decoded.sub,
+      })
     },
   )
 }

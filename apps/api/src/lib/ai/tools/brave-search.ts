@@ -6,7 +6,11 @@ import { env } from '../../env.js'
 
 const maxBraveResults = 8
 
-export function createBraveSearchTool(apiKey: string, log: FastifyBaseLogger) {
+export function createBraveSearchTool(
+  apiKey: string,
+  log: FastifyBaseLogger,
+  abortSignal?: AbortSignal,
+) {
   return tool({
     description:
       'Search the web for current information. Use when the user asks about recent events, news, facts, or anything that requires up-to-date web results.',
@@ -16,7 +20,9 @@ export function createBraveSearchTool(apiKey: string, log: FastifyBaseLogger) {
         const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}`
         const res = await fetch(url, {
           headers: { 'X-Subscription-Token': apiKey },
-          signal: AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),
+          signal: abortSignal
+            ? AbortSignal.any([abortSignal, AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS)])
+            : AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),
         })
         if (res.status === 401 || res.status === 403)
           return 'Brave Search API key invalid or missing.'

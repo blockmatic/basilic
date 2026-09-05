@@ -31,8 +31,23 @@ describe('GET /health', () => {
     const data = JSON.parse(response.body)
     expect(data).toMatchObject({
       ok: true,
-      dbReady: expect.any(Boolean),
+      dbReady: true,
     })
+  })
+
+  it('should return 503 when the database probe fails', async () => {
+    const g = globalThis as { __basilicDbReady?: boolean }
+    g.__basilicDbReady = false
+    try {
+      const response = await fastify.inject({
+        method: 'GET',
+        url: '/health',
+      })
+      expect(response.statusCode).toBe(503)
+      expect(JSON.parse(response.body)).toMatchObject({ ok: false, dbReady: false })
+    } finally {
+      g.__basilicDbReady = undefined
+    }
   })
 
   it('should include security headers but not HSTS in non-production', async () => {

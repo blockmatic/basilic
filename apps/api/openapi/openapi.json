@@ -27,10 +27,32 @@
         "tags": [
           "health"
         ],
-        "description": "Health check endpoint",
+        "description": "Readiness: process is up and the database answers SELECT 1",
         "security": [],
         "responses": {
           "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "dbReady"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "dbReady": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
             "description": "Default Response",
             "content": {
               "application/json": {

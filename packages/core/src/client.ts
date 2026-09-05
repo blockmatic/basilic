@@ -5,8 +5,7 @@ import { ApiError } from './errors'
 import { createConfig, createClient as createHeyApiClient } from './gen/client/index'
 import * as gen from './gen/index'
 
-// Lock to prevent multiple concurrent refresh attempts
-let refreshLock: Promise<{ token: string; refreshToken: string } | null> | null = null
+const refreshLocks = new WeakMap<object, Promise<{ token: string; refreshToken: string } | null>>()
 
 const clientConfigMap = new WeakMap<
   object,
@@ -64,6 +63,12 @@ async function doRefresh(
   if (!isJwtMode(options)) return null
   const refreshToken = await options.getRefreshToken()
   if (!refreshToken) return null
+  if (options.refreshTokens) {
+    const tokens = await options.refreshTokens()
+    if (!tokens) return null
+    await options.onTokensRefreshed(tokens)
+    return tokens
+  }
   const refreshResponse = await gen.refresh({ client, body: { refreshToken } })
   if (refreshResponse.error || !refreshResponse.data) return null
   await options.onTokensRefreshed(refreshResponse.data)
@@ -96,9 +101,13 @@ async function tryRefreshAndRetry<T extends { data?: unknown; error?: unknown }>
   options: CoreClientOptions
 }): Promise<T['data'] | undefined> {
   try {
-    if (!refreshLock) refreshLock = doRefresh(options, client)
-    const newTokens = await refreshLock
-    refreshLock = null
+    let lock = refreshLocks.get(client)
+    if (!lock) {
+      lock = doRefresh(options, client)
+      refreshLocks.set(client, lock)
+    }
+    const newTokens = await lock
+    refreshLocks.delete(client)
 
     if (!newTokens) return undefined
     const retryResponse = await obj({ ...callOptions, client })
@@ -108,7 +117,7 @@ async function tryRefreshAndRetry<T extends { data?: unknown; error?: unknown }>
     }
     return retryResponse.data
   } catch {
-    refreshLock = null
+    refreshLocks.delete(client)
     return undefined
   }
 }

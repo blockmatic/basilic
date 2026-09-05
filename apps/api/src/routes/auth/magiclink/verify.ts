@@ -6,6 +6,8 @@ import { getDb } from '../../../db/index.js'
 import { authAttempts, users, verification } from '../../../db/schema/index.js'
 import { recordAuthFailedAttempt } from '../../../lib/auth/index.js'
 import { logAuthLocked, logAuthVerifyFailed } from '../../../lib/auth/signals.js'
+import { normalizeEmail } from '../../../lib/email.js'
+import { findUserByNormalizedEmail } from '../../../lib/email-identity.js'
 import { hashLoginCode } from '../../../lib/jwt.js'
 import { getTrustedClientIp } from '../../../lib/request.js'
 import { createSessionAndIssueTokens } from '../../../lib/session/index.js'
@@ -62,7 +64,10 @@ export async function verifyMagicLinkAndIssueToken(
     return null
   }
 
-  const [user] = await db.select().from(users).where(eq(users.email, verificationRecord.identifier))
+  const { user } = await findUserByNormalizedEmail({
+    db,
+    email: verificationRecord.identifier,
+  })
 
   if (!user) return null
 
@@ -156,7 +161,7 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
             eq(verification.type, 'magic_link'),
           )
         : and(
-            eq(verification.identifier, idOrEmail),
+            eq(verification.identifier, normalizeEmail(idOrEmail)),
             eq(verification.value, tokenHash),
             eq(verification.type, 'magic_link'),
           )
@@ -181,10 +186,10 @@ const magicLinkVerifyRoute: FastifyPluginAsync = async fastify => {
         })
       }
 
-      const [user] = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, verificationRecord.identifier))
+      const { user } = await findUserByNormalizedEmail({
+        db,
+        email: verificationRecord.identifier,
+      })
 
       if (!user)
         return reply.code(404).send({

@@ -11,6 +11,7 @@ import { users, verification } from '../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { isUniqueViolation } from '../../../lib/db-errors.js'
 import { sendMail } from '../../../lib/email.js'
+import { findUserByNormalizedEmail } from '../../../lib/email-identity.js'
 import { env } from '../../../lib/env.js'
 import { generateLoginCode, hashLoginCode } from '../../../lib/jwt.js'
 import { isAllowedUrl } from '../../../lib/url.js'
@@ -21,16 +22,17 @@ async function findOrCreateUserForMagicLink(
   db: Awaited<ReturnType<typeof getDb>>,
   email: string,
 ): Promise<typeof users.$inferSelect | undefined> {
+  const { normalized } = await findUserByNormalizedEmail({ db, email })
   const userId = randomUUID()
   const funnyName = `${faker.word.adjective()} ${faker.animal.type()}`
   const maxRetries = 5
   for (let attempt = 0; attempt < maxRetries; attempt++)
     try {
       const [created] = await db.transaction(async tx => {
-        const username = await generateUsernameForMagicLink(tx, email)
+        const username = await generateUsernameForMagicLink(tx, normalized)
         await tx.insert(users).values({
           id: userId,
-          email,
+          email: normalized,
           emailVerified: false,
           name: funnyName,
           username,
@@ -42,7 +44,7 @@ async function findOrCreateUserForMagicLink(
       return created
     } catch (err) {
       if (isUniqueViolation(err)) {
-        const [existing] = await db.select().from(users).where(eq(users.email, email))
+        const { user: existing } = await findUserByNormalizedEmail({ db, email: normalized })
         if (existing) return existing
         if (attempt < maxRetries - 1) continue
       }
@@ -91,11 +93,9 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         })
 
       const db = await getDb()
-
-      // Find or create user
-      const [existingUser] = await db.select().from(users).where(eq(users.email, email))
+      const { user: existingUser, normalized } = await findUserByNormalizedEmail({ db, email })
       if (!existingUser) {
-        const created = await findOrCreateUserForMagicLink(db, email)
+        const created = await findOrCreateUserForMagicLink(db, normalized)
         if (!created) throw new Error('Failed to create user')
       }
 
@@ -108,18 +108,18 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
       const storePlain =
         env.NODE_ENV !== 'production' &&
         env.ALLOW_TEST === true &&
-        typeof email === 'string' &&
-        email.endsWith('@test.ai')
+        typeof normalized === 'string' &&
+        normalized.endsWith('@test.ai')
 
       await db.transaction(async tx => {
         await tx
           .delete(verification)
-          .where(and(eq(verification.type, 'magic_link'), eq(verification.identifier, email)))
+          .where(and(eq(verification.type, 'magic_link'), eq(verification.identifier, normalized)))
 
         await tx.insert(verification).values({
           id: verificationId,
           type: 'magic_link',
-          identifier: email,
+          identifier: normalized,
           value: tokenHash,
           ...(storePlain && { tokenPlain: code }),
           expiresAt,
@@ -144,7 +144,7 @@ const magicLinkRequestRoute: FastifyPluginAsync = async fastify => {
         mode: 'throw',
         message: {
           from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
-          to: email,
+          to: normalized,
           subject: `${code} - ${env.APP_NAME} verification code`,
           html,
         },

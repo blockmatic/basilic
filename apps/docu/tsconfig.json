@@ -6,8 +6,6 @@
       "@/*": ["./*"],
       "@/components/*": ["./components/*"],
       "@repo/ui/*": ["../../packages/ui/src/*"],
-      "@repo/core": ["../../packages/core/src/index.ts"],
-      "@repo/core/*": ["../../packages/core/src/*"],
       "fumadocs-mdx:collections/*": ["./.source/*"]
     },
     "plugins": [

@@ -119,4 +119,32 @@ describe('GET /auth/session/user', () => {
     expect(body.user.id).toBeTruthy()
     expect(Array.isArray(body.user.linkedWallets)).toBe(true)
   })
+
+  it('should return 401 for a malformed JWT', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { Authorization: 'Bearer not-a-jwt' },
+    })
+    expect(response.statusCode).toBe(401)
+    expect(response.json().code).toBe('UNAUTHORIZED')
+  })
+
+  it('should return 5xx when session lookup throws', async () => {
+    const { token } = await createAuthenticatedUser(fastify)
+    const g = globalThis as { __basilicGetDb?: () => Promise<never> }
+    g.__basilicGetDb = async () => {
+      throw new Error('db down')
+    }
+    try {
+      const response = await fastify.inject({
+        method: 'GET',
+        url: '/auth/session/user',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      expect(response.statusCode).toBeGreaterThanOrEqual(500)
+    } finally {
+      g.__basilicGetDb = undefined
+    }
+  })
 })

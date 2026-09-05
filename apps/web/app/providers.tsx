@@ -4,7 +4,7 @@ import { createClient } from '@repo/core'
 import { ApiProvider } from '@repo/react'
 import { Toaster } from '@repo/ui/components/sonner'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { getAuthToken, getRefreshToken, updateAuthTokens } from 'lib/auth/auth-client'
+import { getAuthToken, getRefreshToken, refreshSessionViaNext } from 'lib/auth/auth-client'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { type ReactNode, useState } from 'react'
@@ -14,7 +14,8 @@ export const coreClient = createClient({
   baseUrl: env.NEXT_PUBLIC_API_URL,
   getAuthToken,
   getRefreshToken,
-  onTokensRefreshed: updateAuthTokens,
+  refreshTokens: refreshSessionViaNext,
+  onTokensRefreshed: async () => {},
 })
 
 export function Providers({ children }: { children: ReactNode }) {

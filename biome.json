@@ -34,6 +34,7 @@
       "!**/expo-env.d.ts",
       "!**/next-env.d.ts",
       "!**/openapi/*.json",
+      "!**/src/db/migrations/meta",
       "!**/.deepsec"
     ],
     "maxSize": 1048576

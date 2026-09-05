@@ -11,6 +11,18 @@ export type HealthCheckData = {
   url: '/health';
 };
 
+export type HealthCheckErrors = {
+  /**
+   * Default Response
+   */
+  503: {
+    ok: boolean;
+    dbReady: boolean;
+  };
+};
+
+export type HealthCheckError = HealthCheckErrors[keyof HealthCheckErrors];
+
 export type HealthCheckResponses = {
   /**
    * Default Response

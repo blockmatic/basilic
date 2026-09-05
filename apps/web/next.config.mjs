@@ -20,6 +20,9 @@ function toBranchSlug(ref) {
 }
 
 function getApiUrl() {
+  const explicit = process.env.NEXT_PUBLIC_API_URL
+  if (explicit) return explicit
+
   const vercelEnv = process.env.VERCEL_ENV
   const branch = process.env.VERCEL_GIT_COMMIT_REF
 
@@ -35,16 +38,23 @@ function getApiUrl() {
   }
 
   const isProductionBranch = vercelEnv === 'production' || branch === 'main' || branch === 'develop'
-  const url = isProductionBranch
-    ? process.env.NEXT_PUBLIC_API_URL
-    : `https://${apiProjectName}-git-${toBranchSlug(branch)}-${teamSlug}.vercel.app`
-
-  if (isProductionBranch && !url) {
+  if (isProductionBranch) {
     const msg = `[next.config] getApiUrl: NEXT_PUBLIC_API_URL must be configured for production/main/develop deployments (vercelEnv=${vercelEnv}, branch=${branch})`
     // biome-ignore lint/suspicious/noConsole: build-time error
     console.error(msg)
     throw new Error(msg)
   }
+
+  const hostname = `${apiProjectName}-git-${toBranchSlug(branch)}-${teamSlug}.vercel.app`
+  const labels = hostname.split('.')
+  if (labels.some(label => label.length === 0 || label.length > 63)) {
+    const msg = `[next.config] getApiUrl: derived preview hostname is invalid (a DNS label exceeds 63 characters): ${hostname}. Set NEXT_PUBLIC_API_URL explicitly.`
+    // biome-ignore lint/suspicious/noConsole: build-time error
+    console.error(msg)
+    throw new Error(msg)
+  }
+
+  const url = `https://${hostname}`
 
   if (process.env.VERCEL)
     // biome-ignore lint/suspicious/noConsole: build-time debug for Vercel build logs

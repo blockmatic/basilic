@@ -75,7 +75,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
         'Processing generate request',
       )
 
-      const abortSignal = createRequestAbortSignal(request)
+      const abortSignal = createRequestAbortSignal({ request, reply })
       const baseOptions = {
         model: resolvedModel,
         prompt,

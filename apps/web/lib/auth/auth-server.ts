@@ -1,12 +1,19 @@
+import { ApiError } from '@repo/core'
 import { logger } from '@repo/utils/logger/server'
 import { cookies } from 'next/headers'
 import { env } from '@/lib/env'
 import type { AuthCookie } from './auth-schemas'
 import { authCookieSchema } from './auth-schemas'
+import { createBffClient } from './bff-client'
 import { decodeJwtToken } from './jwt-utils'
 import { parseAuthCookie } from './parse-auth-cookie'
 
 const cookieName = env.NEXT_PUBLIC_AUTH_COOKIE_NAME
+
+export type RefreshTokensResult =
+  | { status: 'ok'; tokens: AuthCookie }
+  | { status: 'invalid' }
+  | { status: 'unavailable' }
 
 function getAuthCookieOptions({ maxAge }: { maxAge?: number }) {
   return {
@@ -46,31 +53,40 @@ export function clearAuthCookiesOnResponse(response: {
   response.cookies.set(cookieName, '', { ...cleanOpts, maxAge: 0 } as typeof opts)
 }
 
-export async function getServerAuthToken(): Promise<{ token: string | null }> {
+export async function getServerAuthCookie() {
   const cookieStore = await cookies()
-  const { token } = parseAuthCookie(cookieStore.get(cookieName)?.value)
+  return parseAuthCookie(cookieStore.get(cookieName)?.value)
+}
+
+export async function getServerAuthToken(): Promise<{ token: string | null }> {
+  const { token } = await getServerAuthCookie()
   return { token }
 }
 
 export async function refreshTokensWithRefreshToken({
   refreshToken,
+  request,
   reqId,
 }: {
   refreshToken: string
+  request?: Request
   reqId: string
-}): Promise<AuthCookie | null> {
+}): Promise<RefreshTokensResult> {
+  const { client } = createBffClient({
+    request,
+    extraHeaders: { 'x-request-id': reqId },
+  })
   try {
-    const response = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/session/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-request-id': reqId },
-      body: JSON.stringify({ refreshToken }),
-      cache: 'no-store',
-    })
-    if (!response.ok) return null
-    const parsed = authCookieSchema.safeParse(await response.json())
-    return parsed.success ? parsed.data : null
-  } catch {
+    const data = await client.auth.session.refresh({ body: { refreshToken } })
+    const parsed = authCookieSchema.safeParse(data)
+    if (!parsed.success) return { status: 'unavailable' }
+    return { status: 'ok', tokens: parsed.data }
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.status === 401 || error.status === 400) return { status: 'invalid' }
+      if (error.status === 429 || error.status >= 500) return { status: 'unavailable' }
+    }
     logger.warn({ reqId }, 'auth_proxy_refresh_failed')
-    return null
+    return { status: 'unavailable' }
   }
 }

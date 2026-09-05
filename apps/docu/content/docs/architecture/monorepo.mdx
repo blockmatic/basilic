@@ -39,7 +39,7 @@ flowchart TB
   Cli -->|HTTP| API
 ```
 
-**Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shared `@repo/ui` only, not wired to `@repo/core`/`@repo/react` yet), `docu` (Fumadocs).
+**Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shares **tokens** later, not components/`@repo/core` types yet), `docu` (Fumadocs).
 
 **Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils`, `cli`.
 

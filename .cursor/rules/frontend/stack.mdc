@@ -9,7 +9,7 @@ alwaysApply: false
 - `@repo/react`: React Query hooks and helpers only—never UI components. Route-specific UI (e.g. login form) lives in apps, collocated by route
 - `nuqs`: URL-based state (search/filters/tabs/pagination)
 - `zod`: Schema validation
-- `@repo/lib`: Utility library
+- `@repo/utils`: Utility library
 - `lodash-es`: Common operations (per-function imports)
 - `ahooks`: `useSetState` (grouped state), `useLocalStorageState` (localStorage)
 

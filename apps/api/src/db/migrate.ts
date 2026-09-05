@@ -35,6 +35,11 @@ export async function runMigrations(logger?: {
   const migrationFiles = await readMigrationFiles(migrationsDir)
 
   if (migrationFiles.length === 0) {
+    const shouldUsePGLite = env.PGLITE === true || env.NODE_ENV === 'test'
+    if (shouldUsePGLite)
+      throw new Error(
+        `No SQL migrations found in ${migrationsDir}. Compiled PGLite/test starts require copied migration assets.`,
+      )
     logger?.info('No migrations found, skipping migration step')
     return
   }

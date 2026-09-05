@@ -96,4 +96,14 @@ describe('new-device notify', () => {
     expect(verifyRes.statusCode).toBe(200)
     await vi.waitFor(() => expect(newDeviceMails(email).length).toBe(1))
   })
+
+  it('does not crash the process when notification render rejects', async () => {
+    const renderMod = await import('@repo/email/render')
+    const spy = vi.spyOn(renderMod, 'render').mockRejectedValue(new Error('render failed'))
+    const email = 'sessions-notify-render-fail@test.ai'
+    const verifyRes = await login({ email, userAgent: chromeUa })
+    spy.mockRestore()
+    expect(verifyRes.statusCode).toBe(200)
+    await new Promise(resolve => setTimeout(resolve, 50))
+  })
 })

@@ -5,7 +5,7 @@ description: "Fastify 5 + TypeBox routes generate OpenAPI; @hey-api/openapi-ts g
 
 Fastify routes and TypeBox schemas are the source of truth for validation and for the OpenAPI spec. `@hey-api/openapi-ts` generates the TypeScript client in `@repo/core`. `@repo/react` wraps that client with **handwritten** TanStack Query 5 hooks — Hey API does not generate them.
 
-Flow: TypeBox → OpenAPI → `@repo/core` (client + types + Zod) → `@repo/react` (hooks). Commands: [OpenAPI Generation](/docs/development/openapi-generation).
+Flow: TypeBox → OpenAPI → `@repo/core` (client + types) → handwritten `@repo/react` hooks. Commands: [OpenAPI Generation](/docs/development/openapi-generation).
 
 ## Stack
 
@@ -25,12 +25,23 @@ Runtime: request → Fastify validation → handler → Drizzle → JSON.
 
 ```typescript
 import { Type } from '@sinclair/typebox'
-import { isDbReady } from '../db/index.js'
+import { dbHealth } from '../db/probe.js'
 
 fastify.get('/health', {
-  schema: { response: { 200: Type.Object({ ok: Type.Boolean(), dbReady: Type.Boolean() }) } },
-}, async (_request, reply) => reply.send({ ok: true, dbReady: isDbReady() }))
+  schema: {
+    response: {
+      200: Type.Object({ ok: Type.Boolean(), dbReady: Type.Boolean() }),
+      503: Type.Object({ ok: Type.Boolean(), dbReady: Type.Boolean() }),
+    },
+  },
+}, async (_request, reply) => {
+  const dbReady = await dbHealth.probe()
+  if (!dbReady) return reply.code(503).send({ ok: false, dbReady: false })
+  return reply.code(200).send({ ok: true, dbReady: true })
+})
 ```
+
+`GET /health` is readiness: **200** when `SELECT 1` succeeds, **503** when the store cannot answer. It does not probe Resend, AI, or IdPs.
 
 `createClient` from `@repo/core` has three auth modes (see [Authentication](/docs/architecture/authentication)): no-auth, JWT (`getAuthToken` / refresh), API key.
 

@@ -6,9 +6,25 @@ import { env } from '../env.js'
 import type { ResolvedProvider } from './provider.js'
 import { isInsufficientCreditsError } from './upstream-error.js'
 
-export function createRequestAbortSignal(request: FastifyRequest): AbortSignal {
+export function createRequestAbortSignal({
+  request,
+  reply,
+}: {
+  request: FastifyRequest
+  reply: FastifyReply
+}): AbortSignal {
   const requestAbortController = new AbortController()
-  request.raw.once('close', () => requestAbortController.abort())
+  function onPrematureClose() {
+    if (reply.raw.writableEnded) return
+    requestAbortController.abort()
+  }
+  const socket = request.raw.socket
+  reply.raw.once('close', onPrematureClose)
+  socket?.once('close', onPrematureClose)
+  requestAbortController.signal.addEventListener('abort', () => {
+    reply.raw.off('close', onPrematureClose)
+    socket?.off('close', onPrematureClose)
+  })
   return AbortSignal.any([
     requestAbortController.signal,
     AbortSignal.timeout(env.AI_UPSTREAM_TIMEOUT_MS),

@@ -18,6 +18,9 @@ export const sessions = pgTable(
   {
     id: text('id').primaryKey(),
     token: text('token').notNull(),
+    previousToken: text('previous_token'),
+    currentJti: text('current_jti'),
+    rotatedAt: timestamp('rotated_at'),
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),

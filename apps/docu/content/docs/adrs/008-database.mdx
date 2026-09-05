@@ -129,10 +129,8 @@ We will use **PostgreSQL** as the single database engine with **Supabase** as th
 - Supabase accelerates initial development with managed Postgres, branching, and local development
 - Drizzle ORM ensures **zero vendor lock-in** by generating plain SQL with no proprietary runtime
 - **Portability**: Migration requires only changing `DATABASE_URL` - no code changes
-- **Clear migration path**: Supabase → AWS RDS / Google Cloud SQL → self-hosted / on-premises
-- **Security flexibility**: Easy move to environments with KMS encryption, VPC isolation, Cloud HSM
-- **No cold starts on infrastructure**: Can run with always-on database on Google Cloud or AWS
-- **Complements Fastify**: Both chosen for portability and ability to migrate from Vercel to GCP/AWS
+- **Clear migration path**: Adopter may point `DATABASE_URL` at another Postgres host. Basilic ships Vercel + Postgres; GCP/AWS are not a Basilic destination.
+- **Complements Fastify**: Both stay portable; Basilic’s shipped path is Vercel.
 
 ## Migration Strategy
 
@@ -189,9 +187,9 @@ flowchart TD
 
 All platforms use the same build command pattern:
 
-- **Docker**: `RUN pnpm build` (runs migrations)
-- **Railway/Fly.io/Render**: `build: pnpm build` (runs migrations)
-- **Local dev (PostgreSQL)**: Migrations run when you **build** the API (`pnpm build` / `pnpm --filter @repo/api build`), not when you run `pnpm dev` alone. To wipe local Supabase and re-apply schema + seed, use **`pnpm reset`** (repo root) or **`pnpm reset`** in `apps/api`. **PGLite**: migrations still run at runtime
+- **Docker**: `RUN pnpm build` (OpenAPI + `tsc`; run `pnpm db:migrate` as a separate migrate phase)
+- **Railway/Fly.io/Render**: `build: pnpm build` then a migrate command — not bundled into `tsc`
+- **Local dev (PostgreSQL)**: Migrations run via **`pnpm db:migrate`**, not when you run `pnpm build` / `pnpm --filter @repo/api build` alone. To wipe local Supabase and re-apply schema + seed, use **`pnpm reset`** (repo root) or **`pnpm reset`** in `apps/api`. **PGLite**: SQL assets must be present next to compiled `migrate.js`; empty list is a hard error when `PGLITE=true` or `NODE_ENV=test`
 
 ### Local database reset (Supabase + Drizzle)
 
@@ -213,7 +211,7 @@ Run `pnpm db:stop` before switching to another project's Supabase instance (e.g.
 
 ## Notes
 
-- **Strategic approach**: Start with Supabase for rapid iteration, migrate to Google Cloud/AWS for production security
+- **Strategic approach**: Basilic ships Vercel + Postgres (`DATABASE_URL`). Other hosts (Supabase, GCP, AWS, on-prem) remain an adopter choice via the connection string, not a Basilic destination.
 - Supabase used as "Postgres as a service", not as platform dependency
 - No Supabase SDKs, auth, storage, or proprietary APIs used - only standard PostgreSQL connection
 - PGlite suitable for local dev/testing and preview branches, not production

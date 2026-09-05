@@ -45,8 +45,8 @@ describe('POST /auth/session/refresh', () => {
     expect(typeof refreshBody.refreshToken).toBe('string')
   })
 
-  it('should return TOKEN_REUSE_DETECTED and revoke session on refresh replay', async () => {
-    const email = 'refresh-reuse@test.ai'
+  it('should return the same rotated jti for overlapping refresh within the grace window', async () => {
+    const email = 'refresh-grace@test.ai'
     const token = await getMagicLinkTokenRaw(fastify, email)
 
     const verifyRes = await fastify.inject({
@@ -62,6 +62,44 @@ describe('POST /auth/session/refresh', () => {
       payload: { refreshToken: originalRefresh },
     })
     expect(firstRefresh.statusCode).toBe(200)
+    const firstBody = JSON.parse(firstRefresh.body) as { token: string; refreshToken: string }
+    const firstJti = decodeJwtPayload<{ jti?: string }>(firstBody.refreshToken).jti
+
+    const graceRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/session/refresh',
+      payload: { refreshToken: originalRefresh },
+    })
+    expect(graceRes.statusCode).toBe(200)
+    const graceBody = JSON.parse(graceRes.body) as { token: string; refreshToken: string }
+    expect(decodeJwtPayload<{ jti?: string }>(graceBody.refreshToken).jti).toBe(firstJti)
+  })
+
+  it('should return TOKEN_REUSE_DETECTED and revoke session on refresh replay after grace', async () => {
+    const email = 'refresh-reuse@test.ai'
+    const token = await getMagicLinkTokenRaw(fastify, email)
+
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token },
+    })
+    const { refreshToken: originalRefresh } = JSON.parse(verifyRes.body) as { refreshToken: string }
+    const decoded = decodeJwtPayload<{ sid?: string }>(originalRefresh)
+    if (!decoded.sid) throw new Error('Missing sid')
+
+    const firstRefresh = await fastify.inject({
+      method: 'POST',
+      url: '/auth/session/refresh',
+      payload: { refreshToken: originalRefresh },
+    })
+    expect(firstRefresh.statusCode).toBe(200)
+
+    const db = await getDb()
+    await db
+      .update(sessions)
+      .set({ rotatedAt: new Date(Date.now() - (env.REFRESH_REUSE_GRACE_SECONDS + 5) * 1000) })
+      .where(eq(sessions.id, decoded.sid))
 
     const reuseRes = await fastify.inject({
       method: 'POST',

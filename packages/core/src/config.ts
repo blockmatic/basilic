@@ -40,6 +40,8 @@ export type JwtOptions = {
   getAuthToken: () => string | null | Promise<string | null>
   getRefreshToken: () => string | null | Promise<string | null>
   onTokensRefreshed: (tokens: { token: string; refreshToken: string }) => void | Promise<void>
+  /** Override Fastify `POST /auth/session/refresh`. Next web uses same-origin `/api/auth/refresh`. */
+  refreshTokens?: () => Promise<{ token: string; refreshToken: string } | null>
   getHeaders?: () => Record<string, string> | Promise<Record<string, string>>
 }
 

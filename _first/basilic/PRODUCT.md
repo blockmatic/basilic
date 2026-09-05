@@ -136,7 +136,7 @@ Must work after clone → `pnpm setup` → `db:start` → `pnpm reset` → `pnpm
 - Docs site (`apps/docu`), Cursor rules, basilic-skills playbooks
 - `@repo/ui` tokens in `packages/ui/src/styles/tokens.css`
 - `@repo/email` for auth mail; CLI with API key only
-- Pino `reqId`; `GET /health` `{ ok, dbReady }`
+- Pino `reqId`; `GET /health` readiness (503 when DB probe fails)
 
 ### Demo chrome
 
