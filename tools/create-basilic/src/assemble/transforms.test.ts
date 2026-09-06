@@ -14,16 +14,16 @@ describe('applyAssembleTransforms', () => {
       JSON.stringify({
         version: 1,
         skills: {
-          b: { source: '../basilic-skills', sourceType: 'local' },
+          workflow: { source: '../basilic-skills', sourceType: 'local' },
         },
       }),
     )
     applyAssembleTransforms({ destRoot })
     const lock = JSON.parse(readFileSync(join(destRoot, 'skills-lock.json'), 'utf8')) as {
-      skills: { b: { source: string; sourceType: string; skillPath: string } }
+      skills: { workflow: { source: string; sourceType: string; skillPath: string } }
     }
-    expect(lock.skills.b.source).toBe('blockmatic/basilic-skills')
-    expect(lock.skills.b.sourceType).toBe('github')
-    expect(lock.skills.b.skillPath).toBe('skills/b/SKILL.md')
+    expect(lock.skills.workflow.source).toBe('blockmatic/basilic-skills')
+    expect(lock.skills.workflow.sourceType).toBe('github')
+    expect(lock.skills.workflow.skillPath).toBe('skills/workflow/SKILL.md')
   })
 })

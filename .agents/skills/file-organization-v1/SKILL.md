@@ -56,7 +56,7 @@ description: Folder-plus-index grouping for related modules — when to use fold
 
 ### Group index (same runtime)
 
-```text
+```
 oauth/
   shared.ts
   google.ts
@@ -67,7 +67,7 @@ Consumers: `import { getOAuthAllowedCallbackUrls } from '../lib/oauth/index.js'`
 
 ### Split runtime (no unifying index)
 
-```text
+```
 logger/
   server.ts
   client.ts
@@ -78,7 +78,7 @@ Consumers import named entry files directly (`logger/server`, `logger/client`).
 
 ### Named entry (cycle avoidance)
 
-```text
+```
 catalogs/
   index.ts      # dictionaries only
   mapper.ts     # imports from ./index.js — not re-exported

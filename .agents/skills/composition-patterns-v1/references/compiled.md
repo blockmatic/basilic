@@ -186,6 +186,13 @@ function Composer({
 ```tsx
 const ComposerContext = createContext<ComposerContextValue | null>(null)
 
+function useComposerContext() {
+  const context = useContext(ComposerContext)
+  if (!context)
+    throw new Error('useComposerContext must be used within a Composer provider')
+  return context
+}
+
 function ComposerProvider({ children, state, actions, meta }: ProviderProps) {
   return (
     <ComposerContext.Provider value={{ state, actions, meta }}>
@@ -203,7 +210,7 @@ function ComposerInput() {
     state,
     actions: { update },
     meta: { inputRef },
-  } = useContext(ComposerContext)
+  } = useComposerContext()
   return (
     <TextInput
       ref={inputRef}
@@ -216,7 +223,7 @@ function ComposerInput() {
 function ComposerSubmit() {
   const {
     actions: { submit },
-  } = useContext(ComposerContext)
+  } = useComposerContext()
   return <Button onPress={submit}>Send</Button>
 }
 
@@ -431,6 +438,13 @@ interface ComposerContextValue {
 }
 
 const ComposerContext = createContext<ComposerContextValue | null>(null)
+
+function useComposerContext() {
+  const context = useContext(ComposerContext)
+  if (!context)
+    throw new Error('useComposerContext must be used within a Composer provider')
+  return context
+}
 ```
 
 **UI components consume the interface, not the implementation:**
@@ -441,7 +455,7 @@ function ComposerInput() {
     state,
     actions: { update },
     meta,
-  } = useContext(ComposerContext)
+  } = useComposerContext()
 
   // This component works with ANY provider that implements the interface
   return (
@@ -548,13 +562,13 @@ function ForwardMessageDialog() {
 function ForwardButton() {
   const {
     actions: { submit },
-  } = useContext(ComposerContext)
+  } = useComposerContext()
   return <Button onPress={submit}>Forward</Button>
 }
 
 // This preview lives OUTSIDE Composer.Frame but can read composer's state!
 function MessagePreview() {
-  const { state } = useContext(ComposerContext)
+  const { state } = useComposerContext()
   return <Preview message={state.input} attachments={state.attachments} />
 }
 ```
@@ -685,7 +699,7 @@ function ForwardMessageDialog() {
 }
 
 function ForwardButton() {
-  const { actions } = useContext(ComposerContext)
+  const { actions } = useComposerContext()
   return <Button onPress={actions.submit}>Forward</Button>
 }
 ```

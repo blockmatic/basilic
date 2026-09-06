@@ -7,7 +7,7 @@ Development is **Cursor-first**. Claude Code follows the same rules and skills v
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era). Index this site once — [Cursor Setup](/docs/development/cursor-setup). Versioning and how to update skills: [Cursor Skills](/docs/development/cursor-skills).
 
-FIRST is vendored from [`blockmatic/first`](https://github.com/blockmatic/first). Install `npx skills add blockmatic/first`. Copy `README.md`, `AGENTS.md`, and `ABOUT.md` into `_first/`; keep `FIRST.md` and `_first/basilic/` as this repo’s instance. Write overlays only for stations listed as In. Essays live on the FIRST site. Agents load `_first/AGENTS.md`, then `_first/ABOUT.md`, then `_first/FIRST.md`, then this repository's instructions and skills, then `/f-*` for the station in scope, then the instance listed in FIRST.md. FIRST does not replace this repository's Cursor-first workflow. Factory validation (`pnpm validate`) runs in the first repo. Two catalogs: `blockmatic/first` (`/f-*`) and `blockmatic/basilic-skills` (tech on GitHub; workflow is a local preview until `main` publishes the restored unprefixed tags). Installed playbooks live under `.agents/skills/workflow/` (`/plan-feature`, dispatcher `/workflow`).
+FIRST is vendored from [`blockmatic/first`](https://github.com/blockmatic/first). Install `npx skills add blockmatic/first`. Copy `README.md`, `AGENTS.md`, and `ABOUT.md` into `_first/`; keep `FIRST.md` and `_first/basilic/` as this repo’s instance. Write overlays only for stations listed as In. Essays live on the FIRST site. Agents load `_first/AGENTS.md`, then `_first/ABOUT.md`, then `_first/FIRST.md`, then this repository's instructions and skills, then `/f-*` for the station in scope, then the instance listed in FIRST.md. FIRST does not replace this repository's Cursor-first workflow. Factory validation (`pnpm validate`) runs in the first repo. Two catalogs: `blockmatic/first` (`/f-*`) and `blockmatic/basilic-skills` (tech skills and the `workflow` playbook tree). Installed playbooks live under `.agents/skills/workflow/` (`/plan-feature`, dispatcher `/workflow`).
 
 ## FIRST stations
 
@@ -34,7 +34,7 @@ In Cursor chat, type `/` then the skill name.
 - **Enter** — attach for this message only
 - **Option+Enter** (Alt+Enter) — pin for the session
 
-Use `/workflow` (local preview dispatcher) to list the catalog, `/workflow <shortcut>` to route a task, or the full `/<name>` to load a playbook directly. FIRST `/f-*` remains the separate decision catalog.
+Use `/workflow` to list the catalog, `/workflow <shortcut>` to route a task, or the full `/<name>` to load a playbook directly. FIRST `/f-*` remains the separate decision catalog.
 
 | Task | Shortcut | Direct skill |
 | --- | --- | --- |
@@ -51,7 +51,7 @@ Use `/workflow` (local preview dispatcher) to list the catalog, `/workflow <shor
 
 An empty `/workflow` lists options; an unknown token reports the available names. Neither starts work. `/build` ends with verified local changes. `/exec-push` explicitly requests implementation, full validation, commit, push, and a described PR. No workflow implies merge or deployment.
 
-Names match folders under `.agents/skills/workflow/`, such as `plan-feature`. Names from `/b-*` chats can be translated; they are not separate installed aliases. Update pinned prompts and reload discovery after installing. When a harness does not expose the slash menu, read `.agents/skills/workflow/SKILL.md` and the named child directly. Do not create another skills tree.
+Names match folders under `.agents/skills/workflow/`, such as `plan-feature`. Update pinned prompts and reload discovery after installing. When a harness does not expose the slash menu, read `.agents/skills/workflow/SKILL.md` and the named child directly. Do not create another skills tree.
 
 ## Workflow
 
@@ -72,7 +72,7 @@ The core playbooks use inputs, steps, verification, and a handoff. Reviews inspe
 
 Shared completion evidence lives inside the installed `workflow/references/` directory. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/use-tdd` or repository requirements.
 
-The selective adaptation of [Addy's skills](https://skills.addy.ie/) is documented in the basilic-skills checkout (not yet published on GitHub). See [Cursor Skills](/docs/development/cursor-skills#workflow-migration) for local preview and publication status.
+The selective adaptation of [Addy's skills](https://skills.addy.ie/) is documented in [basilic-skills](https://github.com/blockmatic/basilic-skills). See [Cursor Skills](/docs/development/cursor-skills#workflow-package) for the installed `workflow` tree.
 
 ## Models (30 Aug 2026)
 

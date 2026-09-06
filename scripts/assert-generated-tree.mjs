@@ -40,7 +40,7 @@ const required = [
   'docs/basilic/development/index.md',
   'docs/basilic/testing/product-ready.md',
   '.cursor/rules/base/general.mdc',
-  '.agents/skills/b/SKILL.md',
+  '.agents/skills/workflow/SKILL.md',
 ]
 
 let failed = false
