@@ -66,7 +66,7 @@ Review files for compliance with Vercel Web Interface Guidelines. Upstream skill
 
 Fetch this reviewed commit before each review (not `main`):
 
-```
+```text
 https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/e3d624baaf29dc1fc645aff3e38f03e564d2d6b1/command.md
 ```
 
