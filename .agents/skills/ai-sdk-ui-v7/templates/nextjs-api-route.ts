@@ -14,15 +14,36 @@ import {
   streamText,
   toUIMessageStream,
   type UIMessage,
+  validateUIMessages,
 } from 'ai'
 
+export async function parseChatRequest(
+  body: unknown,
+): Promise<{ ok: true; messages: UIMessage[] } | { ok: false; status: 400 }> {
+  if (
+    typeof body !== 'object' ||
+    body === null ||
+    !('messages' in body) ||
+    !Array.isArray(body.messages)
+  )
+    return { ok: false, status: 400 }
+
+  try {
+    const messages = await validateUIMessages({ messages: body.messages })
+    return { ok: true, messages }
+  } catch {
+    return { ok: false, status: 400 }
+  }
+}
+
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json()
+  const parsed = await parseChatRequest(await req.json())
+  if (!parsed.ok) return new Response(null, { status: parsed.status })
 
   const result = streamText({
     model: openai('gpt-4.1'),
     instructions: 'You are a helpful assistant.',
-    messages: await convertToModelMessages(messages),
+    messages: await convertToModelMessages(parsed.messages),
     stopWhen: isStepCount(5),
   })
 
