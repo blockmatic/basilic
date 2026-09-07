@@ -22,6 +22,7 @@ const forbidden = [
   '.github/workflows/scaffold.yml',
   '.github/workflows/release-impact.yml',
   '.github/workflows/scaffold-acceptance.yml',
+  '.agents/skills/b',
 ]
 
 const required = [

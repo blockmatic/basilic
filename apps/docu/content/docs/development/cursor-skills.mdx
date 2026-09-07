@@ -53,7 +53,7 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 The published workflow package is `workflow`: `.agents/skills/workflow/SKILL.md` dispatches to 51 children, including `/build` and `/use-frontend`. Shared authoring and completion references travel inside this tree. FIRST and technology skill names are unchanged.
 
-This repository should have one workflow tree. Slash tags are `/workflow` and `/plan-feature`. `/workflow plan` is a dispatcher shortcut to `/plan-feature`. After a refresh, remove any leftover `b` package with the skills CLI, preserving local edits first.
+This repository should have one workflow tree. Slash tags are `/workflow` and `/plan-feature`. `/workflow plan` is a dispatcher shortcut to `/plan-feature`. After a refresh, preserve local edits first, then run `pnpm dlx skills@latest remove --skill b -a cursor -y`. `.agents/skills/b/` must be absent afterward.
 
 Packaging validation runs in the catalog with `pnpm validate`. It checks metadata, counts, grouping, and workflow reference targets. These checks do not prove that an agent follows the workflow or that a particular desktop menu has refreshed.
 
@@ -77,7 +77,7 @@ pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --cop
 pnpm dlx skills@latest add blockmatic/first -a cursor --copy -y
 ```
 
-A named refresh is valid (`--skill next-v16`, `--skill workflow`). Do not keep a leftover local `b` tree beside `workflow`.
+A named refresh is valid (`--skill next-v16`, `--skill workflow`). After a refresh, run `pnpm dlx skills@latest remove --skill b -a cursor -y`. `.agents/skills/b/` must be absent afterward.
 
 Review the diff; commit `.agents/skills/` and `skills-lock.json`.
 
