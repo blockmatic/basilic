@@ -36,7 +36,8 @@
       "!**/openapi/*.json",
       "!**/src/db/migrations/meta",
       "!**/.deepsec",
-      "!**/tools/create-basilic/template"
+      "!**/tools/create-basilic/template",
+      "!.agents/skills"
     ],
     "maxSize": 1048576
   },
