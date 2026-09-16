@@ -1,11 +1,11 @@
 import Link from 'next/link'
 
 const steps = [
-  { label: 'create' },
-  { label: 'setup' },
-  { label: 'db:start' },
-  { label: 'reset' },
-  { label: 'dev' },
+  { command: 'npx create-basilic@latest' },
+  { command: 'pnpm setup' },
+  { command: 'pnpm --filter @repo/api db:start' },
+  { command: 'pnpm reset' },
+  { command: 'pnpm dev' },
 ]
 
 export function RunIt() {
@@ -25,11 +25,13 @@ export function RunIt() {
         <ol className="mt-8 flex flex-col gap-4 md:flex-row md:gap-6">
           {steps.map((step, index) => (
             <li
-              key={step.label}
-              className="flex items-baseline gap-2 md:flex-1 md:flex-col md:gap-1"
+              key={step.command}
+              className="flex min-w-0 items-baseline gap-2 md:flex-1 md:flex-col md:gap-1"
             >
               <span className="text-sm text-muted-foreground">{index + 1}</span>
-              <span className="font-mono text-sm md:text-base">{step.label}</span>
+              <span className="font-mono text-sm whitespace-pre-wrap break-words">
+                {step.command}
+              </span>
             </li>
           ))}
         </ol>
