@@ -4,6 +4,7 @@
     "index",
     "monorepo",
     "api",
+    "data",
     "ai",
     "authentication",
     "account-linking",

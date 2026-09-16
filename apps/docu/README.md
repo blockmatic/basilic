@@ -1,6 +1,6 @@
 # Documentation
 
-Fumadocs (Next.js 16 + MDX) site for architecture, ADRs, development, testing, and deployment. Product intent for maintainers is `_first/basilic/PRODUCT.md`, not this site.
+Fumadocs (Next.js 16 + MDX) site for architecture, ADRs, development, testing, and deployment. Product intent for maintainers is root `PRODUCT.md`, not this site.
 
 ```bash
 pnpm --filter @repo/docu dev

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 ## Purpose and inputs
 
-Use the attached or in-context plan, the matching implementation, and [plan-feature](../plan-feature/SKILL.md). Stay read-only. Do not create files, branches, or scaffolds.
+Use the attached or in-context plan, the matching implementation, and [plan](../plan/SKILL.md). Stay read-only. Do not create files, branches, or scaffolds.
 
 ## Steps
 

@@ -76,7 +76,7 @@ The web app uses `useChatFromConfig` (`@repo/react`) → `POST {baseUrl}/ai/chat
 { "__render": "market-card", "spec": { "root": "...", "elements": { ... } }, "summary": "..." }
 ```
 
-`assistant-chat.tsx` matches `tool-getAccountInfo` → `user-info-catalog.tsx` and `tool-getMarketSnapshot` → `market-card-catalog.tsx`. Do not rename a tool or change the output shape without updating the web UI. `__render: 'user-info'` is the account-context demo job; `__render: 'market-card'` is the markets demo job. Product analytics records `assistant_turn` with `accountRender` when the account surface is present — not merely when the assistant replies. See [Product analytics](/docs/architecture/analytics).
+`assistant-chat.tsx` matches `tool-getAccountInfo` → `user-info-catalog.tsx` and `tool-getMarketSnapshot` → `market-card-catalog.tsx`. Do not rename a tool or change the output shape without updating the web UI. `__render: 'user-info'` is the account-context demo job; `__render: 'market-card'` is the markets demo job. Completion for account is `accountRender: true`; completion for markets is the market card rendered. A text-only reply is **not** either job. There is no GenUI CTA (`actions: {}`). Entry is the composer or a suggestion: “What moved?”, “Explain BTC”, “Who am I?”. Product analytics records `assistant_turn` with `accountRender` when the account surface is present — not merely when the assistant replies. See [Product analytics](/docs/architecture/analytics).
 
 `getMarketSnapshot` reads the same public CoinGecko markets URL as the web board. On 429 or network failure it returns a checked-in mock so fork-and-run does not need a CoinGecko key.
 

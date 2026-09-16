@@ -11,14 +11,6 @@ Rules override skills. Skills override the model. Indexed docs are advisory.
 
 ## Catalogs
 
-Two catalogs. Do not merge them.
-
-**FIRST stations** — [blockmatic/first](https://github.com/blockmatic/first). Nested `/f-*` playbooks.
-
-```bash
-npx skills add blockmatic/first
-```
-
 **Tech and workflow** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Playbooks install as the parent `workflow` skill.
 
 Install or refresh (interactive — pick skills and agents):
@@ -27,7 +19,7 @@ Install or refresh (interactive — pick skills and agents):
 pnpm dlx skills@latest add blockmatic/basilic-skills
 ```
 
-Non-interactive Cursor copy of the whole catalog:
+Non-interactive refresh used in this repo:
 
 ```bash
 pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
@@ -35,25 +27,23 @@ pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --cop
 
 That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/workflow/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
 
-Root `skills-lock.json` tracks catalog hashes. FIRST is `source: blockmatic/first`. The `web-design-guidelines-v1` entry also records the pinned `command.md` commit digest. Commit the lock with `.agents/skills/` after every refresh.
+Root `skills-lock.json` tracks catalog hashes. The `web-design-guidelines-v1` entry also records the pinned `command.md` commit digest. Commit the lock with `.agents/skills/` after every refresh.
 
 ## Two kinds
 
-**FIRST** — `.agents/skills/f/` plus nested `f-<name>/`. Slash-only station and role skills. Refresh from `blockmatic/first`, not basilic-skills.
-
 **Tech** — `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
-**Workflow** — install the parent `workflow` skill; nested children are not independent install targets. `.agents/skills/workflow/<name>/` (example: `workflow/plan-feature`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/plan-feature` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
+**Workflow** — install the parent `workflow` skill; nested children are not independent install targets. `.agents/skills/workflow/<name>/` (example: `workflow/plan`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/plan` or `/build` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name.
 
 Skill descriptions are always in the agent’s discovery context. One folder per skill. Do not keep `foo/` next to `foo-v1/`. Prefer fewer, focused skills.
 
-## Workflow package
+## Workflow install
 
-The published workflow package is `workflow`: `.agents/skills/workflow/SKILL.md` dispatches to 51 children, including `/build` and `/use-frontend`. Shared authoring and completion references travel inside this tree. FIRST and technology skill names are unchanged.
+The published workflow package is `workflow`: `.agents/skills/workflow/SKILL.md` dispatches to 51 children, including `/plan`, `/build`, and `/use-frontend`. Shared authoring and completion references travel inside this tree.
 
-This repository should have one workflow tree. Slash tags are `/workflow` and `/plan-feature`. `/workflow plan` is a dispatcher shortcut to `/plan-feature`. After a refresh, preserve local edits first, then run `pnpm dlx skills@latest remove --skill b -a cursor -y`. `.agents/skills/b/` must be absent afterward.
+This repository should have one workflow tree. Slash tags are `/workflow`, `/plan`, and `/build`. `/workflow plan` is a dispatcher shortcut to `/plan`. After a refresh, preserve local edits first, then run `pnpm dlx skills@latest remove --skill b -a cursor -y` if a leftover `b` tree appears. `.agents/skills/b/` must be absent afterward.
 
 Packaging validation runs in the catalog with `pnpm validate`. It checks metadata, counts, grouping, and workflow reference targets. These checks do not prove that an agent follows the workflow or that a particular desktop menu has refreshed.
 
@@ -70,14 +60,11 @@ This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is 
 
 ## Update procedure
 
-Refresh from GitHub:
-
 ```bash
 pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
-pnpm dlx skills@latest add blockmatic/first -a cursor --copy -y
 ```
 
-A named refresh is valid (`--skill next-v16`, `--skill workflow`). After a refresh, run `pnpm dlx skills@latest remove --skill b -a cursor -y`. `.agents/skills/b/` must be absent afterward.
+A named refresh is valid (`--skill next-v16`, `--skill workflow`). After a refresh, run `pnpm dlx skills@latest remove --skill b -a cursor -y` if `.agents/skills/b/` is present. That leftover path must be absent afterward.
 
 Review the diff; commit `.agents/skills/` and `skills-lock.json`.
 

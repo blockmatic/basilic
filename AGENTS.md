@@ -24,29 +24,12 @@ overrides guidance for its subtree and must be read before changing files there.
 Search first and keep reads targeted. Inspect the implementation, configuration,
 and tests instead of relying on memory or assuming that documentation is current.
 
-## FIRST decisions
+## Product and docs
 
-Use FIRST when a task invokes `/f-*` or requires a durable product, journey,
-architecture, data, API, documentation, workflow, quality, security, or
-operations decision. Interface expression is Journeys. Automated delivery is
-Workflow.
-
-Load FIRST in this order:
-
-1. [`_first/AGENTS.md`](_first/AGENTS.md)
-2. [`_first/ABOUT.md`](_first/ABOUT.md)
-3. [`_first/FIRST.md`](_first/FIRST.md)
-4. The primary `/f-<station>` skill
-5. The station artifact listed in `_first/FIRST.md`
-
-FIRST station skills live under `.agents/skills/f/f-<name>/` and come from
-[`blockmatic/first`](https://github.com/blockmatic/first).
-
-Choose one primary station. Load another only when the work crosses a boundary it
-owns. Do not load `_first/maintainers/` for product work. Durable Basilic product
-intent, feature status, non-goals, and roadmap live in
-[`_first/basilic/PRODUCT.md`](_first/basilic/PRODUCT.md); technical adopter
-documentation lives in `apps/docu`.
+Durable Basilic product intent, feature status, non-goals, and roadmap live in
+[`PRODUCT.md`](PRODUCT.md). Visual language is [`DESIGN.md`](DESIGN.md). Technical
+adopter documentation lives in `apps/docu`. Read the matching MDX or ADR before
+changing an architecture, convention, command, or documented behavior.
 
 ## Working contract
 
@@ -87,9 +70,9 @@ without creating conflicting edits or duplicate work.
   exact remaining failure or unverified behavior.
 - When behavior, architecture, commands, or conventions change, update the
   matching MDX page and nearest README in the same work.
-- Update `_first/basilic/PRODUCT.md` only when product goals, feature status,
-  non-goals, metrics, or roadmap horizons change. Passing `pnpm qa` is Workflow
-  evidence, not product success.
+- Update `PRODUCT.md` only when product goals, feature status, non-goals,
+  metrics, or roadmap horizons change. Passing `pnpm qa` is local/CI evidence,
+  not product success.
 - When creating a plan, include a `## References` section listing the rules,
   skills, and documentation used.
 

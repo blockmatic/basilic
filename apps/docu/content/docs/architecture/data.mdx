@@ -1,0 +1,26 @@
+---
+title: "Data"
+description: "Canonical tables in apps/api. oauth_state is a verification type, not a table."
+---
+
+The domain store is PostgreSQL in `apps/api` (Drizzle). Schema: `apps/api/src/db/schema/`. Migrations are generated from that TypeScript; do not hand-edit SQL. ADRs: [007](/docs/adrs/007-backend-orm), [008](/docs/adrs/008-database).
+
+Product analytics is **not** a store. `capture()` does not persist. PostHog is chosen, not installed. See [Product analytics](/docs/architecture/analytics).
+
+## Tables
+
+`users`, `account`, `sessions` (IP, UA, `signInMethod`, `deviceLabel`, `location`, `deviceFingerprint`), `verification` (`session_revoke` among types), `auth_attempts`, `api_keys`, `wallet_identities`, `web3_nonce`, `web3_callback`, `passkey_credentials`, `passkey_challenges`, `passkey_auth_challenges`, `passkey_callback`, `totp`, `totp_setup`.
+
+`oauth_state` and `oauth_link_state` are `verification.type` values, not tables (`apps/api/src/db/schema/tables/verification.ts`). See [Account linking](/docs/architecture/account-linking).
+
+## Users
+
+Text primary key. Email is nullable (Web3-only accounts). Sign-in methods: email, OAuth `account`, `wallet_identities`, `passkey_credentials`. TOTP is 2FA, not a sign-in method. Last-method guardrail on unlink.
+
+## Secrets at rest
+
+API key and refresh `jti` via `hashToken`; magic-link/change-email codes HMAC-SHA256 with `ENCRYPTION_KEY`; OAuth tokens and web3/passkey callbacks AES-GCM. Details: [Authentication](/docs/architecture/authentication), [Security](/docs/architecture/security).
+
+## Unresolved
+
+Domain glossary; retention, deletion, residency; identity/dedup beyond PK uniqueness.

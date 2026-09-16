@@ -55,10 +55,10 @@ overrides:
   eslint: ^10.9.1
   '@eslint/js': ^10.0.0
   tmp@<=0.2.3: '>=0.2.4'
-  js-yaml@<4.3.1: 4.3.1
+  js-yaml@<4.3.2: 4.3.2
   js-yaml@5: 5.2.2
   postcss@<8.5.23: 8.5.23
-  smol-toml: 1.6.1
+  smol-toml: 1.7.1
   sharp@<0.35.0: 0.35.0
   diff@<8.0.3: '>=8.0.3'
   decode-uri-component@<0.5.0: 0.5.0

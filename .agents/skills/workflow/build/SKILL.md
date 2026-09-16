@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 ## Purpose and inputs
 
-Use an existing plan or a sufficiently clear implementation request. Read the repository instructions, affected README/scripts, matching rules and skills, and technical docs. Resolve missing consequential decisions through the matching FIRST station.
+Use an existing plan or a sufficiently clear implementation request. Read the repository instructions, affected README/scripts, matching rules and skills, and technical docs. Resolve missing consequential decisions from `PRODUCT.md` and matching technical docs; ask a human for product scope, secrets, or destructive operations.
 
 ## Steps
 
@@ -14,7 +14,7 @@ Use an existing plan or a sufficiently clear implementation request. Read the re
 2. Implement one complete slice using existing packages and patterns. Change owning schemas and run documented generators instead of editing generated clients or migrations.
 3. Run the smallest meaningful check for the changed behavior. A reproducible logic defect should have a regression check; use TDD when requested or required by the repository, not as a ritual for prose edits.
 4. Investigate failed checks before building dependent work. Separate regressions caused here from pre-existing or environmental failures; never weaken checks to obtain a pass.
-5. Review the diff and update matching technical docs and nearest README when behavior or conventions change. Update the product overlay only when product facts change.
+5. Review the diff and update matching technical docs and nearest README when behavior or conventions change. Update `PRODUCT.md` only when product facts change.
 
 ## Verification
 

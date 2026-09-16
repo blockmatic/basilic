@@ -88,6 +88,12 @@ Limits are in-memory per API instance, keyed by trusted client IP (`getTrustedCl
 
 The Next.js `POST /api/auth/update-tokens` adapter writes `api.session` only for same-origin browser requests whose access/refresh pair Fastify has validated (`POST /auth/session/validate-tokens`). The cookie remains JS-readable (`httpOnly: false`) by design — this gate closes cross-site and forged writes, not same-origin XSS.
 
+## Unresolved
+
+Named threat model; data classification list; in-product AI tool permission matrix; a dated accepted-risk register with owner and next review; refresh ownership / concurrency protocol (see [Authentication](/docs/architecture/authentication)).
+
+Treat coding agents as a service account: least privilege, no secrets, human approval for destructive or trust-boundary edits.
+
 ## Related
 
 - [GitHub Actions](/docs/deployment/github-actions)
