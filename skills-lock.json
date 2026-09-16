@@ -17,13 +17,49 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/ai-sdk-ui-v7/SKILL.md",
-      "computedHash": "2d909a358b697da27416f5db98605d9cbf366600437faaa0a3c0c9d1c108ebdd"
+      "computedHash": "1dc538950bf93839cd593b8dc0c4a6ec0c0cef42c5732d4ff30756c529ce3a39"
+    },
+    "animate": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/animate/SKILL.md",
+      "computedHash": "2d129a1ff80d9ef0e67fa78368ee0885bed79eee8337eca3f95e54284a91a5a5"
+    },
+    "animate-expo": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/animate-expo/SKILL.md",
+      "computedHash": "7c0e016985f645ff1b65e5790921e06cdad1ed57a7d296f2199d0ad7d36dab3a"
+    },
+    "animation-vocabulary": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/animation-vocabulary/SKILL.md",
+      "computedHash": "137cd9950a294e548b5a8045d33432ae5963a6273797675dfbe47d6248721d37"
+    },
+    "apple-design": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/apple-design/SKILL.md",
+      "computedHash": "790a7c3d6785f08d8d4f9aec74cd5b87b7686b9316628c220db13790dbddb979"
+    },
+    "ask-sonner": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ask-sonner/SKILL.md",
+      "computedHash": "3f9f4ddc74f8a254e1022171b769d142dce34f54cd24c515e57d76f1edeacae0"
+    },
+    "better-ui": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/better-ui/SKILL.md",
+      "computedHash": "bfbdcba98eda5ddc36ef3b8a90da7a9fb1b83548b15c0f1b44e1b3642bd52d0c"
     },
     "composition-patterns": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/composition-patterns/SKILL.md",
-      "computedHash": "f687260c668cab07c15b0a2fa639c760718c38d4538f297c556e310e08396150"
+      "computedHash": "56415fbe1cb42178c3f80287d811909db3f807f1d90afb6acb3c83a400d92ad4"
     },
     "drizzle-orm-v0": {
       "source": "blockmatic/basilic-skills",
@@ -31,11 +67,17 @@
       "skillPath": "skills/drizzle-orm-v0/SKILL.md",
       "computedHash": "28c4e0ac28452e89e6faf1f7949e5a2cc687fe385f8d8b3ba6bbb07d3d48053d"
     },
+    "emil-design-eng": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "c8d06573e3b2e43b65027ee0df4277198954fd8b188ef7194a5fd3c366ba5b6c"
+    },
     "emilkowal-animations": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/emilkowal-animations/SKILL.md",
-      "computedHash": "2aa501c3407899c54a036a828ea2f3efc2b58671e1329f53299a84f138a99b15"
+      "computedHash": "f9d5fc89ddc9b7b1ce1b323c7152881c3a01d8088ccec5ddfd4c7aebc0c9c936"
     },
     "expo-cicd-workflows-v55": {
       "source": "blockmatic/basilic-skills",
@@ -83,13 +125,31 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/file-organization/SKILL.md",
-      "computedHash": "002c60ac87f283c2a489a512a7fc08543444beb73026d6b6f9c4f4ba7c27201a"
+      "computedHash": "64f3eafc143ad8b101ae3790b982df28a49ca4088e6604a1edb5d8958c93b35e"
+    },
+    "find-animation-opportunities": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-animation-opportunities/SKILL.md",
+      "computedHash": "30a093905f3dfe849dd0521fb4fdd133cf75e0ae5eed2a05b78e486b93101f06"
     },
     "frontend-design": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/frontend-design/SKILL.md",
-      "computedHash": "1f81af612869800f1297a65000198e5db22ca510c634116d97cb4a633370619e"
+      "computedHash": "abbb47fd2478581243ab487804aff86b59d243295d57c8d83593da4c420c146d"
+    },
+    "improve-animations": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/improve-animations/SKILL.md",
+      "computedHash": "b230b27adc1bb2e3815dc5a77e00b11757fdc18016344cf02470fa27abc6d278"
+    },
+    "mobile-native": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/mobile-native/SKILL.md",
+      "computedHash": "86ac4d5798a493c530a9e0d8566a0162922316a763f091f342537aa3a9529e30"
     },
     "motion-v13": {
       "source": "blockmatic/basilic-skills",
@@ -101,7 +161,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/next-v16/SKILL.md",
-      "computedHash": "0d29fb83302c3e148073a5ccef18c027e5b0c1714ec227522623018a37eacd72"
+      "computedHash": "afb141aca3d6a78d5188b73618439b6e6eb239507ed0466523b6560b894b1dc1"
     },
     "nodejs-keccak256-v1": {
       "source": "blockmatic/basilic-skills",
@@ -121,17 +181,35 @@
       "skillPath": "skills/openapi-ts-v0/SKILL.md",
       "computedHash": "43753c89d5456738c68fc1dff319d33fc74b639597cb15173540b40d909ff022"
     },
+    "pick-ui-library": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/pick-ui-library/SKILL.md",
+      "computedHash": "b2c42e9d4bb50c8024badd66f77035f4def8872f9360ef9e23c501cefc6200d3"
+    },
     "playwright-v1": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/playwright-v1/SKILL.md",
       "computedHash": "90a72381b7d8a9c13899c193827cec28ca1eb3da97b6a581d5310eb6d2b4770f"
     },
+    "prototype": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/prototype/SKILL.md",
+      "computedHash": "9a864b9589420fb5b304d6f827ec8ffa7e4bda58a90d901078fd50f9ff3aa1a4"
+    },
     "react-email": {
       "source": "resend/react-email",
       "sourceType": "github",
       "skillPath": "skills/react-email/SKILL.md",
       "computedHash": "da0feefc6ddf4aaeff930ab203d269774da464429e35b178d2403d69d2dc2fb3"
+    },
+    "review-animations": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/review-animations/SKILL.md",
+      "computedHash": "c820f3f1b7e8f9e4cf16c6106be92dcbadd680b0b059dbca6a4c3b20ecc28f30"
     },
     "shadcn-v3": {
       "source": "blockmatic/basilic-skills",
@@ -167,7 +245,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/vercel-react/SKILL.md",
-      "computedHash": "9d9b3bd49c078cd1bbf33c6c737d22750de6c03907a77c4154e88dd7c9839254"
+      "computedHash": "1a1d1d3888c8ce7928250be890ea06a9b7e90a3cd79d52b6daf90fea0ef289bd"
     },
     "viem-v2": {
       "source": "blockmatic/basilic-skills",
@@ -191,7 +269,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/web-design-guidelines/SKILL.md",
-      "computedHash": "078aca76ac497aa6e2de80f0dd6652563b89a4aaea48b7939bc4596623934ad9",
+      "computedHash": "6fba58fea2b22ede044a14748f967666ab504c9b93863dd2d059b3ce8bdb30da",
       "guidelines": {
         "source": "vercel-labs/web-interface-guidelines",
         "path": "command.md",
@@ -203,7 +281,13 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/workflow/SKILL.md",
-      "computedHash": "9e5cf7317ad42e839e5d9695a461de90a9ffa76bef776f904363b2d3dbfd84e4"
+      "computedHash": "c644da379300bd16b091ee6392f78ae052796471ba85cb76425d8b31d6b226c2"
+    },
+    "write-swift": {
+      "source": "blockmatic/basilic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/write-swift/SKILL.md",
+      "computedHash": "0550d45ef6c0b0745bbe4b19ba6669c03c3a4efb4cd6457ed8504448de047541"
     }
   }
 }

@@ -13,41 +13,43 @@ import {
   isStepCount,
   streamText,
   toUIMessageStream,
-  type UIMessage,
   validateUIMessages,
 } from 'ai'
 
-export async function parseChatRequest(
-  body: unknown,
-): Promise<{ ok: true; messages: UIMessage[] } | { ok: false; status: 400 }> {
-  if (
-    typeof body !== 'object' ||
-    body === null ||
-    !('messages' in body) ||
-    !Array.isArray(body.messages)
-  )
-    return { ok: false, status: 400 }
-
-  try {
-    const messages = await validateUIMessages({ messages: body.messages })
-    return { ok: true, messages }
-  } catch {
-    return { ok: false, status: 400 }
-  }
+function invalidBodyResponse() {
+  return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+    status: 400,
+    headers: { 'Content-Type': 'application/json' },
+  })
 }
 
 export async function POST(req: Request) {
-  const parsed = await parseChatRequest(await req.json())
-  if (!parsed.ok)
-    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
-      status: parsed.status,
-      headers: { 'Content-Type': 'application/json' },
-    })
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return invalidBodyResponse()
+  }
+
+  if (
+    body === null ||
+    typeof body !== 'object' ||
+    !('messages' in body) ||
+    !Array.isArray(body.messages)
+  )
+    return invalidBodyResponse()
+
+  let messages
+  try {
+    messages = await validateUIMessages({ messages: body.messages })
+  } catch {
+    return invalidBodyResponse()
+  }
 
   const result = streamText({
     model: openai('gpt-4.1'),
     instructions: 'You are a helpful assistant.',
-    messages: await convertToModelMessages(parsed.messages),
+    messages: await convertToModelMessages(messages),
     stopWhen: isStepCount(5),
   })
 

@@ -5,12 +5,12 @@
  * without modifying the originals, following best practices.
  */
 
-import { cva, type VariantProps } from 'class-variance-authority'
-import type * as React from 'react'
-import { forwardRef } from 'react'
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { cva, type VariantProps } from 'class-variance-authority'
+import type * as React from 'react'
+import { forwardRef } from 'react'
 
 // ============================================================================
 // Example 1: Wrapper Component with CVA Variants
