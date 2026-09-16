@@ -5,19 +5,19 @@ description: "Run local LLMs for data privacy. Recommended when prompts must sta
 
 By default, the app uses **Anthropic** (direct API, Claude Haiku 4.5) when `ANTHROPIC_API_KEY` is set. Otherwise it falls back to **Open Router** or **Ollama**. Prefer the Anthropic provider for best integration; use Open Router only when an Anthropic key is unavailable. Request alias `sonnet` upgrades to Claude Sonnet 4.6. We recommend **self-hosting** with Ollama when data privacy is a priority—prompts and responses stay on your infrastructure, with no third-party API calls.
 
-This guide covers [Ollama](https://ollama.com)—a local inference runtime with an OpenAI-compatible API—for both development and production.
+This guide covers [Ollama](https://ollama.com)—a local inference runtime with an OpenAI-compatible **wire** API—for development and production. Basilic does **not** ship a first-class OpenAI SDK; in-app chat uses Anthropic → OpenRouter → Ollama. OpenAI-compatible HTTP is not the OpenAI SDK.
 
 ## Why Self-Host for Data Privacy
 
-| Concern | Cloud APIs (OpenAI, Anthropic, etc.) | Self-Hosted (Ollama) |
+| Concern | Cloud APIs (Anthropic, OpenRouter, …) | Self-Hosted (Ollama) |
 |--------|-------------------------------------|----------------------|
 | Data leaves your infra | Yes—sent to vendor | No—stays local |
 | Vendor retention | Varies by ToS | None |
-| Compliance (HIPAA, SOC2) | Requires BAA, audits | Full control |
+| Data residency | Vendor regions | You choose where it runs |
 | Cost at scale | Per-token pricing | Fixed (hardware) |
 | Latency | Network round-trip | Local inference |
 
-**Use self-hosted when:** handling PII, sensitive business data, or regulated workloads. Use cloud APIs for rapid prototyping or when you need the latest frontier models.
+**Use self-hosted when:** prompts should stay on your machine or VPC. Use cloud APIs for rapid prototyping or frontier models. This starter does not claim HIPAA or SOC 2 certification.
 
 ---
 
@@ -243,7 +243,7 @@ Privacy-first routing with Ollama requires `AI_PROVIDER=ollama` when other keys 
 
 ### Tool support (Ollama)
 
-Open Router models support tools (`getAccountInfo`, `braveSearch`). Small Ollama models (e.g. `qwen2.5:3b`) may not; use 7B+ such as `llama3.1:8b` or the runtime default `qwen3:8b` for reliable tool calling.
+Open Router and capable Ollama models support tools (`getAccountInfo`, `getMarketSnapshot`, optional `braveSearch`). Small Ollama models (e.g. `qwen2.5:3b`) may not; use 7B+ such as `llama3.1:8b` or the runtime default `qwen3:8b` for reliable tool calling.
 
 ---
 

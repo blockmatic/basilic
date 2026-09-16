@@ -1,9 +1,13 @@
 ---
 title: "AI"
-description: "Fastify AI routes, lib/ai runtime, providers, streaming, and the web assistant contract."
+description: "Optional in-shell demo assistant: Fastify /ai routes, providers, streaming, and the web catalog contract."
 ---
 
-The Fastify API exposes two AI endpoints under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; route files in `apps/api/src/routes/ai/` are thin handlers (schema + auth + delegation).
+The in-shell assistant is **demo chrome**, not the Product Ready bar and not the product spine. Auth is the shipped demo job. Agent **workflow playbooks and skills** (`AGENTS.md`, `/plan` `/build` `/workflow`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
+
+The Fastify API exposes two AI endpoints under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; route files in `apps/api/src/routes/ai/` are thin handlers (schema + auth + delegation). The browser talks to Fastify directly (Bearer). There is no Next.js AI BFF.
+
+There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store, no `ToolLoopAgent`, and no mobile assistant. Chat is `streamText` / `generateText` with `stopWhen: isStepCount(AI_TOOL_MAX_STEPS)`.
 
 ## Routes
 
@@ -12,7 +16,7 @@ The Fastify API exposes two AI endpoints under `/ai/*`. Implementation lives in 
 | `POST /ai/chat` | Web assistant, multi-turn messages, tools | JSON `{ text }` or UI-message SSE |
 | `POST /ai/generate` | CLI, scripts, single prompt | JSON `{ text }` or UI-message SSE |
 
-Both require Bearer auth (session JWT or API key). Set `Accept: text/event-stream` or `stream: true` for SSE.
+Both require Bearer auth (session JWT or API key). Set `Accept: text/event-stream` or `stream: true` for SSE. Generate is prompt-only (no tools).
 
 ## Provider chain
 
@@ -31,15 +35,15 @@ apps/api/src/lib/ai/
   runtime.ts         abort, SSE piping, upstream error mapping
   upstream-error.ts  isInsufficientCreditsError
     tools/
-    index.ts              getMergedTools
-    account-info.ts       getAccountInfo tool
-    market-snapshot.ts    getMarketSnapshot tool
-    brave-search.ts       braveSearch tool (when BRAVE_SEARCH_API_KEY set)
+    index.ts              re-exports getMergedTools
+    account-info.ts       getMergedTools + getAccountInfo
+    market-snapshot.ts    getMarketSnapshot
+    brave-search.ts       braveSearch (when BRAVE_SEARCH_API_KEY set)
 ```
 
-Chat uses `streamText` / `generateText` with `stopWhen: isStepCount(AI_TOOL_MAX_STEPS)`. Generate is prompt-only (no tools). Shared runtime handles client abort + `AI_UPSTREAM_TIMEOUT_MS`, v7 UI streams (`toUIMessageStream` + `createUIMessageStreamResponse`), and catalog errors via `captureError` then `sendCatalogError`.
+Shared runtime handles client abort + `AI_UPSTREAM_TIMEOUT_MS`, v7 UI streams (`toUIMessageStream` + `createUIMessageStreamResponse`), and catalog errors via `captureError` then `sendCatalogError`.
 
-Client `{ role: 'system' }` messages are rejected with 400 — system prompt belongs server-side (`instructions`), not in client payloads. Client roles are limited to `user` and `assistant`; `tool` and other roles return 400.
+Client `{ role: 'system' }` messages are rejected with 400. There is **no** server `instructions` / system prompt — the model sees `user` and `assistant` messages plus tool descriptions. Client roles are limited to `user` and `assistant`; `tool` and other roles return 400.
 
 File parts in UIMessage payloads must use `data:` URLs only (`maxLength` 2048). Remote URLs (`http:`, `https:`, `file:`, etc.) are rejected at validation with 400 before the handler runs. Defense in depth: TypeBox `^data:` pattern → `resolveMessages` / `isAllowedChatFileUrl` → `experimental_download` (`denyRemoteChatFileDownload`) so the AI SDK never fetches remote file URLs.
 
@@ -54,15 +58,15 @@ File parts in UIMessage payloads must use `data:` URLs only (`maxLength` 2048). 
 | `AI_DEFAULT_MODEL` | No | Provider-specific | Haiku / `anthropic/claude-haiku-4.5` / `qwen3:8b` |
 | `AI_TOOL_MAX_STEPS` | No | `5` | Max tool-loop steps for chat |
 | `AI_UPSTREAM_TIMEOUT_MS` | No | `120000` | Upstream abort timeout (ms) |
-| `BRAVE_SEARCH_API_KEY` | No | — | Enables `braveSearch` tool |
+| `BRAVE_SEARCH_API_KEY` | No | — | Enables optional `braveSearch` tool |
 
 Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`.
 
 ## Web assistant contract
 
-The web app uses `useChatFromConfig` (`@repo/react`) → `POST {baseUrl}/ai/chat` with Bearer auth and `DefaultChatTransport` (UI-message SSE).
+The web app uses `useChatFromConfig` (`@repo/react`) → `POST {baseUrl}/ai/chat` with Bearer auth and `DefaultChatTransport` (UI-message SSE). UI lives in `apps/web/components/assistant`.
 
-**Tools:** `getAccountInfo` and `getMarketSnapshot`.
+**Demo jobs:** `getAccountInfo` (`__render: 'user-info'`) and `getMarketSnapshot` (`__render: 'market-card'`). `braveSearch` is optional and not a demo completion job.
 
 `getAccountInfo` output:
 
@@ -76,11 +80,11 @@ The web app uses `useChatFromConfig` (`@repo/react`) → `POST {baseUrl}/ai/chat
 { "__render": "market-card", "spec": { "root": "...", "elements": { ... } }, "summary": "..." }
 ```
 
-`assistant-chat.tsx` matches `tool-getAccountInfo` → `user-info-catalog.tsx` and `tool-getMarketSnapshot` → `market-card-catalog.tsx`. Do not rename a tool or change the output shape without updating the web UI. `__render: 'user-info'` is the account-context demo job; `__render: 'market-card'` is the markets demo job. Completion for account is `accountRender: true`; completion for markets is the market card rendered. A text-only reply is **not** either job. There is no GenUI CTA (`actions: {}`). Entry is the composer or a suggestion: “What moved?”, “Explain BTC”, “Who am I?”. Product analytics records `assistant_turn` with `accountRender` when the account surface is present — not merely when the assistant replies. See [Product analytics](/docs/architecture/analytics).
+`assistant-chat.tsx` matches `tool-getAccountInfo` → `user-info-catalog.tsx` and `tool-getMarketSnapshot` → `market-card-catalog.tsx`. Do not rename a tool or change the output shape without updating the web UI. Completion for account is `accountRender: true`; completion for markets is the market card rendered. A text-only reply is **not** either job. There is no GenUI CTA (`actions: {}`). Entry is the composer or a suggestion: “What moved?”, “Explain BTC”, “Who am I?”. Product analytics records `assistant_turn` with `accountRender` when the account surface is present — not merely when the assistant replies. See [Product analytics](/docs/architecture/analytics).
 
 `getMarketSnapshot` reads the same public CoinGecko markets URL as the web board. On 429 or network failure it returns a checked-in mock so fork-and-run does not need a CoinGecko key.
 
-Composer send (textarea + suggestions) is disabled while `status !== 'ready'`; stop remains available during `streaming`.
+Composer send (textarea + suggestions) is disabled while `status !== 'ready'`; stop remains available during `streaming`. Multi-turn history is the request `messages` array only — nothing is persisted.
 
 ## Errors
 
@@ -93,7 +97,9 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 
 ## Related
 
+- [AI Workflow](/docs/development/ai-workflow) — playbooks and skills (`AGENTS.md`)
 - [Self-Hosted LLM](/docs/deployment/self-hosted-llm) — Ollama ops
 - [Vercel Deployment](/docs/deployment/vercel) — env vars for hosted API
 - [API Architecture](/docs/architecture/api) — OpenAPI, `@repo/core`
 - [Error handling](/docs/architecture/error-handling) — catalog errors
+- [Product Ready](/docs/testing/product-ready) — assistant is not in the bar

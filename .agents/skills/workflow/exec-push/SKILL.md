@@ -10,7 +10,10 @@ Invocation requests the complete implementation-to-PR path. Read the task or pla
 
 ## Steps
 
-1. Inspect the working tree and current branch. If a new branch is needed, use the repository naming convention and preserve uncommitted work; do not blindly pull into a dirty checkout.
+1. Inspect the working tree and current branch. If the tree is dirty, stash or stop — do not pull into a dirty checkout.
+   - `git fetch origin`.
+   - If a **new** branch is needed: fast-forward local `main` from `origin/main` (`git switch main` then `git merge --ff-only origin/main`, or `git switch -c <name> --no-track origin/main` after fetch). Never branch from a stale local `main`. Use the repository naming convention.
+   - If already on the intended feature branch, do not reset it to `main`.
 2. Implement and review the requested change in complete slices using [build](../build/SKILL.md).
 3. Update affected technical docs and nearest README. Run the repository's full pre-push gate (`pnpm qa` in Basilic); diagnose failures before publishing.
 4. Commit task-owned changes with [git-commit](../git-commit/SKILL.md), then push with [git-push](../git-push/SKILL.md).

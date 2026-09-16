@@ -59,11 +59,11 @@ Maintain one version-controlled **include-and-transform manifest**, colocated wi
 | Lockfile | Produce and validate a lockfile for the assembled workspace using pinned pnpm. Do not hand-edit YAML dependency resolutions. |
 | `.github` | Include portable quality workflows and their local actions; omit Basilic publication workflows, release state, and maintainer ownership metadata. Deployment workflows require adopter configuration and must not target upstream projects. |
 | `.cursor`, `.agents`, `AGENTS.md`, safe `.deepsec` configuration | Retain the shared workflow; replace upstream project bindings and repair documentation pointers. |
-| FIRST user pack | Retain reusable guidance; create an unfilled adopter instance only for stations listed in `FIRST.md`; retarget `FIRST.md` and agent pointers. Do not copy `_first/basilic` or fabricate product decisions. |
+| Product brief | Write an unfilled root `PRODUCT.md`. Do not copy Basilic’s feature map or fabricate product decisions. |
 | `LICENSE` | Preserve MIT copyright and license text. |
 | Git history, caches, dependency installs, build output, credentials, local environment files | Exclude. Include approved `.env.<qualifier>.example` files and audited non-secret defaults. |
 
-The FIRST reset is an additional recommendation beyond the two application exclusions: `_first/FIRST.md` explicitly says not to copy `basilic/` out. Generated projects should not inherit Basilic's roadmap as their own.
+Generated projects should not inherit Basilic's roadmap as their own. Assembly writes an unfilled root `PRODUCT.md` and must not copy `_first/` or `.agents/skills/f/`.
 
 **Documentation needs special treatment.** Existing agent rules require local files under `apps/docu/content/docs`. Excluding that whole tree without repairing those references would break the development workflow. Recommended v1: derive a lightweight `docs/basilic/` reference snapshot from the canonical technical MDX during assembly, strip site-only presentation syntax, and rewrite generated pointers to it. It has no documentation app, dependencies, or build. Keep links to hosted docs for browsing. The snapshot is generated output, not a second upstream authoring source. Acceptance tests must verify every mandatory agent read resolves. If absolutely no documentation content should ship, revise the generated instructions to use remote references explicitly and accept the network dependency.
 
@@ -127,7 +127,7 @@ This lifecycle governs **Basilic distribution**, separately from existing Vercel
 
 ## AI assistance with bounded authority
 
-Extend the existing Cursor-first review workflow before introducing another agent service. At PR time, ask AI to compare the diff with public CLI/template contracts and suggest a conventional title, release impact, migration notes, and evidence paths. Run automatic analysis on every relevant PR if desired, but label the result advisory.
+Extend the existing shared review workflow before introducing another agent service. At PR time, ask AI to compare the diff with public CLI/template contracts and suggest a conventional title, release impact, migration notes, and evidence paths. Run automatic analysis on every relevant PR if desired, but label the result advisory.
 
 At release-PR time, provide merged PRs since the previous tag and test results. Ask for concise user-facing improvements, breaking changes, required actions, and known limitations, with links to each supporting PR. Keep the deterministic changelog; publish reviewed AI prose as supplemental release notes. Cache analysis by head SHA, bound cost/time, and fall back to deterministic notes if the model fails.
 
@@ -147,14 +147,13 @@ Test invalid names, existing/non-empty paths, paths with spaces, interruption, p
 
 Scan packed and generated files for secrets and forbidden paths. Verify workspace dependency closure, portable workflows, license retention, excluded Turbo targets, and lockfile consistency. Reuse root `pnpm qa` for the generated workspace once its transforms are complete, plus `pnpm --filter @repo/docu checktypes` for upstream documentation. Add generator/fixture scripts to package manifests before advertising new validation commands.
 
-At launch, update root and generator READMEs, Getting Started, After fork, CLI, Publishing, GitHub Actions, and Monorepo documentation together. Update `_first/basilic/PRODUCT.md` with the delivered adoption capability and the architecture/workflow overlays with verified implementation facts. Keep forks documented for upstream contributions; new products use the generator. Existing copies remain owner-managed: offer changelogs and migration guidance before considering a future upgrade command.
+At launch, update root and generator READMEs, Getting Started, After fork, CLI, Publishing, GitHub Actions, and Monorepo documentation together. Update root `PRODUCT.md` with the delivered adoption capability. Keep forks documented for upstream contributions; new products use the generator. Existing copies remain owner-managed: offer changelogs and migration guidance before considering a future upgrade command.
 
 **Maintainer gates still open:** claim npm `create-basilic` (or an owned scope) and bind trusted publishing; install the GitHub App and protected `release` environment; squash-merge with `PR_TITLE` + `PR_BODY`; authorize who may merge release PRs; announce **1.0.0** only after Product Ready from `npx create-basilic@<version>`.
 
 ## References
 
 - Repository constraints: root `AGENTS.md`; `.cursor/rules/base/{general,file-organization,git,github-actions,naming,docs,readme}.mdc`.
-- FIRST: `_first/{AGENTS,ABOUT,FIRST}.md`; `_first/basilic/{ARCHITECTURE,WORKFLOW,PRODUCT}.md`; `.agents/skills/f/f-architecture/SKILL.md`, `.agents/skills/f/f-workflow/SKILL.md`, and their analyst/spec references.
 - Local evidence: root `README.md`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`; `packages/cli/{README.md,package.json}`; `tools/{eslint,typescript}`; `.github/workflows/`.
 - Existing technical guidance: [Monorepo](/docs/architecture/monorepo), [After fork](/docs/development/after-fork), [AI workflow](/docs/development/ai-workflow), [Publishing](/docs/deployment/publishing), [GitHub Actions](/docs/deployment/github-actions), [Product Ready](/docs/testing/product-ready).
 - Tool references: [Release Please manifest configuration](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md), [Release Please Action](https://github.com/googleapis/release-please-action), [Changesets](https://github.com/changesets/changesets), [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/). Consulted September 5, 2026; pin and verify selected versions during implementation.

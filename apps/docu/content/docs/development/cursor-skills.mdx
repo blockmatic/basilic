@@ -1,13 +1,13 @@
 ---
-title: "Cursor Skills"
-description: "Versioned tech skills and slash workflows from the Basilic skills.sh catalog."
+title: "Skills"
+description: "Tech skills and workflow playbooks from the Basilic skills.sh catalog. Any agent that can read .agents/skills/."
 ---
 
-Project skills live under `.agents/skills/`. The [skills CLI](https://github.com/vercel-labs/skills) installs there for `-a cursor` (project scope). Cursor also reads `.cursor/skills/` if present, but this repo commits the CLI layout only.
+Project skills live under `.agents/skills/`. That path is the committed hub for Cursor, Codex, Antigravity, Gemini CLI, Copilot, and any agent that reads Agent Skills. The [skills CLI](https://github.com/vercel-labs/skills) interactive install lets you pick skills **and agents**. This repo’s lockfile refresh is `-a cursor --copy` into `.agents/skills/` (Codex shares that path). Claude Code’s default dir is `.claude/skills/`; do not `--copy` that tree into git. `CLAUDE.md` tells Claude to read `.agents/skills/` instead.
 
-Cursor requires `name` in each `SKILL.md` to match the folder that contains it. That is why tech skills use a versioned dirname (`fastify-v5`, not `fastify`).
+Cursor also reads `.cursor/skills/` if present; this repo does not commit that tree. Cursor requires `name` in each `SKILL.md` to match the folder (`fastify-v5`, not `fastify`).
 
-Rules override skills. Skills override the model. Indexed docs are advisory.
+Rules override skills. Skills override the model. Indexed docs are advisory. Daily playbooks: [AI Workflow](/docs/development/ai-workflow). Optional Cursor extras: [Agent setup](/docs/development/cursor-setup).
 
 ## Catalogs
 
@@ -25,9 +25,9 @@ Non-interactive refresh used in this repo:
 pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
 ```
 
-That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/workflow/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths).
+That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/workflow/<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths). Examples: `-a claude-code`, `-a cursor -a claude-code`, `--agent '*'`. Optional maintainer-local Claude symlink (not committed): add `-a claude-code` **without** `--copy`.
 
-Root `skills-lock.json` tracks catalog hashes. The `web-design-guidelines-v1` entry also records the pinned `command.md` commit digest. Commit the lock with `.agents/skills/` after every refresh.
+Root `skills-lock.json` tracks catalog hashes. The `web-design-guidelines` entry also records the pinned `command.md` commit digest. Commit the lock with `.agents/skills/` after every refresh.
 
 ## Two kinds
 
@@ -53,7 +53,7 @@ Packaging validation runs in the catalog with `pnpm validate`. It checks metadat
 
 - Library major change → new folder (`next-v17`). Drop the old folder when the repo no longer uses that major.
 - Upstream wording, references, or bugfixes → edit the catalog; re-run the skills CLI in this repo.
-- Design skills with no npm package keep `-v1` until the skill format itself breaks (`frontend-design-v1`, `emilkowal-animations-v1`, `vercel-react-v1`). Library skills (including Motion) use the npm major (`motion-v13` for `motion` ^13).
+- Pattern, guideline, and craft skills stay unversioned (`frontend-design`, `emilkowal-animations`, `vercel-react`). Library skills (including Motion) use the npm major (`motion-v13` for `motion` ^13).
 - Workflows stay unversioned.
 
 This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is what upstream publishes. Do not invent empty `*-v57` folders. When Expo ships v57 skills, add those folders in the catalog and drop v55.
@@ -84,28 +84,30 @@ Catalog copies may differ from upstream. Original sources:
 - `expo-tailwind-setup-v55` ← `expo-tailwind-setup`
 - `expo-upgrading-v55` ← `expo-upgrade`
 - `expo-use-dom-v55` ← `expo-dom`
-- `vercel-react-v1` ← `react-best-practices` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
-- `web-design-guidelines-v1` ← `web-design-guidelines` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (fetches a pinned [web-interface-guidelines `command.md`](https://github.com/vercel-labs/web-interface-guidelines/blob/e3d624baaf29dc1fc645aff3e38f03e564d2d6b1/command.md) revision)
-- `composition-patterns-v1` ← `composition-patterns` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
+- `vercel-react` ← `react-best-practices` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
+- `web-design-guidelines` ← `web-design-guidelines` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (fetches a pinned [web-interface-guidelines `command.md`](https://github.com/vercel-labs/web-interface-guidelines/blob/e3d624baaf29dc1fc645aff3e38f03e564d2d6b1/command.md) revision)
+- `composition-patterns` ← `composition-patterns` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
 - `next-v16` ← `nextjs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
 - `nuqs-v2` ← `nuqs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
 - `vitest-v4` ← `vitest` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
 - `viem-v2` ← `viem-integration` in [uniswap/uniswap-ai](https://github.com/uniswap/uniswap-ai)
 - `nodejs-keccak256-v1` ← `nodejs-keccak256` in [affaan-m/ecc](https://github.com/affaan-m/ecc)
-- `frontend-design-v1` ← [anthropics/skills](https://github.com/anthropics/skills) `frontend-design`
-- `emilkowal-animations-v1` ← pproenca/dot-skills `emilkowal-animations`
+- `frontend-design` ← [anthropics/skills](https://github.com/anthropics/skills) `frontend-design`
+- `emilkowal-animations` ← pproenca/dot-skills `emilkowal-animations`
+- Emil craft pack ← [emilkowalski/skills](https://github.com/emilkowalski/skills) (unversioned folder names)
+- `better-ui` ← [jakubkrehel/skills](https://github.com/jakubkrehel/skills)
 
-Basilic-maintained in the catalog: `fastify-v5`, `file-organization-v1`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks.
+Basilic-maintained in the catalog: `fastify-v5`, `file-organization`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks.
 
-**Intended unused stack** (catalog skills for future work, not installed app deps yet): `wagmi-v3`, `motion-v13`, `emilkowal-animations-v1`.
+**Intended unused stack** (catalog skills for future work, not installed app deps yet): `wagmi-v3`, `motion-v13`, `emilkowal-animations`, Emil operational skills, `better-ui`.
 
-**Omitted from the catalog** (and why): Vercel `writing-guidelines` (conflicts with docs sentence case); `react-view-transitions` (extra animation API); `react-native-guidelines` (Expo skills already cover native). [Impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0) is not a skill: competing PRODUCT/DESIGN generators, CLI, and detector hooks are out of scope. A few craft ideas (harden loading/empty/error/success; bounded screenshot critique) are adapted in original wording in `/use-frontend` and `frontend-design-v1` `references/product-ui.md`.
+**Omitted from the catalog** (and why): Vercel `writing-guidelines` (conflicts with docs sentence case); `react-view-transitions` (extra animation API); `react-native-guidelines` (Expo skills already cover native). [Impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0) is not a skill: competing PRODUCT/DESIGN generators, CLI, and detector hooks are out of scope. A few craft ideas (harden loading/empty/error/success; bounded screenshot critique) are adapted in original wording in `/use-frontend` and `frontend-design` `references/product-ui.md`.
 
-New or reshaped UI: `/use-frontend` or `/workflow ui`. Visual direction only: `@frontend-design-v1` (tokens win when present). Component APIs: `@composition-patterns-v1`. UI code audit: `@web-design-guidelines-v1`. Quality a11y report: `/audit-accessibility`. Runtime bugs: `/debug-browser`.
+New or reshaped UI: `/use-frontend` or `/workflow ui`. Visual direction only: `@frontend-design` (tokens win when present). Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/audit-accessibility`. Runtime bugs: `/debug-browser`.
 
 ## Related
 
 - [AI Workflow](/docs/development/ai-workflow)
-- [Cursor Setup](/docs/development/cursor-setup)
+- [Agent setup](/docs/development/cursor-setup)
 - Repo [`.cursor/README.md`](https://github.com/blockmatic/basilic/blob/main/.cursor/README.md)
 - [Cursor skills](https://cursor.com/docs/context/skills)

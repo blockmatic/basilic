@@ -8,18 +8,18 @@ disable-model-invocation: true
 
 Build or reshape a user-facing surface. Planning a feature without UI work stays on `/plan`. Installing a primitive stays on `/use-shadcn`. Do not invent PRODUCT.md or DESIGN.md. Follow existing tokens and root `DESIGN.md` when present. Do not install animation libraries or design-detector hooks.
 
-Load `frontend-design-v1` for visual direction, `composition-patterns-v1` for reusable APIs, and `web-design-guidelines-v1` for the UI code checklist. Durable product jobs belong in `PRODUCT.md`.
+Load `frontend-design` for visual direction, `composition-patterns` for reusable APIs, and `web-design-guidelines` for the UI code checklist. Durable product jobs belong in `PRODUCT.md`.
 
 ## Steps
 
 1. **Purpose and audience.** Name the job, the person, and the surface mode: Operate (app/task), Persuade (marketing), or Read (docs). Durable jobs stay in `PRODUCT.md`; do not generate DESIGN.md from tokens.
-2. **Visual references.** Use the brief, existing screens, or a stated aesthetic. If the repo has tokens and shared components, inspect those first. Tokens win over a greenfield palette (`frontend-design-v1` product-ui addendum).
+2. **Visual references.** Use the brief, existing screens, or a stated aesthetic. If the repo has tokens and shared components, inspect those first. Tokens win over a greenfield palette (`frontend-design` product-ui addendum).
 3. **Reuse before invent.** Prefer shared primitives. Compose at the second call site. Do not extract a compound API for a one-off route. Do not lift server data into a client provider.
 4. **Responsive and interaction.** Mobile-first layout, visible focus, keyboard path, `prefers-reduced-motion`. Do not add a new motion library.
 5. **Harden states.** Loading, empty, error, success, and long/overflow content. Skip a full i18n/RTL program unless the repo already localizes.
 6. **Implement** the smallest slice that completes the job.
 7. **Rendered verification (bounded).** Inspect desktop and mobile together. Exercise primary interactions and keyboard navigation. Critique screenshots. Fix evidenced issues in one batch. Confirm with at most one more pass, then stop. If browser tools are missing, say so and use the closest substitute. A type check is not visual QA.
-8. **Optional checklists.** `/audit-accessibility` against existing a11y docs and tests (do not invent a WCAG level). `@web-design-guidelines-v1` for code-level interface rules. Playwright E2E only when an existing spec covers the path—it does not replace the screenshot loop.
+8. **Optional checklists.** `/audit-accessibility` against existing a11y docs and tests (do not invent a WCAG level). `@web-design-guidelines` for code-level interface rules. Playwright E2E only when an existing spec covers the path—it does not replace the screenshot loop.
 
 ## Verification
 

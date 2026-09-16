@@ -1,26 +1,31 @@
 ---
 title: "AI Development Workflow"
-description: "Cursor-first workflow: plan, review, execute incrementally. Claude Code uses the same rules and skills."
+description: "Shared AGENTS.md contract: workflow playbooks and tech skills for any coding agent or IDE."
 ---
 
-Development is **Cursor-first**. Claude Code follows the same rules and skills via root `AGENTS.md`. Do not run a parallel process.
+One workflow: root `AGENTS.md` plus `.agents/skills/` (tech skills and **workflow playbooks** `plan`, `build`, dispatcher `workflow`). Any agent or IDE that can read those files. If the harness has no `/` menu, open the `SKILL.md`. Do not create a parallel process.
 
-Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era). Index this site once — [Cursor Setup](/docs/development/cursor-setup). Versioning and how to update skills: [Cursor Skills](/docs/development/cursor-skills).
+Cursor slash (`/plan` `/build` `/workflow`), glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the contract. Claude Code, Codex, Gemini CLI, and others use the same tree. Versioning and skills CLI `-a` flags: [Skills](/docs/development/cursor-skills). Optional Cursor indexing/MCP: [Agent setup](/docs/development/cursor-setup).
 
-Durable product intent lives in root `PRODUCT.md`. Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. Installed playbooks come from [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) under `.agents/skills/workflow/` (`/plan`, `/build`, dispatcher `/workflow`). `/use-tdd` is opt-in.
+Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
+
+Durable product intent lives in root `PRODUCT.md`. Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. Installed playbooks come from [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) under `.agents/skills/workflow/`. `/use-tdd` is opt-in. In-app chat is the [demo assistant](/docs/architecture/ai), not this page.
 
 ## Sources of truth
 
-Always-on rules point at `apps/docu/content/docs/` for technical topics and root `PRODUCT.md` for product intent. Glob rules are constraints only. **Read** the matching file for the task. Do not `@`-attach MDX from rules or skills. Root `AGENTS.md` is the cross-harness stub.
+Root `AGENTS.md` holds always-on constraints (behavior, naming, file organization, git, GitHub Actions). Glob `.mdc` files under `.cursor/rules/` are file-scoped constraints; Cursor auto-attaches them. **Read** the matching MDX for the task. Do not `@`-attach MDX from rules or skills.
 
 ## Guidance hierarchy
 
 | Layer | Role | How it loads |
 | --- | --- | --- |
-| **Rules** (`.cursor/rules/*.mdc`) | Constraints. Override everything else | Always on: `general`, `naming`, `git`. Other rules attach when matching files are in context |
-| **Workflow skills** (`.agents/skills/workflow/<name>/`) | Slash playbooks | Type `/<name>` or `/workflow <shortcut>` |
+| **AGENTS.md** | Always-on contract | Cursor and Codex read it; Claude via `@AGENTS.md` in `CLAUDE.md`; Gemini CLI via `GEMINI.md`; Antigravity via `.agents/rules/always.md` |
+| **Glob rules** (`.cursor/rules/*.mdc`) | File-scoped constraints | Cursor attaches by glob. Other harnesses read the matching file when those paths are in scope (table in `AGENTS.md`) |
+| **Workflow skills** (`.agents/skills/workflow/<name>/`) | Playbooks | Cursor: `/<name>` or `/workflow <shortcut>`. Otherwise open `SKILL.md` |
 | **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Patterns for a stack | Agent loads when relevant; `@` or `/` to force |
-| **Indexed docs** | Advisory | Never override rules or source |
+| **Indexed docs** | Advisory | Never override `AGENTS.md`, glob rules, or source |
+
+Cursor slash menus, `.cursor/mcp.json`, and glob auto-attach are **Cursor extras**, not the portable contract.
 
 ## Slash workflows
 
@@ -46,7 +51,7 @@ Use `/workflow` to list the catalog, `/workflow <shortcut>` to route a task, or 
 
 An empty `/workflow` lists options; an unknown token reports the available names. Neither starts work. `/build` ends with verified local changes. `/exec-push` explicitly requests implementation, full validation, commit, push, and a described PR. No workflow implies merge or deployment.
 
-Names match folders under `.agents/skills/workflow/`, such as `plan`. Update pinned prompts and reload discovery after installing. When a harness does not expose the slash menu, read `.agents/skills/workflow/SKILL.md` and the named child directly. Do not create another skills tree.
+Names match folders under `.agents/skills/workflow/`, such as `plan`. Update pinned prompts and reload discovery after installing. When a harness does not expose the slash menu, read `.agents/skills/workflow/SKILL.md` and the named child directly. Do not create another skills tree. Do not commit `.claude/skills/` copies.
 
 ## Workflow
 
@@ -57,7 +62,7 @@ Names match folders under `.agents/skills/workflow/`, such as `plan`. Update pin
 5. **Publish when requested** — `/workflow commit`, `/workflow push`, or `/workflow pr` perform their named actions. `/exec-push` combines the implementation-to-PR path and requires `pnpm qa`.
 6. **Learn** — `/workflow retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
 
-Tech skills (`fastify-v5`, `next-v16`, `vercel-react-v1`) load when relevant. The workflow does not add another backlog or quality policy.
+Tech skills (`fastify-v5`, `next-v16`, `vercel-react`) load when relevant. The workflow does not add another backlog or quality policy.
 
 The generator retains this catalog and rewrites its documentation pointers to the adopter’s local docs snapshot. `/release-review` is advisory and preserves the release tooling’s human gates.
 
@@ -67,7 +72,7 @@ The core playbooks use inputs, steps, verification, and a handoff. Reviews inspe
 
 Shared completion evidence lives inside the installed `workflow/references/` directory. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/use-tdd` or repository requirements.
 
-Further workflow polish is later and small. `/use-tdd` stays opt-in. See [Cursor Skills](/docs/development/cursor-skills).
+Further workflow polish is later and small. `/use-tdd` stays opt-in. See [Skills](/docs/development/cursor-skills).
 
 ## Models (30 Aug 2026)
 
@@ -76,7 +81,7 @@ Further workflow polish is later and small. `/use-tdd` stays opt-in. See [Cursor
 | **Cursor Grok 4.6** | Default for plan and implement. Grok 4.5 is a cheaper/faster picker option |
 | **GPT-5.6 Sol** | Long-horizon work, large diffs, hard debugging |
 | **Composer 2.5** | Fast multi-file execution after a reviewed plan |
-| **Claude Code** (Opus 5) | Secondary harness; same rules and skills |
+| **Claude Code** (Opus 5) | Same `AGENTS.md` and `.agents/skills/` |
 
 In-app chat (Fastify `/ai/chat`) defaults to Claude Haiku 4.5 — product model, not this workflow. Pass `model: "sonnet"` for Sonnet 4.6. See [Self-Hosted LLM](/docs/deployment/self-hosted-llm).
 
@@ -84,8 +89,20 @@ CodeRabbit reviews PRs against project standards. Local gates: Biome, ESLint, [p
 
 Point agents at MDX: `Using the patterns from @api, add an endpoint…`
 
+## Harness discovery
+
+Checked 16 Sep 2026 during the agent-agnostic wiring change:
+
+| Harness | Always-on contract | Skills | Status |
+| --- | --- | --- | --- |
+| Cursor | `AGENTS.md` plus short always-on `.mdc` pointers | `.agents/skills/` slash menu | Verified in this session (files present; slash `/plan` still the documented Cursor path) |
+| Claude Code | `CLAUDE.md` first line `@AGENTS.md` | instructed to read `.agents/skills/` | Not verified (`/context` not run here) |
+| Antigravity | `.agents/rules/always.md` | `.agents/skills/` | Not verified (no AGY session here) |
+| Gemini CLI | `GEMINI.md` | `.agents/skills/` | Not verified |
+
 ## Related
 
-- [Cursor Setup](/docs/development/cursor-setup) — indexed docs and MCP
-- [Cursor Skills](/docs/development/cursor-skills) — versioning, vendor and overlay, inventory
-- Repo `.cursor/README.md` — short file index (points here for how to work)
+- [Agent setup](/docs/development/cursor-setup) — optional Cursor indexing and MCP
+- [Skills](/docs/development/cursor-skills) — catalog, install flags, inventory
+- [AI](/docs/architecture/ai) — in-shell demo assistant
+- Repo `.cursor/README.md` — Cursor file index (points here for how to work)

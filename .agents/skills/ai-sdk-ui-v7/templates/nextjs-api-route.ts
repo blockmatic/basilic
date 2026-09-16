@@ -38,7 +38,11 @@ export async function parseChatRequest(
 
 export async function POST(req: Request) {
   const parsed = await parseChatRequest(await req.json())
-  if (!parsed.ok) return new Response(null, { status: parsed.status })
+  if (!parsed.ok)
+    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+      status: parsed.status,
+      headers: { 'Content-Type': 'application/json' },
+    })
 
   const result = streamText({
     model: openai('gpt-4.1'),

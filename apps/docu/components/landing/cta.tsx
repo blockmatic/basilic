@@ -21,6 +21,12 @@ export function CTA() {
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="bg-transparent" asChild>
+            <Link href="/docs/development/ai-workflow">
+              Workflow playbooks
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+          <Button size="lg" variant="outline" className="bg-transparent" asChild>
             <a
               href="https://github.com/blockmatic/basilic"
               target="_blank"

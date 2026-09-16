@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     template: '%s | Basilic',
   },
   description:
-    'Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and a Cursor-first AI workflow.',
+    'Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and workflow playbooks (`/plan`, `/build`, `/workflow`) plus tech skills.',
   openGraph: {
     title: 'Basilic',
     description:
-      'Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and a Cursor-first AI workflow.',
+      'Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and workflow playbooks (`/plan`, `/build`, `/workflow`) plus tech skills.',
     type: 'website',
   },
   twitter: {

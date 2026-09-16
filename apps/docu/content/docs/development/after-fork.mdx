@@ -17,7 +17,7 @@ Enable **Template repository** in GitHub settings so **Use this template** appea
 
 Follow [Getting Started](/docs/development): `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`. Copied env sets `ALLOW_TEST=true`. Sign in with `test@test.ai`. Production refuses `ALLOW_TEST`.
 
-The in-shell assistant is optional. Leave Anthropic unset so Ollama can be the free path, or set a real key. Do not use a truthy placeholder.
+The in-shell assistant is optional [demo chrome](/docs/architecture/ai). Leave Anthropic unset so Ollama can be the free path, or set a real key. Do not use a truthy placeholder.
 
 ## Replace when you ship as you
 
@@ -31,11 +31,9 @@ Keep Basilic names until you care. Then:
 
 Do not sweep every `blockmatic` docs URL. Those point at the upstream starter.
 
-## FIRST
+## Product brief
 
-Generated projects get an **unfilled** `_first/PRODUCT.md` and a retargeted `_first/FIRST.md`. Do not copy `_first/basilic/` out — that overlay is this starter’s filled instance.
-
-In this repository, `_first/basilic/` stays the Basilic adoption pack. Specs stay `/f-*` from `npx skills add blockmatic/first`. Absent files beat empty stubs.
+Generated projects get an **unfilled** root `PRODUCT.md`. Fill it for your product. Do not inherit Basilic’s roadmap. Existing GitHub template copies that still have `_first/` can delete that folder after they own the copy. Agent loaders (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/rules/always.md`) ship with the copy; keep them pointing at your `PRODUCT.md` and local docs.
 
 ## CI secrets
 

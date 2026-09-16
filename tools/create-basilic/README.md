@@ -26,7 +26,7 @@ pnpm dev
 
 Local starter docs: `docs/basilic/`. Hosted: [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready).
 
-Generated projects retain the `/workflow` catalog and its packaged checklists; documentation pointers are rewritten to the local snapshot.
+Generated projects retain the `/workflow` catalog and its packaged checklists; documentation pointers are rewritten to the local snapshot. Fill root `PRODUCT.md` for the new product. Agent stubs (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/rules/always.md`) ship with the tree.
 
 The API CLI remains `packages/cli` (`basilic` binary). This package is only the project generator.
 

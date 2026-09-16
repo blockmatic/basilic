@@ -14,7 +14,8 @@ Content is `content/docs/` (`architecture`, `development`, `testing`, `deploymen
 
 - [Getting Started](content/docs/development/index.mdx)
 - [Product Ready](content/docs/testing/product-ready.mdx)
-- [AI Workflow](content/docs/development/ai-workflow.mdx) — `/workflow` catalog, `/<playbook>` names, and checklists
+- [AI Workflow](content/docs/development/ai-workflow.mdx) — playbooks (`/plan` `/build` `/workflow`) and skills for any agent; not in-app chat
+- [AI](content/docs/architecture/ai.mdx) — optional Fastify/web demo assistant
 - [Architecture](content/docs/architecture/index.mdx)
 - [Security](content/docs/architecture/security.mdx)
 - [Deployment](content/docs/deployment/index.mdx)

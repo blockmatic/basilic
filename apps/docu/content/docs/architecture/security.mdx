@@ -56,6 +56,8 @@ Lockfile integrity (`--frozen-lockfile`), gitleaks, TruffleHog (filesystem + his
 - `POST /ai/chat` does not fetch client-supplied file URLs; only `data:` file parts are accepted. Remote URLs are rejected at validation.
 - 6-digit login codes (magic link, change email): HMAC-SHA256 with `ENCRYPTION_KEY`. API keys and other high-entropy tokens: SHA-256 at rest with `timingSafeEqual` on verify.
 
+Secrets in env (not a threat model): `ENCRYPTION_KEY`, `JWT_SECRET`, OAuth client secrets, `RESEND_API_KEY`, AI keys, `SENTRY_DSN` (unused until Sentry is re-enabled), `DATABASE_URL`, `AI_GATEWAY_API_KEY`, `EXPO_TOKEN`.
+
 ## Login route rate limit (as shipped)
 
 A tighter cap applies only to routes that start login or exchange OAuth/passkey callback codes — not every unauthenticated auth mutation.

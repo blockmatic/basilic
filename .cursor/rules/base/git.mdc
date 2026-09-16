@@ -1,10 +1,6 @@
 ---
-description: Git identity, conventional commits, and exec-push constraints
+description: Git identity and commits — canonical text is root AGENTS.md
 alwaysApply: true
 ---
 
-- Use default global git user (`git config --global user.name`, `git config --global user.email`)—never cursor/system identity
-- Never `--no-verify` or `--trailer` (e.g. Co-authored-by)
-- Fix lint, type-check, and test failures before committing
-- Conventional Commits: `<type>(<scope>): <short summary>` — type/scope lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`, `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit
-- Branch/validate/commit/push/PR: `/exec-push` (read `.agents/skills/workflow/exec-push/SKILL.md`). Commit message: `/git-commit`
+Canonical git identity, Conventional Commits, and publication-playbook paths live in root `AGENTS.md`. Do not diverge from that file.

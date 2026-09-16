@@ -10,9 +10,9 @@ import {
   listUntrackedFiles,
 } from '../git.js'
 import { classifyTrackedFiles, loadManifest } from './classify.js'
-import { resetFirstInstance } from './first-reset.js'
 import { regenerateLockfile } from './lockfile.js'
 import { rewritePointers } from './pointers.js'
+import { resetProductBrief } from './product-reset.js'
 import { snapshotDocs } from './snapshot-docs.js'
 import { applyAssembleTransforms } from './transforms.js'
 
@@ -21,7 +21,8 @@ export const forbiddenGeneratedPaths = [
   'tools/create-basilic',
   'scripts/prepare-publish.mjs',
   'scripts/restore-publish.mjs',
-  '_first/basilic',
+  '_first',
+  '.agents/skills/f',
   'release-please-config.json',
   '.release-please-manifest.json',
   '.github/workflows/release-please.yml',
@@ -30,6 +31,9 @@ export const forbiddenGeneratedPaths = [
 
 export const agentReadPaths = [
   'AGENTS.md',
+  'CLAUDE.md',
+  'GEMINI.md',
+  '.agents/rules/always.md',
   '.cursor/rules/base/general.mdc',
   '.cursor/rules/base/file-organization.mdc',
   '.cursor/rules/base/naming.mdc',
@@ -37,8 +41,7 @@ export const agentReadPaths = [
   '.agents/skills/workflow/SKILL.md',
   '.agents/skills/workflow/exec-push/SKILL.md',
   '.agents/skills/workflow/git-commit/SKILL.md',
-  '_first/FIRST.md',
-  '_first/PRODUCT.md',
+  'PRODUCT.md',
   'docs/basilic/development/index.md',
   'docs/basilic/development/file-organization.md',
   'docs/basilic/testing/product-ready.md',
@@ -86,7 +89,7 @@ export function assembleTemplate({
   if (allowDirty) snapshotDocs({ sourceRoot: repoRoot, destRoot: dest })
 
   applyAssembleTransforms({ destRoot: dest })
-  resetFirstInstance({ destRoot: dest })
+  resetProductBrief({ destRoot: dest })
   rewritePointers({ destRoot: dest })
   if (lockfile) regenerateLockfileOutsideWorkspace({ dest, repoRoot })
 

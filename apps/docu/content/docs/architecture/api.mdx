@@ -11,9 +11,9 @@ Flow: TypeBox → OpenAPI → `@repo/core` (client + types) → handwritten `@re
 
 - Runtime: Node.js 24.x (LTS Krypton)
 - Framework: Fastify 5, TypeBox, ESM
-- Database: PostgreSQL via `DATABASE_URL` (PGLite when `PGLITE=true`)
+- Database: PostgreSQL via `DATABASE_URL`. PGLite when `PGLITE=true` or `NODE_ENV=test`. SQL assets must sit next to compiled `migrate.js`; an empty list is a hard error in those modes. Details: [ADR 008](/docs/adrs/008-database).
 - ORM: Drizzle
-- Spec: OpenAPI 3 at `apps/api/openapi/openapi.json`, UI at `/reference`. Tags: `auth`, `account`, `ai`, `health`.
+- Spec: OpenAPI 3 at `apps/api/openapi/openapi.json`, UI at `/reference`. Tags: `auth`, `account`, `ai`, `health`. The `ai` tag is `POST /ai/chat` and `POST /ai/generate` — optional demo assistant, documented in [AI](/docs/architecture/ai).
 
 ## How it works
 

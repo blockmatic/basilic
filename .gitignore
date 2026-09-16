@@ -76,3 +76,6 @@ tsup.config.bundled_*.mjs
 .deepsec/data/**/files/
 .deepsec/data/**/runs/
 .deepsec/findings/
+
+# Local Claude Code skill symlinks (canonical tree is .agents/skills/)
+.claude/

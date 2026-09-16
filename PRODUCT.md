@@ -1,6 +1,6 @@
 # Product
 
-Basilic is a **developer starter** (fork-and-run toolkit): Fastify + OpenAPI, Next.js, Expo scaffold, Cursor workflow, and a thin web demo that proves auth and the API. It is not a billed SaaS. Do not invent TAM or LTV.
+Basilic is a **developer starter** (fork-and-run toolkit): Fastify + OpenAPI, Next.js, Expo scaffold, a shared `AGENTS.md` agent contract (workflow playbooks and skills; Cursor slash/MCP are adapters), and a thin web demo that proves auth and the API. It is not a billed SaaS. Do not invent TAM or LTV.
 
 Owner until this file says otherwise: **Gabo Esquivel**.
 
@@ -13,6 +13,8 @@ Technical docs for adopters live in [`apps/docu/content/docs/`](apps/docu/conten
 **Adopters** run `npx create-basilic@latest my-app` (or clone / GitHub **Use this template**), run the stack locally, and copy patterns. First successful use is [Product Ready](apps/docu/content/docs/testing/product-ready.mdx): generate or clone → [Getting Started](apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`, `pnpm dev`) → `ALLOW_TEST` + `test@test.ai` to `/`. After they own the copy: [After fork](apps/docu/content/docs/development/after-fork.mdx). Forks remain the path to contribute to Basilic.
 
 **Demo users** sign in to the web app. The shipped job is auth (sessions, API keys, settings). Markets, a headlines strip, and the in-shell assistant are demo chrome. See Feature map below.
+
+Actors: web end user; adopting developer; CLI/agent with API key; CI/CodeRabbit/DeepSec; mobile user (**deferred**). Named journey files beyond auth MDX, and mobile as a completed product surface, are unresolved.
 
 ## Goal
 
@@ -52,7 +54,7 @@ Must work after `npx create-basilic@latest` (or clone) → `pnpm setup` → `db:
 - Optional OAuth (unconfigured = disabled / 503)
 - Passkeys, sessions, API keys `bask_`, Settings profile and security
 - Next 16 web app gated by `apps/web/proxy.ts`
-- Docs site (`apps/docu`), Cursor rules, basilic-skills playbooks
+- Docs site (`apps/docu`), `AGENTS.md` / harness stubs, basilic-skills playbooks, Cursor glob rules as adapters
 - `@repo/ui` tokens in `packages/ui/src/styles/tokens.css`
 - `@repo/email` for auth mail; CLI with API key only
 - Pino `reqId`; `GET /health` readiness (503 when DB probe fails)

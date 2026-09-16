@@ -1,5 +1,7 @@
-# Claude Project Instructions
+@AGENTS.md
 
-This repository uses **Cursor-native** AI workflows. Do not run a parallel process.
+## Claude Code
 
-Follow [AGENTS.md](AGENTS.md).
+Project skills live in `.agents/skills/` (not `.claude/skills/` in this repo).
+When a playbook is requested, read `.agents/skills/workflow/<name>/SKILL.md`.
+Optional local symlink: `pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a claude-code -y` — do not commit `.claude/`.

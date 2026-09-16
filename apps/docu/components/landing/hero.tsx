@@ -42,8 +42,9 @@ export function Hero() {
 
         <p className="mx-auto mt-4 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base md:mt-6 md:text-lg">
           Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted
-          Web2/Web3 auth, and a Cursor-first AI workflow. Shared packages keep web, mobile, and docs
-          consistent.
+          Web2/Web3 auth, and a shared AGENTS.md contract with workflow playbooks (/plan, /build,
+          /workflow) and tech skills — any coding agent or IDE. Shared packages keep web, mobile,
+          and docs consistent.
         </p>
 
         <div className="mt-8 flex justify-center md:mt-10">
