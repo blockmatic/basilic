@@ -67,4 +67,4 @@ Sanitize sensitive keys (`password`, `token`, `secret`, `email`, `prompt`, …) 
 
 Auth/email lines (low cardinality): `session_issued`, `auth_verify_failed`, `auth_locked`, `email_skipped`, `email_send_failed`, `auth_callback_failed`, `auth_proxy_refresh_failed`, `auth_proxy_cookie_failed`. No success-send or product `auth_succeeded` log lines — product auth events are no-op `capture()` calls, not Pino.
 
-Product analytics is not logging: [Analytics](/docs/architecture/analytics). Failures: [Error Handling](/docs/architecture/error-handling).
+Product analytics is not logging: [Analytics](/docs/architecture/analytics). Failures: [Error Handling](/docs/architecture/error-handling). Dashboards, alert rules, runbooks, and post-deployment verification in the running system are **unresolved**.

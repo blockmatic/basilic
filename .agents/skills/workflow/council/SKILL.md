@@ -23,4 +23,4 @@ Gather architecture and keywords for the requested area, then spawn a small set 
 
 ## Handoff
 
-Return a short evidence list, contradictions, and the next named playbook (`/plan-feature`, `/build`, or stop). For plans, include References, 3–5 assumptions, and deferrals per [plan-feature](../plan-feature/SKILL.md).
+Return a short evidence list, contradictions, and the next named playbook (`/plan`, `/build`, or stop). For plans, include References, 3–5 assumptions, and deferrals per [plan](../plan/SKILL.md).

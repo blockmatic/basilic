@@ -1,21 +1,21 @@
 # Basilic: API-First TypeScript FullStack Starter
 
-Fork-and-run developer starter: typed SDKs, self-hosted auth, a portable architecture, Cursor-first workflow, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
+Fork-and-run developer starter: typed SDKs, self-hosted auth, a portable architecture, a shared `AGENTS.md` agent contract, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
 
 MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tools/create-basilic/README.md). Clone or GitHub **Use this template** still works. **Fork** to contribute back. First successful use is [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) (`pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`, `test@test.ai`). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).
 
 ## Features
 
-- 🤖 **AI-first dev workflow** — Agent rules, `/workflow` skills, FIRST `/f-*` decisions, MCP integrations, and automated CodeRabbit reviews
+- 🤖 **AI-first dev workflow** — `AGENTS.md`, `/plan` `/build` `/workflow` playbooks, tech skills, and CodeRabbit. Any coding agent or IDE that can read those files.
 - 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
 - 🧩 **Web + API starters** — Next.js demo, React hooks, Expo UI scaffold, Fastify API (not a wallet or OpenAI template)
-- 🔓 **Zero vendor lock-in** — Run on VPS, AWS, Vercel, or local
+- 🔓 **Zero vendor lock-in** — Shipped path is Vercel + Supabase; ordinary Node/HTTP/Postgres elsewhere
 - 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
 - 🛡️ **Security & quality** — Automated checks in CI (Gitleaks, OSV, DeepSec)
 - ⛓️ **Multichain (API)** — EVM and Solana SIWE/SIWS on Fastify; shared `@repo/utils/web3` helpers — not a web wallet demo
-- 📐 **Conventions** — Cursor rules per domain, @repo/error, Pino logging, shared TS and style
+- 📐 **Conventions** — `AGENTS.md`, glob Cursor rules as adapters, @repo/error, Pino logging, shared TS and style
 - 🧑‍💻 **TypeScript-first** — End-to-end types from database to frontend
 
 ## Technology stack
@@ -98,7 +98,7 @@ Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 - [Getting Started](https://basilic-docs.vercel.app/docs/development) — clone or Use this template, `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`
 - [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) — fork-and-run bar (not CI green)
 - [After fork](https://basilic-docs.vercel.app/docs/development/after-fork) — template vs fork, what to replace, CI secrets
-- Maintainers: [`_first/basilic/PRODUCT.md`](_first/basilic/PRODUCT.md) — intent, feature map, roadmap
+- Maintainers: [`PRODUCT.md`](PRODUCT.md) — intent, feature map, roadmap. Visual: [`DESIGN.md`](DESIGN.md)
 - [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Local vs remote (ports 3000, 3001, 8081; `start:localhost`, `start:tunnel`)
-- FIRST factory (stations, overlays): [`_first/`](_first/README.md) — load `_first/AGENTS.md` then `_first/ABOUT.md` then `_first/FIRST.md`. See [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)
+- [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)
 

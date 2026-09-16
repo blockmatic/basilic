@@ -18,4 +18,4 @@ Use the rows relevant to the requested deliverable. Mark passed, failed, not run
 - [ ] Fixes address the evidenced cause; retries and fallback values do not hide broken assumptions.
 - [ ] Only requested external actions were taken; finishing implementation does not imply publishing permission.
 
-For changed behavior, follow the repository's existing documentation and FIRST destinations. This file records evidence; it does not define another product success metric, quality policy, or backlog.
+For changed behavior, follow the repository's existing documentation and `PRODUCT.md`. This file records evidence; it does not define another product success metric, quality policy, or backlog.

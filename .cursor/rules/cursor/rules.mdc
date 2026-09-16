@@ -6,7 +6,7 @@ alwaysApply: false
 
 - Modular: one concern per file, not monolithic
 - `globs` (plural) for file-scoped rules; comma-separated string or YAML array
-- `alwaysApply: true` only for true globals; omit globs then
+- `alwaysApply: true` only for true globals; omit globs then. Global constraint bodies live in root `AGENTS.md`; always-on `.mdc` files are short pointers so Cursor does not double-inject the full contract
 - Target under 50 lines; patterns and conventions, not verbose examples; no h1
 - Do not `@`-attach MDX or `apps/docu/` from rules. Do not `@` files from `alwaysApply` rules
 - `@` another `.mdc` only if you intend to attach that small rule and it is not already always-on

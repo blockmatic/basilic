@@ -6,14 +6,14 @@ disable-model-invocation: true
 
 ## Purpose and inputs
 
-Compare implementation to the repository's product overlay (`_first/.../PRODUCT.md` or equivalent). Durable goals, priorities, and horizons belong to `/f-product`. Chat only unless the user names a file.
+Compare implementation to the repository's `PRODUCT.md`. Durable goals, priorities, and horizons belong there. Chat only unless the user names a file.
 
 ## Steps
 
-1. Load FIRST in the repository's order and read the product overlay. If it is missing, stop and point at `/f-product`.
-2. Diff code against named horizons and the feature map. List shipped, in-progress, and overlay items with no matching code.
-3. Do not invent features, effort buckets, or a second backlog. Optional diagrams may illustrate the overlay, not a new roadmap.
-4. Ask whether the user wants `/f-product` (durable change) or `/plan-feature` (implementation slices for an already-authorized item).
+1. Read `PRODUCT.md`. If it is missing, stop and say so.
+2. Diff code against named horizons and the feature map. List shipped, in-progress, and PRODUCT.md items with no matching code.
+3. Do not invent features, effort buckets, or a second backlog. Optional diagrams may illustrate PRODUCT.md, not a new roadmap.
+4. Ask whether the user wants a durable `PRODUCT.md` change or `/plan` (implementation slices for an already-authorized item).
 
 ## Verification
 
@@ -23,4 +23,4 @@ Compare implementation to the repository's product overlay (`_first/.../PRODUCT.
 
 ## Handoff
 
-Return overlay gaps and the owning station. Do not offer a feature plan unless the user asked.
+Return PRODUCT.md gaps and the owning document. Do not offer a feature plan unless the user asked.

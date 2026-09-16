@@ -32,7 +32,7 @@ Both/neither returns 400 `INVALID_PAYLOAD`.
 
 Logged-in users can link additional OAuth providers from Profile (Settings). The backend:
 
-- Uses `oauth_link_state` (distinct from `oauth_state` for sign-in)
+- Uses `oauth_link_state` (distinct from `oauth_state` for sign-in). Both are `verification.type` values, not tables — see [Data](/docs/architecture/data)
 - Binds the link to `meta.userId` so the exchange attaches to the correct account
 - Stores `meta.redirectUri` for Google (from `redirect_uri` query) when multiple callback URLs are configured (web + mobile)
 - Returns 409 `PROVIDER_ALREADY_LINKED` when the provider is linked to another user

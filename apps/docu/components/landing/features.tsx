@@ -38,23 +38,22 @@ const features = [
   },
 
   {
-    icon: MessageCircle,
-    title: 'AI Assistant Component',
+    icon: Bot,
+    title: 'Workflow playbooks and skills',
     description:
-      'Streaming AI chat UI with Vercel AI SDK, backed by Fastify `POST /ai/chat` and provider env vars (Anthropic, OpenRouter, Ollama).',
+      '`/plan`, `/build`, and `/workflow` live in `.agents/skills/workflow/` from blockmatic/basilic-skills. Versioned tech skills (`fastify-v5`, `next-v16`, …) plus `AGENTS.md` — any coding agent or IDE that can read those files.',
   },
   {
     icon: ArrowRightLeft,
     title: 'Zero Vendor Lock-in',
     description:
-      'Portable architecture that runs anywhere—your VPS, AWS, Vercel, or locally. Own your stack, control your costs.',
+      'Shipped path is Vercel + Supabase. The stack is ordinary Node, Fastify HTTP, Next.js, and Postgres — a later host change, not a rewrite.',
   },
-
   {
-    icon: Bot,
-    title: 'AI-Assisted Development',
+    icon: MessageCircle,
+    title: 'Optional demo assistant',
     description:
-      'Pre-configured rules and skills for Cursor (primary) and Claude Code. Ship features faster with AI pair programming that understands your codebase.',
+      'In-shell chat is demo chrome: streaming UI via Vercel AI SDK and Fastify `POST /ai/chat` (Anthropic → OpenRouter → Ollama). Not the Product Ready bar.',
   },
   {
     icon: ShieldCheck,

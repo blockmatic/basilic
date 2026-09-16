@@ -1,6 +1,6 @@
 ---
 name: next-v16
-description: Next.js 16 App Router performance, caching, server components, server actions, routing, and codebase-hygiene best practices — plus a category-major review/refactor algorithm with codebase-level (remove/dedup/reuse) findings. This skill should be used when writing Next.js 16 App Router code, configuring caching with 'use cache' or the previous fetch-cache model, building Server Components, setting up parallel/intercepting routes, configuring next.config OR proxy.ts, OR auditing/refactoring a Next.js codebase (single file or whole repo). This skill does NOT cover generic React 19 patterns (use vercel-react-v1) or non-Next.js server rendering.
+description: Next.js 16 App Router performance, caching, server components, server actions, routing, and codebase-hygiene best practices — plus a category-major review/refactor algorithm with codebase-level (remove/dedup/reuse) findings. This skill should be used when writing Next.js 16 App Router code, configuring caching with 'use cache' or the previous fetch-cache model, building Server Components, setting up parallel/intercepting routes, configuring next.config OR proxy.ts, OR auditing/refactoring a Next.js codebase (single file or whole repo). This skill does NOT cover generic React 19 patterns (use vercel-react) or non-Next.js server rendering.
 ---
 
 # Skill: next-v16
@@ -10,7 +10,7 @@ Next.js 16 App Router (GA October 2025). Prefer the version-matched docs in `nod
 ## Scope
 
 - Applies to: Next.js 16 App Router — Turbopack, Cache Components vs previous cache model, `proxy.ts`, async request APIs, Server Components, Server Actions, streaming, metadata, client islands
-- Does NOT cover: Pages Router, generic React 19 (see vercel-react-v1), non-Next server rendering
+- Does NOT cover: Pages Router, generic React 19 (see vercel-react), non-Next server rendering
 
 ## Assumptions
 
@@ -66,7 +66,7 @@ Next.js 16 App Router (GA October 2025). Prefer the version-matched docs in `nod
 
 ## Interactions
 
-- React 19 concurrent UI: [vercel-react-v1](../vercel-react-v1/SKILL.md)
+- React 19 concurrent UI: [vercel-react](../vercel-react/SKILL.md)
 - Client data after hydration: [tanstack-query-v5](../tanstack-query-v5/SKILL.md)
 - Forms that stay on the Next server: [workflow/nextjs-form](../workflow/nextjs-form/SKILL.md)
 

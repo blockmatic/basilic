@@ -24,7 +24,7 @@ Use the specified diff, branch, or PR and its intended behavior. Establish the r
 - [ ] Architecture: ownership, dependencies, generated sources, and existing shared helpers remain coherent. Generated files were not edited by hand.
 - [ ] Security: changed input and authorization boundaries, secret exposure, and denied access paths are checked.
 - [ ] Performance: changed queries, list bounds, repeated work, and client rendering have evidence appropriate to their risk.
-- [ ] Verification: tests exercise behavior; claimed checks were actually run and cover the change. If a finding implies a new quality or security bar, escalate to `/f-quality` or `/f-security` instead of inventing policy.
+- [ ] Verification: tests exercise behavior; claimed checks were actually run and cover the change. If a finding implies a new quality or security bar, point at existing testing or security docs instead of inventing policy.
 
 ## Handoff
 

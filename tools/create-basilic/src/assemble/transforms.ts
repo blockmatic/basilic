@@ -57,6 +57,7 @@ function rewriteLocalSkillSources({ destRoot }: { destRoot: string }) {
   const lock = JSON.parse(readFileSync(path, 'utf8')) as {
     skills?: Record<string, { source?: string; sourceType?: string; skillPath?: string }>
   }
+  delete lock.skills?.f
   for (const [name, skill] of Object.entries(lock.skills ?? {})) {
     if (skill.sourceType !== 'local') continue
     skill.source = 'blockmatic/basilic-skills'

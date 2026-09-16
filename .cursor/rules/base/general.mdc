@@ -1,42 +1,6 @@
 ---
-description: General Agent Rules
+description: General Agent Rules — canonical text is root AGENTS.md
 alwaysApply: true
 ---
 
-## Agent Behavior (CRITICAL)
-- Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `_first/basilic/PRODUCT.md` (path from `_first/FIRST.md`). **Read** the matching file. Do not `@`-attach docs from rules or skills. Slash playbooks: `.agents/skills/workflow/` (`/plan-feature`, dispatcher `/workflow`)
-- After features/fixes: same change, update that MDX and nearest README if behavior, commands, or conventions changed; patch `_first/basilic/PRODUCT.md` if goals, feature map, or horizons changed; glob `.mdc` only if a constraint changed
-- When creating plans add a ## References section listing rules, skills, and MDX pages used
-- Summarize assumptions in 3–5 bullets
-- Respect Ask mode restrictions (read-only)
-- Verify before destructive operations
-- Defer to user for ambiguous, high-risk decisions
-- Never ask before modifying files (including dotfiles)
-- Provide concise summaries when finishing
-- Search first (Grep/Glob), read later
-- Targeted reads over broad exploration
-- Use references strategically
-- Maximize parallel calls (batch file reads/searches)
-
-## Workflow
-- Enter plan mode for non-trivial tasks (3+ steps, architectural decisions); re-plan if stuck
-- Use TodoWrite for multi-step work; keep items focused
-- On user correction: acknowledge mistake, adjust approach (avoid repeating)
-- Don't mark complete without proving it works (run tests, check logs, diff behavior)
-- For non-trivial changes: pause for simpler approach; avoid hacky fixes
-- Bug reports: fix autonomously—use logs, errors, failing tests; fix CI without being told
-
-## Code Quality
-- Simplicity first, minimal impact—change only what's necessary
-- Find root cause; no temporary fixes
-- Collocate related functionality
-- ALWAYS follow linting rules: eslint, biome
-- Search for existing functionality before creating new
-- Always use existing packages in codebase before writing custom code
-- Never use console, use `@repo/utils/logger/server` or `@repo/utils/logger/client`
-- Use `@repo/error` for error handling
-- Use `t3-oss` packages for environment variable validation
-- Prefer app `lib/env.ts` values with defaults over global constants; never use global constants (e.g. `constants.ts` or scattered `export const X = ...`). Put config values in `lib/env.ts` as env vars with defaults or exported constants collocated there
-- Use `lodash-es` (per-function imports)
-
-
+Canonical always-on behavior, workflow, and code-quality constraints live in root `AGENTS.md`. Do not diverge from that file.

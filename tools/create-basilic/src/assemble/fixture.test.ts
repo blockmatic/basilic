@@ -1,17 +1,19 @@
-import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { classifyPath, loadManifest } from './classify.js'
-import { resetFirstInstance } from './first-reset.js'
+import { productShell, resetProductBrief } from './product-reset.js'
 
 const sentinelPaths = [
   ['LICENSE', 'include'],
   ['package.json', 'transform'],
   ['pnpm-lock.yaml', 'include'],
   ['AGENTS.md', 'transform'],
+  ['GEMINI.md', 'transform'],
+  ['PRODUCT.md', 'transform'],
+  ['DESIGN.md', 'transform'],
   ['apps/api/package.json', 'transform'],
   ['apps/web/package.json', 'transform'],
   ['apps/mobile/app.json', 'transform'],
@@ -20,8 +22,8 @@ const sentinelPaths = [
   ['tools/eslint/package.json', 'include'],
   ['tools/typescript/package.json', 'include'],
   ['tools/create-basilic/package.json', 'exclude'],
-  ['_first/FIRST.md', 'transform'],
-  ['_first/basilic/PRODUCT.md', 'exclude'],
+  ['_first/FIRST.md', 'exclude'],
+  ['.agents/skills/f/SKILL.md', 'exclude'],
   ['scripts/run-qa.mjs', 'transform'],
   ['scripts/prepare-publish.mjs', 'exclude'],
   ['release-please-config.json', 'exclude'],
@@ -30,10 +32,6 @@ const sentinelPaths = [
   ['.github/workflows/publish-create-basilic.yml', 'exclude'],
   ['CHANGELOG.md', 'exclude'],
 ] as const
-
-function sha256(value: Buffer) {
-  return createHash('sha256').update(value).digest('hex')
-}
 
 describe('exact-version fixture', () => {
   it('pins include/transform/exclude prefixes', () => {
@@ -46,8 +44,8 @@ describe('exact-version fixture', () => {
         'scripts/restore-publish.mjs',
         'scripts/release-impact.mjs',
         'scripts/assert-generated-tree.mjs',
-        '_first/basilic/',
-        '_first/templates/',
+        '_first/',
+        '.agents/skills/f/',
         '.github/workflows/pr-title.yml',
         '.github/workflows/scaffold.yml',
         '.github/workflows/release-please.yml',
@@ -65,13 +63,15 @@ describe('exact-version fixture', () => {
         'README.md',
         'AGENTS.md',
         'CLAUDE.md',
+        'GEMINI.md',
         'turbo.json',
         'skills-lock.json',
         '.coderabbit.yaml',
         '.cursor/',
         '.agents/',
-        '_first/',
         '.deepsec/',
+        'PRODUCT.md',
+        'DESIGN.md',
         'scripts/run-qa.mjs',
         'scripts/README.md',
         'apps/api/',
@@ -92,10 +92,12 @@ describe('exact-version fixture', () => {
         '.cursor/',
         '.agents/',
         '.deepsec/',
-        '_first/',
         '.vscode/',
+        'PRODUCT.md',
+        'DESIGN.md',
         'AGENTS.md',
         'CLAUDE.md',
+        'GEMINI.md',
         'LICENSE',
         'README.md',
         'biome.json',
@@ -128,14 +130,10 @@ describe('exact-version fixture', () => {
     ).toEqual(sentinelPaths.map(([path, kind]) => ({ path, kind, expected: kind })))
   })
 
-  it('pins hashes of generated FIRST shells', async () => {
+  it('writes the unfilled product brief and removes FIRST', async () => {
     const destRoot = await mkdtemp(join(tmpdir(), 'create-basilic-fixture-'))
-    resetFirstInstance({ destRoot })
-    expect(sha256(readFileSync(join(destRoot, '_first/FIRST.md')))).toBe(
-      'aaf6bb69aee5fbae5a20436d42dd3fbc34867db9ecf8e0b2bbd309a1b9fdb782',
-    )
-    expect(sha256(readFileSync(join(destRoot, '_first/PRODUCT.md')))).toBe(
-      'ba8b11a8e9bef37aab1f835af3eb0824126a088e92420f6814273b5b2d39f766',
-    )
+    resetProductBrief({ destRoot })
+    expect(readFileSync(join(destRoot, 'PRODUCT.md'), 'utf8')).toBe(productShell)
+    expect(existsSync(join(destRoot, '_first'))).toBe(false)
   })
 })

@@ -248,6 +248,8 @@ Some bullets below overstate what Hey API generates today:
 - Hey API generates **`@repo/core`** from OpenAPI; it does **not** generate `@repo/react` hooks or frontend Zod schemas.
 - See [API Architecture](/docs/architecture/api) for the current generate → consume workflow.
 
+**MCP:** This ADR listed “AI/MCP integration” as a REST+OpenAPI benefit. Basilic does **not** ship an API MCP server. Agents use the OpenAPI spec, `@repo/core`, and `@repo/cli` (`basilic ai chat`). Cursor MCP in `.cursor/mcp.json` is IDE tooling (GitHub, CodeRabbit, shadcn, Vercel), not the product API.
+
 ## Related Documentation
 
 - [API Architecture](/docs/architecture/api) - OpenAPI generation workflow

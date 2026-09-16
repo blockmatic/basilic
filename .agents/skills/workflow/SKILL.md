@@ -10,13 +10,13 @@ With no argument, list the shortcuts below and stop. Do not start a lifecycle or
 
 For `/workflow <token>`, resolve a shortcut below or a full name from the index, read that child SKILL.md, and follow it. Preserve the remaining request as its task context. Unknown token: show the index and stop; never guess a publishing command.
 
-Direct `/<name>` loads the same child. FIRST `/f-*` owns durable decisions and remains a separate catalog. Install with `pnpm dlx skills@latest add blockmatic/first` ([reviewed revision](https://github.com/blockmatic/first/tree/d67d26c59c5501c4f6b8518d8543c0721e98f10d)). Do not fork that tree here. Use the repository's FIRST load order when that boundary is relevant.
+Direct `/<name>` loads the same child. `/plan` and `/build` are the everyday short-hands for planning and implementation. Durable product facts live in the consuming repo's `PRODUCT.md`; technical facts live in that repo's docs. `/use-tdd` is opt-in.
 
 ## Shortcuts
 
 | Invocation | Playbook |
 |---|---|
-| `/workflow plan` | [plan-feature](plan-feature/SKILL.md) |
+| `/workflow plan` | [plan](plan/SKILL.md) |
 | `/workflow build` | [build](build/SKILL.md) |
 | `/workflow review` | [code-review](code-review/SKILL.md) |
 | `/workflow debug` | [debug-issue](debug-issue/SKILL.md) |
@@ -64,8 +64,8 @@ Direct `/<name>` loads the same child. FIRST `/f-*` owns durable decisions and r
 - [/onboard-new-developer](onboard-new-developer/SKILL.md)
 - [/optimize-performance](optimize-performance/SKILL.md)
 - [/overview](overview/SKILL.md)
+- [/plan](plan/SKILL.md)
 - [/plan-architecture](plan-architecture/SKILL.md)
-- [/plan-feature](plan-feature/SKILL.md)
 - [/refactor-code](refactor-code/SKILL.md)
 - [/release-review](release-review/SKILL.md)
 - [/retro](retro/SKILL.md)

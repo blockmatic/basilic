@@ -1,19 +1,24 @@
 # Repository agent instructions
 
-This repository has one shared, **Cursor-first** AI development workflow. Other
-agents use the same checked-in rules, skills, and documentation; do not create a
-second workflow or a competing source of truth.
+This repository has one shared AI development workflow: this file plus
+`.agents/skills/` (tech skills and workflow playbooks `plan` / `build` /
+`workflow`). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json` are
+adapters. Other harnesses load the same contract through this file (and thin
+stubs) and open `SKILL.md` when there is no `/` menu. Do not create a second
+workflow or a competing source of truth.
 
 These instructions apply to the whole monorepo. A nested `AGENTS.md` adds or
 overrides guidance for its subtree and must be read before changing files there.
 
 ## Start here
 
-1. Read every `.cursor/rules/**/*.mdc` file with `alwaysApply: true`.
-2. Read each additional rule whose `globs` match the files in scope. Repository
-   rules are constraints and override optional skill guidance.
-3. Read the relevant `.agents/skills/**/SKILL.md` when the user invokes a skill
-   or the task clearly matches one. Workflow and technology skills come from
+1. Always-on constraints are **this file**. Do not chase `.cursor/rules` for the
+   global contract.
+2. When editing files that match a glob in [File-scoped rules](#file-scoped-rules),
+   read that `.cursor/rules` file (Cursor auto-attaches it).
+3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
+   task matches. Workflow playbooks live under `.agents/skills/workflow/`. If
+   the harness has no `/` menu, open the `SKILL.md` file. Catalog:
    [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
 4. Read the matching technical documentation under
    [`apps/docu/content/docs/`](apps/docu/content/docs/) before changing an
@@ -24,29 +29,145 @@ overrides guidance for its subtree and must be read before changing files there.
 Search first and keep reads targeted. Inspect the implementation, configuration,
 and tests instead of relying on memory or assuming that documentation is current.
 
-## FIRST decisions
+## Always-on contract
 
-Use FIRST when a task invokes `/f-*` or requires a durable product, journey,
-architecture, data, API, documentation, workflow, quality, security, or
-operations decision. Interface expression is Journeys. Automated delivery is
-Workflow.
+### Behavior
 
-Load FIRST in this order:
+- Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `PRODUCT.md`.
+  Visual language: `DESIGN.md`. **Read** the matching file. Do not `@`-attach
+  docs from rules or skills. Playbooks: `.agents/skills/workflow/` (`plan`,
+  `build`, dispatcher `workflow`).
+- After features/fixes: same change, update that MDX and nearest README if
+  behavior, commands, or conventions changed; patch `PRODUCT.md` if goals,
+  feature map, or horizons changed; glob `.mdc` only if a Cursor-scoped
+  constraint changed.
+- When creating plans add a ## References section listing rules, skills, and
+  MDX pages used.
+- Summarize assumptions in 3–5 bullets.
+- Respect read-only / review requests (do not edit unless the user also asked).
+- Verify before destructive operations.
+- Defer to the user for ambiguous, high-risk decisions.
+- Never ask before modifying files (including dotfiles).
+- Provide concise summaries when finishing.
+- Search first (Grep/Glob), read later. Targeted reads over broad exploration.
+- Maximize parallel calls (batch file reads/searches).
 
-1. [`_first/AGENTS.md`](_first/AGENTS.md)
-2. [`_first/ABOUT.md`](_first/ABOUT.md)
-3. [`_first/FIRST.md`](_first/FIRST.md)
-4. The primary `/f-<station>` skill
-5. The station artifact listed in `_first/FIRST.md`
+### Workflow
 
-FIRST station skills live under `.agents/skills/f/f-<name>/` and come from
-[`blockmatic/first`](https://github.com/blockmatic/first).
+- Plan first for non-trivial tasks (3+ steps, architectural decisions); re-plan
+  if stuck. Keep a focused task list for multi-step work.
+- On user correction: acknowledge the mistake and adjust (avoid repeating it).
+- Don't mark complete without proving it works (run tests, check logs, diff
+  behavior).
+- For non-trivial changes: pause for a simpler approach; avoid hacky fixes.
+- Bug reports: fix autonomously—use logs, errors, failing tests; fix CI without
+  being told.
 
-Choose one primary station. Load another only when the work crosses a boundary it
-owns. Do not load `_first/maintainers/` for product work. Durable Basilic product
-intent, feature status, non-goals, and roadmap live in
-[`_first/basilic/PRODUCT.md`](_first/basilic/PRODUCT.md); technical adopter
-documentation lives in `apps/docu`.
+### Code quality
+
+- Simplicity first, minimal impact—change only what is necessary.
+- Find the root cause; no temporary fixes.
+- Collocate related functionality.
+- ALWAYS follow linting rules: eslint, biome.
+- Search for existing functionality before creating new.
+- Always use existing packages in the codebase before writing custom code.
+- Never use console; use `@repo/utils/logger/server` or `@repo/utils/logger/client`.
+- Use `@repo/error` for error handling.
+- Use `t3-oss` packages for environment variable validation.
+- Prefer app `lib/env.ts` values with defaults over global constants; never use
+  global constants (e.g. `constants.ts` or scattered `export const X = ...`).
+  Put config values in `lib/env.ts` as env vars with defaults or exported
+  constants collocated there.
+- Use `lodash-es` (per-function imports).
+
+### Naming
+
+- No UPPER_SNAKE_CASE constants—use camelCase for all variables and const
+  declarations.
+- Uppercase allowed only for env var keys (e.g. `env.DATABASE_URL`,
+  `process.env.NODE_ENV`).
+- Prefer collocation: keep data in the same file as its consumer; avoid
+  separate `*-titles.ts`, `*-constants.ts` files.
+- Use `const titles = {}` in the same file, not `const PAGE_TITLES` in a
+  separate file.
+
+### File organization
+
+- Group 2+ related implementation files in a kebab-case folder; `index.ts` is
+  the public API (named re-exports in apps, not `export *` mega-barrels).
+- Single-file modules stay files; colocate tests (`*.test.ts`, `*.spec.ts`)
+  beside implementation.
+- Drop the folder-name prefix inside the folder (`oauth-google.ts` →
+  `oauth/google.ts`). Import the group from outside (`.../lib/oauth/index.js`);
+  import siblings directly inside the folder.
+- Never add a parent mega-barrel (`lib/index.ts`, `components/ui/index.ts`).
+  Never `foo/foo.ts` plus a thin re-export index. Never `foo.ts` beside `foo/`
+  (basename collision).
+- Same runtime for all exports → folder with unifying `index.ts`. Mixed
+  runtimes (server/client) → folder with named entry files and no unifying
+  index.
+- Exceptions: Fastify autoload `routes/` and `plugins/` (no `index.ts` there);
+  shadcn `@repo/ui/components/*`; generated `packages/core/src/gen`; Drizzle
+  `db/schema/index.ts`; package subpath indexes that are the implementation
+  (`packages/utils/src/data/index.ts`); named entries that would cycle
+  (`catalogs/mapper.ts`).
+- Decision tree:
+  `apps/docu/content/docs/development/file-organization.mdx`.
+
+### Git
+
+- Use default global git user (`git config --global user.name`,
+  `git config --global user.email`)—never cursor/system identity.
+- Never `--no-verify` or `--trailer` (e.g. Co-authored-by).
+- Fix lint, type-check, and test failures before committing.
+- Conventional Commits: `<type>(<scope>): <short summary>` — type/scope
+  lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`,
+  `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit.
+- Branch/validate/commit/push/PR: read
+  `.agents/skills/workflow/exec-push/SKILL.md`. Commit message:
+  `.agents/skills/workflow/git-commit/SKILL.md`. Slash names `/exec-push` and
+  `/git-commit` are Cursor extras.
+
+### GitHub Actions
+
+- Inspect PR checks, workflow runs, logs, artifacts, and reruns with **`gh`**
+  (authenticated for the repo remote).
+- Common commands: `gh pr checks`, `gh run list --branch "$(git branch --show-current)"`,
+  `gh run view <id> --log-failed`, `gh run watch <id>`, `gh run download <id>`.
+- Never use GitHub MCP for Actions — logs, artifacts, and reruns belong to the
+  CLI.
+- `/fix-github-actions` follows this rule; do not add `gh run watch` to
+  `/git-push` or `/exec-push`.
+
+## File-scoped rules
+
+Cursor attaches these by glob. Other harnesses should read the matching file
+when those paths are in scope.
+
+| When editing | Read |
+| --- | --- |
+| `**/*.{ts,tsx}` | `.cursor/rules/base/typescript.mdc` |
+| `apps/docu/**/*.mdx` | `.cursor/rules/base/docs.mdc` |
+| `**/README.md` | `.cursor/rules/base/readme.mdc` |
+| `**/.env.*.example` | `.cursor/rules/base/env-files.mdc` |
+| `apps/web/**/*.{tsx,css}` | `.cursor/rules/frontend/nextjs.mdc`, `design.mdc`, `mobile-first.mdc` |
+| `**/*.{tsx,css}` | `.cursor/rules/frontend/react.mdc`, `react-hooks.mdc` |
+| `apps/web/**/*`, `packages/ui/**/*`, `packages/react/**/*` | `.cursor/rules/frontend/stack.mdc` |
+| `apps/web/**/*.{tsx,css}`, `packages/ui/**/*.{tsx,css}` | `.cursor/rules/frontend/shadcnui.mdc` |
+| `apps/web/**/*`, `packages/core/**/*`, `packages/react/**/*` | `.cursor/rules/frontend/auth.mdc` |
+| `apps/mobile/**/*` | `.cursor/rules/frontend/expo.mdc` |
+| web/api Playwright paths | `.cursor/rules/frontend/e2e-playwright.mdc` |
+| `apps/api/**/*` | `.cursor/rules/backend/fastify.mdc` |
+| `.agents/skills/**/*` | `.cursor/rules/cursor/skills.mdc` |
+| `.cursor/rules/**/*.mdc` | `.cursor/rules/cursor/rules.mdc` |
+| web3 / viem / wagmi / solana / cosmos / ponder | `.cursor/rules/web3/*.mdc` matching the stack |
+
+## Product and docs
+
+Durable Basilic product intent, feature status, non-goals, and roadmap live in
+[`PRODUCT.md`](PRODUCT.md). Visual language is [`DESIGN.md`](DESIGN.md). Technical
+adopter documentation lives in `apps/docu`. Read the matching MDX or ADR before
+changing an architecture, convention, command, or documented behavior.
 
 ## Working contract
 
@@ -87,15 +208,27 @@ without creating conflicting edits or duplicate work.
   exact remaining failure or unverified behavior.
 - When behavior, architecture, commands, or conventions change, update the
   matching MDX page and nearest README in the same work.
-- Update `_first/basilic/PRODUCT.md` only when product goals, feature status,
-  non-goals, metrics, or roadmap horizons change. Passing `pnpm qa` is Workflow
-  evidence, not product success.
+- Update `PRODUCT.md` only when product goals, feature status, non-goals,
+  metrics, or roadmap horizons change. Passing `pnpm qa` is local/CI evidence,
+  not product success.
 - When creating a plan, include a `## References` section listing the rules,
   skills, and documentation used.
 
 Finish with a concise, outcome-first summary: what changed, where it changed,
 which checks passed, and any actionable blocker. Distinguish verified facts,
 reasonable inferences, assumptions, and unresolved questions.
+
+## Harness extras
+
+These are loaders and UX, not a second contract.
+
+- **Cursor:** glob auto-attach for `.cursor/rules`; slash playbooks (`/plan`,
+  `/build`, `/workflow`); MCP in `.cursor/mcp.json`.
+- **Claude Code:** `CLAUDE.md` imports this file with `@AGENTS.md`. Project
+  skills are `.agents/skills/` (not committed `.claude/skills/`).
+- **Antigravity:** workspace rules in `.agents/rules/`; skills in
+  `.agents/skills/`.
+- **Gemini CLI:** `GEMINI.md` points here. Skills share `.agents/skills/`.
 
 Full workflow details:
 [`apps/docu/content/docs/development/ai-workflow.mdx`](apps/docu/content/docs/development/ai-workflow.mdx).
