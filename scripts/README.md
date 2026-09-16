@@ -55,7 +55,7 @@ Runs during `postpack` lifecycle hook (after packing):
 
 ### `assert-generated-tree.mjs`
 
-Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please) or is missing required agent/docs files.
+Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files.
 
 ```bash
 node scripts/assert-generated-tree.mjs /path/to/assembled-template

@@ -22,6 +22,7 @@ const forbidden = [
   '.github/workflows/scaffold.yml',
   '.github/workflows/release-impact.yml',
   '.github/workflows/scaffold-acceptance.yml',
+  '.agents/skills/b',
 ]
 
 const required = [
@@ -40,7 +41,7 @@ const required = [
   'docs/basilic/development/index.md',
   'docs/basilic/testing/product-ready.md',
   '.cursor/rules/base/general.mdc',
-  '.agents/skills/b/SKILL.md',
+  '.agents/skills/workflow/SKILL.md',
 ]
 
 let failed = false

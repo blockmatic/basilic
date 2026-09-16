@@ -1,6 +1,6 @@
 # Workflow authoring pattern
 
-One outcome per slash playbook. Keep discovery descriptions to capability and invocation; detailed steps belong in the body. The frontmatter name equals its folder and retains `disable-model-invocation: true`.
+One outcome per slash playbook. Keep discovery descriptions to capability and invocation; detailed steps belong in the body. The frontmatter name equals its folder, is unprefixed, and retains `disable-model-invocation: true`.
 
 Use these sections when they change execution decisions:
 

@@ -5,7 +5,7 @@ Rules, skills, and MCP for AI-assisted development. Daily workflow: [AI Developm
 ## Layout
 
 - [`rules/`](rules/) — constraints. Glob-scoped except `base/general.mdc`, `base/naming.mdc`, `base/git.mdc`, `base/file-organization.mdc` (always on).
-- [`.agents/skills/`](../.agents/skills/) — on-demand expertise (`<topic>-v<major>/`) and slash playbooks under `workflow/`. Refresh `workflow` from a local basilic-skills checkout until GitHub `main` publishes it (`pnpm dlx skills@latest add /path/to/basilic-skills --skill workflow -a cursor --copy -y`). Tech skills may still come from [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills). Details: [Cursor Skills](../apps/docu/content/docs/development/cursor-skills.mdx). There is no `.cursor/skills/` tree in this repo.
+- [`.agents/skills/`](../.agents/skills/) — on-demand expertise (`<topic>-v<major>/`) and slash playbooks under `workflow/`. Refresh from [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) (`pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y`). FIRST: `pnpm dlx skills@latest add blockmatic/first -a cursor --copy -y`. Details: [Cursor Skills](../apps/docu/content/docs/development/cursor-skills.mdx). There is no `.cursor/skills/` tree in this repo.
 - [`mcp.json`](mcp.json) — MCP servers. Setup: [Cursor Setup](../apps/docu/content/docs/development/cursor-setup.mdx).
 
 Type `/` in chat for playbooks (`/plan-feature`, `/git-create-pr`, `/git-commit`, `/retro`). Tech skills load when relevant, or `@.agents/skills/<name>`.

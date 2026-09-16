@@ -13,7 +13,7 @@ Load `frontend-design-v1` for visual direction, `composition-patterns-v1` for re
 ## Steps
 
 1. **Purpose and audience.** Name the job, the person, and the surface mode: Operate (app/task), Persuade (marketing), or Read (docs). Durable jobs stay in the Journeys overlay; do not generate DESIGN.md.
-2. **Visual references.** Use the brief, existing screens, or a stated aesthetic. If the repo has tokens and shared components, inspect those first. Tokens win over a greenfield palette (`frontend-design-v1/references/product-ui.md`).
+2. **Visual references.** Use the brief, existing screens, or a stated aesthetic. If the repo has tokens and shared components, inspect those first. Tokens win over a greenfield palette (`frontend-design-v1` product-ui addendum).
 3. **Reuse before invent.** Prefer shared primitives. Compose at the second call site. Do not extract a compound API for a one-off route. Do not lift server data into a client provider.
 4. **Responsive and interaction.** Mobile-first layout, visible focus, keyboard path, `prefers-reduced-motion`. Do not add a new motion library.
 5. **Harden states.** Loading, empty, error, success, and long/overflow content. Skip a full i18n/RTL program unless the repo already localizes.

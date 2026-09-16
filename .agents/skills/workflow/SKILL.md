@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: Basilic workflow dispatcher and catalog. Use when the user types /workflow or a playbook name such as /exec-push or /git-commit.
+description: Basilic workflow dispatcher and catalog. Use when the user types /workflow or /<playbook>.
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ With no argument, list the shortcuts below and stop. Do not start a lifecycle or
 
 For `/workflow <token>`, resolve a shortcut below or a full name from the index, read that child SKILL.md, and follow it. Preserve the remaining request as its task context. Unknown token: show the index and stop; never guess a publishing command.
 
-Direct `/<name>` loads the same child. Names in an old conversation such as `/b-plan-feature` can be translated to `/plan-feature`; they are not separate installed aliases. FIRST `/f-*` owns durable decisions and remains a separate catalog. Install with `pnpm dlx skills@latest add blockmatic/first` ([reviewed revision](https://github.com/blockmatic/first/tree/d67d26c59c5501c4f6b8518d8543c0721e98f10d)). Do not fork that tree here. Use the repository's FIRST load order when that boundary is relevant.
+Direct `/<name>` loads the same child. FIRST `/f-*` owns durable decisions and remains a separate catalog. Install with `pnpm dlx skills@latest add blockmatic/first` ([reviewed revision](https://github.com/blockmatic/first/tree/d67d26c59c5501c4f6b8518d8543c0721e98f10d)). Do not fork that tree here. Use the repository's FIRST load order when that boundary is relevant.
 
 ## Shortcuts
 

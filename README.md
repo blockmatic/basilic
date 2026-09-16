@@ -6,7 +6,7 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 
 ## Features
 
-- 🤖 **AI-first dev workflow** — Agent rules, `/b` workflow skills, FIRST `/f-*` decisions, MCP integrations, and automated CodeRabbit reviews
+- 🤖 **AI-first dev workflow** — Agent rules, `/workflow` skills, FIRST `/f-*` decisions, MCP integrations, and automated CodeRabbit reviews
 - 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
 - 🧩 **Web + API starters** — Next.js demo, React hooks, Expo UI scaffold, Fastify API (not a wallet or OpenAI template)
