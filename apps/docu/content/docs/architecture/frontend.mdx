@@ -3,7 +3,7 @@ title: "Frontend Architecture"
 description: "Next.js 16 (App Router, RSC-first), React 19, Tailwind 4, and handwritten TanStack Query hooks in @repo/react."
 ---
 
-`apps/web` consumes `@repo/core` and `@repo/ui`. `apps/mobile` is a UI scaffold: it may share **tokens** later, not components or generated API types today. `apps/docu` uses `@repo/ui` only — it does not depend on `@repo/core` or `@repo/react`. Web → Core; Error → Web.
+`apps/web` consumes `@repo/core` and `@repo/ui`. `apps/mobile` is a UI scaffold: it may share **tokens** later, not components or generated API types today. `apps/docu` uses `@repo/ui` only — it does not depend on `@repo/core` or `@repo/react`. It loads the same Inter, Poppins, and Geist Mono CSS variables as `apps/web`. Web → Core; Error → Web.
 
 ## Layout
 
