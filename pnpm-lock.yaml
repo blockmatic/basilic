@@ -179,8 +179,9 @@ overrides:
   flatted: 3.4.2
   h3: 1.15.9
   socket.io-parser: 4.2.7
-  undici@5.28.4: 6.24.0
-  undici@6.23.0: 6.24.0
+  undici@5.28.4: 6.28.0
+  undici@6.23.0: 6.28.0
+  undici@6.24.0: 6.28.0
   undici@7.22.0: 7.29.0
   undici: 7.29.0
   next@<16.3.5: 16.3.5
@@ -12267,8 +12268,8 @@ packages:
   undici-types@8.10.2:
     resolution: {integrity: sha512-7/+aSjzkUoLc92hV22bTW4aGanXf800zbwguhcICs0OAoCF9wDOE4wkopQ+SqfhXZm8mCK8gHpdTs7pZUWzK3w==}
 
-  undici@6.24.0:
-    resolution: {integrity: sha512-lVLNosgqo5EkGqh5XUDhGfsMSoO8K0BAN0TyJLvwNRSl4xWGZlCVYsAIpa/OpA3TvmnM01GWcoKmc3ZWo5wKKA==}
+  undici@6.28.0:
+    resolution: {integrity: sha512-LIY910g9TI13YS95lrMFrs8Rm/u/irgHeTWoKCoteeJ04CUJ92eEfj0rVn+7VKMPBpUPiUoBKfhNyLI23EE/KA==}
     engines: {node: '>=18.17'}
 
   undici@7.29.0:
@@ -17918,7 +17919,7 @@ snapshots:
       is-buffer: 2.0.5
       is-node-process: 1.2.0
       throttleit: 2.1.0
-      undici: 6.24.0
+      undici: 6.28.0
 
   '@vercel/build-utils@14.10.1':
     dependencies:
@@ -18154,7 +18155,7 @@ snapshots:
       ts-morph: 12.0.0
       tsx: 4.21.0
       typescript: 5.9.3
-      undici: 6.24.0
+      undici: 6.28.0
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -25478,7 +25479,7 @@ snapshots:
 
   undici-types@8.10.2: {}
 
-  undici@6.24.0: {}
+  undici@6.28.0: {}
 
   undici@7.29.0: {}
 

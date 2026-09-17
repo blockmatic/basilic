@@ -41,8 +41,9 @@ overrides:
   flatted: 3.4.2
   h3: 1.15.9
   socket.io-parser: 4.2.7
-  undici@5.28.4: 6.24.0
-  undici@6.23.0: 6.24.0
+  undici@5.28.4: 6.28.0
+  undici@6.23.0: 6.28.0
+  undici@6.24.0: 6.28.0
   undici@7.22.0: 7.29.0
   undici: 7.29.0
   next@<16.3.5: 16.3.5

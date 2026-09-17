@@ -71,6 +71,10 @@ Updates pnpm via Corepack (`corepack use pnpm@latest`; Corepack owns the install
 pnpm update-deps
 ```
 
+### `vercel-install.mjs`
+
+Vercel install for pnpm 12: global `npm install` of the `packageManager` pin with scripts enabled (so the native binary replaces the placeholder), then `pnpm install`. Used by `apps/*/vercel.json` `installCommand`.
+
 ## Generator
 
 ### `assert-generated-tree.mjs`
