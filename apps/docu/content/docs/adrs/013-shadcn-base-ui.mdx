@@ -23,7 +23,7 @@ Install and overwrite shadcn wrappers from the **Base UI** registry with visual 
 
 - App call sites that used `asChild` must pass `render`.
 - CLI alias bugs can emit `from "cn"` or `IconPlaceholder`; rewrite to `@repo/ui/lib/utils` and lucide.
-- `pnpm setup:skills` copies `blockmatic/basilic-skills`; `shadcn-v3` and `/shadcn` there must stay on Base UI (`base-vega`, `render`, `data-*`).
+- `pnpm setup:skills` copies `blockmatic/basilic-skills`. This repo already uses Base UI (`base-vega`, `render`, `data-*`). Published catalog `shadcn-v3` / `/shadcn` still describe Radix until that catalog change is merged; preview a sibling clone with `BASILIC_SKILLS_LOCAL=1`.
 - Import path stays `@repo/ui/components/*`. These Radix-era exports are gone: `NavigationMenuViewport`, `NavigationMenu` `viewport`, and `PopoverAnchor`. Use `NavigationMenuPositioner` and Popover `Positioner` (inside `PopoverContent`) instead. Do not restore compatibility shims.
 
 ## Related

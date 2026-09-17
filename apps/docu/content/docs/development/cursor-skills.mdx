@@ -23,7 +23,7 @@ pnpm dlx skills@latest add blockmatic/basilic-skills
 
 Non-interactive install for this repo is `pnpm setup:skills` (Update procedure below). Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths). Optional maintainer-local Claude symlink (not committed): add `-a claude-code` **without** `--copy`.
 
-Root `skills-lock.json` tracks catalog hashes. The `web-design-guidelines` entry also records the pinned `command.md` commit digest. `pnpm setup:skills` restores that file after install. Commit the lock after an explicit catalog refresh. Do not commit `.agents/skills/`.
+Root `skills-lock.json` tracks **skill-file** hashes for this catalog. The pinned `web-interface-guidelines` `command.md` URL and sha256 live in the catalog `web-design-guidelines` skill, not as an extra lock field. `pnpm setup:skills` restores the lock after install so routine setup does not bump hashes. Commit the lock after an explicit catalog refresh. Do not commit `.agents/skills/`.
 
 ## Three kinds
 
@@ -39,11 +39,13 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 ## Workflow install
 
-The published package is `workflow`: `.agents/skills/workflow/SKILL.md` is the parent catalog for **42** child playbooks (including `/plan`, `/build`, `/review`, and `/ui`) plus three references. A full `--skill '*'` install is **45** top-level skills; do not treat that catalog-wide count as the playbook count. Shared `authoring.md`, `git-publish.md`, and `review-dimensions.md` live under `workflow/references/`. Playbook bodies are numbered instructions. The parent lists shortcuts and stops; extra tokens (`/workflow plan`) do not dispatch.
+The published package is `workflow`: `.agents/skills/workflow/SKILL.md` is the parent catalog for **42** child playbooks (including `/plan`, `/build`, `/review`, `/ui`, and `/shadcn`) plus three references. A full `--skill '*'` install is **45** top-level skills (`skills.sh.json` groupings); do not treat that catalog-wide count as the playbook count. Shared `authoring.md`, `git-publish.md`, and `review-dimensions.md` live under `workflow/references/`. Playbook bodies are numbered instructions. The parent lists shortcuts and stops; extra tokens (`/workflow plan`) do not dispatch.
 
 This repository should have one workflow tree. Invoke playbooks as `/<name>`. After a refresh, preserve local edits first, then run `pnpm dlx skills@latest remove --skill b -a cursor -y` if a leftover `b` tree appears. `.agents/skills/b/` must be absent afterward.
 
 Packaging validation runs in the catalog with `pnpm validate`. It checks metadata, counts, grouping, and workflow reference targets. These checks do not prove that an agent follows a playbook or that a particular desktop menu has refreshed.
+
+Installable names follow catalog `skills.sh.json` (45): Core (`typescript-v6`, `file-organization`); Workflow (`workflow`); Web (`next-v16`, `vercel-react`, `tanstack-query-v5`, `ahooks-v3`, `nuqs-v2`, `react-email`); UI (`shadcn-v3`, `tailwind-design-system-v4`, `frontend-design`, `web-design-guidelines`, `composition-patterns`, `better-ui`, `motion-v13`, `emilkowal-animations`, plus the Emil craft folders listed below); API (`fastify-v5`, `drizzle-orm-v0`, `openapi-ts-v0`); AI (`ai-sdk-core-v7`, `ai-sdk-ui-v7`); Expo (`expo-*-v55`, `animate-expo`); Web3 (`wagmi-v3`, `solana-v1`, `viem-v2`, `nodejs-keccak256-v1`); Testing (`vitest-v4`, `playwright-v1`).
 
 ## Versioning
 
@@ -70,7 +72,7 @@ Maintainer preview of a sibling catalog clone:
 BASILIC_SKILLS_LOCAL=1 pnpm setup:skills
 ```
 
-Refresh from GitHub (rewrites hashes in `skills-lock.json`; review and commit the lock):
+Refresh from GitHub (rewrites hashes in `skills-lock.json`; review and commit the lock). The catalog README also documents `pnpm dlx skills@latest update`. Do not run `pnpm setup:skills` afterward if you intend to keep the new hashes — that script restores the previous lock.
 
 ```bash
 pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
@@ -88,7 +90,7 @@ When grepping skill names, match the folder or `name:` exactly (`motion-v1/`, `n
 
 ## Upstream provenance
 
-Catalog copies may differ from upstream. Original sources:
+Catalog copies may differ from upstream. Original sources (same list as the catalog [README](https://github.com/blockmatic/basilic-skills#canonical-copies)):
 
 - `expo-cicd-workflows-v55` ← `eas-workflows` in [expo/skills](https://github.com/expo/skills)
 - `expo-deployment-v55` ← `eas-app-stores`
@@ -106,21 +108,23 @@ Catalog copies may differ from upstream. Original sources:
 - `nodejs-keccak256-v1` ← `nodejs-keccak256` in [affaan-m/ecc](https://github.com/affaan-m/ecc)
 - `frontend-design` ← [anthropics/skills](https://github.com/anthropics/skills) `frontend-design`
 - `emilkowal-animations` ← pproenca/dot-skills `emilkowal-animations`
-- Emil craft pack ← [emilkowalski/skills](https://github.com/emilkowalski/skills) (unversioned folder names)
-- `better-ui` ← [jakubkrehel/skills](https://github.com/jakubkrehel/skills)
+- [emilkowalski/skills](https://github.com/emilkowalski/skills) at [`85e8e236`](https://github.com/emilkowalski/skills/commit/85e8e2363b713506e1d5b6e07a0eb2da66be1bc3): `emil-design-eng`, `review-animations`, `animation-vocabulary`, `apple-design`, `improve-animations`, `find-animation-opportunities`, `pick-ui-library`, `prototype`, `animate`, `ask-sonner`, `animate-expo`
+- `better-ui` ← [jakubkrehel/skills](https://github.com/jakubkrehel/skills) at [`267330e1`](https://github.com/jakubkrehel/skills/commit/267330e1adfc66a718fb65fa6918c1f06d0a689e) (sibling `better-*` skills are not in the catalog)
 - `react-email` ← [resend/react-email](https://github.com/resend/react-email) `skills/react-email`
 
-Basilic-maintained in the catalog: `fastify-v5`, `file-organization`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks. `shadcn-v3` and `/shadcn` document Base UI (`base-vega`, `render`, `data-slot` / `data-open`). Refresh `.agents/skills` with `pnpm setup:skills` after the catalog ships that revision.
+Basilic-maintained in the catalog: `fastify-v5`, `file-organization`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks.
 
-**Intended unused stack** (copied by a full `--skill '*'` refresh, not installed app deps yet): `wagmi-v3`, `motion-v13`, `emilkowal-animations`, Emil operational skills, `better-ui`.
+This product uses Base UI (`base-vega`, `render`, `data-slot` / `data-open`). Published GitHub `shadcn-v3` and `/shadcn` still describe Radix until that catalog change is merged. Preview the sibling clone with `BASILIC_SKILLS_LOCAL=1 pnpm setup:skills`. After the catalog ships, refresh hashes with `skills add` (or `skills update`) and commit `skills-lock.json`.
+
+**Intended unused stack** (copied by a full `--skill '*'` refresh, not installed app deps): `wagmi-v3`, `motion-v13`, `emilkowal-animations`, `pick-ui-library`, `better-ui`. `ask-sonner` matches `@repo/ui` Sonner.
 
 **Omitted from the catalog** (and why): Vercel `writing-guidelines` (conflicts with docs sentence case); `react-view-transitions` (extra animation API); `react-native-guidelines` (Expo skills already cover native); `write-swift` (no Swift in this product); `mobile-native` (web PWA chrome; Expo skills cover native). [Impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0) is not a skill: competing PRODUCT/DESIGN generators, CLI, and detector hooks are out of scope. A few craft ideas (harden loading/empty/error/success; bounded screenshot critique) are adapted in original wording in `/ui` and `frontend-design` `references/product-ui.md`.
 
 ## Design
 
-UI craft also comes from [emilkowalski/skills](https://github.com/emilkowalski/skills): `/prototype`, `emil-design-eng`, animation vocabulary and review skills. Those folders sit next to tech and pattern skills, not under `workflow/`. Project tokens in `DESIGN.md` still win.
+UI craft also comes from [emilkowalski/skills](https://github.com/emilkowalski/skills). Those folders sit next to tech and pattern skills, not under `workflow/`. Project tokens in `DESIGN.md` still win.
 
-New or reshaped UI: `/ui`. Visual direction only: `@frontend-design` (tokens win when present). Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/a11y`. Runtime bugs: `/debug-browser`. Explore variants: `/prototype`.
+New or reshaped UI: `/ui`. New shadcn primitive: `/shadcn` (follow `shadcn-v3`). Visual direction only: `@frontend-design` (tokens win when present). Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/a11y`. Runtime bugs: `/debug-browser`. Explore variants: `/prototype`. Motion: `@animate` (web) or `@animate-expo` (native). Toasts: `@ask-sonner`. Do not run `@pick-ui-library` to replace shadcn in this repo.
 
 ## Related
 
@@ -128,3 +132,4 @@ New or reshaped UI: `/ui`. Visual direction only: `@frontend-design` (tokens win
 - [Agent setup](/docs/development/cursor-setup)
 - Repo [`.cursor/README.md`](https://github.com/blockmatic/basilic/blob/main/.cursor/README.md)
 - [Cursor skills](https://cursor.com/docs/context/skills)
+- Catalog [README](https://github.com/blockmatic/basilic-skills#canonical-copies)
