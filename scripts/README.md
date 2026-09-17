@@ -55,7 +55,7 @@ Runs during `postpack` lifecycle hook (after packing):
 
 ### `setup-skills.mjs`
 
-Installs every skill from `blockmatic/basilic-skills` in one clone (`pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y`). Restores `skills-lock.json` afterward so hashes stay pinned. Fails if the lock is missing, lists a second GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then adds `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`.
+Installs every skill from `blockmatic/basilic-skills` in one clone (`pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y`). Restores `skills-lock.json` afterward so hashes stay pinned. Fails if the lock is missing, lists a second GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then adds `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`. On Windows the script runs `pnpm.cmd` through a shell because Node cannot spawn `.cmd` shims without one.
 
 ```bash
 pnpm setup:skills

@@ -3,7 +3,7 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { exit } from 'node:process'
+import { exit, platform } from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
@@ -43,11 +43,16 @@ function resolveCatalog({ allowLocal, repoRoot }) {
 }
 
 function runSkillsAdd({ source }) {
+  const isWindows = platform === 'win32'
   const result = spawnSync(
-    'pnpm',
+    isWindows ? 'pnpm.cmd' : 'pnpm',
     ['dlx', 'skills@latest', 'add', source, '--skill', '*', '-a', 'cursor', '--copy', '-y'],
-    { cwd: repoRoot, stdio: 'inherit' },
+    { cwd: repoRoot, stdio: 'inherit', shell: isWindows },
   )
+  if (result.error) {
+    console.error(result.error.message)
+    exit(1)
+  }
   if (result.status !== 0) exit(result.status ?? 1)
 }
 
