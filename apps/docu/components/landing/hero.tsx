@@ -20,8 +20,8 @@ export function Hero() {
       </div>
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-xl text-pretty text-sm text-muted-foreground">
-          Then <code className="font-mono text-foreground">pnpm setup</code>, database,{' '}
-          <code className="font-mono text-foreground">pnpm reset</code>, and{' '}
+          Then <code className="font-mono text-foreground">pnpm setup</code>,{' '}
+          <code className="font-mono text-foreground">pnpm db:start</code> and{' '}
           <code className="font-mono text-foreground">pnpm dev</code>.
         </p>
         <Button size="lg" className="min-h-11 w-full sm:w-auto" asChild>
