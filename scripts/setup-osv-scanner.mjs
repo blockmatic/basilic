@@ -4,14 +4,14 @@ import { execSync } from 'node:child_process'
 import { platform } from 'node:os'
 import { exit } from 'node:process'
 
+const osvScannerVersion = '2.6.0'
+
 const Tool = {
   name: 'osv-scanner',
   command: 'osv-scanner',
   checkCommand: 'osv-scanner --version',
   required: false,
-  repo: 'google/osv-scanner',
   macos: {
-    brew: 'brew install osv-scanner',
     getDownloadUrl: (version, arch) => {
       const normalizedArch = normalizeArchForOSV(arch)
       return `https://github.com/google/osv-scanner/releases/download/v${version}/osv-scanner_darwin_${normalizedArch}`
@@ -59,47 +59,12 @@ function getPlatform() {
   return 'linux'
 }
 
-function checkBrewAvailable() {
-  try {
-    execSync('which brew', { stdio: 'ignore' })
-    return true
-  } catch {
-    return false
-  }
-}
-
 function checkCurlAvailable() {
   try {
     execSync('which curl', { stdio: 'ignore' })
     return true
   } catch {
     return false
-  }
-}
-
-function getLatestVersion(repo) {
-  if (!checkCurlAvailable()) {
-    console.error('curl is required to fetch latest versions but is not installed')
-    return null
-  }
-
-  try {
-    const url = `https://api.github.com/repos/${repo}/releases/latest`
-    const response = execSync(`curl -s "${url}"`, { encoding: 'utf-8' })
-    const data = JSON.parse(response)
-
-    // Validate response structure
-    if (!data || typeof data.tag_name !== 'string') {
-      console.error(`Unexpected API response structure for ${repo}`)
-      console.error(`Full response: ${JSON.stringify(data, null, 2)}`)
-      return null
-    }
-
-    // Remove 'v' prefix if present
-    return data.tag_name.replace(/^v/, '')
-  } catch (error) {
-    console.error(`Failed to get latest version for ${repo}: ${error.message}`)
-    return null
   }
 }
 
@@ -129,31 +94,10 @@ function installTool() {
     return false
   }
 
-  // macOS: Try brew first if available
-  if (os === 'macos' && instructions.brew && checkBrewAvailable()) {
-    try {
-      console.log(`\n📦 Installing ${displayName} via Homebrew...`)
-      execSync(instructions.brew, { stdio: 'inherit' })
-      if (checkToolExists(Tool.command, Tool.checkCommand)) {
-        console.log(`✅ ${displayName} installed successfully`)
-        return true
-      }
-    } catch (_error) {
-      console.error('\n⚠️  Homebrew installation failed, trying manual method...')
-    }
-  }
-
-  // Linux/macOS: Manual installation via wget
+  // Linux/macOS: pinned GitHub release
   if (instructions.getDownloadUrl) {
     try {
-      const version = getLatestVersion(Tool.repo)
-      if (!version) {
-        console.error(`\n❌ Failed to get latest version for ${displayName}`)
-        if (instructions.manual) {
-          console.error(`Please install manually: ${instructions.manual}`)
-        }
-        return false
-      }
+      const version = osvScannerVersion
 
       const arch = getArchitecture()
       const downloadUrl = instructions.getDownloadUrl(version, arch)

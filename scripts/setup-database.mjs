@@ -42,12 +42,13 @@ const dockerCompose = {
   },
 }
 
+const supabaseVersion = '2.117.0'
+
 const supabase = {
   name: 'Supabase CLI',
   command: 'supabase',
   checkCommand: 'supabase --version',
   required: false,
-  repo: 'supabase/cli',
   macos: {
     brew: 'brew install supabase/tap/supabase',
     manual: 'https://supabase.com/docs/guides/cli/getting-started',
@@ -127,24 +128,6 @@ function checkCurlAvailable() {
     return true
   } catch {
     return false
-  }
-}
-
-function getLatestVersion(repo) {
-  if (!checkCurlAvailable()) {
-    console.error('curl is required to fetch latest versions but is not installed')
-    return null
-  }
-
-  try {
-    const url = `https://api.github.com/repos/${repo}/releases/latest`
-    const response = execSync(`curl -s "${url}"`, { encoding: 'utf-8' })
-    const data = JSON.parse(response)
-    // Remove 'v' prefix if present
-    return data.tag_name.replace(/^v/, '')
-  } catch (error) {
-    console.error(`Failed to get latest version for ${repo}: ${error.message}`)
-    return null
   }
 }
 
@@ -351,16 +334,7 @@ function installSupabase() {
   // Linux: Install .deb package
   if (os === 'linux' && instructions.getDownloadUrl) {
     try {
-      // Get latest version
-      const version = getLatestVersion(supabase.repo)
-      if (!version) {
-        console.error(`\n❌ Failed to get latest version for ${displayName}`)
-        if (instructions.manual) {
-          console.error(`Please install manually: ${instructions.manual}`)
-        }
-        return false
-      }
-
+      const version = supabaseVersion
       const downloadUrl = instructions.getDownloadUrl(version)
       const debFile = '/tmp/supabase_linux_amd64.deb'
 
