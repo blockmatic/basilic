@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "fastify",
   "ignoreCommand": "npx turbo-ignore @repo/api --fallback=HEAD^1",
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/api... && if [ \"$VERCEL_ENV\" != \"preview\" ] || [ \"$RUN_PG_MIGRATE\" = \"true\" ]; then pnpm turbo run db:migrate --filter=@repo/api; fi",
-  "installCommand": "cd ../.. && pnpm install",
-  "devCommand": "cd ../.. && pnpm dev --filter=@repo/api",
+  "buildCommand": "cd ../.. && node scripts/vercel-install.mjs turbo run build --filter=@repo/api... && if [ \"$VERCEL_ENV\" != \"preview\" ] || [ \"$RUN_PG_MIGRATE\" = \"true\" ]; then node scripts/vercel-install.mjs turbo run db:migrate --filter=@repo/api; fi",
+  "installCommand": "cd ../.. && node scripts/vercel-install.mjs",
+  "devCommand": "cd ../.. && node scripts/vercel-install.mjs dev --filter=@repo/api",
   "git": { "deploymentEnabled": { "main": true, "develop": true } }
 }

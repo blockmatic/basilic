@@ -37,7 +37,7 @@
     "@react-email/tailwind": "2.0.7",
     "@repo/ui": "workspace:*",
     "date-fns": "^4.4.0",
-    "react-email": "6.9.3"
+    "react-email": "6.9.5"
   },
   "peerDependencies": {
     "react": "^19.0.0"
@@ -46,11 +46,11 @@
     "@react-email/preview-server": "5.2.10",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^24.13.3",
-    "@types/react": "^19.2.18",
+    "@types/node": "^24.13.5",
+    "@types/react": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "cross-env": "^10.1.0",
-    "eslint": "^10.9.1",
-    "react": "^19.2.8"
+    "eslint": "^10.10.0",
+    "react": "^19.3.0"
   }
 }

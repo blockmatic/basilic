@@ -62,8 +62,8 @@ Monorepo apps use custom configs. Example for `apps/web`:
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "ignoreCommand": "npx turbo-ignore @repo/web --fallback=HEAD^1",
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/web...",
-  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && node scripts/vercel-install.mjs turbo run build --filter=@repo/web...",
+  "installCommand": "cd ../.. && node scripts/vercel-install.mjs",
   "framework": "nextjs",
   "outputDirectory": ".next"
 }
@@ -75,7 +75,7 @@ Root Directory must be set in Vercel project settings (e.g. `apps/web`).
 
 ```json
 {
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/api... && if [ \"$VERCEL_ENV\" != \"preview\" ] || [ \"$RUN_PG_MIGRATE\" = \"true\" ]; then pnpm turbo run db:migrate --filter=@repo/api; fi"
+  "buildCommand": "cd ../.. && node scripts/vercel-install.mjs turbo run build --filter=@repo/api... && if [ \"$VERCEL_ENV\" != \"preview\" ] || [ \"$RUN_PG_MIGRATE\" = \"true\" ]; then node scripts/vercel-install.mjs turbo run db:migrate --filter=@repo/api; fi"
 }
 ```
 
@@ -155,9 +155,9 @@ The docs app (`apps/docu`) welcomes crawlers on HTML pages (opposite of the web 
 - Check variable names match exactly (case-sensitive)
 - Verify variables are set for the correct environment (production/preview)
 
-### "spawn pnpm ENOENT" or path ".../apps/docu/apps/docu" does not exist
-- **pnpm ENOENT**: The workflow uses `npx pnpm` in `vercel.json` install/build commands so Vercel's build subprocess can find pnpm. Ensure `corepack enable` runs before deploy (already in workflows).
-- **Path duplication**: Ensure Vercel project settings → General → Root Directory is `.` or blank for monorepo apps.
+### "spawn pnpm ENOENT", missing pnpm wrapper, or path ".../apps/docu/apps/docu"
+- **pnpm ENOENT / wrapper missing**: Vercel’s `packageManager` provisioning skips lifecycle scripts, so the pnpm 12 on `PATH` is a placeholder. `vercel.json` runs `node scripts/vercel-install.mjs` for install, build, and dev: `npm install -g pnpm@<pin>` with scripts, then that binary with `PNPM_HOME` isolated and package-manager switching off.
+- **Path duplication**: Ensure Vercel project settings → General → Root Directory is `apps/web`, `apps/docu`, or `apps/api` (not `.` or blank). `vercel.json` install/build commands `cd ../..` to the monorepo root.
 
 ## Related Documentation
 

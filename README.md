@@ -90,7 +90,7 @@ Run with `pnpm <script>`.
   - `hooks:pre-commit` — Pre-commit: security + Biome staged
   - `hooks:security` — Block files, scan secrets, OSV
 **Misc**
-  - `update-deps` — Update pnpm and all dependencies
+  - `update-deps` — Update pnpm via Corepack and all dependencies
 
 ## Documentation
 
