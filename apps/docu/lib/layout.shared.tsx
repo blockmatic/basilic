@@ -6,7 +6,14 @@ export function baseOptions(): BaseLayoutProps {
       enabled: true,
     },
     nav: {
-      title: 'Basilic',
+      title: (
+        <span className="inline-flex items-center gap-2">
+          <span className="flex size-6 items-center justify-center rounded-md bg-primary font-heading text-xs font-semibold text-primary-foreground">
+            B
+          </span>
+          <span className="font-heading font-semibold">Basilic</span>
+        </span>
+      ),
     },
     links: [
       {

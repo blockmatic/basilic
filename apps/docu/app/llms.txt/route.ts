@@ -14,7 +14,7 @@ export async function GET(): Promise<Response> {
     })
     .join('\n')
 
-  const body = `# Basilic Documentation
+  const body = `# Basilic: API-First AI TypeScript FullStack Starter
 
 Full text dump: ${fullDumpUrl}
 

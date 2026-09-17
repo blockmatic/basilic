@@ -2,25 +2,41 @@ import { RootProvider } from 'fumadocs-ui/provider/next'
 import type { ReactNode } from 'react'
 import './global.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Geist_Mono, Inter, Poppins } from 'next/font/google'
 import { env } from '@/lib/env'
 
 const inter = Inter({
   subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
 })
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+})
+
+const fontMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
+
+const siteTitle = 'Basilic · API-First AI TypeScript FullStack Starter'
+const siteDescription =
+  'Typed Fastify + OpenAPI clients, Next.js and Expo, self-hosted auth, and an AGENTS.md workflow any coding agent can run.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
-    default: 'Basilic',
+    default: siteTitle,
     template: '%s | Basilic',
   },
-  description:
-    'Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and workflow playbooks (`/plan`, `/build`, `/workflow`) plus tech skills.',
+  description: siteDescription,
   openGraph: {
-    title: 'Basilic',
-    description:
-      'Portable architecture, a Fastify REST API with OpenAPI-generated clients, self-hosted Web2/Web3 auth, and workflow playbooks (`/plan`, `/build`, `/workflow`) plus tech skills.',
+    title: siteTitle,
+    description: siteDescription,
     type: 'website',
   },
   twitter: {
@@ -30,8 +46,12 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
-      <body className="flex flex-col min-h-screen">
+    <html
+      lang="en"
+      className={`${inter.variable} ${poppins.variable} ${fontMono.variable} font-sans`}
+      suppressHydrationWarning
+    >
+      <body className="flex min-h-screen flex-col font-sans antialiased">
         <RootProvider theme={{ defaultTheme: 'dark' }} search={{ options: { api: '/api/search' } }}>
           {children}
         </RootProvider>

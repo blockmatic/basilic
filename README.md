@@ -1,4 +1,4 @@
-# Basilic: API-First TypeScript FullStack Starter
+# Basilic: API-First AI TypeScript FullStack Starter
 
 Fork-and-run developer starter: typed SDKs, self-hosted auth, a portable architecture, a shared `AGENTS.md` agent contract, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
 

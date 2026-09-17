@@ -1,6 +1,6 @@
 # Product
 
-Basilic is a **developer starter** (fork-and-run toolkit): Fastify + OpenAPI, Next.js, Expo scaffold, a shared `AGENTS.md` agent contract (workflow playbooks and skills; Cursor slash/MCP are adapters), and a thin web demo that proves auth and the API. It is not a billed SaaS. Do not invent TAM or LTV.
+Basilic is an **API-First AI TypeScript FullStack Starter** (fork-and-run toolkit): Fastify + OpenAPI, Next.js, Expo scaffold, a shared `AGENTS.md` agent contract (workflow playbooks and skills; Cursor slash/MCP are adapters), and a thin web demo that proves auth and the API. It is not a billed SaaS. Do not invent TAM or LTV.
 
 Owner until this file says otherwise: **Gabo Esquivel**.
 
