@@ -128,7 +128,7 @@ and tests instead of relying on memory or assuming that documentation is current
 - Branch/validate/commit/push/PR: read
   `.agents/skills/workflow/git/ship/SKILL.md`. Commit message:
   `.agents/skills/workflow/git/commit/SKILL.md`. Slash names `/ship`,
-  `/commit`, and `/pr` are Cursor extras.
+  `/push`, `/commit`, and `/pr` are Cursor extras.
 
 ### GitHub Actions
 
