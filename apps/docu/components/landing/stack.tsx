@@ -45,7 +45,7 @@ const facts = [
   {
     title: 'Design System',
     href: '/docs/adrs/004-design-system',
-    body: 'A shared shadcn/ui design system for consistent components, tokens, and theming across web, mobile, and docs.',
+    body: 'A shared shadcn/ui + Base UI design system for consistent components, tokens, and theming across web, mobile, and docs.',
   },
 ]
 
