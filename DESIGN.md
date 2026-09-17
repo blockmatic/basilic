@@ -8,7 +8,7 @@
 
 ## Docs
 
-`apps/docu` is not the demo shell. The home page is Persuade (fork-and-run); MDX pages are Read. Both use the same tokens, Inter / Poppins / Geist Mono, and the favicon **B** mark. Agent-agnostic copy: `AGENTS.md` is the contract; Cursor slash is an adapter. Fumadocs keeps its own docs chrome — do not describe it as sidebar + main.
+`apps/docu` is not the demo shell. Home is Persuade: hero, features, and skills share `max-w-5xl`; the install command appears once; the closer is a home-only footer. MDX pages are Read. Both use the same tokens, Inter / Poppins / Geist Mono, and the favicon **B** mark. Heading font is scoped to the article (`#nd-page`). Agent-agnostic copy: `AGENTS.md` is the contract; Cursor slash is an adapter. Fumadocs keeps its own docs chrome.
 
 ## Color
 
@@ -20,7 +20,7 @@ Inter, Poppins, and a monospace stack, as named in `tokens.css`. Do not add a fo
 
 ## Layout
 
-Sidebar + main content. Radius and sidebar tokens come from the same file. Components: `@repo/ui/components/*`.
+The **demo shell** is sidebar + main. Fumadocs is not that layout. Radius and sidebar tokens come from the same file. Components: `@repo/ui/components/*`.
 
 ## Motion
 

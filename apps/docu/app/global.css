@@ -3,8 +3,43 @@
 @import "fumadocs-ui/css/preset.css";
 @import "@repo/ui/tokens.css";
 
-#nd-docs-layout h1,
-#nd-docs-layout h2,
-#nd-docs-layout h3 {
+@theme inline {
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+:root {
+  --shadow-border:
+    0px 0px 0px 1px oklch(0 0 0 / 0.06), 0px 1px 2px -1px oklch(0 0 0 / 0.06),
+    0px 2px 4px 0px oklch(0 0 0 / 0.04);
+  --shadow-border-hover:
+    0px 0px 0px 1px oklch(0 0 0 / 0.08), 0px 1px 2px -1px oklch(0 0 0 / 0.08),
+    0px 2px 4px 0px oklch(0 0 0 / 0.06);
+}
+
+.dark {
+  --shadow-border: 0 0 0 1px oklch(1 0 0 / 0.08);
+  --shadow-border-hover: 0 0 0 1px oklch(1 0 0 / 0.13);
+}
+
+#nd-page h1,
+#nd-page h2,
+#nd-page h3 {
   font-family: var(--font-heading);
+}
+
+.landing-slab,
+.landing-card {
+  box-shadow: var(--shadow-border);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .landing-card {
+    transition-property: box-shadow;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+}
+
+.landing-card:hover {
+  box-shadow: var(--shadow-border-hover);
 }
