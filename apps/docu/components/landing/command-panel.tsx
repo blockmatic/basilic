@@ -21,17 +21,17 @@ export function CommandPanel() {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:gap-4">
-      <pre className="m-0 min-w-0 flex-1 whitespace-pre-wrap font-mono text-sm md:text-base">
+    <div className="landing-slab flex flex-col gap-4 rounded-lg bg-card p-4 sm:flex-row sm:items-center sm:gap-6 sm:px-6">
+      <pre className="m-0 min-w-0 flex-1 overflow-x-auto font-mono text-sm whitespace-nowrap md:text-base">
         <span className="text-muted-foreground" aria-hidden="true">
           {'$ '}
         </span>
-        <code className="whitespace-pre-wrap text-foreground">{createCommand}</code>
+        <code className="whitespace-nowrap text-foreground">{createCommand}</code>
       </pre>
       <Button
         type="button"
         variant="outline"
-        className="min-h-11 min-w-11 shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-safe:ease-out"
+        className="min-h-11 min-w-20 w-full shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-safe:ease-out sm:w-auto"
         onClick={copyCommand}
         aria-live="polite"
       >

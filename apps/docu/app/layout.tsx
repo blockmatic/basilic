@@ -20,7 +20,7 @@ const poppins = Poppins({
 
 const fontMono = Geist_Mono({
   subsets: ['latin'],
-  variable: '--font-mono',
+  variable: '--font-geist-mono',
 })
 
 const siteTitle = 'Basilic · API-First AI TypeScript FullStack Starter'
