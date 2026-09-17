@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { delimiter, dirname, join } from 'node:path'
+import { dirname } from 'node:path'
 import { exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 
+import { pnpmVersion, resolveGlobalPnpm } from './vercel-pnpm.mjs'
+
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)))
-const pnpmHome = join(tmpdir(), 'basilic-pnpm-home')
 
 function run({ cmd, args, env }) {
   const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: 'inherit', env })
@@ -19,17 +18,6 @@ function run({ cmd, args, env }) {
   if (result.status !== 0) exit(result.status ?? 1)
 }
 
-function pnpmVersion() {
-  const pkg = JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8'))
-  const match =
-    typeof pkg.packageManager === 'string' ? pkg.packageManager.match(/^pnpm@([^+]+)/) : null
-  if (!match) {
-    console.error('package.json is missing a pnpm packageManager field')
-    exit(1)
-  }
-  return { version: match[1] }
-}
-
 function npmPrefix() {
   const result = spawnSync('npm', ['prefix', '-g'], { encoding: 'utf8' })
   const prefix = result.stdout?.trim() ?? ''
@@ -38,36 +26,6 @@ function npmPrefix() {
     exit(1)
   }
   return { prefix }
-}
-
-function pnpmEnv({ prefix }) {
-  return {
-    env: {
-      ...process.env,
-      PATH: `${join(prefix, 'bin')}${delimiter}${process.env.PATH ?? ''}`,
-      PNPM_HOME: pnpmHome,
-      npm_config_manage_package_manager_versions: 'false',
-    },
-  }
-}
-
-function pnpmVersionMatches({ cmd, argsPrefix, env, version }) {
-  const probe = spawnSync(cmd, [...argsPrefix, '--version'], { encoding: 'utf8', env })
-  return probe.status === 0 && probe.stdout?.trim() === version
-}
-
-function resolveGlobalPnpm({ prefix, version }) {
-  const { env } = pnpmEnv({ prefix })
-  const bin = join(prefix, 'bin', 'pnpm')
-  const mjs = join(prefix, 'lib', 'node_modules', 'pnpm', 'bin', 'pnpm.mjs')
-  if (existsSync(bin) && pnpmVersionMatches({ cmd: bin, argsPrefix: [], env, version }))
-    return { cmd: bin, argsPrefix: [], env }
-  if (
-    existsSync(mjs) &&
-    pnpmVersionMatches({ cmd: process.execPath, argsPrefix: [mjs], env, version })
-  )
-    return { cmd: process.execPath, argsPrefix: [mjs], env }
-  return { cmd: null, argsPrefix: [], env }
 }
 
 function installGlobalPnpm({ version }) {

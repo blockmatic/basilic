@@ -45,6 +45,7 @@ const required = [
   'docs/basilic/testing/product-ready.md',
   '.cursor/rules/base/general.mdc',
   'skills-lock.json',
+  'scripts/vercel-install.mjs',
 ]
 
 let failed = false

@@ -1,9 +1,9 @@
 ---
 title: Product Ready
-description: Fork-and-run bar for Basilic. CI green is Workflow, not this bar.
+description: Generate-and-run bar for Basilic. CI green is Workflow, not this bar.
 ---
 
-**Product Ready** is a local generate/clone/template that a new developer can start and sign into without tribal knowledge. It is **not** “CI is green.” Workflow proves the repo on GitHub Actions (`pnpm qa` locally). This page is the adopter bar.
+**Product Ready** is a local generate-and-run that a new developer can start and sign into without tribal knowledge. It is **not** “CI is green.” Workflow proves the repo on GitHub Actions (`pnpm qa` locally). This page is the adopter bar.
 
 Canonical commands: [Getting Started](/docs/development). After you own the copy: [After fork](/docs/development/after-fork). Playbook: `/onboard`.
 
@@ -12,9 +12,9 @@ Canonical commands: [Getting Started](/docs/development). After you own the copy
 Do these in order. `pnpm setup` installs tools, copies env templates, and installs agent skills into `.agents/skills/`. It does **not** start Postgres.
 
 1. **Node 24 + pnpm** — `.nvmrc` / `packageManager` (`12.4.2`). `corepack enable` then `corepack prepare pnpm@12.4.2 --activate`.
-2. **Create the repo** — `npx create-basilic@latest my-app`, or clone this repository, or GitHub **Use this template**.
+2. **Create the repo** — `npx create-basilic@latest my-app`.
 3. **`pnpm setup`** at the repo root (install, hooks, **agent skills** from `blockmatic/basilic-skills`, scanners, env templates, Docker/Supabase CLI, Playwright Chromium). Copied API/web env sets `ALLOW_TEST=true` for local login. Setup copies templates only when dest files are **missing**; an existing `apps/api/.env` / `apps/web/.env.local` is left alone — set `ALLOW_TEST=true` yourself if those files predate this default.
-4. **`pnpm --filter @repo/api db:start`** — local Supabase Postgres. One instance per host; `pnpm db:stop` before changing `project_id`.
+4. **`pnpm --filter @repo/api db:start`** — local Supabase Postgres. One instance per host; `pnpm --filter @repo/api db:stop` before changing `project_id`.
 5. **`pnpm reset`** at the repo root — Supabase reset + Drizzle migrate + seed. See [ADR 008](/docs/adrs/008-database) and `apps/api/README.md`.
 6. **`pnpm dev`** — API at http://localhost:3001 (`GET /health`, `/reference`), web at http://localhost:3000.
 7. **First login** — copied env has `ALLOW_TEST=true`. Use `test@test.ai` on `/auth/login`. Land on `/`. Resend is optional for real mail. Production refuses `ALLOW_TEST`.

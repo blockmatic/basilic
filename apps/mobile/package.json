@@ -10,7 +10,6 @@
     "start": "expo start",
     "start:localhost": "expo start --localhost",
     "start:tunnel": "expo start --tunnel",
-    "reset-project": "node ./scripts/reset-project.cjs",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",

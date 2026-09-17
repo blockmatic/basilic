@@ -20,5 +20,5 @@ Send transaction: `walletClient.sendTransaction({ to: getAddress(to), value: par
 Use multicall for batch requests, WebSocket for real-time updates
 
 ## Related
-- @.cursor/rules/web3/wagmi.mdc - React hooks (Wagmi v3)
+- @.cursor/rules/web3/wagmi.mdc - no Wagmi or wallet UI in apps/web
 - @.cursor/rules/web3/multichain.mdc - Multichain validation

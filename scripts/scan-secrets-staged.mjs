@@ -20,7 +20,7 @@ function checkToolExists(toolName) {
 if (!checkToolExists('gitleaks')) {
   console.error('\n⚠️  gitleaks is not installed. Skipping secret scan.')
   console.error('Install gitleaks to enable pre-commit secret scanning.')
-  console.error('Run: node scripts/ensure-tool.mjs gitleaks\n')
+  console.error('Run: pnpm setup:gitleaks\n')
   exit(0)
 }
 

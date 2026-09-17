@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify'
-import { env } from '../lib/env.js'
-import { verifyMagicLinkAndIssueToken } from './auth/magiclink/verify.js'
-import { getReferenceHtml } from './reference/template.js'
+import { env } from '../../lib/env.js'
+import { verifyMagicLinkAndIssueToken } from '../auth/magiclink/verify.js'
+import { getReferenceHtml } from './template.js'
 
 const referenceRoutes: FastifyPluginAsync = async fastify => {
   // Serve OpenAPI JSON

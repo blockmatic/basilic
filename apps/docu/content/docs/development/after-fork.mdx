@@ -1,17 +1,15 @@
 ---
 title: After fork
-description: Template vs fork, Product Ready, and what to replace when the copy is your product.
+description: Generator vs fork, Product Ready, and what to replace when the copy is your product.
 ---
 
-Basilic stays the starter brand. **New products** use `npx create-basilic@latest my-app`. This page is also for GitHub **Use this template** or a fork. First run is still [Product Ready](/docs/testing/product-ready). There is no rename script and no upgrade CLI.
+Basilic stays the starter brand. **Start a product** with `npx create-basilic@latest my-app` so the new repo has no Basilic git history, no `apps/docu`, and no generator. **Fork** (or clone) this repository only to collab on Basilic. GitHub **Use this template** is not a product start path. First run is still [Product Ready](/docs/testing/product-ready). There is no rename script and no upgrade CLI.
 
-Enable **Template repository** in GitHub settings so **Use this template** appears. Maintainers do that; agents cannot. Clone still works without the flag.
-
-## Generator vs template vs fork
+## Generator vs fork
 
 - **`npx create-basilic@latest`** — start a product. Independent git history; no docu app; no generator; local docs snapshot in `docs/basilic/`.
-- **Use this template** — start a product from GitHub. Includes the documentation app and generator until you remove them.
 - **Fork** — contribute back to Basilic. Keep the upstream remote.
+- **Use this template / clone of this repo** — not a product start path. The copy includes the documentation app and generator.
 
 ## Run
 
@@ -33,7 +31,7 @@ Do not sweep every `blockmatic` docs URL. Those point at the upstream starter.
 
 ## Product brief
 
-Generated projects get an **unfilled** root `PRODUCT.md`. Fill it for your product. Do not inherit Basilic’s roadmap. Existing GitHub template copies that still have `_first/` can delete that folder after they own the copy. Agent loaders (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/rules/always.md`) ship with the copy; keep them pointing at your `PRODUCT.md` and local docs.
+Generated projects get an **unfilled** root `PRODUCT.md`. Fill it for your product. Do not inherit Basilic’s roadmap. Existing copies that still have `_first/` can delete that folder after they own the copy. Agent loaders (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/rules/always.md`) ship with the copy; keep them pointing at your `PRODUCT.md` and local docs.
 
 ## CI secrets
 

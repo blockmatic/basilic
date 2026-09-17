@@ -1,6 +1,6 @@
 # Product
 
-Basilic is an **API-First AI TypeScript FullStack Starter** (fork-and-run toolkit): Fastify + OpenAPI, Next.js, Expo scaffold, a shared `AGENTS.md` agent contract (tech, pattern, and workflow skills; Cursor slash/MCP are adapters), and a thin web demo that proves auth and the API. It is not a billed SaaS. Do not invent TAM or LTV.
+Basilic is an **API-First AI TypeScript FullStack Starter**: Fastify + OpenAPI, Next.js, Expo scaffold, a shared `AGENTS.md` agent contract (tech, pattern, and workflow skills; Cursor slash/MCP are adapters), and a thin web demo that proves auth and the API. Start a product with `npx create-basilic@latest`. It is not a billed SaaS. Do not invent TAM or LTV.
 
 Owner until this file says otherwise: **Gabo Esquivel**.
 
@@ -10,7 +10,7 @@ Technical docs for adopters live in [`apps/docu/content/docs/`](apps/docu/conten
 
 ## Two audiences
 
-**Adopters** run `npx create-basilic@latest my-app` (or clone / GitHub **Use this template**), run the stack locally, and copy patterns. First successful use is [Product Ready](apps/docu/content/docs/testing/product-ready.mdx): generate or clone → [Getting Started](apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`, `pnpm dev`) → `ALLOW_TEST` + `test@test.ai` to `/`. After they own the copy: [After fork](apps/docu/content/docs/development/after-fork.mdx). Forks remain the path to contribute to Basilic.
+**Adopters** run `npx create-basilic@latest my-app`, run the stack locally, and copy patterns. That new repo has independent git history, no `apps/docu`, and no generator. First successful use is [Product Ready](apps/docu/content/docs/testing/product-ready.mdx): generate → [Getting Started](apps/docu/content/docs/development/index.mdx) (`db:start`, `pnpm reset`, `pnpm dev`) → `ALLOW_TEST` + `test@test.ai` to `/`. After they own the copy: [After fork](apps/docu/content/docs/development/after-fork.mdx). **Contributors** fork (or clone) this repository to collab on Basilic.
 
 **Demo users** sign in to the web app. The shipped job is auth (sessions, API keys, settings). Markets, a headlines strip, and the in-shell assistant are demo chrome. See Feature map below.
 
@@ -44,9 +44,9 @@ Finance: **N/A** (toolkit).
 
 Status is what the tree does today, not a wish list. Horizons: Roadmap below.
 
-### Spine (fork-and-run)
+### Spine (generate-and-run)
 
-Must work after `npx create-basilic@latest` (or clone) → `pnpm setup` → `db:start` → `pnpm reset` → `pnpm dev`.
+Must work after `npx create-basilic@latest` → `pnpm setup` → `db:start` → `pnpm reset` → `pnpm dev`.
 
 - Fastify TypeBox API → generated OpenAPI → `@repo/core` / handwritten `@repo/react`
 - **create-basilic** generator (`tools/create-basilic`) — new products; forks stay for upstream contributions
@@ -92,7 +92,7 @@ R0 is **documentation alignment**. It does not need a semver bump or a GitHub Re
 
 - This file: what Basilic is, feature map, this roadmap
 - Honesty in README and auth docs (starter, not wallet/OpenAI template)
-- MIT `LICENSE`; GitHub Template; [After fork](apps/docu/content/docs/development/after-fork.mdx)
+- MIT `LICENSE`; [After fork](apps/docu/content/docs/development/after-fork.mdx) (contributor docs)
 - [Product Ready](apps/docu/content/docs/testing/product-ready.mdx): `db:start` + `pnpm reset` before `pnpm dev`; copied env `ALLOW_TEST=true`
 
 ### R-launch — generator and distribution
