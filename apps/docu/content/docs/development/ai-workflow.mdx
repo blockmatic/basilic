@@ -54,7 +54,7 @@ Invoke playbooks directly. `/workflow` lists the catalog and stops; it does not 
 
 `/build` ends with verified local changes. `/ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment.
 
-Slash names are leaf folders. Old names (`/git-commit`, `/exec-push`, `/use-frontend`) map to `/commit`, `/ship`, `/ui`. When a harness does not expose the slash menu, read the `SKILL.md` under `.agents/skills/workflow/`. Do not create another skills tree. Do not commit `.claude/skills/` copies.
+Slash names are leaf folders. Removed names map to `/commit`, `/push`, `/pr`, `/ship`, `/ui`, `/tdd`, `/architecture`, and `/refactor` (formerly `/git-commit`, `/git-push`, `/git-create-pr`, `/exec-push`, `/use-frontend`, `/use-tdd`, `/plan-architecture`, `/refactor-code`). When a harness does not expose the slash menu, read the `SKILL.md` under `.agents/skills/workflow/`. Do not create another skills tree. Do not commit `.claude/skills/` copies.
 
 ## Typical order
 
