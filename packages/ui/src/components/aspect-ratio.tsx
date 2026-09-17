@@ -3,6 +3,7 @@ import { cn } from '@repo/ui/lib/utils'
 function AspectRatio({
   ratio,
   className,
+  style,
   ...props
 }: React.ComponentProps<'div'> & { ratio: number }) {
   return (
@@ -10,6 +11,7 @@ function AspectRatio({
       data-slot="aspect-ratio"
       style={
         {
+          ...style,
           '--ratio': ratio,
         } as React.CSSProperties
       }

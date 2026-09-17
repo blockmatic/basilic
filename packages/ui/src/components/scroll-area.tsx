@@ -26,7 +26,7 @@ function ScrollArea({
           orientation === 'horizontal' && 'overflow-y-hidden',
         )}
       >
-        {children}
+        <ScrollAreaPrimitive.Content>{children}</ScrollAreaPrimitive.Content>
       </ScrollAreaPrimitive.Viewport>
       {(orientation === 'vertical' || orientation === 'both') && <ScrollBar />}
       {(orientation === 'horizontal' || orientation === 'both') && (
