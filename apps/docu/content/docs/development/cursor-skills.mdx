@@ -45,7 +45,7 @@ This repository should have one workflow tree. Invoke playbooks as `/<name>`. Af
 
 Packaging validation runs in the catalog with `pnpm validate`. It checks metadata, counts, grouping, and workflow reference targets. These checks do not prove that an agent follows a playbook or that a particular desktop menu has refreshed.
 
-Installable names follow catalog `skills.sh.json` (45): Core (`typescript-v6`, `file-organization`); Workflow (`workflow`); Web (`next-v16`, `vercel-react`, `tanstack-query-v5`, `ahooks-v3`, `nuqs-v2`, `react-email`); UI (`shadcn-v3`, `tailwind-design-system-v4`, `frontend-design`, `web-design-guidelines`, `composition-patterns`, `better-ui`, `motion-v13`, `emilkowal-animations`, plus the Emil craft folders listed below); API (`fastify-v5`, `drizzle-orm-v0`, `openapi-ts-v0`); AI (`ai-sdk-core-v7`, `ai-sdk-ui-v7`); Expo (`expo-*-v55`, `animate-expo`); Web3 (`wagmi-v3`, `solana-v1`, `viem-v2`, `nodejs-keccak256-v1`); Testing (`vitest-v5`, `playwright-v1`). The committed `skills-lock.json` still lists `vitest-v4` until [basilic-skills#22](https://github.com/blockmatic/basilic-skills/pull/22) merges; then refresh hashes from GitHub and commit the lock. Do not preview this rename with `BASILIC_SKILLS_LOCAL=1` against a dirty sibling clone.
+Installable names follow catalog `skills.sh.json` (45): Core (`typescript-v6`, `file-organization`); Workflow (`workflow`); Web (`next-v16`, `vercel-react`, `tanstack-query-v5`, `ahooks-v3`, `nuqs-v2`, `react-email`); UI (`shadcn-v3`, `tailwind-design-system-v4`, `frontend-design`, `web-design-guidelines`, `composition-patterns`, `better-ui`, `motion-v13`, `emilkowal-animations`, plus the Emil craft folders listed below); API (`fastify-v5`, `drizzle-orm-v0`, `openapi-ts-v0`); AI (`ai-sdk-core-v7`, `ai-sdk-ui-v7`); Expo (`expo-*-v55`, `animate-expo`); Web3 (`wagmi-v3`, `solana-v1`, `viem-v2`, `nodejs-keccak256-v1`); Testing (`vitest-v5`, `playwright-v1`). Merge [basilic-skills#22](https://github.com/blockmatic/basilic-skills/pull/22) before this lock: GitHub still serves `vitest-v4` until that catalog lands.
 
 ## Versioning
 
@@ -114,7 +114,7 @@ Catalog copies may differ from upstream. Original sources (same list as the cata
 
 Basilic-maintained in the catalog: `fastify-v5`, `file-organization`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks.
 
-This product uses Base UI (`base-vega`, `render`, `data-slot` / `data-open`). Published GitHub `shadcn-v3` and `/shadcn` still describe Radix until that catalog change is merged. Preview the sibling clone with `BASILIC_SKILLS_LOCAL=1 pnpm setup:skills`. After the catalog ships, refresh hashes with `skills add` (or `skills update`) and commit `skills-lock.json`.
+This product uses Base UI (`base-vega`, `render`, `data-slot` / `data-open`). Catalog `shadcn-v3` and `/shadcn` match that stack in [basilic-skills#22](https://github.com/blockmatic/basilic-skills/pull/22). After that PR merges, `pnpm setup:skills` installs the pinned hashes in `skills-lock.json`.
 
 **Intended unused stack** (copied by a full `--skill '*'` refresh, not installed app deps): `wagmi-v3`, `motion-v13`, `emilkowal-animations`, `pick-ui-library`, `better-ui`. `ask-sonner` matches `@repo/ui` Sonner.
 

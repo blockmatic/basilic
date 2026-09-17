@@ -167,7 +167,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/nuqs-v2/SKILL.md",
-      "computedHash": "54011f46ddc5856a7bd8780dcdfca0849d3b1bf00417d1334c63d787c3325e04"
+      "computedHash": "f85fab6d5fbb7b1d5074e79e011aa0396a33624368e0f53b04dbc157eeab0508"
     },
     "openapi-ts-v0": {
       "source": "blockmatic/basilic-skills",
@@ -209,7 +209,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/shadcn-v3/SKILL.md",
-      "computedHash": "ec7040adeb87150fd421d13b003db359e34881329d21db87fd75f90dc3b251c8"
+      "computedHash": "d352f4821af3af51be4c8e287bcab9bff67d5d7b37c8b241fe48bd3a7ffcdef9"
     },
     "solana-v1": {
       "source": "blockmatic/basilic-skills",
@@ -221,7 +221,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/tailwind-design-system-v4/SKILL.md",
-      "computedHash": "9336f38958f2a6cb46553eb4e08e70e8f2979898dbfa4fd086e2b983aad0fc66"
+      "computedHash": "1d255025cba8877706835973ac97bf61a66b9ef4deaafaab44d17df61287e00e"
     },
     "tanstack-query-v5": {
       "source": "blockmatic/basilic-skills",
@@ -247,11 +247,11 @@
       "skillPath": "skills/viem-v2/SKILL.md",
       "computedHash": "e3f21b7daa1deedaadc392fa7dae1d89fbce244337503b512c4f5eebe0013398"
     },
-    "vitest-v4": {
+    "vitest-v5": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
-      "skillPath": "skills/vitest-v4/SKILL.md",
-      "computedHash": "c1defb69b7efc461d8be5b45b69d209ca9c80eb5af51237e039dba62dfcd01df"
+      "skillPath": "skills/vitest-v5/SKILL.md",
+      "computedHash": "9da5d6dab353b87f44fce78bd214318390e93b6163359fd760d7eb5e1db221b6"
     },
     "wagmi-v3": {
       "source": "blockmatic/basilic-skills",
@@ -269,7 +269,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/workflow/SKILL.md",
-      "computedHash": "8f3da2765c00358be95325d30ba97e2db6c6906800d62c44476e0c371ef3dd81"
+      "computedHash": "faacbcfd15325668e10dd0ba96d47ac61dbf6d0ffc5f31805b8b7a9205d96bc2"
     }
   }
 }
