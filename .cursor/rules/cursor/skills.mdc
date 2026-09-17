@@ -26,4 +26,4 @@ Rules (constraints) > skills (patterns) > model
 
 Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Canonical catalog: `blockmatic/basilic-skills` (installed by `pnpm setup:skills`; lock pins this catalog only).
 
-Workflow authoring: read `.agents/skills/workflow/references/authoring.md`. Shared references stay inside the installable `workflow` tree. Use explicit inputs, task-specific steps, observable verification, and a handoff; keep simple playbooks short.
+Workflow authoring: read `.agents/skills/workflow/references/authoring.md`. Shared references stay inside the installable `workflow` tree. Playbook bodies are numbered instructions (spec frontmatter); keep simple playbooks short.

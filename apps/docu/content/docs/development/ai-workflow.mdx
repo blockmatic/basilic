@@ -78,11 +78,11 @@ When a harness does not expose the slash menu, read the `SKILL.md` under `.agent
 
 Compose skills. This is not a router.
 
-1. **Plan** — `/plan` for non-trivial work. Read existing implementation and docs; list goals, assumptions, acceptance conditions, dependencies, and verification per slice. Planning alone does not create a branch or implement code.
+1. **Plan** — `/plan` for non-trivial work. Read existing implementation and docs; write Goals, Assumptions (3–5), Tasks, Risks, and References (plain paths). Planning alone does not create a branch or implement code.
 2. **Review the plan** — `/review-plan` checks scope and ordering. Resolve consequential product or architecture decisions from `PRODUCT.md` and matching MDX/ADRs; continue routine work already authorized.
 3. **Implement** — `/build` delivers complete slices and runs affected checks. Preserve unrelated changes and generated-source ownership. Update matching docs when behavior changes. Update `PRODUCT.md` only when product facts change.
 4. **Review the change** — `/review` returns evidenced findings and verification limits. Reviews stay read-only unless fixes are requested.
-5. **Publish when requested** — `/commit`, `/push`, or `/pr` perform their named actions. `/ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/commit` may still take task-owned hunks and is the only playbook that owns Conventional Commit format (composers must not paraphrase it). `/ship` requires `pnpm qa`. `/yolo` is the full local gate without publish.
+5. **Publish when requested** — `/commit`, `/push`, or `/pr` perform their named actions. `/ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/commit` may still take task-owned hunks and is the only playbook that owns Conventional Commit format (composers must not paraphrase it). `/ship` requires `pnpm qa`. `/yolo` does not; it fixes failing or requested local checks without publish. `/build` and `/commit` update matching MDX and nearest README when behavior or commands change.
 6. **Learn** — `/retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
 
 Tech skills (`fastify-v5`, `next-v16`, `vercel-react`) load when relevant. Playbooks do not add another backlog or quality policy.
@@ -91,9 +91,9 @@ The generator retains this catalog and rewrites its documentation pointers to th
 
 ## Checklists and evidence
 
-The core playbooks use inputs, steps, verification, and a handoff. Reviews use installed `review-dimensions.md`: correctness, callers, failure paths, clarity, architecture, security, performance, and verification. Skip dimensions that are out of scope and say so. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
+Playbook bodies are numbered instructions (spec frontmatter, no Purpose/Handoff headings). Reviews use installed `review-dimensions.md`: correctness, callers, failure paths, clarity, architecture, security, performance, verification, and docs. Skip dimensions that are out of scope and say so. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
 
-Shared references live in installed `workflow/references/`: `authoring.md`, `completion.md` (including the Full local gate row), `git-publish.md`, and `review-dimensions.md`. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/tdd` or repository requirements.
+Shared references live in installed `workflow/references/`: `authoring.md`, `git-publish.md`, and `review-dimensions.md`. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/tdd` or repository requirements. `/ship` is the only playbook that requires `pnpm qa`.
 
 Further polish is later and small. `/tdd` stays opt-in. See [Skills](/docs/development/cursor-skills).
 
