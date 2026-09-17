@@ -1,11 +1,11 @@
 ---
 title: "AI Development Workflow"
-description: "Shared AGENTS.md contract: workflow playbooks and tech skills for any coding agent or IDE."
+description: "AGENTS.md plus a catalog of skills: tech, patterns, and slash playbooks for any coding agent or IDE."
 ---
 
-One workflow: root `AGENTS.md` plus `.agents/skills/` (tech skills and **workflow playbooks** `plan`, `build`, dispatcher `workflow`). Any agent or IDE that can read those files. If the harness has no `/` menu, open the `SKILL.md`. Do not create a parallel process.
+Root `AGENTS.md` plus `.agents/skills/` (after `pnpm setup`) is the contract: versioned **tech** skills, unversioned **patterns**, and **workflow** playbooks (`/plan`, `/build`, `/review`, `/test`, `/pr`). Any agent or IDE that can read those files. If the harness has no `/` menu, open the `SKILL.md`. Do not create a parallel process.
 
-Cursor slash (`/plan` `/build` `/workflow`), glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the contract. Claude Code, Codex, Gemini CLI, and others use the same tree. Versioning and skills CLI `-a` flags: [Skills](/docs/development/cursor-skills). Optional Cursor indexing/MCP: [Agent setup](/docs/development/cursor-setup).
+Cursor slash (`/plan` `/build` `/review`), glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the contract. Claude Code, Codex, Gemini CLI, and others use the same tree. Catalog, install flags, and the Emil design pack: [Skills](/docs/development/cursor-skills). Optional Cursor indexing/MCP: [Agent setup](/docs/development/cursor-setup).
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
 
@@ -21,48 +21,52 @@ Root `AGENTS.md` holds always-on constraints (behavior, naming, file organizatio
 | --- | --- | --- |
 | **AGENTS.md** | Always-on contract | Cursor and Codex read it; Claude via `@AGENTS.md` in `CLAUDE.md`; Gemini CLI via `GEMINI.md`; Antigravity via `.agents/rules/always.md` |
 | **Glob rules** (`.cursor/rules/*.mdc`) | File-scoped constraints | Cursor attaches by glob. Other harnesses read the matching file when those paths are in scope (table in `AGENTS.md`) |
-| **Workflow skills** (`.agents/skills/workflow/<name>/`) | Playbooks | Cursor: `/<name>` or `/workflow <shortcut>`. Otherwise open `SKILL.md` |
-| **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Patterns for a stack | Agent loads when relevant; `@` or `/` to force |
+| **Workflow skills** (`.agents/skills/workflow/<name>/`) | Playbooks | Cursor: `/<name>`. Otherwise open `SKILL.md` |
+| **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Stack patterns | Agent loads when relevant; `@` or `/` to force |
+| **Pattern skills** (unversioned) | Craft and guidelines | Agent loads when relevant; `@` or `/` to force |
 | **Indexed docs** | Advisory | Never override `AGENTS.md`, glob rules, or source |
 
 Cursor slash menus, `.cursor/mcp.json`, and glob auto-attach are **Cursor extras**, not the portable contract.
 
-## Slash workflows
+## Slash playbooks
 
 In Cursor chat, type `/` then the skill name.
 
 - **Enter** — attach for this message only
 - **Option+Enter** (Alt+Enter) — pin for the session
 
-Use `/workflow` to list the catalog, `/workflow <shortcut>` to route a task, or the full `/<name>` to load a playbook directly.
+Invoke playbooks directly. `/workflow` lists the catalog and stops; it does not run `/workflow plan`.
 
-| Task | Shortcut | Direct skill |
+| Task | Invocation | Canonical folder |
 | --- | --- | --- |
-| Plan a feature | `/workflow plan` | `/plan` |
-| Implement and verify locally | `/workflow build` | `/build` |
-| Review a change | `/workflow review` | `/code-review` |
-| Diagnose or fix a failure | `/workflow debug` | `/debug-issue` |
-| Run tests and fix failures | `/workflow test` | `/run-all-tests-and-fix` |
-| Commit intended changes | `/workflow commit` | `/git-commit` |
-| Push the intended branch | `/workflow push` | `/git-push` |
-| Create a described PR | `/workflow pr` | `/git-create-pr` |
-| Reflect on completed work | `/workflow retro` | `/retro` |
-| Build or reshape UI | `/workflow ui` | `/use-frontend` |
+| Plan a feature | `/plan` | `plan` |
+| Implement and verify locally | `/build` | `build` |
+| Review a change | `/review` | `code-review` |
+| Diagnose or fix a failure | `/debug` | `debug-issue` |
+| Run tests and fix failures | `/test` | `run-all-tests-and-fix` |
+| Commit intended changes | `/commit` | `git-commit` |
+| Push the intended branch | `/push` | `git-push` |
+| Create a described PR | `/pr` | `git-create-pr` |
+| Reflect on completed work | `/retro` | `retro` |
+| Build or reshape UI | `/ui` | `use-frontend` |
+| Explore UI variants | `/prototype` | `prototype` (Emil pack, not under `workflow/`) |
 
-An empty `/workflow` lists options; an unknown token reports the available names. Neither starts work. `/build` ends with verified local changes. `/exec-push` explicitly requests implementation, full validation, commit, push, and a described PR. No workflow implies merge or deployment.
+`/build` ends with verified local changes. `/exec-push` explicitly requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment.
 
-Names match folders under `.agents/skills/workflow/`, such as `plan`. Update pinned prompts and reload discovery after installing. When a harness does not expose the slash menu, read `.agents/skills/workflow/SKILL.md` and the named child directly. Do not create another skills tree. Do not commit `.claude/skills/` copies.
+Canonical folders stay; `/review` and the other short names are alias playbooks that load the sibling. Update pinned prompts and reload discovery after installing. When a harness does not expose the slash menu, read `.agents/skills/workflow/<name>/SKILL.md` directly. Do not create another skills tree. Do not commit `.claude/skills/` copies.
 
-## Workflow
+## Typical order
 
-1. **Plan** — `/plan` or `/workflow plan` for non-trivial work. Read existing implementation and docs; list goals, assumptions, acceptance conditions, dependencies, and verification per slice. Planning alone does not create a branch or implement code.
+Compose skills. This is not a router.
+
+1. **Plan** — `/plan` for non-trivial work. Read existing implementation and docs; list goals, assumptions, acceptance conditions, dependencies, and verification per slice. Planning alone does not create a branch or implement code.
 2. **Review the plan** — `/review-plan` checks scope and ordering. Resolve consequential product or architecture decisions from `PRODUCT.md` and matching MDX/ADRs; continue routine work already authorized.
-3. **Implement** — `/build` or `/workflow build` delivers complete slices and runs affected checks. Preserve unrelated changes and generated-source ownership. Update matching docs when behavior changes. Update `PRODUCT.md` only when product facts change.
-4. **Review the change** — `/workflow review` returns evidenced findings and verification limits. Reviews stay read-only unless fixes are requested.
-5. **Publish when requested** — `/workflow commit`, `/workflow push`, or `/workflow pr` perform their named actions. `/exec-push` combines the implementation-to-PR path and requires `pnpm qa`.
-6. **Learn** — `/workflow retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
+3. **Implement** — `/build` delivers complete slices and runs affected checks. Preserve unrelated changes and generated-source ownership. Update matching docs when behavior changes. Update `PRODUCT.md` only when product facts change.
+4. **Review the change** — `/review` returns evidenced findings and verification limits. Reviews stay read-only unless fixes are requested.
+5. **Publish when requested** — `/commit`, `/push`, or `/pr` perform their named actions. `/exec-push` combines the implementation-to-PR path and requires `pnpm qa`.
+6. **Learn** — `/retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
 
-Tech skills (`fastify-v5`, `next-v16`, `vercel-react`) load when relevant. The workflow does not add another backlog or quality policy.
+Tech skills (`fastify-v5`, `next-v16`, `vercel-react`) load when relevant. Playbooks do not add another backlog or quality policy.
 
 The generator retains this catalog and rewrites its documentation pointers to the adopter’s local docs snapshot. `/release-review` is advisory and preserves the release tooling’s human gates.
 
@@ -72,7 +76,7 @@ The core playbooks use inputs, steps, verification, and a handoff. Reviews inspe
 
 Shared completion evidence lives inside the installed `workflow/references/` directory. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/use-tdd` or repository requirements.
 
-Further workflow polish is later and small. `/use-tdd` stays opt-in. See [Skills](/docs/development/cursor-skills).
+Further polish is later and small. `/use-tdd` stays opt-in. See [Skills](/docs/development/cursor-skills).
 
 ## Models (30 Aug 2026)
 
@@ -83,7 +87,7 @@ Further workflow polish is later and small. `/use-tdd` stays opt-in. See [Skills
 | **Composer 2.5** | Fast multi-file execution after a reviewed plan |
 | **Claude Code** (Opus 5) | Same `AGENTS.md` and `.agents/skills/` |
 
-In-app chat (Fastify `/ai/chat`) defaults to Claude Haiku 4.5 — product model, not this workflow. Pass `model: "sonnet"` for Sonnet 4.6. See [Self-Hosted LLM](/docs/deployment/self-hosted-llm).
+In-app chat (Fastify `/ai/chat`) defaults to Claude Haiku 4.5 — product model, not this page. Pass `model: "sonnet"` for Sonnet 4.6. See [Self-Hosted LLM](/docs/deployment/self-hosted-llm).
 
 CodeRabbit reviews PRs against project standards. Local gates: Biome, ESLint, [pre-commit security](/docs/architecture/security).
 

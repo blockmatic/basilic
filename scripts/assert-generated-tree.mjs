@@ -44,7 +44,7 @@ const required = [
   'docs/basilic/development/index.md',
   'docs/basilic/testing/product-ready.md',
   '.cursor/rules/base/general.mdc',
-  '.agents/skills/workflow/SKILL.md',
+  'skills-lock.json',
 ]
 
 let failed = false
@@ -61,32 +61,42 @@ for (const path of required) {
   }
 }
 
-const turboRaw = readFileSync(join(dest, 'turbo.json'), 'utf8')
-if (turboRaw.includes('@repo/docu#build')) {
+const turboRaw = existsSync(join(dest, 'turbo.json'))
+  ? readFileSync(join(dest, 'turbo.json'), 'utf8')
+  : null
+if (turboRaw?.includes('@repo/docu#build')) {
   console.error('turbo.json still declares @repo/docu#build')
   failed = true
 }
 
-const license = readFileSync(join(dest, 'LICENSE'), 'utf8')
-if (!license.includes('MIT')) {
+const license = existsSync(join(dest, 'LICENSE'))
+  ? readFileSync(join(dest, 'LICENSE'), 'utf8')
+  : null
+if (license && !license.includes('MIT')) {
   console.error('LICENSE is not MIT')
   failed = true
 }
 
-const pkg = JSON.parse(readFileSync(join(dest, 'package.json'), 'utf8'))
-if (pkg.name === 'create-basilic') {
-  console.error('assembled root package.json must not be the generator')
-  failed = true
+const pkgPath = join(dest, 'package.json')
+if (existsSync(pkgPath)) {
+  const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+  if (pkg.name === 'create-basilic') {
+    console.error('assembled root package.json must not be the generator')
+    failed = true
+  }
 }
 
-const workspace = readFileSync(join(dest, 'pnpm-workspace.yaml'), 'utf8')
-if (
-  !workspace.includes('apps/*') ||
-  !workspace.includes('packages/*') ||
-  !workspace.includes('tools/*')
-) {
-  console.error('pnpm-workspace.yaml is missing apps/*, packages/*, or tools/*')
-  failed = true
+const workspacePath = join(dest, 'pnpm-workspace.yaml')
+if (existsSync(workspacePath)) {
+  const workspace = readFileSync(workspacePath, 'utf8')
+  if (
+    !workspace.includes('apps/*') ||
+    !workspace.includes('packages/*') ||
+    !workspace.includes('tools/*')
+  ) {
+    console.error('pnpm-workspace.yaml is missing apps/*, packages/*, or tools/*')
+    failed = true
+  }
 }
 
 const lockPath = join(dest, 'skills-lock.json')
@@ -98,6 +108,19 @@ if (existsSync(lockPath)) {
   if (local.length > 0) {
     const names = local.map(([name]) => name).join(', ')
     console.error(`skills-lock.json still has local sources: ${names}`)
+    failed = true
+  }
+  const github = [
+    ...new Set(
+      Object.values(lock.skills ?? {})
+        .filter(skill => skill.sourceType === 'github' && skill.source)
+        .map(skill => skill.source),
+    ),
+  ]
+  if (github.length !== 1 || github[0] !== 'blockmatic/basilic-skills') {
+    console.error(
+      `skills-lock.json must pin only blockmatic/basilic-skills (found ${github.join(', ') || 'none'})`,
+    )
     failed = true
   }
 }

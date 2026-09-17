@@ -36,8 +36,6 @@ cypress/downloads/
 next-env.d.ts
 out/
 build
-!.agents/skills/workflow/build/
-!.agents/skills/workflow/build/**
 dist
 bin
 
@@ -77,5 +75,8 @@ tsup.config.bundled_*.mjs
 .deepsec/data/**/runs/
 .deepsec/findings/
 
-# Local Claude Code skill symlinks (canonical tree is .agents/skills/)
+# Local Claude Code skill symlinks (canonical tree is .agents/skills/ after setup)
 .claude/
+
+# Agent skills restored from skills-lock.json via pnpm setup:skills
+.agents/skills/
