@@ -35,7 +35,7 @@ In Cursor chat, type `/` then the skill name.
 - **Enter** — attach for this message only
 - **Option+Enter** (Alt+Enter) — pin for the session
 
-Invoke playbooks directly. `/workflow` lists the catalog and stops; it does not run `/workflow plan`.
+Invoke playbooks directly. `/workflow` lists the catalog and stops; extra tokens (`/workflow plan`) do not dispatch.
 
 | Task | Invocation | Folder |
 | --- | --- | --- |
@@ -52,9 +52,27 @@ Invoke playbooks directly. `/workflow` lists the catalog and stops; it does not 
 | Build or reshape UI | `/ui` | `ui` |
 | Explore UI variants | `/prototype` | `prototype` (Emil pack, not under `workflow/`) |
 
-`/build` ends with verified local changes. `/ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment.
+`/build` ends with verified local changes. `/ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/diagram`, `/docs`, `/git-repair`, and `/coderabbit` (PR review playbook; CodeRabbit MCP is [Agent setup](/docs/development/cursor-setup)). `/workflow` lists the rest and stops.
 
-Slash names are leaf folders. Removed names map to `/commit`, `/push`, `/pr`, `/ship`, `/ui`, `/tdd`, `/architecture`, and `/refactor` (formerly `/git-commit`, `/git-push`, `/git-create-pr`, `/exec-push`, `/use-frontend`, `/use-tdd`, `/plan-architecture`, `/refactor-code`). When a harness does not expose the slash menu, read the `SKILL.md` under `.agents/skills/workflow/`. Do not create another skills tree. Do not commit `.claude/skills/` copies.
+Slash names are leaf folders. There are no alias playbooks. Removed names map as follows:
+
+| Removed | Current |
+| --- | --- |
+| `/git-commit` | `/commit` |
+| `/git-push` | `/push` |
+| `/git-create-pr` | `/pr` |
+| `/exec-push` | `/ship` |
+| `/use-frontend` | `/ui` |
+| `/use-tdd` | `/tdd` |
+| `/plan-architecture` | `/architecture` |
+| `/refactor-code` | `/refactor` |
+| `/overview` | `/diagram` |
+| `/docker` | `/debug` |
+| `/info` | `/docs` |
+| `/issues` | `/git-repair` |
+| `/rabbit` | `/coderabbit` |
+
+When a harness does not expose the slash menu, read the `SKILL.md` under `.agents/skills/workflow/`. Do not create another skills tree. Do not commit `.claude/skills/` copies.
 
 ## Typical order
 
@@ -64,7 +82,7 @@ Compose skills. This is not a router.
 2. **Review the plan** — `/review-plan` checks scope and ordering. Resolve consequential product or architecture decisions from `PRODUCT.md` and matching MDX/ADRs; continue routine work already authorized.
 3. **Implement** — `/build` delivers complete slices and runs affected checks. Preserve unrelated changes and generated-source ownership. Update matching docs when behavior changes. Update `PRODUCT.md` only when product facts change.
 4. **Review the change** — `/review` returns evidenced findings and verification limits. Reviews stay read-only unless fixes are requested.
-5. **Publish when requested** — `/commit`, `/push`, or `/pr` perform their named actions. `/ship` combines the implementation-to-PR path and requires `pnpm qa`.
+5. **Publish when requested** — `/commit`, `/push`, or `/pr` perform their named actions. `/ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/commit` may still take task-owned hunks and is the only playbook that owns Conventional Commit format (composers must not paraphrase it). `/ship` requires `pnpm qa`. `/yolo` is the full local gate without publish.
 6. **Learn** — `/retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
 
 Tech skills (`fastify-v5`, `next-v16`, `vercel-react`) load when relevant. Playbooks do not add another backlog or quality policy.
@@ -73,9 +91,9 @@ The generator retains this catalog and rewrites its documentation pointers to th
 
 ## Checklists and evidence
 
-The core playbooks use inputs, steps, verification, and a handoff. Reviews inspect correctness, clarity, architecture, security, performance, and the verification claims. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
+The core playbooks use inputs, steps, verification, and a handoff. Reviews use installed `review-dimensions.md`: correctness, callers, failure paths, clarity, architecture, security, performance, and verification. Skip dimensions that are out of scope and say so. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
 
-Shared completion evidence lives inside the installed `workflow/references/` directory. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/tdd` or repository requirements.
+Shared references live in installed `workflow/references/`: `authoring.md`, `completion.md` (including the Full local gate row), `git-publish.md`, and `review-dimensions.md`. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/tdd` or repository requirements.
 
 Further polish is later and small. `/tdd` stays opt-in. See [Skills](/docs/development/cursor-skills).
 

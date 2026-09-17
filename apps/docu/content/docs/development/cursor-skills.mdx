@@ -39,7 +39,7 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 ## Workflow install
 
-The published package is `workflow`: `.agents/skills/workflow/SKILL.md` is the parent catalog for 45 children, including `/plan`, `/build`, `/review`, and `/ui`. Shared authoring, completion, and git-publish references travel inside this tree. The parent lists shortcuts and stops; it does not dispatch `/workflow plan`.
+The published package is `workflow`: `.agents/skills/workflow/SKILL.md` is the parent catalog for **42** child playbooks (including `/plan`, `/build`, `/review`, and `/ui`) plus four references. A full `--skill '*'` install is **45** top-level skills; do not treat that catalog-wide count as the playbook count. Shared `authoring.md`, `completion.md`, `git-publish.md`, and `review-dimensions.md` live under `workflow/references/`. The parent lists shortcuts and stops; extra tokens (`/workflow plan`) do not dispatch.
 
 This repository should have one workflow tree. Invoke playbooks as `/<name>`. After a refresh, preserve local edits first, then run `pnpm dlx skills@latest remove --skill b -a cursor -y` if a leftover `b` tree appears. `.agents/skills/b/` must be absent afterward.
 
