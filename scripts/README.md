@@ -168,7 +168,7 @@ Installs gitleaks for secret scanning in git repositories.
 - **gitleaks** (required): Secret scanning tool that detects hardcoded secrets, API keys, passwords, and other sensitive information
 
 **Installation methods**:
-- **macOS / Linux**: Downloads gitleaks **8.30.1** from GitHub releases (`gitleaksVersion` in the script)
+- **macOS / Linux**: Downloads gitleaks **8.30.1** from GitHub releases (`gitleaksVersion` in the script) and verifies a pinned SHA-256 before extract/install
 - **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:

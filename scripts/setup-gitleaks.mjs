@@ -1,10 +1,23 @@
 #!/usr/bin/env node
 
 import { execSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 import { platform } from 'node:os'
+import { basename } from 'node:path'
 import { exit } from 'node:process'
 
 const gitleaksVersion = '8.30.1'
+const gitleaksChecksums = {
+  'gitleaks_8.30.1_darwin_arm64.tar.gz':
+    'b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5',
+  'gitleaks_8.30.1_darwin_x64.tar.gz':
+    'dfe101a4db2255fc85120ac7f3d25e4342c3c20cf749f2c20a18081af1952709',
+  'gitleaks_8.30.1_linux_arm64.tar.gz':
+    'e4a487ee7ccd7d3a7f7ec08657610aa3606637dab924210b3aee62570fb4b080',
+  'gitleaks_8.30.1_linux_x64.tar.gz':
+    '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb',
+}
 
 const Tool = {
   name: 'gitleaks',
@@ -83,6 +96,13 @@ function normalizeArchForGitleaks(arch) {
   return arch === 'x64' || arch === 'arm64' ? arch : 'x64'
 }
 
+function verifyReleaseAsset({ path, fileName }) {
+  const expected = gitleaksChecksums[fileName]
+  if (!expected) throw new Error(`no pinned checksum for ${fileName}`)
+  const digest = createHash('sha256').update(readFileSync(path)).digest('hex')
+  if (digest !== expected) throw new Error(`checksum mismatch for ${fileName}`)
+}
+
 function installTool() {
   const os = getPlatform()
   const instructions = Tool[os]
@@ -120,6 +140,7 @@ function installTool() {
         downloadCommand = `curl -L -o ${tempFile} "${downloadUrl}"`
       }
       execSync(downloadCommand, { stdio: 'inherit' })
+      verifyReleaseAsset({ path: tempFile, fileName: basename(downloadUrl) })
 
       // Extract if tar.gz
       if (isTarGz) {
