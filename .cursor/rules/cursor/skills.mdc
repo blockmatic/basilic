@@ -7,9 +7,10 @@ alwaysApply: false
 ## Scope
 Skills are on-demand expertise. `name` must match the folder that contains `SKILL.md`.
 
-## Two kinds
+## Three kinds
 - **Tech** (`<topic>-v<major>/`, e.g. `fastify-v5`): agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions
-- **Workflow** (`.agents/skills/workflow/<name>/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Dispatcher: `.agents/skills/workflow/SKILL.md` (`/workflow`)
+- **Patterns** (unversioned, e.g. `composition-patterns`, `frontend-design`): agent-invocable craft and guidelines
+- **Workflow** (`.agents/skills/workflow/<name>/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Parent catalog: `.agents/skills/workflow/SKILL.md` (lists `/plan`, `/review`; does not dispatch `/workflow plan`)
 
 ## Principles
 - One primary topic per skill; independent versions = separate skills
@@ -23,6 +24,6 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 ## Hierarchy
 Rules (constraints) > skills (patterns) > model
 
-Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Canonical catalog: `blockmatic/basilic-skills`.
+Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Canonical catalog: `blockmatic/basilic-skills` (installed by `pnpm setup:skills`; lock pins this catalog only).
 
 Workflow authoring: read `.agents/skills/workflow/references/authoring.md`. Shared references stay inside the installable `workflow` tree. Use explicit inputs, task-specific steps, observable verification, and a handoff; keep simple playbooks short.

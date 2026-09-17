@@ -1,5 +1,5 @@
 name: Setup pnpm
-description: Install pnpm, Node from .nvmrc, and dependencies with frozen lockfile
+description: Install pnpm, Node from .nvmrc, dependencies, and agent skills (one basilic-skills clone)
 runs:
   using: composite
   steps:
@@ -10,5 +10,13 @@ runs:
       with:
         node-version-file: .nvmrc
         cache: pnpm
+    - uses: actions/cache@v4
+      with:
+        path: .agents/skills
+        key: ${{ runner.os }}-agent-skills-${{ hashFiles('skills-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-agent-skills-
     - run: pnpm install --frozen-lockfile
+      shell: bash
+    - run: pnpm setup:skills
       shell: bash

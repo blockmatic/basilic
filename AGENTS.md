@@ -1,11 +1,11 @@
 # Repository agent instructions
 
-This repository has one shared AI development workflow: this file plus
-`.agents/skills/` (tech skills and workflow playbooks `plan` / `build` /
-`workflow`). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json` are
-adapters. Other harnesses load the same contract through this file (and thin
-stubs) and open `SKILL.md` when there is no `/` menu. Do not create a second
-workflow or a competing source of truth.
+This repository has one shared agent contract: this file plus
+`.agents/skills/` (tech skills, patterns, and workflow playbooks such as
+`/plan` and `/build`). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
+are adapters. Other harnesses load the same contract through this file (and
+thin stubs) and open `SKILL.md` when there is no `/` menu. Do not create a
+second workflow or a competing source of truth.
 
 These instructions apply to the whole monorepo. A nested `AGENTS.md` adds or
 overrides guidance for its subtree and must be read before changing files there.
@@ -17,8 +17,10 @@ overrides guidance for its subtree and must be read before changing files there.
 2. When editing files that match a glob in [File-scoped rules](#file-scoped-rules),
    read that `.cursor/rules` file (Cursor auto-attaches it).
 3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
-   task matches. Workflow playbooks live under `.agents/skills/workflow/`. If
-   the harness has no `/` menu, open the `SKILL.md` file. Catalog:
+   task matches (after `pnpm setup` / `pnpm setup:skills`, which runs one
+   `skills add blockmatic/basilic-skills --skill '*'` and restores `skills-lock.json`).
+   Workflow playbooks live under `.agents/skills/workflow/`. If the harness has
+   no `/` menu, open the `SKILL.md` file. Catalog:
    [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
 4. Read the matching technical documentation under
    [`apps/docu/content/docs/`](apps/docu/content/docs/) before changing an
@@ -35,8 +37,8 @@ and tests instead of relying on memory or assuming that documentation is current
 
 - Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `PRODUCT.md`.
   Visual language: `DESIGN.md`. **Read** the matching file. Do not `@`-attach
-  docs from rules or skills. Playbooks: `.agents/skills/workflow/` (`plan`,
-  `build`, dispatcher `workflow`).
+  docs from rules or skills. Playbooks: `.agents/skills/workflow/` (`/plan`,
+  `/build`, `/review`). `/workflow` lists the catalog and stops.
 - After features/fixes: same change, update that MDX and nearest README if
   behavior, commands, or conventions changed; patch `PRODUCT.md` if goals,
   feature map, or horizons changed; glob `.mdc` only if a Cursor-scoped
@@ -125,8 +127,8 @@ and tests instead of relying on memory or assuming that documentation is current
   `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit.
 - Branch/validate/commit/push/PR: read
   `.agents/skills/workflow/exec-push/SKILL.md`. Commit message:
-  `.agents/skills/workflow/git-commit/SKILL.md`. Slash names `/exec-push` and
-  `/git-commit` are Cursor extras.
+  `.agents/skills/workflow/git-commit/SKILL.md`. Slash names `/exec-push`,
+  `/commit`, and `/git-commit` are Cursor extras.
 
 ### GitHub Actions
 
@@ -223,7 +225,7 @@ reasonable inferences, assumptions, and unresolved questions.
 These are loaders and UX, not a second contract.
 
 - **Cursor:** glob auto-attach for `.cursor/rules`; slash playbooks (`/plan`,
-  `/build`, `/workflow`); MCP in `.cursor/mcp.json`.
+  `/build`, `/review`); MCP in `.cursor/mcp.json`.
 - **Claude Code:** `CLAUDE.md` imports this file with `@AGENTS.md`. Project
   skills are `.agents/skills/` (not committed `.claude/skills/`).
 - **Antigravity:** workspace rules in `.agents/rules/`; skills in

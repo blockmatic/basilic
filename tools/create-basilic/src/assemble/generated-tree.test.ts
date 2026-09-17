@@ -21,4 +21,25 @@ describe('assert-generated-tree', () => {
     expect(result.status).toBe(1)
     expect(result.stderr).toContain('Forbidden path present: .agents/skills/b')
   })
+
+  it('rejects a second GitHub catalog in skills-lock.json', async () => {
+    const dest = await mkdtemp(join(tmpdir(), 'assert-generated-tree-lock-'))
+    writeFileSync(
+      join(dest, 'skills-lock.json'),
+      `${JSON.stringify({
+        version: 1,
+        skills: {
+          workflow: { source: 'blockmatic/basilic-skills', sourceType: 'github' },
+          other: { source: 'resend/react-email', sourceType: 'github' },
+        },
+      })}\n`,
+    )
+    const result = spawnSync(
+      'node',
+      [join(repoRootFromPackage, 'scripts/assert-generated-tree.mjs'), dest],
+      { encoding: 'utf8' },
+    )
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('must pin only blockmatic/basilic-skills')
+  })
 })

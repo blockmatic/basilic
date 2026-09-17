@@ -60,6 +60,7 @@ jobs:
           git add -A
           git -c user.name=basilic-ci -c user.email=ci@basilic.local commit -m 'chore: assembled template' --no-verify
           pnpm install --frozen-lockfile
+          pnpm setup:skills
           pnpm --filter @repo/api exec playwright install chromium
           pnpm --filter @repo/web exec playwright install chromium
 

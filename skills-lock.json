@@ -200,7 +200,7 @@
       "computedHash": "9a864b9589420fb5b304d6f827ec8ffa7e4bda58a90d901078fd50f9ff3aa1a4"
     },
     "react-email": {
-      "source": "resend/react-email",
+      "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/react-email/SKILL.md",
       "computedHash": "da0feefc6ddf4aaeff930ab203d269774da464429e35b178d2403d69d2dc2fb3"
@@ -281,7 +281,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/workflow/SKILL.md",
-      "computedHash": "c644da379300bd16b091ee6392f78ae052796471ba85cb76425d8b31d6b226c2"
+      "computedHash": "667f05521a9a9c3af46b79477da63cda1c9c566840f43e3667c5818ef2eabe73"
     },
     "write-swift": {
       "source": "blockmatic/basilic-skills",

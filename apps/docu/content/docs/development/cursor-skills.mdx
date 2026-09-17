@@ -1,9 +1,11 @@
 ---
 title: "Skills"
-description: "Tech skills and workflow playbooks from the Basilic skills.sh catalog. Any agent that can read .agents/skills/."
+description: "Tech, pattern, and workflow skills from the Basilic skills.sh catalog. Any agent that can read .agents/skills/."
 ---
 
-Project skills live under `.agents/skills/`. That path is the committed hub for Cursor, Codex, Antigravity, Gemini CLI, Copilot, and any agent that reads Agent Skills. The [skills CLI](https://github.com/vercel-labs/skills) interactive install lets you pick skills **and agents**. This repo’s lockfile refresh is `-a cursor --copy` into `.agents/skills/` (Codex shares that path). Claude Code’s default dir is `.claude/skills/`; do not `--copy` that tree into git. `CLAUDE.md` tells Claude to read `.agents/skills/` instead.
+Project skills live under `.agents/skills/` after `pnpm setup` (or `pnpm setup:skills`). That path is gitignored. `skills-lock.json` must pin **only** `blockmatic/basilic-skills` (including vendored `react-email`). Setup runs one `skills add blockmatic/basilic-skills --skill '*'` (one Git clone), then writes the lock file back so hashes stay pinned. It fails on a second GitHub catalog or on `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then it adds `../basilic-skills`). Do not use `skills experimental_install`. To refresh hashes, run `skills add` yourself and commit the lock.
+
+The [skills CLI](https://github.com/vercel-labs/skills) writes the tree for Cursor, Codex, Antigravity, Gemini CLI, Copilot, and any agent that reads Agent Skills. This repo’s install is `-a cursor --copy` into `.agents/skills/` (Codex shares that path). Claude Code’s default dir is `.claude/skills/`; do not `--copy` that tree into git. `CLAUDE.md` tells Claude to read `.agents/skills/` instead.
 
 Cursor also reads `.cursor/skills/` if present; this repo does not commit that tree. Cursor requires `name` in each `SKILL.md` to match the folder (`fastify-v5`, not `fastify`).
 
@@ -11,29 +13,25 @@ Rules override skills. Skills override the model. Indexed docs are advisory. Dai
 
 ## Catalogs
 
-**Tech and workflow** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Playbooks install as the parent `workflow` skill.
+**Tech, patterns, and workflow** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Playbooks install as the parent `workflow` skill. `react-email` is vendored in that catalog (upstream [resend/react-email](https://github.com/resend/react-email)).
 
-Install or refresh (interactive — pick skills and agents):
+Interactive pick (skills and agents):
 
 ```bash
 pnpm dlx skills@latest add blockmatic/basilic-skills
 ```
 
-Non-interactive refresh used in this repo:
+Non-interactive install for this repo is `pnpm setup:skills` (Update procedure below). Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths). Optional maintainer-local Claude symlink (not committed): add `-a claude-code` **without** `--copy`.
 
-```bash
-pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
-```
+Root `skills-lock.json` tracks catalog hashes. The `web-design-guidelines` entry also records the pinned `command.md` commit digest. `pnpm setup:skills` restores that file after install. Commit the lock after an explicit catalog refresh. Do not commit `.agents/skills/`.
 
-That writes tech skills under `.agents/skills/<name>/` and playbooks under `.agents/skills/workflow/<name>/`. Full installer options: catalog [README](https://github.com/blockmatic/basilic-skills#agents-and-paths). Examples: `-a claude-code`, `-a cursor -a claude-code`, `--agent '*'`. Optional maintainer-local Claude symlink (not committed): add `-a claude-code` **without** `--copy`.
-
-Root `skills-lock.json` tracks catalog hashes. The `web-design-guidelines` entry also records the pinned `command.md` commit digest. Commit the lock with `.agents/skills/` after every refresh.
-
-## Two kinds
+## Three kinds
 
 **Tech** — `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
-**Workflow** — install the parent `workflow` skill; nested children are not independent install targets. `.agents/skills/workflow/<name>/` (example: `workflow/plan`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/plan` or `/build` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
+**Patterns** — unversioned craft and guidelines (example: `composition-patterns`, `frontend-design`, `vercel-react`). Agent-invocable. Same loading as tech skills.
+
+**Workflow** — install the parent `workflow` skill; nested children are not independent install targets. `.agents/skills/workflow/<name>/` (example: `workflow/plan`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/plan`, `/build`, or `/review` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name.
 
@@ -41,11 +39,11 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 ## Workflow install
 
-The published workflow package is `workflow`: `.agents/skills/workflow/SKILL.md` dispatches to 51 children, including `/plan`, `/build`, and `/use-frontend`. Shared authoring and completion references travel inside this tree.
+The published package is `workflow`: `.agents/skills/workflow/SKILL.md` is the parent catalog for 58 children, including `/plan`, `/build`, `/review`, and `/use-frontend`. Shared authoring and completion references travel inside this tree. The parent lists shortcuts and stops; it does not dispatch `/workflow plan`.
 
-This repository should have one workflow tree. Slash tags are `/workflow`, `/plan`, and `/build`. `/workflow plan` is a dispatcher shortcut to `/plan`. After a refresh, preserve local edits first, then run `pnpm dlx skills@latest remove --skill b -a cursor -y` if a leftover `b` tree appears. `.agents/skills/b/` must be absent afterward.
+This repository should have one workflow tree. Invoke playbooks as `/<name>`. After a refresh, preserve local edits first, then run `pnpm dlx skills@latest remove --skill b -a cursor -y` if a leftover `b` tree appears. `.agents/skills/b/` must be absent afterward.
 
-Packaging validation runs in the catalog with `pnpm validate`. It checks metadata, counts, grouping, and workflow reference targets. These checks do not prove that an agent follows the workflow or that a particular desktop menu has refreshed.
+Packaging validation runs in the catalog with `pnpm validate`. It checks metadata, counts, grouping, and workflow reference targets. These checks do not prove that an agent follows a playbook or that a particular desktop menu has refreshed.
 
 ## Versioning
 
@@ -60,13 +58,27 @@ This repo’s Expo app is SDK 57; Expo skills are still `*-v55` because that is 
 
 ## Update procedure
 
+Install the tree without changing the lock:
+
+```bash
+pnpm setup:skills
+```
+
+Maintainer preview of a sibling catalog clone:
+
+```bash
+BASILIC_SKILLS_LOCAL=1 pnpm setup:skills
+```
+
+Refresh from GitHub (rewrites hashes in `skills-lock.json`; review and commit the lock):
+
 ```bash
 pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y
 ```
 
 A named refresh is valid (`--skill next-v16`, `--skill workflow`). After a refresh, run `pnpm dlx skills@latest remove --skill b -a cursor -y` if `.agents/skills/b/` is present. That leftover path must be absent afterward.
 
-Review the diff; commit `.agents/skills/` and `skills-lock.json`. Do not reformat skill copies to match this repo's Biome rules; `biome.json` excludes `.agents/skills/**`.
+Review the lockfile diff; commit `skills-lock.json` only. Do not reformat skill copies to match this repo's Biome rules; `biome.json` excludes `.agents/skills/**`.
 
 Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
 
@@ -96,6 +108,7 @@ Catalog copies may differ from upstream. Original sources:
 - `emilkowal-animations` ← pproenca/dot-skills `emilkowal-animations`
 - Emil craft pack ← [emilkowalski/skills](https://github.com/emilkowalski/skills) (unversioned folder names)
 - `better-ui` ← [jakubkrehel/skills](https://github.com/jakubkrehel/skills)
+- `react-email` ← [resend/react-email](https://github.com/resend/react-email) `skills/react-email`
 
 Basilic-maintained in the catalog: `fastify-v5`, `file-organization`, `wagmi-v3`, `solana-v1`, `ahooks-v3`, `ai-sdk-core-v7`, `ai-sdk-ui-v7`, `drizzle-orm-v0`, `motion-v13`, `openapi-ts-v0`, `playwright-v1`, `shadcn-v3`, `tailwind-design-system-v4`, `tanstack-query-v5`, `typescript-v6`, and all workflow playbooks.
 
@@ -103,7 +116,11 @@ Basilic-maintained in the catalog: `fastify-v5`, `file-organization`, `wagmi-v3`
 
 **Omitted from the catalog** (and why): Vercel `writing-guidelines` (conflicts with docs sentence case); `react-view-transitions` (extra animation API); `react-native-guidelines` (Expo skills already cover native). [Impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0) is not a skill: competing PRODUCT/DESIGN generators, CLI, and detector hooks are out of scope. A few craft ideas (harden loading/empty/error/success; bounded screenshot critique) are adapted in original wording in `/use-frontend` and `frontend-design` `references/product-ui.md`.
 
-New or reshaped UI: `/use-frontend` or `/workflow ui`. Visual direction only: `@frontend-design` (tokens win when present). Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/audit-accessibility`. Runtime bugs: `/debug-browser`.
+## Design
+
+UI craft also comes from [emilkowalski/skills](https://github.com/emilkowalski/skills): `/prototype`, `emil-design-eng`, animation vocabulary and review skills. Those folders sit next to tech and pattern skills, not under `workflow/`. Project tokens in `DESIGN.md` still win.
+
+New or reshaped UI: `/ui` or `/use-frontend`. Visual direction only: `@frontend-design` (tokens win when present). Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/audit-accessibility`. Runtime bugs: `/debug-browser`. Explore variants: `/prototype`.
 
 ## Related
 

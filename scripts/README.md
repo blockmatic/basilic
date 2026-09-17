@@ -51,11 +51,21 @@ Runs during `postpack` lifecycle hook (after packing):
 
 `create-basilic` does **not** use these scripts. Pack it with `npm pack` from `tools/create-basilic`.
 
+## Setup
+
+### `setup-skills.mjs`
+
+Installs every skill from `blockmatic/basilic-skills` in one clone (`pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y`). Restores `skills-lock.json` afterward so hashes stay pinned. Fails if the lock is missing, lists a second GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then adds `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`.
+
+```bash
+pnpm setup:skills
+```
+
 ## Generator
 
 ### `assert-generated-tree.mjs`
 
-Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files.
+Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files. `skills-lock.json` must not use local sources and must pin only `blockmatic/basilic-skills`.
 
 ```bash
 node scripts/assert-generated-tree.mjs /path/to/assembled-template

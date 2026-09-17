@@ -12,7 +12,7 @@ export function CTA() {
             <Link href="/docs/development">Getting Started</Link>
           </Button>
           <Button size="lg" variant="outline" className="min-h-11 w-full sm:w-auto" asChild>
-            <Link href="/docs/development/ai-workflow">Workflow playbooks</Link>
+            <Link href="/docs/development/cursor-skills">Skills</Link>
           </Button>
           <Button size="lg" variant="outline" className="min-h-11 w-full sm:w-auto" asChild>
             <a
