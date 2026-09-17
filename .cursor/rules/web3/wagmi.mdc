@@ -1,5 +1,5 @@
 ---
-description: Fastify SIWE/SIWS shelf stock; no Wagmi or wallet UI in apps/web
+description: Fastify SIWE/SIWS authentication; no Wagmi or wallet UI in apps/web
 globs: "apps/web/**/*.{ts,tsx}"
 alwaysApply: false
 ---
