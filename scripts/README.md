@@ -73,7 +73,7 @@ pnpm update-deps
 
 ### `vercel-install.mjs`
 
-Vercel install for pnpm 12: global `npm install` of the `packageManager` pin with scripts enabled (so the native binary replaces the placeholder), then `pnpm install`. Used by `apps/*/vercel.json` `installCommand`.
+Vercel pnpm 12 runner: `npm install -g` the `packageManager` pin with scripts, then invoke that binary (never Vercel’s PATH shim). Isolates `PNPM_HOME` and disables package-manager version switching. `installCommand` / `buildCommand` / `devCommand` in `apps/*/vercel.json`.
 
 ## Generator
 

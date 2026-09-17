@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "ignoreCommand": "npx turbo-ignore @repo/docu --fallback=HEAD^1",
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@repo/docu...",
+  "buildCommand": "cd ../.. && node scripts/vercel-install.mjs turbo run build --filter=@repo/docu...",
   "installCommand": "cd ../.. && node scripts/vercel-install.mjs",
-  "devCommand": "cd ../.. && pnpm dev --filter=@repo/docu",
+  "devCommand": "cd ../.. && node scripts/vercel-install.mjs dev --filter=@repo/docu",
   "git": { "deploymentEnabled": { "main": true, "develop": true } },
   "outputDirectory": ".next",
   "framework": "nextjs"
