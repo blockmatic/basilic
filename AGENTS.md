@@ -126,9 +126,9 @@ and tests instead of relying on memory or assuming that documentation is current
   lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`,
   `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit.
 - Branch/validate/commit/push/PR: read
-  `.agents/skills/workflow/exec-push/SKILL.md`. Commit message:
-  `.agents/skills/workflow/git-commit/SKILL.md`. Slash names `/exec-push`,
-  `/commit`, and `/git-commit` are Cursor extras.
+  `.agents/skills/workflow/git/ship/SKILL.md`. Commit message:
+  `.agents/skills/workflow/git/commit/SKILL.md`. Slash names `/ship`,
+  `/push`, `/commit`, and `/pr` are Cursor extras.
 
 ### GitHub Actions
 
@@ -138,8 +138,8 @@ and tests instead of relying on memory or assuming that documentation is current
   `gh run view <id> --log-failed`, `gh run watch <id>`, `gh run download <id>`.
 - Never use GitHub MCP for Actions — logs, artifacts, and reruns belong to the
   CLI.
-- `/fix-github-actions` follows this rule; do not add `gh run watch` to
-  `/git-push` or `/exec-push`.
+- `/gha` follows this rule; do not add `gh run watch` to
+  `/push` or `/ship`.
 
 ## File-scoped rules
 

@@ -31,7 +31,7 @@ Root `skills-lock.json` tracks catalog hashes. The `web-design-guidelines` entry
 
 **Patterns** — unversioned craft and guidelines (example: `composition-patterns`, `frontend-design`, `vercel-react`). Agent-invocable. Same loading as tech skills.
 
-**Workflow** — install the parent `workflow` skill; nested children are not independent install targets. `.agents/skills/workflow/<name>/` (example: `workflow/plan`). Slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/plan`, `/build`, or `/review` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
+**Workflow** — install the parent `workflow` skill; nested children are not independent install targets. Everyday leaves live at `.agents/skills/workflow/<name>/`; specialists may be `.agents/skills/workflow/<group>/<name>/` (example: `workflow/git/commit`). Slash is the leaf name. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Type `/plan`, `/build`, or `/review` in Cursor. If a harness has no matching menu, read the `SKILL.md` file directly.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name.
 
@@ -39,7 +39,7 @@ Skill descriptions are always in the agent’s discovery context. One folder per
 
 ## Workflow install
 
-The published package is `workflow`: `.agents/skills/workflow/SKILL.md` is the parent catalog for 58 children, including `/plan`, `/build`, `/review`, and `/use-frontend`. Shared authoring and completion references travel inside this tree. The parent lists shortcuts and stops; it does not dispatch `/workflow plan`.
+The published package is `workflow`: `.agents/skills/workflow/SKILL.md` is the parent catalog for 45 children, including `/plan`, `/build`, `/review`, and `/ui`. Shared authoring, completion, and git-publish references travel inside this tree. The parent lists shortcuts and stops; it does not dispatch `/workflow plan`.
 
 This repository should have one workflow tree. Invoke playbooks as `/<name>`. After a refresh, preserve local edits first, then run `pnpm dlx skills@latest remove --skill b -a cursor -y` if a leftover `b` tree appears. `.agents/skills/b/` must be absent afterward.
 
@@ -114,13 +114,13 @@ Basilic-maintained in the catalog: `fastify-v5`, `file-organization`, `wagmi-v3`
 
 **Intended unused stack** (copied by a full `--skill '*'` refresh, not installed app deps yet): `wagmi-v3`, `motion-v13`, `emilkowal-animations`, Emil operational skills, `better-ui`.
 
-**Omitted from the catalog** (and why): Vercel `writing-guidelines` (conflicts with docs sentence case); `react-view-transitions` (extra animation API); `react-native-guidelines` (Expo skills already cover native); `write-swift` (no Swift in this product); `mobile-native` (web PWA chrome; Expo skills cover native). [Impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0) is not a skill: competing PRODUCT/DESIGN generators, CLI, and detector hooks are out of scope. A few craft ideas (harden loading/empty/error/success; bounded screenshot critique) are adapted in original wording in `/use-frontend` and `frontend-design` `references/product-ui.md`.
+**Omitted from the catalog** (and why): Vercel `writing-guidelines` (conflicts with docs sentence case); `react-view-transitions` (extra animation API); `react-native-guidelines` (Expo skills already cover native); `write-swift` (no Swift in this product); `mobile-native` (web PWA chrome; Expo skills cover native). [Impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0) is not a skill: competing PRODUCT/DESIGN generators, CLI, and detector hooks are out of scope. A few craft ideas (harden loading/empty/error/success; bounded screenshot critique) are adapted in original wording in `/ui` and `frontend-design` `references/product-ui.md`.
 
 ## Design
 
 UI craft also comes from [emilkowalski/skills](https://github.com/emilkowalski/skills): `/prototype`, `emil-design-eng`, animation vocabulary and review skills. Those folders sit next to tech and pattern skills, not under `workflow/`. Project tokens in `DESIGN.md` still win.
 
-New or reshaped UI: `/ui` or `/use-frontend`. Visual direction only: `@frontend-design` (tokens win when present). Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/audit-accessibility`. Runtime bugs: `/debug-browser`. Explore variants: `/prototype`.
+New or reshaped UI: `/ui`. Visual direction only: `@frontend-design` (tokens win when present). Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/a11y`. Runtime bugs: `/debug-browser`. Explore variants: `/prototype`.
 
 ## Related
 

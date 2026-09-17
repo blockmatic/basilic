@@ -14,7 +14,7 @@ const groups = [
   {
     title: 'Workflow',
     body: 'Slash playbooks. Type / then the name.',
-    items: ['/plan', '/build', '/test', '/pr', '/prototype'],
+    items: ['/plan', '/build', '/test', '/pr', '/ui'],
   },
 ]
 

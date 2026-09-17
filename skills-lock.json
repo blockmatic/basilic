@@ -155,7 +155,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/next-v16/SKILL.md",
-      "computedHash": "afb141aca3d6a78d5188b73618439b6e6eb239507ed0466523b6560b894b1dc1"
+      "computedHash": "c5723f3f39d5ad40b3e76ee3a4894c33360493955a4fe7f865e00fb78537b251"
     },
     "nodejs-keccak256-v1": {
       "source": "blockmatic/basilic-skills",
@@ -275,7 +275,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/workflow/SKILL.md",
-      "computedHash": "667f05521a9a9c3af46b79477da63cda1c9c566840f43e3667c5818ef2eabe73"
+      "computedHash": "ebc60c3b3764c4aa57048b542a431599f8d75dd27821de3a521a05a850dbd6c5"
     }
   }
 }
