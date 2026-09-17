@@ -263,19 +263,13 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/web-design-guidelines/SKILL.md",
-      "computedHash": "6fba58fea2b22ede044a14748f967666ab504c9b93863dd2d059b3ce8bdb30da",
-      "guidelines": {
-        "source": "vercel-labs/web-interface-guidelines",
-        "path": "command.md",
-        "commit": "e3d624baaf29dc1fc645aff3e38f03e564d2d6b1",
-        "computedHash": "5a775e6411f790f518dbc9c1fa7c50a89e6873502d9a3530a6eb223a590bcfe8"
-      }
+      "computedHash": "6fba58fea2b22ede044a14748f967666ab504c9b93863dd2d059b3ce8bdb30da"
     },
     "workflow": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/workflow/SKILL.md",
-      "computedHash": "ebc60c3b3764c4aa57048b542a431599f8d75dd27821de3a521a05a850dbd6c5"
+      "computedHash": "8f3da2765c00358be95325d30ba97e2db6c6906800d62c44476e0c371ef3dd81"
     }
   }
 }
