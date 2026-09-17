@@ -4,7 +4,7 @@ Shared UI component library built with Shadcn/ui and Tailwind CSS.
 
 ## Overview
 
-Pre-configured, accessible UI components using Radix UI primitives and Tailwind CSS. All components are mobile-first and follow accessibility best practices.
+Pre-configured, accessible UI components using Base UI primitives (shadcn `base-vega`) and Tailwind CSS. Brand colors live in `src/styles/tokens.css`. All components are mobile-first and follow accessibility best practices.
 
 ## Exports
 
@@ -12,7 +12,7 @@ Pre-configured, accessible UI components using Radix UI primitives and Tailwind 
 - `@repo/ui/lib/utils` - Utilities (`cn` for class merging)
 - `@repo/ui/hooks/*` - React hooks (e.g., `use-mobile`)
 - `@repo/ui/globals.css` - Global styles and theme variables
-- `@repo/ui/radix` - Radix UI primitives
+- `@repo/ui/base` - Base UI primitives for rare composition
 - `@repo/ui/postcss.config` - PostCSS configuration
 
 ## Usage
@@ -117,7 +117,7 @@ Components automatically adapt to light/dark mode when using `next-themes` or si
 
 ## Accessibility
 
-All components are built on Radix UI primitives and follow WAI-ARIA guidelines:
+All components are built on Base UI primitives and follow WAI-ARIA guidelines:
 
 - Keyboard navigation support
 - Screen reader announcements
@@ -139,7 +139,7 @@ All components are designed mobile-first. They adapt to larger screens using Tai
 ## Architecture
 
 Centralized design system dependencies:
-- All `@radix-ui/react-*` packages
+- `@base-ui/react`
 - Styling utilities (`clsx`, `tailwind-merge`, `class-variance-authority`)
 - Single source of truth for component versions
 
@@ -147,7 +147,7 @@ Centralized design system dependencies:
 
 This package follows the **Component Library** pattern:
 
-- **Bundled Dependencies**: All component dependencies are bundled (`zod`, `date-fns`, `lucide-react`, `next-themes`, `react-hook-form`, Radix UI packages, etc.)
+- **Bundled Dependencies**: All component dependencies are bundled (`zod`, `date-fns`, `lucide-react`, `next-themes`, `react-hook-form`, `@base-ui/react`, etc.)
 - **Peer Dependencies**: Framework dependencies only (`react`, `react-dom`) - consumers control React version
 - **Rationale**: Simpler developer experience - install `@repo/ui` and it works. Version consistency across all apps. Follows industry patterns (shadcn/ui, Material-UI, Chakra UI)
 

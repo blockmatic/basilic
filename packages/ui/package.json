@@ -9,34 +9,8 @@
     "checktypes": "tsc --noEmit"
   },
   "dependencies": {
+    "@base-ui/react": "^1.8.0",
     "@hookform/resolvers": "^5.9.1",
-    "@radix-ui/react-accordion": "^1.2.20",
-    "@radix-ui/react-alert-dialog": "^1.1.23",
-    "@radix-ui/react-aspect-ratio": "^1.1.15",
-    "@radix-ui/react-avatar": "^1.2.6",
-    "@radix-ui/react-checkbox": "^1.3.11",
-    "@radix-ui/react-collapsible": "^1.1.20",
-    "@radix-ui/react-context-menu": "^2.3.7",
-    "@radix-ui/react-dialog": "^1.1.23",
-    "@radix-ui/react-dropdown-menu": "^2.1.24",
-    "@radix-ui/react-hover-card": "^1.1.23",
-    "@radix-ui/react-label": "^2.1.15",
-    "@radix-ui/react-menubar": "^1.1.24",
-    "@radix-ui/react-navigation-menu": "^1.2.22",
-    "@radix-ui/react-popover": "^1.1.23",
-    "@radix-ui/react-progress": "^1.1.16",
-    "@radix-ui/react-radio-group": "^1.4.7",
-    "@radix-ui/react-scroll-area": "^1.2.18",
-    "@radix-ui/react-select": "^2.3.7",
-    "@radix-ui/react-separator": "^1.1.15",
-    "@radix-ui/react-slider": "^1.4.7",
-    "@radix-ui/react-slot": "^1.3.3",
-    "@radix-ui/react-switch": "^1.3.7",
-    "@radix-ui/react-tabs": "^1.1.21",
-    "@radix-ui/react-toast": "1.2.23",
-    "@radix-ui/react-toggle": "^1.1.18",
-    "@radix-ui/react-toggle-group": "^1.1.19",
-    "@radix-ui/react-tooltip": "^1.2.16",
     "@streamdown/cjk": "^1.0.3",
     "@streamdown/code": "^1.1.1",
     "@streamdown/math": "^1.0.2",
@@ -49,7 +23,6 @@
     "input-otp": "^1.5.0",
     "lucide-react": "^1.46.0",
     "next-themes": "^0.4.6",
-    "radix-ui": "^1.6.7",
     "react-day-picker": "^10.0.1",
     "react-hook-form": "^7.88.0",
     "react-resizable-panels": "^4.12.4",
@@ -59,7 +32,6 @@
     "tailwind-merge": "^3.7.0",
     "tw-animate-css": "^1.4.0",
     "use-stick-to-bottom": "^1.1.6",
-    "vaul": "^1.1.2",
     "zod": "^4.6.5"
   },
   "devDependencies": {
@@ -85,6 +57,6 @@
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
-    "./radix": "./src/radix/index.tsx"
+    "./base": "./src/base/index.tsx"
   }
 }

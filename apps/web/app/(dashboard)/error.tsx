@@ -1,7 +1,8 @@
 'use client'
 
 import { captureError } from '@repo/error/nextjs'
-import { Button } from '@repo/ui/components/button'
+import { Button, buttonVariants } from '@repo/ui/components/button'
+import { cn } from '@repo/ui/lib/utils'
 import Link from 'next/link'
 import { useEffect } from 'react'
 
@@ -32,9 +33,9 @@ export default function DashboardError({
           <Button type="button" onClick={() => reset()}>
             Try again
           </Button>
-          <Button variant="outline" asChild>
-            <Link href="/">Go home</Link>
-          </Button>
+          <Link href="/" className={cn(buttonVariants({ variant: 'outline' }))}>
+            Go home
+          </Link>
         </div>
       </div>
     </div>

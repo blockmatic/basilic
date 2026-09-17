@@ -129,10 +129,8 @@ function UnlinkButton({
 }) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Unlink
-        </Button>
+      <AlertDialogTrigger render={<Button variant="outline" size="sm" />}>
+        Unlink
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

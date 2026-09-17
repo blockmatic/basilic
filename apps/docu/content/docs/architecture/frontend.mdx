@@ -16,7 +16,7 @@ flowchart TB
   end
 
   subgraph Packages["Shared packages"]
-    UI["@repo/ui<br/>shadcn/ui + Radix + Tailwind 4"]
+    UI["@repo/ui<br/>shadcn/ui + Base UI + Tailwind 4"]
     React["@repo/react<br/>handwritten TanStack Query hooks"]
     Core["@repo/core<br/>generated API client"]
     Utils["@repo/utils"]
@@ -99,7 +99,7 @@ const [filters, setFilters] = useQueryStates({
 
 ## UI
 
-`@repo/ui` owns shadcn-style components, Radix primitives, and Tailwind 4. Import `@repo/ui/components/*`. Prototype in v0 if useful, then install into `@repo/ui` and consume from apps.
+`@repo/ui` owns shadcn-style components on Base UI primitives, and Tailwind 4. Import `@repo/ui/components/*`. Primitive composition: `@repo/ui/base`. Prototype in v0 if useful, then install into `@repo/ui` (`components.json` style `base-vega`) and consume from apps.
 
 The dashboard in-shell assistant (`apps/web/components/assistant`) is optional [demo chrome](/docs/architecture/ai). Agent UI work: `/ui` for surfaces. Reuse `@repo/ui` before new primitives (`/shadcn`). Compound APIs: `composition-patterns`. Visual direction stays `frontend-design`; existing tokens win. Brand and palette rules: root `DESIGN.md`. UI code checklist: `web-design-guidelines`. Do not add a second design skill or generate `DESIGN.md` from `tokens.css`.
 

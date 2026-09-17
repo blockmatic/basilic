@@ -1,0 +1,31 @@
+---
+title: "ADR 013: Shadcn Base UI primitives"
+description: "Adopt Base UI as the headless primitive layer under @repo/ui shadcn wrappers, replacing Radix."
+---
+
+Status: **Accepted.** Supersedes the primitive-library choice in [ADR 004](/docs/adrs/004-design-system) (shadcn + Tailwind remains). Landed with `components.json` style `base-vega`.
+
+## Context
+
+`@repo/ui` shipped shadcn/ui wrappers on Radix (`new-york`). shadcn now defaults new installs to Base UI. The wrappers were stock except tokens in `packages/ui/src/styles/tokens.css`. Apps compose via `@repo/ui/components/*`; they did not import `@repo/ui/radix`.
+
+## Decision
+
+Install and overwrite shadcn wrappers from the **Base UI** registry with visual style **`base-vega`** (New York successor). Keep Basilic tokens and `@repo/ui/components/*` import paths.
+
+- Primitives: `@base-ui/react`. Rare direct composition: `@repo/ui/base` (never `@base-ui/react` or `@radix-ui/*` from apps).
+- Composition: Base UI `render` (and `nativeButton={false}` when the rendered node is not a button), not Radix `asChild`.
+- Parts: `data-slot`. Open/checked state: Base UI `data-open` / `data-checked` (not ARIA). ARIA remains for accessibility.
+- Future `shadcn add` must keep `"style": "base-vega"` in both `packages/ui/components.json` and `apps/web/components.json`.
+
+## Consequences
+
+- App call sites that used `asChild` must pass `render`.
+- CLI alias bugs can emit `from "cn"` or `IconPlaceholder`; rewrite to `@repo/ui/lib/utils` and lucide.
+- `pnpm setup:skills` reinstalls `blockmatic/basilic-skills`; keep `shadcn-v3` there in sync or local skill edits drift.
+
+## Related
+
+- [ADR 004: Design System](/docs/adrs/004-design-system)
+- [Frontend Architecture](/docs/architecture/frontend)
+- [Packages Reference](/docs/development/packages)

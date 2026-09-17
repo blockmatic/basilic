@@ -39,7 +39,7 @@ Examples:
 | `@repo/cli` | CLI for Basilic API (API key only) | `dist` bin | `basilic` bin |
 | `@repo/react` | React Query hooks + React utilities | A | `@repo/react` |
 | `@repo/utils` | Cross-runtime utilities | B | `@repo/utils/*` (prefer subpaths) |
-| `@repo/ui` | Shared shadcn/ui components | A | `@repo/ui/components/*`, `@repo/ui/lib/*`, `@repo/ui/radix` |
+| `@repo/ui` | Shared shadcn/ui components | A | `@repo/ui/components/*`, `@repo/ui/lib/*`, `@repo/ui/base` |
 | `@repo/error` | Error reporting interface | B | `@repo/error/node`, `/nextjs`, `/browser`, `/react` |
 | `@repo/email` | Email templates + renderer | B | `@repo/email/emails/*`, `@repo/email/render` |
 
@@ -153,7 +153,7 @@ Subpath-only exports:
 - `@repo/ui/components/*`
 - `@repo/ui/lib/*`
 - `@repo/ui/hooks/*`
-- `@repo/ui/radix`
+- `@repo/ui/base`
 
 ```ts
 import { Button } from '@repo/ui/components/button'

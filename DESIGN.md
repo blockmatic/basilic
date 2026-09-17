@@ -4,7 +4,7 @@
 
 ## Product
 
-**Basilic** is the demo shell brand (sidebar). Apps consume `@repo/ui` (shadcn/ui, Radix, Tailwind 4). App-only UI stays in `apps/web`, `apps/mobile`, and `apps/docu`. See [ADR 004](apps/docu/content/docs/adrs/004-design-system.mdx) and [Frontend](apps/docu/content/docs/architecture/frontend.mdx).
+**Basilic** is the demo shell brand (sidebar). Apps consume `@repo/ui` (shadcn/ui, Base UI, Tailwind 4). App-only UI stays in `apps/web`, `apps/mobile`, and `apps/docu`. See [ADR 004](apps/docu/content/docs/adrs/004-design-system.mdx), [ADR 013](apps/docu/content/docs/adrs/013-shadcn-base-ui.mdx), and [Frontend](apps/docu/content/docs/architecture/frontend.mdx).
 
 ## Docs
 

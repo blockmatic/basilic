@@ -45,14 +45,16 @@ export function AssistantSidebar() {
   if (isMobile)
     return (
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetTrigger asChild>
-          <Button
-            className="fixed bottom-4 right-4 z-40 size-12 rounded-full shadow-lg sm:bottom-6 sm:right-6 sm:hidden"
-            size="icon"
-            aria-label="Open assistant"
-          >
-            <MessageCircleIcon className="size-6" />
-          </Button>
+        <SheetTrigger
+          render={
+            <Button
+              className="fixed bottom-4 right-4 z-40 size-12 rounded-full shadow-lg sm:bottom-6 sm:right-6 sm:hidden"
+              size="icon"
+              aria-label="Open assistant"
+            />
+          }
+        >
+          <MessageCircleIcon className="size-6" />
         </SheetTrigger>
         <SheetContent side="right" className="flex w-[85vw] flex-col p-0 sm:max-w-md">
           <SheetHeader className="border-b px-4 py-3">
@@ -76,16 +78,18 @@ export function AssistantSidebar() {
           <div className="flex h-14 shrink-0 items-center justify-between border-b px-4">
             <span className="font-heading font-semibold text-sm">Assistant</span>
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8"
-                  aria-label="Collapse assistant"
-                  onClick={() => setOpen(false)}
-                >
-                  <PanelRightCloseIcon className="size-4" />
-                </Button>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8"
+                    aria-label="Collapse assistant"
+                    onClick={() => setOpen(false)}
+                  />
+                }
+              >
+                <PanelRightCloseIcon className="size-4" />
               </TooltipTrigger>
               <TooltipContent side="left">Collapse</TooltipContent>
             </Tooltip>
@@ -95,16 +99,18 @@ export function AssistantSidebar() {
       ) : (
         <div className="flex h-14 shrink-0 items-center justify-center border-b">
           <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-8"
-                aria-label="Expand assistant"
-                onClick={() => setOpen(true)}
-              >
-                <MessageCircleIcon className="size-4" />
-              </Button>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  aria-label="Expand assistant"
+                  onClick={() => setOpen(true)}
+                />
+              }
+            >
+              <MessageCircleIcon className="size-4" />
             </TooltipTrigger>
             <TooltipContent side="left">Expand assistant</TooltipContent>
           </Tooltip>
