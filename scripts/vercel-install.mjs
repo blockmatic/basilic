@@ -51,16 +51,22 @@ function pnpmEnv({ prefix }) {
   }
 }
 
-function resolveGlobalPnpm({ prefix }) {
+function pnpmVersionMatches({ cmd, argsPrefix, env, version }) {
+  const probe = spawnSync(cmd, [...argsPrefix, '--version'], { encoding: 'utf8', env })
+  return probe.status === 0 && probe.stdout?.trim() === version
+}
+
+function resolveGlobalPnpm({ prefix, version }) {
   const { env } = pnpmEnv({ prefix })
   const bin = join(prefix, 'bin', 'pnpm')
   const mjs = join(prefix, 'lib', 'node_modules', 'pnpm', 'bin', 'pnpm.mjs')
-  if (existsSync(bin)) {
-    const probe = spawnSync(bin, ['--version'], { encoding: 'utf8', env })
-    if (probe.status === 0 && /\d+\.\d+/.test(probe.stdout ?? ''))
-      return { cmd: bin, argsPrefix: [], env }
-  }
-  if (existsSync(mjs)) return { cmd: process.execPath, argsPrefix: [mjs], env }
+  if (existsSync(bin) && pnpmVersionMatches({ cmd: bin, argsPrefix: [], env, version }))
+    return { cmd: bin, argsPrefix: [], env }
+  if (
+    existsSync(mjs) &&
+    pnpmVersionMatches({ cmd: process.execPath, argsPrefix: [mjs], env, version })
+  )
+    return { cmd: process.execPath, argsPrefix: [mjs], env }
   return { cmd: null, argsPrefix: [], env }
 }
 
@@ -76,10 +82,10 @@ function installGlobalPnpm({ version }) {
 
 function ensurePnpm() {
   const { version } = pnpmVersion()
-  let resolved = resolveGlobalPnpm(npmPrefix())
+  let resolved = resolveGlobalPnpm({ ...npmPrefix(), version })
   if (resolved.cmd) return resolved
   installGlobalPnpm({ version })
-  resolved = resolveGlobalPnpm(npmPrefix())
+  resolved = resolveGlobalPnpm({ ...npmPrefix(), version })
   if (!resolved.cmd) {
     console.error('global pnpm is missing after npm install -g')
     exit(1)
