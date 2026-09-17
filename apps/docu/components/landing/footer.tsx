@@ -1,4 +1,5 @@
-import { Button } from '@repo/ui/components/button'
+import { buttonVariants } from '@repo/ui/components/button'
+import { cn } from '@repo/ui/lib/utils'
 import Link from 'next/link'
 import { LandingSection } from '@/components/landing/section'
 
@@ -17,9 +18,12 @@ export function Footer() {
         <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
           Fork it. Ship it.
         </h2>
-        <Button size="lg" className="min-h-11 w-full sm:w-auto" asChild>
-          <Link href="/docs/development">Getting Started</Link>
-        </Button>
+        <Link
+          href="/docs/development"
+          className={cn(buttonVariants({ size: 'lg' }), 'min-h-11 w-full sm:w-auto')}
+        >
+          Getting Started
+        </Link>
       </div>
       <nav
         aria-label="Footer"

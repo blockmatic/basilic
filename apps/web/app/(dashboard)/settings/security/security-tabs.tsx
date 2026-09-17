@@ -40,15 +40,20 @@ export function SecurityTabs() {
     <Tabs value={active} className="w-full">
       <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 [&>[data-slot=tabs-trigger]]:min-w-0">
         {tabs.map(({ href, value, icon: Icon, label }) => (
-          <TabsTrigger key={value} value={value} asChild>
-            <Link
-              href={href}
-              aria-current={active === value ? 'page' : undefined}
-              className={cn(triggerStyles)}
-            >
-              <Icon />
-              <span className="truncate">{label}</span>
-            </Link>
+          <TabsTrigger
+            key={value}
+            value={value}
+            nativeButton={false}
+            render={
+              <Link
+                href={href}
+                aria-current={active === value ? 'page' : undefined}
+                className={cn(triggerStyles)}
+              />
+            }
+          >
+            <Icon />
+            <span className="truncate">{label}</span>
           </TabsTrigger>
         ))}
       </TabsList>

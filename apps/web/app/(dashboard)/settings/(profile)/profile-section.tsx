@@ -88,16 +88,18 @@ function ProfileFormContent({
             className="font-mono"
           />
           <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                aria-label="Generate username"
-                onClick={onGenerateUsername}
-              >
-                <Shuffle className="size-4" />
-              </Button>
+            <TooltipTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Generate username"
+                  onClick={onGenerateUsername}
+                />
+              }
+            >
+              <Shuffle className="size-4" />
             </TooltipTrigger>
             <TooltipContent>Generate a funny username</TooltipContent>
           </Tooltip>
@@ -164,16 +166,18 @@ function ProfileFormContent({
           <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2">
             <code className="flex-1 truncate font-mono text-sm">{userId}</code>
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Copy user ID"
-                  onClick={onCopyId}
-                >
-                  <Copy className="size-4" />
-                </Button>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Copy user ID"
+                    onClick={onCopyId}
+                  />
+                }
+              >
+                <Copy className="size-4" />
               </TooltipTrigger>
               <TooltipContent>Copy to clipboard</TooltipContent>
             </Tooltip>

@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 ## Core Principles
-Install in `@repo/ui` (packages/ui), import from `@repo/ui/components/*`, all Radix UI from `@repo/ui/radix` (never direct `@radix-ui/react-*`), update Tailwind in packages/ui, app-specific in app's `components`, hooks/utils collocated
+Install in `@repo/ui` (packages/ui), import from `@repo/ui/components/*`, Base UI primitives from `@repo/ui/base` (never `@base-ui/react` or `@radix-ui/react-*` from apps). `components.json` style is `base-vega`. Compose with `render` (and `nativeButton={false}` for non-button nodes), not `asChild`. Target parts with `data-slot`; Base UI state uses `data-open` / `data-checked` (ARIA is separate). Update Tailwind in packages/ui; app-specific UI in the app. Brand tokens stay in `packages/ui/src/styles/tokens.css`.
 
 ## Don't Reinvent the Wheel
 Check existing blocks/templates before building. Full page/block → `shadcnui-jpisnice-react` MCP. Single component → `shadcnui-official` MCP. Only call MCP when unsure/errors
@@ -18,6 +18,8 @@ Components in `packages/ui/src/components/`. App's `components.json`: `"utils": 
 
 ## Component Patterns
 Use cva for variants, `cn` for class merging. See @.agents/skills/shadcn-v3
+
+Tailwind on wrappers: `data-open:`, `data-closed:`, `data-checked:`, `data-[slot=...]`. Do not add Radix `data-[state=open]:` on new code. `data-slot` names parts; `data-open` is not ARIA.
 
 ## Design System Organization
 **Base (Primitives) → `@repo/ui`**: `packages/ui/src/components/`, shared across apps

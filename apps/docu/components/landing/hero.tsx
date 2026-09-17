@@ -1,4 +1,5 @@
-import { Button } from '@repo/ui/components/button'
+import { buttonVariants } from '@repo/ui/components/button'
+import { cn } from '@repo/ui/lib/utils'
 import Link from 'next/link'
 import { CommandPanel } from '@/components/landing/command-panel'
 import { LandingSection } from '@/components/landing/section'
@@ -24,9 +25,12 @@ export function Hero() {
           <code className="font-mono text-foreground">pnpm db:start</code> and{' '}
           <code className="font-mono text-foreground">pnpm dev</code>.
         </p>
-        <Button size="lg" className="min-h-11 w-full sm:w-auto" asChild>
-          <Link href="/docs/development">Getting Started</Link>
-        </Button>
+        <Link
+          href="/docs/development"
+          className={cn(buttonVariants({ size: 'lg' }), 'min-h-11 w-full sm:w-auto')}
+        >
+          Getting Started
+        </Link>
       </div>
     </LandingSection>
   )

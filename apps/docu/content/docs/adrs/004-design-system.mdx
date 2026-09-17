@@ -3,6 +3,8 @@ title: "ADR 004: Design System"
 description: "Decision to use Shadcn/ui with Tailwind CSS for consistent UI components, rapid prototyping with v0, and full component ownership without vendor lock-in."
 ---
 
+Status: **Accepted** for shadcn + Tailwind. Primitive library updated in [ADR 013](/docs/adrs/013-shadcn-base-ui) (Base UI, `base-vega`).
+
 ## Context
 
 We need to establish a design system approach for our frontend applications that:
@@ -30,7 +32,7 @@ Copy-paste component library with Tailwind.
 - No vendor lock-in or breaking changes from library updates
 - Utility-first CSS approach enables rapid styling
 - Consistent design tokens and spacing system
-- Built on Radix UI primitives (accessible by default)
+- Built on Radix UI primitives (accessible by default) — later replaced by Base UI in [ADR 013](/docs/adrs/013-shadcn-base-ui)
 - Well-tested components with good defaults
 - Components can be shared through `@repo/ui` package
 - Works seamlessly with Next.js and our monorepo structure
@@ -108,7 +110,7 @@ We will use **Shadcn/ui with Tailwind CSS** as our design system foundation.
 | **Customization** | ✅ Easy | ⚠️ Limited | ✅ Full control | ✅ Full control |
 | **Bundle size** | ✅ Small (tree-shakeable) | ⚠️ Larger | ✅ Small | ✅ Small |
 | **Rapid prototyping** | ✅ Excellent | ✅ Good | ⚠️ Slower | ❌ Slow |
-| **Accessibility** | ✅ Radix primitives | ✅ Good | ✅ Radix primitives | ⚠️ Manual |
+| **Accessibility** | ✅ Headless primitives (now Base UI) | ✅ Good | ✅ Radix primitives | ⚠️ Manual |
 | **Vendor lock-in** | ✅ None | ❌ Yes | ✅ None | ✅ None |
 | **Maintenance** | ⚠️ Manual updates | ✅ Library updates | ⚠️ All custom | ⚠️ All custom |
 | **Time to market** | ✅ Fast | ✅ Fast | ⚠️ Slower | ❌ Slow |
@@ -118,7 +120,7 @@ We will use **Shadcn/ui with Tailwind CSS** as our design system foundation.
 - Leveraging v0 for prototyping was a key factor in picking Next.js; v0 generates Next.js + Shadcn/ui components
 - Copy-paste philosophy gives full ownership of components with no external dependency versioning
 - Easy to customize and modify components as needed without vendor lock-in
-- Built on Radix UI primitives (accessible by default) with well-tested components
+- Copy-paste shadcn wrappers on accessible primitives (Base UI / `base-vega` as of [ADR 013](/docs/adrs/013-shadcn-base-ui)) with well-tested components
 - Works seamlessly with Next.js and our monorepo structure through `@repo/ui` package
 
 ## Notes

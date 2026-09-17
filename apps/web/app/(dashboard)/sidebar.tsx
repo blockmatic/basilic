@@ -53,11 +53,13 @@ export function DashboardSidebar() {
             <SidebarMenu>
               {navItems.map(({ href, label, icon: Icon }) => (
                 <SidebarMenuItem key={href}>
-                  <SidebarMenuButton asChild isActive={pathname === href} tooltip={label}>
-                    <Link href={href}>
-                      <Icon />
-                      <span>{label}</span>
-                    </Link>
+                  <SidebarMenuButton
+                    render={<Link href={href} />}
+                    isActive={pathname === href}
+                    tooltip={label}
+                  >
+                    <Icon />
+                    <span>{label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -71,14 +73,12 @@ export function DashboardSidebar() {
               {settingsItems.map(({ href, label, icon: Icon, matchPrefix }) => (
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
-                    asChild
+                    render={<Link href={href} />}
                     isActive={isActive(href, pathname, matchPrefix)}
                     tooltip={label}
                   >
-                    <Link href={href}>
-                      <Icon />
-                      <span>{label}</span>
-                    </Link>
+                    <Icon />
+                    <span>{label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -89,11 +89,12 @@ export function DashboardSidebar() {
       <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Sign out">
-              <Link href="/auth/logout" prefetch={false}>
-                <LogOut />
-                <span>Sign out</span>
-              </Link>
+            <SidebarMenuButton
+              render={<Link href="/auth/logout" prefetch={false} />}
+              tooltip="Sign out"
+            >
+              <LogOut />
+              <span>Sign out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

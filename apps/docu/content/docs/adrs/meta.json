@@ -13,6 +13,7 @@
     "009-api-architecture",
     "010-expo-cicd",
     "011-product-analytics",
-    "012-scaffolding-and-releases"
+    "012-scaffolding-and-releases",
+    "013-shadcn-base-ui"
   ]
 }

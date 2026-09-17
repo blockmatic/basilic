@@ -5,9 +5,9 @@ alwaysApply: false
 ---
 
 ## Animation Stack
-1. CSS + data attributes: `tw-animate-css` with `data-[state=*]` (`animate-in`, `fade-in-0`, `zoom-in-95`, `slide-in-from-*`)
+1. CSS + data attributes: `tw-animate-css` with Base UI / shadcn attrs (`data-open`, `data-closed`, `data-slot`, `animate-in`, `fade-in-0`, `zoom-in-95`, `slide-in-from-*`)
 2. Shadcn built-in Dialog/Popover/Sheet/Dropdown animations
-3. Custom `data-*` + Tailwind `data-[state=x]:*`
+3. Custom `data-*` + Tailwind `data-open:*` / `data-closed:*` (not Radix `data-[state=*]` on new wrappers)
 4. Motion only for drag, scroll-linked, layout, gestures, shared-element. See @.agents/skills/motion-v13
 If `transition-*` or `animate-*` works, do not use Motion.
 

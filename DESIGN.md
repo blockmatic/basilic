@@ -4,7 +4,7 @@
 
 ## Product
 
-**Basilic** is the demo shell brand (sidebar). Apps consume `@repo/ui` (shadcn/ui, Radix, Tailwind 4). App-only UI stays in `apps/web`, `apps/mobile`, and `apps/docu`. See [ADR 004](apps/docu/content/docs/adrs/004-design-system.mdx) and [Frontend](apps/docu/content/docs/architecture/frontend.mdx).
+**Basilic** is the demo shell brand (sidebar). Apps consume `@repo/ui` (shadcn/ui, Base UI, Tailwind 4). App-only UI stays in `apps/web`, `apps/mobile`, and `apps/docu`. See [ADR 004](apps/docu/content/docs/adrs/004-design-system.mdx), [ADR 013](apps/docu/content/docs/adrs/013-shadcn-base-ui.mdx), and [Frontend](apps/docu/content/docs/architecture/frontend.mdx).
 
 ## Docs
 
@@ -20,7 +20,7 @@ Inter, Poppins, and a monospace stack, as named in `tokens.css`. Do not add a fo
 
 ## Layout
 
-The **demo shell** is sidebar + main. Fumadocs is not that layout. Radius and sidebar tokens come from the same file. Components: `@repo/ui/components/*`.
+The **demo shell** is sidebar + main. Fumadocs is not that layout. Radius and sidebar tokens come from the same file. Components: `@repo/ui/components/*`. Open/checked styles use Base UI HTML attrs (`data-open`, `data-checked`), not Radix `data-state`.
 
 ## Motion
 

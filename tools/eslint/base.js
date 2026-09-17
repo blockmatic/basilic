@@ -155,14 +155,19 @@ export const config = [
             {
               name: '@repo/ui',
               message:
-                'Use subpath imports: @repo/ui/components/*, @repo/ui/lib/utils, @repo/ui/radix, etc.',
+                'Use subpath imports: @repo/ui/components/*, @repo/ui/lib/utils, @repo/ui/base, etc.',
             },
           ],
           patterns: [
             {
               group: ['@radix-ui/react-*'],
               message:
-                'Import from @repo/ui/radix instead. See packages/ui/src/radix/index.tsx for available exports.',
+                'Import from @repo/ui/base instead. See packages/ui/src/base/index.tsx for available exports.',
+            },
+            {
+              group: ['@base-ui/react', '@base-ui/react/*'],
+              message:
+                'Import from @repo/ui/base instead. See packages/ui/src/base/index.tsx for available exports.',
             },
           ],
         },
