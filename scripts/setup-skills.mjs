@@ -1,7 +1,16 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import {
+  cpSync,
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { exit, platform } from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -9,8 +18,21 @@ import { fileURLToPath } from 'node:url'
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = join(scriptDir, '..')
 const lockPath = join(repoRoot, 'skills-lock.json')
-const githubCatalog = 'blockmatic/basilic-skills'
+const ownedListPath = join(scriptDir, 'owned-agent-skills.txt')
+const basilicCatalog = 'blockmatic/basilic-skills'
+const mattCatalog = 'mattpocock/skills'
+const allowedGithub = new Set([basilicCatalog, mattCatalog])
+const skipMattNames = new Set(['pr', 'retro'])
 const allowLocal = process.env.BASILIC_SKILLS_LOCAL === '1'
+
+function ownedSkillNames() {
+  return {
+    names: readFileSync(ownedListPath, 'utf8')
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean),
+  }
+}
 
 function localSkillNames({ skills }) {
   return {
@@ -32,8 +54,8 @@ function githubSources({ skills }) {
   }
 }
 
-function resolveCatalog({ allowLocal, repoRoot }) {
-  if (!allowLocal) return { source: githubCatalog }
+function resolveBasilicCatalog() {
+  if (!allowLocal) return { source: basilicCatalog }
   const localCatalog = join(repoRoot, '..', 'basilic-skills')
   if (existsSync(join(localCatalog, 'skills', 'workflow', 'SKILL.md')))
     return { source: localCatalog }
@@ -42,11 +64,11 @@ function resolveCatalog({ allowLocal, repoRoot }) {
   }
 }
 
-function runSkillsAdd({ source }) {
+function runSkillsAdd({ source, skill }) {
   const isWindows = platform === 'win32'
   const result = spawnSync(
     isWindows ? 'pnpm.cmd' : 'pnpm',
-    ['dlx', 'skills@latest', 'add', source, '--skill', '*', '-a', 'cursor', '--copy', '-y'],
+    ['dlx', 'skills@latest', 'add', source, '--skill', skill, '-a', 'cursor', '--copy', '-y'],
     { cwd: repoRoot, stdio: 'inherit', shell: isWindows },
   )
   if (result.error) {
@@ -54,6 +76,30 @@ function runSkillsAdd({ source }) {
     exit(1)
   }
   if (result.status !== 0) exit(result.status ?? 1)
+}
+
+function stashOwned({ names, skillsDir }) {
+  const stashDir = mkdtempSync(join(tmpdir(), 'basilic-owned-skills-'))
+  for (const name of names) {
+    const from = join(skillsDir, name)
+    if (!existsSync(from)) continue
+    cpSync(from, join(stashDir, name), { recursive: true })
+  }
+  return { stashDir }
+}
+
+function restoreOwned({ names, skillsDir, stashDir }) {
+  for (const name of names) {
+    const from = join(stashDir, name)
+    if (!existsSync(from)) continue
+    rmSync(join(skillsDir, name), { recursive: true, force: true })
+    cpSync(from, join(skillsDir, name), { recursive: true })
+  }
+  rmSync(stashDir, { recursive: true, force: true })
+}
+
+function dropSkippedMattSkills({ lock }) {
+  for (const name of skipMattNames) delete lock.skills?.[name]
 }
 
 function main() {
@@ -64,30 +110,56 @@ function main() {
 
   const snapshot = readFileSync(lockPath, 'utf8')
   const skills = JSON.parse(snapshot).skills ?? {}
-  const { names } = localSkillNames({ skills })
-  if (names.length > 0 && !allowLocal) {
+  const { names: localNames } = localSkillNames({ skills })
+  if (localNames.length > 0 && !allowLocal) {
     console.error(
-      `skills-lock.json has local sources (${names.join(', ')}). Point them at GitHub, or set BASILIC_SKILLS_LOCAL=1 for a maintainer preview.`,
+      `skills-lock.json has local sources (${localNames.join(', ')}). Point them at GitHub, or set BASILIC_SKILLS_LOCAL=1 for a maintainer preview.`,
     )
     exit(1)
   }
 
   const { sources } = githubSources({ skills })
-  if (sources.length !== 1 || sources[0] !== githubCatalog) {
+  const unexpected = sources.filter(source => !allowedGithub.has(source))
+  if (unexpected.length > 0) {
     console.error(
-      `skills-lock.json must pin only ${githubCatalog} (found ${sources.join(', ') || 'none'}). Do not add a second catalog; vendor into basilic-skills.`,
+      `skills-lock.json has unsupported catalogs (${unexpected.join(', ')}). Allowed: ${[...allowedGithub].join(', ')}.`,
     )
     exit(1)
   }
+  if (!sources.includes(basilicCatalog) && !allowLocal) {
+    console.error(`skills-lock.json must pin ${basilicCatalog}`)
+    exit(1)
+  }
+  if (!sources.includes(mattCatalog) && !allowLocal) {
+    const hasMatt = Object.values(skills).some(skill => skill.source === mattCatalog)
+    if (!hasMatt) {
+      console.error(`skills-lock.json must pin ${mattCatalog}`)
+      exit(1)
+    }
+  }
 
-  const { source, error } = resolveCatalog({ allowLocal, repoRoot })
+  const { source, error } = resolveBasilicCatalog()
   if (error || !source) {
-    console.error(error ?? 'could not resolve skills catalog')
+    console.error(error ?? 'could not resolve basilic-skills catalog')
     exit(1)
   }
 
-  runSkillsAdd({ source })
+  const { names } = ownedSkillNames()
+  const skillsDir = join(repoRoot, '.agents/skills')
+  const { stashDir } = stashOwned({ names, skillsDir })
+  try {
+    runSkillsAdd({ source, skill: 'workflow' })
+    runSkillsAdd({ source: mattCatalog, skill: '*' })
+  } finally {
+    restoreOwned({ names, skillsDir, stashDir })
+  }
+
+  const installed = JSON.parse(readFileSync(lockPath, 'utf8'))
+  dropSkippedMattSkills({ lock: installed })
   writeFileSync(lockPath, snapshot)
+
+  const leftover = readdirSync(skillsDir).filter(name => skipMattNames.has(name))
+  for (const name of leftover) rmSync(join(skillsDir, name), { recursive: true, force: true })
 }
 
 main()

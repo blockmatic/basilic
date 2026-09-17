@@ -118,9 +118,15 @@ if (existsSync(lockPath)) {
         .map(skill => skill.source),
     ),
   ]
-  if (github.length !== 1 || github[0] !== 'blockmatic/basilic-skills') {
+  const allowed = new Set(['blockmatic/basilic-skills', 'mattpocock/skills'])
+  const unexpected = github.filter(source => !allowed.has(source))
+  if (unexpected.length > 0) {
+    console.error(`skills-lock.json has unsupported catalogs (${unexpected.join(', ') || 'none'})`)
+    failed = true
+  }
+  if (!github.includes('blockmatic/basilic-skills') || !github.includes('mattpocock/skills')) {
     console.error(
-      `skills-lock.json must pin only blockmatic/basilic-skills (found ${github.join(', ') || 'none'})`,
+      `skills-lock.json must pin blockmatic/basilic-skills and mattpocock/skills (found ${github.join(', ') || 'none'})`,
     )
     failed = true
   }

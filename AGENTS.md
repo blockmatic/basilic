@@ -1,8 +1,8 @@
 # Repository agent instructions
 
 This repository has one shared agent contract: this file plus
-`.agents/skills/` (tech skills, patterns, and workflow playbooks such as
-`/plan` and `/build`). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
+`.agents/skills/` (committed tech/pattern skills, Basilic `/w-*` playbooks, and
+mattpocock/skills). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
 are adapters. Other harnesses load the same contract through this file (and
 thin stubs) and open `SKILL.md` when there is no `/` menu. Do not create a
 second workflow or a competing source of truth.
@@ -17,11 +17,13 @@ overrides guidance for its subtree and must be read before changing files there.
 2. When editing files that match a glob in [File-scoped rules](#file-scoped-rules),
    read that `.cursor/rules` file (Cursor auto-attaches it).
 3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
-   task matches (after `pnpm setup` / `pnpm setup:skills`, which runs one
-   `skills add blockmatic/basilic-skills --skill '*'` and restores `skills-lock.json`).
-   Workflow playbooks live under `.agents/skills/workflow/`. If the harness has
-   no `/` menu, open the `SKILL.md` file. Catalog:
-   [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
+   task matches (after `pnpm setup` / `pnpm setup:skills`, which runs
+   `skills add` for `blockmatic/basilic-skills --skill workflow` and
+   `mattpocock/skills --skill '*'`, then restores `skills-lock.json`).
+   Basilic playbooks live under `.agents/skills/workflow/` (`/w-plan`). If the
+   harness has no `/` menu, open the `SKILL.md` file. Catalogs:
+   [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) and
+   [`mattpocock/skills`](https://github.com/mattpocock/skills).
 4. Read the matching technical documentation under
    [`apps/docu/content/docs/`](apps/docu/content/docs/) before changing an
    architecture, convention, command, or documented behavior.
@@ -37,8 +39,9 @@ and tests instead of relying on memory or assuming that documentation is current
 
 - Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `PRODUCT.md`.
   Visual language: `DESIGN.md`. **Read** the matching file. Do not `@`-attach
-  docs from rules or skills. Playbooks: `.agents/skills/workflow/` (`/plan`,
-  `/build`, `/review`). `/workflow` lists the catalog and stops.
+  docs from rules or skills. Playbooks: `.agents/skills/workflow/` (`/w-plan`,
+  `/w-build`, `/w-review`). `/workflow` lists the catalog and stops. Matt pack:
+  `/grill-me`, `/implement`, `/tdd`.
 - After features/fixes: same change, update that MDX and nearest README if
   behavior, commands, or conventions changed; patch `PRODUCT.md` if goals,
   feature map, or horizons changed; glob `.mdc` only if a Cursor-scoped
@@ -126,9 +129,9 @@ and tests instead of relying on memory or assuming that documentation is current
   lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`,
   `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit.
 - Branch/validate/commit/push/PR: read
-  `.agents/skills/workflow/git/ship/SKILL.md`. Commit message:
-  `.agents/skills/workflow/git/commit/SKILL.md`. Slash names `/ship`,
-  `/push`, `/commit`, and `/pr` are Cursor extras.
+  `.agents/skills/workflow/git/w-ship/SKILL.md`. Commit message:
+  `.agents/skills/workflow/git/w-commit/SKILL.md`. Slash names `/w-ship`,
+  `/w-push`, `/w-commit`, and `/w-pr` are Cursor extras.
 
 ### GitHub Actions
 
@@ -138,8 +141,8 @@ and tests instead of relying on memory or assuming that documentation is current
   `gh run view <id> --log-failed`, `gh run watch <id>`, `gh run download <id>`.
 - Never use GitHub MCP for Actions — logs, artifacts, and reruns belong to the
   CLI.
-- `/gha` follows this rule; do not add `gh run watch` to
-  `/push` or `/ship`.
+- `/w-gha` follows this rule; do not add `gh run watch` to
+  `/w-push` or `/w-ship`.
 
 ## File-scoped rules
 
@@ -224,8 +227,8 @@ reasonable inferences, assumptions, and unresolved questions.
 
 These are loaders and UX, not a second contract.
 
-- **Cursor:** glob auto-attach for `.cursor/rules`; slash playbooks (`/plan`,
-  `/build`, `/review`); MCP in `.cursor/mcp.json`.
+- **Cursor:** glob auto-attach for `.cursor/rules`; slash playbooks (`/w-plan`,
+  `/w-build`, `/w-review`); MCP in `.cursor/mcp.json`.
 - **Claude Code:** `CLAUDE.md` imports this file with `@AGENTS.md`. Project
   skills are `.agents/skills/` (not committed `.claude/skills/`).
 - **Antigravity:** workspace rules in `.agents/rules/`; skills in

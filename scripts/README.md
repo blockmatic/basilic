@@ -55,7 +55,7 @@ Runs during `postpack` lifecycle hook (after packing):
 
 ### `setup-skills.mjs`
 
-Installs every skill from `blockmatic/basilic-skills` in one clone (`pnpm dlx skills@latest add blockmatic/basilic-skills --skill '*' -a cursor --copy -y`). Restores `skills-lock.json` afterward so hashes stay pinned. Fails if the lock is missing, lists a second GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then adds `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`. On Windows the script runs `pnpm.cmd` through a shell because Node cannot spawn `.cmd` shims without one.
+Installs `blockmatic/basilic-skills --skill workflow` and `mattpocock/skills --skill '*'`, stashes committed stack skills so the CLI cannot wipe them, then restores `skills-lock.json`. Fails if the lock is missing, lists an unsupported GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then workflow adds `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`. On Windows the script runs `pnpm.cmd` through a shell because Node cannot spawn `.cmd` shims without one.
 
 ```bash
 pnpm setup:skills
@@ -79,7 +79,7 @@ Vercel pnpm 12 runner: `npm install -g` the `packageManager` pin with scripts, t
 
 ### `assert-generated-tree.mjs`
 
-Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files. `skills-lock.json` must not use local sources and must pin only `blockmatic/basilic-skills`.
+Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files. `skills-lock.json` must not use local sources and must pin `blockmatic/basilic-skills` and `mattpocock/skills`.
 
 ```bash
 node scripts/assert-generated-tree.mjs /path/to/assembled-template

@@ -23,6 +23,7 @@ export const forbiddenGeneratedPaths = [
   'scripts/restore-publish.mjs',
   '_first',
   '.agents/skills/f',
+  '.agents/skills/workflow',
   'release-please-config.json',
   '.release-please-manifest.json',
   '.github/workflows/release-please.yml',
