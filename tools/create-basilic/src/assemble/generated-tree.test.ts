@@ -22,7 +22,7 @@ describe('assert-generated-tree', () => {
     expect(result.stderr).toContain('Forbidden path present: .agents/skills/b')
   })
 
-  it('rejects a second GitHub catalog in skills-lock.json', async () => {
+  it('rejects an unsupported GitHub catalog in skills-lock.json', async () => {
     const dest = await mkdtemp(join(tmpdir(), 'assert-generated-tree-lock-'))
     writeFileSync(
       join(dest, 'skills-lock.json'),
@@ -30,6 +30,7 @@ describe('assert-generated-tree', () => {
         version: 1,
         skills: {
           workflow: { source: 'blockmatic/basilic-skills', sourceType: 'github' },
+          'grill-me': { source: 'mattpocock/skills', sourceType: 'github' },
           other: { source: 'resend/react-email', sourceType: 'github' },
         },
       })}\n`,
@@ -40,6 +41,6 @@ describe('assert-generated-tree', () => {
       { encoding: 'utf8' },
     )
     expect(result.status).toBe(1)
-    expect(result.stderr).toContain('must pin only blockmatic/basilic-skills')
+    expect(result.stderr).toContain('unsupported catalogs (resend/react-email)')
   })
 })

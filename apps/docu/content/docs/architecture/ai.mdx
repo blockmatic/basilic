@@ -3,7 +3,7 @@ title: "AI"
 description: "Optional in-shell demo assistant: Fastify /ai routes, providers, streaming, and the web catalog contract."
 ---
 
-The in-shell assistant is **demo chrome**, not the Product Ready bar and not the product spine. Auth is the shipped demo job. Agent **skills** (`AGENTS.md`, `/plan` `/build` `/review`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
+The in-shell assistant is **demo chrome**, not the Product Ready bar and not the product spine. Auth is the shipped demo job. Agent **skills** (`AGENTS.md`, `/w-plan` `/w-build` `/w-review`, mattpocock/skills) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
 
 The Fastify API exposes two AI endpoints under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; route files in `apps/api/src/routes/ai/` are thin handlers (schema + auth + delegation). The browser talks to Fastify directly (Bearer). There is no Next.js AI BFF.
 
@@ -97,7 +97,7 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 
 ## Related
 
-- [AI Workflow](/docs/development/ai-workflow) — skills (`AGENTS.md`, `/plan` `/build` `/review`)
+- [AI Workflow](/docs/development/ai-workflow) — skills (`AGENTS.md`, `/w-plan` `/w-build` `/w-review`)
 - [Self-Hosted LLM](/docs/deployment/self-hosted-llm) — Ollama ops
 - [Vercel Deployment](/docs/deployment/vercel) — env vars for hosted API
 - [API Architecture](/docs/architecture/api) — OpenAPI, `@repo/core`

@@ -1,0 +1,17 @@
+{
+  "version": "1.1.0",
+  "organization": "Next.js Community",
+  "technology": "Next.js 16 App Router",
+  "date": "January 2026",
+  "discipline": "distillation",
+  "abstract": "Comprehensive Next.js 16 App Router guide for AI agents and LLMs. Contains 45 rules across 9 categories, prioritized by impact from critical (build optimization, caching strategy) through to cross-cutting codebase hygiene (dedup, dead routes, boundary coherence). Reflects Next.js 16 changes: two cache models (cacheComponents off → previous fetch/segment config; on → use cache + cacheLife), revalidateTag(tag, cacheLife) requirement, proxy.ts replacing middleware.ts, Turbopack as default bundler. Rule files describe pattern shapes (not API names) and open with a Shapes to recognize section. Ships a category-major review/refactor algorithm with two modes (scoped vs whole-repo) and forcing functions (scope declaration, per-category progress lines, coverage table) that make silent category skipping immediately visible.",
+  "references": [
+    "https://nextjs.org/docs",
+    "https://nextjs.org/blog/next-16",
+    "https://nextjs.org/docs/app/guides/upgrading/version-16",
+    "https://nextjs.org/docs/app/guides/caching-without-cache-components",
+    "https://nextjs.org/docs/app/api-reference/file-conventions/proxy",
+    "https://react.dev"
+  ],
+  "category": "Frontend"
+}

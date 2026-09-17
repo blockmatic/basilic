@@ -14,8 +14,8 @@ const groups = [
   },
   {
     title: 'Workflow',
-    body: 'Slash playbooks. Type / then the name.',
-    items: ['/plan', '/build', '/review'],
+    body: 'Basilic `/w-*` playbooks and Matt Pocock’s pack.',
+    items: ['/w-plan', '/grill-me', '/implement'],
   },
 ]
 
@@ -25,6 +25,20 @@ export function Skills() {
       <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">Skills</h2>
       <p className="mt-2 max-w-xl text-sm text-muted-foreground">
         On-demand expertise under <code className="font-mono text-foreground">.agents/skills/</code>
+        : in-repo stack skills,{' '}
+        <Link
+          href="https://github.com/blockmatic/basilic-skills"
+          className="text-primary underline-offset-4 hover:underline"
+        >
+          Basilic playbooks
+        </Link>
+        , and{' '}
+        <Link
+          href="https://github.com/mattpocock/skills"
+          className="text-primary underline-offset-4 hover:underline"
+        >
+          mattpocock/skills
+        </Link>
         .{' '}
         <Link
           href="/docs/development/cursor-skills"

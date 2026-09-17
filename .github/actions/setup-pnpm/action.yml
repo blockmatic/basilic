@@ -1,5 +1,5 @@
 name: Setup pnpm
-description: Install pnpm, Node from .nvmrc, dependencies, and agent skills (one basilic-skills clone)
+description: Install pnpm, Node from .nvmrc, dependencies, and agent skills (basilic-skills workflow plus mattpocock/skills)
 runs:
   using: composite
   steps:

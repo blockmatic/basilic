@@ -6,10 +6,10 @@ Rules, skills, and MCP for AI-assisted development. Daily workflow: [AI Developm
 
 - Root [`AGENTS.md`](../AGENTS.md) — always-on contract (all harnesses).
 - [`rules/`](rules/) — glob-scoped constraints. Always-on `.mdc` files are short pointers to `AGENTS.md`.
-- [`.agents/skills/`](../.agents/skills/) — gitignored; `pnpm setup` / `pnpm setup:skills` installs all skills from [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) in one clone (`--skill '*'`) and does not rewrite [`skills-lock.json`](../skills-lock.json). Playbooks under `workflow/`. Details: [Cursor Skills](../apps/docu/content/docs/development/cursor-skills.mdx). There is no `.cursor/skills/` tree in this repo.
+- [`.agents/skills/`](../.agents/skills/) — stack skills are committed; `pnpm setup` / `pnpm setup:skills` installs [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) `workflow` and [`mattpocock/skills`](https://github.com/mattpocock/skills), then restores [`skills-lock.json`](../skills-lock.json). Details: [Cursor Skills](../apps/docu/content/docs/development/cursor-skills.mdx). There is no `.cursor/skills/` tree in this repo.
 - [`mcp.json`](mcp.json) — MCP servers. Setup: [Cursor Setup](../apps/docu/content/docs/development/cursor-setup.mdx).
 
-Type `/` in chat for playbooks (`/plan`, `/build`, `/review`, `/pr`, `/commit`, `/push`). Tech skills load when relevant, or `@.agents/skills/<name>`.
+Type `/` in chat for Basilic playbooks (`/w-plan`, `/w-build`, `/w-review`, `/w-pr`) and Matt’s pack (`/grill-me`, `/implement`, `/tdd`). Tech skills load when relevant, or `@.agents/skills/<name>`.
 
 ## Related
 

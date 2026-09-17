@@ -54,7 +54,7 @@ Must work after `npx create-basilic@latest` → `pnpm setup` → `db:start` → 
 - Optional OAuth (unconfigured = disabled / 503)
 - Passkeys, sessions, API keys `bask_`, Settings profile and security
 - Next 16 web app gated by `apps/web/proxy.ts`
-- Docs site (`apps/docu`), `AGENTS.md` / harness stubs, basilic-skills playbooks, Cursor glob rules as adapters
+- Docs site (`apps/docu`), `AGENTS.md` / harness stubs, Basilic `/w-*` playbooks plus [mattpocock/skills](https://github.com/mattpocock/skills), Cursor glob rules as adapters
 - `@repo/ui` tokens in `packages/ui/src/styles/tokens.css`
 - `@repo/email` for auth mail; CLI with API key only
 - Pino `reqId`; `GET /health` readiness (503 when DB probe fails)

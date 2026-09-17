@@ -6,7 +6,7 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 
 ## Features
 
-- 🤖 **AI-first skills** — `AGENTS.md`, `/plan` `/build` `/review` playbooks, tech skills, and CodeRabbit. Any coding agent or IDE that can read those files.
+- 🤖 **AI-first skills** — `AGENTS.md`, `/w-plan` `/w-build` `/w-review`, [mattpocock/skills](https://github.com/mattpocock/skills), and CodeRabbit. Any coding agent or IDE that can read those files.
 - 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
 - 🧩 **Web + API starters** — Next.js demo, React hooks, Expo UI scaffold, Fastify API (not a wallet or OpenAI template)
@@ -49,8 +49,8 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 Run with `pnpm <script>`.
 
 **Setup**
-  - `setup` — Full setup (install, hooks, agent skills from basilic-skills, gitleaks, osv, env templates, database, deepsec, Playwright Chromium)
-  - `setup:skills` — Install `.agents/skills/` (`--skill '*'`, one clone; restores `skills-lock.json`)
+  - `setup` — Full setup (install, hooks, agent skills from basilic-skills workflow plus mattpocock/skills, gitleaks, osv, env templates, database, deepsec, Playwright Chromium)
+  - `setup:skills` — Install workflow + Matt pack into `.agents/skills/` (restores `skills-lock.json`)
   - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
   - `setup:playwright` — Install Playwright Chromium for API and web E2E
   - `setup:env` — Copy `.env.<qualifier>.example` templates to dest files when missing

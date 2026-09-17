@@ -25,7 +25,7 @@ const facts = [
   {
     title: 'Agent skills and playbooks',
     href: '/docs/development/cursor-skills',
-    body: 'Plan, build, and review with `/plan`, `/build`, and `/review` plus versioned skills any coding agent can use.',
+    body: 'Basilic `/w-plan` `/w-build` `/w-review` plus [mattpocock/skills](https://github.com/mattpocock/skills) (`/grill-me`, `/implement`).',
   },
   {
     title: 'Zero Vendor Lock-in',
