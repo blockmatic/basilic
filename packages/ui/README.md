@@ -15,6 +15,8 @@ Pre-configured, accessible UI components using Base UI primitives (shadcn `base-
 - `@repo/ui/base` - Base UI primitives for rare composition
 - `@repo/ui/postcss.config` - PostCSS configuration
 
+Composition: `render` (and `nativeButton={false}` for non-button nodes), not `asChild`. Parts use `data-slot`; open/checked use `data-open` / `data-checked`. Style with Tailwind `data-open:*`, not Radix `data-[state=open]:`. `components.json` style is `base-vega`. Keep `src/styles/tokens.css`. Details: [ADR 013](../../apps/docu/content/docs/adrs/013-shadcn-base-ui.mdx).
+
 ## Usage
 
 ### Basic Component Usage

@@ -160,6 +160,8 @@ import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
 ```
 
+Style with `base-vega` HTML attrs: `data-slot` for parts, `data-open` / `data-checked` for Base UI state (not Radix `data-state`). Compose with `render`, not `asChild`. Rare primitives: `@repo/ui/base`. See [ADR 013](/docs/adrs/013-shadcn-base-ui).
+
 ## Error reporting
 
 ### `@repo/error` — capture interface + error utilities

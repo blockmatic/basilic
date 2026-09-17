@@ -20,7 +20,7 @@ Inter, Poppins, and a monospace stack, as named in `tokens.css`. Do not add a fo
 
 ## Layout
 
-The **demo shell** is sidebar + main. Fumadocs is not that layout. Radius and sidebar tokens come from the same file. Components: `@repo/ui/components/*`.
+The **demo shell** is sidebar + main. Fumadocs is not that layout. Radius and sidebar tokens come from the same file. Components: `@repo/ui/components/*`. Open/checked styles use Base UI HTML attrs (`data-open`, `data-checked`), not Radix `data-state`.
 
 ## Motion
 
