@@ -1,17 +1,16 @@
 ---
-description: Web3 integration patterns using Wagmi v3
+description: Fastify SIWE/SIWS shelf stock; no Wagmi or wallet UI in apps/web
 globs: "apps/web/**/*.{ts,tsx}"
 alwaysApply: false
 ---
 
-## Core Principles
-Wagmi v3.x (latest v3.3.2), handle wallet connection states, see @.cursor/rules/web3/viem.mdc for address validation
+## Scope
 
-## Wallet auth, link
-For wallet auth and link flows, use app-local hooks from `@/hooks/` and `@/wallet/`: `useWalletAuth`, `useLinkWallet`, `useWallet` (from `@/hooks/use-wallet`, `@/hooks/use-wallet-auth`, `@/hooks/use-link-wallet`). `WalletProvider` and `WalletAdaptersInjector` in `@/wallet/`. Do not call auth/link APIs directly from app code.
+`apps/web` has **no Wagmi** and **no `@/wallet/` UI**. Wallet connect is a PRODUCT.md non-goal.
 
-## Custom Hooks
-Create specialized hooks for contract interactions. Use `useAccount`, `useWriteContract`, extract ABI types with `AbiParametersToPrimitiveTypes` and `ExtractAbiFunction`, check account connection, let wagmi infer chain
+Web3 auth is Fastify SIWE/SIWS plus `@repo/react` verify hooks. Next `/auth/callback/web3` exists; do not add wallet adapters or Wagmi providers in the web app.
 
-## Error Handling
-Consider network conditions and gas price fluctuations
+## Related
+
+- @.cursor/rules/web3/viem.mdc - address and chain helpers
+- @.cursor/rules/web3/multichain.mdc - multichain validation

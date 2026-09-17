@@ -34,6 +34,6 @@ This script ensures the OpenAPI spec stays in sync with route implementations, e
 
 ## Related Documentation
 
-- **[Deployment Guide](@apps/docu/content/docs/deployment/index.mdx)** - Deployment options and strategies
-- **[API Architecture](@apps/docu/content/docs/architecture/api.mdx)** - Fastify, TypeBox, OpenAPI, `@repo/core`
-- **[OpenAPI generation](@apps/docu/content/docs/development/openapi-generation.mdx)** - Spec from routes, hey-api clients
+- **[Deployment Guide](https://basilic-docs.vercel.app/docs/deployment)** - Deployment options and strategies
+- **[API Architecture](https://basilic-docs.vercel.app/docs/architecture/api)** - Fastify, TypeBox, OpenAPI, `@repo/core`
+- **[OpenAPI generation](https://basilic-docs.vercel.app/docs/development/openapi-generation)** - Spec from routes, hey-api clients

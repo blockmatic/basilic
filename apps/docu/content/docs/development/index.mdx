@@ -23,7 +23,7 @@ cd my-app
 pnpm run setup
 ```
 
-Or clone this repository / GitHub **Use this template**, then `cd` into it. [After fork](/docs/development/after-fork) lists what to replace when the copy is your product. Forks are for contributing upstream.
+This repository is for contributing to Basilic. Generated apps use `docs/basilic/` instead of `apps/docu` (already in the bullets below). [After fork](/docs/development/after-fork) lists what to replace when the generated copy is your product.
 
 `setup` installs dependencies, git hooks, **all agent skills** (one `skills add blockmatic/basilic-skills --skill '*'`; lockfile hashes stay pinned), security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
@@ -46,8 +46,8 @@ Local Postgres is Supabase CLI. `db:start` then **`pnpm reset`** (repo root) bef
 
 ## Next
 
-- [Product Ready](/docs/testing/product-ready) — fork-and-run bar (not CI green)
-- [After fork](/docs/development/after-fork) — template vs fork, identity, CI secrets
+- [Product Ready](/docs/testing/product-ready) — generate-and-run bar (not CI green)
+- [After fork](/docs/development/after-fork) — generator vs fork, identity, CI secrets
 - [Dev Environments](/docs/development/dev-environments) — ports, remote, Expo
 - [AI Workflow](/docs/development/ai-workflow) — compose `/plan` `/build` `/review`; not in-app chat
 - [Agent setup](/docs/development/cursor-setup) — optional Cursor extras (indexed docs, MCP)

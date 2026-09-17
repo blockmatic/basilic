@@ -1,8 +1,8 @@
 # Basilic: API-First AI TypeScript FullStack Starter
 
-Fork-and-run developer starter: typed SDKs, self-hosted auth, a portable architecture, a shared `AGENTS.md` agent contract, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
+Typed SDKs, self-hosted auth, a portable architecture, a shared `AGENTS.md` agent contract, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
 
-MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tools/create-basilic/README.md). Clone or GitHub **Use this template** still works. **Fork** to contribute back. First successful use is [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) (`pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`, `test@test.ai`). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).
+MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tools/create-basilic/README.md) (independent history; no docu app; no generator). **Fork** this repo to contribute. First successful use is [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) (`pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`, `test@test.ai`). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).
 
 ## Features
 
@@ -61,7 +61,7 @@ Run with `pnpm <script>`.
 **Primary**
   - `build` — Build packages and apps
   - `dev` — Start dev (core, react, error, utils, api, web)
-  - `qa` — Full check: install (if needed) → checktypes → lint → OpenAPI drift → build → test (unit) → test:e2e (Fastify + Next, `SKIP_BUILD=1`)
+  - `qa` — Full check: install (if needed) → checktypes → lint → OpenAPI drift → build → test:scripts → test (unit) → test:e2e (Fastify + Next, `SKIP_BUILD=1`)
 **Format / Lint**
   - `checktypes` — Type-check all packages
   - `format` — Format code (Biome)
@@ -96,9 +96,9 @@ Run with `pnpm <script>`.
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 
-- [Getting Started](https://basilic-docs.vercel.app/docs/development) — clone or Use this template, `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`
-- [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) — fork-and-run bar (not CI green)
-- [After fork](https://basilic-docs.vercel.app/docs/development/after-fork) — template vs fork, what to replace, CI secrets
+- [Getting Started](https://basilic-docs.vercel.app/docs/development) — `npx create-basilic@latest`, `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`
+- [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) — generate-and-run bar (not CI green)
+- [After fork](https://basilic-docs.vercel.app/docs/development/after-fork) — generator vs fork, what to replace, CI secrets
 - Maintainers: [`PRODUCT.md`](PRODUCT.md) — intent, feature map, roadmap. Visual: [`DESIGN.md`](DESIGN.md)
 - [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Local vs remote (ports 3000, 3001, 8081; `start:localhost`, `start:tunnel`)
 - [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)

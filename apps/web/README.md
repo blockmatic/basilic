@@ -31,8 +31,10 @@ See the [monorepo documentation](../docu/content/docs/architecture/monorepo.mdx)
 
 ```bash
 # From monorepo root
-pnpm install
+pnpm setup
 ```
+
+See [Getting Started](https://basilic-docs.vercel.app/docs/development).
 
 ### Running the Application
 

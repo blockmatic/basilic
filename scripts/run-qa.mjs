@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Run QA pipeline: install (if needed), checktypes, lint, OpenAPI drift, build, test, e2e.
+ * Run QA pipeline: install (if needed), checktypes, lint, OpenAPI drift, build, test:scripts, test, e2e.
  * Stops immediately on first failure and reports which phase failed.
  */
 import { spawnSync } from 'node:child_process'
@@ -55,6 +55,11 @@ const phases = [
   ...(skipTests
     ? []
     : [
+        {
+          name: 'test:scripts',
+          cmd: 'pnpm',
+          args: ['test:scripts'],
+        },
         {
           name: 'test',
           cmd: 'pnpm',

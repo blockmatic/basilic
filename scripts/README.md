@@ -6,7 +6,7 @@ Utility scripts for this monorepo.
 
 ### `run-qa.mjs`
 
-Runs the full QA pipeline sequentially: install (skipped when `node_modules` exists), checktypes, lint, OpenAPI generate + drift check, build, test, test:e2e (`SKIP_BUILD=1`). Stops immediately on the first failure and prints a clear error banner.
+Runs the full QA pipeline sequentially: install (skipped when `node_modules` exists), checktypes, lint, OpenAPI generate + drift check, build, `test:scripts`, test, test:e2e (`SKIP_BUILD=1`). Stops immediately on the first failure and prints a clear error banner.
 
 **Usage**: Via pnpm at repository root:
 ```bash
@@ -19,9 +19,9 @@ node scripts/run-qa.mjs
 
 For comprehensive guides, see:
 
-- **[Publishing Guide](@apps/docu/content/docs/deployment/publishing.mdx)** - Complete guide to publishing packages
-- **[Security Guide](@apps/docu/content/docs/architecture/security.mdx)** - Security baseline and secret scanning
-- **[Deployment Guide](@apps/docu/content/docs/deployment/index.mdx)** - Deployment options and strategies
+- **[Publishing Guide](https://basilic-docs.vercel.app/docs/deployment/publishing)** - Complete guide to publishing packages
+- **[Security Guide](https://basilic-docs.vercel.app/docs/architecture/security)** - Security baseline and secret scanning
+- **[Deployment Guide](https://basilic-docs.vercel.app/docs/deployment)** - Deployment options and strategies
 
 ## Publishing Scripts
 
@@ -47,7 +47,7 @@ Runs during `postpack` lifecycle hook (after packing):
 
 **Usage**: Automatically invoked via npm/pnpm lifecycle hooks. No manual execution needed.
 
-**Package Configuration**: Packages using these scripts should have development exports pointing to `src/` in `package.json`. See [Publishing Guide](@apps/docu/content/docs/deployment/publishing.mdx) for complete configuration details.
+**Package Configuration**: Packages using these scripts should have development exports pointing to `src/` in `package.json`. See [Publishing Guide](https://basilic-docs.vercel.app/docs/deployment/publishing) for complete configuration details.
 
 `create-basilic` does **not** use these scripts. Pack it with `npm pack` from `tools/create-basilic`.
 
@@ -73,7 +73,7 @@ pnpm update-deps
 
 ### `vercel-install.mjs`
 
-Vercel pnpm 12 runner: `npm install -g` the `packageManager` pin with scripts, then invoke that binary (never Vercel’s PATH shim). Isolates `PNPM_HOME` and disables package-manager version switching. `installCommand` / `buildCommand` / `devCommand` in `apps/*/vercel.json`.
+Vercel pnpm 12 runner: `npm install -g` the `packageManager` pin with scripts, then invoke that binary (never Vercel’s PATH shim). Isolates `PNPM_HOME` and disables package-manager version switching. `installCommand` / `buildCommand` / `devCommand` in `apps/*/vercel.json`. Pin equality lives in `vercel-pnpm.mjs` (`pnpm test:scripts`).
 
 ## Generator
 
@@ -109,7 +109,7 @@ All security-related pnpm scripts are organized under the `security:` namespace:
 - **`pnpm security:deepsec:process`** - DeepSec full-repo AI review (GPT-5.6 Sol / Codex)
 - **`pnpm security:deepsec:report`** - DeepSec findings summary
 
-DeepSec lives in `.deepsec/` and is not part of pre-commit or `security.yml`. `scan` is free. `process` needs `AI_GATEWAY_API_KEY`. See [Security](@apps/docu/content/docs/architecture/security.mdx).
+DeepSec lives in `.deepsec/` and is not part of pre-commit or `security.yml`. `scan` is free. `process` needs `AI_GATEWAY_API_KEY`. See [Security](https://basilic-docs.vercel.app/docs/architecture/security).
 
 ### `block-secret-files.mjs`
 
@@ -141,6 +141,8 @@ Wrapper script for gitleaks staged file scanning.
 pnpm security:secrets
 ```
 
+If gitleaks is missing, the script skips and prints `pnpm setup:gitleaks`.
+
 ### `scan-osv.mjs`
 
 Wrapper script for OSV Scanner vulnerability scanning.
@@ -157,12 +159,6 @@ node scripts/scan-osv.mjs
 ```
 
 **Note**: Requires osv-scanner to be installed. If not installed, the script will skip gracefully with a warning.
-
-### `ensure-tool.mjs`
-
-Checks tool availability and prints install instructions if missing.
-
-**Usage**: Used internally by other scripts to verify required tools are installed.
 
 ### `setup-gitleaks.mjs`
 
@@ -227,17 +223,6 @@ Installs Playwright Chromium for `@repo/api` and `@repo/web` E2E tests. Default 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
 ```bash
 pnpm setup:playwright
-```
-
-### `setup-security-tools.mjs`
-
-Installs all security tools (gitleaks and osv-scanner).
-
-**Usage**: Automatically runs during `pnpm setup`. Can be run manually:
-```bash
-pnpm setup:security
-# or
-node scripts/setup-security-tools.mjs
 ```
 
 ### `security-check.mjs`

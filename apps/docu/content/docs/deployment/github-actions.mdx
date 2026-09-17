@@ -3,7 +3,7 @@ title: "GitHub Actions"
 description: "Continuous integration workflows for automated testing, linting, and security checks."
 ---
 
-GitHub Actions workflows automate quality checks on pull requests (opened and updated).
+GitHub Actions workflows automate quality checks on pull requests (opened and updated). CI installs pnpm with `pnpm/action-setup` from the root `packageManager` field, not Corepack.
 
 ## Workflows
 
@@ -48,7 +48,7 @@ gh run view <run-id> --log-failed
 
 ### Lint (`lint.yml`)
 
-Linting and type checking on every PR (`pnpm lint`, then `pnpm exec turbo run checktypes`). Supports `workflow_dispatch` for manual runs. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
+Linting, `pnpm test:scripts`, and type checking on every PR (`pnpm lint`, then `pnpm test:scripts`, then `pnpm exec turbo run checktypes`). Supports `workflow_dispatch` for manual runs. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
 
 ### Scaffold (`pr-title.yml`, `scaffold.yml`, `release-impact.yml`, `scaffold-acceptance.yml`)
 

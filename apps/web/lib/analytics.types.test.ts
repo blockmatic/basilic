@@ -1,9 +1,13 @@
+import { describe, it } from 'vitest'
 import { capture } from './analytics'
 
-// Valid combinations compile.
-capture({ name: 'auth_succeeded', method: 'magic_link' })
-capture({ name: 'auth_failed', method: 'oauth_google', errorCode: 'oauth_failed_google' })
-capture({ name: 'assistant_turn', outcome: 'completed', accountRender: true })
+describe('capture event types', () => {
+  it('accepts valid combinations', () => {
+    capture({ name: 'auth_succeeded', method: 'magic_link' })
+    capture({ name: 'auth_failed', method: 'oauth_google', errorCode: 'oauth_failed_google' })
+    capture({ name: 'assistant_turn', outcome: 'completed', accountRender: true })
+  })
+})
 
 // @ts-expect-error invalid property on auth_succeeded
 capture({ name: 'auth_succeeded', method: 'magic_link', errorCode: 'x' })
