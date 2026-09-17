@@ -4,7 +4,7 @@ Next.js 16 dashboard for the Basilic stack: settings, auth chrome, and demo surf
 
 ## Tech Stack
 
-- **Next.js** 16.3.3 — App Router, RSC-first
+- **Next.js** 16.3.5 — App Router, RSC-first
 - **React** 19 — UI
 - **TypeScript** — Type safety
 - **Tailwind CSS** — Utility-first CSS
@@ -25,7 +25,7 @@ See the [monorepo documentation](../docu/content/docs/architecture/monorepo.mdx)
 ### Prerequisites
 
 - **Node.js** 24.x (LTS Krypton)
-- **pnpm** 11.24.0
+- **pnpm** 12.4.2
 
 ### Installation
 

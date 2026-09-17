@@ -8,7 +8,7 @@ npx create-basilic@latest my-app --yes
 npx create-basilic@1.2.3 my-app
 ```
 
-Requires **Node.js 24.x** and, after generation, **pnpm 11.24.0**.
+Requires **Node.js 24.x** and, after generation, **pnpm 12.4.2**.
 
 `--yes` accepts safe defaults and never overwrites. The destination must be empty. Paths with spaces are supported.
 

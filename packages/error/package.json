@@ -82,15 +82,15 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@sentry/browser": "^10.72.0",
-    "@sentry/nextjs": "^10.72.0",
-    "@sentry/node": "^10.72.0",
-    "@types/node": "^24.13.3",
-    "@types/react": "^19.2.18",
+    "@sentry/browser": "^10.75.0",
+    "@sentry/nextjs": "^10.75.0",
+    "@sentry/node": "^10.75.0",
+    "@types/node": "^24.13.5",
+    "@types/react": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "eslint": "^10.9.1",
-    "react": "^19.2.8",
+    "eslint": "^10.10.0",
+    "react": "^19.3.0",
     "tsup": "^8.5.1",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.1"
   }
 }

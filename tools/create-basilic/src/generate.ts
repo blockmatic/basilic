@@ -87,17 +87,22 @@ function writeProvenance({
 }
 
 function writeAdopterReadme({ destRoot, name }: { destRoot: string; name: ProjectName }) {
-  writeFileSync(join(destRoot, 'README.md'), adopterReadme({ name }))
+  const pkg = JSON.parse(readFileSync(join(destRoot, 'package.json'), 'utf8')) as {
+    packageManager?: string
+  }
+  const pnpmVersion = pkg.packageManager?.match(/^pnpm@([^+]+)/)?.[1] ?? null
+  writeFileSync(join(destRoot, 'README.md'), adopterReadme({ name, pnpmVersion }))
 }
 
-function adopterReadme({ name }: { name: ProjectName }) {
+function adopterReadme({ name, pnpmVersion }: { name: ProjectName; pnpmVersion: string | null }) {
+  const pnpmReq = pnpmVersion ? `pnpm ${pnpmVersion}` : 'pnpm (see packageManager)'
   return `# ${name.displayName}
 
 Generated with [create-basilic](https://www.npmjs.com/package/create-basilic). This tree is an independent monorepo (API, web, mobile). It does not include Basilic's documentation app or generator.
 
 ## Setup
 
-Requires Node.js 24.x and pnpm 11.24.0.
+Requires Node.js 24.x and ${pnpmReq}.
 
 \`\`\`bash
 pnpm setup

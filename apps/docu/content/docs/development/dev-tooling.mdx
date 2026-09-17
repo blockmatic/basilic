@@ -1,9 +1,9 @@
 ---
 title: "Development Tooling"
-description: "pnpm 11.24.0 workspaces; Biome for format/style; ESLint for correctness."
+description: "pnpm 12.4.2 workspaces; Biome for format/style; ESLint for correctness."
 ---
 
-Package manager is **pnpm 11.24.0** (see root `packageManager`). Decision: [ADR 005](/docs/adrs/005-package-manager). Lint split: [ADR 006](/docs/adrs/006-linters).
+Package manager is **pnpm 12.4.2** (see root `packageManager`). Decision: [ADR 005](/docs/adrs/005-package-manager). Lint split: [ADR 006](/docs/adrs/006-linters).
 
 **Biome** formats and applies style (imports, unused). **ESLint** owns TypeScript, React, Next.js 16, Expo, and Fastify correctness. `pnpm lint` runs Biome then ESLint. Pre-commit formats staged files with Biome after security hooks. CI runs both (`lint.yml`).
 

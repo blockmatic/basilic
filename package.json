@@ -41,29 +41,29 @@
     "setup:deepsec": "pnpm --dir=.deepsec install --frozen-lockfile",
     "setup:playwright": "pnpm --filter @repo/api exec playwright install chromium && pnpm --filter @repo/web exec playwright install chromium",
     "reset": "pnpm --filter @repo/api reset",
-    "update-deps": "pnpm self-update && pnpm update --latest --recursive"
+    "update-deps": "node scripts/update-deps.mjs"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.11",
+    "@biomejs/biome": "^2.5.14",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "~24.13.3",
-    "@types/react": "^19.2.18",
+    "@types/node": "~24.13.5",
+    "@types/react": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "@vitest/coverage-v8": "^4.1.11",
-    "ahooks": "^3.9.7",
-    "eslint": "^10.9.1",
+    "@vitest/coverage-v8": "^5.0.1",
+    "ahooks": "^3.10.0",
+    "eslint": "^10.10.0",
     "simple-git-hooks": "2.14.0",
     "tsup": "^8.5.1",
-    "turbo": "^2.10.12",
+    "turbo": "^2.10.13",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vercel": "latest",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.1"
   },
   "engines": {
     "node": "24.x"
   },
-  "packageManager": "pnpm@11.24.0",
+  "packageManager": "pnpm@12.4.2+sha512.08adc6613180275c7c9edada39dcf08c9c61ad4e7eaf330a4f3461f102b0f907423454d117f98e72d47fef0616070644d7bffc973a6a57f5090a6d7c368b07c9",
   "simple-git-hooks": {
     "pre-commit": "pnpm hooks:pre-commit"
   }

@@ -36,7 +36,7 @@ Shared configs live in `tools/typescript` (`base.json`, `nextjs.json`, `react-li
 
 `from './env.js'` inside `env.ts` is the NodeNext emit specifier (the file on disk after `tsc` is `.js`). It is not CJS and not a second source file. Never write `.ts` in those import paths.
 
-Node dev: `tsx`. Next: `transpilePackages` plus webpack `conditionNames: ['source', …]` and `.js` → `.ts` `extensionAlias` (required in Next 16.3.3 — Turbopack lacks `resolveExtensionAlias`). Scripts pass `--webpack` until Turbopack supports workspace `.js` imports. Import `@repo/*`, not relative paths into `packages/`.
+Node dev: `tsx`. Next: `transpilePackages` plus webpack `conditionNames: ['source', …]` and `.js` → `.ts` `extensionAlias` (required in Next 16.3.5 — Turbopack lacks `resolveExtensionAlias`). Scripts pass `--webpack` until Turbopack supports workspace `.js` imports. Import `@repo/*`, not relative paths into `packages/`.
 
 ## Until
 

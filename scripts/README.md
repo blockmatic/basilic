@@ -61,6 +61,16 @@ Installs every skill from `blockmatic/basilic-skills` in one clone (`pnpm dlx sk
 pnpm setup:skills
 ```
 
+## Dependencies
+
+### `update-deps.mjs`
+
+Updates pnpm via Corepack (`corepack use pnpm@latest`; Corepack owns the install, so `pnpm self-update` fails), syncs `packageManager` in nested package.json files, then runs `pnpm update --latest --recursive` plus `.deepsec`.
+
+```bash
+pnpm update-deps
+```
+
 ## Generator
 
 ### `assert-generated-tree.mjs`

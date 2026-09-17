@@ -102,7 +102,7 @@ const nextConfig = {
     'unist-util-visit-parents',
   ],
   serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
-  // Turbopack: resolveExtensionAlias is not available in Next 16.3.3; scripts use --webpack until it is.
+  // Turbopack: resolveExtensionAlias is not available in Next 16.3.5; scripts use --webpack until it is.
   // Webpack: Pattern B `source` exports and `.js` → `.ts` for workspace + instrumentation imports.
   webpack: config => {
     config.resolve.conditionNames = [...(config.resolve.conditionNames ?? []), 'source']

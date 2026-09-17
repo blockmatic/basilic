@@ -53,7 +53,7 @@ const nextConfig = {
 export default nextConfig
 ```
 
-**Note**: Next.js 16.3 defaults to Turbopack, but this monorepo uses `--webpack` on dev/build because Turbopack 16.3.3 does not yet support `resolveExtensionAlias` for workspace `.js` → `.ts` resolution (instrumentation and `@repo/*` imports). Drop `--webpack` when Next ships Turbopack extension aliasing.
+**Note**: Next.js 16.3 defaults to Turbopack, but this monorepo uses `--webpack` on dev/build because Turbopack 16.3.5 does not yet support `resolveExtensionAlias` for workspace `.js` → `.ts` resolution (instrumentation and `@repo/*` imports). Drop `--webpack` when Next ships Turbopack extension aliasing.
 
 #### Setup Provider
 
