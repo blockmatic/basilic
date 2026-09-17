@@ -45,7 +45,7 @@ This repository should have one workflow tree. Invoke playbooks as `/<name>`. Af
 
 Packaging validation runs in the catalog with `pnpm validate`. It checks metadata, counts, grouping, and workflow reference targets. These checks do not prove that an agent follows a playbook or that a particular desktop menu has refreshed.
 
-Installable names follow catalog `skills.sh.json` (45): Core (`typescript-v6`, `file-organization`); Workflow (`workflow`); Web (`next-v16`, `vercel-react`, `tanstack-query-v5`, `ahooks-v3`, `nuqs-v2`, `react-email`); UI (`shadcn-v3`, `tailwind-design-system-v4`, `frontend-design`, `web-design-guidelines`, `composition-patterns`, `better-ui`, `motion-v13`, `emilkowal-animations`, plus the Emil craft folders listed below); API (`fastify-v5`, `drizzle-orm-v0`, `openapi-ts-v0`); AI (`ai-sdk-core-v7`, `ai-sdk-ui-v7`); Expo (`expo-*-v55`, `animate-expo`); Web3 (`wagmi-v3`, `solana-v1`, `viem-v2`, `nodejs-keccak256-v1`); Testing (`vitest-v4`, `playwright-v1`).
+Installable names follow catalog `skills.sh.json` (45): Core (`typescript-v6`, `file-organization`); Workflow (`workflow`); Web (`next-v16`, `vercel-react`, `tanstack-query-v5`, `ahooks-v3`, `nuqs-v2`, `react-email`); UI (`shadcn-v3`, `tailwind-design-system-v4`, `frontend-design`, `web-design-guidelines`, `composition-patterns`, `better-ui`, `motion-v13`, `emilkowal-animations`, plus the Emil craft folders listed below); API (`fastify-v5`, `drizzle-orm-v0`, `openapi-ts-v0`); AI (`ai-sdk-core-v7`, `ai-sdk-ui-v7`); Expo (`expo-*-v55`, `animate-expo`); Web3 (`wagmi-v3`, `solana-v1`, `viem-v2`, `nodejs-keccak256-v1`); Testing (`vitest-v5`, `playwright-v1`). The committed `skills-lock.json` still lists `vitest-v4` until [basilic-skills#22](https://github.com/blockmatic/basilic-skills/pull/22) merges; then refresh hashes from GitHub and commit the lock. Do not preview this rename with `BASILIC_SKILLS_LOCAL=1` against a dirty sibling clone.
 
 ## Versioning
 
@@ -103,7 +103,7 @@ Catalog copies may differ from upstream. Original sources (same list as the cata
 - `composition-patterns` ← `composition-patterns` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
 - `next-v16` ← `nextjs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
 - `nuqs-v2` ← `nuqs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
-- `vitest-v4` ← `vitest` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
+- `vitest-v5` ← `vitest` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills) (folder major follows `vitest` ^5; was `vitest-v4`)
 - `viem-v2` ← `viem-integration` in [uniswap/uniswap-ai](https://github.com/uniswap/uniswap-ai)
 - `nodejs-keccak256-v1` ← `nodejs-keccak256` in [affaan-m/ecc](https://github.com/affaan-m/ecc)
 - `frontend-design` ← [anthropics/skills](https://github.com/anthropics/skills) `frontend-design`
