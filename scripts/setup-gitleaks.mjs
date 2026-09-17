@@ -1,17 +1,30 @@
 #!/usr/bin/env node
 
 import { execSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 import { platform } from 'node:os'
+import { basename } from 'node:path'
 import { exit } from 'node:process'
+
+const gitleaksVersion = '8.30.1'
+const gitleaksChecksums = {
+  'gitleaks_8.30.1_darwin_arm64.tar.gz':
+    'b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5',
+  'gitleaks_8.30.1_darwin_x64.tar.gz':
+    'dfe101a4db2255fc85120ac7f3d25e4342c3c20cf749f2c20a18081af1952709',
+  'gitleaks_8.30.1_linux_arm64.tar.gz':
+    'e4a487ee7ccd7d3a7f7ec08657610aa3606637dab924210b3aee62570fb4b080',
+  'gitleaks_8.30.1_linux_x64.tar.gz':
+    '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb',
+}
 
 const Tool = {
   name: 'gitleaks',
   command: 'gitleaks',
   checkCommand: 'gitleaks version',
   required: true,
-  repo: 'gitleaks/gitleaks',
   macos: {
-    brew: 'brew install gitleaks',
     getDownloadUrl: (version, arch) => {
       const normalizedArch = normalizeArchForGitleaks(arch)
       return `https://github.com/gitleaks/gitleaks/releases/download/v${version}/gitleaks_${version}_darwin_${normalizedArch}.tar.gz`
@@ -59,39 +72,12 @@ function getPlatform() {
   return 'linux'
 }
 
-function checkBrewAvailable() {
-  try {
-    execSync('which brew', { stdio: 'ignore' })
-    return true
-  } catch {
-    return false
-  }
-}
-
 function checkCurlAvailable() {
   try {
     execSync('which curl', { stdio: 'ignore' })
     return true
   } catch {
     return false
-  }
-}
-
-function getLatestVersion(repo) {
-  if (!checkCurlAvailable()) {
-    console.error('curl is required to fetch latest versions but is not installed')
-    return null
-  }
-
-  try {
-    const url = `https://api.github.com/repos/${repo}/releases/latest`
-    const response = execSync(`curl -s "${url}"`, { encoding: 'utf-8' })
-    const data = JSON.parse(response)
-    // Remove 'v' prefix if present
-    return data.tag_name.replace(/^v/, '')
-  } catch (error) {
-    console.error(`Failed to get latest version for ${repo}: ${error.message}`)
-    return null
   }
 }
 
@@ -110,6 +96,13 @@ function normalizeArchForGitleaks(arch) {
   return arch === 'x64' || arch === 'arm64' ? arch : 'x64'
 }
 
+function verifyReleaseAsset({ path, fileName }) {
+  const expected = gitleaksChecksums[fileName]
+  if (!expected) throw new Error(`no pinned checksum for ${fileName}`)
+  const digest = createHash('sha256').update(readFileSync(path)).digest('hex')
+  if (digest !== expected) throw new Error(`checksum mismatch for ${fileName}`)
+}
+
 function installTool() {
   const os = getPlatform()
   const instructions = Tool[os]
@@ -121,31 +114,10 @@ function installTool() {
     return false
   }
 
-  // macOS: Try brew first if available
-  if (os === 'macos' && instructions.brew && checkBrewAvailable()) {
-    try {
-      console.log(`\n📦 Installing ${displayName} via Homebrew...`)
-      execSync(instructions.brew, { stdio: 'inherit' })
-      if (checkToolExists(Tool.command, Tool.checkCommand)) {
-        console.log(`✅ ${displayName} installed successfully`)
-        return true
-      }
-    } catch (_error) {
-      console.error('\n⚠️  Homebrew installation failed, trying manual method...')
-    }
-  }
-
-  // Linux/macOS: Manual installation via wget
+  // Linux/macOS: pinned GitHub release
   if (instructions.getDownloadUrl) {
     try {
-      const version = getLatestVersion(Tool.repo)
-      if (!version) {
-        console.error(`\n❌ Failed to get latest version for ${displayName}`)
-        if (instructions.manual) {
-          console.error(`Please install manually: ${instructions.manual}`)
-        }
-        return false
-      }
+      const version = gitleaksVersion
 
       const arch = getArchitecture()
       const downloadUrl = instructions.getDownloadUrl(version, arch)
@@ -168,6 +140,7 @@ function installTool() {
         downloadCommand = `curl -L -o ${tempFile} "${downloadUrl}"`
       }
       execSync(downloadCommand, { stdio: 'inherit' })
+      verifyReleaseAsset({ path: tempFile, fileName: basename(downloadUrl) })
 
       // Extract if tar.gz
       if (isTarGz) {

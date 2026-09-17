@@ -3,7 +3,7 @@ title: "Security Baseline"
 description: "Pre-commit and CI scanning for secrets and CVEs, plus DeepSec source-code review. OSS tools only."
 ---
 
-Layers: local pre-commit, `security.yml` on every PR and push to main, DeepSec on trusted same-repo PRs (`deepsec.yml`), and Fastify request hardening. Install scanners with `pnpm run setup`. Manual install: [gitleaks](https://github.com/gitleaks/gitleaks#installation), [OSV Scanner](https://google.github.io/osv-scanner/installation/), [TruffleHog](https://github.com/trufflesecurity/trufflehog#installation).
+Layers: local pre-commit, `security.yml` on every PR and push to main, DeepSec on trusted same-repo PRs (`deepsec.yml`), and Fastify request hardening. Install scanners with `pnpm run setup` (gitleaks **8.30.1** with pinned SHA-256, osv-scanner **2.6.0** from GitHub release tags). Manual install: [gitleaks](https://github.com/gitleaks/gitleaks#installation), [OSV Scanner](https://google.github.io/osv-scanner/installation/), [TruffleHog](https://github.com/trufflesecurity/trufflehog#installation).
 
 ## Pre-commit
 

@@ -168,8 +168,7 @@ Installs gitleaks for secret scanning in git repositories.
 - **gitleaks** (required): Secret scanning tool that detects hardcoded secrets, API keys, passwords, and other sensitive information
 
 **Installation methods**:
-- **macOS**: Uses Homebrew if available, otherwise downloads binary from GitHub releases
-- **Linux**: Downloads binary from GitHub releases
+- **macOS / Linux**: Downloads gitleaks **8.30.1** from GitHub releases (`gitleaksVersion` in the script) and verifies a pinned SHA-256 before extract/install
 - **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
@@ -189,8 +188,7 @@ Installs osv-scanner for vulnerability scanning in dependencies.
 - **osv-scanner** (optional): Vulnerability scanner that checks dependencies against OSV database
 
 **Installation methods**:
-- **macOS**: Uses Homebrew if available, otherwise downloads binary from GitHub releases
-- **Linux**: Downloads binary from GitHub releases
+- **macOS / Linux**: Downloads osv-scanner **2.6.0** from GitHub releases (`osvScannerVersion` in the script; same tag as CI)
 - **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
@@ -286,7 +284,7 @@ Installs Docker, Docker Compose, and Supabase CLI for local PostgreSQL developme
 - **Linux**: 
   - Docker: Installs Docker Engine via official Docker repository (Debian/Ubuntu)
   - Docker Compose: Included as plugin with Docker Engine
-  - Supabase CLI: Downloads `.deb` package from GitHub releases and installs with `dpkg`
+  - Supabase CLI: Downloads pinned `.deb` **2.117.0** (`supabaseVersion` in the script) and installs with `dpkg`
 - **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
 
 **Usage**: Can be run manually:
