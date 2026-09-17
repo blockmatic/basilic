@@ -24,7 +24,7 @@ Sidebar + main content. Radius and sidebar tokens come from the same file. Compo
 
 ## Motion
 
-No extra motion guidelines beyond the existing `emilkowal-animations` / `motion-v13` skills. Do not add a second design skill from `/use-frontend`.
+No extra motion guidelines beyond the existing `emilkowal-animations` / `motion-v13` skills. Do not add a second design skill from `/ui`.
 
 ## Verification
 

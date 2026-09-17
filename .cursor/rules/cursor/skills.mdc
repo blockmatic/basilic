@@ -10,7 +10,7 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 ## Three kinds
 - **Tech** (`<topic>-v<major>/`, e.g. `fastify-v5`): agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions
 - **Patterns** (unversioned, e.g. `composition-patterns`, `frontend-design`): agent-invocable craft and guidelines
-- **Workflow** (`.agents/skills/workflow/<name>/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Parent catalog: `.agents/skills/workflow/SKILL.md` (lists `/plan`, `/review`; does not dispatch `/workflow plan`)
+- **Workflow** (`.agents/skills/workflow/<name>/` or `workflow/<group>/<name>/`): slash-only. Set `disable-model-invocation: true`. One-line `description`. Not versioned. Parent catalog: `.agents/skills/workflow/SKILL.md` (lists `/plan`, `/review`; does not dispatch `/workflow plan`)
 
 ## Principles
 - One primary topic per skill; independent versions = separate skills
