@@ -37,7 +37,9 @@
       "!**/src/db/migrations/meta",
       "!**/.deepsec",
       "!**/tools/create-basilic/template",
-      "!.agents/skills"
+      "!.agents/skills",
+      "!agent",
+      "!.claude"
     ],
     "maxSize": 1048576
   },
