@@ -1,6 +1,6 @@
 # Product
 
-Basilic is an **API-First AI TypeScript FullStack Starter**: Fastify + OpenAPI, Next.js, Expo scaffold, a shared `AGENTS.md` agent contract (tech, pattern, and workflow skills; Cursor slash/MCP are adapters), and a thin web demo that proves auth and the API. Start a product with `npx create-basilic@latest`. It is not a billed SaaS. Do not invent TAM or LTV.
+Basilic is an **API-First AI TypeScript FullStack Starter**: Fastify + OpenAPI, Next.js, Expo scaffold, a shared `AGENTS.md` agent contract (tech and pattern skills in git; [mattpocock/skills](https://www.aihero.dev/skills) as the recommended daily workflow; Basilic `/w-*` as a lightweight alternative; Cursor slash/MCP are adapters), and a thin web demo that proves auth and the API. Start a product with `npx create-basilic@latest`. It is not a billed SaaS. Do not invent TAM or LTV.
 
 Owner until this file says otherwise: **Gabo Esquivel**.
 
@@ -54,7 +54,7 @@ Must work after `npx create-basilic@latest` → `pnpm setup` → `db:start` → 
 - Optional OAuth (unconfigured = disabled / 503)
 - Passkeys, sessions, API keys `bask_`, Settings profile and security
 - Next 16 web app gated by `apps/web/proxy.ts`
-- Docs site (`apps/docu`), `AGENTS.md` / harness stubs, Basilic `/w-*` playbooks plus [mattpocock/skills](https://github.com/mattpocock/skills), Cursor glob rules as adapters
+- Docs site (`apps/docu`), `AGENTS.md` / harness stubs, [mattpocock/skills](https://www.aihero.dev/skills) as the recommended workflow plus Basilic `/w-*` as a lightweight alternative, Cursor glob rules as adapters
 - `@repo/ui` tokens in `packages/ui/src/styles/tokens.css`
 - `@repo/email` for auth mail; CLI with API key only
 - Pino `reqId`; `GET /health` readiness (503 when DB probe fails)

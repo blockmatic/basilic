@@ -14,7 +14,7 @@ Content is `content/docs/` (`architecture`, `development`, `testing`, `deploymen
 
 - [Getting Started](content/docs/development/index.mdx)
 - [Product Ready](content/docs/testing/product-ready.mdx)
-- [AI Workflow](content/docs/development/ai-workflow.mdx) — compose `/w-plan` `/w-build` `/w-review`; not in-app chat
+- [AI Workflow](content/docs/development/ai-workflow.mdx) — recommended Matt pack; Basilic `/w-*` alternative; not in-app chat
 - [AI](content/docs/architecture/ai.mdx) — optional Fastify/web demo assistant
 - [Architecture](content/docs/architecture/index.mdx)
 - [Security](content/docs/architecture/security.mdx)

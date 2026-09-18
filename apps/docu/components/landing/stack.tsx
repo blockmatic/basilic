@@ -25,7 +25,7 @@ const facts = [
   {
     title: 'Agent skills and playbooks',
     href: '/docs/development/cursor-skills',
-    body: 'Basilic `/w-plan` `/w-build` `/w-review` plus [mattpocock/skills](https://github.com/mattpocock/skills) (`/grill-me`, `/implement`).',
+    body: 'Recommended mattpocock/skills (`/grill-me`, `/implement`, `/tdd`); Basilic `/w-*` is a lightweight alternative.',
   },
   {
     title: 'Zero Vendor Lock-in',
