@@ -25,7 +25,7 @@ pnpm run setup
 
 This repository is for contributing to Basilic. Generated apps use `docs/basilic/` instead of `apps/docu` (already in the bullets below). [After fork](/docs/development/after-fork) lists what to replace when the generated copy is your product.
 
-`setup` installs dependencies, git hooks, **agent skills** (`blockmatic/basilic-skills` workflow plus `mattpocock/skills`; lockfile hashes stay pinned), security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
+`setup` installs dependencies, git hooks, **agent skills** (`blockmatic/basilic-skills` `/w-*` plus `mattpocock/skills`; lockfile hashes stay pinned), security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
 ```bash
 pnpm --filter @repo/api db:start
