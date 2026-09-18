@@ -9,7 +9,7 @@ Cursor slash (`/w-plan` `/w-build` `/w-review` and Matt’s unprefixed names), g
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
 
-Durable product intent lives in root `PRODUCT.md`. Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. Basilic playbooks come from [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) under `.agents/skills/workflow/` (`/w-*`). Matt’s pack is unprefixed. `/w-tdd` is Basilic’s opt-in TDD playbook; `/tdd` is Matt’s. In-app chat is the [demo assistant](/docs/architecture/ai), not this page.
+Durable product intent lives in root `PRODUCT.md`. Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. Basilic playbooks come from [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) under `.agents/skills/w-<name>/` (`/w-*`). Matt’s pack is unprefixed. `/w-tdd` is Basilic’s opt-in TDD playbook; `/tdd` is Matt’s. In-app chat is the [demo assistant](/docs/architecture/ai), not this page.
 
 ## Sources of truth
 
@@ -21,7 +21,7 @@ Root `AGENTS.md` holds always-on constraints (behavior, naming, file organizatio
 | --- | --- | --- |
 | **AGENTS.md** | Always-on contract | Cursor and Codex read it; Claude via `@AGENTS.md` in `CLAUDE.md`; Gemini CLI via `GEMINI.md`; Antigravity via `.agents/rules/always.md` |
 | **Glob rules** (`.cursor/rules/*.mdc`) | File-scoped constraints | Cursor attaches by glob. Other harnesses read the matching file when those paths are in scope (table in `AGENTS.md`) |
-| **Workflow skills** (`.agents/skills/workflow/`) | Basilic playbooks | Cursor: `/w-<leaf>`. Otherwise open `SKILL.md` |
+| **Workflow skills** (`.agents/skills/w-<name>/`) | Basilic playbooks | Cursor: `/w-<name>`. Otherwise open `SKILL.md` |
 | **Matt Pocock skills** | Engineering/productivity pack | Cursor: `/grill-me`, `/implement`, `/tdd`, … |
 | **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Stack patterns | Agent loads when relevant; `@` or `/` to force |
 | **Pattern skills** (unversioned) | Craft and guidelines | Agent loads when relevant; `@` or `/` to force |
@@ -36,7 +36,7 @@ In Cursor chat, type `/` then the skill name.
 - **Enter** — attach for this message only
 - **Option+Enter** (Alt+Enter) — pin for the session
 
-Invoke Basilic playbooks as `/w-<leaf>`. `/workflow` lists that catalog and stops; extra tokens (`/workflow plan`) do not dispatch. Matt’s pack is unprefixed (`/grill-me`, `/implement`, `/tdd`). Prefer Matt for grilling, specs, and red-green TDD; prefer Basilic `/w-plan` `/w-build` `/w-ship` for this repo’s docs/git close-out.
+Invoke Basilic playbooks as `/w-<name>`. Matt’s pack is unprefixed (`/grill-me`, `/implement`, `/tdd`). Prefer Matt for grilling, specs, and red-green TDD; prefer Basilic `/w-plan` `/w-build` `/w-ship` for this repo’s docs/git close-out.
 
 | Task | Invocation | Folder |
 | --- | --- | --- |
@@ -45,10 +45,10 @@ Invoke Basilic playbooks as `/w-<leaf>`. `/workflow` lists that catalog and stop
 | Review a change | `/w-review` | `w-review` |
 | Diagnose or fix a failure | `/w-debug` | `w-debug` |
 | Run tests and fix failures | `/w-test` | `w-test` |
-| Commit intended changes | `/w-commit` | `git/w-commit` |
-| Push the intended branch | `/w-push` | `git/w-push` |
-| Create a described PR | `/w-pr` | `git/w-pr` |
-| Implement through a described PR | `/w-ship` | `git/w-ship` |
+| Commit intended changes | `/w-commit` | `w-commit` |
+| Push the intended branch | `/w-push` | `w-push` |
+| Create a described PR | `/w-pr` | `w-pr` |
+| Implement through a described PR | `/w-ship` | `w-ship` |
 | Reflect on completed work | `/w-retro` | `w-retro` |
 | Build or reshape UI | `/w-ui` | `w-ui` |
 | Install or extend a shadcn primitive | `/w-shadcn` | `w-shadcn` |
@@ -57,7 +57,7 @@ Invoke Basilic playbooks as `/w-<leaf>`. `/workflow` lists that catalog and stop
 | Red-green TDD | `/tdd` | Matt pack (`/w-tdd` is Basilic’s opt-in) |
 | Explore UI variants | `/prototype` | Matt pack |
 
-`/w-build` ends with verified local changes. `/w-ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/w-diagram`, `/w-docs`, `/w-git-repair`, and `/w-coderabbit`. `/workflow` lists the rest and stops.
+`/w-build` ends with verified local changes. `/w-ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/w-diagram`, `/w-docs`, `/w-git-repair`, and `/w-coderabbit`.
 
 Slash names are leaf folders. There are no alias playbooks. Removed names map as follows:
 
@@ -78,7 +78,7 @@ Slash names are leaf folders. There are no alias playbooks. Removed names map as
 | `/issues` | `/w-git-repair` |
 | `/rabbit` | `/w-coderabbit` |
 
-When a harness does not expose the slash menu, read the `SKILL.md` under `.agents/skills/workflow/`. Do not create another skills tree. Do not commit `.claude/skills/` copies.
+When a harness does not expose the slash menu, read the `SKILL.md` under `.agents/skills/w-<name>/`. Do not create another skills tree. Do not commit `.claude/skills/` copies.
 
 ## Typical order
 

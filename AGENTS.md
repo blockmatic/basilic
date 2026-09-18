@@ -18,9 +18,9 @@ overrides guidance for its subtree and must be read before changing files there.
    read that `.cursor/rules` file (Cursor auto-attaches it).
 3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
    task matches (after `pnpm setup` / `pnpm setup:skills`, which runs
-   `skills add` for `blockmatic/basilic-skills --skill workflow` and
-   `mattpocock/skills --skill '*'`, then restores `skills-lock.json`).
-   Basilic playbooks live under `.agents/skills/workflow/` (`/w-plan`). If the
+   `skills add` for `blockmatic/basilic-skills --all` and
+   `mattpocock/skills --all`, then restores `skills-lock.json`).
+   Basilic playbooks live under `.agents/skills/w-<name>/` (`/w-plan`). If the
    harness has no `/` menu, open the `SKILL.md` file. Catalogs:
    [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) and
    [`mattpocock/skills`](https://github.com/mattpocock/skills).
@@ -39,8 +39,8 @@ and tests instead of relying on memory or assuming that documentation is current
 
 - Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `PRODUCT.md`.
   Visual language: `DESIGN.md`. **Read** the matching file. Do not `@`-attach
-  docs from rules or skills. Playbooks: `.agents/skills/workflow/` (`/w-plan`,
-  `/w-build`, `/w-review`). `/workflow` lists the catalog and stops. Matt pack:
+  docs from rules or skills. Playbooks: `.agents/skills/w-<name>/` (`/w-plan`,
+  `/w-build`, `/w-review`). Matt pack:
   `/grill-me`, `/implement`, `/tdd`.
 - After features/fixes: same change, update that MDX and nearest README if
   behavior, commands, or conventions changed; patch `PRODUCT.md` if goals,
@@ -129,8 +129,8 @@ and tests instead of relying on memory or assuming that documentation is current
   lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`,
   `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit.
 - Branch/validate/commit/push/PR: read
-  `.agents/skills/workflow/git/w-ship/SKILL.md`. Commit message:
-  `.agents/skills/workflow/git/w-commit/SKILL.md`. Slash names `/w-ship`,
+  `.agents/skills/w-ship/SKILL.md`. Commit message:
+  `.agents/skills/w-commit/SKILL.md`. Slash names `/w-ship`,
   `/w-push`, `/w-commit`, and `/w-pr` are Cursor extras.
 
 ### GitHub Actions

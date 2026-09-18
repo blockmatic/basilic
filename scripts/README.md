@@ -55,7 +55,7 @@ Runs during `postpack` lifecycle hook (after packing):
 
 ### `setup-skills.mjs`
 
-Installs `blockmatic/basilic-skills --skill workflow` and `mattpocock/skills --skill '*'`, stashes committed stack skills so the CLI cannot wipe them, then restores `skills-lock.json`. Fails if the lock is missing, lists an unsupported GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then workflow adds `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`. On Windows the script runs `pnpm.cmd` through a shell because Node cannot spawn `.cmd` shims without one.
+Installs `blockmatic/basilic-skills --all` and `mattpocock/skills --all`, stashes committed stack skills so the CLI cannot wipe them, then restores `skills-lock.json`. Set `BASILIC_SKILLS_WRITE_LOCK=1` to keep the generated lock (rewrites local basilic-skills sources to GitHub). Fails if the lock is missing, lists an unsupported GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks add `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`. On Windows the script runs `pnpm.cmd` through a shell because Node cannot spawn `.cmd` shims without one.
 
 ```bash
 pnpm setup:skills

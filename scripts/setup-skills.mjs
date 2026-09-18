@@ -57,18 +57,18 @@ function githubSources({ skills }) {
 function resolveBasilicCatalog() {
   if (!allowLocal) return { source: basilicCatalog }
   const localCatalog = join(repoRoot, '..', 'basilic-skills')
-  if (existsSync(join(localCatalog, 'skills', 'workflow', 'SKILL.md')))
+  if (existsSync(join(localCatalog, 'skills', 'w-plan', 'SKILL.md')))
     return { source: localCatalog }
   return {
-    error: 'BASILIC_SKILLS_LOCAL=1 but ../basilic-skills/skills/workflow/SKILL.md is missing',
+    error: 'BASILIC_SKILLS_LOCAL=1 but ../basilic-skills/skills/w-plan/SKILL.md is missing',
   }
 }
 
-function runSkillsAdd({ source, skill }) {
+function runSkillsAdd({ source }) {
   const isWindows = platform === 'win32'
   const result = spawnSync(
     isWindows ? 'pnpm.cmd' : 'pnpm',
-    ['dlx', 'skills@latest', 'add', source, '--skill', skill, '-a', 'cursor', '--copy', '-y'],
+    ['dlx', 'skills@latest', 'add', source, '--all'],
     { cwd: repoRoot, stdio: 'inherit', shell: isWindows },
   )
   if (result.error) {
@@ -100,6 +100,7 @@ function restoreOwned({ names, skillsDir, stashDir }) {
 
 function dropSkippedMattSkills({ lock }) {
   for (const name of skipMattNames) delete lock.skills?.[name]
+  delete lock.skills?.workflow
 }
 
 function main() {
@@ -148,17 +149,28 @@ function main() {
   const skillsDir = join(repoRoot, '.agents/skills')
   const { stashDir } = stashOwned({ names, skillsDir })
   try {
-    runSkillsAdd({ source, skill: 'workflow' })
-    runSkillsAdd({ source: mattCatalog, skill: '*' })
+    runSkillsAdd({ source })
+    runSkillsAdd({ source: mattCatalog })
   } finally {
     restoreOwned({ names, skillsDir, stashDir })
   }
 
   const installed = JSON.parse(readFileSync(lockPath, 'utf8'))
   dropSkippedMattSkills({ lock: installed })
-  writeFileSync(lockPath, snapshot)
+  if (process.env.BASILIC_SKILLS_WRITE_LOCK === '1') {
+    for (const [name, skill] of Object.entries(installed.skills ?? {})) {
+      if (skill.sourceType !== 'local') continue
+      if (skill.source === mattCatalog || String(skill.source).includes('mattpocock')) continue
+      skill.source = basilicCatalog
+      skill.sourceType = 'github'
+      if (!skill.skillPath) skill.skillPath = `skills/${name}/SKILL.md`
+    }
+    writeFileSync(lockPath, `${JSON.stringify(installed, null, 2)}\n`)
+  } else writeFileSync(lockPath, snapshot)
 
-  const leftover = readdirSync(skillsDir).filter(name => skipMattNames.has(name))
+  const leftover = readdirSync(skillsDir).filter(
+    name => skipMattNames.has(name) || name === 'workflow',
+  )
   for (const name of leftover) rmSync(join(skillsDir, name), { recursive: true, force: true })
 }
 

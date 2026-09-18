@@ -3,9 +3,9 @@ title: "Skills"
 description: "In-repo stack skills, Basilic /w-* playbooks, and mattpocock/skills. Any agent that can read .agents/skills/."
 ---
 
-Project skills live under `.agents/skills/`. **Tech and pattern** skills are committed in this repo (list in `scripts/owned-agent-skills.txt`). **Playbooks** and the [mattpocock/skills](https://github.com/mattpocock/skills) pack are installed by `pnpm setup:skills` and stay gitignored. `skills-lock.json` pins **exactly two** GitHub catalogs: `blockmatic/basilic-skills` (`workflow`) and `mattpocock/skills`. Setup restores the lock after install so hashes stay pinned. It fails on any other GitHub catalog or on `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then workflow comes from `../basilic-skills`). Do not use `skills experimental_install`. Do not also install Matt’s Claude Code plugin — that duplicates skills.sh copies.
+Project skills live under `.agents/skills/`. **Tech and pattern** skills are committed in this repo (list in `scripts/owned-agent-skills.txt`). **Playbooks** and the [mattpocock/skills](https://github.com/mattpocock/skills) pack are installed by `pnpm setup:skills` and stay gitignored. `skills-lock.json` pins **exactly two** GitHub catalogs: `blockmatic/basilic-skills` (`w-*`) and `mattpocock/skills`. Setup restores the lock after install so hashes stay pinned. It fails on any other GitHub catalog or on `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks come from `../basilic-skills`). Do not use `skills experimental_install`. Do not also install Matt’s Claude Code plugin — that duplicates skills.sh copies.
 
-The [skills CLI](https://github.com/vercel-labs/skills) writes the tree for Cursor, Codex, Antigravity, Gemini CLI, Copilot, and any agent that reads Agent Skills. This repo’s install is `-a cursor --copy` into `.agents/skills/` (Codex shares that path). Claude Code’s default dir is `.claude/skills/`; do not `--copy` that tree into git. `CLAUDE.md` tells Claude to read `.agents/skills/` instead.
+The [skills CLI](https://github.com/vercel-labs/skills) writes the tree for any agent that reads Agent Skills. This repo’s install is `--all` into `.agents/skills/`. Claude Code’s default dir is `.claude/skills/`; do not commit that tree. `CLAUDE.md` tells Claude to read `.agents/skills/` instead.
 
 Cursor also reads `.cursor/skills/` if present; this repo does not commit that tree. Cursor requires `name` in each `SKILL.md` to match the folder (`fastify-v5`, not `fastify`).
 
@@ -13,7 +13,7 @@ Rules override skills. Skills override the model. Indexed docs are advisory. Dai
 
 ## Catalogs
 
-**Basilic playbooks** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Install the parent `workflow` skill. Slash names are `/w-plan`, `/w-build`, `/w-review`.
+**Basilic playbooks** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Each playbook is a top-level skill (`--skill w-plan` or `--all`). Slash names are `/w-plan`, `/w-build`, `/w-review`.
 
 **Matt Pocock pack** — [mattpocock/skills](https://github.com/mattpocock/skills) on [skills.sh](https://skills.sh/mattpocock/skills). Unprefixed: `/grill-me`, `/grill-with-docs`, `/implement`, `/tdd`, `/code-review`, `/ask-matt`. Run `/setup-matt-pocock-skills` once per clone (issue tracker, labels, docs layout). Durable product facts stay in `PRODUCT.md`; Matt may add `CONTEXT.md`.
 
@@ -23,9 +23,9 @@ Rules override skills. Skills override the model. Indexed docs are advisory. Dai
 pnpm setup:skills
 ```
 
-Full installer options: [basilic-skills README](https://github.com/blockmatic/basilic-skills#agents-and-paths) and [mattpocock/skills](https://github.com/mattpocock/skills). Optional maintainer-local Claude symlink (not committed): add `-a claude-code` **without** `--copy` for each catalog.
+Full installer options: [basilic-skills README](https://github.com/blockmatic/basilic-skills) and [mattpocock/skills](https://github.com/mattpocock/skills).
 
-Root `skills-lock.json` tracks hashes for the two **installed** catalogs only. `pnpm setup:skills` restores the lock after install. Commit the lock after an explicit catalog refresh. Do not commit `.agents/skills/workflow/` or Matt’s folders.
+Root `skills-lock.json` tracks hashes for the two **installed** catalogs only. `pnpm setup:skills` restores the lock after install. Commit the lock after an explicit catalog refresh. Do not commit `.agents/skills/w-*` or Matt’s folders.
 
 ## Three kinds
 
@@ -33,17 +33,15 @@ Root `skills-lock.json` tracks hashes for the two **installed** catalogs only. `
 
 **Patterns** — unversioned craft and guidelines (example: `composition-patterns`, `frontend-design`, `vercel-react`). Same loading as tech skills. Matt owns `/prototype`; this repo does not commit an Emil `prototype` skill.
 
-**Workflow** — install the parent `workflow` skill; nested children are not independent install targets. Leaves live at `.agents/skills/workflow/w-<name>/` or `.agents/skills/workflow/<group>/w-<name>/` (example: `workflow/git/w-commit`). Slash is the leaf name (`/w-plan`). Set `disable-model-invocation: true`. One-line `description`. Not versioned. `/workflow` lists Basilic playbooks and stops; extra tokens (`/workflow plan`) do not dispatch.
+**Workflow** — installed as `.agents/skills/w-<name>/` (example: `w-commit`). Slash is the folder name (`/w-plan`). Set `disable-model-invocation: true`. One-line `description`. Not versioned.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name. Basilic playbook names start with `w-`.
 
 ## Workflow install
 
-The published Basilic package is `workflow`: **42** child playbooks plus three references. Shared `authoring.md`, `git-publish.md`, and `review-dimensions.md` live under `workflow/references/`.
+The published catalog is **42** `/w-*` skills. Git playbooks ship `references/git-publish.md`; `/w-review` ships `references/review-dimensions.md`.
 
-This repository should have one Basilic workflow tree. After a refresh, preserve committed stack skills (setup stashes them), then run `pnpm dlx skills@latest remove --skill b -a cursor -y` if a leftover `b` tree appears.
-
-Packaging validation for Basilic playbooks runs in the catalog with `pnpm validate`.
+After a refresh, preserve committed stack skills (setup stashes them). Catalog validation: `node scripts/validate-catalog.mjs` in [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills).
 
 ## Versioning
 
@@ -52,7 +50,7 @@ Packaging validation for Basilic playbooks runs in the catalog with `pnpm valida
 - Library major change → new folder (`next-v17`). Drop the old folder when the repo no longer uses that major.
 - Stack skill wording → edit the committed tree in this repo.
 - Playbook wording → edit [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills), then refresh the lock.
-- Matt pack updates → `pnpm dlx skills@latest add mattpocock/skills --skill '*' -a cursor --copy -y`, review lock, commit lock only.
+- Matt pack updates → `npx skills@latest add mattpocock/skills --all`, review lock, commit lock only.
 - Pattern and craft skills stay unversioned. Library skills use the npm major (`motion-v13`).
 
 This repo’s Expo app is SDK 57; Expo skills are still `*-v55`. Do not invent empty `*-v57` folders.
@@ -72,8 +70,8 @@ BASILIC_SKILLS_LOCAL=1 pnpm setup:skills
 Refresh hashes (review and commit `skills-lock.json`). Do not run `pnpm setup:skills` afterward if you intend to keep the new hashes.
 
 ```bash
-pnpm dlx skills@latest add blockmatic/basilic-skills --skill workflow -a cursor --copy -y
-pnpm dlx skills@latest add mattpocock/skills --skill '*' -a cursor --copy -y
+npx skills@latest add blockmatic/basilic-skills --all
+npx skills@latest add mattpocock/skills --all
 ```
 
 Do not reformat skill copies to match this repo's Biome rules; `biome.json` excludes `.agents/skills/**`.

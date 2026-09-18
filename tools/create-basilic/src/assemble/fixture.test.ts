@@ -46,7 +46,6 @@ describe('exact-version fixture', () => {
         'scripts/assert-generated-tree.mjs',
         '_first/',
         '.agents/skills/f/',
-        '.agents/skills/workflow/',
         '.github/workflows/pr-title.yml',
         '.github/workflows/scaffold.yml',
         '.github/workflows/release-please.yml',

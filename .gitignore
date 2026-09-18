@@ -77,7 +77,10 @@ tsup.config.bundled_*.mjs
 # Local Claude Code skill symlinks (canonical tree is .agents/skills/ after setup)
 .claude/
 
-# Installed catalogs (workflow + mattpocock/skills) via pnpm setup:skills.
+# Extra agent trees from `skills add --all`
+agent/
+
+# Installed catalogs (basilic-skills /w-* plus mattpocock/skills) via pnpm setup:skills.
 # Committed stack skills are un-ignored below.
 .agents/skills/*
 !.agents/skills/ahooks-v3/

@@ -14,18 +14,18 @@ describe('applyAssembleTransforms', () => {
       JSON.stringify({
         version: 1,
         skills: {
-          workflow: { source: '../basilic-skills', sourceType: 'local' },
+          'w-plan': { source: '../basilic-skills', sourceType: 'local' },
           f: { source: 'blockmatic/first', sourceType: 'github' },
         },
       }),
     )
     applyAssembleTransforms({ destRoot })
     const lock = JSON.parse(readFileSync(join(destRoot, 'skills-lock.json'), 'utf8')) as {
-      skills: { workflow: { source: string; sourceType: string; skillPath: string }; f?: unknown }
+      skills: { 'w-plan': { source: string; sourceType: string; skillPath: string }; f?: unknown }
     }
-    expect(lock.skills.workflow.source).toBe('blockmatic/basilic-skills')
-    expect(lock.skills.workflow.sourceType).toBe('github')
-    expect(lock.skills.workflow.skillPath).toBe('skills/workflow/SKILL.md')
+    expect(lock.skills['w-plan'].source).toBe('blockmatic/basilic-skills')
+    expect(lock.skills['w-plan'].sourceType).toBe('github')
+    expect(lock.skills['w-plan'].skillPath).toBe('skills/w-plan/SKILL.md')
     expect(lock.skills.f).toBeUndefined()
   })
 })
