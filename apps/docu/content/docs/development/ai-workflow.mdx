@@ -1,15 +1,15 @@
 ---
 title: "AI Development Workflow"
-description: "AGENTS.md plus in-repo stack skills, Basilic /w-* playbooks, and mattpocock/skills."
+description: "Recommended daily workflow is mattpocock/skills; Basilic /w-* is a lightweight alternative. AGENTS.md plus in-repo stack skills."
 ---
 
-Root `AGENTS.md` plus `.agents/skills/` is the contract: versioned **tech** skills, unversioned **patterns**, Basilic **workflow** playbooks (`/w-plan`, `/w-build`, `/w-review`), and [mattpocock/skills](https://github.com/mattpocock/skills) (`/grill-me`, `/implement`, `/tdd`). Any agent or IDE that can read those files. If the harness has no `/` menu, open the `SKILL.md`. Do not create a parallel process.
+Root `AGENTS.md` plus `.agents/skills/` is the contract. The **recommended daily workflow** is [Matt Pocock’s skills](https://www.aihero.dev/skills) ([mattpocock/skills](https://github.com/mattpocock/skills)): `/grill-me`, `/implement`, `/tdd`, tutorials, and ongoing maintenance. [Basilic `/w-*` playbooks](https://github.com/blockmatic/basilic-skills) stay installed as a lightweight alternative and as this repo’s git/docs close-out (`/w-commit` … `/w-ship`). Versioned **tech** skills and unversioned **patterns** are committed here. Any agent or IDE that can read those files. If the harness has no `/` menu, open the `SKILL.md`. Do not create a parallel process. Do not `claude plugins install mattpocock-skills` in this repo — `pnpm setup:skills` already copies the pack into `.agents/skills/`.
 
-Cursor slash (`/w-plan` `/w-build` `/w-review` and Matt’s unprefixed names), glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the contract. Catalog, install flags, and the Emil design pack: [Skills](/docs/development/cursor-skills). Optional Cursor indexing/MCP: [Agent setup](/docs/development/cursor-setup).
+Cursor slash, glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the contract. Catalog and install: [Skills](/docs/development/cursor-skills). Optional Cursor indexing/MCP: [Agent setup](/docs/development/cursor-setup).
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
 
-Durable product intent lives in root `PRODUCT.md`. Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. Basilic playbooks come from [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) under `.agents/skills/w-<name>/` (`/w-*`). Matt’s pack is unprefixed. `/w-tdd` is Basilic’s opt-in TDD playbook; `/tdd` is Matt’s. In-app chat is the [demo assistant](/docs/architecture/ai), not this page.
+Durable product intent lives in root `PRODUCT.md`. Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. Matt `/grill-with-docs` may add `CONTEXT.md`; that file does not replace `PRODUCT.md`. `/implement` may commit; `/w-build` verifies locally and does not commit. Publish with `/w-ship`. `/tdd` is Matt; `/w-tdd` is Basilic’s opt-in. In-app chat is the [demo assistant](/docs/architecture/ai), not this page. Tracker-backed Matt skills (`/to-tickets`, `/triage`) need `/setup-matt-pocock-skills` once per clone.
 
 ## Sources of truth
 
@@ -21,8 +21,8 @@ Root `AGENTS.md` holds always-on constraints (behavior, naming, file organizatio
 | --- | --- | --- |
 | **AGENTS.md** | Always-on contract | Cursor and Codex read it; Claude via `@AGENTS.md` in `CLAUDE.md`; Gemini CLI via `GEMINI.md`; Antigravity via `.agents/rules/always.md` |
 | **Glob rules** (`.cursor/rules/*.mdc`) | File-scoped constraints | Cursor attaches by glob. Other harnesses read the matching file when those paths are in scope (table in `AGENTS.md`) |
-| **Workflow skills** (`.agents/skills/w-<name>/`) | Basilic playbooks | Cursor: `/w-<name>`. Otherwise open `SKILL.md` |
-| **Matt Pocock skills** | Engineering/productivity pack | Cursor: `/grill-me`, `/implement`, `/tdd`, … |
+| **Matt Pocock skills** | Recommended daily workflow | Cursor: `/grill-me`, `/implement`, `/tdd`, … |
+| **Basilic playbooks** (`.agents/skills/w-<name>/`) | Lightweight alternative; git close-out | Cursor: `/w-<name>`. Otherwise open `SKILL.md` |
 | **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Stack patterns | Agent loads when relevant; `@` or `/` to force |
 | **Pattern skills** (unversioned) | Craft and guidelines | Agent loads when relevant; `@` or `/` to force |
 | **Indexed docs** | Advisory | Never override `AGENTS.md`, glob rules, or source |
@@ -36,34 +36,32 @@ In Cursor chat, type `/` then the skill name.
 - **Enter** — attach for this message only
 - **Option+Enter** (Alt+Enter) — pin for the session
 
-Invoke Basilic playbooks as `/w-<name>`. Matt’s pack is unprefixed (`/grill-me`, `/implement`, `/tdd`). Prefer Matt for grilling, specs, and red-green TDD; prefer Basilic `/w-plan` `/w-build` `/w-ship` for this repo’s docs/git close-out.
+Recommended invocations are Matt’s unprefixed names. Basilic `/w-*` is the alternative (and the git/docs close-out).
 
-| Task | Invocation | Folder |
+| Task | Recommended | Alternative |
 | --- | --- | --- |
-| Plan a feature | `/w-plan` | `w-plan` |
-| Implement and verify locally | `/w-build` | `w-build` |
-| Review a change | `/w-review` | `w-review` |
-| Diagnose or fix a failure | `/w-debug` | `w-debug` |
-| Run tests and fix failures | `/w-test` | `w-test` |
-| Commit intended changes | `/w-commit` | `w-commit` |
-| Push the intended branch | `/w-push` | `w-push` |
-| Create a described PR | `/w-pr` | `w-pr` |
-| Implement through a described PR | `/w-ship` | `w-ship` |
-| Reflect on completed work | `/w-retro` | `w-retro` |
-| Build or reshape UI | `/w-ui` | `w-ui` |
-| Install or extend a shadcn primitive | `/w-shadcn` | `w-shadcn` |
-| Grill a design | `/grill-me` | Matt pack |
-| Implement from a spec | `/implement` | Matt pack |
-| Red-green TDD | `/tdd` | Matt pack (`/w-tdd` is Basilic’s opt-in) |
-| Explore UI variants | `/prototype` | Matt pack |
+| Sharpen an idea | `/grill-me` | `/w-clarify` |
+| Sharpen with docs | `/grill-with-docs` | `/w-plan` |
+| Foggy multi-session map | `/wayfinder` | `/w-roadmap` then `/w-plan` |
+| Spec from the thread | `/to-spec` | `/w-plan` |
+| Implement from a spec | `/implement` | `/w-build` (verify only; no commit) |
+| Red-green TDD | `/tdd` | `/w-tdd` |
+| Review a change | `/code-review` | `/w-review` |
+| Hard bug | `/diagnosing-bugs` | `/w-debug` |
+| Explore UI variants | `/prototype` | `/w-v0` / `/w-ui` |
+| Commit | — | `/w-commit` |
+| Push | — | `/w-push` |
+| Pull request | — | `/w-pr` |
+| Implement through a described PR | — | `/w-ship` |
+| Reflect | — | `/w-retro` |
 
-`/w-build` ends with verified local changes. `/w-ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/w-diagram`, `/w-docs`, `/w-git-repair`, and `/w-coderabbit`.
+`/w-build` ends with verified local changes and does not commit. `/w-ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/w-diagram`, `/w-docs`, `/w-git-repair`, and `/w-coderabbit`.
 
-Slash names are leaf folders. There are no alias playbooks. Removed names map as follows:
+Slash names are leaf folders. Removed Basilic names map as follows:
 
 | Removed | Current |
 | --- | --- |
-| `/plan` `/build` `/review` `/commit` `/push` `/pr` `/ship` | `/w-*` |
+| `/plan` `/build` `/review` `/commit` `/push` `/pr` `/ship` | `/w-*` (or Matt `/implement` `/code-review` for the daily path) |
 | `/git-commit` | `/w-commit` |
 | `/git-push` | `/w-push` |
 | `/git-create-pr` | `/w-pr` |
@@ -78,18 +76,17 @@ Slash names are leaf folders. There are no alias playbooks. Removed names map as
 | `/issues` | `/w-git-repair` |
 | `/rabbit` | `/w-coderabbit` |
 
-When a harness does not expose the slash menu, read the `SKILL.md` under `.agents/skills/w-<name>/`. Do not create another skills tree. Do not commit `.claude/skills/` copies.
+When a harness does not expose the slash menu, read the `SKILL.md` under `.agents/skills/<name>/`. Do not create another skills tree. Do not commit `.claude/skills/` copies.
 
 ## Typical order
 
 Compose skills. This is not a router.
 
-1. **Plan** — `/w-plan` (or `/grill-with-docs`) for non-trivial work. Read existing implementation and docs; write Goals, Assumptions (3–5), Tasks, Risks, and References (plain paths). Planning alone does not create a branch or implement code.
-2. **Review the plan** — `/w-review-plan` checks scope and ordering. Resolve consequential product or architecture decisions from `PRODUCT.md` and matching MDX/ADRs; continue routine work already authorized.
-3. **Implement** — `/w-build` (or `/implement`) delivers complete slices and runs affected checks. Preserve unrelated changes and generated-source ownership. Update matching docs when behavior changes. Update `PRODUCT.md` only when product facts change.
-4. **Review the change** — `/w-review` (or `/code-review`) returns evidenced findings and verification limits. Reviews stay read-only unless fixes are requested.
-5. **Publish when requested** — `/w-commit`, `/w-push`, or `/w-pr` perform their named actions. `/w-ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/w-commit` may still take task-owned hunks and is the only playbook that owns Conventional Commit format (composers must not paraphrase it). `/w-ship` requires `pnpm qa`. `/w-yolo` does not; it fixes failing or requested local checks without publish. `/w-build` and `/w-commit` update matching MDX and nearest README when behavior or commands change.
-6. **Learn** — `/w-retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
+1. **Shape** — `/grill-me` or `/grill-with-docs`. Use `/to-spec` or `/wayfinder` when the thread needs a spec or a multi-session map. Planning alone does not create a branch. Resolve product facts from `PRODUCT.md` and matching MDX/ADRs.
+2. **Implement** — `/implement` or `/tdd`. Use `/w-build` when you want verified local changes **without** a commit.
+3. **Review** — `/code-review` (or `/w-review`). Reviews stay read-only unless fixes are requested.
+4. **Publish when requested** — `/w-commit`, `/w-push`, or `/w-pr`. `/w-ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/w-commit` owns Conventional Commit format. `/w-ship` requires `pnpm qa`. `/w-yolo` does not; it fixes failing or requested local checks without publish.
+5. **Learn** — `/w-retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
 
 Tech skills (`fastify-v5`, `next-v16`, `vercel-react`) load when relevant. Playbooks do not add another backlog or quality policy.
 
@@ -97,9 +94,9 @@ The generator retains this catalog and rewrites its documentation pointers to th
 
 ## Checklists and evidence
 
-Playbook bodies are numbered instructions (spec frontmatter, no Purpose/Handoff headings). Reviews use installed `review-dimensions.md`: correctness, callers, failure paths, clarity, architecture, security, performance, verification, and docs. Skip dimensions that are out of scope and say so. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
+Playbook bodies are numbered instructions (spec frontmatter, no Purpose/Handoff headings). Basilic reviews use installed `review-dimensions.md`: correctness, callers, failure paths, clarity, architecture, security, performance, verification, and docs. Skip dimensions that are out of scope and say so. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
 
-Shared references live in installed `workflow/references/`: `authoring.md`, `git-publish.md`, and `review-dimensions.md`. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/tdd` (Matt), `/w-tdd`, or repository requirements. `/w-ship` is the only Basilic playbook that requires `pnpm qa`.
+Git playbooks ship `references/git-publish.md`. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/tdd` (Matt), `/w-tdd`, or repository requirements. `/w-ship` is the only Basilic playbook that requires `pnpm qa`.
 
 Further polish is later and small. See [Skills](/docs/development/cursor-skills).
 
@@ -124,7 +121,7 @@ Checked 16 Sep 2026 during the agent-agnostic wiring change:
 
 | Harness | Always-on contract | Skills | Status |
 | --- | --- | --- | --- |
-| Cursor | `AGENTS.md` plus short always-on `.mdc` pointers | `.agents/skills/` slash menu | Documented path `/w-plan` (Basilic) and Matt unprefixed names |
+| Cursor | `AGENTS.md` plus short always-on `.mdc` pointers | `.agents/skills/` slash menu | Documented path Matt unprefixed names and Basilic `/w-*` |
 | Claude Code | `CLAUDE.md` first line `@AGENTS.md` | instructed to read `.agents/skills/` | Not verified (`/context` not run here) |
 | Antigravity | `.agents/rules/always.md` | `.agents/skills/` | Not verified (no AGY session here) |
 | Gemini CLI | `GEMINI.md` | `.agents/skills/` | Not verified |
@@ -135,3 +132,4 @@ Checked 16 Sep 2026 during the agent-agnostic wiring change:
 - [Skills](/docs/development/cursor-skills) — catalog, install flags, inventory
 - [AI](/docs/architecture/ai) — in-shell demo assistant
 - Repo `.cursor/README.md` — Cursor file index (points here for how to work)
+- [AI Skills for Real Engineers](https://www.aihero.dev/skills)

@@ -1,8 +1,9 @@
 # Repository agent instructions
 
 This repository has one shared agent contract: this file plus
-`.agents/skills/` (committed tech/pattern skills, Basilic `/w-*` playbooks, and
-mattpocock/skills). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
+`.agents/skills/` (committed tech/pattern skills, recommended
+[mattpocock/skills](https://www.aihero.dev/skills), and Basilic `/w-*` as a
+lightweight alternative). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
 are adapters. Other harnesses load the same contract through this file (and
 thin stubs) and open `SKILL.md` when there is no `/` menu. Do not create a
 second workflow or a competing source of truth.
@@ -18,12 +19,14 @@ overrides guidance for its subtree and must be read before changing files there.
    read that `.cursor/rules` file (Cursor auto-attaches it).
 3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
    task matches (after `pnpm setup` / `pnpm setup:skills`, which runs
-   `skills add` for `blockmatic/basilic-skills --all` and
-   `mattpocock/skills --all`, then restores `skills-lock.json`).
-   Basilic playbooks live under `.agents/skills/w-<name>/` (`/w-plan`). If the
-   harness has no `/` menu, open the `SKILL.md` file. Catalogs:
-   [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills) and
-   [`mattpocock/skills`](https://github.com/mattpocock/skills).
+   `skills add` for `mattpocock/skills --all` and
+   `blockmatic/basilic-skills --all`, then restores `skills-lock.json`).
+   Recommended daily workflow: [mattpocock/skills](https://www.aihero.dev/skills)
+   (`/grill-me`, `/implement`, `/tdd`). Basilic `/w-*` lives under
+   `.agents/skills/w-<name>/` as a lightweight alternative and git close-out.
+   If the harness has no `/` menu, open the `SKILL.md` file. Catalogs:
+   [`mattpocock/skills`](https://github.com/mattpocock/skills) and
+   [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
 4. Read the matching technical documentation under
    [`apps/docu/content/docs/`](apps/docu/content/docs/) before changing an
    architecture, convention, command, or documented behavior.
@@ -39,9 +42,10 @@ and tests instead of relying on memory or assuming that documentation is current
 
 - Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `PRODUCT.md`.
   Visual language: `DESIGN.md`. **Read** the matching file. Do not `@`-attach
-  docs from rules or skills. Playbooks: `.agents/skills/w-<name>/` (`/w-plan`,
-  `/w-build`, `/w-review`). Matt pack:
-  `/grill-me`, `/implement`, `/tdd`.
+  docs from rules or skills. Recommended workflow: Matt pack
+  (`/grill-me`, `/implement`, `/tdd`). Basilic `/w-*` is the lightweight
+  alternative and git close-out (`/w-commit` … `/w-ship`). `/w-build` does not
+  commit; `/implement` may. Publish with `/w-ship`.
 - After features/fixes: same change, update that MDX and nearest README if
   behavior, commands, or conventions changed; patch `PRODUCT.md` if goals,
   feature map, or horizons changed; glob `.mdc` only if a Cursor-scoped
@@ -227,8 +231,8 @@ reasonable inferences, assumptions, and unresolved questions.
 
 These are loaders and UX, not a second contract.
 
-- **Cursor:** glob auto-attach for `.cursor/rules`; slash playbooks (`/w-plan`,
-  `/w-build`, `/w-review`); MCP in `.cursor/mcp.json`.
+- **Cursor:** glob auto-attach for `.cursor/rules`; slash skills (Matt
+  `/grill-me` `/implement` `/tdd`; Basilic `/w-*`); MCP in `.cursor/mcp.json`.
 - **Claude Code:** `CLAUDE.md` imports this file with `@AGENTS.md`. Project
   skills are `.agents/skills/` (not committed `.claude/skills/`).
 - **Antigravity:** workspace rules in `.agents/rules/`; skills in

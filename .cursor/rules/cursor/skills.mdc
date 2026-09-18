@@ -10,7 +10,8 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 ## Three kinds
 - **Tech** (`<topic>-v<major>/`, e.g. `fastify-v5`): committed in this repo. Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions
 - **Patterns** (unversioned, e.g. `composition-patterns`, `frontend-design`): committed. Agent-invocable craft and guidelines
-- **Workflow** (`.agents/skills/w-<name>/`): slash-only, installed from basilic-skills. Set `disable-model-invocation: true`. One-line `description`.
+- **Matt workflow**: recommended daily pack from mattpocock/skills (`/grill-me`, `/implement`, `/tdd`). Installed, not committed
+- **Basilic `/w-*`** (`.agents/skills/w-<name>/`): lightweight alternative and git close-out. Slash-only, installed from basilic-skills. Set `disable-model-invocation: true`. One-line `description`.
 
 ## Principles
 - One primary topic per skill; independent versions = separate skills
@@ -25,6 +26,6 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 ## Hierarchy
 Rules (constraints) > skills (patterns) > model
 
-Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Lock pins `blockmatic/basilic-skills` (`w-*`) and `mattpocock/skills`. Stack skills are committed; list: `scripts/owned-agent-skills.txt`.
+Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Lock pins `mattpocock/skills` and `blockmatic/basilic-skills` (`w-*`). Stack skills are committed; list: `scripts/owned-agent-skills.txt`. Recommended daily workflow: https://www.aihero.dev/skills.
 
 Playbook bodies are numbered instructions (spec frontmatter); keep simple playbooks short. Git playbooks carry `references/git-publish.md`.
