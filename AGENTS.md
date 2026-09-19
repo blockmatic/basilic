@@ -4,9 +4,9 @@ This repository has one shared agent contract: this file plus
 `.agents/skills/` (committed tech/pattern skills, recommended
 [mattpocock/skills](https://www.aihero.dev/skills), and Basilic `/w-*` as a
 lightweight alternative). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
-are adapters. Other harnesses load the same contract through this file (and
-thin stubs) and open `SKILL.md` when there is no `/` menu. Do not create a
-second workflow or a competing source of truth.
+are adapters. Other harnesses load the same contract through this file and
+open `SKILL.md` when there is no `/` menu. Do not create a second workflow
+or a competing source of truth.
 
 These instructions apply to the whole monorepo. A nested `AGENTS.md` adds or
 overrides guidance for its subtree and must be read before changing files there.
@@ -233,11 +233,11 @@ These are loaders and UX, not a second contract.
 
 - **Cursor:** glob auto-attach for `.cursor/rules`; slash skills (Matt
   `/grill-me` `/implement` `/tdd`; Basilic `/w-*`); MCP in `.cursor/mcp.json`.
-- **Claude Code:** `CLAUDE.md` imports this file with `@AGENTS.md`. Project
-  skills are `.agents/skills/` (not committed `.claude/skills/`).
+- **Claude Code:** reads this file. Project skills are `.agents/skills/`
+  (not committed `.claude/skills/`).
 - **Antigravity:** workspace rules in `.agents/rules/`; skills in
   `.agents/skills/`.
-- **Gemini CLI:** `GEMINI.md` points here. Skills share `.agents/skills/`.
+- **Gemini CLI:** reads this file. Skills share `.agents/skills/`.
 
 Full workflow details:
 [`apps/docu/content/docs/development/ai-workflow.mdx`](apps/docu/content/docs/development/ai-workflow.mdx).

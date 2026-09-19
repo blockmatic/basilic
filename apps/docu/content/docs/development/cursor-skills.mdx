@@ -5,7 +5,7 @@ description: "Committed stack skills, recommended mattpocock/skills workflow, an
 
 Project skills live under `.agents/skills/`. **Tech and pattern** skills are committed in this repo (list in `scripts/owned-agent-skills.txt`). The recommended daily workflow is [mattpocock/skills](https://www.aihero.dev/skills); Basilic `/w-*` playbooks are a lightweight alternative. Both catalogs are installed by `pnpm setup:skills` and stay gitignored. `skills-lock.json` pins **exactly two** GitHub catalogs: `mattpocock/skills` and `blockmatic/basilic-skills` (`w-*`). Setup restores the lock after install so hashes stay pinned. It fails on any other GitHub catalog or on `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks come from `../basilic-skills`). Do not use `skills experimental_install`. Do not also install Matt’s Claude Code plugin — that duplicates skills.sh copies.
 
-The [skills CLI](https://github.com/vercel-labs/skills) writes the tree for any agent that reads Agent Skills. This repo’s install is `--all` into `.agents/skills/`. Claude Code’s default dir is `.claude/skills/`; do not commit that tree. `CLAUDE.md` tells Claude to read `.agents/skills/` instead.
+The [skills CLI](https://github.com/vercel-labs/skills) writes the tree for any agent that reads Agent Skills. This repo’s install is `--all` into `.agents/skills/`. Claude Code’s default dir is `.claude/skills/`; do not commit that tree. Project skills stay in `.agents/skills/`.
 
 Cursor also reads `.cursor/skills/` if present; this repo does not commit that tree. Cursor requires `name` in each `SKILL.md` to match the folder (`fastify-v5`, not `fastify`).
 

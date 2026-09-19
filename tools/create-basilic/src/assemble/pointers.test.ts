@@ -17,13 +17,4 @@ describe('rewriteFilePointers', () => {
     expect(next).not.toContain('_first/')
     expect(next).toContain('docs/basilic/testing/product-ready.md')
   })
-
-  it('rewrites GEMINI.md the same way as AGENTS.md', () => {
-    const next = rewriteFilePointers({
-      path: 'GEMINI.md',
-      content: 'See apps/docu/content/docs/development/ai-workflow.mdx',
-    })
-    expect(next).toContain('docs/basilic/development/ai-workflow.mdx')
-    expect(next).not.toContain('apps/docu/content/docs/')
-  })
 })

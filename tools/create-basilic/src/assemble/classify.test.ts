@@ -20,7 +20,6 @@ describe('classifyPath', () => {
 
   it('transforms agent and app surfaces', () => {
     expect(classifyPath({ path: 'AGENTS.md', manifest })?.kind).toBe('transform')
-    expect(classifyPath({ path: 'GEMINI.md', manifest })?.kind).toBe('transform')
     expect(classifyPath({ path: 'apps/web/app/layout.tsx', manifest })?.kind).toBe('transform')
   })
 

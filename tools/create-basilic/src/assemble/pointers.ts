@@ -2,16 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { listFiles } from '../digest.js'
 
-const pointerGlobs = [
-  'AGENTS.md',
-  'CLAUDE.md',
-  'GEMINI.md',
-  '.cursor/rules/',
-  '.agents/',
-  'apps/',
-  'packages/',
-  'scripts/',
-]
+const pointerGlobs = ['AGENTS.md', '.cursor/rules/', '.agents/', 'apps/', 'packages/', 'scripts/']
 
 const skipRewrite = /\.(png|jpe?g|gif|webp|ico|woff2?|ttf|eot|zip|gz|tgz|wasm|mp4|sqlite3?)$/i
 

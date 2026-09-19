@@ -19,7 +19,7 @@ Root `AGENTS.md` holds always-on constraints (behavior, naming, file organizatio
 
 | Layer | Role | How it loads |
 | --- | --- | --- |
-| **AGENTS.md** | Always-on contract | Cursor and Codex read it; Claude via `@AGENTS.md` in `CLAUDE.md`; Gemini CLI via `GEMINI.md`; Antigravity via `.agents/rules/always.md` |
+| **AGENTS.md** | Always-on contract | Cursor, Codex, Claude Code, and Gemini CLI read it; Antigravity via `.agents/rules/always.md` |
 | **Glob rules** (`.cursor/rules/*.mdc`) | File-scoped constraints | Cursor attaches by glob. Other harnesses read the matching file when those paths are in scope (table in `AGENTS.md`) |
 | **Matt Pocock skills** | Recommended daily workflow | Cursor: `/grill-me`, `/implement`, `/tdd`, … |
 | **Basilic playbooks** (`.agents/skills/w-<name>/`) | Lightweight alternative; git close-out | Cursor: `/w-<name>`. Otherwise open `SKILL.md` |
@@ -122,9 +122,9 @@ Checked 16 Sep 2026 during the agent-agnostic wiring change:
 | Harness | Always-on contract | Skills | Status |
 | --- | --- | --- | --- |
 | Cursor | `AGENTS.md` plus short always-on `.mdc` pointers | `.agents/skills/` slash menu | Documented path Matt unprefixed names and Basilic `/w-*` |
-| Claude Code | `CLAUDE.md` first line `@AGENTS.md` | instructed to read `.agents/skills/` | Not verified (`/context` not run here) |
+| Claude Code | `AGENTS.md` | `.agents/skills/` | Not verified (`/context` not run here) |
 | Antigravity | `.agents/rules/always.md` | `.agents/skills/` | Not verified (no AGY session here) |
-| Gemini CLI | `GEMINI.md` | `.agents/skills/` | Not verified |
+| Gemini CLI | `AGENTS.md` | `.agents/skills/` | Not verified |
 
 ## Related
 

@@ -28,8 +28,6 @@ const forbidden = [
 
 const required = [
   'AGENTS.md',
-  'CLAUDE.md',
-  'GEMINI.md',
   '.agents/rules/always.md',
   'LICENSE',
   'package.json',

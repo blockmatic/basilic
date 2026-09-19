@@ -31,8 +31,6 @@ export const forbiddenGeneratedPaths = [
 
 export const agentReadPaths = [
   'AGENTS.md',
-  'CLAUDE.md',
-  'GEMINI.md',
   '.agents/rules/always.md',
   '.cursor/rules/base/general.mdc',
   '.cursor/rules/base/file-organization.mdc',

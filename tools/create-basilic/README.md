@@ -26,7 +26,7 @@ pnpm dev
 
 Local starter docs: `docs/basilic/`. Hosted: [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready).
 
-Generated projects retain committed stack skills and `skills-lock.json` pinned to `mattpocock/skills` (recommended daily workflow) and `blockmatic/basilic-skills` (`w-*` alternative); `pnpm setup` installs those catalogs into `.agents/skills/` and restores the lock. Documentation pointers are rewritten to the local snapshot. Fill root `PRODUCT.md` for the new product. Agent stubs (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/rules/always.md`) ship with the tree.
+Generated projects retain committed stack skills and `skills-lock.json` pinned to `mattpocock/skills` (recommended daily workflow) and `blockmatic/basilic-skills` (`w-*` alternative); `pnpm setup` installs those catalogs into `.agents/skills/` and restores the lock. Documentation pointers are rewritten to the local snapshot. Fill root `PRODUCT.md` for the new product. The agent contract (`AGENTS.md`, `.agents/rules/always.md`) ships with the tree.
 
 The API CLI remains `packages/cli` (`basilic` binary). This package is only the project generator.
 
