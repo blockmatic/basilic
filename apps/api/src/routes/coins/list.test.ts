@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { getOrCreateSession } from '../../../test/utils/auth-helper.js'
-import { mockMarketRows } from '../../lib/coins/index.js'
+import { fixtureQuotes } from '../../lib/coins/index.js'
 import { fastify } from './coins.spec.js'
 
 describe('GET /coins', () => {
@@ -37,8 +37,8 @@ describe('GET /coins', () => {
       coins: { id: string }[]
       sync: { source: string; fetchedAt: string | null; lastError: string | null }
     }
-    expect(body.coins.map(coin => coin.id)).toEqual(mockMarketRows.map(row => row.id))
-    expect(body.sync).toEqual({ source: 'mock', fetchedAt: null, lastError: null })
+    expect(body.coins.map(coin => coin.id)).toEqual(fixtureQuotes.map(row => row.id))
+    expect(body.sync).toEqual({ source: 'fixture', fetchedAt: null, lastError: null })
   })
 
   it('accepts the generated client trailing slash', async () => {

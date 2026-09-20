@@ -1,24 +1,34 @@
 import { count, eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
 import { getDb } from '../../db/index.js'
-import { coinMarkets, coinSync } from '../../db/schema/index.js'
-import { mockMarketRows, seedMockMarkets } from './seed.js'
+import { assetMarkets, assetNetworks, assetProviders, assets } from '../../db/schema/index.js'
+import { fixtureQuotes } from './fixture.js'
+import { seedIdentity } from './seed.js'
 
-describe('seedMockMarkets', () => {
-  it('upserts fixture rows without duplicating', async () => {
+describe('seedIdentity', () => {
+  it('upserts identity rows without duplicating', async () => {
     const db = await getDb()
-    await seedMockMarkets({ db })
-    await seedMockMarkets({ db })
+    await seedIdentity({ db })
+    await seedIdentity({ db })
 
-    const [row] = await db.select({ n: count() }).from(coinMarkets)
-    expect(row?.n).toBeGreaterThanOrEqual(6)
-    expect(row?.n).toBe(mockMarketRows.length)
+    const [row] = await db.select({ n: count() }).from(assets)
+    expect(row?.n).toBe(fixtureQuotes.length)
 
-    const ids = (await db.select({ id: coinMarkets.id }).from(coinMarkets)).map(item => item.id)
+    const ids = (await db.select({ id: assets.id }).from(assets)).map(item => item.id)
     expect(ids).toEqual(expect.arrayContaining(['bitcoin', 'ethereum', 'solana']))
 
-    const [sync] = await db.select().from(coinSync).where(eq(coinSync.id, 'global'))
-    expect(sync?.source).toBe('mock')
-    expect(sync?.fetchedAt).toBeNull()
+    const [providers] = await db.select({ n: count() }).from(assetProviders)
+    expect(providers?.n).toBe(fixtureQuotes.length)
+
+    const [markets] = await db.select({ n: count() }).from(assetMarkets)
+    expect(markets?.n).toBe(fixtureQuotes.length)
+
+    const [native] = await db
+      .select()
+      .from(assetNetworks)
+      .where(eq(assetNetworks.id, 'eip155:1:native'))
+    expect(native?.assetId).toBe('ethereum')
+    expect(native?.isNative).toBe(true)
+    expect(native?.chainCaip2).toBe('eip155:1')
   })
 })
