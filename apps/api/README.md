@@ -1,6 +1,6 @@
 # API
 
-Type-safe REST API built with Fastify & OpenAPI. Routes in `src/routes/` are the source of truth; OpenAPI spec is generated from them. Clients generated via Hey API in `@repo/core`. `GET /` negotiates HTML vs markdown and unknown paths are real 404s. Unauthenticated discovery files (`/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/.well-known/api-catalog`, `/.well-known/oauth-protected-resource`) are listed in [API architecture](https://basilic-docs.vercel.app/docs/architecture/api).
+Type-safe REST API built with Fastify & OpenAPI. Routes in `src/routes/` are the source of truth; OpenAPI spec is generated from them. Clients generated via Hey API in `@repo/core`. `GET /` negotiates HTML vs markdown and unknown paths are real 404s. Live OpenAPI is `GET /openapi.json`. Unauthenticated discovery files (`/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/.well-known/api-catalog`, `/.well-known/oauth-protected-resource`) are listed in [API architecture](https://basilic-docs.vercel.app/docs/architecture/api).
 
 ## Development
 

@@ -13,6 +13,7 @@ describe('discovery OpenAPI hide', () => {
     expect(paths).not.toContain('/robots.txt')
     expect(paths).not.toContain('/sitemap.xml')
     expect(paths).not.toContain('/llms.txt')
+    expect(paths).not.toContain('/openapi.json')
     expect(paths.some(path => path.includes('well-known'))).toBe(false)
   })
 })

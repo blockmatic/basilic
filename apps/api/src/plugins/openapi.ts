@@ -1,23 +1,10 @@
 import swagger from '@fastify/swagger'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
-import { openapiSecurity } from '../lib/openapi-security.js'
+import { getOpenApiDocumentOptions } from '../lib/openapi-spec.js'
 
 const openapi: FastifyPluginAsync = async fastify => {
-  await fastify.register(swagger, {
-    openapi: {
-      info: {
-        title: 'Basilic API',
-        version: '1.0.0',
-        description: 'Basilic API documentation',
-      },
-      ...openapiSecurity,
-    },
-  })
-
-  // Note: Scalar UI is now served via custom route at /reference
-  // The Scalar plugin is not registered here to allow custom HTML wrapper with login
-  // OpenAPI JSON is served at /reference/openapi.json via custom route
+  await fastify.register(swagger, getOpenApiDocumentOptions())
 }
 
 export default fp(openapi, {

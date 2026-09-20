@@ -4,7 +4,6 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import swagger from '@fastify/swagger'
 import Fastify from 'fastify'
-import { openapiSecurity } from '../src/lib/openapi-security.js'
 
 const scriptPath = fileURLToPath(import.meta.url)
 const scriptDir = dirname(scriptPath)
@@ -103,9 +102,11 @@ async function generateOpenAPI() {
     ALLOWED_ORIGINS: 'https://openapi-gen.example',
     APP_NAME: 'OpenAPI Generation',
     WEB_APP_URL: 'https://openapi-gen.example',
+    DOCS_SITE_URL: 'https://basilic-docs.vercel.app',
   }
   for (const [k, v] of Object.entries(stubs)) if (!process.env[k]) process.env[k] = v
 
+  const { getOpenApiDocumentOptions } = await import('../src/lib/openapi-spec.js')
   const { default: app } = await import('../src/app.js')
 
   // Create Fastify instance (same as production)
@@ -117,16 +118,7 @@ async function generateOpenAPI() {
   try {
     // Register @fastify/swagger FIRST (before routes)
     // Swagger needs to scan routes as they're registered
-    await fastify.register(swagger, {
-      openapi: {
-        info: {
-          title: 'Basilic API',
-          version: '1.0.0',
-          description: 'Basilic API documentation',
-        },
-        ...openapiSecurity,
-      },
-    })
+    await fastify.register(swagger, getOpenApiDocumentOptions())
 
     // Register app (which autoloads plugins + routes)
     // Swagger will automatically scan route schemas as they're registered

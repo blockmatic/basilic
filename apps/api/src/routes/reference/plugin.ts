@@ -1,15 +1,15 @@
 import type { FastifyPluginAsync } from 'fastify'
 import {
   applyAgentDiscoveryHeaders,
+  getRequestOrigin,
   negotiateAccept,
   renderReferenceMarkdown,
 } from '../../lib/agent/index.js'
-import { env } from '../../lib/env.js'
+import { sendOpenApiDocument } from '../../lib/openapi-document.js'
 import { verifyMagicLinkAndIssueToken } from '../auth/magiclink/verify.js'
 import { getReferenceHtml } from './template.js'
 
 const referenceRoutes: FastifyPluginAsync = async fastify => {
-  // Serve OpenAPI JSON
   fastify.get(
     '/openapi.json',
     {
@@ -19,13 +19,9 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
         security: [],
       },
     },
-    async (_request, reply) => {
-      const openApiDoc = fastify.swagger()
-      return reply.send(openApiDoc)
-    },
+    async (request, reply) => sendOpenApiDocument({ fastify, request, reply }),
   )
 
-  // Serve custom HTML page with Scalar UI and login button
   fastify.get(
     '/',
     {
@@ -36,13 +32,10 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      // Use request.headers.host which includes port if present
-      const host = request.headers.host || `${request.hostname}:${env.PORT}`
-      const apiUrl = `${request.protocol}://${host}`
-      const openApiUrl = `${apiUrl}/reference/openapi.json`
-      const callbackUrl = `${apiUrl}/reference`
+      const origin = getRequestOrigin({ request })
+      const openApiUrl = `${origin}/openapi.json`
+      const callbackUrl = `${origin}/reference`
 
-      // Magic link callback: token+verificationId in URL → verify server-side; verificationId only → code form (client-side)
       const query = request.query as { token?: string; verificationId?: string }
       const { token: urlToken, verificationId } = query
       const wantsMarkdown =
@@ -69,7 +62,7 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
       }
 
       const html = getReferenceHtml({
-        apiUrl,
+        apiUrl: origin,
         openApiUrl,
         callbackUrl,
         jwtToken,

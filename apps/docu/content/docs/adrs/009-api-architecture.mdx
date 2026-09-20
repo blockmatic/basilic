@@ -205,7 +205,7 @@ Frontend consumes the API via generated clients:
 ### OpenAPI Integration
 
 - **OpenAPI 3.0 specs**: Source of truth for API contracts
-- **Programmatic access**: Served at `/reference/openapi.json`
+- **Programmatic access**: Served at `/openapi.json` (`/reference/openapi.json` remains an alias)
 - **Interactive documentation**: Scalar UI at `/reference`
 - **MCP integration**: OpenAPI specs enable AI agents to interact with API via Model Context Protocol
 - **Multi-language clients**: OpenAPI specs can generate clients in Python, Go, Rust, etc. using standard generators
@@ -233,7 +233,7 @@ Frontend consumes the API via generated clients:
 pnpm --filter @repo/core generate
 
 # For other languages, generate from OpenAPI spec
-curl https://api.your-domain.com/reference/openapi.json > openapi.json
+curl https://api.your-domain.com/openapi.json > openapi.json
 oapi-codegen -package client openapi.json > client.go
 ```
 
