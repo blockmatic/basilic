@@ -70,25 +70,28 @@ export async function getMarkets({
 export async function getQuote({ assetId, vs, mapping }: GetQuoteArgs): Promise<Quote> {
   const vsCurrency = vs ?? 'usd'
   const binanceSymbol = mapping?.binanceSymbol
-  if (binanceSymbol && quoteProvider({ binanceSymbol }) === 'binance') {
-    if (!binanceQuoteMatchesVs({ symbol: binanceSymbol, vs: vsCurrency }))
-      logBinanceSkip({ assetId, reason: 'quote currency mismatch' })
-    else {
-      const fromBinance = await withVendorCache({
-        key: cacheKey('getQuote', { assetId, vs: vsCurrency, provider: 'binance', binanceSymbol }),
-        ttlMs: marketsQuoteCacheMs,
-        vendor: 'binance',
-        load: async () =>
-          tickerToQuote({
-            assetId,
-            vs: vsCurrency,
-            ticker: await fetchBinanceTicker({ symbol: binanceSymbol }),
-          }),
-        fallback: () => fixtureQuote({ assetId, vs: vsCurrency }),
-      })
-      if (fromBinance.provider === 'binance') return fromBinance
-      logBinanceSkip({ assetId, reason: 'binance miss' })
-    }
+  const useBinance = Boolean(binanceSymbol) && quoteProvider({ binanceSymbol }) === 'binance'
+  if (
+    useBinance &&
+    binanceSymbol &&
+    binanceQuoteMatchesVs({ symbol: binanceSymbol, vs: vsCurrency })
+  ) {
+    const fromBinance = await withVendorCache({
+      key: cacheKey('getQuote', { assetId, vs: vsCurrency, provider: 'binance', binanceSymbol }),
+      ttlMs: marketsQuoteCacheMs,
+      vendor: 'binance',
+      load: async () =>
+        tickerToQuote({
+          assetId,
+          vs: vsCurrency,
+          ticker: await fetchBinanceTicker({ symbol: binanceSymbol }),
+        }),
+      fallback: () => fixtureQuote({ assetId, vs: vsCurrency }),
+    })
+    if (fromBinance.provider === 'binance') return fromBinance
+    logBinanceSkip({ assetId, reason: 'binance miss' })
+  } else if (useBinance) {
+    logBinanceSkip({ assetId, reason: 'quote currency mismatch' })
   }
 
   return withVendorCache({
