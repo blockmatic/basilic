@@ -25,7 +25,7 @@ pnpm run setup
 
 This repository is for contributing to Basilic. Generated apps use `docs/basilic/` instead of `apps/docu` (already in the bullets below). [After fork](/docs/development/after-fork) lists what to replace when the generated copy is your product.
 
-`setup` installs dependencies, git hooks, **agent skills** (`mattpocock/skills` plus `blockmatic/basilic-skills` `/w-*`; lockfile hashes stay pinned), security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
+`setup` installs dependencies, git hooks, **agent skills** (`blockmatic/basilic-skills` `/w-*`; lockfile hashes stay pinned), security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
 ```bash
 pnpm --filter @repo/api db:start
@@ -49,7 +49,7 @@ Local Postgres is Supabase CLI. `db:start` then **`pnpm reset`** (repo root) bef
 - [Product Ready](/docs/testing/product-ready) — generate-and-run bar (not CI green)
 - [After fork](/docs/development/after-fork) — generator vs fork, identity, CI secrets
 - [Dev Environments](/docs/development/dev-environments) — ports, remote, Expo
-- [AI Workflow](/docs/development/ai-workflow) — recommended Matt pack; Basilic `/w-*` alternative; not in-app chat
+- [AI Workflow](/docs/development/ai-workflow) — Basilic `/w-*` daily path; not in-app chat
 - [Agent setup](/docs/development/cursor-setup) — optional Cursor extras (indexed docs, MCP)
 - [Skills](/docs/development/cursor-skills) — tech skills catalog and skills CLI
 - [Architecture](/docs/architecture) — including the [demo assistant](/docs/architecture/ai)

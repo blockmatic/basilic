@@ -1,9 +1,9 @@
 ---
 title: "Skills"
-description: "Committed stack skills, recommended mattpocock/skills workflow, and Basilic /w-* as a lightweight alternative."
+description: "Committed stack skills and Basilic /w-* daily playbooks."
 ---
 
-Project skills live under `.agents/skills/`. **Tech and pattern** skills are committed in this repo (list in `scripts/owned-agent-skills.txt`). The recommended daily workflow is [mattpocock/skills](https://www.aihero.dev/skills); Basilic `/w-*` playbooks are a lightweight alternative. Both catalogs are installed by `pnpm setup:skills` and stay gitignored. `skills-lock.json` pins **exactly two** GitHub catalogs: `mattpocock/skills` and `blockmatic/basilic-skills` (`w-*`). Setup restores the lock after install so hashes stay pinned. It fails on any other GitHub catalog or on `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks come from `../basilic-skills`). Do not use `skills experimental_install`. Do not also install Matt’s Claude Code plugin — that duplicates skills.sh copies.
+Project skills live under `.agents/skills/`. **Tech and pattern** skills are committed in this repo (list in `scripts/owned-agent-skills.txt`). Daily workflow is [Basilic `/w-*` playbooks](https://github.com/blockmatic/basilic-skills). `pnpm setup:skills` installs that catalog and stays gitignored. `skills-lock.json` pins **one** GitHub catalog: `blockmatic/basilic-skills` (`w-*`). Setup restores the lock after install so hashes stay pinned. It fails on any other GitHub catalog or on `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks come from `../basilic-skills`). Do not use `skills experimental_install`.
 
 The [skills CLI](https://github.com/vercel-labs/skills) writes the tree for any agent that reads Agent Skills. This repo’s install is `--all` into `.agents/skills/`. Claude Code’s default dir is `.claude/skills/`; do not commit that tree. Project skills stay in `.agents/skills/`.
 
@@ -13,37 +13,35 @@ Rules override skills. Skills override the model. Indexed docs are advisory. Dai
 
 ## Catalogs
 
-**Matt Pocock pack (recommended)** — [AI Skills for Real Engineers](https://www.aihero.dev/skills) / [mattpocock/skills](https://github.com/mattpocock/skills) on [skills.sh](https://skills.sh/mattpocock/skills). Daily path: `/grill-me`, `/grill-with-docs`, `/implement`, `/tdd`, `/code-review`, `/ask-matt`. Run `/setup-matt-pocock-skills` once per clone (issue tracker, labels, docs layout). Matt may add `CONTEXT.md`.
-
-**Basilic playbooks (lightweight alternative)** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Each playbook is a top-level skill (`--skill w-plan` or `--all`). Slash names are `/w-plan`, `/w-build`, `/w-review`. This repo uses them for git/docs close-out (`/w-commit` … `/w-ship`).
+**Basilic playbooks** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Each playbook is a top-level skill (`--skill w-plan` or `--all`). Slash names are `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-review`. This repo uses them for the daily path and for git/docs close-out (`/w-commit` … `/w-ship`).
 
 **Stack skills** — committed here (`next-v16`, `fastify-v5`, …). Not installable from basilic-skills.
 
 ## What’s in git
 
-**48** tech/pattern skills are committed under `.agents/skills/` (list: `scripts/owned-agent-skills.txt`). `.gitignore` ignores `.agents/skills/*` then un-ignores those owned dirs. Installed `w-*` playbooks and Matt folders stay gitignored. A setup or lock PR does not list `.agents/skills/**` because those trees were already committed.
+**48** tech/pattern skills are committed under `.agents/skills/` (list: `scripts/owned-agent-skills.txt`). `.gitignore` ignores `.agents/skills/*` then un-ignores those owned dirs. Installed `w-*` playbooks stay gitignored. A setup or lock PR does not list `.agents/skills/**` because those trees were already committed.
 
 ```bash
 pnpm setup:skills
 ```
 
-Full installer options: [mattpocock/skills](https://github.com/mattpocock/skills) and [basilic-skills README](https://github.com/blockmatic/basilic-skills).
+Full installer options: [basilic-skills README](https://github.com/blockmatic/basilic-skills).
 
-Root `skills-lock.json` tracks hashes for the two **installed** catalogs only. `pnpm setup:skills` restores the lock after install. Commit the lock after an explicit catalog refresh. Do not commit `.agents/skills/w-*` or Matt’s folders.
+Root `skills-lock.json` tracks hashes for the **installed** catalog only. `pnpm setup:skills` restores the lock after install. Commit the lock after an explicit catalog refresh. Do not commit `.agents/skills/w-*`.
 
 ## Three kinds
 
 **Tech** — committed `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
 
-**Patterns** — unversioned craft and guidelines (example: `composition-patterns`, `frontend-design`, `vercel-react`). Same loading as tech skills. Matt owns `/prototype`; this repo does not commit an Emil `prototype` skill.
+**Patterns** — unversioned craft and guidelines (example: `composition-patterns`, `frontend-design`, `vercel-react`). Same loading as tech skills. This repo does not commit an Emil `prototype` skill.
 
-**Workflow** — recommended daily path is Matt’s pack (unprefixed names). Basilic playbooks install as `.agents/skills/w-<name>/` (example: `w-commit`). Slash is the folder name (`/w-plan`). Set `disable-model-invocation: true`. One-line `description`. Not versioned.
+**Workflow** — daily path is Basilic playbooks at `.agents/skills/w-<name>/` (example: `w-commit`). Slash is the folder name (`/w-plan`). Set `disable-model-invocation: true`. One-line `description`. Not versioned.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name. Basilic playbook names start with `w-`.
 
 ## Workflow install
 
-The published catalog is **42** `/w-*` skills. Git playbooks ship `references/git-publish.md`; `/w-review` ships `references/review-dimensions.md`; `/w-plan` ships `references/plan-output.md`. `/w-plan` explores via `/w-council` first. Git, TDD, lint, generate, and publish stay single-writer.
+The published catalog is **44** `/w-*` skills. Git playbooks ship `references/git-publish.md`; `/w-review` ships `references/review-dimensions.md`; `/w-plan` ships `references/plan-output.md`; `/w-grill` ships `references/round-format.md`; `/w-wayfinder` ships `references/map-output.md`. `/w-plan` explores via `/w-council` first. Git, TDD, lint, generate, and publish stay single-writer.
 
 After a refresh, preserve committed stack skills (setup stashes them). Catalog validation: `node scripts/validate-catalog.mjs` in [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills).
 
@@ -54,7 +52,6 @@ After a refresh, preserve committed stack skills (setup stashes them). Catalog v
 - Library major change → new folder (`next-v17`). Drop the old folder when the repo no longer uses that major.
 - Stack skill wording → edit the committed tree in this repo.
 - Playbook wording → edit [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills), then refresh the lock.
-- Matt pack updates → `npx skills@latest add mattpocock/skills --all`, review lock, commit lock only.
 - Pattern and craft skills stay unversioned. Library skills use the npm major (`motion-v13`).
 
 This repo’s Expo app is SDK 57; Expo skills are still `*-v55`. Do not invent empty `*-v57` folders.
@@ -75,7 +72,6 @@ Refresh hashes (review and commit `skills-lock.json`). Do not run `pnpm setup:sk
 
 ```bash
 npx skills@latest add blockmatic/basilic-skills --all
-npx skills@latest add mattpocock/skills --all
 ```
 
 Do not reformat skill copies to match this repo's Biome rules; `biome.json` excludes `.agents/skills/**`.
@@ -121,7 +117,7 @@ This product uses Base UI (`base-vega`, `render`, `data-slot` / `data-open`). Co
 
 UI craft also comes from [emilkowalski/skills](https://github.com/emilkowalski/skills). Project tokens in `DESIGN.md` still win.
 
-New or reshaped UI: `/w-ui`. New shadcn primitive: `/w-shadcn` (follow `shadcn-v3`). Visual direction only: `@frontend-design`. Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/w-a11y`. Runtime bugs: `/w-debug-browser`. Explore variants: `/prototype` (Matt). Motion: `@animate` (web) or `@animate-expo` (native). Toasts: `@ask-sonner`. Do not run `@pick-ui-library` to replace shadcn in this repo.
+New or reshaped UI: `/w-ui`. New shadcn primitive: `/w-shadcn` (follow `shadcn-v3`). Visual direction only: `@frontend-design`. Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/w-a11y`. Runtime bugs: `/w-debug-browser`. Explore variants: `/w-v0` or `/w-ui`. Motion: `@animate` (web) or `@animate-expo` (native). Toasts: `@ask-sonner`. Do not run `@pick-ui-library` to replace shadcn in this repo.
 
 ## Related
 
@@ -129,6 +125,4 @@ New or reshaped UI: `/w-ui`. New shadcn primitive: `/w-shadcn` (follow `shadcn-v
 - [Agent setup](/docs/development/cursor-setup)
 - Repo [`.cursor/README.md`](https://github.com/blockmatic/basilic/blob/main/.cursor/README.md)
 - [Cursor skills](https://cursor.com/docs/context/skills)
-- [AI Skills for Real Engineers](https://www.aihero.dev/skills)
-- [mattpocock/skills](https://github.com/mattpocock/skills)
 - [basilic-skills](https://github.com/blockmatic/basilic-skills)

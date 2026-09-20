@@ -80,7 +80,7 @@ tsup.config.bundled_*.mjs
 # Extra agent trees from `skills add --all` (repo root only)
 /agent/
 
-# Installed catalogs (basilic-skills /w-* plus mattpocock/skills) via pnpm setup:skills.
+# Installed catalogs (basilic-skills /w-*) via pnpm setup:skills.
 # Committed stack skills are un-ignored below.
 .agents/skills/*
 !.agents/skills/ahooks-v3/

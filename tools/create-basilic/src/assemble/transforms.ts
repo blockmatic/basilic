@@ -60,8 +60,6 @@ function rewriteLocalSkillSources({ destRoot }: { destRoot: string }) {
   delete lock.skills?.f
   for (const [name, skill] of Object.entries(lock.skills ?? {})) {
     if (skill.sourceType !== 'local') continue
-    if (skill.source === 'mattpocock/skills' || String(skill.source).includes('mattpocock'))
-      continue
     skill.source = 'blockmatic/basilic-skills'
     skill.sourceType = 'github'
     if (!skill.skillPath) skill.skillPath = `skills/${name}/SKILL.md`

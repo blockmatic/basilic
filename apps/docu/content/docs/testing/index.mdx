@@ -62,4 +62,4 @@ Vitest pins `ALLOWED_ORIGINS` to `http://localhost:3000,http://127.0.0.1:3000,ht
 
 - **OAuth IdP exchange** — Unit tests assert unconfigured 503 and link-authorize-url 401/503 only. No live GitHub/Google/Facebook/Twitter calls in CI.
 - **AI remote** — Skips (not passes) on 402 or upstream errors when `ANTHROPIC_API_KEY` is missing or placeholder (`sk-ant-xxx`). Default model: `claude-haiku-4-5` (alias `sonnet` → `claude-sonnet-4-6`). See [AI Architecture](/docs/architecture/ai).
-- **Unresolved** — eval datasets for `/ai/chat` and `/ai/generate`; performance budgets; visual-regression CI. `/tdd` is opt-in, not the default for docs or small fixes.
+- **Unresolved** — eval datasets for `/ai/chat` and `/ai/generate`; performance budgets; visual-regression CI. `/w-tdd` is opt-in, not the default for docs or small fixes.
