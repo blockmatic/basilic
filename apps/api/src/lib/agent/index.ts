@@ -14,3 +14,4 @@ export {
   negotiateAccept,
   sendNotAcceptable,
 } from './negotiate.js'
+export { getRequestOrigin, publicDiscoveryPaths } from './origin.js'
