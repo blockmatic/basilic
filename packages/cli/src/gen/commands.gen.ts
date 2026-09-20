@@ -228,6 +228,12 @@ export const operationMeta = {
         "name": "temperature"
       }
     ]
+  },
+  "listCoins": {
+    "summary": "List coins snapshot",
+    "description": "List the stored coin snapshot. Seeds mock rows when the table is empty.",
+    "pathParams": [],
+    "bodyParams": []
   }
 } as const
 
@@ -406,5 +412,11 @@ export const commandSpecs = [
       "generate"
     ],
     "operationId": "generate"
+  },
+  {
+    "path": [
+      "list-coins"
+    ],
+    "operationId": "listCoins"
   }
 ] as const

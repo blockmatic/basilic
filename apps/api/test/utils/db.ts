@@ -77,6 +77,9 @@ export async function getTestDatabase() {
 
 /** Tables to truncate (CASCADE handles FK order) */
 const tables = [
+  'coin_watches',
+  'coin_markets',
+  'coin_sync',
   'api_keys',
   'account',
   'sessions',

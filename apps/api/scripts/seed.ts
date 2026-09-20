@@ -13,12 +13,13 @@ import { logger } from '@repo/utils/logger/server'
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
 import * as schema from '../src/db/schema/index.js'
+import { seedMockMarkets } from '../src/lib/coins/index.js'
 import { env } from '../src/lib/env.js'
 
 const scriptFile = fileURLToPath(import.meta.url)
 
-async function applySeed(_db: NodePgDatabase<typeof schema>): Promise<void> {
-  // Reference / dev rows only — extend with db.insert(...).onConflictDoNothing(), etc.
+async function applySeed(db: NodePgDatabase<typeof schema>): Promise<void> {
+  await seedMockMarkets({ db })
 }
 
 export async function runSeed(): Promise<void> {
