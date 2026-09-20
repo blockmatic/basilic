@@ -13,3 +13,4 @@ export {
 } from './search-query.js'
 export { type CoinsDb, seedIdentity } from './seed.js'
 export { describeQuery, spokenSummary } from './spoken-summary.js'
+export { toWatchItem, WatchItemSchema } from './watch.js'

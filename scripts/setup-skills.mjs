@@ -20,7 +20,7 @@ const repoRoot = join(scriptDir, '..')
 const lockPath = join(repoRoot, 'skills-lock.json')
 const ownedListPath = join(scriptDir, 'owned-agent-skills.txt')
 const basilicCatalog = 'blockmatic/basilic-skills'
-const allowedGithub = new Set([basilicCatalog])
+const allowedGithub = new Set([basilicCatalog, 'miqdadbadjuber/anti-slop'])
 const allowLocal = process.env.BASILIC_SKILLS_LOCAL === '1'
 
 function ownedSkillNames() {
@@ -52,6 +52,17 @@ function githubSources({ skills }) {
   }
 }
 
+function extraGithubSkills({ skills }) {
+  return {
+    skills: Object.entries(skills)
+      .filter(
+        ([, skill]) =>
+          skill.sourceType === 'github' && skill.source && skill.source !== basilicCatalog,
+      )
+      .map(([name, skill]) => ({ name, source: skill.source })),
+  }
+}
+
 function resolveBasilicCatalog() {
   if (!allowLocal) return { source: basilicCatalog }
   const localCatalog = join(repoRoot, '..', 'basilic-skills')
@@ -62,13 +73,16 @@ function resolveBasilicCatalog() {
   }
 }
 
-function runSkillsAdd({ source }) {
+function runSkillsAdd({ source, skill }) {
   const isWindows = platform === 'win32'
-  const result = spawnSync(
-    isWindows ? 'pnpm.cmd' : 'pnpm',
-    ['dlx', 'skills@latest', 'add', source, '--all'],
-    { cwd: repoRoot, stdio: 'inherit', shell: isWindows },
-  )
+  const args = ['dlx', 'skills@latest', 'add', source]
+  if (skill) args.push('--skill', skill)
+  else args.push('--all')
+  const result = spawnSync(isWindows ? 'pnpm.cmd' : 'pnpm', args, {
+    cwd: repoRoot,
+    stdio: 'inherit',
+    shell: isWindows,
+  })
   if (result.error) {
     console.error(result.error.message)
     exit(1)
@@ -96,8 +110,8 @@ function restoreOwned({ names, skillsDir, stashDir }) {
   rmSync(stashDir, { recursive: true, force: true })
 }
 
-function pruneForeignSkills({ names, skillsDir }) {
-  const keep = new Set(names)
+function pruneForeignSkills({ names, extraNames, skillsDir }) {
+  const keep = new Set([...names, ...extraNames])
   for (const name of readdirSync(skillsDir)) {
     if (keep.has(name) || name.startsWith('w-')) continue
     rmSync(join(skillsDir, name), { recursive: true, force: true })
@@ -140,10 +154,13 @@ function main() {
   }
 
   const { names } = ownedSkillNames()
+  const { skills: extraSkills } = extraGithubSkills({ skills })
+  const extraNames = extraSkills.map(skill => skill.name)
   const skillsDir = join(repoRoot, '.agents/skills')
   const { stashDir } = stashOwned({ names, skillsDir })
   try {
     runSkillsAdd({ source })
+    for (const extra of extraSkills) runSkillsAdd({ source: extra.source, skill: extra.name })
   } finally {
     restoreOwned({ names, skillsDir, stashDir })
   }
@@ -159,7 +176,7 @@ function main() {
     writeFileSync(lockPath, `${JSON.stringify(installed, null, 2)}\n`)
   } else writeFileSync(lockPath, snapshot)
 
-  pruneForeignSkills({ names, skillsDir })
+  pruneForeignSkills({ names, extraNames, skillsDir })
 }
 
 main()

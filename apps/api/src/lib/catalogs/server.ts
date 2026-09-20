@@ -170,6 +170,10 @@ export const serverErrors = {
     code: 'PROVIDER_ALREADY_LINKED',
     message: 'Provider already linked',
   },
+  WATCHLIST_FULL: {
+    code: 'WATCHLIST_FULL',
+    message: 'Watchlist is full',
+  },
   USER_CREATE_FAILED: {
     code: 'USER_CREATE_FAILED',
     message: 'Failed to create user',

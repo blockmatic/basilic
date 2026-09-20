@@ -115,7 +115,7 @@ if (existsSync(lockPath)) {
         .map(skill => skill.source),
     ),
   ]
-  const allowed = new Set(['blockmatic/basilic-skills'])
+  const allowed = new Set(['blockmatic/basilic-skills', 'miqdadbadjuber/anti-slop'])
   const unexpected = github.filter(source => !allowed.has(source))
   if (unexpected.length > 0) {
     console.error(`skills-lock.json has unsupported catalogs (${unexpected.join(', ') || 'none'})`)

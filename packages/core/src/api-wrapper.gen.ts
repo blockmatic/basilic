@@ -108,5 +108,12 @@ auth: {
 listCoins: gen.listCoins,
 coins: {
   query: gen.queryCoins,
+  watches: {
+    assetId: {
+      id: gen.deleteCoinWatchById,
+      watch: gen.putCoinWatch,
+    },
+    watches: gen.listCoinWatches,
+  },
 },
 }
