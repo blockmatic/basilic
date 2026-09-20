@@ -30,6 +30,9 @@ describe('GET /auth/session/user', () => {
     expect(response.statusCode).toBe(401)
     const body = response.json()
     expect(body.code).toBe('UNAUTHORIZED')
+    const challenge = String(response.headers['www-authenticate'] ?? '')
+    expect(challenge).toContain('Bearer')
+    expect(challenge).toContain('ApiKey')
   })
 
   it('should return user with linkedWallets when authenticated', async () => {
