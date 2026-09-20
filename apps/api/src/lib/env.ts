@@ -115,6 +115,7 @@ export const env = createEnv({
       )
       .default('Your App'),
     WEB_APP_URL: z.string().url().default('http://localhost:3000'),
+    DOCS_SITE_URL: z.string().url().default('https://basilic-docs.vercel.app'),
     ALLOW_TEST: z.coerce.boolean().default(false),
     // GitHub OAuth (optional - OAuth routes return 503 when unset)
     GITHUB_CLIENT_ID: z.string().min(1).optional(),

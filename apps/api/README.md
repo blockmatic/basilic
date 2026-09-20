@@ -1,6 +1,6 @@
 # API
 
-Type-safe REST API built with Fastify & OpenAPI. Routes in `src/routes/` are the source of truth; OpenAPI spec is generated from them. Clients generated via Hey API in `@repo/core`.
+Type-safe REST API built with Fastify & OpenAPI. Routes in `src/routes/` are the source of truth; OpenAPI spec is generated from them. Clients generated via Hey API in `@repo/core`. `GET /` negotiates HTML vs markdown and unknown paths are real 404s — [API architecture](https://basilic-docs.vercel.app/docs/architecture/api).
 
 ## Development
 
