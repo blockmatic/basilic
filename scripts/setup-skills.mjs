@@ -80,7 +80,8 @@ function resolveBasilicCatalog() {
 function runSkillsAdd({ source, skill }) {
   const isWindows = platform === 'win32'
   const args = ['dlx', 'skills@latest', 'add', source]
-  if (skill) args.push('--skill', skill)
+  // `--skill` alone prompts for agents; `--all` is `--skill '*' --agent '*' -y`.
+  if (skill) args.push('--skill', skill, '-y', '--agent', '*')
   else args.push('--all')
   const result = spawnSync(isWindows ? 'pnpm.cmd' : 'pnpm', args, {
     cwd: repoRoot,
