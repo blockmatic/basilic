@@ -67,9 +67,9 @@ const generateRoute: FastifyPluginAsync = async fastify => {
       if (!prompt) return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
 
       const provider = getResolvedProvider()
-      if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
-      if (!isAllowedRequestModel({ model }))
+      if (!isAllowedRequestModel({ model, provider }))
         return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
+      if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
 
       const resolvedModel = getProvider(provider, model)
 

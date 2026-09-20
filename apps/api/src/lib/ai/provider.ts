@@ -119,19 +119,42 @@ export function resolveOpenRouterModel(
   )
 }
 
-export function isAllowedRequestModel({ model }: { model?: string }): boolean {
-  const trimmed = model?.trim()
-  if (!trimmed) return true
-  const allowed = new Set([
-    'default',
+function requestModelAllowlist({ provider }: { provider?: ResolvedProvider | null }): Set<string> {
+  const shared = ['default', ...(env.AI_DEFAULT_MODEL ? [env.AI_DEFAULT_MODEL] : [])]
+  const anthropic = [
+    ...shared,
     'haiku',
     'sonnet',
     defaultAnthropicModel,
+    upgradeSonnetAnthropicModel,
+    ...Object.keys(anthropicModelAliases),
+  ]
+  const openrouter = [
+    ...shared,
+    'haiku',
+    'sonnet',
     defaultOpenRouterModel,
-    defaultOllamaModel,
-  ])
-  if (env.AI_DEFAULT_MODEL) allowed.add(env.AI_DEFAULT_MODEL)
-  return allowed.has(trimmed)
+    upgradeSonnetOpenRouterModel,
+    ...Object.keys(openRouterModelAliases),
+    ...Object.values(openRouterModelAliases),
+  ]
+  const ollama = [...shared, defaultOllamaModel]
+  if (provider === 'anthropic') return new Set(anthropic)
+  if (provider === 'openrouter') return new Set(openrouter)
+  if (provider === 'ollama') return new Set(ollama)
+  return new Set([...anthropic, ...openrouter, ...ollama])
+}
+
+export function isAllowedRequestModel({
+  model,
+  provider,
+}: {
+  model?: string
+  provider?: ResolvedProvider | null
+}): boolean {
+  const trimmed = model?.trim()
+  if (!trimmed) return true
+  return requestModelAllowlist({ provider }).has(trimmed)
 }
 
 export function getProvider(provider: ResolvedProvider, modelParam?: string): LanguageModel {

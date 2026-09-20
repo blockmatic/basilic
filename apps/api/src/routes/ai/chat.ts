@@ -113,12 +113,11 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       const session = request.session
       if (!session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
-      const provider = getResolvedProvider()
-      if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
-
       const { messages: rawMessages, stream, model, temperature } = request.body
-      if (!isAllowedRequestModel({ model }))
+      const provider = getResolvedProvider()
+      if (!isAllowedRequestModel({ model, provider }))
         return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
+      if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
       const resolvedModel = getProvider(provider, model)
 
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''

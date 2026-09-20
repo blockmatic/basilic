@@ -51,9 +51,20 @@ describe('isAllowedRequestModel', () => {
     expect(isAllowedRequestModel({ model: defaultAnthropicModel })).toBe(true)
   })
 
-  it('rejects opus and unknown ids', () => {
+  it('rejects opus and unknown ids without a resolved provider', () => {
     expect(isAllowedRequestModel({ model: 'opus' })).toBe(false)
     expect(isAllowedRequestModel({ model: 'gpt-4' })).toBe(false)
+  })
+
+  it('rejects concrete ids that the selected provider does not resolve', () => {
+    expect(isAllowedRequestModel({ model: defaultOpenRouterModel, provider: 'anthropic' })).toBe(
+      false,
+    )
+    expect(isAllowedRequestModel({ model: 'haiku', provider: 'ollama' })).toBe(false)
+    expect(isAllowedRequestModel({ model: defaultOpenRouterModel, provider: 'ollama' })).toBe(false)
+    expect(isAllowedRequestModel({ model: defaultOpenRouterModel, provider: 'openrouter' })).toBe(
+      true,
+    )
   })
 })
 
