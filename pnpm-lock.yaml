@@ -266,6 +266,9 @@ importers:
       '@ai-sdk/anthropic':
         specifier: ^4.0.54
         version: 4.0.54(zod@4.6.5)
+      '@coingecko/coingecko-typescript':
+        specifier: ^8.1.0
+        version: 8.1.0
       '@faker-js/faker':
         specifier: ^10.6.0
         version: 10.6.0
@@ -1858,6 +1861,9 @@ packages:
 
   '@chevrotain/utils@11.1.2':
     resolution: {integrity: sha512-4mudFAQ6H+MqBTfqLmU7G1ZwRzCLfJEooL/fsF6rCX5eePMbGhoy5n4g+G4vlh2muDcsCTJtL+uKbOzWxs5LHA==}
+
+  '@coingecko/coingecko-typescript@8.1.0':
+    resolution: {integrity: sha512-z9YqPNP9l55AOmuDpwt+syCzHtq1xycAEQcRD/zEeEkAbF+jUTpmYfw9LdlPKJOCncwv7ShUFyEfecSg1vkVoQ==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -12048,6 +12054,8 @@ snapshots:
   '@chevrotain/types@11.1.2': {}
 
   '@chevrotain/utils@11.1.2': {}
+
+  '@coingecko/coingecko-typescript@8.1.0': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:

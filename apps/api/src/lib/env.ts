@@ -90,6 +90,8 @@ export const env = createEnv({
     OPEN_ROUTER_API_KEY: z.string().min(1).optional(),
     AI_DEFAULT_MODEL: z.string().min(1).optional(),
     BRAVE_SEARCH_API_KEY: z.string().min(1).optional(),
+    COINGECKO_DEMO_API_KEY: z.string().min(1).optional(),
+    MARKETS_CACHE_MS: z.coerce.number().int().positive().default(300_000),
     ENCRYPTION_KEY: encryptionKeySchema,
     JWT_SECRET: jwtSecretSchema,
     ACCESS_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(900),
@@ -174,3 +176,6 @@ export const env = createEnv({
 
 /** Zod defaults `LOG_LEVEL` to info; tests stay silent unless the env var is set. */
 export const logLevelProvided = process.env.LOG_LEVEL != null && process.env.LOG_LEVEL !== ''
+
+export const marketsQuoteCacheMs = 30_000
+export const marketsKlinesCacheMs = 60_000

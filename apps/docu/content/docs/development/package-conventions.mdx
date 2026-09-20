@@ -117,6 +117,10 @@ PostgreSQL access for Fastify (and later eve host). Schema barrel `@repo/db/sche
 - Next.js must not import `@repo/db` or `drizzle-orm` (eslint in `apps/web`)
 - Do not add a second Vercel `db:migrate` filter; api still runs `turbo run db:migrate --filter=@repo/api`
 
+### 5) Markets (collocated until E2)
+
+CoinGecko + Binance HTTP lives in `apps/api/src/lib/markets/` until extract to `@repo/markets`. Zero Fastify, zero `@repo/db`, zero Alchemy. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Next.js must not import this folder.
+
 ## Import and export conventions
 
 ### Use only public entrypoints
