@@ -1,11 +1,11 @@
 ---
 title: "Testing"
-description: "Vitest for the API and packages; Playwright E2E for web. No frontend unit suite."
+description: "Vitest for the API, packages, and web composeSurface; Playwright E2E for web."
 ---
 
 - **API** — Vitest + `fastify.inject()`, blackbox HTTP, in-memory PGlite. Group entry files are `*.spec.ts`; route tests are imported `*.test.ts` (see Fastify testing rules).
 - **Packages** — Vitest unit tests for packages with a `test` script (`core`, `react`, `error`). CI: `packages-test.yml` when `packages/` or `tools/` change.
-- **Web** — Playwright E2E only. Commands, fixtures, and specs: [E2E Testing](/docs/testing/e2e-testing).
+- **Web** — Playwright E2E plus `composeSurface` Vitest in `apps/web/lib/genui`. Commands, fixtures, and specs: [E2E Testing](/docs/testing/e2e-testing).
 - **Product Ready** — Generate-and-run checklist for adopters ([Product Ready](/docs/testing/product-ready)). That page is the release bar for R0. CI green is Workflow, not Quality.
 
 PGLite does not support concurrent writers. API Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false`. Between group entry files, `cleanupGroupDatabase()` truncates all 15 schema tables and clears the JWT session pool.

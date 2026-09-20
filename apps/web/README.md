@@ -1,6 +1,6 @@
 # Web App
 
-Next.js 16 dashboard for the Basilic stack: signed-in home is the coin board (`GET /coins` + nuqs `SearchQuery`) with Commands | Chat composer chrome on the same island, plus settings and auth chrome. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
+Next.js 16 dashboard for the Basilic stack: signed-in home is a json-render `Renderer` on the coin island (`GET /coins` + nuqs `SearchQuery`). The catalog lives in `lib/genui`; `components/genui` maps names to `@repo/ui`. Commands | Chat chrome stays on the same island, plus settings and auth. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
 
 ## Tech Stack
 
@@ -70,7 +70,7 @@ pnpm build --filter=@repo/web
 - `pnpm build` — Build for production
 - `pnpm start` — Start production server
 - `pnpm lint` — Run Biome and ESLint
-- `pnpm test` — No-op (E2E only)
+- `pnpm test` — Vitest for `lib/**/*.test.ts`, including `composeSurface`
 - `pnpm test:e2e:local` — Build, spawn servers, run E2E, cleanup
 
 See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx) for full details.
@@ -113,7 +113,7 @@ See [Authentication Architecture](../docu/content/docs/architecture/authenticati
 
 ## Testing
 
-Playwright E2E only (`e2e/**/*.spec.ts`). See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx).
+Playwright E2E (`e2e/**/*.spec.ts`) plus `composeSurface` Vitest beside `lib/genui/compose.ts`. See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx).
 
 ## Related Documentation
 

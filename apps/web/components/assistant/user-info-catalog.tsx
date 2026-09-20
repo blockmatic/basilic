@@ -35,13 +35,13 @@ function getInitials(name: string | null, email: string | null): string {
   return '?'
 }
 
-function UserInfoComponent({
+export function UserInfoComponent({
   props,
 }: {
   props: {
     name: string | null
     email: string | null
-    joinedAt: string
+    joinedAt: string | null
     image: string | null
     username: string | null
   }
@@ -69,7 +69,9 @@ function UserInfoComponent({
         {props.email ? (
           <p className="text-muted-foreground text-sm truncate">{props.email}</p>
         ) : null}
-        <p className="text-muted-foreground text-sm">Joined {props.joinedAt}</p>
+        {props.joinedAt ? (
+          <p className="text-muted-foreground text-sm">Joined {props.joinedAt}</p>
+        ) : null}
       </div>
     </Card>
   )

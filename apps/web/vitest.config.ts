@@ -1,8 +1,17 @@
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
+const configDir = dirname(fileURLToPath(import.meta.url))
+
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': resolve(configDir),
+    },
+  },
   test: {
-    include: ['lib/auth/request-id.test.ts', 'lib/analytics.types.test.ts'],
+    include: ['lib/**/*.test.ts'],
     environment: 'node',
   },
 })
