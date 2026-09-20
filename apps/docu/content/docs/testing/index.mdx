@@ -31,6 +31,7 @@ HTTP errors use `{ code, message }` from the app catalog (`getError` / `sendCata
 | `auth/passkey/passkey.spec.ts` | Passkey start/verify/exchange/resolve-user |
 | `auth/web3/web3.spec.ts` | EIP-155 and Solana verify + `lib/web3/domain` unit tests |
 | `health.spec.ts` | `/health` + security headers |
+| `discovery.spec.ts` | `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/.well-known/api-catalog`, `/.well-known/oauth-protected-resource` |
 | `reference/reference.spec.ts` | `/reference` HTML + OpenAPI JSON (including `jwtFromServer` on magic-link callback) |
 | `ai.spec.ts` | AI chat + generate (`lib/ai/messages.spec.ts` inlines download + message unit tests) |
 

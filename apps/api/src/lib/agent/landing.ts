@@ -33,7 +33,7 @@ function landingProse({ docs }: { docs: string }): string {
     'Readiness is GET /health. Session and API-key auth are documented on the docs site.',
     `Adopter documentation lives at ${docs}. This process is the product API, not a second documentation site.`,
     'Unknown paths return HTTP 404. JSON clients receive the catalog code NOT_FOUND. HTML and markdown clients receive a short recovery body with discovery links.',
-    'Discovery files such as robots.txt, llms.txt, and /openapi.json are linked from this page even when a later change still has to add the files.',
+    'Public discovery files are /robots.txt, /sitemap.xml, /llms.txt, /.well-known/api-catalog, and /.well-known/oauth-protected-resource.',
   ].join(' ')
 }
 
