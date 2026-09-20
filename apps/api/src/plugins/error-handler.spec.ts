@@ -6,6 +6,7 @@ vi.mock('@repo/error/node', () => ({
 }))
 
 const { captureError } = await import('@repo/error/node')
+const { sendCatalogError } = await import('../lib/catalogs/mapper.js')
 const errorHandler = (await import('../plugins/error-handler.js')).default
 
 describe('error-handler', () => {
@@ -33,6 +34,9 @@ describe('error-handler', () => {
     expect(serialized).not.toContain('hunter2')
     expect(serialized).not.toContain('do not log me')
     expect(serialized).not.toContain('token=secret')
+    const body = JSON.parse(response.body)
+    expect(body).toMatchObject({ code: 'SERVER_ERROR', status: 500 })
+    expect(body.type).toContain('#SERVER_ERROR')
     await app.close()
   })
 
@@ -46,10 +50,28 @@ describe('error-handler', () => {
       headers: { accept: 'application/json' },
     })
     expect(response.statusCode).toBe(404)
-    expect(JSON.parse(response.body)).toEqual({
+    expect(response.headers['content-type']).toContain('application/json')
+    expect(response.headers.vary).toMatch(/Accept/i)
+    expect(JSON.parse(response.body)).toMatchObject({
       code: 'NOT_FOUND',
       message: 'Resource not found',
+      status: 404,
     })
+    await app.close()
+  })
+
+  it('returns problem+json 404 when Accept prefers it', async () => {
+    const app = Fastify({ logger: false })
+    await app.register(errorHandler)
+    await app.ready()
+    const response = await app.inject({
+      method: 'GET',
+      url: '/missing',
+      headers: { accept: 'application/problem+json' },
+    })
+    expect(response.statusCode).toBe(404)
+    expect(response.headers['content-type']).toContain('application/problem+json')
+    expect(JSON.parse(response.body).code).toBe('NOT_FOUND')
     await app.close()
   })
 
@@ -84,6 +106,23 @@ describe('error-handler', () => {
     expect(response.headers['content-type']).toContain('text/markdown')
     expect(response.body).toContain('# Not found')
     expect(response.body).toContain('/llms.txt')
+    await app.close()
+  })
+
+  it('sends WWW-Authenticate on sendCatalogError 401', async () => {
+    const app = Fastify({ logger: false })
+    await app.register(errorHandler)
+    app.get('/needs-auth', async (_request, reply) =>
+      sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' }),
+    )
+    await app.ready()
+    const response = await app.inject({ method: 'GET', url: '/needs-auth' })
+    expect(response.statusCode).toBe(401)
+    const challenge = String(response.headers['www-authenticate'] ?? '')
+    expect(challenge).toContain('Bearer')
+    expect(challenge).toContain('ApiKey')
+    expect(challenge).toContain('Basilic API')
+    expect(response.json().code).toBe('UNAUTHORIZED')
     await app.close()
   })
 })

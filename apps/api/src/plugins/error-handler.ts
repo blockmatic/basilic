@@ -8,7 +8,8 @@ import {
   renderNotFoundHtml,
   renderNotFoundMarkdown,
 } from '../lib/agent/index.js'
-import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
+import { mapHttpStatusToErrorCode, sendCatalogError } from '../lib/catalogs/mapper.js'
+import { applyWwwAuthenticate, preferProblemJson } from '../lib/catalogs/problem.js'
 
 const pluralExceptions: Record<string, string> = {
   status: 'status',
@@ -28,6 +29,11 @@ function extractModuleFromRoute(routePath: string): string | null {
 }
 
 const errorHandler: FastifyPluginAsync = async fastify => {
+  fastify.addHook('onSend', async (_request, reply, payload) => {
+    applyWwwAuthenticate({ reply })
+    return payload
+  })
+
   fastify.setErrorHandler((error: FastifyError, request, reply) => {
     const routePath: string =
       'routerPath' in request && typeof request.routerPath === 'string'
@@ -59,33 +65,17 @@ const errorHandler: FastifyPluginAsync = async fastify => {
         },
       })
 
-    const catalogError = getError(errorCode) ??
-      getError('UNEXPECTED_ERROR') ?? {
-        code: 'UNEXPECTED_ERROR',
-        message: 'An unexpected error occurred',
-      }
-
-    reply.status(statusCode).send({
-      code: catalogError.code,
-      message: catalogError.message,
-    })
+    return sendCatalogError({ reply, status: statusCode, code: errorCode })
   })
 
   fastify.setNotFoundHandler((request, reply) => {
     applyAcceptVary({ reply })
-    const media = negotiateAccept({
-      acceptHeader: typeof request.headers.accept === 'string' ? request.headers.accept : undefined,
-    })
-    if (media === 'json') {
-      const catalogError = getError('NOT_FOUND') ?? {
-        code: 'NOT_FOUND',
-        message: 'Resource not found',
-      }
-      return reply.code(404).send({
-        code: catalogError.code,
-        message: catalogError.message,
-      })
-    }
+    const acceptHeader =
+      typeof request.headers.accept === 'string' ? request.headers.accept : undefined
+    const media = negotiateAccept({ acceptHeader })
+    const wantsProblem = preferProblemJson({ acceptHeader })
+    if (media === 'json' || (wantsProblem && media !== 'html' && media !== 'markdown'))
+      return sendCatalogError({ reply, status: 404, code: 'NOT_FOUND' })
     if (media === 'markdown')
       return reply.code(404).type('text/markdown; charset=utf-8').send(renderNotFoundMarkdown())
     return reply.code(404).type('text/html; charset=utf-8').send(renderNotFoundHtml())

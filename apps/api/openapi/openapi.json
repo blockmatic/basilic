@@ -207,6 +207,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -311,6 +323,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -364,6 +388,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -385,6 +421,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -467,6 +515,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -488,6 +548,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -511,6 +583,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -532,6 +616,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -624,6 +720,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -646,6 +754,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -667,6 +787,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -749,6 +881,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -770,6 +914,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -793,6 +949,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -814,6 +982,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -894,6 +1074,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -916,6 +1108,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -937,6 +1141,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -1015,6 +1231,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1036,6 +1264,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -1090,6 +1330,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1112,6 +1364,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1133,6 +1397,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -1330,6 +1606,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1351,6 +1639,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -1648,6 +1948,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1670,6 +1982,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1691,6 +2015,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -1757,6 +2093,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1778,6 +2126,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -1821,6 +2181,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1842,6 +2214,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -1924,6 +2308,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1946,6 +2342,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1967,6 +2375,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2021,6 +2441,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2043,6 +2475,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2064,6 +2508,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2161,6 +2617,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2183,6 +2651,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2204,6 +2684,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2281,6 +2773,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2410,6 +2914,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2431,6 +2947,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2725,6 +3253,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2746,6 +3286,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2769,6 +3321,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2790,6 +3354,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2813,6 +3389,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2834,6 +3422,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2932,6 +3532,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2953,6 +3565,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -2976,6 +3600,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -2997,6 +3633,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3020,6 +3668,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3041,6 +3701,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3119,6 +3791,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3145,6 +3829,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3166,6 +3862,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3254,6 +3962,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3275,6 +3995,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3298,6 +4030,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3320,6 +4064,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3341,6 +4097,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3464,6 +4232,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3490,6 +4270,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3511,6 +4303,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3594,6 +4398,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3616,6 +4432,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3637,6 +4465,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3664,6 +4504,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3685,6 +4537,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3708,6 +4572,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3729,6 +4605,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3797,6 +4685,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3818,6 +4718,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3841,6 +4753,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3862,6 +4786,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -3926,6 +4862,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3952,6 +4900,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -3973,6 +4933,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4056,6 +5028,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4078,6 +5062,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4099,6 +5095,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4126,6 +5134,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4148,6 +5168,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4169,6 +5201,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4237,6 +5281,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4258,6 +5314,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4281,6 +5349,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4302,6 +5382,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4366,6 +5458,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4392,6 +5496,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4413,6 +5529,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4496,6 +5624,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4518,6 +5658,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4539,6 +5691,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4566,6 +5730,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4587,6 +5763,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4610,6 +5798,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4631,6 +5831,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4699,6 +5911,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4720,6 +5944,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4743,6 +5979,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4764,6 +6012,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4840,6 +6100,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4866,6 +6138,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4887,6 +6171,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -4951,6 +6247,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4977,6 +6285,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4998,6 +6318,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -5081,6 +6413,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5103,6 +6447,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5124,6 +6480,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -5151,6 +6519,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5172,6 +6552,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -5195,6 +6587,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5217,6 +6621,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5238,6 +6654,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -5306,6 +6734,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5327,6 +6767,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -5350,6 +6802,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5371,6 +6835,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -5447,6 +6923,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5468,6 +6956,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -5495,6 +6995,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5568,6 +7080,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5594,6 +7118,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5762,6 +7298,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5788,6 +7336,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5947,6 +7507,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -5968,6 +7540,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -5995,6 +7579,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6037,6 +7633,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6058,6 +7666,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -6135,6 +7755,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6156,6 +7788,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -6340,6 +7984,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6361,6 +8017,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -6437,6 +8105,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6490,6 +8170,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6512,6 +8204,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6533,6 +8237,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -6656,6 +8372,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6677,6 +8405,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -6757,6 +8497,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6783,6 +8535,18 @@
                     },
                     "retryAfter": {
                       "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6858,6 +8622,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -6879,6 +8655,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -6964,6 +8752,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -7028,6 +8828,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -7049,6 +8861,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -7152,6 +8976,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -7174,6 +9010,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -7195,6 +9043,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -7260,6 +9120,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -7281,6 +9153,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }
@@ -7384,6 +9268,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -7406,6 +9302,18 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }
@@ -7427,6 +9335,18 @@
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
                       "type": "string"
                     }
                   }

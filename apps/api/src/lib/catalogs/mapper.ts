@@ -2,6 +2,7 @@ import { captureError } from '@repo/error/node'
 import { pathOnlyUrl } from '@repo/utils/logger/types'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { clientErrors, serverErrors, webErrors } from './index.js'
+import { applyProblemContentType, toCatalogProblem } from './problem.js'
 
 type ServerErrorCode = keyof typeof serverErrors
 type ClientErrorCode = keyof typeof clientErrors
@@ -26,14 +27,18 @@ export function sendCatalogError({
   reply,
   status,
   code,
+  detail,
 }: {
   reply: FastifyReply
   status: number
   code: ErrorCode
+  detail?: string
 }): FastifyReply {
   const err = getError(code) ??
     getError('UNEXPECTED_ERROR') ?? { code: 'UNEXPECTED_ERROR', message: 'Unexpected error' }
-  return reply.code(status).send(err)
+  return applyProblemContentType({ reply })
+    .code(status)
+    .send(toCatalogProblem({ code: err.code, message: err.message, status, detail }))
 }
 
 export function sendServerCatalogError({
