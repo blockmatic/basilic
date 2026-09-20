@@ -41,13 +41,11 @@ export function getResolvedProvider(): ResolvedProvider | null {
 
 const openRouterFreeModel = 'meta-llama/llama-3.3-70b-instruct:free'
 const openRouterModelAliases: Record<string, string> = {
-  'aurora-alpha': defaultOpenRouterModel,
   'openrouter/free': openRouterFreeModel,
   grok: 'x-ai/grok-3-mini',
   'grok-3-mini': 'x-ai/grok-3-mini',
   haiku: defaultOpenRouterModel,
   sonnet: upgradeSonnetOpenRouterModel,
-  opus: 'anthropic/claude-3-opus',
 }
 
 const anthropicModelAliases: Record<string, string> = {
@@ -88,7 +86,7 @@ export function resolveAnthropicModel(
   return resolveModelParam({
     modelParam,
     runtimeDefault: defaultAnthropicModel,
-    defaultAliases: ['aurora-alpha', 'default', 'haiku'],
+    defaultAliases: ['default', 'haiku'],
     aliases: anthropicModelAliases,
     defaultModelOverride: opts?.defaultModel,
   })
@@ -98,7 +96,7 @@ function resolveOllamaModel(modelParam?: string, opts?: { defaultModel?: string 
   return resolveModelParam({
     modelParam,
     runtimeDefault: defaultOllamaModel,
-    defaultAliases: ['aurora-alpha', 'default'],
+    defaultAliases: ['default'],
     aliases: {},
     defaultModelOverride: opts?.defaultModel,
   })
@@ -111,7 +109,7 @@ export function resolveOpenRouterModel(
   const effective = resolveModelParam({
     modelParam,
     runtimeDefault: defaultOpenRouterModel,
-    defaultAliases: ['aurora-alpha', 'default', 'haiku'],
+    defaultAliases: ['default', 'haiku'],
     aliases: openRouterModelAliases,
     defaultModelOverride: opts?.defaultModel,
   })
@@ -121,14 +119,55 @@ export function resolveOpenRouterModel(
   )
 }
 
+function requestModelAllowlist({ provider }: { provider?: ResolvedProvider | null }): Set<string> {
+  const shared = ['default', ...(env.AI_DEFAULT_MODEL ? [env.AI_DEFAULT_MODEL] : [])]
+  const anthropic = [
+    ...shared,
+    'haiku',
+    'sonnet',
+    defaultAnthropicModel,
+    upgradeSonnetAnthropicModel,
+    ...Object.keys(anthropicModelAliases),
+  ]
+  const openrouter = [
+    ...shared,
+    'haiku',
+    'sonnet',
+    defaultOpenRouterModel,
+    upgradeSonnetOpenRouterModel,
+    ...Object.keys(openRouterModelAliases),
+    ...Object.values(openRouterModelAliases),
+  ]
+  const ollama = [...shared, defaultOllamaModel]
+  if (provider === 'anthropic') return new Set(anthropic)
+  if (provider === 'openrouter') return new Set(openrouter)
+  if (provider === 'ollama') return new Set(ollama)
+  return new Set([...anthropic, ...openrouter, ...ollama])
+}
+
+export function isAllowedRequestModel({
+  model,
+  provider,
+}: {
+  model?: string
+  provider?: ResolvedProvider | null
+}): boolean {
+  const trimmed = model?.trim()
+  if (!trimmed) return true
+  return requestModelAllowlist({ provider }).has(trimmed)
+}
+
 export function getProvider(provider: ResolvedProvider, modelParam?: string): LanguageModel {
   if (provider === 'anthropic') {
     const apiKey = env.ANTHROPIC_API_KEY
     if (!apiKey) throw new Error('ANTHROPIC_API_KEY required for Anthropic')
     return createAnthropic({ apiKey })(resolveAnthropicModel(modelParam))
   }
-  if (provider === 'ollama')
-    return createOllama({ baseURL: env.OLLAMA_BASE_URL })(resolveOllamaModel(modelParam))
+  if (provider === 'ollama') {
+    const baseURL = env.OLLAMA_BASE_URL
+    if (!baseURL) throw new Error('OLLAMA_BASE_URL required for Ollama')
+    return createOllama({ baseURL })(resolveOllamaModel(modelParam))
+  }
   const apiKey = env.OPEN_ROUTER_API_KEY
   if (!apiKey) throw new Error('OPEN_ROUTER_API_KEY required for Open Router')
   return createOpenRouter({ apiKey }).chat(resolveOpenRouterModel(modelParam))

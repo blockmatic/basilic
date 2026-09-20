@@ -3,6 +3,7 @@ import { Type } from '@sinclair/typebox'
 import { generateText, isStepCount, smoothStream, streamText } from 'ai'
 import type { FastifyPluginAsync } from 'fastify'
 import {
+  aiRouteRateLimitConfig,
   createRequestAbortSignal,
   createUiMessageStreamResponse,
   denyRemoteChatFileDownload,
@@ -10,12 +11,13 @@ import {
   getProvider,
   getResolvedProvider,
   handleUpstreamError,
+  isAllowedRequestModel,
   resolveMessages,
   sendWebResponse,
 } from '../../lib/ai/index.js'
 import { sendCatalogError, sendServerCatalogError } from '../../lib/catalogs/mapper.js'
 import { env } from '../../lib/env.js'
-import { ErrorResponseSchema } from '../schemas.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../schemas.js'
 
 const chatMessageTextMaxLength = 32_000
 const chatMessagePartsMaxItems = 64
@@ -78,6 +80,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/chat',
     {
+      config: aiRouteRateLimitConfig,
       schema: {
         operationId: 'chat',
         description:
@@ -99,6 +102,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           402: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
           500: ErrorResponseSchema,
           502: ErrorResponseSchema,
           504: ErrorResponseSchema,
@@ -109,10 +113,11 @@ const chatRoute: FastifyPluginAsync = async fastify => {
       const session = request.session
       if (!session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
-      const provider = getResolvedProvider()
-      if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
-
       const { messages: rawMessages, stream, model, temperature } = request.body
+      const provider = getResolvedProvider()
+      if (!isAllowedRequestModel({ model, provider }))
+        return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
+      if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
       const resolvedModel = getProvider(provider, model)
 
       const acceptHeader = request.headers.accept?.toLowerCase() ?? ''
@@ -142,6 +147,7 @@ const chatRoute: FastifyPluginAsync = async fastify => {
         stopWhen: isStepCount(env.AI_TOOL_MAX_STEPS),
         abortSignal,
         experimental_download: denyRemoteChatFileDownload,
+        maxOutputTokens: env.AI_MAX_OUTPUT_TOKENS,
         ...(temperature !== undefined && { temperature }),
       }
 

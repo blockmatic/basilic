@@ -19,6 +19,7 @@ const testEnvDefaults: [string, string][] = [
   ['WEBAUTHN_RP_NAME', 'Test App'],
   ['TOTP_ISSUER', 'Test App'],
   ['RATE_LIMIT_MAX', '10000'],
+  ['AI_RATE_LIMIT_MAX', '10000'],
 ]
 for (const [k, v] of testEnvDefaults) process.env[k] = process.env[k] ?? v
 

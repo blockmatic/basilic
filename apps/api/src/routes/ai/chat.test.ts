@@ -273,6 +273,43 @@ describe('POST /ai/chat', () => {
       expect(() => ErrorSchema.parse(data)).not.toThrow()
       expect(data.code).toBe('BAD_REQUEST')
     })
+
+    it('should return 400 for overlong message content', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+        payload: {
+          messages: [{ role: 'user', content: 'x'.repeat(32_001) }],
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(() => ErrorSchema.parse(data)).not.toThrow()
+      expect(data.code).toBe('BAD_REQUEST')
+    })
+
+    it('should return 400 for model opus', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/chat',
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+        payload: {
+          messages: [{ role: 'user', content: 'Hello' }],
+          model: 'opus',
+        },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(() => ErrorSchema.parse(data)).not.toThrow()
+      expect(data.code).toBe('BAD_REQUEST')
+    })
   })
 
   describe.skipIf(!hasRealAnthropicKey())('POST /ai/chat — remote', () => {
@@ -440,22 +477,5 @@ describe('POST /ai/chat', () => {
       expect(data.text).toBeTypeOf('string')
       expect(data.text.length).toBeGreaterThan(0)
     }, 60000)
-
-    it('should return 400 for overlong message content', async () => {
-      const response = await fastify.inject({
-        method: 'POST',
-        url: '/ai/chat',
-        headers: {
-          Authorization: `Bearer ${testToken}`,
-        },
-        payload: {
-          messages: [{ role: 'user', content: 'x'.repeat(32_001) }],
-        },
-      })
-
-      expect(response.statusCode).toBe(400)
-      const data = JSON.parse(response.body)
-      expect(() => ErrorSchema.parse(data)).not.toThrow()
-    })
   })
 })

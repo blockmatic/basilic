@@ -38,6 +38,23 @@ function hasSystemRole(messages: unknown[]): boolean {
   })
 }
 
+function stripUntrustedToolOutput({ part }: { part: unknown }): unknown {
+  if (typeof part !== 'object' || part === null || !('type' in part)) return part
+  const type = (part as { type: unknown }).type
+  if (type !== 'dynamic-tool' && type !== 'tool-invocation') return part
+  const clone = { ...(part as Record<string, unknown>) }
+  Reflect.deleteProperty(clone, 'output')
+  Reflect.deleteProperty(clone, 'errorText')
+  return clone
+}
+
+function stripUntrustedToolOutputs({ messages }: { messages: unknown[] }): unknown[] {
+  return messages.map(msg => {
+    if (!isUIMessage(msg)) return msg
+    return { ...msg, parts: msg.parts.map(part => stripUntrustedToolOutput({ part })) }
+  })
+}
+
 function validateUIMessageFileUrls(messages: unknown[]): ResolveMessagesResult | null {
   for (const msg of messages) {
     if (!isUIMessage(msg)) continue
@@ -76,7 +93,9 @@ export async function resolveMessages(
 
     try {
       const messages = await convertToModelMessages(
-        rawMessages as Parameters<typeof convertToModelMessages>[0],
+        stripUntrustedToolOutputs({ messages: rawMessages }) as Parameters<
+          typeof convertToModelMessages
+        >[0],
         { tools, ignoreIncompleteToolCalls: true },
       )
       return { ok: true, messages }

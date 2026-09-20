@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   defaultAnthropicModel,
   defaultOpenRouterModel,
+  isAllowedRequestModel,
   resolveAnthropicModel,
   resolveOpenRouterModel,
   upgradeSonnetAnthropicModel,
@@ -38,5 +39,53 @@ describe('AI provider model resolution', () => {
     expect(resolveOpenRouterModel('sonnet', { defaultModel: 'x-ai/grok-3-mini' })).toBe(
       upgradeSonnetOpenRouterModel,
     )
+  })
+})
+
+describe('isAllowedRequestModel', () => {
+  it('allows omitted, default, haiku, and sonnet', () => {
+    expect(isAllowedRequestModel({})).toBe(true)
+    expect(isAllowedRequestModel({ model: 'default' })).toBe(true)
+    expect(isAllowedRequestModel({ model: 'haiku' })).toBe(true)
+    expect(isAllowedRequestModel({ model: 'sonnet' })).toBe(true)
+    expect(isAllowedRequestModel({ model: defaultAnthropicModel })).toBe(true)
+  })
+
+  it('rejects opus and unknown ids without a resolved provider', () => {
+    expect(isAllowedRequestModel({ model: 'opus' })).toBe(false)
+    expect(isAllowedRequestModel({ model: 'gpt-4' })).toBe(false)
+  })
+
+  it('rejects concrete ids that the selected provider does not resolve', () => {
+    expect(isAllowedRequestModel({ model: defaultOpenRouterModel, provider: 'anthropic' })).toBe(
+      false,
+    )
+    expect(isAllowedRequestModel({ model: 'haiku', provider: 'ollama' })).toBe(false)
+    expect(isAllowedRequestModel({ model: defaultOpenRouterModel, provider: 'ollama' })).toBe(false)
+    expect(isAllowedRequestModel({ model: defaultOpenRouterModel, provider: 'openrouter' })).toBe(
+      true,
+    )
+  })
+})
+
+describe('getResolvedProvider', () => {
+  afterEach(() => {
+    vi.resetModules()
+    vi.doUnmock('../env.js')
+  })
+
+  it('returns null when no keys and no explicit Ollama URL', async () => {
+    vi.resetModules()
+    vi.doMock('../env.js', () => ({
+      env: {
+        ['AI_PROVIDER']: undefined,
+        ['ANTHROPIC_API_KEY']: undefined,
+        ['OPEN_ROUTER_API_KEY']: undefined,
+        ['OLLAMA_BASE_URL']: undefined,
+        ['AI_DEFAULT_MODEL']: undefined,
+      },
+    }))
+    const { getResolvedProvider } = await import('./provider.js')
+    expect(getResolvedProvider()).toBeNull()
   })
 })
