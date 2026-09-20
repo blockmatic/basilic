@@ -29,7 +29,9 @@ export async function listMarkets({ db }: { db: CoinsDb }) {
   if (existing.length === 0) await seedIdentity({ db })
 
   const rows = await db.select().from(assets).where(eq(assets.enabled, true))
-  const quotes = new Map(fixtureQuotes.map(quote => [quote.id, quote]))
+  const quotes = new Map<string, (typeof fixtureQuotes)[number]>(
+    fixtureQuotes.map(quote => [quote.id, quote]),
+  )
   const coins = rows
     .flatMap(asset => {
       const quote = quotes.get(asset.id)
