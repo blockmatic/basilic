@@ -60,7 +60,8 @@ Stream with `loading.tsx` and Suspense. Mark search/filter updates as transition
 
 - Do not export `dynamic = 'force-dynamic'` from the root layout. That sets `fetchCache: 'force-no-store'` for the route and voids fetch-level `next.revalidate`.
 - [`proxy.ts`](/docs/architecture/authentication) gates requests. Cookie reads there do **not** make RSC segments dynamic. A page becomes dynamic when a Server Component calls `cookies()` (for example `getUserInfo` → `getServerAuthToken`).
-- Semi-static RSC data (markets, headlines): `fetch` with `next: { revalidate: N }`.
+- Coin board: RSC `createLoader` reads the URL `SearchQuery` and fetches `GET /coins` via the BFF client so first HTML matches the query. The client island hydrates the same parsers with shallow `history: 'push'` and refetches with `@repo/core` JWT. Do not set `shallow: false` on those writes.
+- Semi-static RSC data still using `fetch` with `next: { revalidate: N }`: unused headlines helper (`NEWSAPI_KEY`).
 - Auth / Fastify: `cache: 'no-store'`. Identical GET `fetch` calls are request-memoized; do not wrap them in `React.cache()`.
 - No `revalidateTag` until something is tagged. Mutations stay on Fastify, not Server Actions.
 
@@ -85,8 +86,8 @@ Pending and optimistic UI for mutations stays on TanStack mutation flags (`isPen
 
 ### Server vs client fetch
 
-- **RSC:** semi-static pages (markets, headlines) and profile (`getUserInfo` in the page, `initialData` on `useUser`).
-- **Client TanStack:** settings/security (API keys, passkeys, TOTP). These surfaces are mutation-first and need WebAuthn or OTP browser APIs. Do not duplicate their GETs in Server Components; an empty first paint until hydration is accepted.
+- **RSC:** home coin board (`createLoader` + `listCoins`) and profile (`getUserInfo` in the page, `initialData` on `useUser`).
+- **Client TanStack:** coin-board island refetches and watch stars; settings/security (API keys, passkeys, TOTP). Security surfaces are mutation-first and need WebAuthn or OTP browser APIs. Do not duplicate their GETs in Server Components; an empty first paint until hydration is accepted.
 
 ```tsx
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs"
