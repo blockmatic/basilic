@@ -18,8 +18,8 @@ overrides guidance for its subtree and must be read before changing files there.
    read that `.cursor/rules` file (Cursor auto-attaches it).
 3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
    task matches (after `pnpm setup` / `pnpm setup:skills`, which runs
-   `skills add` for `blockmatic/basilic-skills --all`, then restores
-   `skills-lock.json`). Daily path: Basilic `/w-*` under
+   `skills add` for `blockmatic/basilic-skills --all` plus allowed extra
+   catalogs, then restores `skills-lock.json`). Daily path: Basilic `/w-*` under
    `.agents/skills/w-<name>/` (`/w-plan`, `/w-grill`, `/w-wayfinder`,
    `/w-build`, `/w-ship`). If the harness has no `/` menu, open the
    `SKILL.md` file. Catalog:

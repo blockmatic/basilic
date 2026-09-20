@@ -54,12 +54,16 @@ import type {
   AuthSessionsRevokeResponse,
   ChatData,
   ChatResponse,
+  DeleteCoinWatchByIdData,
+  DeleteCoinWatchByIdResponse,
   GenerateData,
   GenerateResponse,
   GetUserData,
   GetUserResponse,
   HealthCheckData,
   HealthCheckResponse,
+  ListCoinWatchesData,
+  ListCoinWatchesResponse,
   ListCoinsData,
   ListCoinsResponse,
   LogoutData,
@@ -96,6 +100,8 @@ import type {
   OauthTwitterExchangeResponse,
   OauthTwitterLinkAuthorizeUrlData,
   OauthTwitterLinkAuthorizeUrlResponse,
+  PutCoinWatchData,
+  PutCoinWatchResponse,
   QueryCoinsData,
   QueryCoinsResponse,
   RefreshData,
@@ -221,6 +227,13 @@ export type CoreApiClient = {
   };
   listCoins: (opts?: Options<ListCoinsData>) => Promise<ListCoinsResponse>;
   coins: {
-    query: (opts: Options<QueryCoinsData>) => Promise<QueryCoinsResponse>
+    query: (opts: Options<QueryCoinsData>) => Promise<QueryCoinsResponse>;
+    watches: {
+      assetId: {
+        id: (opts: Options<DeleteCoinWatchByIdData>) => Promise<DeleteCoinWatchByIdResponse>;
+        watch: (opts: Options<PutCoinWatchData>) => Promise<PutCoinWatchResponse>
+      };
+      watches: (opts?: Options<ListCoinWatchesData>) => Promise<ListCoinWatchesResponse>
+    }
   }
 }

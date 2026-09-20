@@ -274,6 +274,32 @@ export const operationMeta = {
         "name": "highlight"
       }
     ]
+  },
+  "deleteCoinWatchById": {
+    "summary": "Unwatch a coin",
+    "description": "Remove an asset id from the access JWT user watchlist. Missing rows still return 204.",
+    "pathParams": [
+      {
+        "name": "assetId"
+      }
+    ],
+    "bodyParams": []
+  },
+  "putCoinWatch": {
+    "summary": "Watch a coin",
+    "description": "Watch an identity asset id for the access JWT user. Idempotent. Unknown asset is 404. Cap 20 is 409 WATCHLIST_FULL.",
+    "pathParams": [
+      {
+        "name": "assetId"
+      }
+    ],
+    "bodyParams": []
+  },
+  "listCoinWatches": {
+    "summary": "List coin watches",
+    "description": "List the access JWT user watchlist keyed by asset id. Empty list is []. Cap 20 is enforced on PUT.",
+    "pathParams": [],
+    "bodyParams": []
   }
 } as const
 
@@ -465,5 +491,31 @@ export const commandSpecs = [
       "query"
     ],
     "operationId": "queryCoins"
+  },
+  {
+    "path": [
+      "coins",
+      "watches",
+      "asset-id",
+      "id"
+    ],
+    "operationId": "deleteCoinWatchById"
+  },
+  {
+    "path": [
+      "coins",
+      "watches",
+      "asset-id",
+      "watch"
+    ],
+    "operationId": "putCoinWatch"
+  },
+  {
+    "path": [
+      "coins",
+      "watches",
+      "watches"
+    ],
+    "operationId": "listCoinWatches"
   }
 ] as const

@@ -3559,3 +3559,169 @@ export type QueryCoinsResponses = {
 };
 
 export type QueryCoinsResponse = QueryCoinsResponses[keyof QueryCoinsResponses];
+
+export type DeleteCoinWatchByIdData = {
+  body?: never;
+  path: {
+    assetId: string;
+  };
+  query?: never;
+  url: '/coins/watches/{assetId}';
+};
+
+export type DeleteCoinWatchByIdErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type DeleteCoinWatchByIdError = DeleteCoinWatchByIdErrors[keyof DeleteCoinWatchByIdErrors];
+
+export type DeleteCoinWatchByIdResponses = {
+  /**
+   * Default Response
+   */
+  204: void;
+};
+
+export type DeleteCoinWatchByIdResponse = DeleteCoinWatchByIdResponses[keyof DeleteCoinWatchByIdResponses];
+
+export type PutCoinWatchData = {
+  body?: never;
+  path: {
+    assetId: string;
+  };
+  query?: never;
+  url: '/coins/watches/{assetId}';
+};
+
+export type PutCoinWatchErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  404: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  409: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type PutCoinWatchError = PutCoinWatchErrors[keyof PutCoinWatchErrors];
+
+export type PutCoinWatchResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    id: string;
+    assetId: string;
+    createdAt: string;
+  };
+};
+
+export type PutCoinWatchResponse = PutCoinWatchResponses[keyof PutCoinWatchResponses];
+
+export type ListCoinWatchesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/coins/watches/';
+};
+
+export type ListCoinWatchesErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type ListCoinWatchesError = ListCoinWatchesErrors[keyof ListCoinWatchesErrors];
+
+export type ListCoinWatchesResponses = {
+  /**
+   * Default Response
+   */
+  200: Array<{
+    id: string;
+    assetId: string;
+    createdAt: string;
+  }>;
+};
+
+export type ListCoinWatchesResponse = ListCoinWatchesResponses[keyof ListCoinWatchesResponses];
