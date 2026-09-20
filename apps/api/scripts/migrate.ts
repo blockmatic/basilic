@@ -3,7 +3,7 @@
  * Build-time migration script for Fastify (PostgreSQL only).
  *
  * Wraps Drizzle's migrator with project-specific logic:
- * - PGLite: Skips here; migrations run at runtime via src/db/migrate.ts
+ * - PGLite: Skips here; migrations run at runtime via `@repo/db/migrate`
  * - PostgreSQL: Runs migrations at build time (skipped on Vercel Preview unless `RUN_PG_MIGRATE=true`)
  * - Bootstrap: Initializes __drizzle_migrations for DBs that have tables but no migration history
  */
@@ -11,17 +11,13 @@ import 'dotenv/config'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { readdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
+import { migrationsDir } from '@repo/db/migrate'
 import { logger } from '@repo/utils/logger/server'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
 import { Pool } from 'pg'
 import { env } from '../src/lib/env.js'
-
-const scriptFile = fileURLToPath(import.meta.url)
-const scriptDir = dirname(scriptFile)
-const projectRoot = join(scriptDir, '..')
 
 /** Session advisory-lock pair so concurrent migrators serialize (int4, int4). */
 const migrationLockClassid = 1_882_746_001
@@ -34,9 +30,8 @@ const requiredBootstrapTables = [
   'wallet_identities',
 ]
 
-/** Read sorted .sql migration files from src/db/migrations. */
+/** Read sorted .sql migration files from `@repo/db/migrate`. */
 async function readMigrationFiles(): Promise<string[]> {
-  const migrationsDir = join(projectRoot, 'src', 'db', 'migrations')
   try {
     const files = await readdir(migrationsDir)
     return files.filter(file => file.endsWith('.sql')).sort()
@@ -253,7 +248,6 @@ try {
   // PostgreSQL: Run migrations at build time
   if (!env.DATABASE_URL) throw new Error('DATABASE_URL is required when PGLITE is false')
 
-  const migrationsDir = join(projectRoot, 'src', 'db', 'migrations')
   const migrationFiles = await readMigrationFiles()
 
   if (migrationFiles.length === 0) {

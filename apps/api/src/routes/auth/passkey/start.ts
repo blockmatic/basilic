@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { passkeyAuthChallenges } from '@repo/db/schema'
 import { generateAuthenticationOptions } from '@simplewebauthn/server'
 import { type Static, Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import { passkeyAuthChallenges } from '../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import {
   getWebAuthnOriginFromRequest,

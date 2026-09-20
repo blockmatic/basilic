@@ -1,8 +1,8 @@
+import { getDb } from '@repo/db'
+import { passkeyCredentials } from '@repo/db/schema'
 import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
 import { and, eq } from 'drizzle-orm'
-import { getDb } from '../../db/index.js'
-import { passkeyCredentials } from '../../db/schema/index.js'
 import { type ErrorCode, getError } from '../catalogs/mapper.js'
 
 const validTransports = ['ble', 'cable', 'hybrid', 'internal', 'nfc', 'smart-card', 'usb'] as const

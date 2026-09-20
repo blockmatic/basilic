@@ -21,6 +21,7 @@ tools/      # shared tooling (eslint, typescript config, etc.)
 packages/
   core/        # generated client + types (runtime-agnostic)
   react/       # handwritten TanStack Query hooks (built on core)
+  db/          # Drizzle schema, factory, named data-access fns
 apps/
   api/         # Fastify 5 + TypeBox routes → generates OpenAPI
   web/         # Next.js 16 consuming core/react
@@ -30,8 +31,9 @@ apps/
 
 - `@repo/core` → owns generated code, exports API types
 - `@repo/react` → depends on `@repo/core` (and React/TanStack Query via peer deps)
+- `@repo/db` → Drizzle schema, `configureDb` / `getDb`, named fns (`listAssets`, watches, `getValidSession`). Fastify and later eve host import it. Next.js must not.
 
-No reverse dependencies.
+No reverse dependencies. `@repo/db` does not import Fastify env or the api test harness.
 
 ## Mermaid architecture diagram
 
@@ -40,6 +42,7 @@ flowchart TB
   subgraph P[packages]
     K["@repo/core<br/>generated client + types"]
     R["@repo/react<br/>TanStack Query hooks"]
+    D["@repo/db<br/>schema + named fns"]
   end
 
   subgraph A[apps]
@@ -48,6 +51,7 @@ flowchart TB
   end
 
   K --> R
+  D --> API
 
   API -->|OpenAPI JSON| GEN[hey-api Generator]
   GEN -->|Generated Code| K
@@ -102,6 +106,16 @@ React-only helpers using **TanStack Query**.
 
 - Hooks and helpers only — never UI in `@repo/react`
 - `@tanstack/react-query` is a peer dependency
+
+### 4) `packages/db`
+
+PostgreSQL access for Fastify (and later eve host). Schema barrel `@repo/db/schema`, factory `configureDb` / `getDb`, PGLite `runMigrations` on `@repo/db/migrate`. Named RORO fns take `{ userId }` for user-scoped rows. Encrypt helpers and identity seed stay in `apps/api`.
+
+**Hard rules**
+
+- No Fastify dependency and no import of api `env` or `test/utils/db`
+- Next.js must not import `@repo/db` or `drizzle-orm` (eslint in `apps/web`)
+- Do not add a second Vercel `db:migrate` filter; api still runs `turbo run db:migrate --filter=@repo/api`
 
 ## Import and export conventions
 

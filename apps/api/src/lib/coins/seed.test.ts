@@ -1,7 +1,7 @@
+import { getDb } from '@repo/db'
+import { assetMarkets, assetNetworks, assetProviders, assets } from '@repo/db/schema'
 import { count, eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
-import { getDb } from '../../db/index.js'
-import { assetMarkets, assetNetworks, assetProviders, assets } from '../../db/schema/index.js'
 import { fixtureQuotes } from './fixture.js'
 import { seedIdentity } from './seed.js'
 

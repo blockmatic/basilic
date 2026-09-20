@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
+import type { getDb } from '@repo/db'
+import type { SignInMethod } from '@repo/db/schema'
+import { sessions } from '@repo/db/schema'
 import type { FastifyInstance, FastifyRequest } from 'fastify'
-import type { getDb } from '../../db/index.js'
-import { sessions } from '../../db/schema/index.js'
-import type { SignInMethod } from '../../db/schema/tables/sessions.js'
 import { env } from '../env.js'
 import {
   createAccessTokenPayload,

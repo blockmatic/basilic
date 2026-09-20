@@ -1,8 +1,6 @@
-import { eq } from 'drizzle-orm'
+import { getDb, getValidSession } from '@repo/db'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
-import { getDb } from '../db/index.js'
-import { sessions, users } from '../db/schema/index.js'
 import { authenticateWithApiKey } from '../lib/api-keys/index.js'
 
 declare module 'fastify' {
@@ -71,24 +69,12 @@ const authPlugin: FastifyPluginAsync = async fastify => {
       return
     }
 
-    const db = await getDb()
-    const [session] = await db.select().from(sessions).where(eq(sessions.id, decoded.sid))
-
-    if (!session || session.expiresAt < new Date()) {
+    const valid = await getValidSession({ sid: decoded.sid, userId: decoded.sub })
+    if (!valid) {
       request.session = null
       return
     }
-
-    if (session.userId !== decoded.sub) {
-      request.session = null
-      return
-    }
-
-    const [user] = await db.select().from(users).where(eq(users.id, decoded.sub))
-    if (!user) {
-      request.session = null
-      return
-    }
+    const { session, user } = valid
 
     const wallet =
       session.walletChain && session.walletAddress

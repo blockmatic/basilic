@@ -1,9 +1,9 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { users } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { and, eq, ne } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import { users } from '../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 
 const usernameRegex = /^[a-zA-Z0-9_-]{1,48}$/

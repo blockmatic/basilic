@@ -1,9 +1,9 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { totp } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../../db/index.js'
-import { totp } from '../../../../db/schema/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
 const totpUnlinkRoute: FastifyPluginAsync = async fastify => {

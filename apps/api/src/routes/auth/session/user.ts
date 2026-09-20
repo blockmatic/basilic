@@ -1,14 +1,8 @@
+import { getDb } from '@repo/db'
+import { account, passkeyCredentials, totp, users, walletIdentities } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import {
-  account,
-  passkeyCredentials,
-  totp,
-  users,
-  walletIdentities,
-} from '../../../db/schema/index.js'
 import { sendCatalogError, sendServerCatalogError } from '../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 

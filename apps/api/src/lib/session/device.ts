@@ -1,5 +1,5 @@
+import type { SignInMethod } from '@repo/db/schema'
 import type { FastifyRequest } from 'fastify'
-import type { SignInMethod } from '../../db/schema/tables/sessions.js'
 import { getTrustedClientIp } from '../request.js'
 
 const browserLabels: Record<string, string> = {

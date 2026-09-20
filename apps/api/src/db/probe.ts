@@ -1,5 +1,5 @@
+import { getDb } from '@repo/db'
 import { sql } from 'drizzle-orm'
-import { getDb } from './index.js'
 
 export const dbHealth = {
   async probe(): Promise<boolean> {

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import type { getDb } from '../../db/index.js'
-import { users } from '../../db/schema/index.js'
+import type { getDb } from '@repo/db'
+import { users } from '@repo/db/schema'
 import { isUniqueViolation } from '../db-errors.js'
 import { findUserByNormalizedEmail } from '../email-identity.js'
 import { generateUsernameForMagicLink } from '../username.js'

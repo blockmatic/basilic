@@ -1,7 +1,7 @@
+import { getDb } from '@repo/db'
+import { sessions } from '@repo/db/schema'
 import { eq } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getDb } from '../../../db/index.js'
-import { sessions } from '../../../db/schema/index.js'
 import { hashToken } from '../../../lib/jwt.js'
 import { fastify } from './session.spec.js'
 

@@ -9,10 +9,10 @@
 import 'dotenv/config'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import * as schema from '@repo/db/schema'
 import { logger } from '@repo/utils/logger/server'
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
-import * as schema from '../src/db/schema/index.js'
 import { seedIdentity } from '../src/lib/coins/index.js'
 import { env } from '../src/lib/env.js'
 

@@ -15,6 +15,7 @@ on:
       - 'packages/ui/**'
       - 'packages/utils/**'
       - 'packages/error/**'
+      - 'packages/db/**'
       - 'tools/eslint/**'
       - 'tools/typescript/**'
       - 'apps/api/openapi/**'
@@ -57,7 +58,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-next-web-
       - name: Build
-        run: pnpm turbo run build --filter=@repo/web...
+        run: pnpm turbo run build --filter=@repo/web... --filter=@repo/db
       - uses: ./.github/actions/setup-playwright
       - name: E2E tests (local)
         env:

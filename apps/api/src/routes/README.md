@@ -16,7 +16,7 @@ Use TypeBox for request/response schemas. Fastify validates automatically; handl
 ```typescript
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { isDbReady } from '../db/index.js'
+import { isDbReady } from '@repo/db'
 
 const HealthResponseSchema = Type.Object({
   ok: Type.Boolean(),

@@ -35,6 +35,7 @@
       "!**/next-env.d.ts",
       "!**/openapi/*.json",
       "!**/src/db/migrations/meta",
+      "!**/src/migrations/meta",
       "!**/.deepsec",
       "!**/tools/create-basilic/template",
       "!.agents/skills",

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
+import { getDb } from '@repo/db'
+import { sessions, users } from '@repo/db/schema'
 import { describe, expect, it } from 'vitest'
-import { getDb } from '../../../db/index.js'
-import { sessions, users } from '../../../db/schema/index.js'
 import { isUniqueViolation } from '../../../lib/db-errors.js'
 import { hashToken } from '../../../lib/jwt.js'
 

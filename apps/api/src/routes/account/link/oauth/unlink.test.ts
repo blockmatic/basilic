@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
+import { getDb } from '@repo/db'
+import { account, users } from '@repo/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { getOrCreateSession } from '../../../../../test/utils/auth-helper.js'
-import { getDb } from '../../../../db/index.js'
-import { account, users } from '../../../../db/schema/index.js'
 import { fastify } from '../../account.spec.js'
 
 describe('DELETE /account/link/oauth/:providerId', () => {

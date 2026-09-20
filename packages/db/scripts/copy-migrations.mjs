@@ -2,8 +2,8 @@ import { cpSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const apiRoot = dirname(dirname(fileURLToPath(import.meta.url)))
-const from = join(apiRoot, 'src/db/migrations')
-const to = join(apiRoot, 'dist/src/db/migrations')
+const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)))
+const from = join(packageRoot, 'src/migrations')
+const to = join(packageRoot, 'dist/migrations')
 mkdirSync(to, { recursive: true })
 cpSync(from, to, { recursive: true })

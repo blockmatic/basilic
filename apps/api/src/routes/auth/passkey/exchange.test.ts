@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
+import { getDb } from '@repo/db'
+import { passkeyCallback } from '@repo/db/schema'
 import { eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
 import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
-import { getDb } from '../../../db/index.js'
-import { passkeyCallback } from '../../../db/schema/index.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
 import { fastify } from './passkey.spec.js'
 

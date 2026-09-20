@@ -1,8 +1,8 @@
+import { getDb } from '@repo/db'
+import type { VerificationType } from '@repo/db/schema'
+import { sessions, users, verification } from '@repo/db/schema'
 import { and, desc, eq, isNotNull, sql } from 'drizzle-orm'
 import type { FastifyInstance } from 'fastify'
-import { getDb } from '../../db/index.js'
-import { sessions, users, verification } from '../../db/schema/index.js'
-import type { VerificationType } from '../../db/schema/tables/verification.js'
 import { env } from '../../lib/env.js'
 
 export type VerificationLastResult = {

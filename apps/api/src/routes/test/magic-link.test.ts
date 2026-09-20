@@ -1,7 +1,7 @@
+import { getDb } from '@repo/db'
+import { verification } from '@repo/db/schema'
 import { like } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getDb } from '../../db/index.js'
-import { verification } from '../../db/schema/index.js'
 import { fastify } from './test.spec.js'
 
 describe('GET /test/magic-link/last', () => {

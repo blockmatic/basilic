@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
+import { getDb } from '@repo/db'
+import { users, walletIdentities, web3Nonce } from '@repo/db/schema'
 import { and, eq } from 'drizzle-orm'
-import { getDb } from '../../db/index.js'
-import { users, walletIdentities, web3Nonce } from '../../db/schema/index.js'
 import { generateFunnyUsername } from '../username.js'
 
 type ParsedMessage = { address: string; nonce: string; domain: string }

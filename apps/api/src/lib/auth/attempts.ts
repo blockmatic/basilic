@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
+import type { getDb } from '@repo/db'
+import { authAttempts } from '@repo/db/schema'
 import { sql } from 'drizzle-orm'
-import type { getDb } from '../../db/index.js'
-import { authAttempts } from '../../db/schema/index.js'
 
 type AuthAttemptType = 'magic_link' | 'change_email'
 

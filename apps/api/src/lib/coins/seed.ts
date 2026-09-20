@@ -1,5 +1,5 @@
-import type { getDb } from '../../db/index.js'
-import { assetMarkets, assetNetworks, assetProviders, assets } from '../../db/schema/index.js'
+import type { getDb } from '@repo/db'
+import { assetMarkets, assetNetworks, assetProviders, assets } from '@repo/db/schema'
 import { fixtureQuotes } from './fixture.js'
 
 export type CoinsDb = Awaited<ReturnType<typeof getDb>>

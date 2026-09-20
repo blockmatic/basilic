@@ -116,7 +116,7 @@ and tests instead of relying on memory or assuming that documentation is current
   index.
 - Exceptions: Fastify autoload `routes/` and `plugins/` (no `index.ts` there);
   shadcn `@repo/ui/components/*`; generated `packages/core/src/gen`; Drizzle
-  `db/schema/index.ts`; package subpath indexes that are the implementation
+  `packages/db/src/schema/index.ts`; package subpath indexes that are the implementation
   (`packages/utils/src/data/index.ts`); named entries that would cycle
   (`catalogs/mapper.ts`).
 - Decision tree:

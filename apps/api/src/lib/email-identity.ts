@@ -1,6 +1,6 @@
+import type { getDb } from '@repo/db'
+import { users } from '@repo/db/schema'
 import { sql } from 'drizzle-orm'
-import type { getDb } from '../db/index.js'
-import { users } from '../db/schema/index.js'
 import { normalizeEmail } from './email.js'
 
 type Db = Awaited<ReturnType<typeof getDb>>

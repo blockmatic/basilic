@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
+import type { getDb } from '@repo/db'
+import { account, users } from '@repo/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { encryptAccountTokens } from '../../db/account.js'
-import type { getDb } from '../../db/index.js'
-import { account, users } from '../../db/schema/index.js'
 import { generateFunnyUsername } from '../username.js'
 
 /** OAuth API response; snake_case from Twitter API */

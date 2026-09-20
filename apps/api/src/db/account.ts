@@ -1,5 +1,5 @@
+import type { Account, NewAccount } from '@repo/db/schema'
 import { decrypt, encrypt } from '../lib/crypto.js'
-import type { Account, NewAccount } from './schema/tables/account.js'
 
 /**
  * Token fields that should be encrypted at rest

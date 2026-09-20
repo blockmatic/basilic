@@ -9,8 +9,8 @@ const testAccount = privateKeyToAccount(testPrivateKey as `0x${string}`)
 
 describe('POST /account/link/wallet/verify', () => {
   beforeEach(async () => {
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { web3Nonce, walletIdentities } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { web3Nonce, walletIdentities } = await import('@repo/db/schema')
     await db.delete(walletIdentities)
     await db.delete(web3Nonce)
   })
@@ -114,8 +114,8 @@ describe('POST /account/link/wallet/verify', () => {
     expect(response.statusCode).toBe(200)
     expect(JSON.parse(response.body)).toEqual({ ok: true })
 
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { walletIdentities } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { walletIdentities } = await import('@repo/db/schema')
     const { eq } = await import('drizzle-orm')
     const [row] = await db
       .select()
@@ -168,8 +168,8 @@ describe('POST /account/link/wallet/verify', () => {
     expect(response.statusCode).toBe(200)
     expect(JSON.parse(response.body)).toEqual({ ok: true })
 
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { walletIdentities } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { walletIdentities } = await import('@repo/db/schema')
     const { eq } = await import('drizzle-orm')
     const [row] = await db
       .select()

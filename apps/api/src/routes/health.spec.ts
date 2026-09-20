@@ -1,8 +1,8 @@
+import { getDb } from '@repo/db'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { cleanupGroupDatabase, setupGroupDatabase } from '../../test/utils/db-setup.js'
 import type { TestApp } from '../../test/utils/fastify.js'
 import { buildTestApp } from '../../test/utils/fastify.js'
-import { getDb } from '../db/index.js'
 
 vi.setConfig({
   testTimeout: 30000,

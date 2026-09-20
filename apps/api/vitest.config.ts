@@ -143,12 +143,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**'],
-      exclude: [
-        '**/*.{test,spec}.ts',
-        '**/*.md',
-        'src/db/migrations/**',
-        'src/routes/reference/template*.ts',
-      ],
+      exclude: ['**/*.{test,spec}.ts', '**/*.md', 'src/routes/reference/template*.ts'],
       reporter: ['text', 'html', 'lcov'],
     },
   },
@@ -165,11 +160,6 @@ export default defineConfig({
         // This handles imports like '../lib/env.js' -> '../lib/env' -> '../lib/env.ts'
         find: /^(\.\.?\/[^'"]*?)\.js$/,
         replacement: '$1',
-      },
-      {
-        // Resolve db/index.js to .ts (fixes auth plugin and other imports when loaded via autoload)
-        find: /^(.*\/)db\/index\.js$/,
-        replacement: '$1db/index.ts',
       },
       {
         // Handle absolute paths within src directory

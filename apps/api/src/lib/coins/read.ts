@@ -1,5 +1,5 @@
+import { assets } from '@repo/db/schema'
 import { eq } from 'drizzle-orm'
-import { assets } from '../../db/schema/index.js'
 import { fixtureQuotes, fixtureSync } from './fixture.js'
 import { type CoinsDb, seedIdentity } from './seed.js'
 
