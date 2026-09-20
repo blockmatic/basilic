@@ -2,7 +2,7 @@ import type { SearchParams } from 'nuqs/server'
 import { toCoinsQuery } from '@/lib/coins/search-query'
 import { loadSearchQuery } from '@/lib/coins/search-query.server'
 import { fetchMarkets } from '../markets/fetch-markets'
-import { CoinBoard } from './coin-board'
+import { CoinBoard } from './board'
 
 export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const query = await loadSearchQuery(searchParams)

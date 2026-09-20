@@ -9,7 +9,7 @@ Cursor slash, glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
 
-Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. `/w-build` verifies locally and does not commit. Publish with `/w-ship`. `/w-tdd` is opt-in. In-app chat is the [demo assistant](/docs/architecture/ai), not this page.
+Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. `/w-build` verifies locally and does not commit. Publish with `/w-ship`. `/w-tdd` is opt-in. Fastify `/ai/chat` is optional [API chrome](/docs/architecture/ai), not this page.
 
 ## Sources of truth
 
@@ -130,6 +130,6 @@ Checked 16 Sep 2026 during the agent-agnostic wiring change:
 
 - [Agent setup](/docs/development/cursor-setup) — optional Cursor indexing and MCP
 - [Skills](/docs/development/cursor-skills) — catalog, install flags, inventory
-- [AI](/docs/architecture/ai) — in-shell demo assistant
+- [AI](/docs/architecture/ai) — Fastify `/ai` routes and catalogs
 - Repo `.cursor/README.md` — Cursor file index (points here for how to work)
 - [basilic-skills](https://github.com/blockmatic/basilic-skills)

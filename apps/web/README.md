@@ -1,6 +1,6 @@
 # Web App
 
-Next.js 16 dashboard for the Basilic stack: signed-in home is the coin board (`GET /coins` + nuqs `SearchQuery`), plus settings, auth chrome, and an optional in-shell assistant. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
+Next.js 16 dashboard for the Basilic stack: signed-in home is the coin board (`GET /coins` + nuqs `SearchQuery`) with Commands | Chat composer chrome on the same island, plus settings and auth chrome. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
 
 ## Tech Stack
 

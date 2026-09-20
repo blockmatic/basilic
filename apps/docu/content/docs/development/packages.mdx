@@ -94,7 +94,7 @@ await client.auth.magiclink.request({
 
 React-only helpers built on top of `@repo/core`.
 
-Handwritten hooks on `@repo/core` (not generated). Public exports include `ApiProvider`, `createReactApiConfig`, `useReactApiConfig`, session/user, magic link, OAuth, passkeys, TOTP, API keys, profile, `useChatFromConfig` (in-shell [demo assistant](/docs/architecture/ai)), and Web3 verify (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useLinkEmail`). See `packages/react/src/index.ts`.
+Handwritten hooks on `@repo/core` (not generated). Public exports include `ApiProvider`, `createReactApiConfig`, `useReactApiConfig`, session/user, magic link, OAuth, passkeys, TOTP, API keys, profile, `useChatFromConfig` ([Fastify `/ai/chat`](/docs/architecture/ai); the dashboard does not mount it), and Web3 verify (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useLinkEmail`). See `packages/react/src/index.ts`.
 
 **Usage** (minimal):
 

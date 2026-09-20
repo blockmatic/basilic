@@ -46,8 +46,6 @@ Vitest `include` is `**/*.spec.ts` only. Every `*.test.ts` must be imported by a
 - **Contract (local, hard)** — `POST /ai/chat` and `/ai/generate` validation: 401 unauthenticated, 400 bad payloads, SSRF file-URL matrix (`data:` only). No provider calls; no soft skip.
 - **Remote (provider-dependent)** — Live Anthropic/Open Router/Ollama paths. The remote `describe` blocks skip entirely when `ANTHROPIC_API_KEY` is missing or placeholder (`sk-ant-xxx`). With a real key, `test/utils/ai-remote.ts` skips on 402 credits; 502/503/504 fail the suite.
 
-Web chat E2E (`chat-assistant.spec.ts`) uses Playwright `test.skip` for provider outages — not SSRF coverage.
-
 ## Auth helpers
 
 `@test/utils/auth-helper.js`: `getOrCreateSession`, `getWeb3Session`, `createAuthenticatedUser`, `insertTestPasskey`, `getApiKeyToken`, `clearSessionPool`.

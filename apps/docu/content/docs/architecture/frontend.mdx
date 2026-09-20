@@ -104,7 +104,7 @@ const [filters, setFilters] = useQueryStates({
 
 Compose with Base UI `render` (and `nativeButton={false}` when the node is not a button), not Radix `asChild`. Style parts with `data-slot` and open/checked with `data-open` / `data-checked` (Tailwind `data-open:*`, not `data-[state=open]:`). Full attribute list: [ADR 013](/docs/adrs/013-shadcn-base-ui).
 
-The dashboard in-shell assistant (`apps/web/components/assistant`) is optional [demo chrome](/docs/architecture/ai). Agent UI work: `/ui` for surfaces. Reuse `@repo/ui` before new primitives (`/shadcn`). Compound APIs: `composition-patterns`. Visual direction stays `frontend-design`; existing tokens win. Brand and palette rules: root `DESIGN.md`. UI code checklist: `web-design-guidelines`. Do not add a second design skill or generate `DESIGN.md` from `tokens.css`.
+The dashboard composer lives on the coin board (`Commands` | `Chat` chrome inside the same client island as the table). Catalogs in `apps/web/components/assistant` stay for G1. Fastify `POST /ai/chat` is not mounted from the dashboard. Agent UI work: `/ui` for surfaces. Reuse `@repo/ui` before new primitives (`/shadcn`). Compound APIs: `composition-patterns`. Visual direction stays `frontend-design`; existing tokens win. Brand and palette rules: root `DESIGN.md`. UI code checklist: `web-design-guidelines`. Do not add a second design skill or generate `DESIGN.md` from `tokens.css`.
 
 ## Web3 (apps/web)
 

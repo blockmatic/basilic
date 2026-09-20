@@ -13,7 +13,8 @@ import {
   toCoinsQuery,
 } from '@/lib/coins/search-query'
 import { coinsListQueryKey, coinsListQueryKeyPrefix, coinWatchesQueryKey } from '@/lib/query-keys'
-import { MarketsTable } from '../markets/markets-table'
+import { MarketsTable } from '../../markets/markets-table'
+import { BoardLayout } from './rail'
 
 const watchCap = 20
 const boardStaleMs = 30_000
@@ -97,27 +98,33 @@ export function CoinBoard({
   }
 
   return (
-    <div className="w-full space-y-4" data-testid="coin-board">
-      {caption ? (
-        <h2 className="font-heading text-base font-semibold md:text-lg">{caption}</h2>
-      ) : null}
-      {notices.map(notice => (
-        <p key={notice} className="text-muted-foreground text-sm">
-          {notice}
-        </p>
-      ))}
-      {emptyWatchlist ? (
-        <p className="text-muted-foreground text-sm">nothing on your list</p>
-      ) : (
-        <MarketsTable
-          coins={coins}
-          error={error ?? undefined}
-          watchedIds={watchedIds}
-          isAtCap={isAtCap}
-          pendingAssetId={watchMutation.isPending ? watchMutation.variables?.assetId : undefined}
-          onToggleWatch={handleToggleWatch}
-        />
-      )}
+    <div className="w-full" data-testid="coin-board">
+      <BoardLayout>
+        <div className="space-y-4">
+          {caption ? (
+            <h2 className="font-heading text-base font-semibold md:text-lg">{caption}</h2>
+          ) : null}
+          {notices.map(notice => (
+            <p key={notice} className="text-muted-foreground text-sm">
+              {notice}
+            </p>
+          ))}
+          {emptyWatchlist ? (
+            <p className="text-muted-foreground text-sm">nothing on your list</p>
+          ) : (
+            <MarketsTable
+              coins={coins}
+              error={error ?? undefined}
+              watchedIds={watchedIds}
+              isAtCap={isAtCap}
+              pendingAssetId={
+                watchMutation.isPending ? watchMutation.variables?.assetId : undefined
+              }
+              onToggleWatch={handleToggleWatch}
+            />
+          )}
+        </div>
+      </BoardLayout>
     </div>
   )
 }

@@ -80,6 +80,7 @@ export function PromptInputSubmit({
   disabled,
   onStop,
   className,
+  children,
   ...props
 }: PromptInputSubmitProps) {
   const isStreaming = status === 'streaming'
@@ -89,14 +90,15 @@ export function PromptInputSubmit({
       size="icon"
       disabled={disabled}
       onClick={isStreaming ? onStop : undefined}
-      className={cn('absolute bottom-2 right-2 size-8', className)}
+      className={cn('absolute right-2 bottom-2 size-8', className)}
       {...props}
     >
-      {isStreaming ? (
-        <SquareIcon className="size-4" aria-label="Stop" />
-      ) : (
-        <SendIcon className="size-4" aria-label="Send" />
-      )}
+      {children ??
+        (isStreaming ? (
+          <SquareIcon className="size-4" aria-label="Stop" />
+        ) : (
+          <SendIcon className="size-4" aria-label="Send" />
+        ))}
     </Button>
   )
 }
