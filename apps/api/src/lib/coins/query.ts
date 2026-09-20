@@ -23,10 +23,12 @@ async function filterCoins({
   coins: MarketCoin[]
   query: SearchQuery
   userId: string
-}): Promise<MarketCoin[]> {
+}): Promise<{ coins: MarketCoin[]; watchlistEmpty: boolean }> {
   let rows = coins
+  let watchlistEmpty = false
   if (query.universe === 'watchlist') {
     const { watches } = await listWatches({ userId })
+    watchlistEmpty = watches.length === 0
     const ids = new Set(watches.map(watch => watch.assetId))
     rows = rows.filter(coin => ids.has(coin.id))
   } else if (query.universe === 'majors') {
@@ -46,7 +48,7 @@ async function filterCoins({
   if (maxChangePct != null) rows = rows.filter(coin => coin.change24h <= maxChangePct)
   if (minPrice != null) rows = rows.filter(coin => coin.priceUsd >= minPrice)
   if (maxPrice != null) rows = rows.filter(coin => coin.priceUsd <= maxPrice)
-  return rows
+  return { coins: rows, watchlistEmpty }
 }
 
 function sortCoins({ coins, query }: { coins: MarketCoin[]; query: SearchQuery }): MarketCoin[] {
@@ -70,7 +72,11 @@ export async function queryCoins({
 }) {
   const effective = normalizeSearchQuery({ query })
   const { coins, sync } = await listMarkets({ db })
-  const filtered = await filterCoins({ coins, query: effective, userId })
+  const { coins: filtered, watchlistEmpty } = await filterCoins({
+    coins,
+    query: effective,
+    userId,
+  })
   const sorted = sortCoins({ coins: filtered, query: effective })
   const sliced = effective.topN != null ? sorted.slice(0, effective.topN) : sorted
   const highlight = new Set(effective.highlight ?? [])
@@ -82,7 +88,7 @@ export async function queryCoins({
     coins: marked,
     sync,
     query: effective,
-    spokenSummary: spokenSummary({ coins: marked, query: effective, sync }),
+    spokenSummary: spokenSummary({ coins: marked, query: effective, sync, watchlistEmpty }),
     queryCaption: describeQuery({ query: effective }),
   }
 }

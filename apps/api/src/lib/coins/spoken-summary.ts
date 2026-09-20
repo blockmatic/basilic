@@ -87,6 +87,21 @@ function clipSpoken({ text }: { text: string }): string {
   return `${text.slice(0, maxSpokenChars - 3)}...`
 }
 
+function spokenSignedPercent({ value }: { value: number }): string {
+  const digits = spokenDigits({ value })
+  if (value < 0) return `minus ${digits} percent`
+  return `${digits} percent`
+}
+
+function changeThresholdPhrase({ kind, value }: { kind: 'min' | 'max'; value: number }): string {
+  if (kind === 'min') {
+    if (value < 0) return `change at least ${spokenSignedPercent({ value })}`
+    return `up at least ${spokenSignedPercent({ value })}`
+  }
+  if (value < 0) return `change at most ${spokenSignedPercent({ value })}`
+  return `at most ${spokenSignedPercent({ value })} change`
+}
+
 export function describeQuery({ query }: { query: SearchQuery }): string {
   const universe =
     query.universe === 'watchlist'
@@ -98,9 +113,9 @@ export function describeQuery({ query }: { query: SearchQuery }): string {
   if (query.text) filters.push(`matching ${query.text}`)
   if (query.symbols) filters.push('selected symbols')
   if (query.minChangePct != null)
-    filters.push(`up at least ${spokenDigits({ value: query.minChangePct })} percent`)
+    filters.push(changeThresholdPhrase({ kind: 'min', value: query.minChangePct }))
   if (query.maxChangePct != null)
-    filters.push(`at most ${spokenDigits({ value: query.maxChangePct })} percent change`)
+    filters.push(changeThresholdPhrase({ kind: 'max', value: query.maxChangePct }))
   if (query.minPrice != null || query.maxPrice != null) filters.push('price filtered')
 
   let sort = 'by rank'
@@ -120,14 +135,16 @@ export function spokenSummary({
   coins,
   query,
   sync,
+  watchlistEmpty = false,
   now = Date.now(),
 }: {
   coins: SpokenCoin[]
   query: SearchQuery
   sync: SpokenSync
+  watchlistEmpty?: boolean
   now?: number
 }): string {
-  if (query.universe === 'watchlist' && coins.length === 0) return 'Your list is empty.'
+  if (query.universe === 'watchlist' && watchlistEmpty) return 'Your list is empty.'
   if (coins.length === 0) return 'Nothing matches that filter.'
 
   const shown = coins.slice(0, maxSpokenNames)

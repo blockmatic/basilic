@@ -19,7 +19,16 @@ describe('spokenSummary', () => {
 
   it('returns empty watchlist copy', () => {
     const query = normalizeSearchQuery({ query: { universe: 'watchlist' } })
-    expect(spokenSummary({ coins: [], query, sync: fixtureSync })).toBe('Your list is empty.')
+    expect(spokenSummary({ coins: [], query, sync: fixtureSync, watchlistEmpty: true })).toBe(
+      'Your list is empty.',
+    )
+  })
+
+  it('returns empty filter copy when the watchlist has rows', () => {
+    const query = normalizeSearchQuery({ query: { universe: 'watchlist', text: 'nope' } })
+    expect(spokenSummary({ coins: [], query, sync: fixtureSync, watchlistEmpty: false })).toBe(
+      'Nothing matches that filter.',
+    )
   })
 
   it('returns empty filter copy', () => {
@@ -47,5 +56,15 @@ describe('describeQuery', () => {
     const caption = describeQuery({ query })
     expect(caption.toLowerCase()).toMatch(/mover|change/)
     expect(caption.toLowerCase()).not.toContain('doge')
+  })
+
+  it('keeps non-negative minChangePct wording', () => {
+    const query = normalizeSearchQuery({ query: { minChangePct: 5 } })
+    expect(describeQuery({ query }).toLowerCase()).toContain('up at least five percent')
+  })
+
+  it('preserves a negative minChangePct sign', () => {
+    const query = normalizeSearchQuery({ query: { minChangePct: -5 } })
+    expect(describeQuery({ query }).toLowerCase()).toContain('change at least minus five percent')
   })
 })

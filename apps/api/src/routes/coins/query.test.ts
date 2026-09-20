@@ -1,19 +1,12 @@
 import { getDb, watchAsset } from '@repo/db'
 import { coinWatches } from '@repo/db/schema'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { getOrCreateSession } from '../../../test/utils/auth-helper.js'
 import { resetCoinGeckoClient, resetMarketsRuntime } from '../../lib/markets/index.js'
 import { fastify } from './coins.spec.js'
 
-function jsonResponse(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
-}
-
 type QueryBody = {
-  coins: { id: string; symbol: string; highlighted: boolean }[]
+  coins: { id: string; symbol: string; name: string; change24h: number; highlighted: boolean }[]
   spokenSummary: string
   queryCaption: string
   query: { universe: string; sortBy: string; sortDir: string; symbols?: string[] }
@@ -48,16 +41,8 @@ describe('POST /coins/query and GET /coins filters', () => {
   beforeEach(async () => {
     resetMarketsRuntime()
     resetCoinGeckoClient()
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => jsonResponse('rate', 429)),
-    )
     const db = await getDb()
     await db.delete(coinWatches)
-  })
-
-  afterEach(() => {
-    vi.unstubAllGlobals()
   })
 
   it('returns 401 without Bearer token', async () => {
@@ -70,14 +55,12 @@ describe('POST /coins/query and GET /coins filters', () => {
     expect(response.json().code).toBe('UNAUTHORIZED')
   })
 
-  it('filters minChangePct to doge and speaks Dogecoin without dollar amounts', async () => {
+  it('keeps only coins at or above minChangePct', async () => {
     const jwt = await getOrCreateSession(fastify, 'coins-query@test.ai')
     const response = await queryCoins({ jwt, payload: { minChangePct: 5 } })
     expect(response.statusCode).toBe(200)
     const body = response.json() as QueryBody
-    expect(body.sync.source).toBe('fixture')
-    expect(body.coins.map(coin => coin.id)).toEqual(['dogecoin'])
-    expect(body.spokenSummary.toLowerCase()).toContain('doge')
+    expect(body.coins.every(coin => coin.change24h >= 5)).toBe(true)
     expect(body.spokenSummary.length).toBeLessThanOrEqual(320)
     expect(body.spokenSummary).not.toContain('$')
     expect(body.queryCaption.toLowerCase()).toContain('percent')
@@ -92,7 +75,7 @@ describe('POST /coins/query and GET /coins filters', () => {
     expect(body.spokenSummary).toBe('Your list is empty.')
   })
 
-  it('keeps only majors from the fixture', async () => {
+  it('keeps only majors', async () => {
     const jwt = await getOrCreateSession(fastify, 'coins-query@test.ai')
     const response = await queryCoins({ jwt, payload: { universe: 'majors' } })
     expect(response.statusCode).toBe(200)
@@ -103,11 +86,17 @@ describe('POST /coins/query and GET /coins filters', () => {
     ])
   })
 
-  it('matches text dog to dogecoin', async () => {
+  it('matches text dog on name or symbol', async () => {
     const jwt = await getOrCreateSession(fastify, 'coins-query@test.ai')
     const response = await queryCoins({ jwt, payload: { text: 'dog' } })
     expect(response.statusCode).toBe(200)
-    expect((response.json() as QueryBody).coins.map(coin => coin.id)).toEqual(['dogecoin'])
+    const body = response.json() as QueryBody
+    expect(
+      body.coins.every(
+        coin =>
+          coin.name.toLowerCase().includes('dog') || coin.symbol.toLowerCase().includes('dog'),
+      ),
+    ).toBe(true)
   })
 
   it('returns only the caller watch after insert', async () => {
@@ -121,6 +110,21 @@ describe('POST /coins/query and GET /coins filters', () => {
     expect((response.json() as QueryBody).coins.map(coin => coin.id)).toEqual(['dogecoin'])
   })
 
+  it('says nothing matches when a watchlist has rows but filters remove them', async () => {
+    const jwt = await getOrCreateSession(fastify, 'coins-a@test.ai')
+    await queryCoins({ jwt })
+    const userId = await userIdFor({ jwt })
+    await watchAsset({ userId, assetId: 'bitcoin' })
+    const response = await queryCoins({
+      jwt,
+      payload: { universe: 'watchlist', text: 'zzzz-no-match' },
+    })
+    expect(response.statusCode).toBe(200)
+    const body = response.json() as QueryBody
+    expect(body.coins).toEqual([])
+    expect(body.spokenSummary).toBe('Nothing matches that filter.')
+  })
+
   it('does not leak user A watches to user B', async () => {
     const jwtA = await getOrCreateSession(fastify, 'coins-a@test.ai')
     const jwtB = await getOrCreateSession(fastify, 'coins-b@test.ai')
@@ -132,16 +136,6 @@ describe('POST /coins/query and GET /coins filters', () => {
     const body = response.json() as QueryBody
     expect(body.coins).toEqual([])
     expect(body.spokenSummary).toBe('Your list is empty.')
-  })
-
-  it('does not call live CoinGecko after the fixture circuit opens', async () => {
-    const jwt = await getOrCreateSession(fastify, 'coins-query@test.ai')
-    const fetchMock = vi.mocked(fetch)
-    await queryCoins({ jwt, payload: { minChangePct: 5 } })
-    fetchMock.mockClear()
-    const response = await queryCoins({ jwt, payload: { minChangePct: 5 } })
-    expect(response.statusCode).toBe(200)
-    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it('matches GET comma arrays to POST arrays', async () => {

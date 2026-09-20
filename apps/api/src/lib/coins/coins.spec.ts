@@ -9,6 +9,7 @@ afterAll(async () => {
   await cleanupGroupDatabase()
 })
 
+import './query.test'
 import './read.test'
 import './search-query.test'
 import './seed.test'
