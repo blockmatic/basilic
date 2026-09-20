@@ -85,7 +85,7 @@ The web app uses `useChatFromConfig` (`@repo/react`) → `POST {baseUrl}/ai/chat
 
 `assistant-chat.tsx` matches `tool-getAccountInfo` → `user-info-catalog.tsx` and `tool-getMarketSnapshot` → `market-card-catalog.tsx`. Do not rename a tool or change the output shape without updating the web UI. Completion for account is `accountRender: true`; completion for markets is the market card rendered. A text-only reply is **not** either job. There is no GenUI CTA (`actions: {}`). Entry is the composer or a suggestion: “What moved?”, “Explain BTC”, “Who am I?”. Product analytics records `assistant_turn` with `accountRender` when the account surface is present — not merely when the assistant replies. See [Product analytics](/docs/architecture/analytics).
 
-`getMarketSnapshot` reads the same public CoinGecko markets URL as the web board. On 429 or network failure it returns a checked-in mock so fork-and-run does not need a CoinGecko key.
+`getMarketSnapshot` still fetches the public CoinGecko markets URL (the signed-in web board reads `GET /coins` instead). On 429 or network failure it returns a checked-in mock so fork-and-run does not need a CoinGecko key.
 
 Composer send (textarea + suggestions) is disabled while `status !== 'ready'`; stop remains available during `streaming`. Multi-turn history is the request `messages` array only — nothing is persisted.
 

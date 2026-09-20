@@ -105,4 +105,5 @@ auth: {
     },
   },
 },
+listCoins: gen.listCoins,
 }

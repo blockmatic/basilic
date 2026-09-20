@@ -3353,3 +3353,53 @@ export type Web3SolanaVerifyResponses = {
 };
 
 export type Web3SolanaVerifyResponse = Web3SolanaVerifyResponses[keyof Web3SolanaVerifyResponses];
+
+export type ListCoinsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/coins/';
+};
+
+export type ListCoinsErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type ListCoinsError = ListCoinsErrors[keyof ListCoinsErrors];
+
+export type ListCoinsResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    coins: Array<{
+      id: string;
+      symbol: string;
+      name: string;
+      imageUrl: string | unknown;
+      priceUsd: number;
+      change24h: number;
+      volumeUsd: number;
+      marketCapUsd: number;
+      rank: number;
+      fetchedAt: string;
+    }>;
+    sync: {
+      source: string;
+      fetchedAt: string | unknown;
+      lastError: string | unknown;
+    };
+  };
+};
+
+export type ListCoinsResponse = ListCoinsResponses[keyof ListCoinsResponses];

@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@repo/error'
 import { env } from '@/lib/env'
-import { fetchMarkets } from '../markets/fetch-markets'
+import { fetchMarkets, isSampleBoard } from '../markets/fetch-markets'
 import { MarketsTable } from '../markets/markets-table'
 import { NewsList, type NewsListArticle } from './news-list'
 
@@ -32,14 +32,12 @@ export default async function Home() {
     <div className="w-full space-y-8">
       <section className="space-y-4">
         <p className="text-muted-foreground max-w-2xl text-sm">
-          Public prices (CoinGecko or sample). Ask the assistant what moved.
+          Snapshot prices from the API. Ask the assistant what moved.
         </p>
-        {markets.source === 'mock' ? (
-          <p className="text-muted-foreground text-sm">
-            Showing a sample board. CoinGecko was unavailable or rate-limited.
-          </p>
+        {isSampleBoard(markets.sync) ? (
+          <p className="text-muted-foreground text-sm">Showing a sample board.</p>
         ) : null}
-        <MarketsTable coins={markets.coins} />
+        <MarketsTable coins={markets.coins} error={markets.error ?? undefined} />
       </section>
       <section className="space-y-3">
         <h2 className="font-heading text-base font-semibold md:text-lg">Headlines</h2>

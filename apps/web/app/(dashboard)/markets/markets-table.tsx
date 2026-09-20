@@ -10,15 +10,16 @@ import { cn } from '@repo/ui/lib/utils'
 import Image from 'next/image'
 
 export type CoinMarket = {
-  id?: string
-  symbol?: string
-  name?: string
-  image?: string
-  current_price?: number
-  market_cap?: number
-  market_cap_rank?: number
-  price_change_percentage_24h?: number | null
-  total_volume?: number
+  id: string
+  symbol: string
+  name: string
+  imageUrl: string | null
+  priceUsd: number
+  change24h: number
+  volumeUsd: number
+  marketCapUsd: number
+  rank: number
+  fetchedAt: string
 }
 
 type MarketsTableProps = {
@@ -38,24 +39,18 @@ function formatPrice(n: number) {
   }).format(n)
 }
 
-function formatChange24h(value: number | null | undefined) {
-  if (value == null) return '—'
+function formatChange24h(value: number) {
   const sign = value >= 0 ? '+' : ''
   return `${sign}${value.toFixed(2)}%`
 }
 
-function Change24hBadge({ value }: { value: number | null | undefined }) {
-  const isNeutral = value == null
-  const isPositive = !isNeutral && value >= 0
+function Change24hBadge({ value }: { value: number }) {
+  const isPositive = value >= 0
   return (
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-heading text-xs font-semibold tabular-nums transition-colors',
-        isNeutral
-          ? 'bg-muted/50 text-muted-foreground'
-          : isPositive
-            ? 'bg-chart-2/15 text-chart-2'
-            : 'bg-destructive/12 text-destructive',
+        isPositive ? 'bg-chart-2/15 text-chart-2' : 'bg-destructive/12 text-destructive',
       )}
     >
       {formatChange24h(value)}
@@ -81,15 +76,15 @@ export function MarketsTable({ coins, error }: MarketsTableProps) {
     <div className="min-w-0 w-full max-w-full">
       {/* Mobile/Tablet/Mid-size: card layout (touch-friendly, avoids truncation when assistant open) */}
       <div className="space-y-2 xl:hidden">
-        {coins.map((c, i) => (
+        {coins.map(c => (
           <div
-            key={c.id ?? i}
+            key={c.id}
             className="flex min-h-[52px] items-center justify-between gap-3 rounded-xl border border-border/80 bg-card p-4 transition-colors"
           >
             <div className="flex min-w-0 flex-1 items-center gap-3">
-              {c.image && (
+              {c.imageUrl && (
                 <Image
-                  src={c.image}
+                  src={c.imageUrl}
                   alt=""
                   width={36}
                   height={36}
@@ -97,22 +92,20 @@ export function MarketsTable({ coins, error }: MarketsTableProps) {
                 />
               )}
               <div className="min-w-0">
-                <p className="truncate font-heading font-medium">{c.name ?? 'Unknown'}</p>
-                <p className="text-muted-foreground truncate text-xs uppercase">{c.symbol ?? ''}</p>
+                <p className="truncate font-heading font-medium">{c.name}</p>
+                <p className="text-muted-foreground truncate text-xs uppercase">{c.symbol}</p>
               </div>
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1">
               <span className="font-heading text-base font-semibold tabular-nums">
-                {c.current_price != null
-                  ? new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: c.current_price < 0.01 ? 6 : 2,
-                    }).format(c.current_price)
-                  : '—'}
+                {new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: c.priceUsd < 0.01 ? 6 : 2,
+                }).format(c.priceUsd)}
               </span>
-              <Change24hBadge value={c.price_change_percentage_24h} />
+              <Change24hBadge value={c.change24h} />
             </div>
           </div>
         ))}
@@ -142,16 +135,16 @@ export function MarketsTable({ coins, error }: MarketsTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {coins.map((c, i) => (
-              <TableRow key={c.id ?? i}>
+            {coins.map(c => (
+              <TableRow key={c.id}>
                 <TableCell className="text-muted-foreground hidden font-medium text-left lg:table-cell">
-                  {c.market_cap_rank ?? i + 1}
+                  {c.rank}
                 </TableCell>
                 <TableCell className="min-w-0 text-left">
                   <div className="flex min-w-0 items-center gap-2">
-                    {c.image && (
+                    {c.imageUrl && (
                       <Image
-                        src={c.image}
+                        src={c.imageUrl}
                         alt=""
                         width={24}
                         height={24}
@@ -159,40 +152,34 @@ export function MarketsTable({ coins, error }: MarketsTableProps) {
                       />
                     )}
                     <div className="min-w-0">
-                      <span className="truncate font-medium">{c.name ?? 'Unknown'}</span>
+                      <span className="truncate font-medium">{c.name}</span>
                       <span className="ml-1 shrink-0 text-muted-foreground text-sm uppercase">
-                        {c.symbol ?? ''}
+                        {c.symbol}
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="numeric min-w-0 truncate px-2 text-right font-medium">
-                  {c.current_price != null
-                    ? new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: c.current_price < 0.01 ? 6 : 2,
-                      }).format(c.current_price)
-                    : '—'}
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: c.priceUsd < 0.01 ? 6 : 2,
+                  }).format(c.priceUsd)}
                 </TableCell>
                 <TableCell
                   className={cn(
                     'numeric min-w-0 px-2 text-right',
-                    c.price_change_percentage_24h == null
-                      ? 'text-muted-foreground'
-                      : c.price_change_percentage_24h >= 0
-                        ? 'text-chart-2'
-                        : 'text-destructive',
+                    c.change24h >= 0 ? 'text-chart-2' : 'text-destructive',
                   )}
                 >
-                  {formatChange24h(c.price_change_percentage_24h)}
+                  {formatChange24h(c.change24h)}
                 </TableCell>
                 <TableCell className="numeric hidden truncate px-2 text-right text-muted-foreground md:table-cell">
-                  {c.market_cap != null ? formatPrice(c.market_cap) : '—'}
+                  {formatPrice(c.marketCapUsd)}
                 </TableCell>
                 <TableCell className="numeric hidden truncate px-2 text-right text-muted-foreground md:table-cell">
-                  {c.total_volume != null ? formatPrice(c.total_volume) : '—'}
+                  {formatPrice(c.volumeUsd)}
                 </TableCell>
               </TableRow>
             ))}

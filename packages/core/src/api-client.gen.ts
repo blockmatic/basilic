@@ -60,6 +60,8 @@ import type {
   GetUserResponse,
   HealthCheckData,
   HealthCheckResponse,
+  ListCoinsData,
+  ListCoinsResponse,
   LogoutData,
   LogoutResponse,
   MagiclinkRequestData,
@@ -214,5 +216,6 @@ export type CoreApiClient = {
         verify: (opts: Options<Web3SolanaVerifyData>) => Promise<Web3SolanaVerifyResponse>
       }
     }
-  }
+  };
+  listCoins: (opts?: Options<ListCoinsData>) => Promise<ListCoinsResponse>
 }

@@ -141,6 +141,13 @@
       "when": 1788618513571,
       "tag": "0019_deep_human_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1789907215427,
+      "tag": "0020_premium_king_bedlam",
+      "breakpoints": true
     }
   ]
 }

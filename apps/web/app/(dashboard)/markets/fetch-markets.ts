@@ -1,18 +1,56 @@
 import { getErrorMessage } from '@repo/error'
+import { getServerAuthToken } from '@/lib/auth/auth-server'
+import { createBffClient } from '@/lib/auth/bff-client'
 import type { CoinMarket } from './markets-table'
-import { marketsMock } from './mock-snapshot'
 
-const coingeckoUrl =
-  'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h'
+export type MarketsSync = {
+  source: string
+  fetchedAt: string | null
+  lastError: string | null
+}
 
-export async function fetchMarkets() {
+const emptySync: MarketsSync = { source: 'mock', fetchedAt: null, lastError: null }
+
+function asNullableString(value: unknown) {
+  return typeof value === 'string' ? value : null
+}
+
+export function isSampleBoard({ source, fetchedAt }: MarketsSync) {
+  return source === 'mock' || fetchedAt == null
+}
+
+export async function fetchMarkets(): Promise<{
+  coins: CoinMarket[]
+  sync: MarketsSync
+  error: string | null
+}> {
+  const { token } = await getServerAuthToken()
+  if (!token) return { coins: [], sync: emptySync, error: 'Authentication required' }
+
+  const { client } = createBffClient({ token })
   try {
-    const res = await fetch(coingeckoUrl, { next: { revalidate: 60 } })
-    if (!res.ok) return { coins: marketsMock, source: 'mock' as const, error: null }
-    const data = (await res.json()) as CoinMarket[]
-    if (!data?.length) return { coins: marketsMock, source: 'mock' as const, error: null }
-    return { coins: data, source: 'live' as const, error: null }
+    const data = await client.listCoins()
+    return {
+      coins: data.coins.map(coin => ({
+        id: coin.id,
+        symbol: coin.symbol,
+        name: coin.name,
+        imageUrl: asNullableString(coin.imageUrl),
+        priceUsd: coin.priceUsd,
+        change24h: coin.change24h,
+        volumeUsd: coin.volumeUsd,
+        marketCapUsd: coin.marketCapUsd,
+        rank: coin.rank,
+        fetchedAt: coin.fetchedAt,
+      })),
+      sync: {
+        source: data.sync.source,
+        fetchedAt: asNullableString(data.sync.fetchedAt),
+        lastError: asNullableString(data.sync.lastError),
+      },
+      error: null,
+    }
   } catch (error) {
-    return { coins: marketsMock, source: 'mock' as const, error: getErrorMessage(error) }
+    return { coins: [], sync: emptySync, error: getErrorMessage(error) }
   }
 }

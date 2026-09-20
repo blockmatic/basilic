@@ -9432,6 +9432,165 @@
           }
         }
       }
+    },
+    "/coins/": {
+      "get": {
+        "operationId": "listCoins",
+        "summary": "List coins snapshot",
+        "tags": [
+          "coins"
+        ],
+        "description": "List the stored coin snapshot. Seeds mock rows when the table is empty.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "coins",
+                    "sync"
+                  ],
+                  "properties": {
+                    "coins": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "symbol",
+                          "name",
+                          "imageUrl",
+                          "priceUsd",
+                          "change24h",
+                          "volumeUsd",
+                          "marketCapUsd",
+                          "rank",
+                          "fetchedAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "symbol": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "imageUrl": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "priceUsd": {
+                            "type": "number"
+                          },
+                          "change24h": {
+                            "type": "number"
+                          },
+                          "volumeUsd": {
+                            "type": "number"
+                          },
+                          "marketCapUsd": {
+                            "type": "number"
+                          },
+                          "rank": {
+                            "type": "integer"
+                          },
+                          "fetchedAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "sync": {
+                      "type": "object",
+                      "required": [
+                        "source",
+                        "fetchedAt",
+                        "lastError"
+                      ],
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "fetchedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "lastError": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "servers": [
