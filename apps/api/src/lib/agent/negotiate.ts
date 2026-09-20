@@ -11,19 +11,26 @@ function parseAcceptOffers({ acceptHeader }: { acceptHeader?: string }): AcceptO
   const raw = acceptHeader?.trim()
   if (!raw) return [{ kind: 'star', q: 1 }]
 
-  return raw.split(',').flatMap(part => {
+  const offers: AcceptOffer[] = []
+  for (const part of raw.split(',')) {
     const [typeToken, ...params] = part.trim().split(';')
     const type = typeToken?.trim().toLowerCase()
-    if (!type) return []
+    if (!type) continue
     const qToken = params.find(p => p.trim().toLowerCase().startsWith('q='))
     const q = qToken ? Number(qToken.trim().slice(2)) : 1
-    if (!Number.isFinite(q) || q <= 0) return []
-    if (type === '*/*' || type === 'text/*') return [{ kind: 'star', q }]
-    if (type === 'text/html' || type === 'application/xhtml+xml') return [{ kind: 'html', q }]
-    if (type === 'text/markdown' || type === 'text/x-markdown') return [{ kind: 'markdown', q }]
-    if (type === 'application/json') return [{ kind: 'json', q }]
-    return []
-  })
+    if (!Number.isFinite(q) || q <= 0) continue
+    const kind = mediaKind({ type })
+    if (kind) offers.push({ kind, q })
+  }
+  return offers
+}
+
+function mediaKind({ type }: { type: string }): AcceptOffer['kind'] | null {
+  if (type === '*/*' || type === 'text/*') return 'star'
+  if (type === 'text/html' || type === 'application/xhtml+xml') return 'html'
+  if (type === 'text/markdown' || type === 'text/x-markdown') return 'markdown'
+  if (type === 'application/json') return 'json'
+  return null
 }
 
 export function negotiateAccept({ acceptHeader }: { acceptHeader?: string }): AcceptMedia {
