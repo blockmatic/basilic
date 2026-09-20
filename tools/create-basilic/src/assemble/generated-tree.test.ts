@@ -30,7 +30,6 @@ describe('assert-generated-tree', () => {
         version: 1,
         skills: {
           'w-plan': { source: 'blockmatic/basilic-skills', sourceType: 'github' },
-          'grill-me': { source: 'mattpocock/skills', sourceType: 'github' },
           other: { source: 'resend/react-email', sourceType: 'github' },
         },
       })}\n`,
@@ -42,5 +41,26 @@ describe('assert-generated-tree', () => {
     )
     expect(result.status).toBe(1)
     expect(result.stderr).toContain('unsupported catalogs (resend/react-email)')
+  })
+
+  it('rejects mattpocock/skills in skills-lock.json', async () => {
+    const dest = await mkdtemp(join(tmpdir(), 'assert-generated-tree-matt-'))
+    writeFileSync(
+      join(dest, 'skills-lock.json'),
+      `${JSON.stringify({
+        version: 1,
+        skills: {
+          'w-plan': { source: 'blockmatic/basilic-skills', sourceType: 'github' },
+          'grill-me': { source: 'mattpocock/skills', sourceType: 'github' },
+        },
+      })}\n`,
+    )
+    const result = spawnSync(
+      'node',
+      [join(repoRootFromPackage, 'scripts/assert-generated-tree.mjs'), dest],
+      { encoding: 'utf8' },
+    )
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('unsupported catalogs (mattpocock/skills)')
   })
 })

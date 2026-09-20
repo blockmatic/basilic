@@ -20,9 +20,7 @@ const repoRoot = join(scriptDir, '..')
 const lockPath = join(repoRoot, 'skills-lock.json')
 const ownedListPath = join(scriptDir, 'owned-agent-skills.txt')
 const basilicCatalog = 'blockmatic/basilic-skills'
-const mattCatalog = 'mattpocock/skills'
-const allowedGithub = new Set([basilicCatalog, mattCatalog])
-const skipMattNames = new Set(['pr', 'retro'])
+const allowedGithub = new Set([basilicCatalog])
 const allowLocal = process.env.BASILIC_SKILLS_LOCAL === '1'
 
 function ownedSkillNames() {
@@ -98,9 +96,12 @@ function restoreOwned({ names, skillsDir, stashDir }) {
   rmSync(stashDir, { recursive: true, force: true })
 }
 
-function dropSkippedMattSkills({ lock }) {
-  for (const name of skipMattNames) delete lock.skills?.[name]
-  delete lock.skills?.workflow
+function pruneForeignSkills({ names, skillsDir }) {
+  const keep = new Set(names)
+  for (const name of readdirSync(skillsDir)) {
+    if (keep.has(name) || name.startsWith('w-')) continue
+    rmSync(join(skillsDir, name), { recursive: true, force: true })
+  }
 }
 
 function main() {
@@ -131,13 +132,6 @@ function main() {
     console.error(`skills-lock.json must pin ${basilicCatalog}`)
     exit(1)
   }
-  if (!sources.includes(mattCatalog) && !allowLocal) {
-    const hasMatt = Object.values(skills).some(skill => skill.source === mattCatalog)
-    if (!hasMatt) {
-      console.error(`skills-lock.json must pin ${mattCatalog}`)
-      exit(1)
-    }
-  }
 
   const { source, error } = resolveBasilicCatalog()
   if (error || !source) {
@@ -150,17 +144,14 @@ function main() {
   const { stashDir } = stashOwned({ names, skillsDir })
   try {
     runSkillsAdd({ source })
-    runSkillsAdd({ source: mattCatalog })
   } finally {
     restoreOwned({ names, skillsDir, stashDir })
   }
 
   const installed = JSON.parse(readFileSync(lockPath, 'utf8'))
-  dropSkippedMattSkills({ lock: installed })
   if (process.env.BASILIC_SKILLS_WRITE_LOCK === '1') {
     for (const [name, skill] of Object.entries(installed.skills ?? {})) {
       if (skill.sourceType !== 'local') continue
-      if (skill.source === mattCatalog || String(skill.source).includes('mattpocock')) continue
       skill.source = basilicCatalog
       skill.sourceType = 'github'
       if (!skill.skillPath) skill.skillPath = `skills/${name}/SKILL.md`
@@ -168,10 +159,7 @@ function main() {
     writeFileSync(lockPath, `${JSON.stringify(installed, null, 2)}\n`)
   } else writeFileSync(lockPath, snapshot)
 
-  const leftover = readdirSync(skillsDir).filter(
-    name => skipMattNames.has(name) || name === 'workflow',
-  )
-  for (const name of leftover) rmSync(join(skillsDir, name), { recursive: true, force: true })
+  pruneForeignSkills({ names, skillsDir })
 }
 
 main()

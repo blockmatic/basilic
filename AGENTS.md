@@ -1,9 +1,8 @@
 # Repository agent instructions
 
 This repository has one shared agent contract: this file plus
-`.agents/skills/` (committed tech/pattern skills, recommended
-[mattpocock/skills](https://www.aihero.dev/skills), and Basilic `/w-*` as a
-lightweight alternative). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
+`.agents/skills/` (committed tech/pattern skills and Basilic `/w-*`
+playbooks). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
 are adapters. Other harnesses load the same contract through this file and
 open `SKILL.md` when there is no `/` menu. Do not create a second workflow
 or a competing source of truth.
@@ -19,13 +18,11 @@ overrides guidance for its subtree and must be read before changing files there.
    read that `.cursor/rules` file (Cursor auto-attaches it).
 3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
    task matches (after `pnpm setup` / `pnpm setup:skills`, which runs
-   `skills add` for `mattpocock/skills --all` and
-   `blockmatic/basilic-skills --all`, then restores `skills-lock.json`).
-   Recommended daily workflow: [mattpocock/skills](https://www.aihero.dev/skills)
-   (`/grill-me`, `/implement`, `/tdd`). Basilic `/w-*` lives under
-   `.agents/skills/w-<name>/` as a lightweight alternative and git close-out.
-   If the harness has no `/` menu, open the `SKILL.md` file. Catalogs:
-   [`mattpocock/skills`](https://github.com/mattpocock/skills) and
+   `skills add` for `blockmatic/basilic-skills --all`, then restores
+   `skills-lock.json`). Daily path: Basilic `/w-*` under
+   `.agents/skills/w-<name>/` (`/w-plan`, `/w-grill`, `/w-wayfinder`,
+   `/w-build`, `/w-ship`). If the harness has no `/` menu, open the
+   `SKILL.md` file. Catalog:
    [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
 4. Read the matching technical documentation under
    [`apps/docu/content/docs/`](apps/docu/content/docs/) before changing an
@@ -42,10 +39,9 @@ and tests instead of relying on memory or assuming that documentation is current
 
 - Docs: technical MDX in `apps/docu/content/docs/`.
   Visual language: `DESIGN.md`. **Read** the matching file. Do not `@`-attach
-  docs from rules or skills. Recommended workflow: Matt pack
-  (`/grill-me`, `/implement`, `/tdd`). Basilic `/w-*` is the lightweight
-  alternative and git close-out (`/w-commit` … `/w-ship`). `/w-build` does not
-  commit; `/implement` may. Publish with `/w-ship`.
+  docs from rules or skills. Daily path: Basilic `/w-*`
+  (`/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-commit` …
+  `/w-ship`). `/w-build` does not commit. Publish with `/w-ship`.
 - After features/fixes: same change, update that MDX and nearest README if
   behavior, commands, or conventions changed; glob `.mdc` only if a Cursor-scoped
   constraint changed.
@@ -65,8 +61,9 @@ and tests instead of relying on memory or assuming that documentation is current
 ### Workflow
 
 - Plan first for non-trivial tasks (3+ steps, architectural decisions); re-plan
-  if stuck. `/w-plan` explores via `/w-council` first. Keep a focused task list
-  for multi-step work.
+  if stuck. `/w-plan` explores via `/w-council` first. `/w-grill` stress-tests
+  a plan. `/w-wayfinder` charts fog bigger than one session. Keep a focused
+  task list for multi-step work.
 - On user correction: acknowledge the mistake and adjust (avoid repeating it).
 - Don't mark complete without proving it works (run tests, check logs, diff
   behavior).
@@ -231,8 +228,8 @@ reasonable inferences, assumptions, and unresolved questions.
 
 These are loaders and UX, not a second contract.
 
-- **Cursor:** glob auto-attach for `.cursor/rules`; slash skills (Matt
-  `/grill-me` `/implement` `/tdd`; Basilic `/w-*`); MCP in `.cursor/mcp.json`.
+- **Cursor:** glob auto-attach for `.cursor/rules`; slash skills (Basilic
+  `/w-plan` `/w-grill` `/w-wayfinder` `/w-*`); MCP in `.cursor/mcp.json`.
 - **Claude Code:** reads this file. Project skills are `.agents/skills/`
   (not committed `.claude/skills/`).
 - **Antigravity:** workspace rules in `.agents/rules/`; skills in

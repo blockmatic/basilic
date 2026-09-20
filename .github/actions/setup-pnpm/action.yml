@@ -1,5 +1,5 @@
 name: Setup pnpm
-description: Install pnpm, Node from .nvmrc, dependencies, and agent skills (basilic-skills /w-* plus mattpocock/skills)
+description: Install pnpm, Node from .nvmrc, dependencies, and agent skills (basilic-skills /w-*)
 runs:
   using: composite
   steps:

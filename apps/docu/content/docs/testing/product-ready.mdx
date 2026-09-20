@@ -13,7 +13,7 @@ Do these in order. `pnpm setup` installs tools, copies env templates, and instal
 
 1. **Node 24 + pnpm** — `.nvmrc` / `packageManager` (`12.4.2`). `corepack enable` then `corepack prepare pnpm@12.4.2 --activate`.
 2. **Create the repo** — `npx create-basilic@latest my-app`.
-3. **`pnpm setup`** at the repo root (install, hooks, **agent skills** from mattpocock/skills plus basilic-skills `/w-*`, scanners, env templates, Docker/Supabase CLI, Playwright Chromium). Copied API/web env sets `ALLOW_TEST=true` for local login. Setup copies templates only when dest files are **missing**; an existing `apps/api/.env` / `apps/web/.env.local` is left alone — set `ALLOW_TEST=true` yourself if those files predate this default.
+3. **`pnpm setup`** at the repo root (install, hooks, **agent skills** from basilic-skills `/w-*`, scanners, env templates, Docker/Supabase CLI, Playwright Chromium). Copied API/web env sets `ALLOW_TEST=true` for local login. Setup copies templates only when dest files are **missing**; an existing `apps/api/.env` / `apps/web/.env.local` is left alone — set `ALLOW_TEST=true` yourself if those files predate this default.
 4. **`pnpm --filter @repo/api db:start`** — local Supabase Postgres. One instance per host; `pnpm --filter @repo/api db:stop` before changing `project_id`.
 5. **`pnpm reset`** at the repo root — Supabase reset + Drizzle migrate + seed. See [ADR 008](/docs/adrs/008-database) and `apps/api/README.md`.
 6. **`pnpm dev`** — API at http://localhost:3001 (`GET /health`, `/reference`), web at http://localhost:3000.
