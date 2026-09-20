@@ -15,7 +15,7 @@ Basilic stays the starter brand. **Start a product** with `npx create-basilic@la
 
 Follow [Getting Started](/docs/development): `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`. Copied env sets `ALLOW_TEST=true`. Sign in with `test@test.ai`. Production refuses `ALLOW_TEST`.
 
-The in-shell assistant is optional [demo chrome](/docs/architecture/ai). Leave Anthropic unset so Ollama can be the free path, or set a real key. Do not use a truthy placeholder.
+Fastify `POST /ai/chat` is optional API chrome. Leave Anthropic unset so Ollama can be the free path, or set a real key. Do not use a truthy placeholder. The dashboard does not mount that assistant.
 
 ## Replace when you ship as you
 
@@ -37,7 +37,6 @@ Existing copies that still have `_first/` can delete that folder. The agent cont
 
 Lint, `security.yml`, package tests, and API unit/Scalar E2E run without org secrets. Fork PRs do not get upstream secrets.
 
-- **Chat E2E** (`web-e2e` chat project) skips when `ANTHROPIC_API_KEY` is empty. Set the secret later if you want that project.
 - **DeepSec** already skips untrusted and fork PRs.
 - Vercel and EAS are not Product Ready.
 

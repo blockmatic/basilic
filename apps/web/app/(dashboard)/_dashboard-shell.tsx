@@ -4,14 +4,39 @@ import { Button } from '@repo/ui/components/button'
 import { ScrollArea } from '@repo/ui/components/scroll-area'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@repo/ui/components/sidebar'
 import { useQueryClient } from '@tanstack/react-query'
-import { AssistantSidebar } from 'components/assistant'
 import { ApiHealthBadge } from 'components/shared/api-health-badge'
 import { AuthBadge } from 'components/shared/auth-badge'
-import { LogOut } from 'lucide-react'
+import { LogOut, PanelRightOpenIcon } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { useQueryStates } from 'nuqs'
+import { Suspense } from 'react'
 import { toast } from 'sonner'
+import { chromeParsers } from '@/lib/coins/chrome'
 import { authSessionJwtQueryKey, authSessionUserQueryKey } from '@/lib/query-keys'
 import { PageTitle } from './page-title'
 import { DashboardSidebar } from './sidebar'
+
+function isBoardPath({ pathname }: { pathname: string }): boolean {
+  return pathname === '/' || pathname === '/markets'
+}
+
+function BoardRailOpenButton() {
+  const pathname = usePathname()
+  const [{ sidebar }, setChrome] = useQueryStates(chromeParsers)
+  if (!isBoardPath({ pathname }) || sidebar !== 'close') return null
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="size-11 sm:size-9"
+      aria-label="Open commands"
+      type="button"
+      onClick={() => setChrome({ sidebar: 'open' })}
+    >
+      <PanelRightOpenIcon />
+    </Button>
+  )
+}
 
 export function DashboardShell({
   children,
@@ -46,6 +71,9 @@ export function DashboardShell({
               <PageTitle />
             </div>
             <div className="flex min-h-11 items-center gap-3 md:gap-4">
+              <Suspense fallback={null}>
+                <BoardRailOpenButton />
+              </Suspense>
               <ApiHealthBadge />
               <AuthBadge />
               <Button
@@ -60,12 +88,13 @@ export function DashboardShell({
               </Button>
             </div>
           </header>
-          <div className="flex min-h-0 flex-1" style={{ height: 'calc(100dvh - 3.5rem)' }}>
-            <ScrollArea orientation="vertical" className="min-h-0 min-w-0 w-0 flex-1">
-              <main className="block p-4 md:p-6">{children}</main>
-            </ScrollArea>
-            <AssistantSidebar />
-          </div>
+          <ScrollArea
+            orientation="vertical"
+            className="min-h-0 min-w-0 flex-1"
+            style={{ height: 'calc(100dvh - 3.5rem)' }}
+          >
+            <main className="block p-4 md:p-6">{children}</main>
+          </ScrollArea>
         </SidebarInset>
       </div>
     </SidebarProvider>

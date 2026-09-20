@@ -1,0 +1,1 @@
+export { CoinBoard } from './island'

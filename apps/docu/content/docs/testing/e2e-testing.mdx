@@ -28,7 +28,7 @@ pnpm test:e2e --app=https://my-app.vercel.app --api=https://my-api.vercel.app
 
 ## Session model
 
-Use **one worker** (PGlite cannot take concurrent writers). The **setup** project logs in as `test@test.ai` once and writes `test-results/.auth/user.json`. **chromium**, **security**, and **chat** reuse that file via project `storageState`. **auth**, **passkey-login**, and logout tests use empty storage so they never revoke the shared session.
+Use **one worker** (PGlite cannot take concurrent writers). The setup project logs in as `test@test.ai` once and writes `test-results/.auth/user.json`. **chromium** and **security** reuse that file via project `storageState`. **auth**, **passkey-login**, and logout tests use empty storage so they never revoke the shared session.
 
 Import `page` from `@playwright/test` in all specs. Navigate to the target route in each authed test (`page.goto('/settings/...')`).
 
@@ -41,7 +41,7 @@ test('shows dashboard when authenticated', async ({ page }) => {
 })
 ```
 
-Chat E2E needs a real `ANTHROPIC_API_KEY` (in-app Claude Haiku 4.5 by default). Playwright **omits** the chat project when `hasRealAnthropicKey()` is false (empty, `sk-ant-xxx`, `sk-ant-dummy*`), so fork CI without org secrets still runs auth and dashboard E2E. When the key is set, `chat-assistant.spec.ts` skips only quota or credit errors; upstream 5xx and network failures fail the test run. API Scalar E2E (`pnpm --filter @repo/api test:e2e:local`) does not call AI and does not require Anthropic. API remote tests (`ai.spec.ts`) use `test/utils/ai-remote.ts`: skip 402 always; skip 502/503/504 only with placeholder/missing key — real key fails on 502. See [AI Architecture](/docs/architecture/ai).
+API Scalar E2E (`pnpm --filter @repo/api test:e2e:local`) does not call AI and does not require Anthropic. API remote tests (`ai.spec.ts`) use `test/utils/ai-remote.ts`: skip 402 always; skip 502/503/504 only with placeholder/missing key — real key fails on 502. See [AI Architecture](/docs/architecture/ai).
 
 ## Test helpers
 
@@ -60,10 +60,9 @@ Local spawn scripts set `ALLOW_TEST`. The API process exits if `ALLOW_TEST` is t
 1. **public** — legal pages, login smoke, robots/sitemap
 2. **auth** — `01-callbacks` … `06-logout` (empty storage; depends on public; file-name order)
 3. **setup** — writes `user.json` (depends on auth)
-4. **chromium** — dashboard smokes, 404 (storageState)
+4. **chromium** — dashboard smokes, coin-board chips, 404 (storageState)
 5. **security** — TOTP, API keys, passkeys CRUD (storageState; never logout)
 6. **passkey-login** — passkey sign-in with `e2e-passkey@test.ai` (empty storage; depends on setup)
-7. **chat** — assistant (storageState; mobile viewport; last)
 
 Dedicated emails: `test@test.ai` (shared), `e2e-passkey@test.ai`, `e2e-email@test.ai` (change-email).
 
@@ -79,12 +78,11 @@ Dedicated emails: `test@test.ai` (shared), `e2e-passkey@test.ai`, `e2e-email@tes
 | `05-change-email.spec.ts` | auth | In-page email change verify |
 | `06-logout.spec.ts` | auth | Header sign-out revokes sid |
 | `auth.setup.ts` | setup | Writes shared storageState |
-| `dashboard.spec.ts` | chromium | Coin board (fixture USD, sort, watch), profile, 404 |
+| `dashboard.spec.ts` | chromium | Coin board (fixture USD, sort, watch, chips, sidebar), profile, 404 |
 | `security/authenticator.spec.ts` | security | TOTP setup/unlink |
 | `security/api-keys.spec.ts` | security | API keys CRUD |
 | `security/passkeys.spec.ts` | security | Passkeys add/remove |
 | `passkey-auth.spec.ts` | passkey-login | Passkey sign-in flow |
-| `chat-assistant.spec.ts` | chat | Assistant Who am I? |
 
 ## CI and mobile
 

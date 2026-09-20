@@ -55,6 +55,31 @@ test.describe('Dashboard routes', () => {
     )
   })
 
+  test('chip What moved? lists doge first and Back restores', async ({ page }) => {
+    await page.goto('/')
+    await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'btc', {
+      timeout: 15_000,
+    })
+    await expect(page.getByTestId('board-rail')).toBeVisible()
+    await page.getByRole('button', { name: 'What moved?' }).click()
+    await expect(page).toHaveURL(/sortBy=change24h/)
+    await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'doge', {
+      timeout: 15_000,
+    })
+    await page.goBack()
+    await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'btc', {
+      timeout: 15_000,
+    })
+  })
+
+  test('sidebar=close hides the rail and survives reload', async ({ page }) => {
+    await page.goto('/?sidebar=close')
+    await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('board-rail')).toHaveCount(0)
+    await page.reload()
+    await expect(page.getByTestId('board-rail')).toHaveCount(0)
+  })
+
   test('markets path redirects to home', async ({ page }) => {
     await page.goto('/markets')
     await expect(page).toHaveURL(/\/$/, { timeout: 15_000 })
