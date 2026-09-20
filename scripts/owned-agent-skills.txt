@@ -1,6 +1,7 @@
 ahooks-v3
 ai-sdk-core-v7
 ai-sdk-ui-v7
+alchemy-api
 animate
 animate-expo
 animation-vocabulary
@@ -11,6 +12,7 @@ composition-patterns
 drizzle-orm-v0
 emil-design-eng
 emilkowal-animations
+eve
 expo-cicd-workflows-v55
 expo-deployment-v55
 expo-dev-client-v55
@@ -22,6 +24,8 @@ file-organization
 find-animation-opportunities
 frontend-design
 improve-animations
+json-render-core-v0
+json-render-react-v0
 motion-v13
 next-v16
 nodejs-keccak256-v1
@@ -35,6 +39,7 @@ shadcn-v3
 solana-v1
 tailwind-design-system-v4
 tanstack-query-v5
+typesafe-ai
 typescript-v6
 vercel-react
 viem-v2

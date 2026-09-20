@@ -21,7 +21,7 @@ Rules override skills. Skills override the model. Indexed docs are advisory. Dai
 
 ## What’s in git
 
-**43** tech/pattern skills are committed under `.agents/skills/` ([PR #216](https://github.com/blockmatic/basilic/pull/216); list: `scripts/owned-agent-skills.txt`). `.gitignore` ignores `.agents/skills/*` then un-ignores those owned dirs. Installed `w-*` playbooks and Matt folders stay gitignored. A setup or lock PR (for example [#217](https://github.com/blockmatic/basilic/pull/217)) does not list `.agents/skills/**` because those trees were already committed.
+**48** tech/pattern skills are committed under `.agents/skills/` (list: `scripts/owned-agent-skills.txt`). `.gitignore` ignores `.agents/skills/*` then un-ignores those owned dirs. Installed `w-*` playbooks and Matt folders stay gitignored. A setup or lock PR does not list `.agents/skills/**` because those trees were already committed.
 
 ```bash
 pnpm setup:skills
@@ -107,6 +107,11 @@ Committed stack copies may differ from upstream. Original sources:
 - [emilkowalski/skills](https://github.com/emilkowalski/skills) at [`85e8e236`](https://github.com/emilkowalski/skills/commit/85e8e2363b713506e1d5b6e07a0eb2da66be1bc3): `emil-design-eng`, `review-animations`, `animation-vocabulary`, `apple-design`, `improve-animations`, `find-animation-opportunities`, `pick-ui-library`, `animate`, `ask-sonner`, `animate-expo`
 - `better-ui` ← [jakubkrehel/skills](https://github.com/jakubkrehel/skills) at [`267330e1`](https://github.com/jakubkrehel/skills/commit/267330e1adfc66a718fb65fa6918c1f06d0a689e)
 - `react-email` ← [resend/react-email](https://github.com/resend/react-email) `skills/react-email`
+- `typesafe-ai` ← [typesafe-ai/skills](https://github.com/typesafe-ai/skills) `typesafe-ai` (Gateway / `experimental_evaluate` overlay)
+- `eve` ← [vercel/eve](https://github.com/vercel/eve) `skills/eve`
+- `json-render-core-v0` ← [vercel-labs/json-render](https://github.com/vercel-labs/json-render) `skills/core`
+- `json-render-react-v0` ← same repo `skills/react`
+- `alchemy-api` ← [alchemyplatform/skills](https://github.com/alchemyplatform/skills) `alchemy-api` (Portfolio / webhook / ops refs only)
 
 This product uses Base UI (`base-vega`, `render`, `data-slot` / `data-open`). Committed `shadcn-v3` and `/w-shadcn` match that stack.
 

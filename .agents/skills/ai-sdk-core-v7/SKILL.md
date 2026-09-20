@@ -1,6 +1,6 @@
 ---
 name: ai-sdk-core-v7
-description: Build backend AI with Vercel AI SDK v7 — generateText, streamText, ToolLoopAgent, tools. Use when implementing AI SDK v7 or troubleshooting AI errors. Never write AI SDK from memory.
+description: Build backend AI with Vercel AI SDK v7 — generateText, streamText, ToolLoopAgent, experimental_evaluate, tools. Use when implementing AI SDK v7 or troubleshooting AI errors. Never write AI SDK from memory.
 ---
 
 # Skill: ai-sdk-core
@@ -22,6 +22,7 @@ description: Build backend AI with Vercel AI SDK v7 — generateText, streamText
 - `generateText` / `streamText` for request handlers and one-shot API routes; `instructions` for system-style prompt
 - Request-handler tool loops: `stopWhen: isStepCount(n)` on `generateText` / `streamText` — not `maxSteps`, not `stepCountIs`
 - `ToolLoopAgent` + `generate()` / `stream()` for durable agents — not hand-rolled loops, not `new Agent()`
+- Decision models (Jev): `experimental_evaluate` on an evaluation model — not `streamText`, not `ToolLoopAgent`
 - UI streams: `createUIMessageStreamResponse` + `toUIMessageStream({ stream: result.stream })` from `'ai'`. Use these for new handlers and for dedicated stream/SDK updates
 - `result.toUIMessageStreamResponse()` still works in v7 (deprecated). Leave it only when the task is unrelated to streaming or the SDK
 - Tool results must be JSON-serializable (no `Date`)
@@ -40,10 +41,11 @@ description: Build backend AI with Vercel AI SDK v7 — generateText, streamText
 - `toDataStreamResponse` / `pipeDataStreamToResponse`
 - `stepCountIs` / `maxSteps` / `result.fullStream` / top-level `system:` (use `isStepCount`, `result.stream`, `instructions`)
 - Guessing model IDs
+- `streamText` / `generateText` with a System One / Jev evaluation model
 
 ## Interactions
 
-- Complements [ai-sdk-ui](../ai-sdk-ui-v7/SKILL.md), [fastify](../fastify-v5/SKILL.md), [next](../next-v16/SKILL.md)
+- Complements [ai-sdk-ui](../ai-sdk-ui-v7/SKILL.md), [fastify](../fastify-v5/SKILL.md), [next](../next-v16/SKILL.md), [typesafe-ai](../typesafe-ai/SKILL.md), [eve](../eve/SKILL.md)
 - Upstream: [vercel/ai use-ai-sdk](https://github.com/vercel/ai/blob/main/skills/use-ai-sdk/SKILL.md)
 
 ## Templates
@@ -55,3 +57,4 @@ description: Build backend AI with Vercel AI SDK v7 — generateText, streamText
 ## References
 
 - [Request handlers](references/request-handlers.md) — tools + `isStepCount`, Fastify SSE, system-message reject
+- [Evaluate](references/evaluate.md) — `experimental_evaluate` + Gateway Jev

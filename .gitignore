@@ -89,6 +89,8 @@ tsup.config.bundled_*.mjs
 !.agents/skills/ai-sdk-core-v7/**
 !.agents/skills/ai-sdk-ui-v7/
 !.agents/skills/ai-sdk-ui-v7/**
+!.agents/skills/alchemy-api/
+!.agents/skills/alchemy-api/**
 !.agents/skills/animate/
 !.agents/skills/animate/**
 !.agents/skills/animate-expo/
@@ -109,6 +111,8 @@ tsup.config.bundled_*.mjs
 !.agents/skills/emil-design-eng/**
 !.agents/skills/emilkowal-animations/
 !.agents/skills/emilkowal-animations/**
+!.agents/skills/eve/
+!.agents/skills/eve/**
 !.agents/skills/expo-cicd-workflows-v55/
 !.agents/skills/expo-cicd-workflows-v55/**
 !.agents/skills/expo-deployment-v55/
@@ -131,6 +135,10 @@ tsup.config.bundled_*.mjs
 !.agents/skills/frontend-design/**
 !.agents/skills/improve-animations/
 !.agents/skills/improve-animations/**
+!.agents/skills/json-render-core-v0/
+!.agents/skills/json-render-core-v0/**
+!.agents/skills/json-render-react-v0/
+!.agents/skills/json-render-react-v0/**
 !.agents/skills/motion-v13/
 !.agents/skills/motion-v13/**
 !.agents/skills/next-v16/
@@ -157,6 +165,8 @@ tsup.config.bundled_*.mjs
 !.agents/skills/tailwind-design-system-v4/**
 !.agents/skills/tanstack-query-v5/
 !.agents/skills/tanstack-query-v5/**
+!.agents/skills/typesafe-ai/
+!.agents/skills/typesafe-ai/**
 !.agents/skills/typescript-v6/
 !.agents/skills/typescript-v6/**
 !.agents/skills/vercel-react/
