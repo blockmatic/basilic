@@ -25,6 +25,6 @@ Skills are on-demand expertise. `name` must match the folder that contains `SKIL
 ## Hierarchy
 Rules (constraints) > skills (patterns) > model
 
-Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Lock pins `blockmatic/basilic-skills` (`w-*`) and `miqdadbadjuber/anti-slop` (`antislop`). Stack skills are committed; list: `scripts/owned-agent-skills.txt`. Daily path: `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-ship`.
+Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Lock pins `blockmatic/basilic-skills` (`w-*`), `miqdadbadjuber/anti-slop` (`antislop`), and `jakubkrehel/make-interfaces-feel-better`. Stack skills are committed; list: `scripts/owned-agent-skills.txt`. Daily path: `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-ship`.
 
 Playbook bodies are numbered instructions (spec frontmatter); keep simple playbooks short. Git playbooks carry `references/git-publish.md`. `/w-plan` explores via `/w-council` first and ships `references/plan-output.md`. `/w-grill` ships `references/round-format.md`. `/w-wayfinder` ships `references/map-output.md`.

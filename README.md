@@ -50,8 +50,8 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 Run with `pnpm <script>`.
 
 **Setup**
-  - `setup` — Full setup (install, hooks, agent skills from basilic-skills `/w-*` plus antislop, gitleaks, osv, env templates, database, deepsec, Playwright Chromium)
-  - `setup:skills` — Install `/w-*` playbooks and `antislop` into `.agents/skills/` (restores `skills-lock.json`)
+  - `setup` — Full setup (install, hooks, agent skills from basilic-skills `/w-*` plus antislop and make-interfaces-feel-better, gitleaks, osv, env templates, database, deepsec, Playwright Chromium)
+  - `setup:skills` — Install `/w-*` playbooks, `antislop`, and `make-interfaces-feel-better` into `.agents/skills/` (restores `skills-lock.json`)
   - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
   - `setup:playwright` — Install Playwright Chromium for API and web E2E
   - `setup:env` — Copy `.env.<qualifier>.example` templates to dest files when missing

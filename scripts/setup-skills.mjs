@@ -20,7 +20,11 @@ const repoRoot = join(scriptDir, '..')
 const lockPath = join(repoRoot, 'skills-lock.json')
 const ownedListPath = join(scriptDir, 'owned-agent-skills.txt')
 const basilicCatalog = 'blockmatic/basilic-skills'
-const allowedGithub = new Set([basilicCatalog, 'miqdadbadjuber/anti-slop'])
+const allowedGithub = new Set([
+  basilicCatalog,
+  'miqdadbadjuber/anti-slop',
+  'jakubkrehel/make-interfaces-feel-better',
+])
 const allowLocal = process.env.BASILIC_SKILLS_LOCAL === '1'
 
 function ownedSkillNames() {
