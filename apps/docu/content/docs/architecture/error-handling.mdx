@@ -15,9 +15,9 @@ description: "Two-track errors: captureError logs the real failure; HTTP clients
 
 Two tracks: logs get `{ err, label, code, ... }`; the HTTP JSON body always includes catalog `{ code, message }`. Never send connection strings or stack traces to clients.
 
-API JSON errors also add optional RFC 9457 `type`, `title`, `status`, and `detail`. `type` is `${DOCS_SITE_URL}/docs/architecture/error-handling#${code}`. Default `Content-Type` is `application/json`. If `Accept` prefers `application/problem+json`, the API uses that type and sends `Vary: Accept`. Landing `GET /` does not negotiate `problem+json` (that Accept still 406s there). HTML and markdown 404 recovery bodies are unchanged.
+API JSON errors also add optional RFC 9457 `type`, `title`, `status`, and `detail`. `type` is `${DOCS_SITE_URL}/docs/architecture/error-handling#${code}`. Default `Content-Type` is `application/json`. If `Accept` prefers `application/problem+json` (exact range, then `application/*`, then `*/*`; more specific ranges win, including `q=0`), the API uses that type and sends `Vary: Accept`. Landing `GET /` does not negotiate `problem+json` (that Accept still 406s there). HTML and markdown 404 recovery bodies are unchanged.
 
-Every **401** sends `WWW-Authenticate: Bearer realm="Basilic API", ApiKey realm="Basilic API"` (challenge header, including inline `reply.code(401)` sends). **429** keeps `retryAfter` in the body and `x-ratelimit-*` headers, and adds IETF structured `RateLimit` / `RateLimit-Policy` plus `Retry-After`.
+Every **401** sends `WWW-Authenticate: Bearer realm="Basilic API", ApiKey realm="Basilic API"` (challenge header, including inline `reply.code(401)` sends). **429** responses also negotiate that JSON vs `problem+json` type. The body `retryAfter` is remaining window time in whole seconds (`ceil` of `@fastify/rate-limit` `ttl` milliseconds). **429** keeps `x-ratelimit-*` and adds IETF structured `RateLimit` / `RateLimit-Policy` plus `Retry-After`.
 
 ```typescript
 import { captureError } from '@repo/error/node'

@@ -33,6 +33,32 @@ describe('preferProblemJson', () => {
       }),
     ).toBe(false)
   })
+
+  it('matches application/* and */* with specificity over q', () => {
+    expect(preferProblemJson({ acceptHeader: 'application/*' })).toBe(true)
+    expect(preferProblemJson({ acceptHeader: '*/*' })).toBe(true)
+    expect(
+      preferProblemJson({
+        acceptHeader: '*/*;q=0.5, application/problem+json;q=0.4',
+      }),
+    ).toBe(false)
+  })
+
+  it('is false when the selected problem+json range is unacceptable', () => {
+    expect(
+      preferProblemJson({
+        acceptHeader: 'application/problem+json;q=0, */*;q=0.8',
+      }),
+    ).toBe(false)
+  })
+
+  it('ignores q values outside 0 to 1', () => {
+    expect(
+      preferProblemJson({
+        acceptHeader: 'application/problem+json;q=1.5, application/json',
+      }),
+    ).toBe(false)
+  })
 })
 
 describe('toCatalogProblem', () => {

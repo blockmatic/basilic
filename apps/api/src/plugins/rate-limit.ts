@@ -2,7 +2,11 @@ import rateLimit from '@fastify/rate-limit'
 import type { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import { getError } from '../lib/catalogs/mapper.js'
-import { applyIetfRateLimitHeaders, toCatalogProblem } from '../lib/catalogs/problem.js'
+import {
+  applyIetfRateLimitHeaders,
+  applyProblemContentType,
+  toCatalogProblem,
+} from '../lib/catalogs/problem.js'
 import { env } from '../lib/env.js'
 import { getTrustedClientIp } from '../lib/request.js'
 
@@ -17,6 +21,7 @@ const rateLimitPlugin: FastifyPluginAsync<RateLimitPluginOptions> = async (fasti
   const windowSeconds = Math.round(timeWindow / 1000)
 
   fastify.addHook('onSend', async (_request, reply, payload) => {
+    if (reply.statusCode === 429) applyProblemContentType({ reply })
     applyIetfRateLimitHeaders({ reply, windowSeconds })
     return payload
   })
@@ -44,7 +49,7 @@ const rateLimitPlugin: FastifyPluginAsync<RateLimitPluginOptions> = async (fasti
           status: 429,
           detail,
         }),
-        retryAfter: windowSeconds,
+        retryAfter: Math.ceil(context.ttl / 1000),
       }
     },
   })

@@ -17,6 +17,16 @@ function trimSlash({ url }: { url: string }): string {
   return url.endsWith('/') ? url.slice(0, -1) : url
 }
 
+function acceptRangeRank({ offered, type }: { offered: string; type: string }): number | undefined {
+  if (offered === type) return 3
+  const [offeredType, offeredSubtype] = offered.split('/')
+  if (!offeredType || !offeredSubtype) return undefined
+  const typeName = type.slice(0, type.indexOf('/'))
+  if (offeredType === typeName && offeredSubtype === '*') return 2
+  if (offeredType === '*' && offeredSubtype === '*') return 1
+  return undefined
+}
+
 function acceptQ({
   acceptHeader,
   type,
@@ -27,22 +37,28 @@ function acceptQ({
   const raw = acceptHeader?.trim()
   if (!raw) return undefined
 
-  let best: number | undefined
+  let bestRank = 0
+  let bestQ: number | undefined
   for (const part of raw.split(',')) {
     const [typeToken, ...params] = part.trim().split(';')
     const offered = typeToken?.trim().toLowerCase()
-    if (offered !== type) continue
+    if (!offered) continue
+    const rank = acceptRangeRank({ offered, type })
+    if (rank === undefined) continue
     const qToken = params.find(p => p.trim().toLowerCase().startsWith('q='))
     const q = qToken ? Number(qToken.trim().slice(2)) : 1
-    if (!Number.isFinite(q) || q <= 0) continue
-    if (best === undefined || q > best) best = q
+    if (!Number.isFinite(q) || q < 0 || q > 1) continue
+    if (rank > bestRank || (rank === bestRank && (bestQ === undefined || q > bestQ))) {
+      bestRank = rank
+      bestQ = q
+    }
   }
-  return best
+  return bestQ
 }
 
 export function preferProblemJson({ acceptHeader }: { acceptHeader?: string }): boolean {
   const problemQ = acceptQ({ acceptHeader, type: 'application/problem+json' })
-  if (problemQ === undefined) return false
+  if (problemQ === undefined || problemQ <= 0) return false
   const jsonQ = acceptQ({ acceptHeader, type: 'application/json' }) ?? 0
   return problemQ >= jsonQ
 }
