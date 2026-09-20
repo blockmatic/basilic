@@ -15,9 +15,9 @@ Flow: TypeBox → OpenAPI → `@repo/core` (client + types) → handwritten `@re
 - ORM: Drizzle
 - Spec: OpenAPI 3 at `apps/api/openapi/openapi.json`, UI at `/reference`. Tags: `auth`, `account`, `ai`, `coins`, `health`. The `ai` tag is `POST /ai/chat` and `POST /ai/generate` — optional demo assistant, documented in [AI](/docs/architecture/ai).
 
-`GET /coins` is a JWT list of fixture quotes joined to identity `assets` (seeded when the registry is empty). It does not call CoinGecko.
+`GET /coins` is a JWT list of cached CoinGecko markets joined to identity `assets` (seeded when the registry is empty). Quotes are the same for every authenticated user. Vendor failure returns fixture quotes with `sync.source: 'fixture'` (HTTP 200). `sync.source` is `live`, `fixture`, or `stale`. Live responses include `sync.attribution` (`Data by CoinGecko`). Optional `sync.stale` is true when the in-process cache is served past TTL.
 
-Vendor HTTP for later live quotes lives in `apps/api/src/lib/markets/`: CoinGecko Demo via `@coingecko/coingecko-typescript`, Binance public REST on `data-api.binance.vision`, an in-process TTL cache with a `get`/`set` port, and an SSRF allowlist. Those functions are not wired to `GET /coins` yet. Optional `COINGECKO_DEMO_API_KEY` and `MARKETS_CACHE_MS` (default 300000) are in api `lib/env.ts`. There is no Alchemy client in this folder.
+Vendor HTTP lives in `apps/api/src/lib/markets/`: CoinGecko Demo via `@coingecko/coingecko-typescript`, Binance public REST on `data-api.binance.vision`, an in-process TTL cache with a `get`/`set` port, and an SSRF allowlist. `GET /coins` and `getMarketSnapshot` both call `getMarkets`. Optional `COINGECKO_DEMO_API_KEY` and `MARKETS_CACHE_MS` (default 300000) are in api `lib/env.ts`. `GET /coins` uses a tighter route rate limit (`COINS_RATE_LIMIT_MAX`, default 10) than `/ai/*` (`AI_RATE_LIMIT_MAX`, default 20). There is no Alchemy client in this folder.
 
 ## How it works
 

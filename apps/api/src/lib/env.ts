@@ -85,6 +85,7 @@ export const env = createEnv({
     AI_TOOL_MAX_STEPS: z.coerce.number().int().min(1).max(20).optional().default(5),
     AI_MAX_OUTPUT_TOKENS: z.coerce.number().int().min(256).max(16_000).optional().default(4096),
     AI_RATE_LIMIT_MAX: z.coerce.number().int().positive().optional().default(20),
+    COINS_RATE_LIMIT_MAX: z.coerce.number().int().positive().optional().default(10),
     AI_PROVIDER: z.enum(['anthropic', 'openrouter', 'ollama']).optional(),
     ANTHROPIC_API_KEY: z.string().min(1).optional(),
     OPEN_ROUTER_API_KEY: z.string().min(1).optional(),

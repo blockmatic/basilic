@@ -1,8 +1,6 @@
 import { tool } from 'ai'
 import { z } from 'zod'
-
-export const coingeckoMarketsUrl =
-  'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h'
+import { fixtureMarkets, getMarkets, type MarketRow as QuoteRow } from '../../markets/index.js'
 
 export type MarketRow = {
   id: string
@@ -13,74 +11,25 @@ export type MarketRow = {
   marketCapRank: number
 }
 
-export const marketSnapshotMock: MarketRow[] = [
-  {
-    id: 'bitcoin',
-    symbol: 'btc',
-    name: 'Bitcoin',
-    currentPrice: 67_420.12,
-    change24h: 2.14,
-    marketCapRank: 1,
-  },
-  {
-    id: 'ethereum',
-    symbol: 'eth',
-    name: 'Ethereum',
-    currentPrice: 3_412.5,
-    change24h: -1.08,
-    marketCapRank: 2,
-  },
-  {
-    id: 'solana',
-    symbol: 'sol',
-    name: 'Solana',
-    currentPrice: 178.4,
-    change24h: 4.62,
-    marketCapRank: 5,
-  },
-  {
-    id: 'ripple',
-    symbol: 'xrp',
-    name: 'XRP',
-    currentPrice: 0.62,
-    change24h: 0.41,
-    marketCapRank: 4,
-  },
-  {
-    id: 'cardano',
-    symbol: 'ada',
-    name: 'Cardano',
-    currentPrice: 0.45,
-    change24h: -2.3,
-    marketCapRank: 9,
-  },
-  {
-    id: 'dogecoin',
-    symbol: 'doge',
-    name: 'Dogecoin',
-    currentPrice: 0.12,
-    change24h: 6.11,
-    marketCapRank: 8,
-  },
-]
-
 const marketCardRoot = 'market-card-1'
 
-export function toMarketRows(raw: unknown): MarketRow[] {
-  if (!Array.isArray(raw)) return []
-  return raw.flatMap(item => {
-    if (!item || typeof item !== 'object') return []
-    const row = item as Record<string, unknown>
-    const id = typeof row.id === 'string' ? row.id : ''
-    const symbol = typeof row.symbol === 'string' ? row.symbol : ''
-    const name = typeof row.name === 'string' ? row.name : ''
-    const currentPrice = typeof row.current_price === 'number' ? row.current_price : Number.NaN
-    const change24h =
-      typeof row.price_change_percentage_24h === 'number' ? row.price_change_percentage_24h : 0
-    const marketCapRank = typeof row.market_cap_rank === 'number' ? row.market_cap_rank : 0
-    if (!id || !symbol || !name || Number.isNaN(currentPrice)) return []
-    return [{ id, symbol, name, currentPrice, change24h, marketCapRank }]
-  })
+function toSnapshotRows(quotes: QuoteRow[]): MarketRow[] {
+  return quotes.map(row => ({
+    id: row.id,
+    symbol: row.symbol,
+    name: row.name,
+    currentPrice: row.priceUsd,
+    change24h: row.change24h,
+    marketCapRank: row.rank,
+  }))
+}
+
+function fixtureSnapshotRows() {
+  return toSnapshotRows(fixtureMarkets().markets)
+}
+
+function cardSource(source: QuoteRow['source']): 'live' | 'fixture' {
+  return source === 'fixture' ? 'fixture' : 'live'
 }
 
 export function pickMovers(rows: MarketRow[], query?: string) {
@@ -103,7 +52,7 @@ export function buildMarketCardSpec({
   source,
 }: {
   movers: MarketRow[]
-  source: 'live' | 'mock'
+  source: 'live' | 'fixture'
 }) {
   const top = movers[0]
   const headline = top
@@ -132,21 +81,13 @@ export function buildMarketCardSpec({
 
 export async function loadMarketRows(abortSignal?: AbortSignal): Promise<{
   rows: MarketRow[]
-  source: 'live' | 'mock'
+  source: 'live' | 'fixture'
 }> {
-  try {
-    const res = await fetch(coingeckoMarketsUrl, {
-      signal: abortSignal
-        ? AbortSignal.any([abortSignal, AbortSignal.timeout(8_000)])
-        : AbortSignal.timeout(8_000),
-    })
-    if (!res.ok) return { rows: marketSnapshotMock, source: 'mock' }
-    const rows = toMarketRows(await res.json())
-    if (rows.length === 0) return { rows: marketSnapshotMock, source: 'mock' }
-    return { rows, source: 'live' }
-  } catch {
-    return { rows: marketSnapshotMock, source: 'mock' }
-  }
+  if (abortSignal?.aborted) return { rows: fixtureSnapshotRows(), source: 'fixture' }
+  const { markets, source } = await getMarkets({})
+  const rows = toSnapshotRows(markets)
+  if (rows.length === 0) return { rows: fixtureSnapshotRows(), source: 'fixture' }
+  return { rows, source: cardSource(source) }
 }
 
 function marketSnapshotTool(abortSignal?: AbortSignal) {

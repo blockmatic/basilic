@@ -17,7 +17,7 @@ Root `pnpm qa` builds, then ends with `pnpm test:e2e` (`SKIP_BUILD=1`, `scripts/
 | --- | --- |
 | `pnpm test:e2e` (root) | Fastify E2E, then Next E2E (spawns servers) |
 | `pnpm --filter @repo/web test:e2e:local` | Build (unless `SKIP_BUILD=1`), spawn API + Next, run web E2E |
-| `pnpm --filter @repo/api test:e2e:local` | Spawn API (`RATE_LIMIT_MAX=10000`), run Scalar login E2E — no `ANTHROPIC_API_KEY` required |
+| `pnpm --filter @repo/api test:e2e:local` | Spawn API (`RATE_LIMIT_MAX=10000`, `COINS_RATE_LIMIT_MAX=10000`), run Scalar login E2E — no `ANTHROPIC_API_KEY` required |
 | `pnpm test:e2e:ui` / `test:e2e:debug` | Playwright UI or debug (in the app) |
 
 Pass URLs with `--app` / `--api`, or `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL`. Defaults: `http://localhost:3000` and `http://localhost:3001`.
@@ -98,7 +98,7 @@ For protected previews: enable Protection Bypass for Automation on both projects
 
 ## Troubleshooting
 
-Ports in use: `bash scripts/kill-test-servers.sh`. Token extraction fails: confirm `ALLOW_TEST=true` and the correct `@test.ai` email query on `/test/verification/last`. Magic link `500` mid-suite: local/CI spawn sets `RATE_LIMIT_MAX=10000` (default API limit is 100/min per IP). Passkey registration fails in CI: spawn scripts and `web-e2e.yml` set `WEBAUTHN_RP_NAME=Test App` when `.env.test` is absent.
+Ports in use: `bash scripts/kill-test-servers.sh`. Token extraction fails: confirm `ALLOW_TEST=true` and the correct `@test.ai` email query on `/test/verification/last`. Magic link `500` mid-suite: local/CI spawn sets `RATE_LIMIT_MAX=10000` and `COINS_RATE_LIMIT_MAX=10000` (default API limit is 100/min per IP; `GET /coins` defaults to 10). Passkey registration fails in CI: spawn scripts and `web-e2e.yml` set `WEBAUTHN_RP_NAME=Test App` when `.env.test` is absent.
 
 ## Related
 

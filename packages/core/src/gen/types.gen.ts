@@ -3373,6 +3373,18 @@ export type ListCoinsErrors = {
     status?: number;
     detail?: string;
   };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
 };
 
 export type ListCoinsError = ListCoinsErrors[keyof ListCoinsErrors];
@@ -3398,6 +3410,8 @@ export type ListCoinsResponses = {
       source: string;
       fetchedAt: string | unknown;
       lastError: string | unknown;
+      stale?: boolean;
+      attribution?: string;
     };
   };
 };

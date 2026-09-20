@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@repo/error'
 import { env } from '@/lib/env'
-import { fetchMarkets, isSampleBoard } from '../markets/fetch-markets'
+import { boardNotice, fetchMarkets } from '../markets/fetch-markets'
 import { MarketsTable } from '../markets/markets-table'
 import { NewsList, type NewsListArticle } from './news-list'
 
@@ -27,6 +27,7 @@ async function fetchHeadlines() {
 
 export default async function Home() {
   const [markets, headlines] = await Promise.all([fetchMarkets(), fetchHeadlines()])
+  const notice = boardNotice(markets.sync)
 
   return (
     <div className="w-full space-y-8">
@@ -34,9 +35,7 @@ export default async function Home() {
         <p className="text-muted-foreground max-w-2xl text-sm">
           Snapshot prices from the API. Ask the assistant what moved.
         </p>
-        {isSampleBoard(markets.sync) ? (
-          <p className="text-muted-foreground text-sm">Showing a sample board.</p>
-        ) : null}
+        {notice ? <p className="text-muted-foreground text-sm">{notice}</p> : null}
         <MarketsTable coins={markets.coins} error={markets.error ?? undefined} />
       </section>
       <section className="space-y-3">
