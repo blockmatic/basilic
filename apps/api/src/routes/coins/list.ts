@@ -3,8 +3,8 @@ import { getDb } from '@repo/db'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { sendCatalogError } from '../../lib/catalogs/mapper.js'
-import { listMarkets } from '../../lib/coins/index.js'
-import { ErrorResponseSchema } from '../schemas.js'
+import { coinsRouteRateLimitConfig, listMarkets } from '../../lib/coins/index.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../schemas.js'
 
 const CoinSchema = Type.Object({
   id: Type.String(),
@@ -23,6 +23,8 @@ const CoinSyncSchema = Type.Object({
   source: Type.String(),
   fetchedAt: Type.Union([Type.String({ format: 'date-time' }), Type.Null()]),
   lastError: Type.Union([Type.String(), Type.Null()]),
+  stale: Type.Optional(Type.Boolean()),
+  attribution: Type.Optional(Type.String()),
 })
 
 const ListCoinsResponseSchema = Type.Object({
@@ -34,15 +36,18 @@ const coinsListRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().get(
     '/',
     {
+      config: coinsRouteRateLimitConfig,
       schema: {
         operationId: 'listCoins',
-        description: 'List fixture coin quotes. Seeds identity assets when the registry is empty.',
+        description:
+          'List cached CoinGecko markets joined to identity assets. Seeds identity when the registry is empty. Vendor failure returns fixture quotes.',
         summary: 'List coins',
         tags: ['coins'],
         security: [{ bearerAuth: [] }],
         response: {
           200: ListCoinsResponseSchema,
           401: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
         },
       },
     },

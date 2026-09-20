@@ -668,7 +668,7 @@ export const web3SolanaVerify = <ThrowOnError extends boolean = false>(options: 
 /**
  * List coins
  *
- * List fixture coin quotes. Seeds identity assets when the registry is empty.
+ * List cached CoinGecko markets joined to identity assets. Seeds identity when the registry is empty. Vendor failure returns fixture quotes.
  */
 export const listCoins = <ThrowOnError extends boolean = false>(options?: Options<ListCoinsData, ThrowOnError>): RequestResult<ListCoinsResponses, ListCoinsErrors, ThrowOnError> => (options?.client ?? client).get<ListCoinsResponses, ListCoinsErrors, ThrowOnError>({
   security: [{ scheme: 'bearer', type: 'http' }],

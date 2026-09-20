@@ -119,7 +119,7 @@ PostgreSQL access for Fastify (and later eve host). Schema barrel `@repo/db/sche
 
 ### 5) Markets (collocated until E2)
 
-CoinGecko + Binance HTTP lives in `apps/api/src/lib/markets/` until extract to `@repo/markets`. Zero Fastify, zero `@repo/db`, zero Alchemy. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Next.js must not import this folder.
+CoinGecko + Binance HTTP lives in `apps/api/src/lib/markets/` until extract to `@repo/markets`. Zero Fastify, zero `@repo/db`, zero Alchemy. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Fastify `GET /coins` and `getMarketSnapshot` call `getMarkets`. Next.js must not import this folder.
 
 ## Import and export conventions
 

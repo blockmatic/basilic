@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * E2E local: spawn Fastify API, poll until healthy, run Playwright, cleanup on exit.
- * No wait-on. Uses ALLOW_TEST, PGLITE, NODE_ENV=test, RATE_LIMIT_MAX=10000.
+ * No wait-on. Uses ALLOW_TEST, PGLITE, NODE_ENV=test, RATE_LIMIT_MAX=10000,
+ * COINS_RATE_LIMIT_MAX=10000.
  * Scalar login E2E does not call AI; Anthropic is not required for this spawn.
  */
 import { spawn, spawnSync } from 'node:child_process'
@@ -69,6 +70,7 @@ async function main() {
     PGLITE: 'true',
     NODE_ENV: 'test',
     RATE_LIMIT_MAX: '10000',
+    COINS_RATE_LIMIT_MAX: '10000',
     WEBAUTHN_RP_NAME: loaded.WEBAUTHN_RP_NAME ?? process.env.WEBAUTHN_RP_NAME ?? 'Test App',
     TOTP_ISSUER: loaded.TOTP_ISSUER ?? process.env.TOTP_ISSUER ?? 'Test App',
     JWT_SECRET: jwtSecret,

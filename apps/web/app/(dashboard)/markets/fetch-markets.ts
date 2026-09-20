@@ -7,6 +7,8 @@ export type MarketsSync = {
   source: string
   fetchedAt: string | null
   lastError: string | null
+  stale?: boolean
+  attribution?: string | null
 }
 
 const emptySync: MarketsSync = { source: 'fixture', fetchedAt: null, lastError: null }
@@ -17,6 +19,11 @@ function asNullableString(value: unknown) {
 
 export function isSampleBoard({ source, fetchedAt }: MarketsSync) {
   return source === 'fixture' || fetchedAt == null
+}
+
+export function boardNotice(sync: MarketsSync) {
+  if (isSampleBoard(sync)) return 'Showing a sample board.'
+  return sync.attribution ?? null
 }
 
 export async function fetchMarkets(): Promise<{
@@ -47,6 +54,8 @@ export async function fetchMarkets(): Promise<{
         source: data.sync.source,
         fetchedAt: asNullableString(data.sync.fetchedAt),
         lastError: asNullableString(data.sync.lastError),
+        stale: data.sync.stale,
+        attribution: asNullableString(data.sync.attribution),
       },
       error: null,
     }

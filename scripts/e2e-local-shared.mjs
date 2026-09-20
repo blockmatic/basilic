@@ -12,6 +12,7 @@ export const defaultE2eEnv = {
   PGLITE: 'true',
   NODE_ENV: 'test',
   RATE_LIMIT_MAX: '10000',
+  COINS_RATE_LIMIT_MAX: '10000',
   WEBAUTHN_RP_NAME: 'Test App',
   TOTP_ISSUER: 'Test App',
 }

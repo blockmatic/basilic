@@ -9440,7 +9440,7 @@
         "tags": [
           "coins"
         ],
-        "description": "List fixture coin quotes. Seeds identity assets when the registry is empty.",
+        "description": "List cached CoinGecko markets joined to identity assets. Seeds identity when the registry is empty. Vendor failure returns fixture quotes.",
         "security": [
           {
             "bearerAuth": []
@@ -9547,6 +9547,12 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "stale": {
+                          "type": "boolean"
+                        },
+                        "attribution": {
+                          "type": "string"
                         }
                       }
                     }
@@ -9571,6 +9577,44 @@
                     },
                     "message": {
                       "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "retryAfter"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "retryAfter": {
+                      "type": "integer"
                     },
                     "type": {
                       "type": "string"

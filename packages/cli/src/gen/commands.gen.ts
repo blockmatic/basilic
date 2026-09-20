@@ -231,7 +231,7 @@ export const operationMeta = {
   },
   "listCoins": {
     "summary": "List coins",
-    "description": "List fixture coin quotes. Seeds identity assets when the registry is empty.",
+    "description": "List cached CoinGecko markets joined to identity assets. Seeds identity when the registry is empty. Vendor failure returns fixture quotes.",
     "pathParams": [],
     "bodyParams": []
   }
