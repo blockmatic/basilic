@@ -3,8 +3,8 @@
 import { usePathname } from 'next/navigation'
 
 export const pageTitles: Record<string, string> = {
-  '/': 'Markets',
-  '/markets': 'Markets',
+  '/': 'Coins',
+  '/markets': 'Coins',
   '/settings': 'Profile',
   '/settings/security': 'Passkeys',
   '/settings/security/passkeys': 'Passkeys',

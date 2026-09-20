@@ -1,65 +1,47 @@
+import type { ListCoinsData } from '@repo/core'
 import { getErrorMessage } from '@repo/error'
 import { getServerAuthToken } from '@/lib/auth/auth-server'
 import { createBffClient } from '@/lib/auth/bff-client'
-import type { CoinMarket } from './markets-table'
+import {
+  type CoinBoardData,
+  type CoinMarket,
+  emptySync,
+  type MarketsSync,
+  mapListCoins,
+} from '@/lib/coins/board'
 
-export type MarketsSync = {
-  source: string
-  fetchedAt: string | null
-  lastError: string | null
-  stale?: boolean
-  attribution?: string | null
-}
+export type { CoinMarket, MarketsSync }
 
-const emptySync: MarketsSync = { source: 'fixture', fetchedAt: null, lastError: null }
-
-function asNullableString(value: unknown) {
-  return typeof value === 'string' ? value : null
-}
-
-export function isSampleBoard({ source, fetchedAt }: MarketsSync) {
-  return source === 'fixture' || fetchedAt == null
-}
-
-export function boardNotice(sync: MarketsSync) {
-  if (isSampleBoard(sync)) return 'Showing a sample board.'
-  return sync.attribution ?? null
-}
-
-export async function fetchMarkets(): Promise<{
-  coins: CoinMarket[]
-  sync: MarketsSync
-  error: string | null
-}> {
+export async function fetchMarkets({
+  query,
+}: {
+  query?: NonNullable<ListCoinsData['query']>
+} = {}): Promise<CoinBoardData & { watchedIds: string[]; error: string | null }> {
   const { token } = await getServerAuthToken()
-  if (!token) return { coins: [], sync: emptySync, error: 'Authentication required' }
+  if (!token)
+    return {
+      coins: [],
+      sync: emptySync,
+      queryCaption: '',
+      watchedIds: [],
+      error: 'Authentication required',
+    }
 
   const { client } = createBffClient({ token })
-  try {
-    const data = await client.listCoins()
+  const [coinsResult, watchesResult] = await Promise.allSettled([
+    client.listCoins({ query }),
+    client.coins.watches.watches(),
+  ])
+  const watchedIds =
+    watchesResult.status === 'fulfilled' ? watchesResult.value.map(watch => watch.assetId) : []
+  if (coinsResult.status === 'rejected')
     return {
-      coins: data.coins.map(coin => ({
-        id: coin.id,
-        symbol: coin.symbol,
-        name: coin.name,
-        imageUrl: asNullableString(coin.imageUrl),
-        priceUsd: coin.priceUsd,
-        change24h: coin.change24h,
-        volumeUsd: coin.volumeUsd,
-        marketCapUsd: coin.marketCapUsd,
-        rank: coin.rank,
-        fetchedAt: coin.fetchedAt,
-      })),
-      sync: {
-        source: data.sync.source,
-        fetchedAt: asNullableString(data.sync.fetchedAt),
-        lastError: asNullableString(data.sync.lastError),
-        stale: data.sync.stale,
-        attribution: asNullableString(data.sync.attribution),
-      },
-      error: null,
+      coins: [],
+      sync: emptySync,
+      queryCaption: '',
+      watchedIds,
+      error: getErrorMessage(coinsResult.reason),
     }
-  } catch (error) {
-    return { coins: [], sync: emptySync, error: getErrorMessage(error) }
-  }
+
+  return { ...mapListCoins({ data: coinsResult.value }), watchedIds, error: null }
 }

@@ -16,7 +16,7 @@ import { BarChart3Icon, GalleryVerticalEnd, LogOut, ShieldIcon, UserIcon } from 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const navItems = [{ href: '/', label: 'Markets', icon: BarChart3Icon }] as const
+const navItems = [{ href: '/', label: 'Coins', icon: BarChart3Icon }] as const
 
 const settingsItems: Array<{
   href: string

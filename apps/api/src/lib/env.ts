@@ -92,6 +92,10 @@ export const env = createEnv({
     AI_DEFAULT_MODEL: z.string().min(1).optional(),
     BRAVE_SEARCH_API_KEY: z.string().min(1).optional(),
     COINGECKO_DEMO_API_KEY: z.string().min(1).optional(),
+    COINS_USE_FIXTURE: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, false)),
     MARKETS_CACHE_MS: z.coerce.number().int().positive().default(300_000),
     COIN_MAJOR_SYMBOLS: z
       .string()

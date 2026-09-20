@@ -14,6 +14,7 @@ alwaysApply: false
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
 - Do not filter `--project=` in spawn scripts; run the full project DAG
 - Local/CI API spawn sets `ALLOW_TEST=true`, `RATE_LIMIT_MAX=10000`, and `COINS_RATE_LIMIT_MAX=10000` (default API limit is 100/min per IP; `GET /coins` defaults to 10)
+- Local/CI API spawn sets `COINS_USE_FIXTURE=true` so `GET /coins` uses checked-in fixture quotes
 - Local/CI API spawn sets `WEBAUTHN_RP_NAME=Test App` when unset (passkey registration requires an RP display name)
 - Confirm dialogs use `getByRole('alertdialog')` (shadcn AlertDialog), not `dialog`
 

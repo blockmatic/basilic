@@ -58,6 +58,7 @@ export async function getMarkets({
   ids,
   sparkline,
 }: GetMarketsArgs = {}): Promise<MarketsResult> {
+  if (env.COINS_USE_FIXTURE) return fixtureMarkets({ vs, topN, category, ids, sparkline })
   return withVendorCache({
     key: cacheKey('getMarkets', { vs: vs ?? 'usd', topN, category, ids, sparkline }),
     ttlMs: env.MARKETS_CACHE_MS,

@@ -15,6 +15,7 @@ export const defaultE2eEnv = {
   COINS_RATE_LIMIT_MAX: '10000',
   WEBAUTHN_RP_NAME: 'Test App',
   TOTP_ISSUER: 'Test App',
+  COINS_USE_FIXTURE: 'true',
 }
 
 export const defaultE2eJwt = 'e2e-jwt-secret-min-32-chars-for-tests'
