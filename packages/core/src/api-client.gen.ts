@@ -96,6 +96,8 @@ import type {
   OauthTwitterExchangeResponse,
   OauthTwitterLinkAuthorizeUrlData,
   OauthTwitterLinkAuthorizeUrlResponse,
+  QueryCoinsData,
+  QueryCoinsResponse,
   RefreshData,
   RefreshResponse,
   ValidateTokensData,
@@ -217,5 +219,8 @@ export type CoreApiClient = {
       }
     }
   };
-  listCoins: (opts?: Options<ListCoinsData>) => Promise<ListCoinsResponse>
+  listCoins: (opts?: Options<ListCoinsData>) => Promise<ListCoinsResponse>;
+  coins: {
+    query: (opts: Options<QueryCoinsData>) => Promise<QueryCoinsResponse>
+  }
 }

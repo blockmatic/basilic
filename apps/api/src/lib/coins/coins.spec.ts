@@ -10,4 +10,6 @@ afterAll(async () => {
 })
 
 import './read.test'
+import './search-query.test'
 import './seed.test'
+import './spoken-summary.test'

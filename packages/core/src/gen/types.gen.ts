@@ -3357,11 +3357,34 @@ export type Web3SolanaVerifyResponse = Web3SolanaVerifyResponses[keyof Web3Solan
 export type ListCoinsData = {
   body?: never;
   path?: never;
-  query?: never;
+  query?: {
+    universe?: 'all' | 'majors' | 'watchlist';
+    symbols?: Array<string>;
+    text?: string;
+    topN?: number;
+    sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
+    sortDir?: 'asc' | 'desc';
+    minChangePct?: number;
+    maxChangePct?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    highlight?: Array<string>;
+  };
   url: '/coins/';
 };
 
 export type ListCoinsErrors = {
+  /**
+   * Default Response
+   */
+  400: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
   /**
    * Default Response
    */
@@ -3405,6 +3428,7 @@ export type ListCoinsResponses = {
       marketCapUsd: number;
       rank: number;
       fetchedAt: string;
+      highlighted: boolean;
     }>;
     sync: {
       source: string;
@@ -3413,7 +3437,125 @@ export type ListCoinsResponses = {
       stale?: boolean;
       attribution?: string;
     };
+    query: {
+      universe?: 'all' | 'majors' | 'watchlist';
+      symbols?: Array<string>;
+      text?: string;
+      topN?: number;
+      sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
+      sortDir?: 'asc' | 'desc';
+      minChangePct?: number;
+      maxChangePct?: number;
+      minPrice?: number;
+      maxPrice?: number;
+      highlight?: Array<string>;
+    };
+    spokenSummary: string;
+    queryCaption: string;
   };
 };
 
 export type ListCoinsResponse = ListCoinsResponses[keyof ListCoinsResponses];
+
+export type QueryCoinsData = {
+  body: {
+    universe?: 'all' | 'majors' | 'watchlist';
+    symbols?: Array<string>;
+    text?: string;
+    topN?: number;
+    sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
+    sortDir?: 'asc' | 'desc';
+    minChangePct?: number;
+    maxChangePct?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    highlight?: Array<string>;
+  };
+  path?: never;
+  query?: never;
+  url: '/coins/query';
+};
+
+export type QueryCoinsErrors = {
+  /**
+   * Default Response
+   */
+  400: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type QueryCoinsError = QueryCoinsErrors[keyof QueryCoinsErrors];
+
+export type QueryCoinsResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    coins: Array<{
+      id: string;
+      symbol: string;
+      name: string;
+      imageUrl: string | unknown;
+      priceUsd: number;
+      change24h: number;
+      volumeUsd: number;
+      marketCapUsd: number;
+      rank: number;
+      fetchedAt: string;
+      highlighted: boolean;
+    }>;
+    sync: {
+      source: string;
+      fetchedAt: string | unknown;
+      lastError: string | unknown;
+      stale?: boolean;
+      attribution?: string;
+    };
+    query: {
+      universe?: 'all' | 'majors' | 'watchlist';
+      symbols?: Array<string>;
+      text?: string;
+      topN?: number;
+      sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
+      sortDir?: 'asc' | 'desc';
+      minChangePct?: number;
+      maxChangePct?: number;
+      minPrice?: number;
+      maxPrice?: number;
+      highlight?: Array<string>;
+    };
+    spokenSummary: string;
+    queryCaption: string;
+  };
+};
+
+export type QueryCoinsResponse = QueryCoinsResponses[keyof QueryCoinsResponses];
