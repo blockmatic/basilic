@@ -40,15 +40,14 @@ and tests instead of relying on memory or assuming that documentation is current
 
 ### Behavior
 
-- Docs: technical MDX in `apps/docu/content/docs/`. Product intent: `PRODUCT.md`.
+- Docs: technical MDX in `apps/docu/content/docs/`.
   Visual language: `DESIGN.md`. **Read** the matching file. Do not `@`-attach
   docs from rules or skills. Recommended workflow: Matt pack
   (`/grill-me`, `/implement`, `/tdd`). Basilic `/w-*` is the lightweight
   alternative and git close-out (`/w-commit` … `/w-ship`). `/w-build` does not
   commit; `/implement` may. Publish with `/w-ship`.
 - After features/fixes: same change, update that MDX and nearest README if
-  behavior, commands, or conventions changed; patch `PRODUCT.md` if goals,
-  feature map, or horizons changed; glob `.mdc` only if a Cursor-scoped
+  behavior, commands, or conventions changed; glob `.mdc` only if a Cursor-scoped
   constraint changed.
 - When creating plans add a ## References section listing rules, skills, and
   MDX pages used.
@@ -59,12 +58,15 @@ and tests instead of relying on memory or assuming that documentation is current
 - Never ask before modifying files (including dotfiles).
 - Provide concise summaries when finishing.
 - Search first (Grep/Glob), read later. Targeted reads over broad exploration.
-- Maximize parallel calls (batch file reads/searches).
+- Maximize parallel calls (batch file reads/searches). Spawn 2–3 read-only
+  explorers for independent angles (`/w-council`); git and publish stay
+  single-writer.
 
 ### Workflow
 
 - Plan first for non-trivial tasks (3+ steps, architectural decisions); re-plan
-  if stuck. Keep a focused task list for multi-step work.
+  if stuck. `/w-plan` explores via `/w-council` first. Keep a focused task list
+  for multi-step work.
 - On user correction: acknowledge the mistake and adjust (avoid repeating it).
 - Don't mark complete without proving it works (run tests, check logs, diff
   behavior).
@@ -173,10 +175,10 @@ when those paths are in scope.
 
 ## Product and docs
 
-Durable Basilic product intent, feature status, non-goals, and roadmap live in
-[`PRODUCT.md`](PRODUCT.md). Visual language is [`DESIGN.md`](DESIGN.md). Technical
-adopter documentation lives in `apps/docu`. Read the matching MDX or ADR before
-changing an architecture, convention, command, or documented behavior.
+Visual language is [`DESIGN.md`](DESIGN.md). Technical adopter documentation
+lives in `apps/docu`. Read the matching MDX or ADR before changing an
+architecture, convention, command, or documented behavior. Do not create
+`PRODUCT.md` or `ROADMAP.md`.
 
 ## Working contract
 
@@ -217,9 +219,7 @@ without creating conflicting edits or duplicate work.
   exact remaining failure or unverified behavior.
 - When behavior, architecture, commands, or conventions change, update the
   matching MDX page and nearest README in the same work.
-- Update `PRODUCT.md` only when product goals, feature status, non-goals,
-  metrics, or roadmap horizons change. Passing `pnpm qa` is local/CI evidence,
-  not product success.
+- Passing `pnpm qa` is local/CI evidence, not product success.
 - When creating a plan, include a `## References` section listing the rules,
   skills, and documentation used.
 

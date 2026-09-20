@@ -21,9 +21,7 @@ export function rewriteFilePointers({ path, content }: { path: string; content: 
   next = next.replaceAll('apps/docu/content/docs/', 'docs/basilic/')
   next = next.replaceAll('@apps/docu/content/docs/', 'docs/basilic/')
   next = next.replaceAll('apps/docu/content/docs', 'docs/basilic')
-  next = next.replaceAll('_first/basilic/PRODUCT.md', 'PRODUCT.md')
   next = next.replaceAll('_first/basilic/', '')
-  next = next.replaceAll('_first/PRODUCT.md', 'PRODUCT.md')
   next = next.replaceAll('globs: "apps/docu/**/*.mdx"', 'globs: "docs/basilic/**/*.md"')
   next = rewriteRelativeDocuLinks({ path, content: next })
   return next

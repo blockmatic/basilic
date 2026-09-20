@@ -7,12 +7,12 @@ describe('rewriteFilePointers', () => {
       path: 'AGENTS.md',
       content: [
         'Read [`apps/docu/content/docs/`](apps/docu/content/docs/) ',
-        'and `_first/basilic/PRODUCT.md`.',
+        'and `_first/basilic/DESIGN.md`.',
         'Also ../docu/content/docs/testing/product-ready.mdx',
       ].join('\n'),
     })
     expect(next).toContain('docs/basilic/')
-    expect(next).toContain('PRODUCT.md')
+    expect(next).toContain('DESIGN.md')
     expect(next).not.toContain('apps/docu/content/docs/')
     expect(next).not.toContain('_first/')
     expect(next).toContain('docs/basilic/testing/product-ready.md')

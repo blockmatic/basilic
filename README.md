@@ -99,7 +99,7 @@ Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 - [Getting Started](https://basilic-docs.vercel.app/docs/development) — `npx create-basilic@latest`, `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`
 - [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) — generate-and-run bar (not CI green)
 - [After fork](https://basilic-docs.vercel.app/docs/development/after-fork) — generator vs fork, what to replace, CI secrets
-- Maintainers: [`PRODUCT.md`](PRODUCT.md) — intent, feature map, roadmap. Visual: [`DESIGN.md`](DESIGN.md)
+- Visual: [`DESIGN.md`](DESIGN.md)
 - [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Local vs remote (ports 3000, 3001, 8081; `start:localhost`, `start:tunnel`)
 - [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)
 

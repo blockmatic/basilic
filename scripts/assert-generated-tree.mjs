@@ -38,7 +38,6 @@ const required = [
   'packages/cli/package.json',
   'tools/eslint/package.json',
   'tools/typescript/package.json',
-  'PRODUCT.md',
   'docs/basilic/development/index.md',
   'docs/basilic/testing/product-ready.md',
   '.cursor/rules/base/general.mdc',

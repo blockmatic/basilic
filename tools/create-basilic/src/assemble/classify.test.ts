@@ -26,7 +26,7 @@ describe('classifyPath', () => {
   it('prefers exclude over a parent transform', () => {
     expect(classifyPath({ path: '_first/FIRST.md', manifest })?.kind).toBe('exclude')
     expect(classifyPath({ path: '.agents/skills/f/SKILL.md', manifest })?.kind).toBe('exclude')
-    expect(classifyPath({ path: 'PRODUCT.md', manifest })?.kind).toBe('transform')
+    expect(classifyPath({ path: 'DESIGN.md', manifest })?.kind).toBe('transform')
   })
 
   it('excludes release automation', () => {

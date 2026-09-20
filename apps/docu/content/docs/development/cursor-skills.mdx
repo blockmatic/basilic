@@ -13,7 +13,7 @@ Rules override skills. Skills override the model. Indexed docs are advisory. Dai
 
 ## Catalogs
 
-**Matt Pocock pack (recommended)** — [AI Skills for Real Engineers](https://www.aihero.dev/skills) / [mattpocock/skills](https://github.com/mattpocock/skills) on [skills.sh](https://skills.sh/mattpocock/skills). Daily path: `/grill-me`, `/grill-with-docs`, `/implement`, `/tdd`, `/code-review`, `/ask-matt`. Run `/setup-matt-pocock-skills` once per clone (issue tracker, labels, docs layout). Durable product facts stay in `PRODUCT.md`; Matt may add `CONTEXT.md`.
+**Matt Pocock pack (recommended)** — [AI Skills for Real Engineers](https://www.aihero.dev/skills) / [mattpocock/skills](https://github.com/mattpocock/skills) on [skills.sh](https://skills.sh/mattpocock/skills). Daily path: `/grill-me`, `/grill-with-docs`, `/implement`, `/tdd`, `/code-review`, `/ask-matt`. Run `/setup-matt-pocock-skills` once per clone (issue tracker, labels, docs layout). Matt may add `CONTEXT.md`.
 
 **Basilic playbooks (lightweight alternative)** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Each playbook is a top-level skill (`--skill w-plan` or `--all`). Slash names are `/w-plan`, `/w-build`, `/w-review`. This repo uses them for git/docs close-out (`/w-commit` … `/w-ship`).
 
@@ -43,7 +43,7 @@ Root `skills-lock.json` tracks hashes for the two **installed** catalogs only. `
 
 ## Workflow install
 
-The published catalog is **42** `/w-*` skills. Git playbooks ship `references/git-publish.md`; `/w-review` ships `references/review-dimensions.md`.
+The published catalog is **42** `/w-*` skills. Git playbooks ship `references/git-publish.md`; `/w-review` ships `references/review-dimensions.md`; `/w-plan` ships `references/plan-output.md`. `/w-plan` explores via `/w-council` first. Git, TDD, lint, generate, and publish stay single-writer.
 
 After a refresh, preserve committed stack skills (setup stashes them). Catalog validation: `node scripts/validate-catalog.mjs` in [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills).
 
