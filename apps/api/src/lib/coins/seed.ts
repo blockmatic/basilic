@@ -1,6 +1,6 @@
 import type { getDb } from '@repo/db'
 import { assetMarkets, assetNetworks, assetProviders, assets } from '@repo/db/schema'
-import { fixtureQuotes } from './fixture.js'
+import { fixtureQuotes } from '../markets/index.js'
 
 export type CoinsDb = Awaited<ReturnType<typeof getDb>>
 

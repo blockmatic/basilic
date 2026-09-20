@@ -1,6 +1,6 @@
 import { assets } from '@repo/db/schema'
 import { eq } from 'drizzle-orm'
-import { fixtureQuotes, fixtureSync } from './fixture.js'
+import { fixtureQuotes, fixtureSync } from '../markets/index.js'
 import { type CoinsDb, seedIdentity } from './seed.js'
 
 function toCoinDto({
