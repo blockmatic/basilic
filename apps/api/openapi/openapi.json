@@ -3,7 +3,14 @@
   "info": {
     "title": "Basilic API",
     "version": "1.0.0",
-    "description": "Basilic API documentation"
+    "description": "Typed REST API on Fastify 5. Authenticate with a Bearer JWT issued by this host or an X-API-Key / Bearer bask_<prefix>_<secret>. This host is a resource server plus a social login client, not an OAuth authorization server. It does not expose MCP, GraphQL, or a plugin manifest.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "contact": {
+      "url": "https://basilic-docs.vercel.app"
+    }
   },
   "components": {
     "securitySchemes": {
@@ -15,6 +22,44 @@
         "type": "apiKey",
         "in": "header",
         "name": "X-API-Key"
+      }
+    },
+    "headers": {
+      "RateLimit": {
+        "description": "IETF RateLimit quota for the matched policy",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "RateLimit-Policy": {
+        "description": "IETF RateLimit-Policy describing quota and window",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Retry-After": {
+        "description": "Seconds until a 429 client may retry",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "x-ratelimit-limit": {
+        "description": "Maximum requests in the current window",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "x-ratelimit-remaining": {
+        "description": "Remaining requests in the current window",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "x-ratelimit-reset": {
+        "description": "Seconds until the current window resets",
+        "schema": {
+          "type": "string"
+        }
       }
     },
     "schemas": {}
@@ -7393,6 +7438,11 @@
       }
     }
   },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
   "security": [
     {
       "bearerAuth": []
@@ -7400,5 +7450,9 @@
     {
       "apiKeyAuth": []
     }
-  ]
+  ],
+  "externalDocs": {
+    "description": "Authentication",
+    "url": "https://basilic-docs.vercel.app/docs/architecture/authentication"
+  }
 }
