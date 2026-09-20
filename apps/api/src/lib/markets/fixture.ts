@@ -1,6 +1,7 @@
 import type {
   AssetDetail,
   CandlesResult,
+  GetMarketsArgs,
   GlobalStats,
   MarketRow,
   MarketsResult,
@@ -88,10 +89,8 @@ export const fixtureSync = { source: 'fixture', fetchedAt: null, lastError: null
 
 function quoteById(assetId: string): (typeof fixtureQuotes)[number] {
   const match = fixtureQuotes.find(row => row.id === assetId)
-  if (match) return match
-  const [bitcoin] = fixtureQuotes
-  if (!bitcoin) throw new Error('fixture quotes empty')
-  return bitcoin
+  if (!match) throw new Error('fixture quote unavailable')
+  return match
 }
 
 export function toFixtureMarketRow(quote: (typeof fixtureQuotes)[number]): MarketRow {
@@ -111,11 +110,15 @@ export function toFixtureMarketRow(quote: (typeof fixtureQuotes)[number]): Marke
   }
 }
 
-export function fixtureMarkets(): MarketsResult {
-  return { markets: fixtureQuotes.map(toFixtureMarketRow), source: 'fixture' }
+export function fixtureMarkets({ topN, category, ids }: GetMarketsArgs = {}): MarketsResult {
+  if (category) return { markets: [], source: 'fixture' }
+  const selected = ids?.length ? fixtureQuotes.filter(row => ids.includes(row.id)) : fixtureQuotes
+  const limited = topN === undefined ? selected : selected.slice(0, topN)
+  return { markets: limited.map(toFixtureMarketRow), source: 'fixture' }
 }
 
 export function fixtureQuote({ assetId, vs = 'usd' }: { assetId: string; vs?: string }): Quote {
+  if (vs.toLowerCase() !== 'usd') throw new Error('fixture quote unavailable')
   const quote = quoteById(assetId)
   return {
     assetId,

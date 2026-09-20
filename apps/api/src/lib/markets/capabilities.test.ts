@@ -174,4 +174,56 @@ describe('markets capabilities', () => {
     expect(tickerCalls).toHaveLength(1)
     expect(new URL(tickerCalls[0] ?? '').searchParams.get('symbol')).toBe('BTCUSDT')
   })
+
+  it('filters fixture markets by ids and topN and drops unknown categories', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => jsonResponse('rate', 429)),
+    )
+    const byIds = await getMarkets({ ids: ['ethereum', 'solana'] })
+    expect(byIds.markets.map(row => row.id)).toEqual(['ethereum', 'solana'])
+    const topN = await getMarkets({ topN: 2 })
+    expect(topN.markets.map(row => row.id)).toEqual(['bitcoin', 'ethereum'])
+    const category = await getMarkets({ category: 'layer-1' })
+    expect(category.markets).toEqual([])
+  })
+
+  it('does not copy non-usd gecko prices into usd market fields', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => jsonResponse(frozenMarkets)),
+    )
+    const result = await getMarkets({ vs: 'eur' })
+    expect(result.markets).toEqual([])
+  })
+
+  it('skips Binance when the pair quote does not match vs', async () => {
+    const fetchMock = vi.fn(async () => jsonResponse({ bitcoin: { eur: 1, eur_24h_change: 0 } }))
+    vi.stubGlobal('fetch', fetchMock)
+    const quote = await getQuote({
+      assetId: 'bitcoin',
+      vs: 'eur',
+      mapping: { binanceSymbol: 'BTCUSDT' },
+    })
+    expect(quote.provider).toBe('coingecko')
+    expect(quote.vs).toBe('eur')
+    expect(quote.price).toBe(1)
+    expect(
+      fetchMock.mock.calls
+        .map(call => requestUrl(call[0]))
+        .some(url => url.includes('ticker/24hr')),
+    ).toBe(false)
+  })
+
+  it('does not reuse a quote cache entry across coingecko ids', async () => {
+    const fetchMock = vi.fn(async () => jsonResponse({ bitcoin: { usd: 1 } }))
+    vi.stubGlobal('fetch', fetchMock)
+    const bitcoin = await getQuote({ assetId: 'bitcoin', mapping: { coingeckoId: 'bitcoin' } })
+    const wrapped = await getQuote({
+      assetId: 'bitcoin',
+      mapping: { coingeckoId: 'wrapped-bitcoin' },
+    })
+    expect(bitcoin.price).toBe(1)
+    expect(wrapped.price).toBe(fixtureQuotes[0].priceUsd)
+  })
 })

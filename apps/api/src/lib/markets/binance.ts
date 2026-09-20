@@ -126,6 +126,14 @@ export function tickerToQuote({
   }
 }
 
+export function binanceQuoteMatchesVs({ symbol, vs }: { symbol: string; vs: string }): boolean {
+  const quote = vs.trim().toLowerCase()
+  if (!quote) return false
+  const upper = symbol.toUpperCase()
+  if (quote === 'usd') return upper.endsWith('USDT') || upper.endsWith('USD')
+  return upper.endsWith(quote.toUpperCase())
+}
+
 export function logBinanceSkip({ assetId, reason }: { assetId: string; reason: string }): void {
   logger.warn({ assetId, reason }, 'markets binance skipped')
 }

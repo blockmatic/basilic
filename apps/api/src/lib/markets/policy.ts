@@ -56,6 +56,10 @@ async function followAllowed({
   const location = response.headers.get('location')
   if (!location) throw new Error('markets redirect missing location')
   const next = new URL(location, url)
+  if (next.origin !== new URL(url).origin) {
+    logger.warn({ host: next.hostname }, 'markets redirect cross origin')
+    throw new Error('markets redirect cross origin')
+  }
   if (!isAllowedUrl(next)) {
     logger.warn({ host: next.hostname }, 'markets redirect off allowlist')
     throw new Error('markets redirect off allowlist')

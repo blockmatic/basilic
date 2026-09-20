@@ -13,4 +13,5 @@ afterEach(() => {
 
 import './binance.test'
 import './capabilities.test'
+import './fixture.test'
 import './policy.test'

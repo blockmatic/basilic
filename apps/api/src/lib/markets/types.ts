@@ -2,30 +2,41 @@ export type Provenance = 'live' | 'fixture' | 'stale'
 export type MarketProvider = 'coingecko' | 'binance' | 'fixture'
 export type Vendor = 'coingecko' | 'binance'
 
-export type AssetMapping = {
+export interface AssetMapping {
   coingeckoId?: string
   binanceSymbol?: string
 }
 
-export type SearchAssetsArgs = { text: string }
-export type GetMarketsArgs = {
+export interface SearchAssetsArgs {
+  text: string
+}
+export interface GetMarketsArgs {
   vs?: string
   topN?: number
   category?: string
   ids?: string[]
   sparkline?: boolean
 }
-export type GetQuoteArgs = { assetId: string; vs?: string; mapping?: AssetMapping }
-export type GetCandlesArgs = {
+export interface GetQuoteArgs {
+  assetId: string
+  vs?: string
+  mapping?: AssetMapping
+}
+export interface GetCandlesArgs {
   assetId: string
   interval?: string
   range?: string
   mapping?: AssetMapping
 }
-export type GetTrendingArgs = { vs?: string }
-export type GetAssetArgs = { assetId: string; mapping?: AssetMapping }
+export interface GetTrendingArgs {
+  vs?: string
+}
+export interface GetAssetArgs {
+  assetId: string
+  mapping?: AssetMapping
+}
 
-export type MarketRow = {
+export interface MarketRow {
   id: string
   symbol: string
   name: string
@@ -40,9 +51,12 @@ export type MarketRow = {
   provider: MarketProvider
 }
 
-export type MarketsResult = { markets: MarketRow[]; source: Provenance }
+export interface MarketsResult {
+  markets: MarketRow[]
+  source: Provenance
+}
 
-export type Quote = {
+export interface Quote {
   assetId: string
   vs: string
   price: number
@@ -52,7 +66,7 @@ export type Quote = {
   provider: MarketProvider
 }
 
-export type Candle = {
+export interface Candle {
   openTime: number
   open: number
   high: number
@@ -62,7 +76,7 @@ export type Candle = {
   closeTime: number
 }
 
-export type CandlesResult = {
+export interface CandlesResult {
   assetId: string
   interval: string
   candles: Candle[]
@@ -70,19 +84,30 @@ export type CandlesResult = {
   provider: MarketProvider
 }
 
-export type SearchHit = { id: string; symbol: string; name: string; rank: number | null }
-export type SearchResult = { hits: SearchHit[]; source: Provenance }
+export interface SearchHit {
+  id: string
+  symbol: string
+  name: string
+  rank: number | null
+}
+export interface SearchResult {
+  hits: SearchHit[]
+  source: Provenance
+}
 
-export type TrendingCoin = {
+export interface TrendingCoin {
   id: string
   symbol: string
   name: string
   rank: number | null
   source: Provenance
 }
-export type TrendingResult = { coins: TrendingCoin[]; source: Provenance }
+export interface TrendingResult {
+  coins: TrendingCoin[]
+  source: Provenance
+}
 
-export type AssetDetail = {
+export interface AssetDetail {
   id: string
   symbol: string
   name: string
@@ -91,7 +116,7 @@ export type AssetDetail = {
   provider: MarketProvider
 }
 
-export type GlobalStats = {
+export interface GlobalStats {
   marketCapUsd: number
   volumeUsd: number
   btcDominance: number

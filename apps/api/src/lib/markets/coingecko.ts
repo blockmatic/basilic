@@ -50,33 +50,41 @@ export async function fetchCoinGeckoMarkets({
   ids,
   sparkline,
 }: GetMarketsArgs): Promise<MarketsResult> {
+  const vsCurrency = vs ?? 'usd'
   const query: {
     vs_currency: string
     category?: string
     ids?: string
     per_page?: number
     sparkline?: boolean
-  } = { vs_currency: vs ?? 'usd' }
+  } = { vs_currency: vsCurrency }
   if (category) query.category = category
   if (ids?.length) query.ids = ids.join(',')
   if (topN !== undefined) query.per_page = topN
   if (sparkline !== undefined) query.sparkline = sparkline
   const rows = await getClient().coins.markets.get(query)
-  return { markets: rows.flatMap(toMarketRow), source: 'live' }
+  return { markets: rows.flatMap(row => toMarketRow({ row, vs: vsCurrency })), source: 'live' }
 }
 
-function toMarketRow(row: {
-  id: string
-  symbol: string
-  name: string
-  image?: string
-  current_price?: number | null
-  price_change_percentage_24h?: number | null
-  total_volume?: number | null
-  market_cap?: number | null
-  market_cap_rank?: number | null
-  last_updated?: string
+function toMarketRow({
+  row,
+  vs,
+}: {
+  row: {
+    id: string
+    symbol: string
+    name: string
+    image?: string
+    current_price?: number | null
+    price_change_percentage_24h?: number | null
+    total_volume?: number | null
+    market_cap?: number | null
+    market_cap_rank?: number | null
+    last_updated?: string
+  }
+  vs: string
 }): MarketRow[] {
+  if (vs.toLowerCase() !== 'usd') return []
   const priceUsd = row.current_price
   if (typeof priceUsd !== 'number' || !Number.isFinite(priceUsd)) return []
   return [

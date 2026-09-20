@@ -1,5 +1,11 @@
 import { env, marketsKlinesCacheMs, marketsQuoteCacheMs } from '../env.js'
-import { fetchBinanceKlines, fetchBinanceTicker, logBinanceSkip, tickerToQuote } from './binance.js'
+import {
+  binanceQuoteMatchesVs,
+  fetchBinanceKlines,
+  fetchBinanceTicker,
+  logBinanceSkip,
+  tickerToQuote,
+} from './binance.js'
 import { cacheKey, withVendorCache } from './cache.js'
 import {
   fetchCoinGeckoAsset,
@@ -57,32 +63,41 @@ export async function getMarkets({
     ttlMs: env.MARKETS_CACHE_MS,
     vendor: 'coingecko',
     load: () => fetchCoinGeckoMarkets({ vs, topN, category, ids, sparkline }),
-    fallback: fixtureMarkets,
+    fallback: () => fixtureMarkets({ vs, topN, category, ids, sparkline }),
   })
 }
 
 export async function getQuote({ assetId, vs, mapping }: GetQuoteArgs): Promise<Quote> {
   const vsCurrency = vs ?? 'usd'
   const binanceSymbol = mapping?.binanceSymbol
-  if (quoteProvider({ binanceSymbol }) === 'binance' && binanceSymbol) {
-    const fromBinance = await withVendorCache({
-      key: cacheKey('getQuote', { assetId, vs: vsCurrency, provider: 'binance', binanceSymbol }),
-      ttlMs: marketsQuoteCacheMs,
-      vendor: 'binance',
-      load: async () =>
-        tickerToQuote({
-          assetId,
-          vs: vsCurrency,
-          ticker: await fetchBinanceTicker({ symbol: binanceSymbol }),
-        }),
-      fallback: () => fixtureQuote({ assetId, vs: vsCurrency }),
-    })
-    if (fromBinance.provider === 'binance') return fromBinance
-    logBinanceSkip({ assetId, reason: 'binance miss' })
+  if (binanceSymbol && quoteProvider({ binanceSymbol }) === 'binance') {
+    if (!binanceQuoteMatchesVs({ symbol: binanceSymbol, vs: vsCurrency }))
+      logBinanceSkip({ assetId, reason: 'quote currency mismatch' })
+    else {
+      const fromBinance = await withVendorCache({
+        key: cacheKey('getQuote', { assetId, vs: vsCurrency, provider: 'binance', binanceSymbol }),
+        ttlMs: marketsQuoteCacheMs,
+        vendor: 'binance',
+        load: async () =>
+          tickerToQuote({
+            assetId,
+            vs: vsCurrency,
+            ticker: await fetchBinanceTicker({ symbol: binanceSymbol }),
+          }),
+        fallback: () => fixtureQuote({ assetId, vs: vsCurrency }),
+      })
+      if (fromBinance.provider === 'binance') return fromBinance
+      logBinanceSkip({ assetId, reason: 'binance miss' })
+    }
   }
 
   return withVendorCache({
-    key: cacheKey('getQuote', { assetId, vs: vsCurrency, provider: 'coingecko' }),
+    key: cacheKey('getQuote', {
+      assetId,
+      vs: vsCurrency,
+      provider: 'coingecko',
+      coingeckoId: mapping?.coingeckoId,
+    }),
     ttlMs: marketsQuoteCacheMs,
     vendor: 'coingecko',
     load: () => fetchCoinGeckoQuote({ assetId, vs: vsCurrency, coingeckoId: mapping?.coingeckoId }),

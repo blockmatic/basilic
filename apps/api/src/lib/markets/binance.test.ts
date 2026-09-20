@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildKlinesUrl, buildTickerUrl } from './binance.js'
+import { binanceQuoteMatchesVs, buildKlinesUrl, buildTickerUrl } from './binance.js'
 
 describe('Binance URLs', () => {
   it('fails ticker/24hr without symbol', () => {
@@ -14,5 +14,12 @@ describe('Binance URLs', () => {
 
   it('fails klines without symbol', () => {
     expect(() => buildKlinesUrl({ symbol: '' })).toThrow(/symbol/)
+  })
+
+  it('matches usd quotes to USD and USDT pairs only', () => {
+    expect(binanceQuoteMatchesVs({ symbol: 'BTCUSDT', vs: 'usd' })).toBe(true)
+    expect(binanceQuoteMatchesVs({ symbol: 'BTCUSD', vs: 'usd' })).toBe(true)
+    expect(binanceQuoteMatchesVs({ symbol: 'ETHBTC', vs: 'usd' })).toBe(false)
+    expect(binanceQuoteMatchesVs({ symbol: 'BTCUSDT', vs: 'eur' })).toBe(false)
   })
 })
