@@ -9440,7 +9440,171 @@
         "tags": [
           "coins"
         ],
-        "description": "List cached CoinGecko markets joined to identity assets. Seeds identity when the registry is empty. Vendor failure returns fixture quotes.",
+        "description": "List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol).",
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "all"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "majors"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "watchlist"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "universe",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "in": "query",
+            "name": "symbols",
+            "required": false
+          },
+          {
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "text",
+            "required": false
+          },
+          {
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "topN",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "rank"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "change24h"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "volume"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "marketCap"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "price"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "sortBy",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "asc"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "desc"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "sortDir",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "in": "query",
+            "name": "minChangePct",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "in": "query",
+            "name": "maxChangePct",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "in": "query",
+            "name": "minPrice",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "in": "query",
+            "name": "maxPrice",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "in": "query",
+            "name": "highlight",
+            "required": false
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -9455,7 +9619,10 @@
                   "type": "object",
                   "required": [
                     "coins",
-                    "sync"
+                    "sync",
+                    "query",
+                    "spokenSummary",
+                    "queryCaption"
                   ],
                   "properties": {
                     "coins": {
@@ -9472,7 +9639,8 @@
                           "volumeUsd",
                           "marketCapUsd",
                           "rank",
-                          "fetchedAt"
+                          "fetchedAt",
+                          "highlighted"
                         ],
                         "properties": {
                           "id": {
@@ -9512,6 +9680,9 @@
                           "fetchedAt": {
                             "format": "date-time",
                             "type": "string"
+                          },
+                          "highlighted": {
+                            "type": "boolean"
                           }
                         }
                       }
@@ -9555,6 +9726,639 @@
                           "type": "string"
                         }
                       }
+                    },
+                    "query": {
+                      "type": "object",
+                      "properties": {
+                        "universe": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "all"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "majors"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "watchlist"
+                              ]
+                            }
+                          ]
+                        },
+                        "symbols": {
+                          "type": "array",
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "text": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "topN": {
+                          "minimum": 1,
+                          "maximum": 100,
+                          "type": "integer"
+                        },
+                        "sortBy": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "rank"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "change24h"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "volume"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "marketCap"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "price"
+                              ]
+                            }
+                          ]
+                        },
+                        "sortDir": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "asc"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "desc"
+                              ]
+                            }
+                          ]
+                        },
+                        "minChangePct": {
+                          "type": "number"
+                        },
+                        "maxChangePct": {
+                          "type": "number"
+                        },
+                        "minPrice": {
+                          "type": "number"
+                        },
+                        "maxPrice": {
+                          "type": "number"
+                        },
+                        "highlight": {
+                          "type": "array",
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "spokenSummary": {
+                      "type": "string"
+                    },
+                    "queryCaption": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "retryAfter"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "retryAfter": {
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coins/query": {
+      "post": {
+        "operationId": "queryCoins",
+        "summary": "Query coins",
+        "tags": [
+          "coins"
+        ],
+        "description": "Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Vendor failure returns fixture quotes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "universe": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "all"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "majors"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "watchlist"
+                        ]
+                      }
+                    ]
+                  },
+                  "symbols": {
+                    "type": "array",
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "text": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "topN": {
+                    "minimum": 1,
+                    "maximum": 100,
+                    "type": "integer"
+                  },
+                  "sortBy": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "rank"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "change24h"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "volume"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "marketCap"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "price"
+                        ]
+                      }
+                    ]
+                  },
+                  "sortDir": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "asc"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "desc"
+                        ]
+                      }
+                    ]
+                  },
+                  "minChangePct": {
+                    "type": "number"
+                  },
+                  "maxChangePct": {
+                    "type": "number"
+                  },
+                  "minPrice": {
+                    "type": "number"
+                  },
+                  "maxPrice": {
+                    "type": "number"
+                  },
+                  "highlight": {
+                    "type": "array",
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "coins",
+                    "sync",
+                    "query",
+                    "spokenSummary",
+                    "queryCaption"
+                  ],
+                  "properties": {
+                    "coins": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "symbol",
+                          "name",
+                          "imageUrl",
+                          "priceUsd",
+                          "change24h",
+                          "volumeUsd",
+                          "marketCapUsd",
+                          "rank",
+                          "fetchedAt",
+                          "highlighted"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "symbol": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "imageUrl": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "priceUsd": {
+                            "type": "number"
+                          },
+                          "change24h": {
+                            "type": "number"
+                          },
+                          "volumeUsd": {
+                            "type": "number"
+                          },
+                          "marketCapUsd": {
+                            "type": "number"
+                          },
+                          "rank": {
+                            "type": "integer"
+                          },
+                          "fetchedAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "highlighted": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "sync": {
+                      "type": "object",
+                      "required": [
+                        "source",
+                        "fetchedAt",
+                        "lastError"
+                      ],
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "fetchedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "lastError": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "stale": {
+                          "type": "boolean"
+                        },
+                        "attribution": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "query": {
+                      "type": "object",
+                      "properties": {
+                        "universe": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "all"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "majors"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "watchlist"
+                              ]
+                            }
+                          ]
+                        },
+                        "symbols": {
+                          "type": "array",
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "text": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "topN": {
+                          "minimum": 1,
+                          "maximum": 100,
+                          "type": "integer"
+                        },
+                        "sortBy": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "rank"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "change24h"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "volume"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "marketCap"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "price"
+                              ]
+                            }
+                          ]
+                        },
+                        "sortDir": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "asc"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "desc"
+                              ]
+                            }
+                          ]
+                        },
+                        "minChangePct": {
+                          "type": "number"
+                        },
+                        "maxChangePct": {
+                          "type": "number"
+                        },
+                        "minPrice": {
+                          "type": "number"
+                        },
+                        "maxPrice": {
+                          "type": "number"
+                        },
+                        "highlight": {
+                          "type": "array",
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "spokenSummary": {
+                      "type": "string"
+                    },
+                    "queryCaption": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
                     }
                   }
                 }

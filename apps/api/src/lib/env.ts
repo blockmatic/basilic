@@ -93,6 +93,16 @@ export const env = createEnv({
     BRAVE_SEARCH_API_KEY: z.string().min(1).optional(),
     COINGECKO_DEMO_API_KEY: z.string().min(1).optional(),
     MARKETS_CACHE_MS: z.coerce.number().int().positive().default(300_000),
+    COIN_MAJOR_SYMBOLS: z
+      .string()
+      .default('btc,eth,sol')
+      .transform(val =>
+        val
+          .split(',')
+          .map(s => s.trim().toLowerCase())
+          .filter(Boolean),
+      )
+      .refine(val => val.length > 0, 'COIN_MAJOR_SYMBOLS must include at least one symbol'),
     ENCRYPTION_KEY: encryptionKeySchema,
     JWT_SECRET: jwtSecretSchema,
     ACCESS_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(900),

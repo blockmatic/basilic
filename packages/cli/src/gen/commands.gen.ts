@@ -231,9 +231,49 @@ export const operationMeta = {
   },
   "listCoins": {
     "summary": "List coins",
-    "description": "List cached CoinGecko markets joined to identity assets. Seeds identity when the registry is empty. Vendor failure returns fixture quotes.",
+    "description": "List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol).",
     "pathParams": [],
     "bodyParams": []
+  },
+  "queryCoins": {
+    "summary": "Query coins",
+    "description": "Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Vendor failure returns fixture quotes.",
+    "pathParams": [],
+    "bodyParams": [
+      {
+        "name": "universe"
+      },
+      {
+        "name": "symbols"
+      },
+      {
+        "name": "text"
+      },
+      {
+        "name": "topN"
+      },
+      {
+        "name": "sortBy"
+      },
+      {
+        "name": "sortDir"
+      },
+      {
+        "name": "minChangePct"
+      },
+      {
+        "name": "maxChangePct"
+      },
+      {
+        "name": "minPrice"
+      },
+      {
+        "name": "maxPrice"
+      },
+      {
+        "name": "highlight"
+      }
+    ]
   }
 } as const
 
@@ -418,5 +458,12 @@ export const commandSpecs = [
       "list-coins"
     ],
     "operationId": "listCoins"
+  },
+  {
+    "path": [
+      "coins",
+      "query"
+    ],
+    "operationId": "queryCoins"
   }
 ] as const

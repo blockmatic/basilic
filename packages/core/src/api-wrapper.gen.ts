@@ -106,4 +106,7 @@ auth: {
   },
 },
 listCoins: gen.listCoins,
+coins: {
+  query: gen.queryCoins,
+},
 }

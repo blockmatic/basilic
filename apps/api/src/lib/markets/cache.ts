@@ -43,14 +43,23 @@ export function createMarketsRuntime({
   return { cache, inflight: new Map(), circuits: emptyCircuits() }
 }
 
-let runtime = createMarketsRuntime()
+function getRuntime(): MarketsRuntime {
+  const g = globalThis as { __basilicMarketsRuntime?: MarketsRuntime }
+  g.__basilicMarketsRuntime ??= createMarketsRuntime()
+  return g.__basilicMarketsRuntime
+}
+
+function setRuntime(next: MarketsRuntime): void {
+  const g = globalThis as { __basilicMarketsRuntime?: MarketsRuntime }
+  g.__basilicMarketsRuntime = next
+}
 
 export function configureMarkets({ cache }: { cache: CachePort }): void {
-  runtime = { ...runtime, cache }
+  setRuntime({ ...getRuntime(), cache })
 }
 
 export function resetMarketsRuntime(): void {
-  runtime = createMarketsRuntime()
+  setRuntime(createMarketsRuntime())
 }
 
 export function cacheKey(capability: string, params: Record<string, unknown>): string {
@@ -83,6 +92,7 @@ function rewriteSource<T>(value: T, source: Provenance): T {
 }
 
 async function singleflight<T>({ key, load }: { key: string; load: () => Promise<T> }): Promise<T> {
+  const runtime = getRuntime()
   const existing = runtime.inflight.get(key)
   if (existing) return existing as Promise<T>
   const pending = load().finally(() => runtime.inflight.delete(key))
@@ -103,6 +113,7 @@ export async function withVendorCache<T>({
   load: () => Promise<T>
   fallback: () => T
 }): Promise<T> {
+  const runtime = getRuntime()
   const now = Date.now()
   const circuit = runtime.circuits[vendor]
   const cached = await runtime.cache.get(key)

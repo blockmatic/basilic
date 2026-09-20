@@ -3,7 +3,6 @@ import { getDb } from '@repo/db'
 import type { FastifyPluginAsync } from 'fastify'
 import { sendCatalogError } from '../../lib/catalogs/mapper.js'
 import {
-  coerceSearchQuerystring,
   coinsRouteRateLimitConfig,
   QueryCoinsResponseSchema,
   queryCoins,
@@ -11,22 +10,19 @@ import {
 } from '../../lib/coins/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../schemas.js'
 
-const coinsListRoute: FastifyPluginAsync = async fastify => {
-  fastify.withTypeProvider<TypeBoxTypeProvider>().get(
-    '/',
+const coinsQueryRoute: FastifyPluginAsync = async fastify => {
+  fastify.withTypeProvider<TypeBoxTypeProvider>().post(
+    '/query',
     {
       config: coinsRouteRateLimitConfig,
-      preValidation: async request => {
-        coerceSearchQuerystring({ query: request.query as Record<string, unknown> })
-      },
       schema: {
-        operationId: 'listCoins',
+        operationId: 'queryCoins',
         description:
-          'List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol).',
-        summary: 'List coins',
+          'Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Vendor failure returns fixture quotes.',
+        summary: 'Query coins',
         tags: ['coins'],
         security: [{ bearerAuth: [] }],
-        querystring: SearchQuerySchema,
+        body: SearchQuerySchema,
         response: {
           200: QueryCoinsResponseSchema,
           400: ErrorResponseSchema,
@@ -40,10 +36,10 @@ const coinsListRoute: FastifyPluginAsync = async fastify => {
       const db = await getDb()
       return reply
         .code(200)
-        .send(await queryCoins({ db, userId: request.session.user.id, query: request.query }))
+        .send(await queryCoins({ db, userId: request.session.user.id, query: request.body }))
     },
   )
 }
 
-export default coinsListRoute
+export default coinsQueryRoute
 export const prefixOverride = '/coins'

@@ -18,3 +18,4 @@ afterAll(async () => {
 export { fastify }
 
 import './list.test'
+import './query.test'
