@@ -9436,11 +9436,11 @@
     "/coins/": {
       "get": {
         "operationId": "listCoins",
-        "summary": "List coins snapshot",
+        "summary": "List coins",
         "tags": [
           "coins"
         ],
-        "description": "List the stored coin snapshot. Seeds mock rows when the table is empty.",
+        "description": "List fixture coin quotes. Seeds identity assets when the registry is empty.",
         "security": [
           {
             "bearerAuth": []

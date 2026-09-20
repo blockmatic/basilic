@@ -1,5 +1,5 @@
 import { index, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
-import { coinMarkets } from './coin-markets.js'
+import { assets } from './assets.js'
 import { users } from './users.js'
 
 export const coinWatches = pgTable(
@@ -9,13 +9,13 @@ export const coinWatches = pgTable(
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    geckoId: text('gecko_id')
+    assetId: text('asset_id')
       .notNull()
-      .references(() => coinMarkets.id, { onDelete: 'cascade' }),
+      .references(() => assets.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   table => [
-    uniqueIndex('coin_watches_user_gecko_unique').on(table.userId, table.geckoId),
+    uniqueIndex('coin_watches_user_asset_unique').on(table.userId, table.assetId),
     index('coin_watches_user_id_idx').on(table.userId),
   ],
 )

@@ -230,8 +230,8 @@ export const operationMeta = {
     ]
   },
   "listCoins": {
-    "summary": "List coins snapshot",
-    "description": "List the stored coin snapshot. Seeds mock rows when the table is empty.",
+    "summary": "List coins",
+    "description": "List fixture coin quotes. Seeds identity assets when the registry is empty.",
     "pathParams": [],
     "bodyParams": []
   }

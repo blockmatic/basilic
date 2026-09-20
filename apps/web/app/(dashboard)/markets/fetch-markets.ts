@@ -9,14 +9,14 @@ export type MarketsSync = {
   lastError: string | null
 }
 
-const emptySync: MarketsSync = { source: 'mock', fetchedAt: null, lastError: null }
+const emptySync: MarketsSync = { source: 'fixture', fetchedAt: null, lastError: null }
 
 function asNullableString(value: unknown) {
   return typeof value === 'string' ? value : null
 }
 
 export function isSampleBoard({ source, fetchedAt }: MarketsSync) {
-  return source === 'mock' || fetchedAt == null
+  return source === 'fixture' || fetchedAt == null
 }
 
 export async function fetchMarkets(): Promise<{

@@ -1,2 +1,3 @@
+export { fixtureQuotes, fixtureSync } from './fixture.js'
 export { listMarkets } from './read.js'
-export { type CoinsDb, mockMarketRows, seedMockMarkets } from './seed.js'
+export { type CoinsDb, seedIdentity } from './seed.js'

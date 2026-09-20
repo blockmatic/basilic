@@ -15,7 +15,7 @@ Flow: TypeBox → OpenAPI → `@repo/core` (client + types) → handwritten `@re
 - ORM: Drizzle
 - Spec: OpenAPI 3 at `apps/api/openapi/openapi.json`, UI at `/reference`. Tags: `auth`, `account`, `ai`, `coins`, `health`. The `ai` tag is `POST /ai/chat` and `POST /ai/generate` — optional demo assistant, documented in [AI](/docs/architecture/ai).
 
-`GET /coins` is a JWT snapshot read of stored `coin_markets` rows (mock-seeded when empty). It does not call CoinGecko.
+`GET /coins` is a JWT list of fixture quotes joined to identity `assets` (seeded when the registry is empty). It does not call CoinGecko.
 
 ## How it works
 

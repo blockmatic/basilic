@@ -36,8 +36,8 @@ const coinsListRoute: FastifyPluginAsync = async fastify => {
     {
       schema: {
         operationId: 'listCoins',
-        description: 'List the stored coin snapshot. Seeds mock rows when the table is empty.',
-        summary: 'List coins snapshot',
+        description: 'List fixture coin quotes. Seeds identity assets when the registry is empty.',
+        summary: 'List coins',
         tags: ['coins'],
         security: [{ bearerAuth: [] }],
         response: {

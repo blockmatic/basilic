@@ -18,7 +18,7 @@ export const marketCardCatalog = defineCatalog(schema, {
     MarketCard: {
       props: z.object({
         headline: z.string(),
-        source: z.enum(['live', 'mock']),
+        source: z.enum(['live', 'fixture']),
         movers: z.array(moverSchema),
       }),
       description: 'Market movers card with prices and 24h change',
@@ -41,7 +41,7 @@ function MarketCardComponent({
 }: {
   props: {
     headline: string
-    source: 'live' | 'mock'
+    source: 'live' | 'fixture'
     movers: Array<{ symbol: string; name: string; price: number; change24h: number }>
   }
 }) {
@@ -57,7 +57,7 @@ function MarketCardComponent({
       <div className="flex items-start justify-between gap-2">
         <p className="font-heading font-semibold text-sm md:text-base">{props.headline}</p>
         <span className="text-muted-foreground shrink-0 text-xs uppercase tracking-wide">
-          {props.source === 'mock' ? 'Sample' : 'Live'}
+          {props.source === 'fixture' ? 'Sample' : 'Live'}
         </span>
       </div>
       <ul className="space-y-2">
