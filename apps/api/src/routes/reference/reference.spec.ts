@@ -17,6 +17,19 @@ describe('GET /reference', () => {
     await cleanupGroupDatabase()
   })
 
+  it('should return markdown when Accept is text/markdown', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/reference',
+      headers: { accept: 'text/markdown' },
+    })
+    expect(response.statusCode).toBe(200)
+    expect(response.headers['content-type']).toContain('text/markdown')
+    expect(response.body).toContain('# API reference')
+    expect(response.body).toContain('/reference/openapi.json')
+    expect(response.body).not.toContain('scalar')
+  })
+
   it('should return HTML with status 200', async () => {
     const response = await fastify.inject({
       method: 'GET',

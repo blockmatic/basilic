@@ -2,6 +2,12 @@ import { captureError } from '@repo/error/node'
 import { pathOnlyUrl } from '@repo/utils/logger/types'
 import type { FastifyError, FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
+import {
+  applyAcceptVary,
+  negotiateAccept,
+  renderNotFoundHtml,
+  renderNotFoundMarkdown,
+} from '../lib/agent/index.js'
 import { getError, mapHttpStatusToErrorCode } from '../lib/catalogs/mapper.js'
 
 const pluralExceptions: Record<string, string> = {
@@ -63,6 +69,26 @@ const errorHandler: FastifyPluginAsync = async fastify => {
       code: catalogError.code,
       message: catalogError.message,
     })
+  })
+
+  fastify.setNotFoundHandler((request, reply) => {
+    applyAcceptVary({ reply })
+    const media = negotiateAccept({
+      acceptHeader: typeof request.headers.accept === 'string' ? request.headers.accept : undefined,
+    })
+    if (media === 'json') {
+      const catalogError = getError('NOT_FOUND') ?? {
+        code: 'NOT_FOUND',
+        message: 'Resource not found',
+      }
+      return reply.code(404).send({
+        code: catalogError.code,
+        message: catalogError.message,
+      })
+    }
+    if (media === 'markdown')
+      return reply.code(404).type('text/markdown; charset=utf-8').send(renderNotFoundMarkdown())
+    return reply.code(404).type('text/html; charset=utf-8').send(renderNotFoundHtml())
   })
 }
 

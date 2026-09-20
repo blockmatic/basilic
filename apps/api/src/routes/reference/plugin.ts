@@ -1,4 +1,9 @@
 import type { FastifyPluginAsync } from 'fastify'
+import {
+  applyAgentDiscoveryHeaders,
+  negotiateAccept,
+  renderReferenceMarkdown,
+} from '../../lib/agent/index.js'
 import { env } from '../../lib/env.js'
 import { verifyMagicLinkAndIssueToken } from '../auth/magiclink/verify.js'
 import { getReferenceHtml } from './template.js'
@@ -40,6 +45,18 @@ const referenceRoutes: FastifyPluginAsync = async fastify => {
       // Magic link callback: token+verificationId in URL → verify server-side; verificationId only → code form (client-side)
       const query = request.query as { token?: string; verificationId?: string }
       const { token: urlToken, verificationId } = query
+      const wantsMarkdown =
+        negotiateAccept({
+          acceptHeader:
+            typeof request.headers.accept === 'string' ? request.headers.accept : undefined,
+        }) === 'markdown'
+      if (wantsMarkdown && !urlToken && !verificationId) {
+        applyAgentDiscoveryHeaders({ reply })
+        return reply
+          .type('text/markdown; charset=utf-8')
+          .send(renderReferenceMarkdown({ openApiUrl }))
+      }
+
       let jwtToken: string | null = null
       if (urlToken && verificationId) {
         const result = await verifyMagicLinkAndIssueToken(fastify, request, {
