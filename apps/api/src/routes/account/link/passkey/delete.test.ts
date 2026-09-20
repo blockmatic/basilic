@@ -1,8 +1,8 @@
+import { getDb } from '@repo/db'
+import { passkeyCredentials, users } from '@repo/db/schema'
 import { eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { getOrCreateSession, insertTestPasskey } from '../../../../../test/utils/auth-helper.js'
-import { getDb } from '../../../../db/index.js'
-import { passkeyCredentials, users } from '../../../../db/schema/index.js'
 import { fastify } from '../../account.spec.js'
 
 describe('DELETE /account/link/passkey/:id', () => {

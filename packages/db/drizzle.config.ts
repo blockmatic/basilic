@@ -1,4 +1,4 @@
-/** Migrations + schema. Local data seed: `scripts/seed.ts` (via `pnpm reset` in apps/api). */
+/** Schema + migrations for `@repo/db`. Local data seed stays in `apps/api` (`pnpm reset`). */
 import 'dotenv/config'
 import { defineConfig } from 'drizzle-kit'
 
@@ -7,8 +7,8 @@ if (!databaseUrl) throw new Error('DATABASE_URL environment variable is required
 
 export default defineConfig({
   dialect: 'postgresql',
-  schema: './src/db/schema/tables/*.ts',
-  out: './src/db/migrations',
+  schema: './src/schema/tables/*.ts',
+  out: './src/migrations',
   dbCredentials: {
     url: databaseUrl,
   },

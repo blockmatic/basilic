@@ -1,6 +1,6 @@
+import type { getDb } from '@repo/db'
+import { users } from '@repo/db/schema'
 import { eq } from 'drizzle-orm'
-import type { getDb } from '../../db/index.js'
-import { users } from '../../db/schema/index.js'
 import type { SessionNotifyUser } from './notify.js'
 
 type DbForUser = Pick<Awaited<ReturnType<typeof getDb>>, 'select'>

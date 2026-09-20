@@ -1,9 +1,8 @@
+import type { Db } from '@repo/db'
+import type { Verification } from '@repo/db/schema'
+import { verification } from '@repo/db/schema'
 import { and, eq, inArray, isNull } from 'drizzle-orm'
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import type { Verification } from '../../db/schema/index.js'
-import { verification } from '../../db/schema/index.js'
-
-type Db = Awaited<ReturnType<typeof import('../../db/index.js').getDb>>
 
 export type ValidateOAuthStateResult =
   | { ok: true; isLinkMode: boolean; linkUserId?: string; stateRecord: Verification }

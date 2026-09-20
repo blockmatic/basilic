@@ -45,6 +45,7 @@ reviews:
     - "!**/*.gen.ts"
     - "!**/*.gen.js"
     - "!apps/api/src/db/migrations/**"
+    - "!packages/db/src/migrations/**"
     
     # Documentation assets
     - "!**/*.png"

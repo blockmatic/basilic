@@ -35,11 +35,11 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 - `pnpm db:stop` — Stop Supabase (run before switching to another project’s Supabase)
 - `pnpm reset` — From repo root: `pnpm --filter @repo/api reset`. From `apps/api`: Supabase DB reset, then Drizzle migrations (`scripts/migrate.ts`), then seed (`scripts/seed.ts`) with local `DATABASE_URL` + `RUN_PG_MIGRATE=true`. Seed writes identity assets + mappings (`assets`, `asset_providers`, `asset_markets`, `asset_networks`). `[db.seed]` / `seed.sql` unused (`supabase/config.toml`)
 - `pnpm db:migrate` — Run migrations (skips when PGLITE=true or Vercel Preview; use `RUN_PG_MIGRATE=true` to force PostgreSQL, including isolated Preview DBs)
-- `pnpm db:generate` — Generate migrations from schema
+- `pnpm db:generate` — Generate migrations from `@repo/db` schema
 - `pnpm db:push` — Push schema (dev only)
 - `pnpm generate:openapi` — Regenerate OpenAPI spec
 
-**Database:** `drizzle.config.ts` defines schema glob (`src/db/schema/tables/*.ts`) and migration output (`src/db/migrations`). `scripts/migrate.ts` runs the Drizzle migrator against PostgreSQL (or skips at build time when using PGLite—see `src/db/migrate.ts` at runtime). `pnpm reset` runs `scripts/seed.ts` (`runSeed`) after migrations; `pnpm db:migrate` alone does not.
+**Database:** `@repo/db` owns schema (`packages/db/src/schema/tables/*.ts`), SQL (`packages/db/src/migrations/`), and `drizzle.config.ts`. Api `pnpm db:generate` delegates to `--filter=@repo/db`. `scripts/migrate.ts` runs the Drizzle migrator against PostgreSQL using `@repo/db/migrate` `migrationsDir` (or skips at build time when using PGLite — runtime SQL is `runMigrations` in the package). `pnpm reset` runs `scripts/seed.ts` (`runSeed`) after migrations; `pnpm db:migrate` alone does not.
 
 ## Links
 

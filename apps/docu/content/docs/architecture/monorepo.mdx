@@ -15,6 +15,7 @@ flowchart TB
     Utils["utils — logger, async, web3"]
     Email["email — React Email"]
     Cli["cli — API key CLI"]
+    Db["db — Drizzle + named fns"]
   end
 
   subgraph Apps["apps/"]
@@ -41,6 +42,7 @@ flowchart TB
   Utils --> API
   Utils --> Web
   Email --> API
+  Db --> API
   Web -->|HTTP| API
   Cli -->|HTTP| API
 ```
@@ -49,6 +51,6 @@ flowchart TB
 
 **Tools:** `eslint`, `typescript` (copied), `create-basilic` (generator; excluded from generated projects). See [ADR 012](/docs/adrs/012-scaffolding-and-releases).
 
-**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils`, `cli`.
+**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils`, `cli`, `db` (Drizzle schema + named fns; Fastify only).
 
 Dependency rule: `core` → `react`; apps depend on packages, never the reverse. Pattern A packages import `src/` in the workspace; Pattern B Node consumers (Fastify, serverless) use `dist/`. `prepack` switches to `dist/` for npm. See [Publishing](/docs/deployment/publishing) and [ESM & TypeScript](/docs/architecture/esm-strategy).

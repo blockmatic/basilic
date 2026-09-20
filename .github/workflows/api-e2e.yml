@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'apps/api/**'
+      - 'packages/db/**'
       - 'packages/email/**'
       - 'packages/error/**'
       - 'packages/utils/**'

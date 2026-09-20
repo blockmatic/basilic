@@ -1,12 +1,6 @@
+import { getDb } from '@repo/db'
+import { assetMarkets, assetNetworks, assetProviders, assets, coinWatches } from '@repo/db/schema'
 import { describe, expect, it } from 'vitest'
-import { getDb } from '../../db/index.js'
-import {
-  assetMarkets,
-  assetNetworks,
-  assetProviders,
-  assets,
-  coinWatches,
-} from '../../db/schema/index.js'
 import { fixtureQuotes } from './fixture.js'
 import { listMarkets } from './read.js'
 

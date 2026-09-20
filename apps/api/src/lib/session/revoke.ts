@@ -1,6 +1,6 @@
+import type { getDb } from '@repo/db'
+import { sessions, verification } from '@repo/db/schema'
 import { and, eq, isNull } from 'drizzle-orm'
-import type { getDb } from '../../db/index.js'
-import { sessions, verification } from '../../db/schema/index.js'
 import { hashToken } from '../jwt.js'
 
 type DbForRevoke = Awaited<ReturnType<typeof getDb>>

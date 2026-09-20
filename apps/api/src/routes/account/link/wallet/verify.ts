@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { walletIdentities, web3Nonce } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../../db/index.js'
-import { walletIdentities, web3Nonce } from '../../../../db/schema/index.js'
 import {
   getCanonicalAddress,
   parseSignInMessage,

@@ -42,6 +42,7 @@ Examples:
 | `@repo/ui` | Shared shadcn/ui components | A | `@repo/ui/components/*`, `@repo/ui/lib/*`, `@repo/ui/base` |
 | `@repo/error` | Error reporting interface | B | `@repo/error/node`, `/nextjs`, `/browser`, `/react` |
 | `@repo/email` | Email templates + renderer | B | `@repo/email/emails/*`, `@repo/email/render` |
+| `@repo/db` | Drizzle schema, factory, named fns | B | `@repo/db`, `@repo/db/schema`, `@repo/db/migrate` |
 
 ## Core packages
 
@@ -145,6 +146,14 @@ import { logger } from '@repo/utils/logger/server'
 await delay(250)
 logger.info('delayed')
 ```
+
+### `@repo/db` — Drizzle schema and named fns
+
+Pattern B. Fastify (and later eve host) only. Next.js must not import this package.
+
+- `@repo/db` — `configureDb`, `getDb`, asset/watch/session fns
+- `@repo/db/schema` — table defs
+- `@repo/db/migrate` — `runMigrations`, `migrationsDir`
 
 ### `@repo/ui` — UI components
 

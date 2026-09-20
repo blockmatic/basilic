@@ -1,9 +1,9 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { sessions } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import { sessions } from '../../../db/schema/index.js'
 import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 

@@ -20,8 +20,8 @@ describe('POST /account/link/email/verify', () => {
     const jwt = await getOrCreateSession(fastify, 'verify-already-set@test.ai', {
       clearBefore: true,
     })
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { verification } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { verification } = await import('@repo/db/schema')
     const { hashToken } = await import('../../../../lib/jwt.js')
     const { randomUUID } = await import('node:crypto')
 
@@ -62,8 +62,8 @@ describe('POST /account/link/email/verify', () => {
     expect(body).toHaveProperty('token')
     expect(body).toHaveProperty('refreshToken')
 
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { users } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { users } = await import('@repo/db/schema')
     const { eq } = await import('drizzle-orm')
     const [user] = await db.select().from(users).where(eq(users.email, 'linked-web3@test.ai'))
     expect(user).toBeDefined()
@@ -72,8 +72,8 @@ describe('POST /account/link/email/verify', () => {
 
   it('should return EXPIRED_TOKEN for expired token', async () => {
     const jwt = await getWeb3Session(fastify, { accountIndex: 2 })
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { verification } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { verification } = await import('@repo/db/schema')
     const { hashToken } = await import('../../../../lib/jwt.js')
     const { randomUUID } = await import('node:crypto')
 

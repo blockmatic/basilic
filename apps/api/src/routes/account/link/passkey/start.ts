@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { passkeyChallenges, passkeyCredentials } from '@repo/db/schema'
 import { generateRegistrationOptions } from '@simplewebauthn/server'
 import { type Static, Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../../db/index.js'
-import { passkeyChallenges, passkeyCredentials } from '../../../../db/schema/index.js'
 import {
   getWebAuthnOriginFromRequest,
   getWebAuthnRpName,

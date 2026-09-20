@@ -1,7 +1,7 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../../db/index.js'
 import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
 import { sendCatalogError, sendServerCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { isUniqueViolation } from '../../../../lib/db-errors.js'

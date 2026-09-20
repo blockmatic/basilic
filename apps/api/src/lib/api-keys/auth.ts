@@ -1,7 +1,7 @@
 import { timingSafeEqual } from 'node:crypto'
+import type { getDb } from '@repo/db'
+import { apiKeys, users } from '@repo/db/schema'
 import { eq } from 'drizzle-orm'
-import type { getDb } from '../../db/index.js'
-import { apiKeys, users } from '../../db/schema/index.js'
 import { hashToken } from '../jwt.js'
 import { parseApiKey } from './keys.js'
 

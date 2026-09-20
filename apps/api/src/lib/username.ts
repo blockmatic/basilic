@@ -1,8 +1,8 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { faker } from '@faker-js/faker'
+import type { getDb } from '@repo/db'
+import { users } from '@repo/db/schema'
 import { eq } from 'drizzle-orm'
-import type { getDb } from '../db/index.js'
-import { users } from '../db/schema/index.js'
 import { env } from '../lib/env.js'
 
 type Db = Awaited<ReturnType<typeof getDb>>

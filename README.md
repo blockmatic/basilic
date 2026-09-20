@@ -42,6 +42,7 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 - **[@repo/utils](packages/utils/README.md)** — Shared utilities (async, data, debug, error, logger, web3)
 - **[@repo/error](packages/error/README.md)** — Error reporting and utilities (`captureError`, `getErrorMessage`)
 - **[@repo/email](packages/email/README.md)** — Email template library built with React Email
+- **[@repo/db](packages/db/README.md)** — Drizzle schema, client factory, and named data-access functions
 
 
 ## Scripts

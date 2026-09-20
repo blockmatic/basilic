@@ -1,17 +1,17 @@
 ---
 title: "Data"
-description: "Canonical tables in apps/api. oauth_state is a verification type, not a table."
+description: "Canonical tables in @repo/db. oauth_state is a verification type, not a table."
 ---
 
-The domain store is PostgreSQL in `apps/api` (Drizzle). Schema: `apps/api/src/db/schema/`. Migrations are generated from that TypeScript; do not hand-edit SQL. ADRs: [007](/docs/adrs/007-backend-orm), [008](/docs/adrs/008-database).
+The domain store is PostgreSQL. Schema, migrations, and the Drizzle factory live in `@repo/db`. Fastify calls `configureDb` from api env and imports tables from `@repo/db/schema`. Next.js does not import `@repo/db` or `drizzle-orm`. Migrations are generated from the TypeScript schema; do not hand-edit SQL. ADRs: [007](/docs/adrs/007-backend-orm), [008](/docs/adrs/008-database).
 
 Product analytics is **not** a store. `capture()` does not persist. PostHog is chosen, not installed. See [Product analytics](/docs/architecture/analytics).
 
 ## Tables
 
-`users`, `account`, `sessions` (IP, UA, `signInMethod`, `deviceLabel`, `location`, `deviceFingerprint`), `verification` (`session_revoke` among types), `auth_attempts`, `api_keys`, `wallet_identities`, `web3_nonce`, `web3_callback`, `passkey_credentials`, `passkey_challenges`, `passkey_auth_challenges`, `passkey_callback`, `totp`, `totp_setup`.
+`users`, `account`, `sessions` (IP, UA, `signInMethod`, `deviceLabel`, `location`, `deviceFingerprint`), `verification` (`session_revoke` among types), `auth_attempts`, `api_keys`, `wallet_identities`, `web3_nonce`, `web3_callback`, `passkey_credentials`, `passkey_challenges`, `passkey_auth_challenges`, `passkey_callback`, `totp`, `totp_setup`, `assets`, `asset_providers`, `asset_markets`, `asset_networks`, `coin_watches`.
 
-`oauth_state` and `oauth_link_state` are `verification.type` values, not tables (`apps/api/src/db/schema/tables/verification.ts`). See [Account linking](/docs/architecture/account-linking).
+`oauth_state` and `oauth_link_state` are `verification.type` values, not tables (`packages/db/src/schema/tables/verification.ts`). See [Account linking](/docs/architecture/account-linking).
 
 ## Users
 

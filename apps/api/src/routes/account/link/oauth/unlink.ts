@@ -1,9 +1,9 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { account } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../../db/index.js'
-import { account } from '../../../../db/schema/index.js'
 import { hasRemainingLoginMethod, withUserSignInMethodLock } from '../../../../lib/auth/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 

@@ -1,6 +1,6 @@
+import type { getDb } from '@repo/db'
+import { account, passkeyCredentials, users, walletIdentities } from '@repo/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
-import type { getDb } from '../../db/index.js'
-import { account, passkeyCredentials, users, walletIdentities } from '../../db/schema/index.js'
 
 type Db = Awaited<ReturnType<typeof getDb>>
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0]

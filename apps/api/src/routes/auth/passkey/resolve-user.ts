@@ -1,9 +1,9 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { passkeyCredentials, users } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import { passkeyCredentials, users } from '../../../db/schema/index.js'
 import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
 

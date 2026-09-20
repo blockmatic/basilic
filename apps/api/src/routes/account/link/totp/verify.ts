@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { totp, totpSetup } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../../db/index.js'
-import { totp, totpSetup } from '../../../../db/schema/index.js'
 import { decryptTotpSecret, verifyTotpCode } from '../../../../lib/totp.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 

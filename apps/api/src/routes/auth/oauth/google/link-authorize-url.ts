@@ -1,10 +1,10 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { verification } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { and, eq, gte, sql } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../../db/index.js'
-import { verification } from '../../../../db/schema/index.js'
 import { env } from '../../../../lib/env.js'
 import { hashToken } from '../../../../lib/jwt.js'
 import {

@@ -24,7 +24,7 @@
       "env": ["NODE_ENV"]
     },
     "@repo/api#generate:openapi": {
-      "dependsOn": ["@repo/utils#build", "@repo/error#build"],
+      "dependsOn": ["@repo/utils#build", "@repo/error#build", "@repo/db#build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],
       "env": ["NODE_ENV"]

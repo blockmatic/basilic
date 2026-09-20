@@ -1,11 +1,11 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { closeDb, configureDb, getDb } from '@repo/db'
+import { runMigrations } from '@repo/db/migrate'
 import { initErrorReporting } from '@repo/error/node'
 import { logger } from '@repo/utils/logger/server'
 import Fastify from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
-import { closeDb, getDb } from './src/db/index.js'
-import { runMigrations } from './src/db/migrate.js'
 import { env } from './src/lib/env.js'
 import { createApiLoggerOptions } from './src/lib/http-logging.js'
 
@@ -38,6 +38,11 @@ async function initialize(): Promise<void> {
   }
 
   try {
+    configureDb({
+      databaseUrl: env.DATABASE_URL,
+      pglite: env.PGLITE === true || env.NODE_ENV === 'test',
+    })
+
     // 1. Wait for database connection
     await waitForDatabase(logger)
 

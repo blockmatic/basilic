@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { getDb } from '@repo/db'
+import { apiKeys } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { getDb } from '../../../db/index.js'
-import { apiKeys } from '../../../db/schema/index.js'
 import { generateApiKey } from '../../../lib/api-keys/index.js'
 import { ErrorResponseSchema } from '../../schemas.js'
 

@@ -24,7 +24,7 @@ Defective release → patch + deprecate; never rewrite tags; never promise to un
 
 ## Dual-mode `@repo/*` packing
 
-Packages use **dual-mode exports**. **Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): workspace `import` is `src/`; `prepack` builds and rewrites to `dist/` for npm. **Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`): workspace Node already uses `dist/`; `prepack` still rewrites remaining `src/` paths (`types`/`source`) and packs `files: ["dist"]`. ESM details: [ESM & TypeScript Strategy](/docs/architecture/esm-strategy). This path is **not** how `create-basilic` is published. v1 does not publish every `@repo/*` package.
+Packages use **dual-mode exports**. **Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): workspace `import` is `src/`; `prepack` builds and rewrites to `dist/` for npm. **Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`, `@repo/db`): workspace Node already uses `dist/`; `prepack` still rewrites remaining `src/` paths (`types`/`source`) and packs `files: ["dist"]`. ESM details: [ESM & TypeScript Strategy](/docs/architecture/esm-strategy). This path is **not** how `create-basilic` is published. v1 does not publish every `@repo/*` package.
 
 ## How It Works
 

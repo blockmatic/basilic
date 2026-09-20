@@ -49,8 +49,8 @@ async function linkWallet(jwt: string, privateKey: `0x${string}`): Promise<strin
 
 describe('DELETE /account/link/wallet/:id', () => {
   beforeEach(async () => {
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { web3Nonce, walletIdentities } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { web3Nonce, walletIdentities } = await import('@repo/db/schema')
     await db.delete(walletIdentities)
     await db.delete(web3Nonce)
   })
@@ -139,8 +139,8 @@ describe('DELETE /account/link/wallet/:id', () => {
     const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
     const walletId = await linkWallet(jwt, anvilPrivateKeys[0])
 
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { users } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { users } = await import('@repo/db/schema')
     const { eq } = await import('drizzle-orm')
     const userRes = await fastify.inject({
       method: 'GET',
@@ -169,8 +169,8 @@ describe('DELETE /account/link/wallet/:id', () => {
     })
     const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
 
-    const db = await (await import('../../../../db/index.js')).getDb()
-    const { users, walletIdentities } = await import('../../../../db/schema/index.js')
+    const db = await (await import('@repo/db')).getDb()
+    const { users, walletIdentities } = await import('@repo/db/schema')
     const { eq } = await import('drizzle-orm')
     const userRes = await fastify.inject({
       method: 'GET',

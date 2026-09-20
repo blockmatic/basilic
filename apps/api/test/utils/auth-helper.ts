@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
+import { getDb } from '@repo/db'
+import { apiKeys, passkeyCredentials } from '@repo/db/schema'
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
-import { getDb } from '../../src/db/index.js'
-import { apiKeys, passkeyCredentials } from '../../src/db/schema/index.js'
 import { generateApiKey } from '../../src/lib/api-keys/index.js'
 import type { TestApp } from './fastify.js'
 
@@ -120,7 +120,7 @@ async function getStoredVerification({
   userId?: string
 }): Promise<{ token: string; verificationId: string } | null> {
   const db = await getDb()
-  const { verification } = await import('../../src/db/schema/index.js')
+  const { verification } = await import('@repo/db/schema')
   const { and, desc, eq, isNotNull } = await import('drizzle-orm')
 
   const identifier = type === 'link_email' ? `${userId}:${email}` : email
@@ -187,7 +187,7 @@ export async function getSessionToken(
 ): Promise<string> {
   if (options?.clearBefore) {
     const db = await getDb()
-    const { verification } = await import('../../src/db/schema/index.js')
+    const { verification } = await import('@repo/db/schema')
     const { like } = await import('drizzle-orm')
     await db.delete(verification).where(like(verification.identifier, `%${email}`))
   }
