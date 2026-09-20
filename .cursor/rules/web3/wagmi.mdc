@@ -6,7 +6,7 @@ alwaysApply: false
 
 ## Scope
 
-`apps/web` has **no Wagmi** and **no `@/wallet/` UI**. Wallet connect is a PRODUCT.md non-goal.
+`apps/web` has **no Wagmi** and **no `@/wallet/` UI**. Do not add wallet connect in the web app.
 
 Web3 auth is Fastify SIWE/SIWS plus `@repo/react` verify hooks. Next `/auth/callback/web3` exists; do not add wallet adapters or Wagmi providers in the web app.
 

@@ -28,4 +28,4 @@ Rules (constraints) > skills (patterns) > model
 
 Update procedure and inventory: `apps/docu/content/docs/development/cursor-skills.mdx`. Lock pins `mattpocock/skills` and `blockmatic/basilic-skills` (`w-*`). Stack skills are committed; list: `scripts/owned-agent-skills.txt`. Recommended daily workflow: https://www.aihero.dev/skills.
 
-Playbook bodies are numbered instructions (spec frontmatter); keep simple playbooks short. Git playbooks carry `references/git-publish.md`.
+Playbook bodies are numbered instructions (spec frontmatter); keep simple playbooks short. Git playbooks carry `references/git-publish.md`. `/w-plan` explores via `/w-council` first and ships `references/plan-output.md`.

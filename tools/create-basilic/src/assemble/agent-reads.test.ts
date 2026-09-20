@@ -25,13 +25,13 @@ describe('assembled agent reads', () => {
     expect(pages).toBeGreaterThanOrEqual(40)
   })
 
-  it('snapshots docs and writes an unfilled product brief', async () => {
+  it('snapshots docs and strips FIRST extras', async () => {
     const dest = await mkdtemp(join(tmpdir(), 'create-basilic-product-'))
     snapshotDocs({ sourceRoot: repoRootFromPackage, destRoot: dest })
     resetProductBrief({ destRoot: dest })
     for (const path of agentReadPaths.filter(item => item.startsWith('docs/basilic/')))
       expect(existsSync(join(dest, path)), path).toBe(true)
-    expect(existsSync(join(dest, 'PRODUCT.md'))).toBe(true)
+    expect(existsSync(join(dest, 'PRODUCT.md'))).toBe(false)
     expect(existsSync(join(dest, '_first'))).toBe(false)
   })
 })

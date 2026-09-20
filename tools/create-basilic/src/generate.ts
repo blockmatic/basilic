@@ -119,7 +119,7 @@ Local starter docs: [\`docs/basilic/\`](docs/basilic/). Hosted: [Product Ready](
 
 ## Customize
 
-Replace display names, mobile scheme (\`apps/mobile/app.json\`), DeepSec \`githubUrl\`, and Vercel project slugs in \`apps/web/next.config.mjs\`. Keep \`@repo/*\` package names. Fill \`PRODUCT.md\`.
+Replace display names, mobile scheme (\`apps/mobile/app.json\`), DeepSec \`githubUrl\`, and Vercel project slugs in \`apps/web/next.config.mjs\`. Keep \`@repo/*\` package names.
 
 Upstream contributions belong in a Basilic fork, not this generated repo.
 `

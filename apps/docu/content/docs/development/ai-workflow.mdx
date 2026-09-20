@@ -9,7 +9,7 @@ Cursor slash, glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
 
-Durable product intent lives in root `PRODUCT.md`. Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. Matt `/grill-with-docs` may add `CONTEXT.md`; that file does not replace `PRODUCT.md`. `/implement` may commit; `/w-build` verifies locally and does not commit. Publish with `/w-ship`. `/tdd` is Matt; `/w-tdd` is Basilic’s opt-in. In-app chat is the [demo assistant](/docs/architecture/ai), not this page. Tracker-backed Matt skills (`/to-tickets`, `/triage`) need `/setup-matt-pocock-skills` once per clone.
+Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. Matt `/grill-with-docs` may add `CONTEXT.md`. `/implement` may commit; `/w-build` verifies locally and does not commit. Publish with `/w-ship`. `/tdd` is Matt; `/w-tdd` is Basilic’s opt-in. In-app chat is the [demo assistant](/docs/architecture/ai), not this page. Tracker-backed Matt skills (`/to-tickets`, `/triage`) need `/setup-matt-pocock-skills` once per clone.
 
 ## Sources of truth
 
@@ -41,9 +41,10 @@ Recommended invocations are Matt’s unprefixed names. Basilic `/w-*` is the alt
 | Task | Recommended | Alternative |
 | --- | --- | --- |
 | Sharpen an idea | `/grill-me` | `/w-clarify` |
-| Sharpen with docs | `/grill-with-docs` | `/w-plan` |
+| Sharpen with docs | `/grill-with-docs` | `/w-plan` (runs `/w-council` first) |
 | Foggy multi-session map | `/wayfinder` | `/w-roadmap` then `/w-plan` |
 | Spec from the thread | `/to-spec` | `/w-plan` |
+| Explore a codebase | — | `/w-council` |
 | Implement from a spec | `/implement` | `/w-build` (verify only; no commit) |
 | Red-green TDD | `/tdd` | `/w-tdd` |
 | Review a change | `/code-review` | `/w-review` |
@@ -55,7 +56,7 @@ Recommended invocations are Matt’s unprefixed names. Basilic `/w-*` is the alt
 | Implement through a described PR | — | `/w-ship` |
 | Reflect | — | `/w-retro` |
 
-`/w-build` ends with verified local changes and does not commit. `/w-ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/w-diagram`, `/w-docs`, `/w-git-repair`, and `/w-coderabbit`.
+`/w-build` ends with verified local changes and does not commit. `/w-ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/w-council`, `/w-diagram`, `/w-docs`, `/w-git-repair`, and `/w-coderabbit`. Git, TDD, lint, generate, and publish stay single-writer.
 
 Slash names are leaf folders. Removed Basilic names map as follows:
 
@@ -82,7 +83,7 @@ When a harness does not expose the slash menu, read the `SKILL.md` under `.agent
 
 Compose skills. This is not a router.
 
-1. **Shape** — `/grill-me` or `/grill-with-docs`. Use `/to-spec` or `/wayfinder` when the thread needs a spec or a multi-session map. Planning alone does not create a branch. Resolve product facts from `PRODUCT.md` and matching MDX/ADRs.
+1. **Shape** — `/grill-me` or `/grill-with-docs`. Use `/to-spec` or `/wayfinder` when the thread needs a spec or a multi-session map. `/w-plan` explores via `/w-council` first. Planning alone does not create a branch. Resolve product facts from matching MDX/ADRs, README, and `DESIGN.md`.
 2. **Implement** — `/implement` or `/tdd`. Use `/w-build` when you want verified local changes **without** a commit.
 3. **Review** — `/code-review` (or `/w-review`). Reviews stay read-only unless fixes are requested.
 4. **Publish when requested** — `/w-commit`, `/w-push`, or `/w-pr`. `/w-ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/w-commit` owns Conventional Commit format. `/w-ship` requires `pnpm qa`. `/w-yolo` does not; it fixes failing or requested local checks without publish.
@@ -94,7 +95,7 @@ The generator retains this catalog and rewrites its documentation pointers to th
 
 ## Checklists and evidence
 
-Playbook bodies are numbered instructions (spec frontmatter, no Purpose/Handoff headings). Basilic reviews use installed `review-dimensions.md`: correctness, callers, failure paths, clarity, architecture, security, performance, verification, and docs. Skip dimensions that are out of scope and say so. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
+Playbook bodies are numbered instructions (spec frontmatter, no Purpose/Handoff headings). `/w-plan` ships `plan-output.md`. Basilic reviews use installed `review-dimensions.md`: correctness, callers, failure paths, clarity, architecture, security, performance, verification, and docs. Spawn 2–3 read-only explorers that split in-scope dimensions. Skip dimensions that are out of scope and say so. Debugging connects a reproduction to its cause and repeats the original scenario after a fix.
 
 Git playbooks ship `references/git-publish.md`. Record checks as passed, failed, not run, or not applicable with a reason. A type check alone does not verify a browser interaction. Documentation changes need proportionate checks; TDD remains explicit through `/tdd` (Matt), `/w-tdd`, or repository requirements. `/w-ship` is the only Basilic playbook that requires `pnpm qa`.
 

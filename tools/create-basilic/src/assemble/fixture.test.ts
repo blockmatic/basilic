@@ -1,17 +1,16 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { classifyPath, loadManifest } from './classify.js'
-import { productShell, resetProductBrief } from './product-reset.js'
+import { resetProductBrief } from './product-reset.js'
 
 const sentinelPaths = [
   ['LICENSE', 'include'],
   ['package.json', 'transform'],
   ['pnpm-lock.yaml', 'include'],
   ['AGENTS.md', 'transform'],
-  ['PRODUCT.md', 'transform'],
   ['DESIGN.md', 'transform'],
   ['apps/api/package.json', 'transform'],
   ['apps/web/package.json', 'transform'],
@@ -67,7 +66,6 @@ describe('exact-version fixture', () => {
         '.cursor/',
         '.agents/',
         '.deepsec/',
-        'PRODUCT.md',
         'DESIGN.md',
         'scripts/run-qa.mjs',
         'scripts/README.md',
@@ -90,7 +88,6 @@ describe('exact-version fixture', () => {
         '.agents/',
         '.deepsec/',
         '.vscode/',
-        'PRODUCT.md',
         'DESIGN.md',
         'AGENTS.md',
         'LICENSE',
@@ -125,10 +122,10 @@ describe('exact-version fixture', () => {
     ).toEqual(sentinelPaths.map(([path, kind]) => ({ path, kind, expected: kind })))
   })
 
-  it('writes the unfilled product brief and removes FIRST', async () => {
+  it('strips FIRST extras and does not write PRODUCT.md', async () => {
     const destRoot = await mkdtemp(join(tmpdir(), 'create-basilic-fixture-'))
     resetProductBrief({ destRoot })
-    expect(readFileSync(join(destRoot, 'PRODUCT.md'), 'utf8')).toBe(productShell)
+    expect(existsSync(join(destRoot, 'PRODUCT.md'))).toBe(false)
     expect(existsSync(join(destRoot, '_first'))).toBe(false)
   })
 })

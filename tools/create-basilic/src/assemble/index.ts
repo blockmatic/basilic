@@ -37,7 +37,6 @@ export const agentReadPaths = [
   '.cursor/rules/base/naming.mdc',
   '.cursor/rules/base/docs.mdc',
   'skills-lock.json',
-  'PRODUCT.md',
   'docs/basilic/development/index.md',
   'docs/basilic/development/file-organization.md',
   'docs/basilic/testing/product-ready.md',
