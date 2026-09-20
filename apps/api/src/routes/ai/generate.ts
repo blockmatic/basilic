@@ -3,15 +3,18 @@ import { Type } from '@sinclair/typebox'
 import { generateText, streamText } from 'ai'
 import type { FastifyPluginAsync } from 'fastify'
 import {
+  aiRouteRateLimitConfig,
   createRequestAbortSignal,
   createUiMessageStreamResponse,
   getProvider,
   getResolvedProvider,
   handleUpstreamError,
+  isAllowedRequestModel,
   sendWebResponse,
 } from '../../lib/ai/index.js'
 import { sendCatalogError, sendServerCatalogError } from '../../lib/catalogs/mapper.js'
-import { ErrorResponseSchema } from '../schemas.js'
+import { env } from '../../lib/env.js'
+import { ErrorResponseSchema, RateLimitResponseSchema } from '../schemas.js'
 
 const maxPromptLength = 32_000
 
@@ -30,6 +33,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().post(
     '/generate',
     {
+      config: aiRouteRateLimitConfig,
       schema: {
         operationId: 'generate',
         description:
@@ -48,6 +52,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           402: ErrorResponseSchema,
+          429: RateLimitResponseSchema,
           500: ErrorResponseSchema,
           502: ErrorResponseSchema,
           504: ErrorResponseSchema,
@@ -63,6 +68,8 @@ const generateRoute: FastifyPluginAsync = async fastify => {
 
       const provider = getResolvedProvider()
       if (!provider) return sendServerCatalogError({ request, reply, code: 'SERVER_ERROR' })
+      if (!isAllowedRequestModel({ model }))
+        return sendCatalogError({ reply, status: 400, code: 'BAD_REQUEST' })
 
       const resolvedModel = getProvider(provider, model)
 
@@ -80,6 +87,7 @@ const generateRoute: FastifyPluginAsync = async fastify => {
         model: resolvedModel,
         prompt,
         abortSignal,
+        maxOutputTokens: env.AI_MAX_OUTPUT_TOKENS,
         ...(temperature !== undefined && { temperature }),
       }
 

@@ -82,6 +82,20 @@ describe('POST /ai/generate', () => {
       expect(() => ErrorSchema.parse(data)).not.toThrow()
       expect(data.code).toBe('BAD_REQUEST')
     })
+
+    it('should return 400 for model opus', async () => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/ai/generate',
+        headers: { Authorization: `Bearer ${testToken}` },
+        payload: { prompt: 'Say hi', model: 'opus' },
+      })
+
+      expect(response.statusCode).toBe(400)
+      const data = JSON.parse(response.body)
+      expect(() => ErrorSchema.parse(data)).not.toThrow()
+      expect(data.code).toBe('BAD_REQUEST')
+    })
   })
 
   describe.skipIf(!hasRealAnthropicKey())('POST /ai/generate — remote', () => {

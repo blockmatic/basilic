@@ -1115,6 +1115,18 @@ export type ChatErrors = {
   /**
    * Default Response
    */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
   500: {
     code: string;
     message: string;
@@ -1201,6 +1213,18 @@ export type GenerateErrors = {
   402: {
     code: string;
     message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
     type?: string;
     title?: string;
     status?: number;

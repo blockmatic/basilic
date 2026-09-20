@@ -7,7 +7,7 @@ The in-shell assistant is **demo chrome**, not the Product Ready bar and not the
 
 The Fastify API exposes two AI endpoints under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; route files in `apps/api/src/routes/ai/` are thin handlers (schema + auth + delegation). The browser talks to Fastify directly (Bearer). There is no Next.js AI BFF.
 
-There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store, no `ToolLoopAgent`, and no mobile assistant. Chat is `streamText` / `generateText` with `stopWhen: isStepCount(AI_TOOL_MAX_STEPS)`.
+There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store, no `ToolLoopAgent`, and no mobile assistant. Chat is `streamText` / `generateText` with `stopWhen: isStepCount(AI_TOOL_MAX_STEPS)` and `maxOutputTokens` from `AI_MAX_OUTPUT_TOKENS` (default 4096). Client tool `output` / `errorText` on `dynamic-tool` and `tool-invocation` parts is stripped before `convertToModelMessages`. `body.model` is an allowlist (`default`, `haiku`, `sonnet`, runtime defaults, `AI_DEFAULT_MODEL`); unknown ids including `opus` are 400. `POST /ai/chat` and `POST /ai/generate` use a tighter route rate limit (`AI_RATE_LIMIT_MAX`, default 20) than global `RATE_LIMIT_MAX`.
 
 ## Routes
 
@@ -20,7 +20,7 @@ Both require Bearer auth (session JWT or API key). Set `Accept: text/event-strea
 
 ## Provider chain
 
-When `AI_PROVIDER` is unset, resolution order is **Anthropic → Open Router → Ollama** (`getResolvedProvider()` in `lib/ai/provider.ts`). Request alias `sonnet` maps to Claude Sonnet 4.6; default model is Haiku 4.5.
+When `AI_PROVIDER` is unset, resolution order is **Anthropic → Open Router → Ollama if `OLLAMA_BASE_URL` is set** (`getResolvedProvider()` in `lib/ai/provider.ts`). Missing keys and no Ollama URL yields `null` (500 `SERVER_ERROR`). Request alias `sonnet` maps to Claude Sonnet 4.6; default model is Haiku 4.5.
 
 For Ollama installation and ops, see [Self-Hosted LLM](/docs/deployment/self-hosted-llm). The example pull model there is `qwen2.5:3b`; the runtime default when using Ollama is `qwen3:8b`.
 
@@ -29,8 +29,9 @@ For Ollama installation and ops, see [Self-Hosted LLM](/docs/deployment/self-hos
 ```
 apps/api/src/lib/ai/
   index.ts           named re-exports
-  provider.ts        getResolvedProvider, getProvider, model aliases
-  messages.ts        UIMessage / CoreMessage → ModelMessage
+  provider.ts        getResolvedProvider, getProvider, model allowlist
+  messages.ts        UIMessage / CoreMessage → ModelMessage; strip tool output
+  route-rate-limit.ts /ai/* Fastify rateLimit config
   download.ts        denyRemoteChatFileDownload (blocks non-data: fetches)
   runtime.ts         abort, SSE piping, upstream error mapping
   upstream-error.ts  isInsufficientCreditsError
@@ -53,10 +54,12 @@ File parts in UIMessage payloads must use `data:` URLs only (`maxLength` 2048). 
 |----------|----------|---------|-------------|
 | `ANTHROPIC_API_KEY` | Conditional (preferred) | — | Anthropic direct API |
 | `OPEN_ROUTER_API_KEY` | Conditional (fallback) | — | Open Router when Anthropic unavailable |
-| `OLLAMA_BASE_URL` | Conditional | `http://localhost:11434` | Self-hosted Ollama |
+| `OLLAMA_BASE_URL` | Conditional | — | Self-hosted Ollama (not inferred from localhost) |
 | `AI_PROVIDER` | No | Inferred | `anthropic`, `openrouter`, or `ollama` |
 | `AI_DEFAULT_MODEL` | No | Provider-specific | Haiku / `anthropic/claude-haiku-4.5` / `qwen3:8b` |
 | `AI_TOOL_MAX_STEPS` | No | `5` | Max tool-loop steps for chat |
+| `AI_MAX_OUTPUT_TOKENS` | No | `4096` | Completion cap (`maxOutputTokens`) |
+| `AI_RATE_LIMIT_MAX` | No | `20` | Per-route `/ai/*` max in the rate-limit window |
 | `AI_UPSTREAM_TIMEOUT_MS` | No | `120000` | Upstream abort timeout (ms) |
 | `BRAVE_SEARCH_API_KEY` | No | — | Enables optional `braveSearch` tool |
 
@@ -88,7 +91,7 @@ Composer send (textarea + suggestions) is disabled while `status !== 'ready'`; s
 
 ## Errors
 
-Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`), 502 (`UPSTREAM_SERVICE_ERROR`), 504 (`UPSTREAM_TIMEOUT`). Response bodies use catalog messages only — never raw upstream `err.message`.
+Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`), 429 (`RATE_LIMIT_EXCEEDED`), 502 (`UPSTREAM_SERVICE_ERROR`), 504 (`UPSTREAM_TIMEOUT`). Response bodies use catalog messages only — never raw upstream `err.message`.
 
 ## Testing
 
