@@ -76,7 +76,14 @@ describe('composeSurface', () => {
         surface: 'account',
       }),
     })
-    expect(Object.values(spec.elements).some(element => element.type === 'UserInfo')).toBe(true)
+    const userInfo = Object.values(spec.elements).find(element => element.type === 'UserInfo')
+    expect(userInfo?.props).toMatchObject({
+      name: { $state: '/account/name' },
+      email: { $state: '/account/email' },
+      image: { $state: '/account/image' },
+      username: { $state: '/account/username' },
+      joinedAt: { $state: '/account/joinedAt' },
+    })
     expect(tableElement(spec)?.repeat).toEqual({ statePath: '/coins', key: 'id' })
     expect(JSON.stringify(spec)).toContain('Your profile. Favorites below.')
   })

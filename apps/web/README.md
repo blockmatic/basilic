@@ -1,6 +1,6 @@
 # Web App
 
-Next.js 16 dashboard for the Basilic stack: signed-in home is a json-render `Renderer` on the coin island (`GET /coins` + nuqs `SearchQuery`). The catalog lives in `lib/genui`; `components/genui` maps names to `@repo/ui`. Commands | Chat chrome stays on the same island, plus settings and auth. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
+Next.js 16 dashboard for the Basilic stack: signed-in home is a json-render `Renderer` on the coin island (`GET /coins` + nuqs `SearchQuery` + `surface`). `surface=account` is catalog UserInfo plus this JWT’s watchlist. The catalog lives in `lib/genui`; `components/genui` maps names to `@repo/ui`. Commands | Chat chrome stays on the same island, plus settings and auth. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
 
 ## Tech Stack
 

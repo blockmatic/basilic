@@ -1,21 +1,36 @@
 import type { SearchParams } from 'nuqs/server'
+import { getUserInfo } from '@/lib/auth/auth-utils'
 import { toCoinsQuery } from '@/lib/coins/search-query'
-import { loadSearchQuery } from '@/lib/coins/search-query.server'
-import { composeSurface, viewFromSearchQuery } from '@/lib/genui'
+import {
+  accountFromUser,
+  composeSurface,
+  overlayAccountQuery,
+  splitBoardView,
+  viewFromSearchQuery,
+  viewTitle,
+} from '@/lib/genui'
+import { loadBoardView } from '@/lib/genui/surface.server'
 import { fetchMarkets } from '../markets/fetch-markets'
 import { CoinBoard } from './board'
 
 export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const query = await loadSearchQuery(searchParams)
-  const markets = await fetchMarkets({ query: toCoinsQuery({ query }) })
+  const { query, surface } = splitBoardView({ view: await loadBoardView(searchParams) })
+  const fetchQuery = overlayAccountQuery({ query, surface })
+  const [markets, user] = await Promise.all([
+    fetchMarkets({ query: toCoinsQuery({ query: fetchQuery }) }),
+    getUserInfo(),
+  ])
+  const title = viewTitle({ surface, caption: markets.queryCaption })
   const spec = composeSurface({
-    view: viewFromSearchQuery({ query, title: markets.queryCaption }),
+    view: viewFromSearchQuery({ query: fetchQuery, title, surface }),
   })
 
   return (
     <CoinBoard
       spec={spec}
       initialQuery={query}
+      initialSurface={surface}
+      initialAccount={accountFromUser({ user })}
       initialCoins={markets.coins}
       initialSync={markets.sync}
       initialCaption={markets.queryCaption}

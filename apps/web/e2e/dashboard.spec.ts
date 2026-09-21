@@ -105,6 +105,43 @@ test.describe('Dashboard routes', () => {
     })
     await expect(page.getByRole('link', { name: 'Go home' })).toBeVisible()
   })
+
+  test('surface=account shows user info and watchlist table', async ({ page }) => {
+    await page.goto('/')
+    const star = visibleCoinRow(page, 'btc').getByTestId('coin-watch')
+    await expect(star).toBeVisible({ timeout: 15_000 })
+    if ((await star.getAttribute('aria-pressed')) !== 'true') await star.click()
+    await expect(star).toHaveAttribute('aria-pressed', 'true')
+    await page.goto('/?surface=account')
+    await expect(page.getByTestId('user-info-card')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('user-info-card')).toContainText('test@test.ai')
+    await expect(visibleCoinRow(page, 'btc')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Send, agent not wired' })).toBeDisabled()
+  })
+
+  test('Who am I? writes account surface and restores from history', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
+    await page.getByTestId('whoami-command').click()
+    await expect(page).toHaveURL(/surface=account/)
+    await expect(page.getByTestId('user-info-card')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('command-history-row').first()).toHaveText('Who am I?')
+    await page.goto('/')
+    await expect(page.getByTestId('user-info-card')).toHaveCount(0)
+    await page.getByTestId('command-history-row').first().click()
+    await expect(page).toHaveURL(/surface=account/)
+    await expect(page.getByTestId('user-info-card')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('button', { name: 'Send, agent not wired' })).toBeDisabled()
+  })
+
+  test("What's on my list? stays table-only", async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
+    await page.getByRole('button', { name: "What's on my list?" }).click()
+    await expect(page).toHaveURL(/universe=watchlist/)
+    await expect(page).not.toHaveURL(/surface=account/)
+    await expect(page.getByTestId('user-info-card')).toHaveCount(0)
+  })
 })
 
 test.describe('Coin board SSR', () => {

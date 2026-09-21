@@ -17,35 +17,32 @@ import { toast } from 'sonner'
 import { BoardWatchProvider, boardRegistry } from '@/components/genui'
 import { boardNotices, type CoinMarket, type MarketsSync, mapListCoins } from '@/lib/coins/board'
 import {
+  clearedSearchQuery,
   isSameSearchQuery,
   type SearchQueryState,
-  searchQueryParsers,
   toCoinsQuery,
 } from '@/lib/coins/search-query'
-import { composeSurface, viewFromSearchQuery } from '@/lib/genui'
+import {
+  type AccountState,
+  boardViewParsers,
+  composeSurface,
+  overlayAccountQuery,
+  splitBoardView,
+  type ViewSurface,
+  viewFromSearchQuery,
+  viewTitle,
+} from '@/lib/genui'
 import { coinsListQueryKey, coinsListQueryKeyPrefix, coinWatchesQueryKey } from '@/lib/query-keys'
 import { BoardLayout } from './rail'
 
 const watchCap = 20
 const boardStaleMs = 30_000
 
-const clearedSearchQuery = {
-  universe: null,
-  sortBy: null,
-  sortDir: null,
-  symbols: null,
-  highlight: null,
-  text: null,
-  topN: null,
-  minChangePct: null,
-  maxChangePct: null,
-  minPrice: null,
-  maxPrice: null,
-} as const
-
 type CoinBoardProps = {
   spec: Spec
   initialQuery: SearchQueryState
+  initialSurface: ViewSurface
+  initialAccount: AccountState
   initialCoins: CoinMarket[]
   initialSync: MarketsSync
   initialCaption: string
@@ -56,6 +53,8 @@ type CoinBoardProps = {
 export function CoinBoard({
   spec,
   initialQuery,
+  initialSurface,
+  initialAccount,
   initialCoins,
   initialSync,
   initialCaption,
@@ -64,21 +63,26 @@ export function CoinBoard({
 }: CoinBoardProps) {
   const { client } = useReactApiConfig()
   const queryClient = useQueryClient()
-  const [query, setQuery] = useQueryStates(searchQueryParsers, { history: 'push', shallow: true })
-  const isInitial = isSameSearchQuery({ a: query, b: initialQuery })
+  const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
+  const { query, surface } = splitBoardView({ view })
+  const fetchQuery = overlayAccountQuery({ query, surface })
+  const isInitial = surface === initialSurface && isSameSearchQuery({ a: query, b: initialQuery })
   const [store] = useState(() =>
     createStateStore({
       coins: initialCoins,
       sync: initialSync,
       caption: initialCaption,
       error: initialError,
+      account: initialAccount,
     }),
   )
 
   const listQuery = useQuery({
-    queryKey: coinsListQueryKey(query),
+    queryKey: coinsListQueryKey(fetchQuery),
     queryFn: async () =>
-      mapListCoins({ data: await client.listCoins({ query: toCoinsQuery({ query }) }) }),
+      mapListCoins({
+        data: await client.listCoins({ query: toCoinsQuery({ query: fetchQuery }) }),
+      }),
     initialData: isInitial
       ? { coins: initialCoins, sync: initialSync, queryCaption: initialCaption }
       : undefined,
@@ -101,7 +105,7 @@ export function CoinBoard({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: coinWatchesQueryKey })
-      if (query.universe === 'watchlist')
+      if (fetchQuery.universe === 'watchlist')
         await queryClient.invalidateQueries({ queryKey: coinsListQueryKeyPrefix })
     },
     onError: error => {
@@ -121,10 +125,16 @@ export function CoinBoard({
   const watchedIds = new Set(watchesQuery.data ?? [])
   const isAtCap = watchedIds.size >= watchCap
   const notices = error ? [] : boardNotices({ sync })
-  const emptyWatchlist = query.universe === 'watchlist' && coins.length === 0 && !error
+  const emptyWatchlist = fetchQuery.universe === 'watchlist' && coins.length === 0 && !error
   const liveSpec = isInitial
     ? spec
-    : composeSurface({ view: viewFromSearchQuery({ query, title: caption }) })
+    : composeSurface({
+        view: viewFromSearchQuery({
+          query: fetchQuery,
+          title: viewTitle({ surface, caption }),
+          surface,
+        }),
+      })
 
   useEffect(() => {
     store.update({
@@ -132,8 +142,9 @@ export function CoinBoard({
       '/sync': sync,
       '/caption': caption,
       '/error': error,
+      '/account': initialAccount,
     })
-  }, [store, coins, sync, caption, error])
+  }, [store, coins, sync, caption, error, initialAccount])
 
   function handleToggleWatch({ assetId, watched }: { assetId: string; watched: boolean }) {
     if (!watched && isAtCap) {
@@ -144,7 +155,7 @@ export function CoinBoard({
   }
 
   async function handleResetView() {
-    await setQuery(clearedSearchQuery)
+    await setView({ ...clearedSearchQuery, surface: null })
   }
 
   return (

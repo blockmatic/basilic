@@ -60,7 +60,7 @@ Stream with `loading.tsx` and Suspense. Mark search/filter updates as transition
 
 - Do not export `dynamic = 'force-dynamic'` from the root layout. That sets `fetchCache: 'force-no-store'` for the route and voids fetch-level `next.revalidate`.
 - [`proxy.ts`](/docs/architecture/authentication) gates requests. Cookie reads there do **not** make RSC segments dynamic. A page becomes dynamic when a Server Component calls `cookies()` (for example `getUserInfo` → `getServerAuthToken`).
-- Coin board: RSC `createLoader` reads the URL `SearchQuery` and fetches `GET /coins` via the BFF client so first HTML matches the query. The client island hydrates the same parsers with shallow `history: 'push'` and refetches with `@repo/core` JWT. Do not set `shallow: false` on those writes.
+- Coin board: RSC `createLoader` reads the URL `SearchQuery` plus `surface` (`clearOnDefault`, default `table`) and fetches `GET /coins` via the BFF client so first HTML matches the query. `surface=account` overlays `universe=watchlist` for that fetch and paints catalog `UserInfo` from `$state.account` (`getUserInfo`) plus the favorites table. The client island hydrates the same parsers with shallow `history: 'push'` and refetches with `@repo/core` JWT. Do not set `shallow: false` on those writes. Do not put `version` or a JSON ViewConfig blob on the query string.
 - Semi-static RSC data still using `fetch` with `next: { revalidate: N }`: unused headlines helper (`NEWSAPI_KEY`).
 - Auth / Fastify: `cache: 'no-store'`. Identical GET `fetch` calls are request-memoized; do not wrap them in `React.cache()`.
 - No `revalidateTag` until something is tagged. Mutations stay on Fastify, not Server Actions.
@@ -79,15 +79,15 @@ Pending and optimistic UI for mutations stays on TanStack mutation flags (`isPen
 | Client async | TanStack Query 5 via `@repo/react` |
 | API client | `@repo/core` |
 | Query keys | Handwritten in `@repo/react` hooks and `apps/web/lib/query-keys.ts` |
-| URL state | `nuqs` (filters, tabs, pagination) |
+| URL state | `nuqs` (SearchQuery, `surface`, chrome tabs) |
 | Grouped / persisted UI | `ahooks` (`useSetState`, `useLocalStorageState`) |
 | Validation | Zod at boundaries |
 | Errors | `react-error-boundary` + [Error Handling](/docs/architecture/error-handling) |
 
 ### Server vs client fetch
 
-- **RSC:** home coin board (`createLoader` + `listCoins` + `composeSurface`) and profile (`getUserInfo` in the page, `initialData` on `useUser`).
-- **Client TanStack:** coin-board island hydrates a json-render `Renderer` with `StateProvider` `{ coins, sync }`, then refetches and watch stars; settings/security (API keys, passkeys, TOTP). Security surfaces are mutation-first and need WebAuthn or OTP browser APIs. Do not duplicate their GETs in Server Components; an empty first paint until hydration is accepted.
+- **RSC:** home coin board (`createLoader` + `listCoins` + `composeSurface` + `getUserInfo` into `$state.account`) and profile (`getUserInfo` in the page, `initialData` on `useUser`).
+- **Client TanStack:** coin-board island hydrates a json-render `Renderer` with `StateProvider` `{ coins, sync, account }`, then refetches and watch stars; settings/security (API keys, passkeys, TOTP). Security surfaces are mutation-first and need WebAuthn or OTP browser APIs. Do not duplicate their GETs in Server Components; an empty first paint until hydration is accepted. Commands canned **Who am I?** writes `surface=account` and appends `{ command, viewConfig }` to `sessionStorage`; history rows restore nuqs with `history: 'push'`. Spoken-query chips stay SearchQuery-only. Typed Send stays disabled.
 
 ```tsx
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs"

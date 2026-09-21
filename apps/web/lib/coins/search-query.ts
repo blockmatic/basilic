@@ -34,6 +34,20 @@ export const searchQueryParsers = {
 
 export type SearchQueryState = inferParserType<typeof searchQueryParsers>
 
+export const clearedSearchQuery = {
+  universe: null,
+  sortBy: null,
+  sortDir: null,
+  symbols: null,
+  highlight: null,
+  text: null,
+  topN: null,
+  minChangePct: null,
+  maxChangePct: null,
+  minPrice: null,
+  maxPrice: null,
+} as const
+
 function compactStrings({ values }: { values: string[] }): string[] {
   return [...new Set(values.map(value => value.trim().toLowerCase()).filter(Boolean))]
 }
