@@ -1,6 +1,8 @@
 # Basilic: API-First AI TypeScript FullStack Starter
 
-Typed SDKs, self-hosted auth, a portable architecture, a shared `AGENTS.md` agent contract, and a thin web demo. Fastify • OpenAPI • Next.js • Expo scaffold — one stack, multiple clients.
+Deploy on [Vercel](https://basilic-docs.vercel.app/docs/deployment/vercel). Run Fastify, Next.js, and eve locally first (`pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`). Typed SDKs, self-hosted auth, a shared `AGENTS.md` agent contract. Fastify • OpenAPI • Next.js • Expo scaffold. Node / container / `eve start` are the exit — [Portability](https://basilic-docs.vercel.app/docs/architecture/portability).
+
+The in-box web sample is a **coin tracker** (not Markets, not a signer). **J1:** signed-in board and chips with no LLM (cached `GET /coins`, fixture if vendors are down). **J2:** Commands type or talk → generated table, chart, account, or ephemeral dashboard; share restores `elements` with no model. Chat is an eve transcript, not navigation.
 
 MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tools/create-basilic/README.md) (independent history; no docu app; no generator). **Fork** this repo to contribute. First successful use is [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) (`pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`, `test@test.ai`). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).
 
@@ -9,8 +11,8 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 - 🤖 **AI-first skills** — `AGENTS.md`, Basilic `/w-*` (`/w-plan` `/w-grill` `/w-wayfinder` `/w-build` `/w-ship`), and CodeRabbit. Any coding agent or IDE that can read those files.
 - 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
-- 🧩 **Web + API starters** — Next.js demo, React hooks, Expo UI scaffold, Fastify API (not a wallet or OpenAI template)
-- 🔓 **Zero vendor lock-in** — Shipped path is Vercel + Supabase; ordinary Node/HTTP/Postgres elsewhere
+- 🧩 **Web + API starters** — Next.js coin tracker, React hooks, Expo UI scaffold, Fastify API (not a signer or OpenAI template)
+- 🚀 **Vercel default** — Shipped path is Vercel + Supabase; ordinary Node/HTTP/Postgres if you leave
 - 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
 - 🛡️ **Security & quality** — Automated checks in CI (Gitleaks, OSV, DeepSec)
@@ -23,13 +25,13 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 - **AI (in-app):** AI SDK — Anthropic, OpenRouter, Ollama (no first-class OpenAI SDK)
 - **Frontend:** Next.js 16, React 19, Tailwind, ShadcnUI
 - **Backend:** Fastify, PostgreSQL, Supabase
-- **Web3:** Fastify SIWE/SIWS + `@repo/utils/web3` helpers. **No Wagmi and no wallet UI in `apps/web`**
+- **Web3:** Fastify SIWE/SIWS + `@repo/utils/web3`. Web has a custom wallet modal (wagmi + Wallet Standard), not RainbowKit. Not send/swap.
 - **DevOps:** Node.js 24.x (LTS Krypton), pnpm, TurboRepo, TypeScript, Biome, ESLint
 
 ## Apps
 
 - **[API](apps/api/README.md)** — Type-safe REST API built with Fastify & OpenAPI
-- **[Web App](apps/web/README.md)** — Next.js app with monorepo integration
+- **[Web App](apps/web/README.md)** — Next.js coin tracker sample
 - **[Mobile App](apps/mobile/README.md)** — Expo UI scaffold (shared `@repo/ui`; not an API client yet)
 - **[Documentation](apps/docu/README.md)** — Fumadocs site (architecture, ADRs, development)
 
