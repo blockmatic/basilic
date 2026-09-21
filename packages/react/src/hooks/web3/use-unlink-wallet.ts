@@ -1,9 +1,9 @@
 'use client'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { type UseMutationResult, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../../context'
 
-export function useUnlinkWallet() {
+export function useUnlinkWallet(): UseMutationResult<void, unknown, { id: string }> {
   const { client } = useReactApiConfig()
   const queryClient = useQueryClient()
 

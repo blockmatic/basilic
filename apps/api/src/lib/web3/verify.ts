@@ -1,4 +1,6 @@
+import { walletIdentities } from '@repo/db/schema'
 import bs58 from 'bs58'
+import { sql } from 'drizzle-orm'
 import nacl from 'tweetnacl'
 import type { Hex } from 'viem'
 import { getAddress, verifyMessage } from 'viem'
@@ -72,6 +74,10 @@ export function getCanonicalAddress({
   address: string
 }): string | null {
   return normalizeAddress({ chain, address })
+}
+
+export function walletIdentityAddressEquals({ address }: { address: string }) {
+  return sql`lower(${walletIdentities.address}) = ${address.toLowerCase()}`
 }
 
 function normalizeAddress({

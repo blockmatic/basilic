@@ -62,7 +62,7 @@ Both/neither returns 400 `INVALID_INPUT`.
 
 EIP-155 and Solana verify routes store short-lived callback JWTs in `web3_callback` **encrypted at rest** (AES-GCM). `POST /auth/web3/exchange` decrypts before returning tokens to the client. Decrypt failure returns 401 `INVALID_OR_EXPIRED_CODE`.
 
-Wallet login is **returning only**. `POST /auth/web3/{eip155,solana}/verify` issues a session when the address already exists in `wallet_identities`. Unknown addresses return **401** `WALLET_NOT_LINKED` and do not insert `users` or identities. Register with magic link or OAuth first, then link the wallet in Settings. Legacy wallet-only rows (`users.email` null) can still sign in if they already have an identity. `/auth/web3/*` uses the same tight Fastify login rate cap as magic/OAuth/passkey.
+Wallet login is **returning only**. `POST /auth/web3/{eip155,solana}/verify` issues a session when the address already exists in `wallet_identities`. Unknown addresses return **401** `WALLET_NOT_LINKED` and do not insert `users` or identities. Register with magic link or OAuth first, then link the wallet in Settings. Existing identities still sign in when `users.email` is null. `/auth/web3/*` uses the same tight Fastify login rate cap as magic/OAuth/passkey.
 
 The Next login page opens a custom wallet modal (wagmi + Wallet Standard). After connect, the client fetches a nonce, signs SIWE or SIWS, and posts verify with `callbackUrl` → `/auth/callback/web3`.
 
@@ -72,7 +72,7 @@ Passkey **verify** consumes the auth challenge before WebAuthn verification (one
 
 ## Web (Next.js)
 
-Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session (refresh first if the access JWT is expired) and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Browser 401 refresh uses same-origin `POST /api/auth/refresh` (cookie → SDK → Fastify); it does not call Fastify refresh from the browser. In-page issuance still uses `POST /api/auth/update-tokens` (same-origin, Fastify `POST /auth/session/validate-tokens` before `Set-Cookie`). After login, home is the news dashboard. Settings covers profile, sessions, API keys, OAuth, and wallet link/unlink. Change-email lives in Settings. Link-email remains on the API for **legacy** wallet-only rows; login no longer creates those accounts. See [Frontend](/docs/architecture/frontend).
+Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session (refresh first if the access JWT is expired) and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Browser 401 refresh uses same-origin `POST /api/auth/refresh` (cookie → SDK → Fastify); it does not call Fastify refresh from the browser. In-page issuance still uses `POST /api/auth/update-tokens` (same-origin, Fastify `POST /auth/session/validate-tokens` before `Set-Cookie`). After login, home is the news dashboard. Settings covers profile, sessions, API keys, OAuth, and wallet link/unlink. Change-email lives in Settings. An authenticated session may request link-email when `users.email` is null; login no longer creates those accounts. See [Frontend](/docs/architecture/frontend).
 
 ### Web auth gate
 

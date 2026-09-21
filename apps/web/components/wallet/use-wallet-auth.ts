@@ -5,7 +5,7 @@ import { getWallets } from '@wallet-standard/app'
 import type { Wallet } from '@wallet-standard/base'
 import { useLocalStorageState } from 'ahooks'
 import bs58 from 'bs58'
-import { useEffect, useState } from 'react'
+import { type Dispatch, type SetStateAction, useEffect, useState } from 'react'
 import { getAddress } from 'viem'
 import { createSiweMessage } from 'viem/siwe'
 import { ConnectorAlreadyConnectedError, useConnect, useConnectors, useSignMessage } from 'wagmi'
@@ -39,7 +39,13 @@ function buildSiwsMessage({
   return `${domain} wants you to sign in with your Solana account:\n${address}\n\nSign in to Basilic\n\nURI: ${uri}\nVersion: 1\nChain ID: mainnet-beta\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}`
 }
 
-export function useWalletAuth({ mode }: { mode: AuthMode }) {
+export function useWalletAuth({ mode }: { mode: AuthMode }): {
+  rows: WalletRow[]
+  query: string
+  setQuery: Dispatch<SetStateAction<string>>
+  authenticate: (input: { row: WalletRow }) => Promise<void>
+  isPending: boolean
+} {
   const { client } = useReactApiConfig()
   const connectors = useConnectors()
   const { connectAsync } = useConnect()
@@ -107,9 +113,10 @@ export function useWalletAuth({ mode }: { mode: AuthMode }) {
     try {
       const domain = window.location.host
       const origin = window.location.origin
-      const signed = row.namespaces.includes('eip155')
-        ? await signEip155({ row, domain, origin })
-        : await signSolana({ row, domain, origin })
+      const signed =
+        row.connectKind === 'standard'
+          ? await signSolana({ row, domain, origin })
+          : await signEip155({ row, domain, origin })
       setRecentIds([row.id, ...(recentIds ?? []).filter(id => id !== row.id)].slice(0, 8))
       if (mode === 'login') {
         await verifyLogin.mutateAsync({
@@ -148,8 +155,9 @@ export function useWalletAuth({ mode }: { mode: AuthMode }) {
   }) {
     const connector =
       connectors.find(item => item.id === row.rdns || item.id === row.id) ??
-      connectors.find(item => item.type === 'injected' && row.connectKind === 'injected') ??
-      connectors.find(item => item.type === 'walletConnect')
+      (row.connectKind === 'walletconnect'
+        ? connectors.find(item => item.type === 'walletConnect')
+        : undefined)
     if (!connector) {
       if (row.deeplink) {
         window.location.href = `${row.deeplink}${encodeURIComponent(origin)}`

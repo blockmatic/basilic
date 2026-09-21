@@ -12,6 +12,7 @@ import {
   isAllowedWeb3Domain,
   parseSignInMessage,
   verifyWalletSignature,
+  walletIdentityAddressEquals,
 } from '../../../../lib/web3/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
@@ -108,15 +109,16 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
 
       try {
         await db.transaction(async tx => {
-          const [existing] = await tx
+          const matches = await tx
             .select()
             .from(walletIdentities)
             .where(
               and(
                 eq(walletIdentities.chain, chain),
-                eq(walletIdentities.address, normalizedAddress),
+                walletIdentityAddressEquals({ address: normalizedAddress }),
               ),
             )
+          const existing = matches.find(row => row.address === normalizedAddress) ?? matches[0]
 
           if (existing) {
             if (existing.userId !== userId) {

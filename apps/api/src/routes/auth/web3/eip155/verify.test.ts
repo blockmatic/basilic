@@ -20,9 +20,11 @@ const unlinkedAddress = unlinkedAccount.address
 async function seedLinkedWallet({
   address,
   email,
+  storeLowercase = false,
 }: {
   address: string
   email: string
+  storeLowercase?: boolean
 }): Promise<string> {
   const verifyRes = await fastify.inject({
     method: 'POST',
@@ -41,7 +43,7 @@ async function seedLinkedWallet({
     id: randomUUID(),
     userId,
     chain: 'eip155',
-    address: getAddress(address),
+    address: storeLowercase ? getAddress(address).toLowerCase() : getAddress(address),
   })
   return userId
 }
@@ -129,6 +131,36 @@ describe('POST /auth/web3/eip155/verify', () => {
       query: { address: testAddress.toLowerCase() },
     })
     expect(nonceRes.statusCode).toBe(200)
+    const { nonce } = JSON.parse(nonceRes.body)
+    const account = privateKeyToAccount(testPrivateKey)
+    const message = createSiweMessage({
+      address: testAddress,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+    const signature = await account.signMessage({ message })
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/eip155/verify',
+      payload: { message, signature, domain: 'localhost' },
+    })
+    expect(verifyRes.statusCode).toBe(200)
+  })
+
+  it('should match a legacy lowercase stored EIP-155 identity', async () => {
+    await seedLinkedWallet({
+      address: testAddress,
+      email: 'eip155-lower@test.ai',
+      storeLowercase: true,
+    })
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/eip155/nonce',
+      query: { address: testAddress },
+    })
     const { nonce } = JSON.parse(nonceRes.body)
     const account = privateKeyToAccount(testPrivateKey)
     const message = createSiweMessage({

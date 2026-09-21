@@ -1,6 +1,7 @@
 import { getDb } from '@repo/db'
 import { users, walletIdentities, web3Nonce } from '@repo/db/schema'
 import { and, eq } from 'drizzle-orm'
+import { walletIdentityAddressEquals } from './verify.js'
 
 type ParsedMessage = { address: string; nonce: string; domain: string }
 
@@ -67,10 +68,16 @@ export async function verifyWeb3Auth({
   const valid = await verifySignature({ message, signature, validatedAddress })
   if (!valid) return { ok: false, code: 'INVALID_SIGNATURE', message: 'Invalid signature' }
 
-  const [wallet] = await db
+  const wallets = await db
     .select()
     .from(walletIdentities)
-    .where(and(eq(walletIdentities.chain, chain), eq(walletIdentities.address, validatedAddress)))
+    .where(
+      and(
+        eq(walletIdentities.chain, chain),
+        walletIdentityAddressEquals({ address: validatedAddress }),
+      ),
+    )
+  const wallet = wallets.find(row => row.address === validatedAddress) ?? wallets[0]
 
   if (!wallet)
     return {

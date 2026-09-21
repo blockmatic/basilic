@@ -27,6 +27,7 @@ describe('wallet registry', () => {
     const phantom = rows.filter(row => row.rdns === 'app.phantom')
     expect(phantom).toHaveLength(1)
     expect(phantom[0]?.namespaces).toEqual(['eip155', 'solana'])
+    expect(phantom[0]?.connectKind).toBe('standard')
     expect(phantom[0]?.installed).toBe(true)
   })
 
