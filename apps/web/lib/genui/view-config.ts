@@ -61,6 +61,7 @@ export const viewConfigSchema = z.object({
   query: searchQuerySchema,
   columns: z.array(z.string()).optional(),
   period: z.enum(periodValues).optional(),
+  elements: z.array(z.string()).optional(),
   benchmark: z.string().optional(),
   chart: z.enum(['line', 'area', 'bar', 'normalized']).optional(),
 })
@@ -128,12 +129,14 @@ export function viewFromSearchQuery({
   surface = 'table',
   period,
   columns,
+  elements,
 }: {
   query: SearchQueryState
   title: string
   surface?: ViewSurface
   period?: ViewPeriod | null
   columns?: string[]
+  elements?: string[]
 }): ViewConfig {
   return {
     version: 1,
@@ -142,5 +145,6 @@ export function viewFromSearchQuery({
     query,
     ...(period ? { period } : {}),
     ...(columns?.length ? { columns } : {}),
+    ...(elements?.length ? { elements } : {}),
   }
 }

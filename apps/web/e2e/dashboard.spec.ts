@@ -183,6 +183,21 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByTestId('user-info-card')).toBeVisible()
   })
 
+  test('GET elements restores the board and chips drop them', async ({ page }) => {
+    const chatHits: string[] = []
+    page.on('request', request => {
+      if (request.url().includes('/ai/chat')) chatHits.push(request.url())
+    })
+    await page.goto('/?elements=summary,table-ranked')
+    await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('coin-board')).toHaveAttribute('data-spec-root', 'board')
+    await expect(visibleCoinRow(page, 'btc')).toBeVisible()
+    expect(chatHits).toEqual([])
+    await page.getByRole('button', { name: 'What moved?' }).click()
+    await expect(page).toHaveURL(/sortBy=change24h/)
+    await expect(page).not.toHaveURL(/elements=/)
+  })
+
   test('Share copies the current href', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
     await page.goto('/?sortBy=change24h&sidebar=close')
@@ -204,6 +219,7 @@ test.describe('Dashboard routes', () => {
     await page.getByLabel('Command').fill('top 10 coins today')
     await page.getByRole('button', { name: 'Send' }).click()
     await expect(page).toHaveURL(/q=/, { timeout: 30_000 })
+    await expect(page.getByTestId('coin-board')).toBeVisible()
     expect(chatHits).toEqual([])
   })
 })

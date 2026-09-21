@@ -13,13 +13,14 @@ describe('serializeBoardUrl', () => {
     ).toBe('/?sortBy=change24h&sortDir=desc&sidebar=close&q=What+moved?')
   })
 
-  it('keeps rail and columns on the query string', () => {
+  it('keeps rail, columns, and elements on the query string', () => {
     expect(
       serializeBoardUrl('/', {
         rail: 'chat',
         columns: ['identity', 'price'],
+        elements: ['summary', 'table-ranked'],
         period: '7d',
       }),
-    ).toBe('/?period=7d&columns=identity,price&rail=chat')
+    ).toBe('/?period=7d&columns=identity,price&elements=summary,table-ranked&rail=chat')
   })
 })

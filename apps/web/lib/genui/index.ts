@@ -9,6 +9,7 @@ export {
   whoamiViewConfig,
 } from './command-history'
 export { composeSurface } from './compose'
+export { specFromSelection } from './spec-from-selection'
 export {
   type BoardViewState,
   boardViewParsers,

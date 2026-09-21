@@ -48,6 +48,7 @@ export const boardCatalog = defineCatalog(schema, {
     },
     Button: {
       props: z.object({ label: z.string(), variant: buttonVariant }),
+      events: ['press'],
       description: 'Pressable control that emits press for catalog actions',
     },
     Section: {
@@ -65,7 +66,7 @@ export const boardCatalog = defineCatalog(schema, {
         emptyLabel: z.string().nullable(),
       }),
       slots: ['default'],
-      description: 'Coin rows bound to $state.coins via repeat',
+      description: 'Coin rows bound to $state.coins',
     },
     CoinIdentity: {
       props: z.object({

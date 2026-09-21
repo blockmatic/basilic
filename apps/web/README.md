@@ -1,6 +1,6 @@
 # Web App
 
-Next.js 16 dashboard for the Basilic stack: signed-in home is a json-render `Renderer` on the coin island (`GET /coins` + nuqs `SearchQuery` + `surface` / chrome). Share copies the current `/` href. `surface=account` is catalog UserInfo plus this JWT’s watchlist. The catalog lives in `lib/genui`; `components/genui` maps names to `@repo/ui`. Typed Commands send to the eve **command** agent (`GET /agents` then Bearer `fetch` to `POST /eve/v1/session`). Chat chrome is still unwired. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. Eve command: `pnpm --filter @repo/agents eve:dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
+Next.js 16 dashboard for the Basilic stack: signed-in home is a json-render `Renderer` on the coin island (`GET /coins` + nuqs `SearchQuery` + `surface` / `elements` / chrome). Share copies the current `/` href. `surface=account` is catalog UserInfo plus this JWT’s watchlist. The catalog lives in `lib/genui`; `components/genui` maps names to `@repo/ui`. Typed Commands send to the eve **command** agent (`GET /agents` then Bearer `fetch` to `POST /eve/v1/session`), then Next `composeBoardSpec` when `AI_GATEWAY_API_KEY` is set; otherwise `composeSurface`. Chat chrome is still unwired. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root, start Postgres (`pnpm --filter @repo/api db:start`), seed (`pnpm reset`), then `pnpm dev`. Eve command: `pnpm --filter @repo/agents eve:dev`. See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
 
 ## Tech Stack
 
@@ -70,14 +70,14 @@ pnpm build --filter=@repo/web
 - `pnpm build` — Build for production
 - `pnpm start` — Start production server
 - `pnpm lint` — Run Biome and ESLint
-- `pnpm test` — Vitest for `lib/**/*.test.ts`, including `composeSurface`
+- `pnpm test` — Vitest for `lib/**/*.test.ts`, including `composeSurface` / `specFromSelection`
 - `pnpm test:e2e:local` — Build, spawn servers, run E2E, cleanup
 
 See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx) for full details.
 
 ### Environment Variables
 
-See `.env.local.example` (copy to `.env.local`) and `lib/env.ts`. Optional `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` enables WalletConnect-only rows in the login modal.
+See `.env.local.example` (copy to `.env.local`) and `lib/env.ts`. Optional `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` enables WalletConnect-only rows in the login modal. Optional server `AI_GATEWAY_API_KEY` enables composeSpec on Commands Send; unset keeps `composeSurface`.
 
 ## Project Structure
 
@@ -113,7 +113,7 @@ See [Authentication Architecture](../docu/content/docs/architecture/authenticati
 
 ## Testing
 
-Playwright E2E (`e2e/**/*.spec.ts`) plus `composeSurface` Vitest beside `lib/genui/compose.ts`. See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx).
+Playwright E2E (`e2e/**/*.spec.ts`) plus compose Vitest beside `lib/genui`. See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx).
 
 ## Related Documentation
 

@@ -8,9 +8,9 @@ Four planes:
 - **Control** — Fastify product HTTP. `POST /ai/generate` stays. `POST /ai/chat` is demo chrome scheduled to retire once eve command and chat agents land.
 - **Interaction and execution** — eve on a separate host. Hello lives in `apps/agents` — [Eve](/docs/architecture/eve). Not a Fastify proxy. No coordinator agent.
 - **Domain** — `@repo/db` named functions and `@repo/markets` vendor HTTP. Next keeps `@repo/core`.
-- **Presentation** — json-render on Next. `composeSurface` in `apps/web/lib/genui` builds Specs. Board chrome lives on [Frontend](/docs/architecture/frontend).
+- **Presentation** — json-render on Next. Commands Send runs `experimental_composeSpec` on the Next server (`apps/web/lib/genui/compose-spec.ts`). Closed `elements` (candidate ids) persist on nuqs; GET, chips, Back, and share restore with `specFromSelection` and never re-run Jev. Unset web `AI_GATEWAY_API_KEY` or compose `unavailable`/`limit` falls back to `composeSurface`. Board chrome lives on [Frontend](/docs/architecture/frontend).
 
-Models are implementation details; agents are product capabilities (`command`, `chat`). Fastify `getProvider()` resolves language models for `/ai/generate` and demo `/ai/chat`. Eve hosts Jev: `getEvaluationModel()` plus `evaluateBoardTurn` in `apps/agents/lib/evaluate` call `experimental_evaluate` on Vercel AI Gateway (`typesafe-ai/jev`). Unset `AI_GATEWAY_API_KEY` (and no `VERCEL_OIDC_TOKEN`) returns a null model and skips the hop. Jev judges refuse / canned / surface; it does not author json-render trees. The command agent wires that hop on `step.started`. Chat still lands later. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
+Models are implementation details; agents are product capabilities (`command`, `chat`). Fastify `getProvider()` resolves language models for `/ai/generate` and demo `/ai/chat`. Eve hosts Jev for Commands triage: `getEvaluationModel()` plus `evaluateBoardTurn` in `apps/agents/lib/evaluate` call `experimental_evaluate` on Vercel AI Gateway (`typesafe-ai/jev`). Unset eve `AI_GATEWAY_API_KEY` (and no `VERCEL_OIDC_TOKEN`) returns a null model and skips that hop. Jev on eve judges refuse / canned / surface; it does not author json-render trees. After `set_view`, Next composeSpec uses a separate web Gateway key so Jev can pick table/account candidate membership. The command agent wires the eve hop on `step.started`. Chat still lands later. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
 
 Fastify `/ai/*` is **control-plane API chrome**, not the Product Ready bar and not the durable agent runtime. Agent **skills** (`AGENTS.md`, Basilic `/w-*`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
 
@@ -72,11 +72,11 @@ File parts in UIMessage payloads must use `data:` URLs only (`maxLength` 2048). 
 | `AI_UPSTREAM_TIMEOUT_MS` | No | `120000` | Upstream abort timeout (ms) |
 | `BRAVE_SEARCH_API_KEY` | No | — | Enables optional `braveSearch` tool |
 
-Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`. Jev Gateway credentials live on the eve host (`apps/agents/.env.defaults.example`): optional `AI_GATEWAY_API_KEY`, `JEV_MODEL` (default `typesafe-ai/jev`), `AI_EVALUATE_TIMEOUT_MS`. Do not put `AI_PROVIDER=jev` on Fastify.
+Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`. Eve Jev credentials live on the eve host (`apps/agents/.env.defaults.example`): optional `AI_GATEWAY_API_KEY`, `JEV_MODEL` (default `typesafe-ai/jev`), `AI_EVALUATE_TIMEOUT_MS`. Next composeSpec uses the same var names on `apps/web` (`lib/env.ts`, `.env.local.example`) — independent skip from eve. Do not put `AI_PROVIDER=jev` on Fastify.
 
 ## Fastify chat tools (demo chrome)
 
-The dashboard does not mount this assistant. Presentation (board Spec, `composeSurface`) is [Frontend](/docs/architecture/frontend). Do not wire `useChatFromConfig` from the dashboard.
+The dashboard does not mount this assistant. Presentation (board Spec, composeSpec / `specFromSelection` / `composeSurface`) is [Frontend](/docs/architecture/frontend). Do not wire `useChatFromConfig` from the dashboard.
 
 **Demo jobs (API tools, not dashboard UI):** `getAccountInfo` (`__render: 'user-info'`) and `getMarketSnapshot` (`__render: 'market-card'`). `braveSearch` is optional and not a demo completion job. Matching catalogs live under `apps/web/components/assistant`. There is no GenUI CTA (`actions: {}`).
 
@@ -103,13 +103,13 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 ## Testing
 
 - **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): `test/utils/ai-remote.ts` skips **402** only when the response is `INSUFFICIENT_CREDITS` (quota is infra). Skips 502/504/connection only when `ANTHROPIC_API_KEY` is missing or placeholder `sk-ant-xxx`. A real key → 502 fails the suite.
-- Board chrome and `composeSurface` tests: [Frontend](/docs/architecture/frontend) and [E2E Testing](/docs/testing/e2e-testing). There is no chat Playwright project.
+- Board chrome and compose tests: [Frontend](/docs/architecture/frontend) and [E2E Testing](/docs/testing/e2e-testing). There is no chat Playwright project.
 
 ## Related
 
 - [ADR 014: Fastify, eve, and Vercel runtime](/docs/adrs/014-fastify-eve-vercel-runtime)
 - [Eve](/docs/architecture/eve) — durable runtime, command agent, Jev hop
-- [Frontend](/docs/architecture/frontend) — presentation plane, `composeSurface`
+- [Frontend](/docs/architecture/frontend) — presentation plane, composeSpec / `specFromSelection`
 - [AI Workflow](/docs/development/ai-workflow) — skills (`AGENTS.md`, Basilic `/w-*`)
 - [Self-Hosted LLM](/docs/deployment/self-hosted-llm) — Ollama ops
 - [Vercel Deployment](/docs/deployment/vercel) — env vars for hosted API

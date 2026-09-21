@@ -17,6 +17,7 @@ export const surfaceParsers = {
   surface: parseAsStringLiteral(viewSurfaces).withDefault('table').withOptions(viewFieldOptions),
   period: parseAsStringLiteral(periodValues).withOptions(viewFieldOptions),
   columns: parseAsArrayOf(parseAsString).withDefault([]).withOptions(viewFieldOptions),
+  elements: parseAsArrayOf(parseAsString).withDefault([]).withOptions(viewFieldOptions),
 }
 
 export const boardViewParsers = {
@@ -32,6 +33,7 @@ export const whoamiViewPatch = {
   surface: 'account',
   period: null,
   columns: null,
+  elements: null,
 } as const
 
 export function splitBoardView({ view }: { view: BoardViewState }): {
@@ -39,7 +41,8 @@ export function splitBoardView({ view }: { view: BoardViewState }): {
   surface: BoardViewState['surface']
   period: BoardViewState['period']
   columns: BoardViewState['columns']
+  elements: BoardViewState['elements']
 } {
-  const { surface, period, columns, ...query } = view
-  return { query, surface, period, columns }
+  const { surface, period, columns, elements, ...query } = view
+  return { query, surface, period, columns, elements }
 }

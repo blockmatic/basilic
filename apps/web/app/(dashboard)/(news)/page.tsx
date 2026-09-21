@@ -6,6 +6,7 @@ import {
   accountFromUser,
   composeSurface,
   overlayAccountQuery,
+  specFromSelection,
   splitBoardView,
   viewFromSearchQuery,
   viewTitle,
@@ -16,16 +17,24 @@ import { CoinBoard } from './board'
 
 export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const [view, chrome] = await Promise.all([loadBoardView(searchParams), loadChrome(searchParams)])
-  const { query, surface, period, columns } = splitBoardView({ view })
+  const { query, surface, period, columns, elements } = splitBoardView({ view })
   const fetchQuery = overlayAccountQuery({ query, surface })
   const [markets, user] = await Promise.all([
     fetchMarkets({ query: toCoinsQuery({ query: fetchQuery }) }),
     getUserInfo(),
   ])
   const title = viewTitle({ surface, caption: markets.queryCaption })
-  const spec = composeSurface({
-    view: viewFromSearchQuery({ query: fetchQuery, title, surface, period, columns }),
+  const viewConfig = viewFromSearchQuery({
+    query: fetchQuery,
+    title,
+    surface,
+    period,
+    columns,
+    elements,
   })
+  const spec = elements.length
+    ? specFromSelection({ elements, view: viewConfig })
+    : composeSurface({ view: viewConfig })
 
   return (
     <CoinBoard
@@ -34,6 +43,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
       initialSurface={surface}
       initialPeriod={period}
       initialColumns={columns}
+      initialElements={elements}
       initialChrome={chrome}
       initialAccount={accountFromUser({ user })}
       initialCoins={markets.coins}
