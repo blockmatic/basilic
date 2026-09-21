@@ -39,7 +39,15 @@ export function PromptInputTextarea({
   ...props
 }: PromptInputTextareaProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.nativeEvent.isComposing) {
+      onKeyDown?.(e)
+      return
+    }
     if (e.key !== 'Enter') {
+      onKeyDown?.(e)
+      return
+    }
+    if (props.readOnly) {
       onKeyDown?.(e)
       return
     }

@@ -125,6 +125,7 @@ export function BoardComposer({
             aria-label={isChat ? 'Chat' : 'Command'}
             className={cn('min-h-11 rounded-lg', dictation.supported ? 'pr-28' : 'pr-14')}
             submitOnEnter={!dictation.listening}
+            readOnly={dictation.listening}
             value={prompt}
             onChange={event => setPrompt(event.target.value)}
           />
