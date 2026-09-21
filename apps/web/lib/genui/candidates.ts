@@ -26,7 +26,7 @@ export const honestyBySurface: Partial<Record<ViewSurface, string>> = {
   news: "Headlines aren't a generated surface yet.",
   dashboard: 'Dashboards come later. Showing a table.',
   coin: 'No coin page yet. Highlighting that row.',
-  account: 'Your profile. Favorites below. Onchain tokens appear after a wallet snapshot.',
+  account: 'Your profile. Favorites below. Linked wallet tokens load live from Alchemy.',
 }
 
 export const honestyCandidateIds = {
@@ -70,6 +70,21 @@ function tableElement({ columns }: { columns: ColumnId[] }) {
   }
 }
 
+const tokenTableElement = {
+  type: 'TokenTable',
+  props: { network: 'all' as const },
+}
+
+const nftGridElement = {
+  type: 'NftGrid',
+  props: { hidden: false },
+}
+
+const walletLinkElement = {
+  type: 'Text',
+  props: { text: 'Link an Ethereum wallet in Settings to load tokens.', tone: 'muted' as const },
+}
+
 export const boardRecipes = {
   summary: { element: summaryElement, description: 'Caption of the current SearchQuery' },
   account: { element: accountElement, description: 'Signed-in profile card' },
@@ -109,6 +124,30 @@ export const boardRecipes = {
   'table-watchlist': {
     element: tableElement({ columns: rankedColumns }),
     description: 'Favorites table; empty watchlist stays honest',
+  },
+  'token-table-all': {
+    element: tokenTableElement,
+    description: 'Linked wallet tokens on eth and base',
+  },
+  'token-table-eth': {
+    element: { type: 'TokenTable', props: { network: 'eth-mainnet' as const } },
+    description: 'Linked wallet tokens on Ethereum',
+  },
+  'token-table-base': {
+    element: { type: 'TokenTable', props: { network: 'base-mainnet' as const } },
+    description: 'Linked wallet tokens on Base',
+  },
+  'nft-grid': {
+    element: nftGridElement,
+    description: 'Linked wallet NFTs as a grid',
+  },
+  'nft-hide': {
+    element: { type: 'NftGrid', props: { hidden: true } },
+    description: 'Hide NFT grid',
+  },
+  'wallet-link-cta': {
+    element: walletLinkElement,
+    description: 'Prompt to link an Ethereum wallet in Settings',
   },
 } as const
 
@@ -150,6 +189,14 @@ export function recipeIdFromElement({
   if (element.type === 'QuerySummary') return 'summary'
   if (element.type === 'UserInfo') return 'account'
   if (element.type === 'Button') return 'reset'
+  if (element.type === 'TokenTable') {
+    const network = element.props?.network
+    if (network === 'eth-mainnet') return 'token-table-eth'
+    if (network === 'base-mainnet') return 'token-table-base'
+    return 'token-table-all'
+  }
+  if (element.type === 'NftGrid') return element.props?.hidden ? 'nft-hide' : 'nft-grid'
+  if (element.type === 'Text') return 'wallet-link-cta'
   if (element.type === 'Alert') {
     const title = element.props?.title
     if (title === honestyBySurface.chart) return 'honesty-chart'
@@ -209,7 +256,15 @@ export function boardCandidates(): Experimental_CompositionCandidate[] {
       description: recipe.description,
       element: recipe.element,
       root: false as const,
-      resource: isTableRecipeId(id) ? 'table' : id.startsWith('honesty-') ? 'honesty' : undefined,
+      resource: isTableRecipeId(id)
+        ? 'table'
+        : id.startsWith('honesty-')
+          ? 'honesty'
+          : id.startsWith('token-')
+            ? 'tokens'
+            : id.startsWith('nft-')
+              ? 'nfts'
+              : undefined,
     })),
   ]
 }

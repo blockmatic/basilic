@@ -17,10 +17,6 @@ export default [
               message: 'Eve must not import drizzle-orm. Database access stays in @repo/db.',
             },
             {
-              name: '@repo/onchain',
-              message: '@repo/onchain is not this step.',
-            },
-            {
               name: 'fastify',
               message: 'Eve is a sibling process. Do not import Fastify.',
             },

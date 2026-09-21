@@ -194,6 +194,12 @@ export const operationMeta = {
       }
     ]
   },
+  "accountWalletGet": {
+    "summary": "Get linked wallet holdings",
+    "description": "Live Alchemy Portfolio for the access JWT user linked eip155 address. Empty when unlinked or key unset.",
+    "pathParams": [],
+    "bodyParams": []
+  },
   "getAgentById": {
     "summary": "Get agent",
     "description": "Get one product eve agent by id (command or chat). JWT required.",
@@ -464,6 +470,13 @@ export const commandSpecs = [
       "profile"
     ],
     "operationId": "accountProfileUpdate"
+  },
+  {
+    "path": [
+      "account",
+      "wallet"
+    ],
+    "operationId": "accountWalletGet"
   },
   {
     "path": [

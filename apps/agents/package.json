@@ -27,6 +27,7 @@
     "@openrouter/ai-sdk-provider": "^3.0.0",
     "@repo/db": "workspace:*",
     "@repo/markets": "workspace:*",
+    "@repo/onchain": "workspace:*",
     "@repo/utils": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
     "@vercel/connect": "2.2.0",

@@ -23,7 +23,7 @@ Keep `/eve/` and `/.well-known/workflow/` un-rewritten behind a reverse proxy. N
 
 ## Domain logic
 
-Eve consumes `@repo/db` **named functions** and `@repo/markets` for market HTTP. Next.js keeps `@repo/core` HTTP clients and does not import those packages. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP.
+Eve consumes `@repo/db` **named functions**, `@repo/markets` for market HTTP, and `@repo/onchain` for live wallet reads. Next.js keeps `@repo/core` HTTP clients and does not import those packages. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP.
 
 ## Jev
 

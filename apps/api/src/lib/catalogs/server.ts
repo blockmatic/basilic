@@ -126,6 +126,10 @@ export const serverErrors = {
     message:
       'This wallet is not linked to an account. Sign in with email or another method first, then link a wallet in Settings.',
   },
+  WALLET_EIP155_LIMIT: {
+    code: 'WALLET_EIP155_LIMIT',
+    message: 'Only one Ethereum wallet can be linked.',
+  },
   INVALID_CALLBACK_URL: {
     code: 'INVALID_CALLBACK_URL',
     message: 'Invalid callback URL',

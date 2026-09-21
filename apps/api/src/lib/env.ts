@@ -95,6 +95,7 @@ export const env = createEnv({
       .optional()
       .transform(val => parseBool(val, false)),
     MARKETS_CACHE_MS: z.coerce.number().int().positive().default(300_000),
+    ALCHEMY_API_KEY: z.string().min(1).optional(),
     COIN_MAJOR_SYMBOLS: z
       .string()
       .default('btc,eth,sol')

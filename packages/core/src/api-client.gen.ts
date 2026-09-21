@@ -38,6 +38,8 @@ import type {
   AccountPasskeysListResponse,
   AccountProfileUpdateData,
   AccountProfileUpdateResponse,
+  AccountWalletGetData,
+  AccountWalletGetResponse,
   AuthPasskeyExchangeData,
   AuthPasskeyExchangeResponse,
   AuthPasskeyResolveUserData,
@@ -162,7 +164,8 @@ export type CoreApiClient = {
       }
     };
     passkeys: (opts?: Options<AccountPasskeysListData>) => Promise<AccountPasskeysListResponse>;
-    profile: (opts: Options<AccountProfileUpdateData>) => Promise<AccountProfileUpdateResponse>
+    profile: (opts: Options<AccountProfileUpdateData>) => Promise<AccountProfileUpdateResponse>;
+    wallet: (opts?: Options<AccountWalletGetData>) => Promise<AccountWalletGetResponse>
   };
   agents: {
     agentId: (opts: Options<GetAgentByIdData>) => Promise<GetAgentByIdResponse>

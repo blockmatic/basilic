@@ -47,7 +47,7 @@ pnpm --filter @repo/agents eve:dev
 curl -sS http://127.0.0.1:3004/eve/v1/health
 ```
 
-Session routes need a Fastify access JWT. Command and chat turns use `getProvider()` (Anthropic → OpenRouter → Ollama). Jev `evaluateBoardTurn` runs first on **command** when Gateway credentials exist; refuse/canned/surface can skip Haiku. Chat does not run Jev. Runtime skill: `agents/command/agent/skills/view-config.md`. Command evals: `agents/command/evals/*.eval.ts`. Chat evals: `agents/chat/evals/*.eval.ts`.
+Session routes need a Fastify access JWT. Optional `ALCHEMY_API_KEY` on this host enables command `get_wallet` / `get_nfts`. Command and chat turns use `getProvider()` (Anthropic → OpenRouter → Ollama). Jev `evaluateBoardTurn` runs first on **command** when Gateway credentials exist; refuse/canned/surface can skip Haiku. Chat does not run Jev. Runtime skill: `agents/command/agent/skills/view-config.md`. Command evals: `agents/command/evals/*.eval.ts`. Chat evals: `agents/chat/evals/*.eval.ts`.
 
 Jev factory: `getEvaluationModel()` is `null` without `AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN`. Optional `JEV_MODEL` (default `typesafe-ai/jev`) and `AI_EVALUATE_TIMEOUT_MS`. Unit tests: `pnpm --filter @repo/agents test` (live Gateway is skipped unless `AI_GATEWAY_API_KEY` is set). `eve eval` is not in packages CI.
 

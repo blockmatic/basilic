@@ -17,7 +17,7 @@ Keep Fastify. Adopt eve. Optimize for Vercel. Preserve a Node/container exit. Us
 - eve is the recommended **durable** agent runtime (Workflow-backed sessions) on a **separate** host. Do not mount `/eve/` on the scored Fastify URL.
 - Default deploy is Vercel. Exit is ordinary Node / container: Fastify `listen`, `eve start`, and `eve build` → Nitro for the agent host.
 - Core API = Node + Fluid Compute, not Edge Runtime wholesale. Edge is CDN, WAF, redirects, auth precheck, geo, and cache — not the API, not eve, not Drizzle.
-- Domain functions live in `@repo/*`. `@repo/db` named fns and `@repo/markets` vendor HTTP are landed. Next keeps `@repo/core`. Fastify is not a database proxy for eve.
+- Domain functions live in `@repo/*`. `@repo/db` named fns, `@repo/markets` vendor HTTP, and `@repo/onchain` wallet HTTP are landed. Next keeps `@repo/core`. Fastify is not a database proxy for eve.
 - Track A discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) stays on Fastify. OpenAPI is the agent contract. There is **no product MCP**. If MCP is justified later, add a logically isolated capability surface inside Fastify — not a second application. Do not advertise MCP or `/eve/` from `llms.txt`.
 - Fastify is the **control plane**, not a universal proxy. Interactive agent transport belongs to eve. No coordinator: two first-class agents (`command` and `chat`). `GET /agents` is discoverability (JWT), not the authorization boundary.
 

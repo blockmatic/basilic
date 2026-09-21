@@ -23,6 +23,7 @@ packages/
   react/       # handwritten TanStack Query hooks (built on core)
   db/          # Drizzle schema, factory, named data-access fns
   markets/     # CoinGecko + Binance vendor HTTP
+  onchain/     # Alchemy Free Portfolio HTTP
 apps/
   api/         # Fastify 5 + TypeBox routes → generates OpenAPI
   web/         # Next.js 16 consuming core/react
@@ -34,6 +35,7 @@ apps/
 - `@repo/react` → depends on `@repo/core` (and React/TanStack Query via peer deps)
 - `@repo/db` → Drizzle schema, `configureDb` / `getDb`, named fns (`listAssets`, watches, `getValidSession`). Fastify and the eve host import it. Next.js must not.
 - `@repo/markets` → CoinGecko + Binance HTTP. Fastify and eve command tools import it. Next.js must not.
+- `@repo/onchain` → Alchemy Portfolio HTTP. Fastify and eve command tools import it. Next.js must not.
 
 No reverse dependencies. `@repo/db` does not import Fastify env or the api test harness.
 
@@ -45,6 +47,8 @@ flowchart TB
     K["@repo/core<br/>generated client + types"]
     R["@repo/react<br/>TanStack Query hooks"]
     D["@repo/db<br/>schema + named fns"]
+    M["@repo/markets<br/>CoinGecko + Binance"]
+    O["@repo/onchain<br/>Alchemy Portfolio"]
   end
 
   subgraph A[apps]
@@ -54,6 +58,8 @@ flowchart TB
 
   K --> R
   D --> API
+  M --> API
+  O --> API
 
   API -->|OpenAPI JSON| GEN[hey-api Generator]
   GEN -->|Generated Code| K
@@ -122,6 +128,10 @@ PostgreSQL access for Fastify and the eve host. Schema barrel `@repo/db/schema`,
 ### 5) `packages/markets`
 
 CoinGecko Demo + Binance public REST. Zero Fastify, zero `@repo/db`, zero Alchemy. Hosts call `configureMarkets` from their env. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Fastify `GET /coins` calls `getMarkets`. Eve command tools call the same fns. Next.js must not import this package.
+
+### 6) `packages/onchain`
+
+Alchemy Free Portfolio (`getWallet`, `getNfts`) for eth-mainnet and base-mainnet. Zero Fastify, zero `@repo/db`, zero `@repo/markets`. Hosts call `configureOnchain` from their env. Fastify `GET /account/wallet` and eve `get_wallet` / `get_nfts` compose linked `eip155` identity + this HTTP + `getQuote`. Holdings are not stored. Next.js must not import this package.
 
 ## Import and export conventions
 

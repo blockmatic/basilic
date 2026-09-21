@@ -44,6 +44,7 @@ Examples:
 | `@repo/email` | Email templates + renderer | B | `@repo/email/emails/*`, `@repo/email/render` |
 | `@repo/db` | Drizzle schema, factory, named fns | B | `@repo/db`, `@repo/db/schema`, `@repo/db/migrate` |
 | `@repo/markets` | CoinGecko + Binance vendor HTTP | B | `@repo/markets` |
+| `@repo/onchain` | Alchemy Free Portfolio HTTP | B | `@repo/onchain` |
 
 ## Core packages
 
@@ -159,6 +160,10 @@ Pattern B. Fastify and the eve host. Next.js must not import this package.
 ### `@repo/markets` — CoinGecko + Binance HTTP
 
 Pattern B. Fastify and the eve host. Next.js must not import this package. Call `configureMarkets` from host env. Named fns: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`.
+
+### `@repo/onchain` — Alchemy Portfolio HTTP
+
+Pattern B. Fastify and the eve host. Next.js must not import this package. Call `configureOnchain` from host env. Named fns: `getWallet`, `getNfts`. Allowlist `api.g.alchemy.com`. Optional `ALCHEMY_API_KEY`.
 
 ### `@repo/ui` — UI components
 

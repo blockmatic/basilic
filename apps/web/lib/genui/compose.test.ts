@@ -87,7 +87,9 @@ describe('composeSurface', () => {
       joinedAt: { $state: '/account/joinedAt' },
     })
     expect(tableElement(spec)?.repeat).toBeUndefined()
-    expect(JSON.stringify(spec)).toContain('Your profile. Favorites below.')
+    expect(JSON.stringify(spec)).toContain('Linked wallet tokens load live from Alchemy.')
+    expect(Object.values(spec.elements).some(element => element.type === 'TokenTable')).toBe(true)
+    expect(Object.values(spec.elements).some(element => element.type === 'NftGrid')).toBe(true)
   })
 
   it('drops unknown column ids and keeps the allowlist subset', () => {

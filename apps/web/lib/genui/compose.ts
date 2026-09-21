@@ -55,7 +55,8 @@ function chromeRecipeIds({ view }: { view: ViewConfig }): BoardRecipeId[] {
   const showReset = !isSameSearchQuery({ a: view.query, b: defaultSearchQuery })
   const ids: BoardRecipeId[] = ['summary']
   if (honesty) ids.push(honesty)
-  if (view.surface === 'account') ids.push('account')
+  if (view.surface === 'account')
+    ids.push('account', 'token-table-all', 'nft-grid', 'wallet-link-cta')
   if (showReset) ids.push('reset')
   return ids
 }

@@ -34,6 +34,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-pnpm
       - name: Build packages
-        run: pnpm turbo run build --filter=@repo/error... --filter=@repo/core --filter=@repo/react --filter=@repo/db --filter=@repo/markets
+        run: pnpm turbo run build --filter=@repo/error... --filter=@repo/core --filter=@repo/react --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain
       - name: Unit tests (packages + agents)
-        run: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/db --filter=@repo/markets --filter=@repo/agents
+        run: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain --filter=@repo/agents
