@@ -20,7 +20,7 @@ Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as t
 
 ## Testing
 
-Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest loads it when present. See [Testing](https://basilic-docs.vercel.app/docs/testing) for group layout, assertion rules, and catalog contract, and [Error Handling](https://basilic-docs.vercel.app/docs/architecture/error-handling) for RFC 9457 fields and 401/429 headers. `ALLOWED_ORIGINS` controls CORS and URL validation for auth callbacks (default `*` in dev/test; production requires explicit origins, not `*`).
+Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest loads it when present. See [Testing](https://basilic-docs.vercel.app/docs/testing) for group layout, assertion rules, and catalog contract, and [Error Handling](https://basilic-docs.vercel.app/docs/architecture/error-handling) for RFC 9457 fields and 401/429 headers. `ALLOWED_ORIGINS` controls CORS and URL validation for auth callbacks (default `*` in dev/test; production omit/`*` uses `WEB_APP_URL` origin).
 
 ## pnpm commands
 
