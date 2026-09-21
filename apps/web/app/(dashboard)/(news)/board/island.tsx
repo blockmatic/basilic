@@ -1,10 +1,20 @@
 'use client'
 
+import type { Spec } from '@json-render/core'
+import {
+  ActionProvider,
+  createStateStore,
+  Renderer,
+  StateProvider,
+  VisibilityProvider,
+} from '@json-render/react'
 import { getErrorMessage } from '@repo/error'
 import { useReactApiConfig } from '@repo/react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQueryStates } from 'nuqs'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { BoardWatchProvider, boardRegistry } from '@/components/genui'
 import { boardNotices, type CoinMarket, type MarketsSync, mapListCoins } from '@/lib/coins/board'
 import {
   isSameSearchQuery,
@@ -12,14 +22,29 @@ import {
   searchQueryParsers,
   toCoinsQuery,
 } from '@/lib/coins/search-query'
+import { composeSurface, viewFromSearchQuery } from '@/lib/genui'
 import { coinsListQueryKey, coinsListQueryKeyPrefix, coinWatchesQueryKey } from '@/lib/query-keys'
-import { MarketsTable } from '../../markets/markets-table'
 import { BoardLayout } from './rail'
 
 const watchCap = 20
 const boardStaleMs = 30_000
 
+const clearedSearchQuery = {
+  universe: null,
+  sortBy: null,
+  sortDir: null,
+  symbols: null,
+  highlight: null,
+  text: null,
+  topN: null,
+  minChangePct: null,
+  maxChangePct: null,
+  minPrice: null,
+  maxPrice: null,
+} as const
+
 type CoinBoardProps = {
+  spec: Spec
   initialQuery: SearchQueryState
   initialCoins: CoinMarket[]
   initialSync: MarketsSync
@@ -29,6 +54,7 @@ type CoinBoardProps = {
 }
 
 export function CoinBoard({
+  spec,
   initialQuery,
   initialCoins,
   initialSync,
@@ -38,8 +64,16 @@ export function CoinBoard({
 }: CoinBoardProps) {
   const { client } = useReactApiConfig()
   const queryClient = useQueryClient()
-  const [query] = useQueryStates(searchQueryParsers, { history: 'push', shallow: true })
+  const [query, setQuery] = useQueryStates(searchQueryParsers, { history: 'push', shallow: true })
   const isInitial = isSameSearchQuery({ a: query, b: initialQuery })
+  const [store] = useState(() =>
+    createStateStore({
+      coins: initialCoins,
+      sync: initialSync,
+      caption: initialCaption,
+      error: initialError,
+    }),
+  )
 
   const listQuery = useQuery({
     queryKey: coinsListQueryKey(query),
@@ -88,6 +122,18 @@ export function CoinBoard({
   const isAtCap = watchedIds.size >= watchCap
   const notices = error ? [] : boardNotices({ sync })
   const emptyWatchlist = query.universe === 'watchlist' && coins.length === 0 && !error
+  const liveSpec = isInitial
+    ? spec
+    : composeSurface({ view: viewFromSearchQuery({ query, title: caption }) })
+
+  useEffect(() => {
+    store.update({
+      '/coins': coins,
+      '/sync': sync,
+      '/caption': caption,
+      '/error': error,
+    })
+  }, [store, coins, sync, caption, error])
 
   function handleToggleWatch({ assetId, watched }: { assetId: string; watched: boolean }) {
     if (!watched && isAtCap) {
@@ -97,13 +143,14 @@ export function CoinBoard({
     watchMutation.mutate({ assetId, nextWatched: !watched })
   }
 
+  async function handleResetView() {
+    await setQuery(clearedSearchQuery)
+  }
+
   return (
-    <div className="w-full" data-testid="coin-board">
+    <div className="w-full" data-testid="coin-board" data-spec-root={liveSpec.root}>
       <BoardLayout>
         <div className="space-y-4">
-          {caption ? (
-            <h2 className="font-heading text-base font-semibold md:text-lg">{caption}</h2>
-          ) : null}
           {notices.map(notice => (
             <p key={notice} className="text-muted-foreground text-sm">
               {notice}
@@ -111,18 +158,25 @@ export function CoinBoard({
           ))}
           {emptyWatchlist ? (
             <p className="text-muted-foreground text-sm">nothing on your list</p>
-          ) : (
-            <MarketsTable
-              coins={coins}
-              error={error ?? undefined}
-              watchedIds={watchedIds}
-              isAtCap={isAtCap}
-              pendingAssetId={
-                watchMutation.isPending ? watchMutation.variables?.assetId : undefined
-              }
-              onToggleWatch={handleToggleWatch}
-            />
-          )}
+          ) : null}
+          <StateProvider store={store}>
+            <VisibilityProvider>
+              <ActionProvider handlers={{ reset_view: handleResetView }}>
+                <BoardWatchProvider
+                  value={{
+                    watchedIds,
+                    isAtCap,
+                    pendingAssetId: watchMutation.isPending
+                      ? watchMutation.variables?.assetId
+                      : undefined,
+                    onToggleWatch: handleToggleWatch,
+                  }}
+                >
+                  <Renderer spec={liveSpec} registry={boardRegistry} />
+                </BoardWatchProvider>
+              </ActionProvider>
+            </VisibilityProvider>
+          </StateProvider>
         </div>
       </BoardLayout>
     </div>

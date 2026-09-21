@@ -147,7 +147,8 @@
         "**/settings/security/**",
         "**/market-snapshot.ts",
         "**/market-snapshot.spec.ts",
-        "**/market-card-catalog.tsx"
+        "**/market-card-catalog.tsx",
+        "**/components/genui/**"
       ],
       "linter": {
         "rules": {
@@ -203,6 +204,8 @@
         "**/e2e/**",
         "**/auth-error-messages.ts",
         "**/user-info-catalog.tsx",
+        "**/lib/genui/**",
+        "**/components/genui/**",
         "**/chart.tsx",
         "**/packages/ui/**",
         "**/app/auth/**",

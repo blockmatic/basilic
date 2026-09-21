@@ -15,8 +15,10 @@ test.describe('Dashboard routes', () => {
       timeout: 15_000,
     })
     await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('coin-board')).toHaveAttribute('data-spec-root', 'board')
     await expect(visibleCoinRow(page, 'btc')).toBeVisible()
     await expect(visibleCoinRow(page, 'eth')).toBeVisible()
+    await expect(visibleCoinRow(page, 'sol')).toBeVisible()
     await expect(visibleCoinRow(page, 'doge')).toBeVisible()
     await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'btc')
     await expect(page.getByText('Showing a sample board.')).toBeVisible()
@@ -111,6 +113,9 @@ test.describe('Coin board SSR', () => {
   test('sortBy change24h lists doge first without JS', async ({ page }) => {
     await page.goto('/?sortBy=change24h&sortDir=desc')
     await expect(page.getByTestId('coin-board')).toBeAttached({ timeout: 15_000 })
+    await expect(page.getByTestId('coin-board')).toHaveAttribute('data-spec-root', 'board')
     await expect(page.getByTestId('coin-row').first()).toHaveAttribute('data-symbol', 'doge')
+    const html = await page.content()
+    expect(html.includes('"root"') || html.includes('/coins')).toBe(true)
   })
 })
