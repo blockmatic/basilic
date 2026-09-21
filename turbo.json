@@ -316,6 +316,17 @@
         "AUTH_COOKIE_NAME",
         "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
+    },
+    "@repo/agents#dev": {
+      "dependsOn": [],
+      "cache": false,
+      "persistent": true,
+      "with": ["@repo/agents#eve:dev:chat"]
+    },
+    "@repo/agents#eve:dev:chat": {
+      "dependsOn": [],
+      "cache": false,
+      "persistent": true
     }
   }
 }

@@ -19,7 +19,7 @@ The published tarball includes a sanitized, lockfile-valid template. The CLI doe
 ```bash
 cd my-app
 pnpm setup
-pnpm --filter @repo/api db:start
+pnpm db:start
 pnpm reset
 pnpm dev
 ```

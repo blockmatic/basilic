@@ -26,12 +26,12 @@ Local Workflow data is `.eve/.workflow-data` (gitignored). CI does not run live 
 
 ## Ports
 
-Command binds **3004**. Chat binds **3005**. Root `pnpm dev` does not start eve (no `dev` script).
+Command binds **3004**. Chat binds **3005**. Root `pnpm dev` starts both as Turbo TUI panes (`@repo/agents#dev`, `@repo/agents#eve:dev:chat`). Generated projects omit this app.
 
 ## pnpm commands
 
-- `pnpm --filter @repo/agents eve:dev` — command on 3004
-- `pnpm --filter @repo/agents eve:dev:chat` — chat on 3005
+- `pnpm --filter @repo/agents eve:dev` — command on 3004 (alias of `dev`; also started by root `pnpm dev`)
+- `pnpm --filter @repo/agents eve:dev:chat` — chat on 3005 (also started by root `pnpm dev`)
 - `pnpm --filter @repo/agents eve:build` — `eve build`
 - `pnpm --filter @repo/agents eve:start` — `eve start --port 3004`
 - `pnpm --filter @repo/agents eve:eval` — command `eve eval` (skipIf no language-model key; not default CI)

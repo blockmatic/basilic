@@ -12,9 +12,12 @@ Drizzle PostgreSQL schema, client factory, and named data-access functions. Fast
 
 Call `configureDb({ databaseUrl, pglite, pgliteInstance })` from the host env. The package does not import Fastify `env` or the api test harness.
 
+This package does **not** start Postgres. Local Docker Postgres is `pnpm db:start` (Supabase CLI in `apps/api`). `dev` is `tsc --watch` so Fastify and eve pick up `dist/` changes.
+
 ## Scripts
 
 - `pnpm --filter @repo/db build` — Compile and copy SQL migrations
+- `pnpm --filter @repo/db dev` — `tsc --watch` (not Postgres)
 - `pnpm --filter @repo/db checktypes` — Type-check
 - `pnpm --filter @repo/db test` — PGLite unit tests
 - `pnpm --filter @repo/db db:generate` — Generate migrations from schema

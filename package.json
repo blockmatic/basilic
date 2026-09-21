@@ -6,7 +6,7 @@
   "scripts": {
     "build": "turbo run build",
     "generate": "turbo run generate --filter=@repo/core --filter=@repo/cli",
-    "dev": "turbo run dev",
+    "dev": "node scripts/dev.mjs",
     "qa": "node scripts/run-qa.mjs",
     "checktypes": "turbo checktypes",
     "format": "biome format . --write",
@@ -41,6 +41,9 @@
     "setup:database": "node scripts/setup-database.mjs",
     "setup:deepsec": "pnpm --dir=.deepsec install --frozen-lockfile",
     "setup:playwright": "pnpm --filter @repo/api exec playwright install chromium && pnpm --filter @repo/web exec playwright install chromium",
+    "db:start": "pnpm --filter @repo/api db:start",
+    "db:stop": "pnpm --filter @repo/api db:stop",
+    "db:status": "pnpm --filter @repo/api db:status",
     "reset": "pnpm --filter @repo/api reset",
     "update-deps": "node scripts/update-deps.mjs"
   },

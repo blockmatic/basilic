@@ -106,7 +106,7 @@ Requires Node.js 24.x and ${pnpmReq}.
 
 \`\`\`bash
 pnpm setup
-pnpm --filter @repo/api db:start
+pnpm db:start
 pnpm reset
 pnpm dev
 \`\`\`

@@ -16,7 +16,7 @@ Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive st
 | Host | What runs |
 | --- | --- |
 | Default | Separate Vercel project: Workflow + Sandbox. Fastify stays Function + Fluid on its own project. This queue has not added that Vercel project. |
-| Local | `pnpm --filter @repo/agents eve:dev` on port **3004**; `eve:dev:chat` on **3005**. Health: `GET /eve/v1/health`. |
+| Local | Root `pnpm dev` starts command (**3004**) and chat (**3005**) as TUI panes. Manual: `pnpm --filter @repo/agents eve:dev` / `eve:dev:chat`. Health: `GET /eve/v1/health`. |
 | Exit | `eve build` → Nitro `.output/`, then `eve start`. Ordinary Node / container. Not `vercel()` sandbox as the only self-host path. Local Workflow data is `.eve/.workflow-data`. |
 
 Keep `/eve/` and `/.well-known/workflow/` un-rewritten behind a reverse proxy. Nitro is eve’s build and server, not Basilic’s product API and not an identity provider.

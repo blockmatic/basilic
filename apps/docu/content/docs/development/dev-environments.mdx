@@ -11,7 +11,7 @@ Strategy for supporting all IDEs, local PC development, and remote VPC developme
 |---------|-----------|---------------|
 | Local | `pnpm dev` | `pnpm --filter @repo/mobile start` |
 | Remote + Cursor | `pnpm dev` (ports auto-tunnel) | `pnpm --filter @repo/mobile start:localhost` |
-| Remote + other IDE | Forward 3000, 3001; run `pnpm dev` | Forward 8081 + `start:localhost`, or use `start:tunnel` |
+| Remote + other IDE | Forward 3000, 3001, 3004, 3005; run `pnpm dev` | Forward 8081 + `start:localhost`, or use `start:tunnel` |
 | Physical device (remote Metro) | — | Use `start:tunnel` (port forwarding does not help devices) |
 
 ## Overview
@@ -30,7 +30,8 @@ The monorepo must work consistently whether you develop locally (macOS, Linux, W
 |------|-------------|---------|
 | 3000 | Next.js (web) | Web dev server |
 | 3001 | Fastify (api) | API dev server |
-| 3004 | eve (agents) | Hello agent HTTP (`GET /eve/v1/health`). Not in root `pnpm dev`. |
+| 3004 | eve command | Root `pnpm dev` TUI pane `@repo/agents#dev`. Health `GET /eve/v1/health`. |
+| 3005 | eve chat | Root `pnpm dev` TUI pane `@repo/agents#eve:dev:chat`. Health `GET /eve/v1/health`. |
 | 8081 | Expo (mobile) | Metro bundler |
 | 19000 | Expo | Expo DevTools / manifest |
 | 19001 | Expo | Expo DevTools (alt) |
@@ -41,13 +42,13 @@ The monorepo must work consistently whether you develop locally (macOS, Linux, W
 
 Standard workflow: run everything on the same machine where the IDE and simulators live.
 
-### Web + API
+### Web + API + agents
 
 ```bash
 pnpm dev
 ```
 
-Starts Turborepo `dev` pipeline: Fastify, Next.js, and dependent packages. Uses LAN addresses by default.
+Ensures local Postgres is up, then starts Turborepo's TUI (same left-pane logs as `pnpm lint:eslint` / `pnpm test`): Fastify, Next.js, eve command/chat in this repo, and dependent package watchers. Uses LAN addresses by default. Mobile stays a separate command. Generated projects omit agents.
 
 ### Mobile (Expo)
 
@@ -70,7 +71,7 @@ When the repo and dev servers run on a remote VPC, the simulator and browser run
 
 If your IDE forwards ports from remote to local:
 
-1. Ensure ports `3000`, `3001`, `8081` (and optionally `19000`, `19001`) are forwarded. Cursor does this automatically; in VS Code, check the Ports view.
+1. Ensure ports `3000`, `3001`, `3004`, `3005`, `8081` (and optionally `19000`, `19001`) are forwarded. Cursor does this automatically; in VS Code, check the Ports view.
 2. Run Expo with `--localhost` so it advertises `localhost:8081` instead of the VPC's LAN IP:
 
    ```bash
@@ -149,7 +150,7 @@ Scripts `start:localhost` and `start:tunnel` are available in `apps/mobile` for 
 
 ### Next.js / Fastify
 
-These run where you execute `pnpm dev`. Browsers reach them via `localhost` (when forwarded) or VPC IP (when on VPN). Database (PGLite/Postgres) runs alongside the API on the same host.
+These run where you execute `pnpm dev`. Browsers reach them via `localhost` (when forwarded) or VPC IP (when on VPN). Local Postgres is Docker via `pnpm db:start` (Supabase CLI in `apps/api`); `@repo/db` only rebuilds schema `dist/`.
 
 ## Scripts (apps/mobile)
 
@@ -187,7 +188,7 @@ No special env vars are required to distinguish local vs remote. The same `.env`
 1. Clone repo, run `pnpm setup`.
 2. Decide: local only, or remote VPC?
 3. If remote with Cursor: ports are auto-tunneled; use `pnpm --filter @repo/mobile start:localhost` for Expo. With other IDEs: configure port forwarding or use `start:tunnel` for mobile.
-4. Run `pnpm dev` (web/api) and `pnpm --filter @repo/mobile start` (or `start:localhost` / `start:tunnel` for remote) from repo root.
+4. Run `pnpm dev` (web, API, agents in this repo) and `pnpm --filter @repo/mobile start` (or `start:localhost` / `start:tunnel` for remote) from repo root.
 5. Verify simulator/device can load the app and reach the API.
 
 ## Related
