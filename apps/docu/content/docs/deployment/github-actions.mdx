@@ -11,7 +11,7 @@ Path filters are used only for test workflows (app E2E and package unit tests) s
 
 ### Web (`web-e2e.yml`)
 
-Build → E2E. Triggers on pull request when `apps/web/**`, API routes the suite exercises (`auth`, `account`, `ai`, `health`, `test`), shared packages (including `packages/db/**`), OpenAPI, or the workflow/action files change. Single job: build `@repo/web...` and `@repo/db` (with localhost API URL), then E2E via `test:e2e:local` with `SKIP_BUILD=1` (spawns Fastify + Next with `ALLOW_TEST=true`, `RATE_LIMIT_MAX=10000`, `COINS_RATE_LIMIT_MAX=10000`, and `WEBAUTHN_RP_NAME=Test App`). Fastify imports Pattern B `@repo/db` `dist/`; `--filter=@repo/web...` does not build it. Web Playwright has no chat project. `cancel-in-progress: true`. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
+Build → E2E. Triggers on pull request when `apps/web/**`, API routes the suite exercises (`auth`, `account`, `ai`, `health`, `test`), shared packages (including `packages/db/**` and `packages/markets/**`), OpenAPI, or the workflow/action files change. Single job: build `@repo/web...`, `@repo/db`, and `@repo/markets` (with localhost API URL), then E2E via `test:e2e:local` with `SKIP_BUILD=1` (spawns Fastify + Next with `ALLOW_TEST=true`, `RATE_LIMIT_MAX=10000`, `COINS_RATE_LIMIT_MAX=10000`, and `WEBAUTHN_RP_NAME=Test App`). Fastify imports Pattern B `@repo/db` and `@repo/markets` `dist/`; `--filter=@repo/web...` does not build them. Web Playwright has no chat project. `cancel-in-progress: true`. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
 
 ### API (`api-e2e.yml`)
 
