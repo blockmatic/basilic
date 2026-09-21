@@ -42,5 +42,10 @@ export function parseCommandHistory({ value }: { value: string }): CommandHistor
 }
 
 export function viewConfigToSearchPatch({ viewConfig }: { viewConfig: ViewConfig }) {
-  return { surface: viewConfig.surface, ...viewConfig.query }
+  return {
+    surface: viewConfig.surface,
+    period: viewConfig.period ?? null,
+    columns: viewConfig.columns ?? null,
+    ...viewConfig.query,
+  }
 }

@@ -97,4 +97,13 @@ describe('composeSurface', () => {
     })
     expect(tableElement(spec)?.props).toMatchObject({ columns: ['identity', 'price'] })
   })
+
+  it('returns the same spec shape for the same query twice', () => {
+    const view = viewFromSearchQuery({
+      query: { ...defaultSearchQuery, sortBy: 'change24h' },
+      title: 'What moved?',
+      columns: ['identity', 'price'],
+    })
+    expect(composeSurface({ view })).toEqual(composeSurface({ view }))
+  })
 })

@@ -5,9 +5,10 @@ import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
 import { useSessionStorageState } from 'ahooks'
 import { PanelRightCloseIcon } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
-import type { ReactNode } from 'react'
+import { type ReactNode, useSyncExternalStore } from 'react'
+import { toast } from 'sonner'
 import { Input, PromptInputSubmit, PromptInputTextarea } from '@/components/assistant/prompt-input'
-import { chromeParsers, parseRailValue } from '@/lib/coins/chrome'
+import { type ChromeState, chromeParsers, parseRailValue } from '@/lib/coins/chrome'
 import {
   boardViewParsers,
   type CommandHistoryEntry,
@@ -19,6 +20,41 @@ import {
   whoamiViewPatch,
 } from '@/lib/genui'
 import { BoardChips } from './chips'
+
+function useIsHydrated(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
+}
+
+function ShareBoardButton() {
+  async function handleShare() {
+    if (!navigator.clipboard) {
+      toast.error('Clipboard not available')
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      toast.success('Copied to clipboard')
+    } catch (error) {
+      toast.error(`Failed to copy: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      className="min-h-11 rounded-lg"
+      data-testid="share-board"
+      onClick={handleShare}
+    >
+      Share
+    </Button>
+  )
+}
 
 function BoardComposer() {
   return (
@@ -38,8 +74,8 @@ function BoardComposer() {
   )
 }
 
-function BoardRail({ onClose }: { onClose: () => void }) {
-  const [{ rail }, setChrome] = useQueryStates(chromeParsers)
+function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['rail'] }) {
+  const [, setChrome] = useQueryStates(chromeParsers)
   const [, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
   const [history, setHistory] = useSessionStorageState<CommandHistoryEntry[]>(commandHistoryKey, {
     defaultValue: [],
@@ -142,8 +178,17 @@ function BoardRail({ onClose }: { onClose: () => void }) {
   )
 }
 
-export function BoardLayout({ children }: { children: ReactNode }) {
-  const [{ sidebar }, setChrome] = useQueryStates(chromeParsers)
+export function BoardLayout({
+  children,
+  initialChrome,
+}: {
+  children: ReactNode
+  initialChrome: ChromeState
+}) {
+  const [chrome, setChrome] = useQueryStates(chromeParsers)
+  const isHydrated = useIsHydrated()
+  const sidebar = isHydrated ? chrome.sidebar : initialChrome.sidebar
+  const rail = isHydrated ? chrome.rail : initialChrome.rail
   const isOpen = sidebar === 'open'
 
   function handleClose() {
@@ -152,10 +197,15 @@ export function BoardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-[calc(100dvh-3.5rem-2rem)] flex-col gap-4 md:h-[calc(100dvh-3.5rem-3rem)] md:flex-row md:items-stretch">
-      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</div>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4">
+        <div className="flex justify-end">
+          <ShareBoardButton />
+        </div>
+        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</div>
+      </div>
       {isOpen ? (
         <aside className="flex max-h-[min(42vh,24rem)] w-full shrink-0 flex-col overflow-hidden rounded-3xl border bg-card p-4 md:sticky md:top-0 md:max-h-none md:h-full md:w-80">
-          <BoardRail onClose={handleClose} />
+          <BoardRail onClose={handleClose} rail={rail} />
         </aside>
       ) : null}
     </div>

@@ -1,5 +1,6 @@
 import type { SearchParams } from 'nuqs/server'
 import { getUserInfo } from '@/lib/auth/auth-utils'
+import { loadChrome } from '@/lib/coins/chrome.server'
 import { toCoinsQuery } from '@/lib/coins/search-query'
 import {
   accountFromUser,
@@ -14,7 +15,8 @@ import { fetchMarkets } from '../markets/fetch-markets'
 import { CoinBoard } from './board'
 
 export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const { query, surface } = splitBoardView({ view: await loadBoardView(searchParams) })
+  const [view, chrome] = await Promise.all([loadBoardView(searchParams), loadChrome(searchParams)])
+  const { query, surface, period, columns } = splitBoardView({ view })
   const fetchQuery = overlayAccountQuery({ query, surface })
   const [markets, user] = await Promise.all([
     fetchMarkets({ query: toCoinsQuery({ query: fetchQuery }) }),
@@ -22,7 +24,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
   ])
   const title = viewTitle({ surface, caption: markets.queryCaption })
   const spec = composeSurface({
-    view: viewFromSearchQuery({ query: fetchQuery, title, surface }),
+    view: viewFromSearchQuery({ query: fetchQuery, title, surface, period, columns }),
   })
 
   return (
@@ -30,6 +32,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
       spec={spec}
       initialQuery={query}
       initialSurface={surface}
+      initialPeriod={period}
+      initialColumns={columns}
+      initialChrome={chrome}
       initialAccount={accountFromUser({ user })}
       initialCoins={markets.coins}
       initialSync={markets.sync}

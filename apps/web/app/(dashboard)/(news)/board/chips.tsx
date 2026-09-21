@@ -3,6 +3,7 @@
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
 import { useQueryStates } from 'nuqs'
+import { chromeParsers } from '@/lib/coins/chrome'
 import { type SearchQueryState, searchQueryParsers } from '@/lib/coins/search-query'
 
 interface BoardChip {
@@ -19,6 +20,11 @@ export const boardChips: BoardChip[] = [
   { label: "What's on my list?", patch: { universe: 'watchlist' } },
 ]
 
+const chipUrlParsers = {
+  ...searchQueryParsers,
+  q: chromeParsers.q,
+}
+
 export function matchesChipPatch({
   query,
   patch,
@@ -30,7 +36,8 @@ export function matchesChipPatch({
 }
 
 export function BoardChips() {
-  const [query, setQuery] = useQueryStates(searchQueryParsers, { history: 'push', shallow: true })
+  const [state, setState] = useQueryStates(chipUrlParsers, { history: 'push', shallow: true })
+  const { q: _q, ...query } = state
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -47,7 +54,7 @@ export function BoardChips() {
               'active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100',
               isActive && 'bg-secondary text-secondary-foreground',
             )}
-            onClick={() => setQuery(chip.patch, { history: 'push', shallow: true })}
+            onClick={() => setState({ ...chip.patch, q: null }, { history: 'push', shallow: true })}
           >
             {chip.label}
           </Button>

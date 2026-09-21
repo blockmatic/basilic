@@ -1,15 +1,22 @@
-import { type inferParserType, parseAsStringLiteral } from 'nuqs/server'
+import {
+  type inferParserType,
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringLiteral,
+} from 'nuqs/server'
 import {
   clearedSearchQuery,
   type SearchQueryState,
   searchQueryParsers,
 } from '@/lib/coins/search-query'
-import { viewSurfaces } from './view-config'
+import { periodValues, viewSurfaces } from './view-config'
+
+const viewFieldOptions = { clearOnDefault: true } as const
 
 export const surfaceParsers = {
-  surface: parseAsStringLiteral(viewSurfaces).withDefault('table').withOptions({
-    clearOnDefault: true,
-  }),
+  surface: parseAsStringLiteral(viewSurfaces).withDefault('table').withOptions(viewFieldOptions),
+  period: parseAsStringLiteral(periodValues).withOptions(viewFieldOptions),
+  columns: parseAsArrayOf(parseAsString).withDefault([]).withOptions(viewFieldOptions),
 }
 
 export const boardViewParsers = {
@@ -23,12 +30,16 @@ export const whoamiViewPatch = {
   ...clearedSearchQuery,
   universe: 'watchlist',
   surface: 'account',
+  period: null,
+  columns: null,
 } as const
 
 export function splitBoardView({ view }: { view: BoardViewState }): {
   query: SearchQueryState
   surface: BoardViewState['surface']
+  period: BoardViewState['period']
+  columns: BoardViewState['columns']
 } {
-  const { surface, ...query } = view
-  return { query, surface }
+  const { surface, period, columns, ...query } = view
+  return { query, surface, period, columns }
 }
