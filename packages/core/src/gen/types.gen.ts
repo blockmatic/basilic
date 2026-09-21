@@ -891,6 +891,7 @@ export type AccountLinkWalletVerifyData = {
     chain: 'eip155' | 'solana';
     message: string;
     signature: string;
+    domain: string;
   };
   path?: never;
   query?: never;

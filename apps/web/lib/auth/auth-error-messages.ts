@@ -64,6 +64,9 @@ const authErrorMessages: Record<string, string> = {
   oauth_failed: 'GitHub sign-in failed. Please try again.',
   oauth_failed_google: 'Google sign-in failed. Please try again.',
   rate_limit_exceeded: 'Too many attempts. Please wait a moment and try again.',
+  wallet_not_linked:
+    'This wallet is not linked to an account. Sign in with email or another method first, then link a wallet in Settings.',
+  wallet_email_required: 'Add an email to your account before linking a wallet.',
   facebook_invalid_state: 'Invalid or expired sign-in session. Please try again.',
   facebook_expired_state: 'Sign-in session expired. Please try again.',
   facebook_token_exchange_failed: 'Facebook sign-in failed. Please try again.',

@@ -31,6 +31,7 @@ export const env = createEnv({
     NEXT_PUBLIC_API_URL: z.string().min(1),
     NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1).optional(),
     NEXT_PUBLIC_AUTH_COOKIE_NAME: z.string().default('api.session'),
     NEXT_PUBLIC_SENTRY_DSN: z.string().min(1).optional(),
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().min(1).optional(),
@@ -57,6 +58,7 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_APP_URL ??
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined),
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
     NEXT_PUBLIC_AUTH_COOKIE_NAME:
       process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME ?? process.env.AUTH_COOKIE_NAME,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,

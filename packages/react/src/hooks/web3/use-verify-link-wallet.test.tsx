@@ -35,11 +35,12 @@ describe('useVerifyLinkWallet', () => {
         chain: 'eip155',
         message: 'test message',
         signature: '0xsig',
+        domain: 'localhost',
       })
     })
 
     expect(client.account.link.wallet.verify).toHaveBeenCalledWith({
-      body: { chain: 'eip155', message: 'test message', signature: '0xsig' },
+      body: { chain: 'eip155', message: 'test message', signature: '0xsig', domain: 'localhost' },
       throwOnError: true,
     })
   })
@@ -55,11 +56,12 @@ describe('useVerifyLinkWallet', () => {
         chain: 'solana',
         message: 'solana msg',
         signature: 'sig',
+        domain: 'localhost',
       })
     })
 
     expect(client.account.link.wallet.verify).toHaveBeenCalledWith({
-      body: { chain: 'solana', message: 'solana msg', signature: 'sig' },
+      body: { chain: 'solana', message: 'solana msg', signature: 'sig', domain: 'localhost' },
       throwOnError: true,
     })
   })

@@ -5,10 +5,11 @@ import { web3Nonce } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
-import { getAddress } from 'viem'
 import { generateSiweNonce } from 'viem/siwe'
+import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../schemas.js'
+import { validateAddress } from './validate-address.js'
 
 const nonceExpiryMinutes = 5
 
@@ -37,6 +38,7 @@ const web3NonceRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
         },
       },
+      config: authLoginRouteConfig,
     },
     async (request, reply) => {
       const { chain, address } = request.query
@@ -45,7 +47,7 @@ const web3NonceRoute: FastifyPluginAsync = async fastify => {
 
       let normalizedAddr: string
       try {
-        normalizedAddr = chain === 'eip155' ? getAddress(trimmed).toLowerCase() : trimmed
+        normalizedAddr = validateAddress({ chain, address: trimmed })
       } catch {
         return sendCatalogError({ reply, status: 400, code: 'INVALID_ADDRESS' })
       }

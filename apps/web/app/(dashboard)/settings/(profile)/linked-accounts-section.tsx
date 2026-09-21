@@ -1,6 +1,12 @@
 'use client'
 
-import { useOAuthLink, useOAuthProviders, useOAuthUnlink, useUser } from '@repo/react'
+import {
+  useOAuthLink,
+  useOAuthProviders,
+  useOAuthUnlink,
+  useUnlinkWallet,
+  useUser,
+} from '@repo/react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,8 +20,11 @@ import {
 } from '@repo/ui/components/alert-dialog'
 import { Button } from '@repo/ui/components/button'
 import { useSetState } from 'ahooks'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
+import { WalletModal } from '@/components/wallet/wallet-modal'
+import { getApiErrorCode } from '@/lib/auth/api-error'
+import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
 
 const providerLabels: Record<string, string> = {
   github: 'GitHub',
@@ -33,8 +42,13 @@ export function LinkedAccountsSection() {
     twitter: twitterEnabled,
   } = useOAuthProviders()
   const unlinkMutation = useOAuthUnlink()
+  const unlinkWalletMutation = useUnlinkWallet()
+  const [walletModalOpen, setWalletModalOpen] = useState(false)
   const [confirmUnlink, setConfirmUnlink] = useSetState<{ providerId: string | null }>({
     providerId: null,
+  })
+  const [confirmUnlinkWallet, setConfirmUnlinkWallet] = useSetState<{ id: string | null }>({
+    id: null,
   })
 
   const linkedProviderIds = new Set(
@@ -42,6 +56,11 @@ export function LinkedAccountsSection() {
       a => a.providerId,
     ) ?? [],
   )
+  const linkedWallets =
+    (data?.user as { linkedWallets?: { id: string; chain: string; address: string }[] } | undefined)
+      ?.linkedWallets ?? []
+  const hasEmail = Boolean(data?.user?.email)
+  const providerIds = Object.keys(providerLabels) as (keyof typeof providerLabels)[]
 
   const handleUnlink = useCallback(
     async (providerId: string) => {
@@ -50,27 +69,38 @@ export function LinkedAccountsSection() {
         toast.success(`${providerLabels[providerId] ?? providerId} unlinked`)
         setConfirmUnlink({ providerId: null })
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Failed to unlink'
-        const code =
-          err && typeof err === 'object' && 'body' in err
-            ? (err as { body?: { code?: string } }).body?.code
-            : undefined
+        const code = getApiErrorCode(err)
         if (code === 'LAST_SIGN_IN_METHOD')
           toast.error('Cannot unlink your last sign-in method. Add another first.')
-        else toast.error(msg)
+        else toast.error(err instanceof Error ? err.message : 'Failed to unlink')
       }
     },
     [unlinkMutation, setConfirmUnlink],
   )
 
-  const providerIds = Object.keys(providerLabels) as (keyof typeof providerLabels)[]
+  const handleUnlinkWallet = useCallback(
+    async (id: string) => {
+      try {
+        await unlinkWalletMutation.mutateAsync({ id })
+        toast.success('Wallet unlinked')
+        setConfirmUnlinkWallet({ id: null })
+      } catch (err) {
+        const code = getApiErrorCode(err)
+        if (code === 'LAST_SIGN_IN_METHOD')
+          toast.error('Cannot unlink your last sign-in method. Add another first.')
+        else toast.error(err instanceof Error ? err.message : 'Failed to unlink wallet')
+      }
+    },
+    [unlinkWalletMutation, setConfirmUnlinkWallet],
+  )
 
   return (
     <section className="space-y-4 border-b pb-6">
       <div>
         <h2 className="text-lg font-heading font-semibold">Linked accounts</h2>
         <p className="text-muted-foreground mt-1 text-sm">
-          Connect OAuth providers to sign in with them. You can unlink at any time.
+          Connect OAuth providers and wallets to sign in with them. Link a wallet only after you
+          have an email on the account.
         </p>
       </div>
       <div className="space-y-3">
@@ -107,7 +137,72 @@ export function LinkedAccountsSection() {
             </div>
           )
         })}
+        {linkedWallets.map(wallet => (
+          <div
+            key={wallet.id}
+            className="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3"
+          >
+            <div>
+              <span className="font-medium">
+                {wallet.chain === 'solana' ? 'Solana' : 'Ethereum'} wallet
+              </span>
+              <p className="text-muted-foreground font-mono text-xs">
+                {wallet.address.slice(0, 6)}…{wallet.address.slice(-4)}
+              </p>
+            </div>
+            <AlertDialog
+              open={confirmUnlinkWallet.id === wallet.id}
+              onOpenChange={open => setConfirmUnlinkWallet({ id: open ? wallet.id : null })}
+            >
+              <AlertDialogTrigger render={<Button variant="outline" size="sm" />}>
+                Unlink
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Unlink wallet?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    You will no longer be able to sign in with this wallet. Keep another sign-in
+                    method.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => handleUnlinkWallet(wallet.id)}
+                    disabled={unlinkWalletMutation.isPending}
+                  >
+                    {unlinkWalletMutation.isPending ? 'Unlinking…' : 'Unlink'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        ))}
+        <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3">
+          <span className="font-medium">Link wallet</span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!hasEmail}
+            onClick={() => setWalletModalOpen(true)}
+          >
+            {hasEmail ? 'Link' : 'Add email first'}
+          </Button>
+        </div>
       </div>
+      <WalletModal
+        open={walletModalOpen}
+        onOpenChange={setWalletModalOpen}
+        mode="link"
+        onLinked={() => toast.success('Wallet linked')}
+        onError={error => {
+          const code = getApiErrorCode(error)
+          if (code === 'EMAIL_REQUIRED') toast.error(getAuthErrorMessage('wallet_email_required'))
+          else if (code === 'WALLET_ALREADY_LINKED')
+            toast.error('This wallet is already linked to another account')
+          else toast.error(error instanceof Error ? error.message : 'Failed to link wallet')
+        }}
+      />
     </section>
   )
 }

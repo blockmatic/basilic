@@ -20,6 +20,7 @@ export { useSession } from './hooks/use-session'
 export { useRevokeSession, useSessionsList } from './hooks/use-sessions'
 export { useTotpSetup, useTotpUnlink, useTotpVerify } from './hooks/use-totp'
 export { useUser } from './hooks/use-user'
+export { useUnlinkWallet } from './hooks/web3/use-unlink-wallet'
 export { useVerifyLinkWallet } from './hooks/web3/use-verify-link-wallet'
 export { useVerifyWeb3Auth } from './hooks/web3/use-verify-web3-auth'
 // Export provider and context

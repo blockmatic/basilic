@@ -30,7 +30,7 @@ async function linkWallet(jwt: string, privateKey: `0x${string}`): Promise<strin
     method: 'POST',
     url: '/account/link/wallet/verify',
     headers: { Authorization: `Bearer ${jwt}` },
-    payload: { chain: 'eip155', message, signature },
+    payload: { chain: 'eip155', message, signature, domain: 'localhost' },
   })
 
   const userRes = await fastify.inject({
@@ -178,10 +178,9 @@ describe('DELETE /account/link/wallet/:id', () => {
       headers: { Authorization: `Bearer ${jwt}` },
     })
     const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
-    await db.update(users).set({ email: null }).where(eq(users.id, userId))
-
     const walletId1 = await linkWallet(jwt, anvilPrivateKeys[0])
     const walletId2 = await linkWallet(jwt, anvilPrivateKeys[1])
+    await db.update(users).set({ email: null }).where(eq(users.id, userId))
 
     const [first, second] = await Promise.all([
       fastify.inject({

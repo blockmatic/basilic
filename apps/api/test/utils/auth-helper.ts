@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { getDb } from '@repo/db'
-import { apiKeys, passkeyCredentials } from '@repo/db/schema'
+import { apiKeys, passkeyCredentials, users, walletIdentities } from '@repo/db/schema'
+import { and, eq } from 'drizzle-orm'
+import { getAddress } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { generateApiKey } from '../../src/lib/api-keys/index.js'
@@ -49,6 +51,30 @@ export async function getWeb3Session(
   const accountIndex = options?.accountIndex ?? 0
   const testPrivateKey = resolveAnvilPrivateKey(accountIndex)
   const testAccount = privateKeyToAccount(testPrivateKey)
+  const address = getAddress(testAccount.address)
+  const db = await getDb()
+  const [existing] = await db
+    .select()
+    .from(walletIdentities)
+    .where(and(eq(walletIdentities.chain, 'eip155'), eq(walletIdentities.address, address)))
+
+  if (!existing) {
+    const userId = randomUUID()
+    await db.insert(users).values({
+      id: userId,
+      email: null,
+      emailVerified: false,
+      username: `web3_${userId.slice(0, 8)}`,
+    })
+    await db.insert(walletIdentities).values({
+      id: randomUUID(),
+      userId,
+      chain: 'eip155',
+      address,
+      walletProvider: null,
+    })
+  }
+
   const nonceRes = await app.inject({
     method: 'GET',
     url: '/auth/web3/eip155/nonce',

@@ -108,7 +108,7 @@ The dashboard composer lives on the coin board (`Commands` | `Chat` chrome insid
 
 ## Web3 (apps/web)
 
-The Fastify API supports Web3 auth and account linking (EIP-155 / Solana). **`apps/web` does not ship a wallet UI yet** — no wagmi, viem, or Solana wallet-adapter packages in the web app. When wallet connect ships, adapters live in the app (`@/hooks/`, `@/wallet/`) and `@repo/react` exposes verify/link helpers (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useLinkEmail`). See [Authentication](/docs/architecture/authentication) and [Account linking](/docs/architecture/account-linking).
+The Fastify API supports Web3 auth and account linking (EIP-155 / Solana). `apps/web` ships a custom searchable wallet modal (`lib/wallet` registry + `@/components/wallet`) using wagmi EIP-6963, optional WalletConnect (`NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`), and Wallet Standard for Solana. Import connectors from `wagmi/connectors/injected` and `wagmi/connectors/walletConnect` (not the `wagmi/connectors` barrel — webpack would pull Coinbase/`@x402`). Login is linked-wallets only; Settings links/unlinks. `@repo/react` keeps verify helpers (`useVerifyWeb3Auth`, `useVerifyLinkWallet`, `useUnlinkWallet`). See [Authentication](/docs/architecture/authentication) and [Account linking](/docs/architecture/account-linking).
 
 ## Testing
 

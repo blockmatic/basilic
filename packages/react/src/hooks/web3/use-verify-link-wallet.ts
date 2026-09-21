@@ -8,6 +8,7 @@ export type UseVerifyLinkWalletParams = {
   chain: Web3Chain
   message: string
   signature: string
+  domain: string
 }
 
 /**
@@ -19,9 +20,9 @@ export function useVerifyLinkWallet() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ chain, message, signature }: UseVerifyLinkWalletParams) => {
+    mutationFn: async ({ chain, message, signature, domain }: UseVerifyLinkWalletParams) => {
       await client.account.link.wallet.verify({
-        body: { chain, message, signature },
+        body: { chain, message, signature, domain },
         throwOnError: true,
       })
     },

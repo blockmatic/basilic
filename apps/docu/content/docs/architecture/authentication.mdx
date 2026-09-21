@@ -62,13 +62,17 @@ Both/neither returns 400 `INVALID_INPUT`.
 
 EIP-155 and Solana verify routes store short-lived callback JWTs in `web3_callback` **encrypted at rest** (AES-GCM). `POST /auth/web3/exchange` decrypts before returning tokens to the client. Decrypt failure returns 401 `INVALID_OR_EXPIRED_CODE`.
 
+Wallet login is **returning only**. `POST /auth/web3/{eip155,solana}/verify` issues a session when the address already exists in `wallet_identities`. Unknown addresses return **401** `WALLET_NOT_LINKED` and do not insert `users` or identities. Register with magic link or OAuth first, then link the wallet in Settings. Legacy wallet-only rows (`users.email` null) can still sign in if they already have an identity. `/auth/web3/*` uses the same tight Fastify login rate cap as magic/OAuth/passkey.
+
+The Next login page opens a custom wallet modal (wagmi + Wallet Standard). After connect, the client fetches a nonce, signs SIWE or SIWS, and posts verify with `callbackUrl` → `/auth/callback/web3`.
+
 ## Passkey authentication
 
 Passkey **verify** consumes the auth challenge before WebAuthn verification (one-shot; concurrent reuse returns `EXPIRED_CHALLENGE`). Credential counters use compare-and-swap on update. Redirect flows store encrypted tokens in `passkey_callback` (same AES-GCM helpers as Web3). `POST /auth/passkey/exchange` decrypts before returning tokens; decrypt failure returns 401 `INVALID_OR_EXPIRED_CODE`. Exchange requires a non-empty stored `callbackOrigin` and a matching request `Origin` / `X-Callback-Origin`. Stored callback origins must use HTTPS in production; outside production, HTTP is allowed only for loopback hosts (`localhost`, `127.0.0.1`, `::1`). See [Login route rate limit](/docs/architecture/security#login-route-rate-limit-as-shipped) for which auth routes share the tight Fastify cap.
 
 ## Web (Next.js)
 
-Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session (refresh first if the access JWT is expired) and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Browser 401 refresh uses same-origin `POST /api/auth/refresh` (cookie → SDK → Fastify); it does not call Fastify refresh from the browser. In-page issuance still uses `POST /api/auth/update-tokens` (same-origin, Fastify `POST /auth/session/validate-tokens` before `Set-Cookie`). After login, home is the news dashboard. Settings covers profile, sessions, and API keys. Change-email lives in Settings. Link-email and Web3 link exist on the API and in `@repo/react` — **web has no link-wallet or link-email UI**. See [Frontend](/docs/architecture/frontend).
+Callback routes under `/auth/callback/*` exchange with Fastify, set cookies, redirect to `/`. `/auth/logout` revokes the session (refresh first if the access JWT is expired) and clears cookies. `/auth/session/revoke` consumes the email token (works logged out) and clears `api.session` when the current JWT session was the one revoked. Browser 401 refresh uses same-origin `POST /api/auth/refresh` (cookie → SDK → Fastify); it does not call Fastify refresh from the browser. In-page issuance still uses `POST /api/auth/update-tokens` (same-origin, Fastify `POST /auth/session/validate-tokens` before `Set-Cookie`). After login, home is the news dashboard. Settings covers profile, sessions, API keys, OAuth, and wallet link/unlink. Change-email lives in Settings. Link-email remains on the API for **legacy** wallet-only rows; login no longer creates those accounts. See [Frontend](/docs/architecture/frontend).
 
 ### Web auth gate
 

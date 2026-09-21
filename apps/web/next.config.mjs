@@ -70,7 +70,7 @@ const nextConfig = {
   // alias (`typescript` → @typescript/typescript6) only ships `tsc6` + the compiler API.
   experimental: {
     useTypeScriptCli: false,
-    optimizePackageImports: ['lucide-react', 'ahooks'],
+    optimizePackageImports: ['lucide-react', 'ahooks', '@web3icons/react'],
   },
   ...(apiUrl !== undefined && {
     env: { NEXT_PUBLIC_API_URL: apiUrl },

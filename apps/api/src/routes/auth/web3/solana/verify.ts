@@ -7,6 +7,8 @@ import bs58 from 'bs58'
 import type { FastifyPluginAsync } from 'fastify'
 import nacl from 'tweetnacl'
 import { encryptCallbackTokens } from '../../../../db/callback-tokens.js'
+import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
+import type { ErrorCode } from '../../../../lib/catalogs/mapper.js'
 import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
@@ -50,6 +52,7 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
           500: ErrorResponseSchema,
         },
       },
+      config: authLoginRouteConfig,
     },
     async (request, reply) => {
       const { message, signature, domain, callbackUrl } = request.body
@@ -88,7 +91,8 @@ const solanaVerifyRoute: FastifyPluginAsync = async fastify => {
         },
       })
 
-      if (!result.ok) return reply.code(401).send({ code: result.code, message: result.message })
+      if (!result.ok)
+        return sendCatalogError({ reply, status: 401, code: result.code as ErrorCode })
 
       const db = await getDb()
       const walletInfo = { chain: 'solana' as const, address: result.validatedAddress }

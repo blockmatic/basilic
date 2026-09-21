@@ -49,15 +49,19 @@ export async function verifyWalletSignature({
 }
 
 // Parse SIWE/SIWS message to extract address and nonce
-export function parseSignInMessage(message: string): { address: string; nonce: string } | null {
-  // SIWE format: "domain wants you to sign in with your Ethereum account:\n{address}\n..."
-  // SIWS format: "domain wants you to sign in with your Solana account:\n{address}\n..."
-  const addrMatch = message.match(
-    /wants you to sign in with your (?:Ethereum|Solana) account:\s*\n([^\s\n]+)/i,
+export function parseSignInMessage(
+  message: string,
+): { address: string; nonce: string; domain: string } | null {
+  const headerMatch = message.match(
+    /^(\S+) wants you to sign in with your (?:Ethereum|Solana) account:\s*\n([^\s\n]+)/i,
   )
   const nonceMatch = message.match(/Nonce:\s*(\S+)/i)
-  if (!addrMatch?.[1] || !nonceMatch?.[1]) return null
-  return { address: addrMatch[1].trim(), nonce: nonceMatch[1].trim() }
+  if (!headerMatch?.[1] || !headerMatch[2] || !nonceMatch?.[1]) return null
+  return {
+    domain: headerMatch[1].trim(),
+    address: headerMatch[2].trim(),
+    nonce: nonceMatch[1].trim(),
+  }
 }
 
 export function getCanonicalAddress({
@@ -79,7 +83,7 @@ function normalizeAddress({
 }): string | null {
   if (chain === eip155Chain)
     try {
-      return getAddress(address).toLowerCase()
+      return getAddress(address)
     } catch {
       return null
     }

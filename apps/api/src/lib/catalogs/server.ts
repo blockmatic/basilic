@@ -121,6 +121,11 @@ export const serverErrors = {
     code: 'WALLET_ALREADY_LINKED',
     message: 'Wallet already linked',
   },
+  WALLET_NOT_LINKED: {
+    code: 'WALLET_NOT_LINKED',
+    message:
+      'This wallet is not linked to an account. Sign in with email or another method first, then link a wallet in Settings.',
+  },
   INVALID_CALLBACK_URL: {
     code: 'INVALID_CALLBACK_URL',
     message: 'Invalid callback URL',

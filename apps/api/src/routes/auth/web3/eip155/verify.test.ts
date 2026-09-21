@@ -1,14 +1,59 @@
+import { randomUUID } from 'node:crypto'
+import { getDb } from '@repo/db'
+import { users, walletIdentities } from '@repo/db/schema'
+import { eq } from 'drizzle-orm'
+import { getAddress } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../web3.spec.js'
 
 const testPrivateKey =
   '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as `0x${string}`
 const testAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+const unlinkedPrivateKey =
+  '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b786127' as `0x${string}`
+const unlinkedAccount = privateKeyToAccount(unlinkedPrivateKey)
+const unlinkedAddress = unlinkedAccount.address
+
+async function seedLinkedWallet({
+  address,
+  email,
+}: {
+  address: string
+  email: string
+}): Promise<string> {
+  const verifyRes = await fastify.inject({
+    method: 'POST',
+    url: '/auth/magiclink/verify',
+    payload: { email, token: await getMagicLinkTokenRaw(fastify, email) },
+  })
+  const { token } = JSON.parse(verifyRes.body) as { token: string }
+  const userRes = await fastify.inject({
+    method: 'GET',
+    url: '/auth/session/user',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
+  const db = await getDb()
+  await db.insert(walletIdentities).values({
+    id: randomUUID(),
+    userId,
+    chain: 'eip155',
+    address: getAddress(address),
+  })
+  return userId
+}
 
 describe('POST /auth/web3/eip155/verify', () => {
+  beforeEach(async () => {
+    const db = await getDb()
+    await db.delete(walletIdentities)
+  })
+
   it('should verify valid SIWE signature and return JWTs', async () => {
+    await seedLinkedWallet({ address: testAddress, email: 'eip155-linked@test.ai' })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
@@ -40,6 +85,67 @@ describe('POST /auth/web3/eip155/verify', () => {
     expect(body).toHaveProperty('token')
     expect(body).toHaveProperty('refreshToken')
     expect(body.token.length).toBeGreaterThan(0)
+  })
+
+  it('should return 401 WALLET_NOT_LINKED without creating a user', async () => {
+    const db = await getDb()
+    const beforeUsers = await db.select({ id: users.id }).from(users)
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/eip155/nonce',
+      query: { address: unlinkedAddress },
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+    const message = createSiweMessage({
+      address: unlinkedAddress,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+    const signature = await unlinkedAccount.signMessage({ message })
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/eip155/verify',
+      payload: { message, signature, domain: 'localhost' },
+    })
+    expect(verifyRes.statusCode).toBe(401)
+    expect(JSON.parse(verifyRes.body).code).toBe('WALLET_NOT_LINKED')
+    const afterUsers = await db.select({ id: users.id }).from(users)
+    expect(afterUsers).toHaveLength(beforeUsers.length)
+    const wallets = await db
+      .select()
+      .from(walletIdentities)
+      .where(eq(walletIdentities.address, getAddress(unlinkedAddress)))
+    expect(wallets).toHaveLength(0)
+  })
+
+  it('should accept mixed-case nonce address against checksum verify', async () => {
+    await seedLinkedWallet({ address: testAddress, email: 'eip155-case@test.ai' })
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/eip155/nonce',
+      query: { address: testAddress.toLowerCase() },
+    })
+    expect(nonceRes.statusCode).toBe(200)
+    const { nonce } = JSON.parse(nonceRes.body)
+    const account = privateKeyToAccount(testPrivateKey)
+    const message = createSiweMessage({
+      address: testAddress,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+    const signature = await account.signMessage({ message })
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/eip155/verify',
+      payload: { message, signature, domain: 'localhost' },
+    })
+    expect(verifyRes.statusCode).toBe(200)
   })
 
   it('should return 400 when domain is omitted', async () => {
@@ -155,6 +261,7 @@ describe('POST /auth/web3/eip155/verify', () => {
   })
 
   it('should return 302 with encoded code when callbackUrl provided', async () => {
+    await seedLinkedWallet({ address: testAddress, email: 'eip155-cb@test.ai' })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
@@ -190,6 +297,7 @@ describe('POST /auth/web3/eip155/verify', () => {
   })
 
   it('should place code in query string when callbackUrl has fragment', async () => {
+    await seedLinkedWallet({ address: testAddress, email: 'eip155-frag@test.ai' })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',
@@ -225,6 +333,7 @@ describe('POST /auth/web3/eip155/verify', () => {
   })
 
   it('should access protected route after SIWE authentication', async () => {
+    await seedLinkedWallet({ address: testAddress, email: 'eip155-authed@test.ai' })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/eip155/nonce',

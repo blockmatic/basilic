@@ -24,6 +24,7 @@ This package provides React Query hooks that wrap `@repo/core` API client method
 - `useTotpSetup`, `useTotpUnlink`, `useTotpVerify` - TOTP hooks
 - `useUser` - Query hook for current user (GET /auth/session/user)
 - `useVerifyLinkWallet` - Mutation hook for link wallet verify
+- `useUnlinkWallet` - Mutation hook for unlink wallet
 - `useVerifyWeb3Auth` - Mutation hook for Web3 auth verify (SIWE/SIWS)
 - `useWebAuthnAvailable` - Hook to check WebAuthn availability
 
