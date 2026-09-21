@@ -1,21 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalPassThroughEnv": [
-    "QA_SKIP_TESTS",
-    "SKIP_KILL_PORTS",
-    "SKIP_BUILD",
-    "PR_TITLE",
-    "PR_BODY",
-    "PR_BASE_SHA",
-    "PR_HEAD_SHA",
-    "CREATE_BASILIC_LOCKFILE",
-    "CREATE_BASILIC_ALLOW_DIRTY",
-    "CREATE_BASILIC_TEMPLATE_DIR",
-    "CREATE_BASILIC_PACK_TEST",
-    "BASILIC_SKILLS_LOCAL",
-    "BASILIC_SKILLS_WRITE_LOCK"
-  ],
+  "globalPassThroughEnv": ["SKIP_KILL_PORTS", "SKIP_BUILD", "SKIP_DB_START"],
   "tasks": {
     "generate": {
       "dependsOn": [],
@@ -84,7 +70,6 @@
         "JWT_SECRET",
         "JWT_ISSUER",
         "JWT_AUDIENCE",
-        "NEWSAPI_KEY",
         "AUTH_COOKIE_NAME",
         "ALLOW_TEST",
         "SENTRY_DSN",
@@ -127,7 +112,6 @@
         "AI_EVALUATE_TIMEOUT_MS",
         "JEV_MODEL",
         "VERCEL_OIDC_TOKEN",
-        "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
         "DATABASE_URL",
@@ -182,7 +166,6 @@
         "JWT_AUDIENCE",
         "AI_PROVIDER",
         "ANTHROPIC_API_KEY",
-        "NEWSAPI_KEY",
         "NODE_ENV",
         "CI",
         "DATABASE_URL",
@@ -296,6 +279,10 @@
         "SKIP_BUILD"
       ]
     },
+    "@repo/db#db:start": {
+      "cache": false,
+      "env": ["SKIP_DB_START"]
+    },
     "dev": {
       "dependsOn": [],
       "cache": false,
@@ -318,13 +305,13 @@
       ]
     },
     "@repo/agents#dev": {
-      "dependsOn": [],
+      "dependsOn": ["@repo/db#db:start"],
       "cache": false,
       "persistent": true,
       "with": ["@repo/agents#eve:dev:chat"]
     },
     "@repo/agents#eve:dev:chat": {
-      "dependsOn": [],
+      "dependsOn": ["@repo/db#db:start"],
       "cache": false,
       "persistent": true
     }

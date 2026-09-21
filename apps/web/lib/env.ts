@@ -22,7 +22,6 @@ export const env = createEnv({
       .string()
       .default('api.yourapp.com')
       .transform(val => val.split(',').map(aud => aud.trim())),
-    NEWSAPI_KEY: z.string().optional(),
     AI_GATEWAY_API_KEY: z.string().min(1).optional(),
     JEV_MODEL: z.string().min(1).default('typesafe-ai/jev'),
     SENTRY_DSN: z.string().min(1).optional(),
@@ -54,7 +53,6 @@ export const env = createEnv({
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_ISSUER: process.env.JWT_ISSUER,
     JWT_AUDIENCE: process.env.JWT_AUDIENCE,
-    NEWSAPI_KEY: process.env.NEWSAPI_KEY,
     AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
     JEV_MODEL: process.env.JEV_MODEL,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,

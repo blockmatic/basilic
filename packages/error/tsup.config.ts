@@ -15,7 +15,6 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   outDir: 'dist',
-  noExternal: ['@repo/utils'],
-  // Utils are internal; logger from @repo/utils
-  external: ['@sentry/node', '@sentry/nextjs', '@sentry/browser', 'react', 'pino'],
+  // Package-name external does not match @repo/utils/logger/* subpaths.
+  external: ['@sentry/node', '@sentry/nextjs', '@sentry/browser', 'react', 'pino', /^@repo\/utils/],
 })

@@ -1,8 +1,10 @@
-import '#lib/host.js'
 import { defineAgent, defineDynamic } from 'eve'
 import { getProvider } from '#lib/provider.js'
 
 export default defineAgent({
+  build: {
+    externalDependencies: ['@repo/db', '@electric-sql/pglite', 'pg'],
+  },
   model: defineDynamic({
     events: {
       'step.started': () => {

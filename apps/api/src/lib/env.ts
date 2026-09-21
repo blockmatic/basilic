@@ -85,22 +85,34 @@ export const env = createEnv({
     PORT: z.coerce.number().int().positive().default(3001),
     HOST: z.string().default('0.0.0.0'),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    CI: z.coerce.boolean().default(false),
-    PGLITE: z.coerce.boolean().default(false),
+    CI: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, false)),
+    PGLITE: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, false)),
     DATABASE_URL: z
       .string()
       .optional()
       .transform(val => {
-        if (process.env.PGLITE === 'true' && !val) return 'postgresql://localhost/test'
+        if (parseBool(process.env.PGLITE, false) && !val) return 'postgresql://localhost/test'
         return val ?? ''
       })
-      .refine(val => (process.env.PGLITE !== 'true' ? val !== undefined && val.length > 0 : true), {
+      .refine(val => parseBool(process.env.PGLITE, false) || val.length > 0, {
         message: 'DATABASE_URL is required when PGLITE is not enabled',
       }),
     RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
     RATE_LIMIT_TIME_WINDOW: z.coerce.number().int().positive().default(60000),
-    TRUST_PROXY: z.coerce.boolean().default(true),
-    SECURITY_HEADERS_ENABLED: z.coerce.boolean().default(true),
+    TRUST_PROXY: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, true)),
+    SECURITY_HEADERS_ENABLED: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, true)),
     BODY_LIMIT: z.coerce.number().int().positive().default(1048576),
     REQUEST_TIMEOUT: z.coerce.number().int().positive().default(30000),
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).default('info'),
@@ -167,7 +179,10 @@ export const env = createEnv({
     DOCS_SITE_URL: z.string().url().default('https://basilic-docs.vercel.app'),
     EVE_COMMAND_URL: z.string().url().default('http://127.0.0.1:3004'),
     EVE_CHAT_URL: z.string().url().default('http://127.0.0.1:3005'),
-    ALLOW_TEST: z.coerce.boolean().default(false),
+    ALLOW_TEST: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, false)),
     // GitHub OAuth (optional - OAuth routes return 503 when unset)
     GITHUB_CLIENT_ID: z.string().min(1).optional(),
     GITHUB_CLIENT_SECRET: z.string().min(1).optional(),

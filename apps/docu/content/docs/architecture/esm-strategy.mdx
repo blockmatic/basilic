@@ -11,7 +11,7 @@ The same `@repo/*` graph is loaded by a bundler (Next: can compile TS) and by na
 
 **Pattern A** (`@repo/core`, `@repo/react`, `@repo/ui`): `import` points at `src/` in the workspace. Next.js lists them in `transpilePackages`. Workspace `build` is a no-op (`@repo/ui` never runs `tsup` locally).
 
-**Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`, `@repo/db`): `source` for bundlers → `src/` (except `@repo/db`, which omits `source` because Next must not import it); `node` / `import` / `default` for compiled `dist/` so serverless resolvers do not hit `ERR_MODULE_NOT_FOUND`. `@repo/db` keeps real schema `.ts` and `.sql` files (tsc emit, not a tsup schema bundle) so drizzle-kit can generate migrations.
+**Pattern B** (`@repo/utils`, `@repo/error`, `@repo/email`, `@repo/db`): `source` for bundlers → `src/` (except `@repo/db`, which omits `source` because Next must not import it); `node` / `import` / `default` for compiled `dist/` so serverless resolvers do not hit `ERR_MODULE_NOT_FOUND`. `@repo/db` keeps real schema `.ts` and `.sql` files (tsc emit, not a tsup schema bundle) so drizzle-kit can generate migrations. Pattern B `tsup` leaves sibling `@repo/*` packages external. `noExternal` follows `import` → `dist/` and races `pnpm dev` watchers that `clean` that folder. A package-name `external` entry does not match subpaths (`@repo/utils/logger/server`); use `/^@repo\/utils/`.
 
 **`@repo/cli`**: bin entry is `dist/` only (Node CLI, not imported by apps).
 

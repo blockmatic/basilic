@@ -211,6 +211,8 @@ Entrypoints:
 - `@repo/email/emails/*`
 - `@repo/email/render` (server-only)
 
+`pnpm --filter @repo/email dev` (port 3003) needs `@react-email/ui` at the same version as `react-email`.
+
 **Usage:**
 ```typescript
 import { WelcomeEmail } from '@repo/email/emails/welcome'

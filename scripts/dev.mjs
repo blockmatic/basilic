@@ -4,8 +4,7 @@
  * Schema and identity seed run on Fastify boot. Wipe remains `pnpm reset`.
  */
 import { spawnSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
@@ -16,30 +15,8 @@ export function envFlagIsTrue(value) {
   return value === '1' || value === 'true'
 }
 
-export function parseEnvFlag(text, key) {
-  if (!text) return undefined
-  for (const line of text.split(/\r?\n/)) {
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
-    const eq = trimmed.indexOf('=')
-    if (eq <= 0) continue
-    if (trimmed.slice(0, eq) !== key) continue
-    let value = trimmed.slice(eq + 1)
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    )
-      value = value.slice(1, -1)
-    return value
-  }
-}
-
-export function shouldSkipDbStart({ env = process.env, apiEnvText } = {}) {
-  return (
-    envFlagIsTrue(env.SKIP_DB_START) ||
-    envFlagIsTrue(env.PGLITE) ||
-    envFlagIsTrue(parseEnvFlag(apiEnvText, 'PGLITE'))
-  )
+export function turboChildEnv({ env = process.env } = {}) {
+  return { ...env, SKIP_DB_START: '1' }
 }
 
 export function turboDevCommand({ extraArgs = [] } = {}) {
@@ -49,12 +26,6 @@ export function turboDevCommand({ extraArgs = [] } = {}) {
   }
 }
 
-function readApiEnvText() {
-  const envPath = join(repoRoot, 'apps/api/.env')
-  if (!existsSync(envPath)) return undefined
-  return readFileSync(envPath, 'utf8')
-}
-
 function isMain() {
   const entry = process.argv[1]
   if (!entry) return false
@@ -62,21 +33,25 @@ function isMain() {
 }
 
 function main() {
-  if (!shouldSkipDbStart({ apiEnvText: readApiEnvText() })) {
+  if (!envFlagIsTrue(process.env.SKIP_DB_START)) {
     const db = spawnSync('pnpm', ['--filter', '@repo/db', 'db:start'], {
       cwd: repoRoot,
       stdio: 'inherit',
     })
     if (db.status !== 0) {
       console.error(
-        '\nFailed to start local Postgres. Start Docker Desktop, then run `pnpm db:start`.\nSet SKIP_DB_START=1 to skip (or PGLITE=true).\n',
+        '\nFailed to start local Postgres. Start Docker Desktop, then run `pnpm db:start`.\nSet SKIP_DB_START=1 to skip.\n',
       )
       process.exit(db.status ?? 1)
     }
   }
 
   const { cmd, args } = turboDevCommand({ extraArgs: process.argv.slice(2) })
-  const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: 'inherit' })
+  const result = spawnSync(cmd, args, {
+    cwd: repoRoot,
+    stdio: 'inherit',
+    env: turboChildEnv(),
+  })
   process.exit(result.status ?? 1)
 }
 

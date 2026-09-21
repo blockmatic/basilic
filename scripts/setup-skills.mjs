@@ -170,16 +170,7 @@ function main() {
     restoreOwned({ names, skillsDir, stashDir })
   }
 
-  const installed = JSON.parse(readFileSync(lockPath, 'utf8'))
-  if (process.env.BASILIC_SKILLS_WRITE_LOCK === '1') {
-    for (const [name, skill] of Object.entries(installed.skills ?? {})) {
-      if (skill.sourceType !== 'local') continue
-      skill.source = basilicCatalog
-      skill.sourceType = 'github'
-      if (!skill.skillPath) skill.skillPath = `skills/${name}/SKILL.md`
-    }
-    writeFileSync(lockPath, `${JSON.stringify(installed, null, 2)}\n`)
-  } else writeFileSync(lockPath, snapshot)
+  writeFileSync(lockPath, snapshot)
 
   pruneForeignSkills({ names, extraNames, skillsDir })
 }
