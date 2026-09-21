@@ -214,6 +214,8 @@ Frontend consumes the API via generated clients:
 
 The Fastify host serves unauthenticated `/llms.txt`, `/robots.txt`, `/sitemap.xml`, `/.well-known/api-catalog` (RFC 9727), and live `GET /openapi.json`. Current paths and landing contract: [API Architecture](/docs/architecture/api). Basilic does not ship a product MCP server — see [Superseded claims](#superseded-claims).
 
+The public agent contract on this scored host remains OpenAPI plus `@repo/core`. Durable agents run on **eve**, a separate host ([ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime), [Eve](/docs/architecture/eve)). Do not advertise `/eve/` or `/mcp` from `llms.txt`. Eve is not in the tree until E1. Product MCP is not this change.
+
 ## Multi-Language SDK Strategy
 
 **Architecture**: Fastify Routes → OpenAPI Spec → Generated Clients
@@ -259,3 +261,5 @@ Some bullets below overstate what Hey API generates today:
 - [API Architecture](/docs/architecture/api) - OpenAPI generation workflow
 - [API Development](/docs/architecture/api) - Fastify and OpenAPI implementation
 - [Package Conventions](/docs/development/package-conventions) - Client package structure
+- [ADR 014: Fastify, eve, and Vercel runtime](/docs/adrs/014-fastify-eve-vercel-runtime) - eve sibling host, still no product MCP
+- [Eve](/docs/architecture/eve) - durable agent runtime (queued until E1)

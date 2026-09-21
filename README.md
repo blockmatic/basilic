@@ -95,7 +95,7 @@ Run with `pnpm <script>`.
 
 ## Documentation
 
-The Fastify API host exposes unauthenticated `/llms.txt`, live `/openapi.json`, and `/.well-known/api-catalog` (RFC 9727). Agents use the OpenAPI spec, `@repo/core`, and `@repo/cli`. There is no product MCP. Paths and landing contract: [API architecture](https://basilic-docs.vercel.app/docs/architecture/api).
+The Fastify API host exposes unauthenticated `/llms.txt`, live `/openapi.json`, and `/.well-known/api-catalog` (RFC 9727). Agents use the OpenAPI spec, `@repo/core`, and `@repo/cli`. There is no product MCP. Durable agents run on eve, a sibling host (queued until E1) — [runtime ADR](https://basilic-docs.vercel.app/docs/adrs/014-fastify-eve-vercel-runtime). Paths and landing contract: [API architecture](https://basilic-docs.vercel.app/docs/architecture/api).
 
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 

@@ -164,6 +164,7 @@ We will use **Node.js LTS** as our runtime and **Fastify** as our backend API fr
 
 - **Deployment flexibility**: Fastify runs as standard Node.js process with no platform-specific code
 - **Shipped path**: Vercel + Fastify. GCP/AWS remain an unresolved **adopter** choice, not Basilic’s destination.
+- **Vercel runtime**: Fastify on Vercel is one Function + Fluid Compute. Do not move the core API to Edge Runtime. Eve is a **sibling** runtime on a separate host, not a Fastify replacement — [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
 - **Migration path**: application code stays portable via Node + Fastify; changing hosts is an Operations/adopter decision
 - Consider framework-agnostic patterns when building shared utilities
 - OpenAPI generation via `@fastify/swagger` enables AI tool integration and typed SDK generation
@@ -177,3 +178,4 @@ We will use **Node.js LTS** as our runtime and **Fastify** as our backend API fr
 - [API Architecture](/docs/architecture/api) - REST API with OpenAPI generation and client generation
 - [Portability Strategy](/docs/architecture/portability) - Zero vendor lock-in architecture and migration paths
 - [ADR 009: API Architecture](/docs/adrs/009-api-architecture) - API architecture and client generation decisions
+- [ADR 014: Fastify, eve, and Vercel runtime](/docs/adrs/014-fastify-eve-vercel-runtime) - sibling eve host, Fluid Compute, Node/container exit

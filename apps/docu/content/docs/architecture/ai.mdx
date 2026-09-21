@@ -1,9 +1,18 @@
 ---
 title: "AI"
-description: "Fastify /ai routes, providers, streaming, and the web catalog contract. The dashboard does not mount this assistant."
+description: "Four planes, Fastify /ai/* control-plane APIs, and the GenUI split. Durable agents are eve — not in the tree until E1."
 ---
 
-Fastify `/ai/*` is **API chrome**, not the Product Ready bar and not the product spine. The dashboard composer lives on the coin board and does not call these routes. Auth is the shipped demo job. Agent **skills** (`AGENTS.md`, Basilic `/w-*`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
+Four planes:
+
+- **Control** — Fastify product HTTP. `POST /ai/generate` stays. `POST /ai/chat` is demo chrome scheduled to retire once eve command and chat agents land.
+- **Interaction and execution** — eve on a separate host. **Queued until E1** — [Eve](/docs/architecture/eve). Not a Fastify proxy. No coordinator agent.
+- **Domain** — `@repo/db` named functions; market HTTP still `apps/api/src/lib/markets/` until extract to `@repo/markets`. Next keeps `@repo/core`.
+- **Presentation** — json-render on Next. `composeSurface` in `apps/web/lib/genui` builds Specs. Board chrome lives on [Frontend](/docs/architecture/frontend).
+
+Models are implementation details; agents are product capabilities (`command`, `chat`). `getProvider()` resolves Fastify language models. Jev (`getEvaluationModel` / `experimental_evaluate`) **judges** refuse / canned / surface and is **not in the tree** until it lands on eve. Jev does not author json-render trees. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
+
+Fastify `/ai/*` is **control-plane API chrome**, not the Product Ready bar and not the durable agent runtime. Agent **skills** (`AGENTS.md`, Basilic `/w-*`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
 
 The Fastify API exposes two AI endpoints under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; route files in `apps/api/src/routes/ai/` are thin handlers (schema + auth + delegation). The browser talks to Fastify directly (Bearer). There is no Next.js AI BFF.
 
@@ -13,8 +22,8 @@ There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store,
 
 | Route | Use case | Response |
 |-------|----------|----------|
-| `POST /ai/chat` | Web assistant, multi-turn messages, tools | JSON `{ text }` or UI-message SSE |
-| `POST /ai/generate` | CLI, scripts, single prompt | JSON `{ text }` or UI-message SSE |
+| `POST /ai/chat` | Demo chrome: multi-turn messages, tools. Retire after eve command+chat | JSON `{ text }` or UI-message SSE |
+| `POST /ai/generate` | CLI, scripts, single prompt. **Stays** | JSON `{ text }` or UI-message SSE |
 
 Both require Bearer auth (session JWT or API key). Set `Accept: text/event-stream` or `stream: true` for SSE. Generate is prompt-only (no tools).
 
@@ -65,13 +74,11 @@ File parts in UIMessage payloads must use `data:` URLs only (`maxLength` 2048). 
 
 Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`.
 
-## Web catalog contract
+## Fastify chat tools (demo chrome)
 
-The dashboard does not mount a Fastify assistant. Home is the coin board: spoken-query chips write nuqs `SearchQuery` and clear `q`; Commands | Chat chrome stays on the same client island. Canned **Who am I?** in Commands writes `surface=account` and keeps `q` (not a chip, not `POST /ai/chat`). Share copies `location.href`. Typed Send is disabled (`agent not wired`) until G-cmd. Do not wire `useChatFromConfig` from the dashboard.
+The dashboard does not mount this assistant. Presentation (board Spec, `composeSurface`) is [Frontend](/docs/architecture/frontend). Do not wire `useChatFromConfig` from the dashboard.
 
-`POST /ai/chat` stays on Fastify. Catalogs `user-info-catalog.tsx` and `market-card-catalog.tsx` remain for G1.
-
-**Demo jobs (API tools, not dashboard UI):** `getAccountInfo` (`__render: 'user-info'`) and `getMarketSnapshot` (`__render: 'market-card'`). `braveSearch` is optional and not a demo completion job.
+**Demo jobs (API tools, not dashboard UI):** `getAccountInfo` (`__render: 'user-info'`) and `getMarketSnapshot` (`__render: 'market-card'`). `braveSearch` is optional and not a demo completion job. Matching catalogs live under `apps/web/components/assistant`. There is no GenUI CTA (`actions: {}`).
 
 `getAccountInfo` output:
 
@@ -85,8 +92,6 @@ The dashboard does not mount a Fastify assistant. Home is the coin board: spoken
 { "__render": "market-card", "spec": { "root": "...", "elements": { ... } }, "summary": "..." }
 ```
 
-G1 matches `tool-getAccountInfo` → `user-info-catalog.tsx` and `tool-getMarketSnapshot` → `market-card-catalog.tsx`. Do not rename a tool or change the output shape without updating those catalogs. There is no GenUI CTA (`actions: {}`). Product analytics still records `assistant_turn` with `accountRender` when the account surface is present. See [Product analytics](/docs/architecture/analytics).
-
 `getMarketSnapshot` calls `getMarkets` (the same in-process cache as JWT `GET /coins`). On 429 or network failure it returns checked-in fixture rows so fork-and-run does not need a CoinGecko key. Card `source` is `live` or `fixture` (never `mock`).
 
 Multi-turn history for `POST /ai/chat` is the request `messages` array only — nothing is persisted.
@@ -98,10 +103,13 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 ## Testing
 
 - **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): `test/utils/ai-remote.ts` skips **402** only when the response is `INSUFFICIENT_CREDITS` (quota is infra). Skips 502/504/connection only when `ANTHROPIC_API_KEY` is missing or placeholder `sk-ant-xxx`. A real key → 502 fails the suite.
-- **Web E2E** (`dashboard.spec.ts`): chromium covers chip “What moved?”, `?sidebar=close`, `?rail=chat`, chip URLs without `q`, Share copy, `?surface=account` vs chip “What's on my list?”, and canned Who am I?. There is no chat Playwright project. See [E2E Testing](/docs/testing/e2e-testing).
+- Board chrome and `composeSurface` tests: [Frontend](/docs/architecture/frontend) and [E2E Testing](/docs/testing/e2e-testing). There is no chat Playwright project.
 
 ## Related
 
+- [ADR 014: Fastify, eve, and Vercel runtime](/docs/adrs/014-fastify-eve-vercel-runtime)
+- [Eve](/docs/architecture/eve) — durable runtime (not in tree until E1)
+- [Frontend](/docs/architecture/frontend) — presentation plane, `composeSurface`
 - [AI Workflow](/docs/development/ai-workflow) — skills (`AGENTS.md`, Basilic `/w-*`)
 - [Self-Hosted LLM](/docs/deployment/self-hosted-llm) — Ollama ops
 - [Vercel Deployment](/docs/deployment/vercel) — env vars for hosted API
