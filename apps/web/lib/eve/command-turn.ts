@@ -4,21 +4,9 @@ import { coreClient } from '@/app/providers'
 import { getAuthToken, refreshSessionViaNext } from '@/lib/auth/auth-client'
 import type { SearchQueryState } from '@/lib/coins/search-query'
 import { viewConfigFromEvents } from './parse-view'
-import { eventsFromNdjson, joinEveUrl } from './session-http'
+import { isEveHttpError, postEveSession, readStreamEvents } from './session-http'
 
 const commandSessionKey = 'basilic.board.commandSession'
-const sessionPath = '/eve/v1/session'
-const sessionIdHeader = 'x-eve-session-id'
-
-function eveHttpError({ status, body }: { status: number; body: string }) {
-  const error = new Error(body || `eve HTTP ${status}`) as Error & { status: number }
-  error.status = status
-  return error
-}
-
-function isEveHttpError(error: unknown): error is Error & { status: number } {
-  return error instanceof Error && 'status' in error && typeof error.status === 'number'
-}
 
 async function commandEndpoint() {
   const agents = await coreClient.listAgents()
@@ -29,27 +17,6 @@ async function commandEndpoint() {
 
 async function bearerToken() {
   return (await getAuthToken()) ?? ''
-}
-
-async function readStreamEvents({
-  host,
-  token,
-  sessionId,
-}: {
-  host: string
-  token: string
-  sessionId: string
-}) {
-  const response = await fetch(
-    joinEveUrl({ host, path: `${sessionPath}/${encodeURIComponent(sessionId)}/stream` }),
-    {
-      cache: 'no-store',
-      headers: { authorization: `Bearer ${token}` },
-      redirect: 'manual',
-    },
-  )
-  if (!response.ok) throw eveHttpError({ status: response.status, body: await response.text() })
-  return eventsFromNdjson({ text: await response.text() })
 }
 
 async function postTurn({
@@ -65,26 +32,16 @@ async function postTurn({
   prompt: string
   boardQuery: SearchQueryState
 }) {
-  const path = sessionId ? `${sessionPath}/${encodeURIComponent(sessionId)}` : sessionPath
-  const response = await fetch(joinEveUrl({ host, path }), {
-    method: 'POST',
-    redirect: 'manual',
-    headers: {
-      authorization: `Bearer ${token}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ message: prompt, clientContext: { boardQuery } }),
+  const posted = await postEveSession({
+    host,
+    token,
+    sessionId,
+    body: { message: prompt, clientContext: { boardQuery } },
   })
-  if (!response.ok) throw eveHttpError({ status: response.status, body: await response.text() })
-  const json = (await response.json()) as { sessionId?: unknown }
-  const nextSessionId =
-    (typeof json.sessionId === 'string' ? json.sessionId : undefined) ??
-    response.headers.get(sessionIdHeader)?.trim()
-  if (!nextSessionId) throw new Error('command session did not return a session id')
-  const events = await readStreamEvents({ host, token, sessionId: nextSessionId })
+  const events = await readStreamEvents({ host, token, sessionId: posted.sessionId })
   if (events.some(event => event.type === 'session.failed'))
     throw new Error('command session failed')
-  return { sessionId: nextSessionId, events }
+  return { sessionId: posted.sessionId, events }
 }
 
 async function sendWithRefresh(args: {

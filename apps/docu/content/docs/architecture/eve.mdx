@@ -9,7 +9,7 @@ The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` o
 
 ## Session model
 
-Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The Commands rail talks to eve `command` with JWT `GET /agents` then `fetch` to `POST /eve/v1/session` (not `eve/client` — that entry is not webpack-safe). Chat UI still lands later.
+Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The Commands rail talks to eve `command` with JWT `GET /agents` then `fetch` to `POST /eve/v1/session` (not `eve/client` — that entry is not webpack-safe). The Chat tab uses the same hop against eve `chat`.
 
 ## Hosts
 

@@ -1,5 +1,6 @@
 import { PGlite } from '@electric-sql/pglite'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { getAccountSnapshot } from './account-snapshot.js'
 import { listAssets } from './assets.js'
 import { closeDb, configureDb, getDb, resetDbInstance } from './client.js'
 import { runMigrations } from './migrate.js'
@@ -16,7 +17,14 @@ async function seedIdentityRows() {
   const db = await getDb()
   const now = new Date()
   await db.insert(users).values([
-    { id: userA, email: 'a@test.ai', emailVerified: true, createdAt: now, updatedAt: now },
+    {
+      id: userA,
+      email: 'a@test.ai',
+      name: 'Ada',
+      emailVerified: true,
+      createdAt: now,
+      updatedAt: now,
+    },
     { id: userB, email: 'b@test.ai', emailVerified: true, createdAt: now, updatedAt: now },
   ])
   await db.insert(assets).values([
@@ -114,6 +122,16 @@ describe('named db fns', () => {
     const { watches: watchesB } = await listWatches({ userId: userB })
     expect(watchesA).toEqual([])
     expect(watchesB.map(row => row.assetId)).toEqual([bitcoin])
+  })
+
+  it('getAccountSnapshot returns only that user profile', async () => {
+    const { account: accountA } = await getAccountSnapshot({ userId: userA })
+    const { account: accountB } = await getAccountSnapshot({ userId: userB })
+    expect(accountA?.email).toBe('a@test.ai')
+    expect(accountA?.name).toBe('Ada')
+    expect(accountB?.email).toBe('b@test.ai')
+    expect(accountB?.name).toBeNull()
+    expect(await getAccountSnapshot({ userId: 'missing' })).toEqual({ account: null })
   })
 
   it('getValidSession returns the row only when sid, expiry, and userId match', async () => {

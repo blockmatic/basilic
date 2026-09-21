@@ -35,6 +35,7 @@ Command binds **3004**. Chat binds **3005**. Root `pnpm dev` does not start eve 
 - `pnpm --filter @repo/agents eve:build` — `eve build`
 - `pnpm --filter @repo/agents eve:start` — `eve start --port 3004`
 - `pnpm --filter @repo/agents eve:eval` — command `eve eval` (skipIf no language-model key; not default CI)
+- `pnpm --filter @repo/agents eve:eval:chat` — chat `eve eval` (skipIf no language-model key; not default CI)
 - `pnpm --filter @repo/agents checktypes`
 - `pnpm --filter @repo/agents lint:eslint`
 - `pnpm --filter @repo/agents test`
@@ -46,7 +47,7 @@ pnpm --filter @repo/agents eve:dev
 curl -sS http://127.0.0.1:3004/eve/v1/health
 ```
 
-Session routes need a Fastify access JWT. Command turns use `getCommandModel()` (Anthropic → OpenRouter → Ollama). Jev `evaluateBoardTurn` runs first when Gateway credentials exist; refuse/canned/surface can skip Haiku. Runtime skill: `agents/command/agent/skills/view-config.md`. Evals: `agents/command/evals/*.eval.ts`.
+Session routes need a Fastify access JWT. Command and chat turns use `getProvider()` (Anthropic → OpenRouter → Ollama). Jev `evaluateBoardTurn` runs first on **command** when Gateway credentials exist; refuse/canned/surface can skip Haiku. Chat does not run Jev. Runtime skill: `agents/command/agent/skills/view-config.md`. Command evals: `agents/command/evals/*.eval.ts`. Chat evals: `agents/chat/evals/*.eval.ts`.
 
 Jev factory: `getEvaluationModel()` is `null` without `AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN`. Optional `JEV_MODEL` (default `typesafe-ai/jev`) and `AI_EVALUATE_TIMEOUT_MS`. Unit tests: `pnpm --filter @repo/agents test` (live Gateway is skipped unless `AI_GATEWAY_API_KEY` is set). `eve eval` is not in packages CI.
 

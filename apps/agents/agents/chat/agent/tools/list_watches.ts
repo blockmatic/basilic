@@ -5,9 +5,6 @@ import { userIdFromCtx } from '#lib/principal.js'
 
 export default defineTool({
   description: "List the caller's own coin watches. Read-only.",
-  inputSchema: z.object({
-    boardQuery: z.string().optional(),
-    viewConfig: z.record(z.string(), z.unknown()).optional(),
-  }),
+  inputSchema: z.object({}),
   execute: (_input, ctx) => listWatches({ userId: userIdFromCtx({ ctx }) }),
 })

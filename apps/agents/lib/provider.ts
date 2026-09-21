@@ -16,7 +16,7 @@ export function getResolvedCommandProvider(): CommandProvider | null {
   return null
 }
 
-export function getCommandModel(): LanguageModel | null {
+export function getProvider(): LanguageModel | null {
   const provider = getResolvedCommandProvider()
   if (!provider) return null
   if (provider === 'anthropic') {
@@ -33,3 +33,5 @@ export function getCommandModel(): LanguageModel | null {
   if (!apiKey) return null
   return createOpenRouter({ apiKey }).chat(env.AI_DEFAULT_MODEL ?? 'anthropic/claude-haiku-4.5')
 }
+
+export const getCommandModel = getProvider

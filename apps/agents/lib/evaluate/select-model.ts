@@ -1,6 +1,6 @@
 import type { JSONValue } from 'ai'
 import { env } from '../env.js'
-import { getCommandModel } from '../provider.js'
+import { getProvider } from '../provider.js'
 import { evaluateBoardTurn } from './board-turn.js'
 import { finishLanguageModel, setViewLanguageModel } from './canned-model.js'
 import { resolveCommandTurn } from './resolve.js'
@@ -91,7 +91,7 @@ export async function selectCommandLanguageModel({ messages }: { messages: Model
         modelContextWindowTokens: 8_192,
       }
   }
-  const model = getCommandModel()
+  const model = getProvider()
   if (!model) throw new Error('command language model is not configured')
   return { model, modelContextWindowTokens: 200_000 }
 }
