@@ -19,7 +19,7 @@ node scripts/run-qa.mjs
 
 ### `dev.mjs`
 
-Root `pnpm dev` entry. Ensures local Postgres (`pnpm --filter @repo/db db:start`) unless `SKIP_DB_START=1` or `PGLITE=true`, then runs Turbo TUI (`dev`, including eve chat via `@repo/agents#dev` `with`) at `--concurrency=20`. Schema and identity seed run on API boot.
+Root `pnpm dev` entry. Starts local Postgres (`pnpm --filter @repo/db db:start`) unless `SKIP_DB_START=1`, then Turbo TUI with `SKIP_DB_START=1` so the eve `db:start` wait is a no-op. Schema and identity seed run on API boot.
 
 ```bash
 pnpm dev
@@ -66,7 +66,7 @@ Runs during `postpack` lifecycle hook (after packing):
 
 ### `setup-skills.mjs`
 
-Installs `blockmatic/basilic-skills --all` and any other allowed lock catalogs (`miqdadbadjuber/anti-slop`, `jakubkrehel/make-interfaces-feel-better`) with `--skill <name> -y --agent '*'` so extra catalogs are non-interactive, stashes committed stack skills so the CLI cannot wipe them, then restores `skills-lock.json`. Set `BASILIC_SKILLS_WRITE_LOCK=1` to keep the generated lock (rewrites local basilic-skills sources to GitHub). Fails if the lock is missing, lists an unsupported GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks add `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`. On Windows the script runs `pnpm.cmd` through a shell because Node cannot spawn `.cmd` shims without one.
+Installs `blockmatic/basilic-skills --all` and any other allowed lock catalogs (`miqdadbadjuber/anti-slop`, `jakubkrehel/make-interfaces-feel-better`) with `--skill <name> -y --agent '*'` so extra catalogs are non-interactive, stashes committed stack skills so the CLI cannot wipe them, then restores `skills-lock.json`. Fails if the lock is missing, lists an unsupported GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks add `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`. On Windows the script runs `pnpm.cmd` through a shell because Node cannot spawn `.cmd` shims without one. Refresh hashes with `npx skills add`, then commit the lock.
 
 ```bash
 pnpm setup:skills

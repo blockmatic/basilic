@@ -16,10 +16,12 @@ Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive st
 | Host | What runs |
 | --- | --- |
 | Default | Separate Vercel project: Workflow + Sandbox. Fastify stays Function + Fluid on its own project. This queue has not added that Vercel project. |
-| Local | Root `pnpm dev` starts command (**3004**) and chat (**3005**) as TUI panes. Manual: `pnpm --filter @repo/agents eve:dev` / `eve:dev:chat`. Health: `GET /eve/v1/health`. |
+| Local | Root `pnpm dev` starts command (**3004**) and chat (**3005**) as TUI panes after `@repo/db#db:start`. Manual: `pnpm --filter @repo/agents eve:dev` / `eve:dev:chat`. Health: `GET /eve/v1/health`. `PGLITE=false` is local Postgres. |
 | Exit | `eve build` → Nitro `.output/`, then `eve start`. Ordinary Node / container. Not `vercel()` sandbox as the only self-host path. Local Workflow data is `.eve/.workflow-data`. |
 
 Keep `/eve/` and `/.well-known/workflow/` un-rewritten behind a reverse proxy. Nitro is eve’s build and server, not Basilic’s product API and not an identity provider.
+
+Command and chat `defineAgent` set `build.externalDependencies` to `@repo/db`, `@electric-sql/pglite`, and `pg`. Eve must not bundle PGLite into authored modules (WASM / `eval`). `bootHost` runs from the HTTP channel, not `agent.ts`, so eve can read that list before it evaluates `@repo/db`. It is once-per-process: `eve dev` re-evaluates the compiled channel after listen, and a second eval must not construct PGLite (Node 24 V8 `Check failed: end > addr`).
 
 ## Domain logic
 

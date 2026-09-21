@@ -15,7 +15,6 @@ const qaBuildEnv = process.env.JWT_SECRET
   ? undefined
   : { JWT_SECRET: 'qa-build-placeholder-min-32-chars-to-pass-validation' }
 
-const skipTests = process.env.QA_SKIP_TESTS === '1' || process.env.QA_SKIP_TESTS === 'true'
 const hasNodeModules = existsSync(join(repoRoot, 'node_modules'))
 
 const phases = [
@@ -52,26 +51,22 @@ const phases = [
     args: ['build'],
     env: { ...qaBuildEnv, NEXT_PUBLIC_API_URL: 'http://localhost:3001' },
   },
-  ...(skipTests
-    ? []
-    : [
-        {
-          name: 'test:scripts',
-          cmd: 'pnpm',
-          args: ['test:scripts'],
-        },
-        {
-          name: 'test',
-          cmd: 'pnpm',
-          args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'],
-        },
-        {
-          name: 'test:e2e',
-          cmd: 'pnpm',
-          args: ['test:e2e'],
-          env: { SKIP_BUILD: '1', ...qaBuildEnv, NEXT_PUBLIC_API_URL: 'http://localhost:3001' },
-        },
-      ]),
+  {
+    name: 'test:scripts',
+    cmd: 'pnpm',
+    args: ['test:scripts'],
+  },
+  {
+    name: 'test',
+    cmd: 'pnpm',
+    args: ['exec', 'turbo', 'run', 'test', '--concurrency=100%'],
+  },
+  {
+    name: 'test:e2e',
+    cmd: 'pnpm',
+    args: ['test:e2e'],
+    env: { SKIP_BUILD: '1', ...qaBuildEnv, NEXT_PUBLIC_API_URL: 'http://localhost:3001' },
+  },
 ]
 
 for (const { name, cmd, args, env } of phases) {

@@ -9,6 +9,21 @@ describe('command tools', () => {
   })
 })
 
+describe('eve authored modules', () => {
+  it('keeps PGLite and Postgres packages external', () => {
+    for (const agent of ['command', 'chat'] as const) {
+      const source = readFileSync(
+        new URL(`../agents/${agent}/agent/agent.ts`, import.meta.url),
+        'utf8',
+      )
+      expect(source, agent).not.toContain('#lib/host')
+      expect(source, agent).toContain(
+        "externalDependencies: ['@repo/db', '@electric-sql/pglite', 'pg']",
+      )
+    }
+  })
+})
+
 describe('chat tools', () => {
   it('sources do not call markets, Alchemy, or drizzle schema', () => {
     const dir = new URL('../agents/chat/agent/tools/', import.meta.url)

@@ -145,7 +145,7 @@ await emailService.send({
 
 ### Development Server
 
-Preview and develop email templates locally. Run from monorepo root: `pnpm --filter @repo/email dev` (port 3003), `pnpm --filter @repo/email build`, `pnpm --filter @repo/email start`. See Scripts below.
+Preview and develop email templates locally. Run from monorepo root: `pnpm --filter @repo/email dev` (port 3003), `pnpm --filter @repo/email build`, `pnpm --filter @repo/email start`. Preview CLI needs `@react-email/ui` at the same version as `react-email`.
 
 ## Troubleshooting
 

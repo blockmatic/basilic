@@ -1,3 +1,4 @@
+import '#lib/host.js'
 import { ForbiddenError, localDev, vercelOidc } from 'eve/channels/auth'
 import { defaultEveAuth, eveChannel } from 'eve/channels/eve'
 import { basilicAccessJwt } from './auth.js'

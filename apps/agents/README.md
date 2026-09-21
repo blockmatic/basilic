@@ -26,7 +26,7 @@ Local Workflow data is `.eve/.workflow-data` (gitignored). CI does not run live 
 
 ## Ports
 
-Command binds **3004**. Chat binds **3005**. Root `pnpm dev` starts both as Turbo TUI panes (`@repo/agents#dev`, `@repo/agents#eve:dev:chat`). `bootHost` applies Drizzle migrations on start (same advisory lock as Fastify). Generated projects omit this app.
+Command binds **3004**. Chat binds **3005**. Root `pnpm dev` starts both after `@repo/db#db:start`. `bootHost` runs from the HTTP channel (once per process — `eve dev` re-evaluates the compiled channel after listen) and applies Drizzle migrations on start. Local default is `PGLITE=false` plus `DATABASE_URL`. A second eval must not construct PGLite: Node 24 V8 aborts (`Check failed: end > addr`) when that WASM is torn down. Both agents set `build.externalDependencies` to `@repo/db`, `@electric-sql/pglite`, and `pg`. Generated projects omit this app.
 
 ## pnpm commands
 

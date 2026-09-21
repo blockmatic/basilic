@@ -12,7 +12,7 @@ Drizzle PostgreSQL schema, client factory, and named data-access functions. Fast
 
 Call `configureDb({ databaseUrl, pglite, pgliteInstance })` from the host env. The package does not import Fastify `env` or the api test harness.
 
-Local Docker Postgres is `pnpm db:start` (Supabase CLI in this package). `dev` is `tsc --watch` so Fastify and eve pick up `dist/` changes. Identity seed stays in `apps/api`.
+Local Docker Postgres is `pnpm db:start` (Supabase CLI in this package; no-op when `SKIP_DB_START=1`). `dev` is `tsc --watch` so Fastify and eve pick up `dist/` changes. Identity seed stays in `apps/api`.
 
 ## Scripts
 

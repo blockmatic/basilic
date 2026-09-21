@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { envFlagIsTrue, parseEnvFlag, shouldSkipDbStart, turboDevCommand } from './dev.mjs'
+import { envFlagIsTrue, turboChildEnv, turboDevCommand } from './dev.mjs'
 
 test('envFlagIsTrue accepts 1 and true only', () => {
   assert.equal(envFlagIsTrue('true'), true)
@@ -10,19 +10,9 @@ test('envFlagIsTrue accepts 1 and true only', () => {
   assert.equal(envFlagIsTrue(undefined), false)
 })
 
-test('parseEnvFlag reads unquoted and quoted keys and ignores comments', () => {
-  const text = ['# PGLITE=true', 'PGLITE=false', 'DATABASE_URL=postgres://x'].join('\n')
-  assert.equal(parseEnvFlag(text, 'PGLITE'), 'false')
-  assert.equal(parseEnvFlag('PGLITE="true"\n', 'PGLITE'), 'true')
-  assert.equal(parseEnvFlag(undefined, 'PGLITE'), undefined)
-})
-
-test('shouldSkipDbStart honors SKIP_DB_START, PGLITE env, and api .env', () => {
-  assert.equal(shouldSkipDbStart({ env: { SKIP_DB_START: '1' } }), true)
-  assert.equal(shouldSkipDbStart({ env: { PGLITE: 'true' } }), true)
-  assert.equal(shouldSkipDbStart({ env: {}, apiEnvText: 'PGLITE=true\n' }), true)
-  assert.equal(shouldSkipDbStart({ env: {}, apiEnvText: 'PGLITE=false\n' }), false)
-  assert.equal(shouldSkipDbStart({ env: {} }), false)
+test('turboChildEnv sets SKIP_DB_START for the Turbo child only', () => {
+  assert.equal(turboChildEnv({ env: { PATH: '/bin' } }).SKIP_DB_START, '1')
+  assert.equal(turboChildEnv({ env: { SKIP_DB_START: '1', PATH: '/bin' } }).SKIP_DB_START, '1')
 })
 
 test('turboDevCommand runs turbo dev at high concurrency', () => {

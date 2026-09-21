@@ -44,7 +44,7 @@ pnpm dev
 pnpm dev
 ```
 
-Ensures Docker Postgres is up (skip with `SKIP_DB_START=1` or `PGLITE=true`), then starts Turborepo's TUI — the same left-pane task list as `pnpm lint:eslint` / `pnpm test`. Click or arrow-key between logs. Ctrl-C stops Node watchers; Postgres stays up until `pnpm db:stop`.
+Ensures Docker Postgres is up, then starts Turborepo's TUI — the same left-pane task list as `pnpm lint:eslint` / `pnpm test`. Eve `dev` waits on `@repo/db#db:start`. Skip Docker with `SKIP_DB_START=1` (use that for PGLite-only generated apps). Click or arrow-key between logs. Ctrl-C stops Node watchers; Postgres stays up until `pnpm db:stop`.
 
 This repo's TUI includes API (http://localhost:3001, `GET /health`, `/reference`), web (http://localhost:3000 — login `test@test.ai`), eve command (http://localhost:3004/eve/v1/health), eve chat (http://localhost:3005/eve/v1/health), docs (http://localhost:3002), email preview (http://localhost:3003), and Pattern B package watchers. Mobile stays `pnpm --filter @repo/mobile start`. Generated projects omit `apps/agents` and `apps/docu`.
 

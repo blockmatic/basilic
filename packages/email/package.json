@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "@react-email/preview-server": "5.2.10",
+    "@react-email/ui": "6.9.5",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^24.13.5",

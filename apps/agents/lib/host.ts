@@ -5,10 +5,18 @@ import { configureOnchain } from '@repo/onchain'
 import { logger } from '@repo/utils/logger/server'
 import { env } from './env.js'
 
+type HostGlobal = typeof globalThis & { __basilicEveHostBoot?: Promise<void> }
+
 export async function bootHost(): Promise<void> {
+  const g = globalThis as HostGlobal
+  g.__basilicEveHostBoot ??= startHost()
+  return g.__basilicEveHostBoot
+}
+
+async function startHost(): Promise<void> {
   configureDb({
     databaseUrl: env.DATABASE_URL,
-    pglite: env.PGLITE,
+    pglite: env.PGLITE === true,
   })
   configureMarkets({
     coinGeckoDemoApiKey: env.COINGECKO_DEMO_API_KEY,

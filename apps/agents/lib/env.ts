@@ -19,15 +19,18 @@ const jwtSecretSchema = isProduction
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    PGLITE: z.coerce.boolean().default(false),
+    PGLITE: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, false)),
     DATABASE_URL: z
       .string()
       .optional()
       .transform(val => {
-        if (process.env.PGLITE === 'true' && !val) return 'postgresql://localhost/test'
+        if (parseBool(process.env.PGLITE, false) && !val) return 'postgresql://localhost/test'
         return val ?? ''
       })
-      .refine(val => (process.env.PGLITE !== 'true' ? val !== undefined && val.length > 0 : true), {
+      .refine(val => parseBool(process.env.PGLITE, false) || val.length > 0, {
         message: 'DATABASE_URL is required when PGLITE is not enabled',
       }),
     JWT_SECRET: jwtSecretSchema,

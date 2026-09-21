@@ -42,6 +42,7 @@
     "@repo/eslint-config": "workspace:*",
     "@types/node": "^24.13.5",
     "eslint": "^10.10.0",
+    "microsandbox": "^0.7.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vitest": "^5.0.1"
   }
