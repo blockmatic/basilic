@@ -10,7 +10,7 @@ Four planes:
 - **Domain** — `@repo/db` named functions and `@repo/markets` vendor HTTP. Next keeps `@repo/core`.
 - **Presentation** — json-render on Next. `composeSurface` in `apps/web/lib/genui` builds Specs. Board chrome lives on [Frontend](/docs/architecture/frontend).
 
-Models are implementation details; agents are product capabilities (`command`, `chat`). Fastify `getProvider()` resolves language models for `/ai/generate` and demo `/ai/chat`. Eve hosts Jev: `getEvaluationModel()` plus `evaluateBoardTurn` in `apps/agents/lib/evaluate` call `experimental_evaluate` on Vercel AI Gateway (`typesafe-ai/jev`). Unset `AI_GATEWAY_API_KEY` (and no `VERCEL_OIDC_TOKEN`) returns a null model and skips the hop. Jev judges refuse / canned / surface; it does not author json-render trees. Commands still wire that hop in G-cmd. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
+Models are implementation details; agents are product capabilities (`command`, `chat`). Fastify `getProvider()` resolves language models for `/ai/generate` and demo `/ai/chat`. Eve hosts Jev: `getEvaluationModel()` plus `evaluateBoardTurn` in `apps/agents/lib/evaluate` call `experimental_evaluate` on Vercel AI Gateway (`typesafe-ai/jev`). Unset `AI_GATEWAY_API_KEY` (and no `VERCEL_OIDC_TOKEN`) returns a null model and skips the hop. Jev judges refuse / canned / surface; it does not author json-render trees. The command agent wires that hop on `step.started`. Chat still lands later. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
 
 Fastify `/ai/*` is **control-plane API chrome**, not the Product Ready bar and not the durable agent runtime. Agent **skills** (`AGENTS.md`, Basilic `/w-*`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
 
@@ -108,7 +108,7 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 ## Related
 
 - [ADR 014: Fastify, eve, and Vercel runtime](/docs/adrs/014-fastify-eve-vercel-runtime)
-- [Eve](/docs/architecture/eve) — durable runtime (not in tree until E1)
+- [Eve](/docs/architecture/eve) — durable runtime, command agent, Jev hop
 - [Frontend](/docs/architecture/frontend) — presentation plane, `composeSurface`
 - [AI Workflow](/docs/development/ai-workflow) — skills (`AGENTS.md`, Basilic `/w-*`)
 - [Self-Hosted LLM](/docs/deployment/self-hosted-llm) — Ollama ops

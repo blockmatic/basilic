@@ -116,7 +116,7 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByTestId('user-info-card')).toBeVisible({ timeout: 15_000 })
     await expect(page.getByTestId('user-info-card')).toContainText('test@test.ai')
     await expect(visibleCoinRow(page, 'btc')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Send, agent not wired' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Send' })).toBeDisabled()
   })
 
   test('Who am I? writes account surface and restores from history', async ({ page }) => {
@@ -131,7 +131,7 @@ test.describe('Dashboard routes', () => {
     await page.getByTestId('command-history-row').first().click()
     await expect(page).toHaveURL(/surface=account/)
     await expect(page.getByTestId('user-info-card')).toBeVisible({ timeout: 15_000 })
-    await expect(page.getByRole('button', { name: 'Send, agent not wired' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Send' })).toBeDisabled()
   })
 
   test("What's on my list? stays table-only", async ({ page }) => {
@@ -191,6 +191,20 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByText('Copied to clipboard')).toBeVisible()
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('sortBy=change24h')
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('sidebar=close')
+  })
+
+  test('typed command talks to eve', async ({ page }) => {
+    test.skip(!process.env.EVE_E2E, 'eve is not spawned in default e2e')
+    const chatHits: string[] = []
+    page.on('request', request => {
+      if (request.url().includes('/ai/chat')) chatHits.push(request.url())
+    })
+    await page.goto('/')
+    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
+    await page.getByLabel('Command').fill('top 10 coins today')
+    await page.getByRole('button', { name: 'Send' }).click()
+    await expect(page).toHaveURL(/q=/, { timeout: 30_000 })
+    expect(chatHits).toEqual([])
   })
 })
 
