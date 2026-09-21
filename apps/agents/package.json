@@ -16,6 +16,7 @@
     "eve:dev:chat": "eve dev --agent chat --port 3005 --no-ui",
     "eve:start": "eve start --port 3004",
     "eve:eval": "eve eval --agent command",
+    "eve:eval:chat": "eve eval --agent chat",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "test": "vitest run",

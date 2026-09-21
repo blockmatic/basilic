@@ -163,9 +163,9 @@ test.describe('Dashboard routes', () => {
   test('rail=chat survives reload', async ({ page }) => {
     await page.goto('/?rail=chat')
     await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
-    await expect(page.getByText('Chat is not wired yet.')).toBeVisible()
+    await expect(page.getByTestId('chat-empty')).toBeVisible()
     await page.reload()
-    await expect(page.getByText('Chat is not wired yet.')).toBeVisible()
+    await expect(page.getByTestId('chat-empty')).toBeVisible()
     await expect(page).toHaveURL(/rail=chat/)
   })
 
@@ -219,6 +219,23 @@ test.describe('Dashboard routes', () => {
     await page.getByLabel('Command').fill('top 10 coins today')
     await page.getByRole('button', { name: 'Send' }).click()
     await expect(page).toHaveURL(/q=/, { timeout: 30_000 })
+    await expect(page.getByTestId('coin-board')).toBeVisible()
+    expect(chatHits).toEqual([])
+  })
+
+  test('typed chat talks to eve without changing the canvas', async ({ page }) => {
+    test.skip(!process.env.EVE_E2E, 'eve is not spawned in default e2e')
+    const chatHits: string[] = []
+    page.on('request', request => {
+      if (request.url().includes('/ai/chat')) chatHits.push(request.url())
+    })
+    await page.goto('/?rail=chat&elements=summary,table-ranked')
+    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
+    await page.getByLabel('Chat').fill("what's on my list?")
+    await page.getByRole('button', { name: 'Send' }).click()
+    await expect(page.getByTestId('chat-transcript')).toBeVisible({ timeout: 30_000 })
+    await expect(page).toHaveURL(/rail=chat/)
+    await expect(page).toHaveURL(/elements=summary,table-ranked/)
     await expect(page.getByTestId('coin-board')).toBeVisible()
     expect(chatHits).toEqual([])
   })

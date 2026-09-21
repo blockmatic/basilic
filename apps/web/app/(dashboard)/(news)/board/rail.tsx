@@ -2,28 +2,25 @@
 
 import { Button } from '@repo/ui/components/button'
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
-import { useMutation } from '@tanstack/react-query'
 import { useSessionStorageState } from 'ahooks'
 import { PanelRightCloseIcon } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
 import { type ReactNode, useState, useSyncExternalStore } from 'react'
 import { toast } from 'sonner'
-import { Input, PromptInputSubmit, PromptInputTextarea } from '@/components/assistant/prompt-input'
 import { type ChromeState, chromeParsers, parseRailValue } from '@/lib/coins/chrome'
-import { sendCommandTurn } from '@/lib/eve'
 import {
   boardViewParsers,
   type CommandHistoryEntry,
   commandHistoryKey,
   parseCommandHistory,
-  splitBoardView,
   viewConfigToSearchPatch,
   whoamiCommand,
   whoamiViewConfig,
   whoamiViewPatch,
 } from '@/lib/genui'
-import { composeBoardSpec } from '@/lib/genui/compose-spec'
+import { ChatPane, type ChatTurn } from './chat-pane'
 import { BoardChips } from './chips'
+import { BoardComposer } from './composer'
 
 function useIsHydrated(): boolean {
   return useSyncExternalStore(
@@ -60,74 +57,6 @@ function ShareBoardButton() {
   )
 }
 
-function BoardComposer() {
-  const [prompt, setPrompt] = useState('')
-  const [, setChrome] = useQueryStates(chromeParsers)
-  const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
-  const [, setHistory] = useSessionStorageState<CommandHistoryEntry[]>(commandHistoryKey, {
-    defaultValue: [],
-    deserializer: value => parseCommandHistory({ value }),
-  })
-  const mutation = useMutation({
-    mutationFn: () =>
-      sendCommandTurn({
-        prompt: prompt.trim(),
-        boardQuery: splitBoardView({ view }).query,
-      }),
-    async onSuccess(result) {
-      const command = prompt.trim()
-      const composed = await composeBoardSpec({
-        prompt: command,
-        view: result.viewConfig,
-      })
-      const viewConfig =
-        composed.skip || !composed.elements.length
-          ? result.viewConfig
-          : { ...result.viewConfig, elements: composed.elements }
-      await setView(viewConfigToSearchPatch({ viewConfig }), {
-        history: 'push',
-        shallow: true,
-      })
-      await setChrome({ q: command })
-      setHistory(current => [
-        ...(current ?? []),
-        { command, viewConfig, eveTurnId: result.eveTurnId },
-      ])
-      if (result.honesty) toast.message(result.honesty)
-      setPrompt('')
-    },
-    onError() {
-      toast.error('Command failed')
-    },
-  })
-  const canSend = prompt.trim().length > 0 && !mutation.isPending
-
-  return (
-    <div className="space-y-2">
-      <Input
-        onSubmit={() => {
-          if (canSend) mutation.mutate()
-        }}
-      >
-        <div className="relative">
-          <PromptInputTextarea
-            placeholder="Ask the board"
-            aria-label="Command"
-            className="min-h-11 rounded-lg pr-12"
-            value={prompt}
-            onChange={event => setPrompt(event.target.value)}
-          />
-          <PromptInputSubmit
-            disabled={!canSend}
-            status={mutation.isPending ? 'submitted' : 'ready'}
-            aria-label="Send"
-          />
-        </div>
-      </Input>
-    </div>
-  )
-}
-
 function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['rail'] }) {
   const [, setChrome] = useQueryStates(chromeParsers)
   const [, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
@@ -135,6 +64,7 @@ function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['
     defaultValue: [],
     deserializer: value => parseCommandHistory({ value }),
   })
+  const [chatTurns, setChatTurns] = useState<ChatTurn[]>([])
 
   function handleRailChange(value: unknown) {
     const next = parseRailValue({ value })
@@ -223,11 +153,9 @@ function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['
         inert={rail !== 'chat' ? true : undefined}
         className="min-h-0 flex-1 overflow-y-auto"
       >
-        <p className="text-muted-foreground text-sm">
-          Chat is not wired yet. Commands still change the board.
-        </p>
+        <ChatPane turns={chatTurns} />
       </div>
-      <BoardComposer />
+      <BoardComposer rail={rail} onChatTurns={setChatTurns} />
     </div>
   )
 }

@@ -1,6 +1,15 @@
 import '#lib/host.js'
-import { defineAgent } from 'eve'
+import { defineAgent, defineDynamic } from 'eve'
+import { getProvider } from '#lib/provider.js'
 
 export default defineAgent({
-  model: 'openai/gpt-5.6-luna-fast',
+  model: defineDynamic({
+    events: {
+      'step.started': () => {
+        const model = getProvider()
+        if (!model) throw new Error('chat language model is not configured')
+        return { model, modelContextWindowTokens: 200_000 }
+      },
+    },
+  }),
 })

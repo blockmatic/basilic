@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { eventsFromNdjson, joinEveUrl } from './session-http'
+import { assistantTextFromEvents, eventsFromNdjson, joinEveUrl } from './session-http'
 
 describe('joinEveUrl', () => {
   it('joins origin and path without a double slash', () => {
@@ -20,5 +20,30 @@ describe('eventsFromNdjson', () => {
         ].join('\n'),
       }).map(event => event.type),
     ).toEqual(['action.result', 'session.waiting'])
+  })
+})
+
+describe('assistantTextFromEvents', () => {
+  it('prefers message.completed over appended deltas', () => {
+    expect(
+      assistantTextFromEvents({
+        events: [
+          { type: 'message.appended', data: { messageDelta: 'Hel' } },
+          { type: 'message.appended', data: { messageDelta: 'lo' } },
+          { type: 'message.completed', data: { message: 'Hello board', finishReason: 'stop' } },
+        ],
+      }),
+    ).toBe('Hello board')
+  })
+
+  it('joins deltas when completed is missing', () => {
+    expect(
+      assistantTextFromEvents({
+        events: [
+          { type: 'message.appended', data: { messageDelta: 'top ' } },
+          { type: 'message.appended', data: { messageDelta: 'coins' } },
+        ],
+      }),
+    ).toBe('top coins')
   })
 })
