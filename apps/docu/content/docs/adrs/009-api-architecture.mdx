@@ -1,6 +1,6 @@
 ---
 title: "ADR 009: API Architecture & Client Generation"
-description: "Decision to use Fastify REST API with OpenAPI generation and Hey API for client generation, REST-first approach, and AI/MCP integration support."
+description: "Decision to use Fastify REST API with OpenAPI generation and Hey API for client generation, REST-first approach, and public agent discovery (no product MCP)."
 ---
 
 ## Context
@@ -209,6 +209,10 @@ Frontend consumes the API via generated clients:
 - **Interactive documentation**: Scalar UI at `/reference`
 - **MCP integration**: OpenAPI specs enable AI agents to interact with API via Model Context Protocol
 - **Multi-language clients**: OpenAPI specs can generate clients in Python, Go, Rust, etc. using standard generators
+
+### Agent discovery
+
+The Fastify host serves unauthenticated `/llms.txt`, `/robots.txt`, `/sitemap.xml`, `/.well-known/api-catalog` (RFC 9727), and live `GET /openapi.json`. Current paths and landing contract: [API Architecture](/docs/architecture/api). Basilic does not ship a product MCP server — see [Superseded claims](#superseded-claims).
 
 ## Multi-Language SDK Strategy
 

@@ -140,6 +140,15 @@ The docs app (`apps/docu`) welcomes crawlers on HTML pages (opposite of the web 
 - Absolute `loc` URLs use `NEXT_PUBLIC_SITE_URL`.
 - LLM crawlers: start at `/llms.txt`, then fetch `/llms-full.txt`.
 
+## API host crawl
+
+The Fastify API (`apps/api`) publishes a crawlable public surface for agents. Paths and landing contract: [API Architecture](/docs/architecture/api).
+
+- `GET /robots.txt` allows `/`, `/reference`, `/openapi.json`, `/health`, `/llms.txt`, `/sitemap.xml`, `/.well-known/api-catalog`, and `/.well-known/oauth-protected-resource`, and points at `/sitemap.xml`.
+- `GET /sitemap.xml` lists those discovery URLs (not `/robots.txt` or itself).
+- LLM crawlers: start at `/llms.txt`, then `/.well-known/api-catalog` (RFC 9727) and live `GET /openapi.json`.
+- When Deployment Protection is enabled, do not login-wall `/`, `/llms.txt`, `/openapi.json`, or `/.well-known/*`. Keep the OPTIONS allowlist for CORS preflight.
+
 ## Troubleshooting
 
 ### Build Fails
