@@ -49,6 +49,37 @@ const jwtSecretSchema = isProduction
       )
   : z.string().min(32).default(rejectedDevDefault)
 
+const defaultWebAppUrl = 'http://localhost:3000'
+
+function originFromWebAppUrl(webAppUrl: string): string {
+  try {
+    return new URL(webAppUrl).origin
+  } catch {
+    return new URL(defaultWebAppUrl).origin
+  }
+}
+
+/** Dev/test keep `*`. Production never boots with a wildcard: omit or `*` uses `WEB_APP_URL` origin. */
+export function parseAllowedOrigins({
+  raw,
+  isProduction: production,
+  webAppUrl,
+}: {
+  raw: string | undefined
+  isProduction: boolean
+  webAppUrl: string
+}): string[] {
+  const webOrigin = originFromWebAppUrl(webAppUrl)
+  const fallback = production ? webOrigin : '*'
+  const parts = (raw ?? fallback)
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+  const origins = parts.length > 0 ? parts : [fallback]
+  if (production && (origins.length === 0 || origins.includes('*'))) return [webOrigin]
+  return origins
+}
+
 export const env = createEnv({
   server: {
     PORT: z.coerce.number().int().positive().default(3001),
@@ -132,7 +163,7 @@ export const env = createEnv({
           ),
       )
       .default('Your App'),
-    WEB_APP_URL: z.string().url().default('http://localhost:3000'),
+    WEB_APP_URL: z.string().url().default(defaultWebAppUrl),
     DOCS_SITE_URL: z.string().url().default('https://basilic-docs.vercel.app'),
     EVE_COMMAND_URL: z.string().url().default('http://127.0.0.1:3004'),
     EVE_CHAT_URL: z.string().url().default('http://127.0.0.1:3005'),
@@ -171,14 +202,14 @@ export const env = createEnv({
       .transform(val => parseCallbackUrls(val)),
     ALLOWED_ORIGINS: z
       .string()
-      .default('*')
-      .transform(val => {
-        const parts = val
-          .split(',')
-          .map(s => s.trim())
-          .filter(Boolean)
-        return parts.length > 0 ? parts : ['*']
-      })
+      .optional()
+      .transform(val =>
+        parseAllowedOrigins({
+          raw: val,
+          isProduction,
+          webAppUrl: process.env.WEB_APP_URL ?? defaultWebAppUrl,
+        }),
+      )
       .refine(
         val => !isProduction || (val.length > 0 && !val.includes('*')),
         'ALLOWED_ORIGINS must be a non-empty list of explicit origins in production (not *)',

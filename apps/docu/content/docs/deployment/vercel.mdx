@@ -23,6 +23,9 @@ Set environment variables in Vercel project settings:
 DATABASE_URL=postgresql://user:pass@host:5432/dbname
 ENCRYPTION_KEY=<64-char-hex>
 JWT_SECRET=<min-32-chars-not-dev-default>
+WEB_APP_URL=https://app.yourdomain.com
+# ALLOWED_ORIGINS=https://app.yourdomain.com,https://preview.yourdomain.com
+# Omit ALLOWED_ORIGINS or set * in production: CORS uses WEB_APP_URL origin (wildcard never ships).
 # AI: Anthropic direct API (preferred). See [AI Architecture](/docs/architecture/ai).
 ANTHROPIC_API_KEY=sk-ant-...
 # OPEN_ROUTER_API_KEY=sk-or-...
@@ -31,7 +34,7 @@ RESEND_API_KEY=re_...
 PORT=3001
 NODE_ENV=production
 SENTRY_DSN=https://...
-# Optional: OAuth — see [Authentication](/docs/architecture/authentication) for GITHUB_*, GOOGLE_*, OAUTH_*_CALLBACK_URL(S).
+# Optional: OAuth. See [Authentication](/docs/architecture/authentication) for GITHUB_*, GOOGLE_*, OAUTH_*_CALLBACK_URL(S).
 ```
 
 Scope `DATABASE_URL` per Vercel environment. Production and Preview must not share a URL. Preview builds skip `db:migrate` unless `RUN_PG_MIGRATE=true` (use that only with an isolated Preview database).
