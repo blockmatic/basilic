@@ -1,7 +1,10 @@
 'use client'
 
+import { Button } from '@repo/ui/components/button'
+import { cn } from '@repo/ui/lib/utils'
 import { useMutation } from '@tanstack/react-query'
 import { useSessionStorageState } from 'ahooks'
+import { MicIcon } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -19,6 +22,7 @@ import {
 } from '@/lib/genui'
 import { composeBoardSpec } from '@/lib/genui/compose-spec'
 import type { ChatTurn } from './chat-pane'
+import { useBoardDictation } from './use-board-dictation'
 
 export function BoardComposer({
   rail,
@@ -105,29 +109,65 @@ export function BoardComposer({
     },
   })
   const canSend = prompt.trim().length > 0 && !mutation.isPending
+  const dictation = useBoardDictation({ prompt, onDraft: setPrompt })
 
   return (
     <div className="space-y-2">
       <Input
         onSubmit={() => {
-          if (canSend) mutation.mutate()
+          if (dictation.listening || !canSend) return
+          mutation.mutate()
         }}
       >
         <div className="relative">
           <PromptInputTextarea
             placeholder={isChat ? 'Ask about the board' : 'Ask the board'}
             aria-label={isChat ? 'Chat' : 'Command'}
-            className="min-h-11 rounded-lg pr-12"
+            className={cn('min-h-11 rounded-lg', dictation.supported ? 'pr-28' : 'pr-14')}
+            submitOnEnter={!dictation.listening}
+            readOnly={dictation.listening}
             value={prompt}
             onChange={event => setPrompt(event.target.value)}
           />
-          <PromptInputSubmit
-            disabled={!canSend}
-            status={mutation.isPending ? 'submitted' : 'ready'}
-            aria-label="Send"
-          />
+          <div className="absolute right-1 bottom-1 flex gap-1">
+            {dictation.supported ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  'size-11 rounded-lg',
+                  dictation.listening &&
+                    'text-primary ring-2 ring-primary motion-safe:animate-pulse',
+                )}
+                aria-label="Dictate to the board"
+                aria-pressed={dictation.listening}
+                disabled={dictation.blocked}
+                onClick={dictation.toggle}
+              >
+                <MicIcon />
+                {dictation.listening ? <span className="sr-only">Listening</span> : null}
+              </Button>
+            ) : null}
+            <PromptInputSubmit
+              disabled={!canSend || dictation.listening}
+              status={mutation.isPending ? 'submitted' : 'ready'}
+              aria-label="Send"
+            />
+          </div>
         </div>
       </Input>
+      {dictation.supported ? (
+        <p className="text-muted-foreground text-xs">
+          Words stay in this box until you send. Chrome may use the browser recognizer; we do not
+          upload audio to Basilic.
+        </p>
+      ) : null}
+      {dictation.listening && dictation.interim ? (
+        <p className="text-muted-foreground text-xs" aria-live="polite">
+          {dictation.interim}
+        </p>
+      ) : null}
     </div>
   )
 }

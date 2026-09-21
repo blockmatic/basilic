@@ -27,16 +27,27 @@ export function Input({ onSubmit, className, children, ...props }: PromptInputFo
   )
 }
 
-export type PromptInputTextareaProps = ComponentProps<typeof Textarea>
+export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
+  submitOnEnter?: boolean
+}
 
 export function PromptInputTextarea({
   className,
   onKeyDown,
   onChange,
+  submitOnEnter = true,
   ...props
 }: PromptInputTextareaProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.nativeEvent.isComposing) {
+      onKeyDown?.(e)
+      return
+    }
     if (e.key !== 'Enter') {
+      onKeyDown?.(e)
+      return
+    }
+    if (props.readOnly) {
       onKeyDown?.(e)
       return
     }
@@ -53,15 +64,17 @@ export function PromptInputTextarea({
       } as unknown as ChangeEvent<HTMLTextAreaElement>
       onChange?.(syntheticEvent)
       requestAnimationFrame(() => el.setSelectionRange(selectionStart + 1, selectionStart + 1))
-    } else {
+    } else if (submitOnEnter) {
       e.preventDefault()
       e.currentTarget.form?.requestSubmit()
+    } else {
+      e.preventDefault()
     }
     onKeyDown?.(e)
   }
   return (
     <Textarea
-      className={cn('min-h-12 resize-none pr-12', className)}
+      className={cn('min-h-12 resize-none pr-14', className)}
       rows={1}
       onKeyDown={handleKeyDown}
       onChange={onChange}
@@ -90,7 +103,7 @@ export function PromptInputSubmit({
       size="icon"
       disabled={disabled}
       onClick={isStreaming ? onStop : undefined}
-      className={cn('absolute right-2 bottom-2 size-8', className)}
+      className={cn('size-11 rounded-lg', className)}
       {...props}
     >
       {children ??

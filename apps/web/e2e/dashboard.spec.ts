@@ -208,6 +208,21 @@ test.describe('Dashboard routes', () => {
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('sidebar=close')
   })
 
+  test('missing SpeechRecognition hides the mic and typing still works', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, 'SpeechRecognition', { configurable: true, value: undefined })
+      Object.defineProperty(window, 'webkitSpeechRecognition', {
+        configurable: true,
+        value: undefined,
+      })
+    })
+    await page.goto('/')
+    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('button', { name: 'Dictate to the board' })).toHaveCount(0)
+    await page.getByRole('textbox', { name: 'Command' }).fill('top 10 coins today')
+    await expect(page.getByRole('button', { name: 'Send' })).toBeEnabled()
+  })
+
   test('typed command talks to eve', async ({ page }) => {
     test.skip(!process.env.EVE_E2E, 'eve is not spawned in default e2e')
     const chatHits: string[] = []
@@ -216,7 +231,7 @@ test.describe('Dashboard routes', () => {
     })
     await page.goto('/')
     await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
-    await page.getByLabel('Command').fill('top 10 coins today')
+    await page.getByRole('textbox', { name: 'Command' }).fill('top 10 coins today')
     await page.getByRole('button', { name: 'Send' }).click()
     await expect(page).toHaveURL(/q=/, { timeout: 30_000 })
     await expect(page.getByTestId('coin-board')).toBeVisible()
@@ -231,7 +246,7 @@ test.describe('Dashboard routes', () => {
     })
     await page.goto('/?rail=chat&elements=summary,table-ranked')
     await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
-    await page.getByLabel('Chat').fill("what's on my list?")
+    await page.getByRole('textbox', { name: 'Chat' }).fill("what's on my list?")
     await page.getByRole('button', { name: 'Send' }).click()
     await expect(page.getByTestId('chat-transcript')).toBeVisible({ timeout: 30_000 })
     await expect(page).toHaveURL(/rail=chat/)
