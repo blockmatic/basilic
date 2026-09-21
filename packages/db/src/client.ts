@@ -44,6 +44,10 @@ export function isPgliteConfigured(): boolean {
   return requireConfig().pglite === true
 }
 
+export function getPgPool(): Pool | null {
+  return runtime().pgPool
+}
+
 export function getPgliteClient(): PGlite | null {
   const state = runtime()
   const configured = state.config?.pgliteInstance ?? state.pgLiteInstance

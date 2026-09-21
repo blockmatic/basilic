@@ -20,7 +20,6 @@ The published tarball includes a sanitized, lockfile-valid template. The CLI doe
 cd my-app
 pnpm setup
 pnpm db:start
-pnpm reset
 pnpm dev
 ```
 

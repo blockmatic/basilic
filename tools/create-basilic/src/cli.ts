@@ -31,7 +31,6 @@ program
       process.stdout.write(`  cd ${directory}\n`)
       process.stdout.write('  pnpm setup\n')
       process.stdout.write('  pnpm db:start\n')
-      process.stdout.write('  pnpm reset\n')
       process.stdout.write('  pnpm dev\n\n')
       process.stdout.write(
         'Product Ready: https://basilic-docs.vercel.app/docs/testing/product-ready\n',

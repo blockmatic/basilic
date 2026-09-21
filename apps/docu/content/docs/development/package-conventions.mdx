@@ -117,7 +117,7 @@ React-only helpers using **TanStack Query**.
 
 ### 4) `packages/db`
 
-PostgreSQL access for Fastify and the eve host. Schema barrel `@repo/db/schema`, factory `configureDb` / `getDb`, PGLite `runMigrations` on `@repo/db/migrate`. Named RORO fns take `{ userId }` for user-scoped rows. Encrypt helpers and identity seed stay in `apps/api`.
+PostgreSQL access for Fastify and the eve host. Schema barrel `@repo/db/schema`, factory `configureDb` / `getDb`, `runMigrations` on `@repo/db/migrate` (PGLite always; Postgres at boot in development). Local Docker is Supabase CLI in `packages/db/supabase/`. Named RORO fns take `{ userId }` for user-scoped rows. Encrypt helpers and identity seed stay in `apps/api`.
 
 **Hard rules**
 

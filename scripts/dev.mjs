@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Daily local start: ensure Supabase Postgres is up, then Turbo TUI (`dev` + optional eve chat).
- * Does not reset or seed. First run still needs `pnpm db:start` then `pnpm reset`.
+ * Daily local start: ensure Supabase Postgres is up, then Turbo TUI.
+ * Schema and identity seed run on Fastify boot. Wipe remains `pnpm reset`.
  */
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -63,7 +63,7 @@ function isMain() {
 
 function main() {
   if (!shouldSkipDbStart({ apiEnvText: readApiEnvText() })) {
-    const db = spawnSync('pnpm', ['--filter', '@repo/api', 'db:start'], {
+    const db = spawnSync('pnpm', ['--filter', '@repo/db', 'db:start'], {
       cwd: repoRoot,
       stdio: 'inherit',
     })

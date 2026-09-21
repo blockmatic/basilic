@@ -6,6 +6,7 @@ import { logger } from '@repo/utils/logger/server'
 import Fastify from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
+import { seedIdentityIfEmpty } from './src/lib/coins/seed.js'
 import { env } from './src/lib/env.js'
 import './src/lib/markets-host.js'
 import { createApiLoggerOptions } from './src/lib/http-logging.js'
@@ -50,8 +51,10 @@ async function initialize(): Promise<void> {
     // 2. Initialize database connection (sets db for isDbReady())
     await getDb()
 
-    // 3. Run migrations
-    await runMigrations(logger)
+    // 3. Run migrations (PGLite always; Postgres in development)
+    await runMigrations({ logger, nodeEnv: env.NODE_ENV })
+
+    if (env.NODE_ENV !== 'test') await seedIdentityIfEmpty({ db: await getDb() })
   } catch (err) {
     fastify.log.error({ err }, 'Initialization failed')
     throw err

@@ -81,7 +81,7 @@ Remove upstream MCP/project bindings, EAS project IDs, deployment ownership, and
 3. Copy the bundled template into a temporary sibling directory. Prevent path traversal and escaping symlinks; apply typed, targeted transforms.
 4. Check workspace dependencies, required files, and prohibited output. Record generator version, template source SHA, template digest, and selected inputs under a `basilic` field in root `package.json`; this is provenance, not a new configuration framework.
 5. Move the completed tree to the destination atomically where supported. On failure, clean only temporary files created by this run.
-6. Print the destination and existing setup sequence: `pnpm setup`, database start, `pnpm reset`, then `pnpm dev`, with a link to Product Ready. Do not automatically reset databases, create remotes, publish, deploy, or commit. Installation/setup remains an explicit next step in v1.
+6. Print the destination and existing setup sequence: `pnpm setup`, database start, then `pnpm dev`, with a link to Product Ready. Do not automatically reset databases, create remotes, publish, deploy, or commit. Installation/setup remains an explicit next step in v1.
 
 Bundle compiled generator code and the sanitized template in **one npm tarball**. The running generator must not depend on unresolved workspace packages, Git, GitHub API availability, or downloading `main`. Use a package `files` allowlist covering the executable and template; the existing package pack helper's `files: ["dist"]` policy cannot be reused blindly. Test the actual tarball outside the monorepo.
 

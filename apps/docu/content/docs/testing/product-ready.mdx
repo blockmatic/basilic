@@ -14,13 +14,13 @@ Do these in order. `pnpm setup` installs tools, copies env templates, and instal
 1. **Node 24 + pnpm** — `.nvmrc` / `packageManager` (`12.4.2`). `corepack enable` then `corepack prepare pnpm@12.4.2 --activate`.
 2. **Create the repo** — `npx create-basilic@latest my-app`.
 3. **`pnpm setup`** at the repo root (install, hooks, **agent skills** from basilic-skills `/w-*`, scanners, env templates, Docker/Supabase CLI, Playwright Chromium). Copied API/web env sets `ALLOW_TEST=true` for local login. Setup copies templates only when dest files are **missing**; an existing `apps/api/.env` / `apps/web/.env.local` is left alone — set `ALLOW_TEST=true` yourself if those files predate this default.
-4. **`pnpm db:start`** — local Supabase Postgres (`apps/api/supabase/`). One instance per host; `pnpm db:stop` before changing `project_id`. `@repo/db` does not start Postgres.
-5. **`pnpm reset`** at the repo root — Supabase reset + Drizzle migrate + seed. See [ADR 008](/docs/adrs/008-database) and `apps/api/README.md`.
-6. **`pnpm dev`** — Turbo TUI. API at http://localhost:3001 (`GET /health`, `/reference`), web at http://localhost:3000. This repo also starts eve command/chat (3004/3005); generated projects omit agents. Not required to sign in.
-7. **First login** — copied env has `ALLOW_TEST=true`. Use `test@test.ai` on `/auth/login`. Land on `/`. Resend is optional for real mail. Production refuses `ALLOW_TEST`.
+4. **`pnpm db:start`** — local Supabase Postgres (`packages/db/supabase/`). One instance per host; `pnpm db:stop` before changing `project_id`.
+5. **`pnpm dev`** — Turbo TUI. API migrates and seeds identity on boot. API at http://localhost:3001 (`GET /health`, `/reference`), web at http://localhost:3000. This repo also starts eve command/chat (3004/3005); generated projects omit agents. Not required to sign in.
+6. **First login** — copied env has `ALLOW_TEST=true`. Use `test@test.ai` on `/auth/login`. Land on `/`. Resend is optional for real mail. Production refuses `ALLOW_TEST`.
+7. **Optional wipe** — `pnpm reset` drops local Postgres, remigrates, and reseeds. Not required after `db:start`.
 8. **Optional mobile** — `pnpm --filter @repo/mobile start`. Not required for Product Ready.
 
-Stop if any step fails. Do not skip `db:start` or `pnpm reset` and treat a hanging API as a product bug.
+Stop if any step fails. Do not skip `db:start` and treat a hanging API as a product bug.
 
 ## What this bar is not
 

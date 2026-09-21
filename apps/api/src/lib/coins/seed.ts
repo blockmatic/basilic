@@ -96,3 +96,8 @@ export async function seedIdentity({ db }: { db: CoinsDb }): Promise<void> {
       })
   })
 }
+
+export async function seedIdentityIfEmpty({ db }: { db: CoinsDb }): Promise<void> {
+  const existing = await db.select({ id: assets.id }).from(assets).limit(1)
+  if (existing.length === 0) await seedIdentity({ db })
+}

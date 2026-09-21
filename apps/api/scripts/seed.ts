@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Data seed after a local Supabase reset. Invoked only from `pnpm reset` (apps/api or repo root via filter).
- * (not from `pnpm db:migrate` / `pnpm build`).
+ * Data seed after a local wipe. Invoked from `pnpm reset` and Fastify boot (`seedIdentityIfEmpty`).
+ * Not from `pnpm db:migrate` / `pnpm build` alone.
  *
  * Add idempotent inserts here (`onConflictDoNothing()` / upserts). Uses the same
  * PostgreSQL vs PGLite rules as `scripts/migrate.ts` (`RUN_PG_MIGRATE`, `DATABASE_URL`).

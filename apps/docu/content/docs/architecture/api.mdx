@@ -59,7 +59,7 @@ const client = createClient({ baseUrl: process.env.NEXT_PUBLIC_API_URL! })
 const { data } = useHealthCheck()
 ```
 
-Other languages can use any OpenAPI generator against the same spec. Local DB: `pnpm reset` (Supabase reset + Drizzle migrate + seed). See [ADR 008](/docs/adrs/008-database).
+Other languages can use any OpenAPI generator against the same spec. Local DB: `pnpm db:start` then `pnpm dev` (migrate + seed on API boot). Wipe: `pnpm reset`. See [ADR 008](/docs/adrs/008-database).
 
 ## Security
 

@@ -4,9 +4,9 @@ Type-safe REST API built with Fastify & OpenAPI. This process is the product API
 
 ## Development
 
-Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (gitignored). Optional `COINGECKO_DEMO_API_KEY` and `MARKETS_CACHE_MS` configure `@repo/markets` (CoinGecko Demo + Binance public REST). Optional `ALCHEMY_API_KEY` configures `@repo/onchain`. JWT `GET /coins` and `POST /coins/query` filter cached `getMarkets` (fixture on vendor 429). JWT watch CRUD is `GET/PUT/DELETE /coins/watches` by asset id. JWT `GET /coins/:assetId/candles` returns Binance klines (fixture when unmapped). JWT `GET /coins/global` and `GET /coins/trending` return CoinGecko global stats and trending (fixture on vendor failure). JWT `GET /account/wallet` returns live Portfolio holdings for the linked `eip155` address. JWT `GET /agents` lists eve command/chat origins. Start database first from the repo root (`pnpm db:start`), then **`pnpm reset`** before daily `pnpm dev`. `@repo/db` is schema/`dist/` watch, not Postgres. Uses Supabase CLI for PostgreSQL, or `PGLITE=true` for in-memory. Dev server at [http://localhost:3001](http://localhost:3001). Adopter bar: [Product Ready](../docu/content/docs/testing/product-ready.mdx).
+Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (gitignored). Optional `COINGECKO_DEMO_API_KEY` and `MARKETS_CACHE_MS` configure `@repo/markets` (CoinGecko Demo + Binance public REST). Optional `ALCHEMY_API_KEY` configures `@repo/onchain`. JWT `GET /coins` and `POST /coins/query` filter cached `getMarkets` (fixture on vendor 429). JWT watch CRUD is `GET/PUT/DELETE /coins/watches` by asset id. JWT `GET /coins/:assetId/candles` returns Binance klines (fixture when unmapped). JWT `GET /coins/global` and `GET /coins/trending` return CoinGecko global stats and trending (fixture on vendor failure). JWT `GET /account/wallet` returns live Portfolio holdings for the linked `eip155` address. JWT `GET /agents` lists eve command/chat origins. Start database first from the repo root (`pnpm db:start`), then `pnpm dev`. Fastify applies Drizzle migrations on boot in development and seeds identity when empty. `@repo/db` owns schema and the local Supabase CLI (`packages/db/supabase/`). Wipe with **`pnpm reset`**. Uses Supabase CLI for PostgreSQL, or `PGLITE=true` for in-memory. Dev server at [http://localhost:3001](http://localhost:3001). Adopter bar: [Product Ready](../docu/content/docs/testing/product-ready.mdx).
 
-**Switching project_id:** If you change `project_id` in `supabase/config.toml` (e.g. after a rebrand), run `pnpm db:stop` before `pnpm db:start`—only one Supabase instance runs per host.
+**Switching project_id:** If you change `project_id` in `packages/db/supabase/config.toml` (e.g. after a rebrand), run `pnpm db:stop` before `pnpm db:start`—only one Supabase instance runs per host.
 
 ## Vercel
 
@@ -33,15 +33,13 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 - `pnpm test:e2e:ui` — E2E with Playwright UI
 - `pnpm test:e2e:debug` — Debug E2E tests
 - `pnpm checktypes` — Type-check
-- `pnpm db:start` — Start Supabase (local). From repo root: `pnpm db:start`
-- `pnpm db:stop` — Stop Supabase (run before switching to another project’s Supabase). From repo root: `pnpm db:stop`
-- `pnpm reset` — From repo root: `pnpm --filter @repo/api reset`. From `apps/api`: Supabase DB reset, then Drizzle migrations (`scripts/migrate.ts`), then seed (`scripts/seed.ts`) with local `DATABASE_URL` + `RUN_PG_MIGRATE=true`. Seed writes identity assets + mappings (`assets`, `asset_providers`, `asset_markets`, `asset_networks`). `[db.seed]` / `seed.sql` unused (`supabase/config.toml`)
 - `pnpm db:migrate` — Run migrations (skips when PGLITE=true or Vercel Preview; use `RUN_PG_MIGRATE=true` to force PostgreSQL, including isolated Preview DBs)
+- `pnpm reset` — Wipe: `@repo/db` `db:reset`, then Drizzle migrate + `scripts/seed.ts`. From repo root: `pnpm reset`. Daily `pnpm dev` migrates and seeds without this.
 - `pnpm db:generate` — Generate migrations from `@repo/db` schema
 - `pnpm db:push` — Push schema (dev only)
 - `pnpm generate:openapi` — Regenerate OpenAPI spec
 
-**Database:** `@repo/db` owns schema (`packages/db/src/schema/tables/*.ts`), SQL (`packages/db/src/migrations/`), and `drizzle.config.ts`. Api `pnpm db:generate` delegates to `--filter=@repo/db`. `scripts/migrate.ts` runs the Drizzle migrator against PostgreSQL using `@repo/db/migrate` `migrationsDir` (or skips at build time when using PGLite — runtime SQL is `runMigrations` in the package). `pnpm reset` runs `scripts/seed.ts` (`runSeed`) after migrations; `pnpm db:migrate` alone does not.
+**Database:** `@repo/db` owns schema (`packages/db/src/schema/tables/*.ts`), SQL (`packages/db/src/migrations/`), `drizzle.config.ts`, and local Supabase CLI (`packages/db/supabase/`). Api `pnpm db:generate` delegates to `--filter=@repo/db`. `scripts/migrate.ts` is the Vercel/CLI wrapper around `@repo/db/migrate` `runPostgresMigrations`. Development boot uses `runMigrations`. `pnpm reset` wipes then migrate+seed.
 
 ## Links
 
