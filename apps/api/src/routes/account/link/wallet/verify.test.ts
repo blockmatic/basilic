@@ -187,6 +187,66 @@ describe('POST /account/link/wallet/verify', () => {
     expect(row?.chain).toBe('eip155')
   })
 
+  it('should return WALLET_EIP155_LIMIT when linking a second eip155 wallet', async () => {
+    const email = 'eip155-limit@test.ai'
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token: await getMagicLinkTokenRaw(fastify, email) },
+    })
+    const { token } = JSON.parse(verifyRes.body)
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+    const messageToSign = createSiweMessage({
+      address: testAccount.address,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+    const signature = await testAccount.signMessage({ message: messageToSign })
+    await fastify.inject({
+      method: 'POST',
+      url: '/account/link/wallet/verify',
+      headers: { Authorization: `Bearer ${token}` },
+      payload: { chain: 'eip155', message: messageToSign, signature, domain: 'localhost' },
+    })
+    const secondAccount = privateKeyToAccount(
+      '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',
+    )
+    const nonceRes2 = await fastify.inject({
+      method: 'GET',
+      url: `/auth/web3/nonce?chain=eip155&address=${secondAccount.address}`,
+    })
+    const { nonce: nonce2 } = JSON.parse(nonceRes2.body)
+    const messageToSign2 = createSiweMessage({
+      address: secondAccount.address,
+      chainId: 1,
+      domain: 'localhost',
+      nonce: nonce2,
+      uri: 'https://localhost',
+      version: '1',
+    })
+    const signature2 = await secondAccount.signMessage({ message: messageToSign2 })
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/account/link/wallet/verify',
+      headers: { Authorization: `Bearer ${token}` },
+      payload: {
+        chain: 'eip155',
+        message: messageToSign2,
+        signature: signature2,
+        domain: 'localhost',
+      },
+    })
+    expect(response.statusCode).toBe(409)
+    expect(JSON.parse(response.body).code).toBe('WALLET_EIP155_LIMIT')
+  })
+
   it('should return WALLET_ALREADY_LINKED when wallet belongs to another user', async () => {
     const email1 = 'test@test.ai'
     const token1 = await getMagicLinkTokenRaw(fastify)

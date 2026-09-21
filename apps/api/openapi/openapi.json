@@ -2974,6 +2974,260 @@
         }
       }
     },
+    "/account/wallet/": {
+      "get": {
+        "operationId": "accountWalletGet",
+        "summary": "Get linked wallet holdings",
+        "tags": [
+          "account"
+        ],
+        "description": "Live Alchemy Portfolio for the access JWT user linked eip155 address. Empty when unlinked or key unset.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "address",
+                    "tokens",
+                    "nfts",
+                    "error"
+                  ],
+                  "properties": {
+                    "address": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "tokens": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "network",
+                          "tokenAddress",
+                          "symbol",
+                          "name",
+                          "amount",
+                          "quoteUsd",
+                          "logoUrl",
+                          "assetId"
+                        ],
+                        "properties": {
+                          "network": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "eth-mainnet"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "base-mainnet"
+                                ]
+                              }
+                            ]
+                          },
+                          "tokenAddress": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "symbol": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "amount": {
+                            "type": "string"
+                          },
+                          "quoteUsd": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "logoUrl": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "assetId": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "nfts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "network",
+                          "contractAddress",
+                          "tokenId",
+                          "name",
+                          "collectionName",
+                          "imageUrl"
+                        ],
+                        "properties": {
+                          "network": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "eth-mainnet"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "base-mainnet"
+                                ]
+                              }
+                            ]
+                          },
+                          "contractAddress": {
+                            "type": "string"
+                          },
+                          "tokenId": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "collectionName": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "imageUrl": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/agents/{agentId}": {
       "get": {
         "operationId": "getAgentById",

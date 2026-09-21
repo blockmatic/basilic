@@ -35,7 +35,13 @@ import {
   viewFromSearchQuery,
   viewTitle,
 } from '@/lib/genui'
-import { coinsListQueryKey, coinsListQueryKeyPrefix, coinWatchesQueryKey } from '@/lib/query-keys'
+import {
+  accountWalletQueryKey,
+  coinsListQueryKey,
+  coinsListQueryKeyPrefix,
+  coinWatchesQueryKey,
+} from '@/lib/query-keys'
+import { emptyWalletState } from '@/lib/wallet'
 import { BoardLayout } from './rail'
 
 const watchCap = 20
@@ -92,6 +98,7 @@ export function CoinBoard({
       caption: initialCaption,
       error: initialError,
       account: initialAccount,
+      wallet: emptyWalletState,
     }),
   )
 
@@ -114,6 +121,11 @@ export function CoinBoard({
       return watches.map(watch => watch.assetId)
     },
     initialData: initialWatchedIds,
+    staleTime: boardStaleMs,
+  })
+  const walletQuery = useQuery({
+    queryKey: accountWalletQueryKey,
+    queryFn: () => client.account.wallet(),
     staleTime: boardStaleMs,
   })
   const watchMutation = useMutation({
@@ -165,8 +177,9 @@ export function CoinBoard({
       '/caption': caption,
       '/error': error,
       '/account': initialAccount,
+      '/wallet': walletQuery.data ?? emptyWalletState,
     })
-  }, [store, coins, sync, caption, error, initialAccount])
+  }, [store, coins, sync, caption, error, initialAccount, walletQuery.data])
 
   function handleToggleWatch({ assetId, watched }: { assetId: string; watched: boolean }) {
     if (!watched && isAtCap) {

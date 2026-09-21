@@ -28,7 +28,8 @@
         "@repo/utils#build",
         "@repo/error#build",
         "@repo/db#build",
-        "@repo/markets#build"
+        "@repo/markets#build",
+        "@repo/onchain#build"
       ],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
       "outputs": ["openapi/openapi.json"],

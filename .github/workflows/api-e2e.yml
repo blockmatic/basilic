@@ -6,6 +6,7 @@ on:
       - 'apps/api/**'
       - 'packages/db/**'
       - 'packages/markets/**'
+      - 'packages/onchain/**'
       - 'packages/email/**'
       - 'packages/error/**'
       - 'packages/utils/**'

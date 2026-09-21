@@ -98,6 +98,16 @@ export const boardCatalog = defineCatalog(schema, {
       }),
       description: 'Account card with avatar and profile fields',
     },
+    TokenTable: {
+      props: z.object({
+        network: z.enum(['all', 'eth-mainnet', 'base-mainnet']),
+      }),
+      description: 'Linked wallet tokens bound to $state.wallet',
+    },
+    NftGrid: {
+      props: z.object({ hidden: z.boolean() }),
+      description: 'Linked wallet NFTs bound to $state.wallet',
+    },
   },
   actions: {
     reset_view: {

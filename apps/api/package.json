@@ -57,6 +57,7 @@
     "@openrouter/ai-sdk-provider": "^3.0.0",
     "@repo/db": "workspace:*",
     "@repo/markets": "workspace:*",
+    "@repo/onchain": "workspace:*",
     "@repo/email": "workspace:*",
     "@repo/error": "workspace:*",
     "@repo/utils": "workspace:*",

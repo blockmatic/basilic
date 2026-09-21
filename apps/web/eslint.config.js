@@ -28,6 +28,10 @@ export default [
               message: 'Next.js must not import @repo/markets. Call Fastify via @repo/core.',
             },
             {
+              name: '@repo/onchain',
+              message: 'Next.js must not import @repo/onchain. Call Fastify via @repo/core.',
+            },
+            {
               name: 'drizzle-orm',
               message: 'Next.js must not import drizzle-orm. Database access stays in @repo/db.',
             },

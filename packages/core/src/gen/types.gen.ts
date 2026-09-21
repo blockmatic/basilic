@@ -1038,6 +1038,59 @@ export type AccountProfileUpdateResponses = {
 
 export type AccountProfileUpdateResponse = AccountProfileUpdateResponses[keyof AccountProfileUpdateResponses];
 
+export type AccountWalletGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/account/wallet/';
+};
+
+export type AccountWalletGetErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type AccountWalletGetError = AccountWalletGetErrors[keyof AccountWalletGetErrors];
+
+export type AccountWalletGetResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    address: string | unknown;
+    tokens: Array<{
+      network: 'eth-mainnet' | 'base-mainnet';
+      tokenAddress: string | unknown;
+      symbol: string | unknown;
+      name: string | unknown;
+      amount: string;
+      quoteUsd: number | unknown;
+      logoUrl: string | unknown;
+      assetId: string | unknown;
+    }>;
+    nfts: Array<{
+      network: 'eth-mainnet' | 'base-mainnet';
+      contractAddress: string;
+      tokenId: string;
+      name: string | unknown;
+      collectionName: string | unknown;
+      imageUrl: string | unknown;
+    }>;
+    error: string | unknown;
+  };
+};
+
+export type AccountWalletGetResponse = AccountWalletGetResponses[keyof AccountWalletGetResponses];
+
 export type GetAgentByIdData = {
   body?: never;
   path: {

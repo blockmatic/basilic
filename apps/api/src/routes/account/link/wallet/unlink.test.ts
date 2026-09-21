@@ -1,13 +1,12 @@
+import { randomUUID } from 'node:crypto'
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { getApiKeyToken, getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
-const anvilPrivateKeys = [
-  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-  '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b786127',
-] as const
+const anvilPrivateKey =
+  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as const
 
 async function linkWallet(jwt: string, privateKey: `0x${string}`): Promise<string> {
   const testAccount = privateKeyToAccount(privateKey)
@@ -95,7 +94,7 @@ describe('DELETE /account/link/wallet/:id', () => {
     })
     const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
 
-    const walletId = await linkWallet(jwt, anvilPrivateKeys[0])
+    const walletId = await linkWallet(jwt, anvilPrivateKey)
 
     const response = await fastify.inject({
       method: 'DELETE',
@@ -118,7 +117,7 @@ describe('DELETE /account/link/wallet/:id', () => {
       return (JSON.parse(verifyRes.body) as { token: string }).token
     })()
 
-    const walletId = await linkWallet(jwt, anvilPrivateKeys[0])
+    const walletId = await linkWallet(jwt, anvilPrivateKey)
 
     const response = await fastify.inject({
       method: 'DELETE',
@@ -137,7 +136,7 @@ describe('DELETE /account/link/wallet/:id', () => {
       payload: { email, token },
     })
     const jwt = (JSON.parse(verifyRes.body) as { token: string }).token
-    const walletId = await linkWallet(jwt, anvilPrivateKeys[0])
+    const walletId = await linkWallet(jwt, anvilPrivateKey)
 
     const db = await (await import('@repo/db')).getDb()
     const { users } = await import('@repo/db/schema')
@@ -178,8 +177,17 @@ describe('DELETE /account/link/wallet/:id', () => {
       headers: { Authorization: `Bearer ${jwt}` },
     })
     const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
-    const walletId1 = await linkWallet(jwt, anvilPrivateKeys[0])
-    const walletId2 = await linkWallet(jwt, anvilPrivateKeys[1])
+    const walletId1 = await linkWallet(jwt, anvilPrivateKey)
+    const walletId2 = randomUUID()
+    const now = new Date()
+    await db.insert(walletIdentities).values({
+      id: walletId2,
+      userId,
+      chain: 'solana',
+      address: '4Cw1koUQtqybLFem7uqhzMBznMPGARbFS4cjaYbM9RnR',
+      createdAt: now,
+      lastUsedAt: now,
+    })
     await db.update(users).set({ email: null }).where(eq(users.id, userId))
 
     const [first, second] = await Promise.all([

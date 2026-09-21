@@ -106,6 +106,7 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
 
       const userId = request.session.user.id
       let walletAlreadyLinked = false
+      let walletEip155Limit = false
 
       try {
         await db.transaction(async tx => {
@@ -130,6 +131,19 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
             return
           }
 
+          if (chain === 'eip155') {
+            const [ownEip155] = await tx
+              .select({ id: walletIdentities.id })
+              .from(walletIdentities)
+              .where(and(eq(walletIdentities.userId, userId), eq(walletIdentities.chain, 'eip155')))
+              .limit(1)
+            if (ownEip155) {
+              walletEip155Limit = true
+              await tx.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
+              return
+            }
+          }
+
           await tx.insert(walletIdentities).values({
             id: randomUUID(),
             userId,
@@ -151,6 +165,8 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
 
       if (walletAlreadyLinked)
         return sendCatalogError({ reply, status: 409, code: 'WALLET_ALREADY_LINKED' })
+      if (walletEip155Limit)
+        return sendCatalogError({ reply, status: 409, code: 'WALLET_EIP155_LIMIT' })
 
       return reply.code(200).send({ ok: true })
     },

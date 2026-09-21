@@ -41,6 +41,7 @@ account: {
   },
   passkeys: gen.accountPasskeysList,
   profile: gen.accountProfileUpdate,
+  wallet: gen.accountWalletGet,
 },
 agents: {
   agentId: gen.getAgentById,

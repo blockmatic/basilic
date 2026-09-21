@@ -11,6 +11,8 @@ import type { ReactNode } from 'react'
 import { UserInfoComponent } from '@/components/assistant/user-info-catalog'
 import { boardCatalog } from '@/lib/genui'
 import { DataTable } from './data-table'
+import { NftGrid } from './nft-grid'
+import { TokenTable } from './token-table'
 
 const stackGapClass = { sm: 'gap-2', md: 'gap-4', lg: 'gap-6' } as const
 
@@ -133,6 +135,8 @@ export const { registry: boardRegistry } = defineRegistry(boardCatalog, {
     PercentageChange,
     Insight: ({ props }) => <p className="text-muted-foreground text-sm">{props.text}</p>,
     UserInfo: UserInfoComponent,
+    TokenTable,
+    NftGrid,
   },
   actions: {
     reset_view: async () => {},

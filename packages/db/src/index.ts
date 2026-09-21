@@ -1,6 +1,7 @@
 export { type AccountSnapshot, getAccountSnapshot } from './account-snapshot.js'
-export { getAsset, listAssets } from './assets.js'
+export { findAssetIdByNetwork, getAsset, listAssets } from './assets.js'
 export type { Db } from './client.js'
 export { closeDb, configureDb, getDb, isDbReady, resetDbInstance } from './client.js'
 export { getValidSession } from './sessions.js'
+export { countLinkedEip155, getLinkedEip155 } from './wallets.js'
 export { listWatches, unwatchAsset, watchAsset } from './watches.js'
