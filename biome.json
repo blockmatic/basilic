@@ -40,6 +40,10 @@
       "!**/tools/create-basilic/template",
       "!.agents/skills",
       "!agent",
+      "apps/agents/agent/**",
+      "!**/.eve",
+      "!**/.output",
+      "!**/.nitro",
       "!.claude"
     ],
     "maxSize": 1048576

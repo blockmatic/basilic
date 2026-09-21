@@ -52,6 +52,7 @@ Maintain one version-controlled **include-and-transform manifest**, colocated wi
 | --- | --- |
 | `apps/api`, `apps/web`, `apps/mobile` | Include source, tests, assets, migrations, and safe configuration. |
 | `apps/docu` | Exclude the application, its build dependencies, and its Turbo tasks. |
+| `apps/agents` | Exclude the eve hello workspace until a later E PR copies it. |
 | Existing `packages/*`, including `packages/cli` | Include. Preserve `@repo/*` names and `workspace:*` links. |
 | `tools/eslint`, `tools/typescript` | Include; generated projects need these. |
 | `tools/create-basilic` and future maintainer-only tools | Exclude. |

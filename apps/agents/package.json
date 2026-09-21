@@ -1,0 +1,33 @@
+{
+  "name": "@repo/agents",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "imports": {
+    "#*": "./agent/*",
+    "#evals/*": "./evals/*"
+  },
+  "scripts": {
+    "checktypes": "tsc --noEmit",
+    "eve:build": "eve build",
+    "eve:dev": "eve dev --port 3004 --no-ui",
+    "eve:start": "eve start --port 3004",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0"
+  },
+  "dependencies": {
+    "@vercel/connect": "2.2.0",
+    "ai": "^7.0.102",
+    "eve": "^0.63.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@types/node": "^24.13.5",
+    "eslint": "^10.10.0",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
+  }
+}

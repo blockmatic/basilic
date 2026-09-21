@@ -44,6 +44,7 @@ jobs:
           node "$work/package/dist/cli.js" "$dest" --yes
           test -f "$dest/package.json"
           test ! -d "$dest/apps/docu"
+          test ! -d "$dest/apps/agents"
           test ! -d "$dest/tools/create-basilic"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -121,4 +122,5 @@ jobs:
           npx --yes "create-basilic@$VERSION" "$work/from-npx" --yes
           test -f "$work/from-npx/package.json"
           test ! -d "$work/from-npx/apps/docu"
+          test ! -d "$work/from-npx/apps/agents"
           test ! -d "$work/from-npx/tools/create-basilic"

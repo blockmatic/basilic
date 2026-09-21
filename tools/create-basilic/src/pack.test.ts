@@ -35,6 +35,7 @@ describe.skipIf(!runPack)('npm pack outside the workspace', () => {
     expect(generate.status, generate.stderr).toBe(0)
     expect(existsSync(join(dest, 'package.json'))).toBe(true)
     expect(existsSync(join(dest, 'apps/docu'))).toBe(false)
+    expect(existsSync(join(dest, 'apps/agents'))).toBe(false)
     expect(existsSync(join(dest, 'tools/create-basilic'))).toBe(false)
     rmSync(work, { recursive: true, force: true })
   })

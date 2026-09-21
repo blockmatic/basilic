@@ -8,6 +8,7 @@ describe('classifyPath', () => {
 
   it('excludes the documentation app and generator', () => {
     expect(classifyPath({ path: 'apps/docu/package.json', manifest })?.kind).toBe('exclude')
+    expect(classifyPath({ path: 'apps/agents/package.json', manifest })?.kind).toBe('exclude')
     expect(classifyPath({ path: 'tools/create-basilic/src/cli.ts', manifest })?.kind).toBe(
       'exclude',
     )
