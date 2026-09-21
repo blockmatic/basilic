@@ -41,6 +41,7 @@ export default [
     ignores: [
       'node_modules/**',
       '.eve/**',
+      '**/.eve/**',
       '.output/**',
       '.nitro/**',
       '.vercel/**',

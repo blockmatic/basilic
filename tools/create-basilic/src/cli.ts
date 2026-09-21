@@ -30,7 +30,7 @@ program
       process.stdout.write('Next:\n')
       process.stdout.write(`  cd ${directory}\n`)
       process.stdout.write('  pnpm setup\n')
-      process.stdout.write('  pnpm --filter @repo/api db:start\n')
+      process.stdout.write('  pnpm db:start\n')
       process.stdout.write('  pnpm reset\n')
       process.stdout.write('  pnpm dev\n\n')
       process.stdout.write(

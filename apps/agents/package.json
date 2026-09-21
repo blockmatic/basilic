@@ -11,8 +11,9 @@
   },
   "scripts": {
     "checktypes": "tsc --noEmit",
+    "dev": "eve dev --agent command --port 3004 --no-ui",
     "eve:build": "eve build",
-    "eve:dev": "eve dev --agent command --port 3004 --no-ui",
+    "eve:dev": "pnpm run dev",
     "eve:dev:chat": "eve dev --agent chat --port 3005 --no-ui",
     "eve:start": "eve start --port 3004",
     "eve:eval": "eve eval --agent command",
