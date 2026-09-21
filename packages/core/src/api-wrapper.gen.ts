@@ -42,6 +42,10 @@ account: {
   passkeys: gen.accountPasskeysList,
   profile: gen.accountProfileUpdate,
 },
+agents: {
+  agentId: gen.getAgentById,
+},
+listAgents: gen.listAgents,
 ai: {
   chat: gen.chat,
   generate: gen.generate,

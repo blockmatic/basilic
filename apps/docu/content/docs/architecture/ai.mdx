@@ -7,7 +7,7 @@ Four planes:
 
 - **Control** — Fastify product HTTP. `POST /ai/generate` stays. `POST /ai/chat` is demo chrome scheduled to retire once eve command and chat agents land.
 - **Interaction and execution** — eve on a separate host. Hello lives in `apps/agents` — [Eve](/docs/architecture/eve). Not a Fastify proxy. No coordinator agent.
-- **Domain** — `@repo/db` named functions; market HTTP still `apps/api/src/lib/markets/` until extract to `@repo/markets`. Next keeps `@repo/core`.
+- **Domain** — `@repo/db` named functions and `@repo/markets` vendor HTTP. Next keeps `@repo/core`.
 - **Presentation** — json-render on Next. `composeSurface` in `apps/web/lib/genui` builds Specs. Board chrome lives on [Frontend](/docs/architecture/frontend).
 
 Models are implementation details; agents are product capabilities (`command`, `chat`). `getProvider()` resolves Fastify language models. Jev (`getEvaluationModel` / `experimental_evaluate`) **judges** refuse / canned / surface and is **not in the tree** until it lands on eve. Jev does not author json-render trees. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).

@@ -9,20 +9,12 @@ export default [
         {
           paths: [
             {
-              name: '@repo/db',
-              message: 'Eve hello must not import @repo/db. Named db fns land in E2.',
-            },
-            {
               name: '@repo/db/schema',
-              message: 'Eve must not import @repo/db/schema. Use named functions in E2.',
+              message: 'Eve must not import @repo/db/schema. Use named functions.',
             },
             {
               name: 'drizzle-orm',
               message: 'Eve must not import drizzle-orm. Database access stays in @repo/db.',
-            },
-            {
-              name: '@repo/markets',
-              message: '@repo/markets is not in this hello workspace. Extract in E2.',
             },
             {
               name: '@repo/onchain',
@@ -36,11 +28,17 @@ export default [
           patterns: [
             {
               group: ['@repo/db/*', 'drizzle-orm/*', 'fastify/*', '@repo/api', '@repo/api/*'],
-              message: 'Eve hello stays off Fastify, @repo/db, and drizzle-orm.',
+              message: 'Eve stays off Fastify, @repo/db/schema, and drizzle-orm.',
             },
           ],
         },
       ],
+    },
+  },
+  {
+    files: ['**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': 'off',
     },
   },
   {

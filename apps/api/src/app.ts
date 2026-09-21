@@ -4,6 +4,7 @@ import AutoLoad, { type AutoloadPluginOptions } from '@fastify/autoload'
 import type { FastifyPluginAsync } from 'fastify'
 
 import { env } from './lib/env.js'
+import './lib/markets-host.js'
 
 const appFile = fileURLToPath(import.meta.url)
 const appDir = path.dirname(appFile)

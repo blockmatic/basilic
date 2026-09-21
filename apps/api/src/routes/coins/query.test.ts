@@ -1,8 +1,8 @@
 import { getDb, watchAsset } from '@repo/db'
 import { coinWatches } from '@repo/db/schema'
+import { resetCoinGeckoClient, resetMarketsRuntime } from '@repo/markets'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { getOrCreateSession } from '../../../test/utils/auth-helper.js'
-import { resetCoinGeckoClient, resetMarketsRuntime } from '../../lib/markets/index.js'
 import { fastify } from './coins.spec.js'
 
 type QueryBody = {

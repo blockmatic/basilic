@@ -7,6 +7,7 @@ import Fastify from 'fastify'
 import app from './src/app.js'
 import { waitForDatabase } from './src/db/health.js'
 import { env } from './src/lib/env.js'
+import './src/lib/markets-host.js'
 import { createApiLoggerOptions } from './src/lib/http-logging.js'
 
 if (env.NODE_ENV === 'production' && env.ALLOW_TEST) {

@@ -1,4 +1,3 @@
-export type { CachePort, CacheRecord } from './cache.js'
 export { configureMarkets, createMemoryCache, resetMarketsRuntime } from './cache.js'
 export {
   getAsset,
@@ -10,10 +9,13 @@ export {
   searchAssets,
 } from './capabilities.js'
 export { resetCoinGeckoClient } from './coingecko.js'
+export { getMarketsConfig, resetMarketsConfig } from './config.js'
 export { fixtureMarkets, fixtureQuotes, fixtureSync } from './fixture.js'
 export type {
   AssetDetail,
   AssetMapping,
+  CachePort,
+  CacheRecord,
   Candle,
   CandlesResult,
   GetAssetArgs,

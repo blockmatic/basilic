@@ -58,10 +58,14 @@ import type {
   DeleteCoinWatchByIdResponse,
   GenerateData,
   GenerateResponse,
+  GetAgentByIdData,
+  GetAgentByIdResponse,
   GetUserData,
   GetUserResponse,
   HealthCheckData,
   HealthCheckResponse,
+  ListAgentsData,
+  ListAgentsResponse,
   ListCoinWatchesData,
   ListCoinWatchesResponse,
   ListCoinsData,
@@ -162,6 +166,10 @@ export type CoreApiClient = {
     passkeys: (opts?: Options<AccountPasskeysListData>) => Promise<AccountPasskeysListResponse>;
     profile: (opts: Options<AccountProfileUpdateData>) => Promise<AccountProfileUpdateResponse>
   };
+  agents: {
+    agentId: (opts: Options<GetAgentByIdData>) => Promise<GetAgentByIdResponse>
+  };
+  listAgents: (opts?: Options<ListAgentsData>) => Promise<ListAgentsResponse>;
   ai: {
     chat: (opts: Options<ChatData>) => Promise<ChatResponse>;
     generate: (opts: Options<GenerateData>) => Promise<GenerateResponse>

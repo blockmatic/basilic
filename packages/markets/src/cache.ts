@@ -1,13 +1,7 @@
 import { logger } from '@repo/utils/logger/server'
+import { configureMarkets as setMarketsConfig, takeConfiguredCache } from './config.js'
 import { vendorStatus } from './policy.js'
-import type { Provenance, Vendor } from './types.js'
-
-export type CacheRecord = { value: unknown; expiresAt: number }
-
-export type CachePort = {
-  get: (key: string) => Promise<CacheRecord | undefined> | CacheRecord | undefined
-  set: (key: string, record: CacheRecord) => Promise<void> | void
-}
+import type { CachePort, CacheRecord, Provenance, Vendor } from './types.js'
 
 type Circuit = { consecutive429: number; openUntil: number }
 
@@ -36,7 +30,7 @@ function emptyCircuits(): Record<Vendor, Circuit> {
 }
 
 export function createMarketsRuntime({
-  cache = createMemoryCache(),
+  cache = takeConfiguredCache() ?? createMemoryCache(),
 }: {
   cache?: CachePort
 } = {}): MarketsRuntime {
@@ -54,8 +48,30 @@ function setRuntime(next: MarketsRuntime): void {
   g.__basilicMarketsRuntime = next
 }
 
-export function configureMarkets({ cache }: { cache: CachePort }): void {
-  setRuntime({ ...getRuntime(), cache })
+export function configureMarkets({
+  cache,
+  coinGeckoDemoApiKey,
+  coinsUseFixture,
+  cacheMs,
+  quoteCacheMs,
+  klinesCacheMs,
+}: {
+  cache?: CachePort
+  coinGeckoDemoApiKey?: string
+  coinsUseFixture?: boolean
+  cacheMs?: number
+  quoteCacheMs?: number
+  klinesCacheMs?: number
+} = {}): void {
+  setMarketsConfig({
+    cache,
+    coinGeckoDemoApiKey,
+    coinsUseFixture,
+    cacheMs,
+    quoteCacheMs,
+    klinesCacheMs,
+  })
+  if (cache) setRuntime({ ...getRuntime(), cache })
 }
 
 export function resetMarketsRuntime(): void {

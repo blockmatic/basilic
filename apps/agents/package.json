@@ -7,20 +7,27 @@
     "node": "24.x"
   },
   "imports": {
-    "#*": "./agent/*",
-    "#evals/*": "./evals/*"
+    "#lib/*": "./lib/*"
   },
   "scripts": {
     "checktypes": "tsc --noEmit",
     "eve:build": "eve build",
-    "eve:dev": "eve dev --port 3004 --no-ui",
+    "eve:dev": "eve dev --agent command --port 3004 --no-ui",
+    "eve:dev:chat": "eve dev --agent chat --port 3005 --no-ui",
     "eve:start": "eve start --port 3004",
     "lint:eslint": "eslint . --max-warnings 0",
-    "lint:eslint:fix": "eslint . --fix --max-warnings 0"
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "test": "vitest run",
+    "test:unit": "vitest run"
   },
   "dependencies": {
+    "@repo/db": "workspace:*",
+    "@repo/markets": "workspace:*",
+    "@repo/utils": "workspace:*",
+    "@t3-oss/env-core": "^0.13.11",
     "@vercel/connect": "2.2.0",
     "ai": "^7.0.102",
+    "dotenv": "^17.4.2",
     "eve": "^0.63.0",
     "zod": "^4.6.5"
   },
@@ -28,6 +35,7 @@
     "@repo/eslint-config": "workspace:*",
     "@types/node": "^24.13.5",
     "eslint": "^10.10.0",
-    "typescript": "npm:@typescript/typescript6@^6.0.2"
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "vitest": "^5.0.1"
   }
 }

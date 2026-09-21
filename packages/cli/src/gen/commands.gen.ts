@@ -191,6 +191,22 @@ export const operationMeta = {
       }
     ]
   },
+  "getAgentById": {
+    "summary": "Get agent",
+    "description": "Get one product eve agent by id (command or chat). JWT required.",
+    "pathParams": [
+      {
+        "name": "agentId"
+      }
+    ],
+    "bodyParams": []
+  },
+  "listAgents": {
+    "summary": "List agents",
+    "description": "List product eve agents (command, chat). JWT required. Endpoints are absolute eve origins.",
+    "pathParams": [],
+    "bodyParams": []
+  },
   "chat": {
     "summary": "Generate AI chat response",
     "description": "Chat with AI via Anthropic, Open Router, or Ollama. Set ANTHROPIC_API_KEY, OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.",
@@ -464,6 +480,19 @@ export const commandSpecs = [
       "profile"
     ],
     "operationId": "accountProfileUpdate"
+  },
+  {
+    "path": [
+      "agents",
+      "agent-id"
+    ],
+    "operationId": "getAgentById"
+  },
+  {
+    "path": [
+      "list-agents"
+    ],
+    "operationId": "listAgents"
   },
   {
     "path": [

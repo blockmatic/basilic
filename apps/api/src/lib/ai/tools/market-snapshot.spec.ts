@@ -1,5 +1,5 @@
+import { fixtureMarkets, resetCoinGeckoClient, resetMarketsRuntime } from '@repo/markets'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fixtureMarkets, resetCoinGeckoClient, resetMarketsRuntime } from '../../markets/index.js'
 import { loadMarketRows } from './market-snapshot.js'
 
 const frozenMarkets = Object.freeze([

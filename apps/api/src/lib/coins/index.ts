@@ -1,4 +1,4 @@
-export { fixtureQuotes, fixtureSync } from '../markets/index.js'
+export { fixtureQuotes, fixtureSync } from '@repo/markets'
 export { queryCoins } from './query.js'
 export { listMarkets } from './read.js'
 export { coinsRouteRateLimit, coinsRouteRateLimitConfig } from './route-rate-limit.js'

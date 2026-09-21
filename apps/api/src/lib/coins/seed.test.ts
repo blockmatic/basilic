@@ -1,8 +1,8 @@
 import { getDb } from '@repo/db'
 import { assetMarkets, assetNetworks, assetProviders, assets } from '@repo/db/schema'
+import { fixtureQuotes } from '@repo/markets'
 import { count, eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
-import { fixtureQuotes } from '../markets/index.js'
 import { seedIdentity } from './seed.js'
 
 describe('seedIdentity', () => {

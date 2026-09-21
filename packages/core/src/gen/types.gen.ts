@@ -1037,6 +1037,123 @@ export type AccountProfileUpdateResponses = {
 
 export type AccountProfileUpdateResponse = AccountProfileUpdateResponses[keyof AccountProfileUpdateResponses];
 
+export type GetAgentByIdData = {
+  body?: never;
+  path: {
+    agentId: string;
+  };
+  query?: never;
+  url: '/agents/{agentId}';
+};
+
+export type GetAgentByIdErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  404: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type GetAgentByIdError = GetAgentByIdErrors[keyof GetAgentByIdErrors];
+
+export type GetAgentByIdResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    id: 'command' | 'chat';
+    name: string;
+    endpoint: string;
+    transport: 'eve';
+    presentation: string;
+    capabilities: Array<string>;
+    features: Array<string>;
+  };
+};
+
+export type GetAgentByIdResponse = GetAgentByIdResponses[keyof GetAgentByIdResponses];
+
+export type ListAgentsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/agents/';
+};
+
+export type ListAgentsErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type ListAgentsError = ListAgentsErrors[keyof ListAgentsErrors];
+
+export type ListAgentsResponses = {
+  /**
+   * Default Response
+   */
+  200: Array<{
+    id: 'command' | 'chat';
+    name: string;
+    endpoint: string;
+    transport: 'eve';
+    presentation: string;
+    capabilities: Array<string>;
+    features: Array<string>;
+  }>;
+};
+
+export type ListAgentsResponse = ListAgentsResponses[keyof ListAgentsResponses];
+
 export type ChatData = {
   body: {
     messages: Array<{

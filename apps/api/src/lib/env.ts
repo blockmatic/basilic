@@ -135,6 +135,8 @@ export const env = createEnv({
       .default('Your App'),
     WEB_APP_URL: z.string().url().default('http://localhost:3000'),
     DOCS_SITE_URL: z.string().url().default('https://basilic-docs.vercel.app'),
+    EVE_COMMAND_URL: z.string().url().default('http://127.0.0.1:3004'),
+    EVE_CHAT_URL: z.string().url().default('http://127.0.0.1:3005'),
     ALLOW_TEST: z.coerce.boolean().default(false),
     // GitHub OAuth (optional - OAuth routes return 503 when unset)
     GITHUB_CLIENT_ID: z.string().min(1).optional(),
@@ -191,6 +193,3 @@ export const env = createEnv({
 
 /** Zod defaults `LOG_LEVEL` to info; tests stay silent unless the env var is set. */
 export const logLevelProvided = process.env.LOG_LEVEL != null && process.env.LOG_LEVEL !== ''
-
-export const marketsQuoteCacheMs = 30_000
-export const marketsKlinesCacheMs = 60_000

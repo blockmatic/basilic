@@ -1,7 +1,7 @@
 import { getDb } from '@repo/db'
 import { assetMarkets, assetNetworks, assetProviders, assets, coinWatches } from '@repo/db/schema'
+import { fixtureQuotes, resetCoinGeckoClient, resetMarketsRuntime } from '@repo/markets'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fixtureQuotes, resetCoinGeckoClient, resetMarketsRuntime } from '../markets/index.js'
 import { listMarkets } from './read.js'
 
 const frozenMarkets = Object.freeze([
