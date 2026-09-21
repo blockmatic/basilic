@@ -11,9 +11,9 @@ Account linking lets users attach additional sign-in methods (email, OAuth provi
 
 | Capability | Change email | Link email |
 |------------|--------------|------------|
-| Effect | Replaces `users.email` | Sets `users.email` when it is currently null (e.g. Web3-only account) |
+| Effect | Replaces `users.email` | Sets `users.email` when it is currently null |
 | Flow | Request → verify code/link → update | Request → verify link → set email |
-| Use case | User changes email address | User adds email sign-in to a wallet/OAuth-only account |
+| Use case | User changes email address | Authenticated session with `users.email` null requests a primary email |
 | Already has email | Allowed (change) | 409 `EMAIL_ALREADY_SET` (use change email) |
 | Email owned by another user | 409 `EMAIL_ALREADY_IN_USE` | 409 `EMAIL_ALREADY_IN_USE` |
 
@@ -51,3 +51,7 @@ OAuth providers are trusted for identity on first link. Subsequent links require
 Users must keep at least one sign-in method. Sign-in methods: `users.email`, OAuth `account`, `wallet_identities`, `passkey_credentials`. **TOTP is 2FA only** — unlinking TOTP is always allowed.
 
 Unlinking wallet, OAuth, or passkey fails with 400 `LAST_SIGN_IN_METHOD` if it would leave no way to sign in.
+
+## Wallet linking
+
+`POST /account/link/wallet/verify` binds `domain` the same way login verify does (`ALLOWED_ORIGINS` hostnames) and requires `users.email`. Accounts without email get **400** `EMAIL_REQUIRED`. Settings lists `linkedWallets` from `GET /auth/session/user`, opens the same custom modal, and unlinks with `DELETE /account/link/wallet/:id`. New addresses cannot self-register via SIWE/SIWS; that path returns `WALLET_NOT_LINKED`. `POST /account/link/email/request` remains available to any authenticated session whose `users.email` is null.

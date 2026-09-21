@@ -1,8 +1,7 @@
-import { randomUUID } from 'node:crypto'
 import { getDb } from '@repo/db'
 import { users, walletIdentities, web3Nonce } from '@repo/db/schema'
 import { and, eq } from 'drizzle-orm'
-import { generateFunnyUsername } from '../username.js'
+import { walletIdentityAddressEquals } from './verify.js'
 
 type ParsedMessage = { address: string; nonce: string; domain: string }
 
@@ -69,44 +68,38 @@ export async function verifyWeb3Auth({
   const valid = await verifySignature({ message, signature, validatedAddress })
   if (!valid) return { ok: false, code: 'INVALID_SIGNATURE', message: 'Invalid signature' }
 
-  const [wallet] = await db
+  const wallets = await db
     .select()
     .from(walletIdentities)
-    .where(and(eq(walletIdentities.chain, chain), eq(walletIdentities.address, validatedAddress)))
+    .where(
+      and(
+        eq(walletIdentities.chain, chain),
+        walletIdentityAddressEquals({ address: validatedAddress }),
+      ),
+    )
+  const wallet = wallets.find(row => row.address === validatedAddress) ?? wallets[0]
 
-  let user: typeof users.$inferSelect | undefined
-  if (wallet) {
-    const [u] = await db.select().from(users).where(eq(users.id, wallet.userId))
-    user = u
-  }
+  if (!wallet)
+    return {
+      ok: false,
+      code: 'WALLET_NOT_LINKED',
+      message:
+        'This wallet is not linked to an account. Sign in with email or another method first, then link a wallet in Settings.',
+    }
 
-  if (!user) {
-    const userId = randomUUID()
-    await db.transaction(async tx => {
-      const username = await generateFunnyUsername(tx)
-      await tx.insert(users).values({
-        id: userId,
-        email: null,
-        emailVerified: false,
-        username,
-      })
-      await tx.insert(walletIdentities).values({
-        id: randomUUID(),
-        userId,
-        chain,
-        address: validatedAddress,
-        walletProvider: null,
-      })
-    })
-    const [created] = await db.select().from(users).where(eq(users.id, userId))
-    if (!created) throw new Error('Failed to create user')
-    user = created
-  } else if (wallet) {
-    await db
-      .update(walletIdentities)
-      .set({ lastUsedAt: new Date() })
-      .where(eq(walletIdentities.id, wallet.id))
-  }
+  const [user] = await db.select().from(users).where(eq(users.id, wallet.userId))
+  if (!user)
+    return {
+      ok: false,
+      code: 'WALLET_NOT_LINKED',
+      message:
+        'This wallet is not linked to an account. Sign in with email or another method first, then link a wallet in Settings.',
+    }
+
+  await db
+    .update(walletIdentities)
+    .set({ lastUsedAt: new Date() })
+    .where(eq(walletIdentities.id, wallet.id))
 
   return {
     ok: true,

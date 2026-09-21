@@ -5,6 +5,7 @@ import { Type } from '@sinclair/typebox'
 import { and, eq, gt } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
 import { decryptCallbackTokens } from '../../../db/callback-tokens.js'
+import { authLoginRouteConfig } from '../../../lib/auth/index.js'
 import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { hashToken } from '../../../lib/jwt.js'
 import { ErrorResponseSchema } from '../../schemas.js'
@@ -35,6 +36,7 @@ const web3ExchangeRoute: FastifyPluginAsync = async fastify => {
           401: ErrorResponseSchema,
         },
       },
+      config: authLoginRouteConfig,
     },
     async (request, reply) => {
       const { code } = request.body

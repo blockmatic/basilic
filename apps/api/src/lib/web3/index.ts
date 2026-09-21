@@ -5,4 +5,5 @@ export {
   parseSignInMessage,
   verifyWalletSignature,
   type Web3Chain,
+  walletIdentityAddressEquals,
 } from './verify.js'

@@ -1,4 +1,6 @@
+import { walletIdentities } from '@repo/db/schema'
 import bs58 from 'bs58'
+import { sql } from 'drizzle-orm'
 import nacl from 'tweetnacl'
 import type { Hex } from 'viem'
 import { getAddress, verifyMessage } from 'viem'
@@ -49,15 +51,19 @@ export async function verifyWalletSignature({
 }
 
 // Parse SIWE/SIWS message to extract address and nonce
-export function parseSignInMessage(message: string): { address: string; nonce: string } | null {
-  // SIWE format: "domain wants you to sign in with your Ethereum account:\n{address}\n..."
-  // SIWS format: "domain wants you to sign in with your Solana account:\n{address}\n..."
-  const addrMatch = message.match(
-    /wants you to sign in with your (?:Ethereum|Solana) account:\s*\n([^\s\n]+)/i,
+export function parseSignInMessage(
+  message: string,
+): { address: string; nonce: string; domain: string } | null {
+  const headerMatch = message.match(
+    /^(\S+) wants you to sign in with your (?:Ethereum|Solana) account:\s*\n([^\s\n]+)/i,
   )
   const nonceMatch = message.match(/Nonce:\s*(\S+)/i)
-  if (!addrMatch?.[1] || !nonceMatch?.[1]) return null
-  return { address: addrMatch[1].trim(), nonce: nonceMatch[1].trim() }
+  if (!headerMatch?.[1] || !headerMatch[2] || !nonceMatch?.[1]) return null
+  return {
+    domain: headerMatch[1].trim(),
+    address: headerMatch[2].trim(),
+    nonce: nonceMatch[1].trim(),
+  }
 }
 
 export function getCanonicalAddress({
@@ -70,6 +76,10 @@ export function getCanonicalAddress({
   return normalizeAddress({ chain, address })
 }
 
+export function walletIdentityAddressEquals({ address }: { address: string }) {
+  return sql`lower(${walletIdentities.address}) = ${address.toLowerCase()}`
+}
+
 function normalizeAddress({
   chain,
   address,
@@ -79,7 +89,7 @@ function normalizeAddress({
 }): string | null {
   if (chain === eip155Chain)
     try {
-      return getAddress(address).toLowerCase()
+      return getAddress(address)
     } catch {
       return null
     }

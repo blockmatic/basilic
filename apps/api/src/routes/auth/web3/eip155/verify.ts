@@ -6,6 +6,8 @@ import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
 import { SiweMessage } from 'siwe'
 import { encryptCallbackTokens } from '../../../../db/callback-tokens.js'
+import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
+import type { ErrorCode } from '../../../../lib/catalogs/mapper.js'
 import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { env } from '../../../../lib/env.js'
 import { generateToken, hashToken } from '../../../../lib/jwt.js'
@@ -48,6 +50,7 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
           500: ErrorResponseSchema,
         },
       },
+      config: authLoginRouteConfig,
     },
     async (request, reply) => {
       const { message, signature, domain, callbackUrl } = request.body
@@ -81,7 +84,8 @@ const eip155VerifyRoute: FastifyPluginAsync = async fastify => {
         },
       })
 
-      if (!result.ok) return reply.code(401).send({ code: result.code, message: result.message })
+      if (!result.ok)
+        return sendCatalogError({ reply, status: 401, code: result.code as ErrorCode })
 
       const db = await getDb()
       const walletInfo = { chain: 'eip155' as const, address: result.validatedAddress }

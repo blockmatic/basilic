@@ -7,16 +7,16 @@ import {
   usePasskeyDiscovery,
   useWebAuthnAvailable,
 } from '@repo/react'
-import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
-import { Button } from '@repo/ui/components/button'
-import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
+import { WalletLoginButton } from '@/components/wallet/wallet-login-button'
 import { capture } from '@/lib/analytics'
 import { getApiErrorCode } from '@/lib/auth/api-error'
 import { updateAuthTokens } from '@/lib/auth/auth-client'
+import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
+import { ErrorBanner } from './login-error-banner'
 import { LoginForm } from './login-form'
 import { PasskeyShortcut } from './passkey-shortcut'
 import { useGoogleOneTap } from './use-google-one-tap'
@@ -25,7 +25,7 @@ type LoginActionsProps = { initialError?: string }
 
 type OAuthButtonsProps = {
   anyPending: boolean
-  setLastAuthMethod: (m: 'oauth' | 'passkey') => void
+  setLastAuthMethod: (m: 'oauth' | 'passkey' | 'wallet') => void
   startOAuthLogin: (p: 'github' | 'google' | 'facebook' | 'twitter') => void
   onGoogleClick: () => void
   isGithubConfigured: boolean
@@ -39,6 +39,7 @@ type OAuthButtonsProps = {
   webauthnAvailable: boolean
   startPasskeyAuth: (opts: { callbackUrl: string }) => void
   isPasskeyPending: boolean
+  onWalletError: (error: unknown) => void
 }
 
 function OAuthButtons({
@@ -57,9 +58,17 @@ function OAuthButtons({
   webauthnAvailable,
   startPasskeyAuth,
   isPasskeyPending,
+  onWalletError,
 }: OAuthButtonsProps) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-3">
+      <WalletLoginButton
+        disabled={anyPending}
+        onError={error => {
+          setLastAuthMethod('wallet')
+          onWalletError(error)
+        }}
+      />
       {webauthnAvailable && (
         <button
           type="button"
@@ -130,30 +139,11 @@ function OAuthButtons({
   )
 }
 
-function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () => void }) {
-  return (
-    <Alert variant="destructive" className="mb-4">
-      <AlertTitle className="text-center">Error</AlertTitle>
-      <AlertDescription className="flex items-center justify-between gap-2">
-        <span className="flex-1 text-center">{message}</span>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 shrink-0"
-          onClick={onDismiss}
-          aria-label="Dismiss"
-        >
-          <X className="size-4" />
-        </Button>
-      </AlertDescription>
-    </Alert>
-  )
-}
-
 export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Element {
   const router = useRouter()
   const [dismissedForError, setDismissedForError] = useState<string | null>(null)
-  const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | null>(null)
+  const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | 'wallet' | null>(null)
+  const [walletError, setWalletError] = useState<string | null>(null)
   const [optedOutEmails, setOptedOutEmails] = useState<Set<string>>(() => new Set())
   const [oneTapSkipped, setOneTapSkipped] = useState(false)
   const { mutate: startOAuthLogin, error: oauthError, isPending: isOAuthPending } = useOAuthLogin()
@@ -187,12 +177,15 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
   const { email: discoveryEmail } = usePasskeyDiscovery()
   const webauthnAvailable = useWebAuthnAvailable()
   const anyPending = isOAuthPending || isPasskeyPending || isGooglePending
+  const walletBanner = walletError
   const displayError =
-    lastAuthMethod === 'passkey'
-      ? (passkeyError?.message ?? oauthError?.message ?? initialError)
-      : lastAuthMethod === 'oauth'
-        ? (oauthError?.message ?? passkeyError?.message ?? initialError)
-        : (oauthError?.message ?? passkeyError?.message ?? initialError)
+    lastAuthMethod === 'wallet'
+      ? (walletBanner ?? initialError)
+      : lastAuthMethod === 'passkey'
+        ? (passkeyError?.message ?? oauthError?.message ?? initialError)
+        : lastAuthMethod === 'oauth'
+          ? (oauthError?.message ?? passkeyError?.message ?? initialError)
+          : (oauthError?.message ?? passkeyError?.message ?? walletBanner ?? initialError)
   const showBanner = displayError && displayError !== dismissedForError
 
   const handleGoogleClick = useCallback(() => {
@@ -268,6 +261,18 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
             webauthnAvailable={webauthnAvailable}
             startPasskeyAuth={opts => startPasskeyAuth(opts, { onError: capturePasskeyFailed })}
             isPasskeyPending={isPasskeyPending}
+            onWalletError={error => {
+              const code = getApiErrorCode(error)
+              capture({
+                name: 'auth_failed',
+                method: 'web3_eip155',
+                errorCode: code ?? 'WALLET_FAILED',
+              })
+              setWalletError(
+                getAuthErrorMessage(code) ??
+                  (error instanceof Error ? error.message : 'Wallet sign-in failed'),
+              )
+            }}
           />
         }
       />

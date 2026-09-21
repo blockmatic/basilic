@@ -1,7 +1,11 @@
 import { privateKeyToAccount } from 'viem/accounts'
 import { createSiweMessage } from 'viem/siwe'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getApiKeyToken, getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
+import {
+  getApiKeyToken,
+  getMagicLinkTokenRaw,
+  getWeb3Session,
+} from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../../account.spec.js'
 
 const testPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as const
@@ -23,6 +27,7 @@ describe('POST /account/link/wallet/verify', () => {
         chain: 'eip155',
         message: 'test message',
         signature: '0x00',
+        domain: 'localhost',
       },
     })
     expect(response.statusCode).toBe(401)
@@ -60,6 +65,7 @@ describe('POST /account/link/wallet/verify', () => {
         chain: 'eip155',
         message,
         signature: '0xinvalid',
+        domain: 'localhost',
       },
     })
     expect(response.statusCode).toBe(401)
@@ -109,6 +115,7 @@ describe('POST /account/link/wallet/verify', () => {
         chain: 'eip155',
         message: messageToSign,
         signature,
+        domain: 'localhost',
       },
     })
     expect(response.statusCode).toBe(200)
@@ -163,6 +170,7 @@ describe('POST /account/link/wallet/verify', () => {
         chain: 'eip155',
         message: messageToSign,
         signature,
+        domain: 'localhost',
       },
     })
     expect(response.statusCode).toBe(200)
@@ -209,7 +217,7 @@ describe('POST /account/link/wallet/verify', () => {
       method: 'POST',
       url: '/account/link/wallet/verify',
       headers: { Authorization: `Bearer ${jwt1}` },
-      payload: { chain: 'eip155', message: messageToSign, signature },
+      payload: { chain: 'eip155', message: messageToSign, signature, domain: 'localhost' },
     })
 
     const email2 = 'other@test.ai'
@@ -241,10 +249,79 @@ describe('POST /account/link/wallet/verify', () => {
       method: 'POST',
       url: '/account/link/wallet/verify',
       headers: { Authorization: `Bearer ${jwt2}` },
-      payload: { chain: 'eip155', message: messageToSign2, signature: signature2 },
+      payload: {
+        chain: 'eip155',
+        message: messageToSign2,
+        signature: signature2,
+        domain: 'localhost',
+      },
     })
     expect(response.statusCode).toBe(409)
     const body = JSON.parse(response.body)
     expect(body.code).toBe('WALLET_ALREADY_LINKED')
+  })
+
+  it('should return INVALID_DOMAIN when domain is not allowed', async () => {
+    const email = 'domain-link@test.ai'
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token: await getMagicLinkTokenRaw(fastify, email) },
+    })
+    const { token } = JSON.parse(verifyRes.body)
+
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: `/auth/web3/nonce?chain=eip155&address=${testAccount.address}`,
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+    const message = createSiweMessage({
+      address: testAccount.address,
+      chainId: 1,
+      domain: 'evil.example',
+      nonce,
+      uri: 'https://evil.example',
+      version: '1',
+    })
+    const signature = await testAccount.signMessage({ message })
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/account/link/wallet/verify',
+      headers: { Authorization: `Bearer ${token}` },
+      payload: { chain: 'eip155', message, signature, domain: 'evil.example' },
+    })
+    expect(response.statusCode).toBe(400)
+    expect(JSON.parse(response.body).code).toBe('INVALID_DOMAIN')
+  })
+
+  it('should return EMAIL_REQUIRED when the account has no email', async () => {
+    const jwt = await getWeb3Session(fastify, { accountIndex: 1 })
+    const otherAccount = privateKeyToAccount(
+      '0x5de4111afa1a4b94908e83a8ec860c567f04b3aa191f021b7f36795a0579779b',
+    )
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: `/auth/web3/nonce?chain=eip155&address=${otherAccount.address}`,
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+    const message = createSiweMessage({
+      address: otherAccount.address,
+      chainId: 1,
+      domain: 'localhost',
+      nonce,
+      uri: 'https://localhost',
+      version: '1',
+    })
+    const signature = await otherAccount.signMessage({ message })
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/account/link/wallet/verify',
+      headers: { Authorization: `Bearer ${jwt}` },
+      payload: { chain: 'eip155', message, signature, domain: 'localhost' },
+    })
+    expect(response.statusCode).toBe(400)
+    expect(JSON.parse(response.body).code).toBe('EMAIL_REQUIRED')
   })
 })

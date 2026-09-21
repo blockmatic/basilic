@@ -1,7 +1,12 @@
+import { randomUUID } from 'node:crypto'
+import { getDb } from '@repo/db'
+import { users, walletIdentities } from '@repo/db/schema'
 import { Keypair } from '@solana/web3.js'
 import bs58 from 'bs58'
+import { eq } from 'drizzle-orm'
 import * as nacl from 'tweetnacl'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { getMagicLinkTokenRaw } from '../../../../../test/utils/auth-helper.js'
 import { fastify } from '../web3.spec.js'
 
 function buildSiwsMessage({
@@ -22,7 +27,35 @@ describe('POST /auth/web3/solana/verify', () => {
   const keypair = Keypair.generate()
   const address = keypair.publicKey.toBase58()
 
+  async function seedLinkedSolana({ email }: { email: string }): Promise<void> {
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/magiclink/verify',
+      payload: { email, token: await getMagicLinkTokenRaw(fastify, email) },
+    })
+    const { token } = JSON.parse(verifyRes.body) as { token: string }
+    const userRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/session/user',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const userId = (JSON.parse(userRes.body) as { user: { id: string } }).user.id
+    const db = await getDb()
+    await db.insert(walletIdentities).values({
+      id: randomUUID(),
+      userId,
+      chain: 'solana',
+      address,
+    })
+  }
+
+  beforeEach(async () => {
+    const db = await getDb()
+    await db.delete(walletIdentities)
+  })
+
   it('should verify valid SIWS signature and return JWTs', async () => {
+    await seedLinkedSolana({ email: 'solana-linked@test.ai' })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',
@@ -52,6 +85,37 @@ describe('POST /auth/web3/solana/verify', () => {
     expect(body).toHaveProperty('token')
     expect(body).toHaveProperty('refreshToken')
     expect(body.token.length).toBeGreaterThan(0)
+  })
+
+  it('should return 401 WALLET_NOT_LINKED without creating a user', async () => {
+    const db = await getDb()
+    const beforeUsers = await db.select({ id: users.id }).from(users)
+    const other = Keypair.generate()
+    const otherAddress = other.publicKey.toBase58()
+    const nonceRes = await fastify.inject({
+      method: 'GET',
+      url: '/auth/web3/solana/nonce',
+      query: { address: otherAddress },
+    })
+    const { nonce } = JSON.parse(nonceRes.body)
+    const message = buildSiwsMessage({ domain: 'localhost', address: otherAddress, nonce })
+    const signatureB58 = bs58.encode(
+      nacl.sign.detached(new TextEncoder().encode(message), other.secretKey),
+    )
+    const verifyRes = await fastify.inject({
+      method: 'POST',
+      url: '/auth/web3/solana/verify',
+      payload: { message, signature: signatureB58, domain: 'localhost' },
+    })
+    expect(verifyRes.statusCode).toBe(401)
+    expect(JSON.parse(verifyRes.body).code).toBe('WALLET_NOT_LINKED')
+    const afterUsers = await db.select({ id: users.id }).from(users)
+    expect(afterUsers).toHaveLength(beforeUsers.length)
+    const wallets = await db
+      .select()
+      .from(walletIdentities)
+      .where(eq(walletIdentities.address, otherAddress))
+    expect(wallets).toHaveLength(0)
   })
 
   it('should return 401 for invalid nonce', async () => {
@@ -134,6 +198,7 @@ describe('POST /auth/web3/solana/verify', () => {
   })
 
   it('should return 302 with encoded code when callbackUrl provided', async () => {
+    await seedLinkedSolana({ email: 'solana-cb@test.ai' })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',
@@ -166,6 +231,7 @@ describe('POST /auth/web3/solana/verify', () => {
   })
 
   it('should place code in query string when callbackUrl has fragment', async () => {
+    await seedLinkedSolana({ email: 'solana-frag@test.ai' })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',
@@ -198,6 +264,7 @@ describe('POST /auth/web3/solana/verify', () => {
   })
 
   it('should access protected route after SIWS authentication', async () => {
+    await seedLinkedSolana({ email: 'solana-authed@test.ai' })
     const nonceRes = await fastify.inject({
       method: 'GET',
       url: '/auth/web3/solana/nonce',

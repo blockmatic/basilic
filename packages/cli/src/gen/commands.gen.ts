@@ -169,6 +169,9 @@ export const operationMeta = {
       },
       {
         "name": "signature"
+      },
+      {
+        "name": "domain"
       }
     ]
   },

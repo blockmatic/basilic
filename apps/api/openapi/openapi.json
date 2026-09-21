@@ -2547,7 +2547,8 @@
                 "required": [
                   "chain",
                   "message",
-                  "signature"
+                  "signature",
+                  "domain"
                 ],
                 "properties": {
                   "chain": {
@@ -2570,6 +2571,10 @@
                     "type": "string"
                   },
                   "signature": {
+                    "type": "string"
+                  },
+                  "domain": {
+                    "minLength": 1,
                     "type": "string"
                   }
                 }

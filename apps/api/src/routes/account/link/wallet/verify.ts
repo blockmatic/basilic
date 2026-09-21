@@ -1,14 +1,18 @@
 import { randomUUID } from 'node:crypto'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { getDb } from '@repo/db'
-import { walletIdentities, web3Nonce } from '@repo/db/schema'
+import { users, walletIdentities, web3Nonce } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
+import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
+import { env } from '../../../../lib/env.js'
 import {
   getCanonicalAddress,
+  isAllowedWeb3Domain,
   parseSignInMessage,
   verifyWalletSignature,
+  walletIdentityAddressEquals,
 } from '../../../../lib/web3/index.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 
@@ -22,6 +26,7 @@ const VerifySchema = Type.Object({
   chain: Type.Union([Type.Literal('eip155'), Type.Literal('solana')]),
   message: Type.String(),
   signature: Type.String(),
+  domain: Type.String({ minLength: 1 }),
 })
 
 const VerifyResponseSchema = Type.Object({
@@ -48,59 +53,46 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session)
-        return reply.code(401).send({
-          code: 'UNAUTHORIZED',
-          message: 'Authentication required',
-        })
+      if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
 
-      const { chain, message, signature } = request.body
+      const { chain, message, signature, domain } = request.body
       if (!isValidChain(chain))
-        return reply.code(400).send({
-          code: 'INVALID_CHAIN',
-          message: 'Chain must be eip155 or solana',
-        })
+        return sendCatalogError({ reply, status: 400, code: 'INVALID_ADDRESS' })
+
+      if (!isAllowedWeb3Domain({ domain, allowedOrigins: env.ALLOWED_ORIGINS }))
+        return sendCatalogError({ reply, status: 400, code: 'INVALID_DOMAIN' })
 
       const parsed = parseSignInMessage(message)
-      if (!parsed)
-        return reply.code(400).send({
-          code: 'INVALID_MESSAGE',
-          message: 'Invalid sign-in message format',
-        })
+      if (!parsed) return sendCatalogError({ reply, status: 400, code: 'INVALID_MESSAGE' })
+
+      if (parsed.domain !== domain)
+        return sendCatalogError({ reply, status: 400, code: 'INVALID_DOMAIN' })
 
       const lookupAddr = getCanonicalAddress({ chain, address: parsed.address })
-      if (!lookupAddr)
-        return reply.code(400).send({
-          code: 'INVALID_ADDRESS',
-          message: 'Invalid wallet address in message',
-        })
+      if (!lookupAddr) return sendCatalogError({ reply, status: 400, code: 'INVALID_ADDRESS' })
 
       const db = await getDb()
+      const [userRow] = await db
+        .select({ email: users.email })
+        .from(users)
+        .where(eq(users.id, request.session.user.id))
+
+      if (!userRow?.email) return sendCatalogError({ reply, status: 400, code: 'EMAIL_REQUIRED' })
 
       const [nonceRow] = await db
         .select()
         .from(web3Nonce)
         .where(and(eq(web3Nonce.chain, chain), eq(web3Nonce.address, lookupAddr)))
 
-      if (!nonceRow)
-        return reply.code(401).send({
-          code: 'INVALID_NONCE',
-          message: 'No nonce found for this wallet. Request one first.',
-        })
+      if (!nonceRow) return sendCatalogError({ reply, status: 401, code: 'INVALID_NONCE' })
 
       if (nonceRow.expiresAt < new Date()) {
         await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
-        return reply.code(401).send({
-          code: 'EXPIRED_NONCE',
-          message: 'Nonce expired. Request a new one.',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'EXPIRED_NONCE' })
       }
 
       if (nonceRow.nonce !== parsed.nonce)
-        return reply.code(401).send({
-          code: 'INVALID_NONCE',
-          message: 'Nonce does not match',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_NONCE' })
 
       const { valid, normalizedAddress } = await verifyWalletSignature({
         chain,
@@ -110,25 +102,23 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
       })
 
       if (!valid || !normalizedAddress)
-        return reply.code(401).send({
-          code: 'INVALID_SIGNATURE',
-          message: 'Signature verification failed',
-        })
+        return sendCatalogError({ reply, status: 401, code: 'INVALID_SIGNATURE' })
 
       const userId = request.session.user.id
       let walletAlreadyLinked = false
 
       try {
         await db.transaction(async tx => {
-          const [existing] = await tx
+          const matches = await tx
             .select()
             .from(walletIdentities)
             .where(
               and(
                 eq(walletIdentities.chain, chain),
-                eq(walletIdentities.address, normalizedAddress),
+                walletIdentityAddressEquals({ address: normalizedAddress }),
               ),
             )
+          const existing = matches.find(row => row.address === normalizedAddress) ?? matches[0]
 
           if (existing) {
             if (existing.userId !== userId) {
@@ -154,19 +144,13 @@ const walletVerifyRoute: FastifyPluginAsync = async fastify => {
           (err as { code?: string }).code
         if (code === '23505') {
           await db.delete(web3Nonce).where(eq(web3Nonce.id, nonceRow.id))
-          return reply.code(409).send({
-            code: 'WALLET_ALREADY_LINKED',
-            message: 'This wallet is already linked to another account',
-          })
+          return sendCatalogError({ reply, status: 409, code: 'WALLET_ALREADY_LINKED' })
         }
         throw err
       }
 
       if (walletAlreadyLinked)
-        return reply.code(409).send({
-          code: 'WALLET_ALREADY_LINKED',
-          message: 'This wallet is already linked to another account',
-        })
+        return sendCatalogError({ reply, status: 409, code: 'WALLET_ALREADY_LINKED' })
 
       return reply.code(200).send({ ok: true })
     },

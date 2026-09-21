@@ -1,6 +1,7 @@
 'use client'
 
 import type { Web3Eip155VerifyResponse, Web3SolanaVerifyResponse } from '@repo/core'
+import { ApiError } from '@repo/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useReactApiConfig } from '../../context'
 import type { Web3Chain } from '../../types'
@@ -12,16 +13,23 @@ export type UseVerifyWeb3AuthParams = {
   message: string
   signature: string
   domain: string
-  /** When set, Fastify returns 302 to callback; browser redirects to complete flow */
   callbackUrl?: string
 }
 
-/**
- * Minimal hook: given signed SIWE/SIWS payload, calls the verify endpoint.
- * No wallet adapters, no viem, no message building.
- * When callbackUrl provided: Fastify returns 302, browser follows redirect to callback page.
- * When absent: returns JSON tokens (mobile/CLI).
- */
+function throwVerifyFailure({ status, text }: { status: number; text: string }): never {
+  let body: unknown
+  try {
+    body = JSON.parse(text) as unknown
+  } catch {
+    body = { message: text }
+  }
+  const message =
+    body && typeof body === 'object' && 'message' in body && typeof body.message === 'string'
+      ? body.message
+      : text || `Verify failed: ${status}`
+  throw new ApiError(status, message, body)
+}
+
 export function useVerifyWeb3Auth() {
   const { client, baseUrl } = useReactApiConfig()
   const queryClient = useQueryClient()
@@ -54,8 +62,7 @@ export function useVerifyWeb3Auth() {
             return {} as Web3Eip155VerifyResponse
           }
         }
-        const text = await res.text()
-        throw new Error(text || `Verify failed: ${res.status}`)
+        throwVerifyFailure({ status: res.status, text: await res.text() })
       }
 
       return chain === 'eip155'

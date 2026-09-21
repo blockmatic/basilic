@@ -77,7 +77,7 @@ See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx) for full details
 
 ### Environment Variables
 
-See `.env.local.example` (copy to `.env.local`) and `lib/env.ts`.
+See `.env.local.example` (copy to `.env.local`) and `lib/env.ts`. Optional `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` enables WalletConnect-only rows in the login modal.
 
 ## Project Structure
 
@@ -87,7 +87,7 @@ apps/web/
 │   ├── api/auth/          # Cookie update routes (update-tokens)
 │   ├── auth/              # Callbacks (magiclink, oauth, web3), logout
 │   └── (dashboard)/       # Authenticated routes
-├── app/providers.tsx      # QueryClient, ApiProvider, createClient (JWT mode)
+├── app/providers.tsx      # QueryClient, WagmiProvider, ApiProvider
 ├── lib/auth/              # auth-client, auth-server, jwt-utils
 ├── lib/analytics.ts       # typed capture() — no-op sink
 ├── lib/env.ts             # Environment validation

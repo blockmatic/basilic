@@ -5,6 +5,7 @@ import { web3Nonce } from '@repo/db/schema'
 import { Type } from '@sinclair/typebox'
 import { and, eq } from 'drizzle-orm'
 import type { FastifyPluginAsync } from 'fastify'
+import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
 import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
 import { ErrorResponseSchema } from '../../../schemas.js'
 import { validateAddress } from '../validate-address.js'
@@ -34,6 +35,7 @@ const solanaNonceRoute: FastifyPluginAsync = async fastify => {
           500: ErrorResponseSchema,
         },
       },
+      config: authLoginRouteConfig,
     },
     async (request, reply) => {
       const { address } = request.query as { address: string }

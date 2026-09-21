@@ -8,6 +8,7 @@ enablePrePostScripts: true
 engineStrict: true
 
 allowBuilds:
+  '@reown/appkit': true
   '@sentry/cli': true
   '@stellar/stellar-sdk': true
   blake-hash: true
