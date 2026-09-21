@@ -33,11 +33,10 @@ This repository is for contributing to Basilic. Generated apps use `docs/basilic
 
 ```bash
 pnpm db:start
-pnpm reset
 pnpm dev
 ```
 
-`pnpm db:start` runs the API's Supabase CLI (`apps/api/supabase/`). `@repo/db` is Drizzle schema and a `tsc --watch` rebuild of `dist/` — it does not start Postgres. `pnpm reset` wipes local Postgres, migrates, and seeds. Do that once after the first `db:start`, not on every `pnpm dev`. See [ADR 008](/docs/adrs/008-database) and [Product Ready](/docs/testing/product-ready).
+`pnpm db:start` is Supabase CLI in `@repo/db` (`packages/db/supabase/`). Fastify (and eve) apply Drizzle migrations on boot in development and seed identity when `assets` is empty. `pnpm reset` is a wipe (drop + migrate + seed), not a first-run requirement. See [ADR 008](/docs/adrs/008-database) and [Product Ready](/docs/testing/product-ready).
 
 ## Daily
 
@@ -53,7 +52,7 @@ This repo's TUI includes API (http://localhost:3001, `GET /health`, `/reference`
 
 Separate terminals, always from the repo root (no `cd`):
 
-- Postgres: `pnpm db:start` then (once) `pnpm reset`. Status: `pnpm db:status`. Stop: `pnpm db:stop`.
+- Postgres: `pnpm db:start`. Status: `pnpm db:status`. Stop: `pnpm db:stop`. Wipe: `pnpm reset`.
 - API: `pnpm --filter @repo/api dev` — http://localhost:3001
 - Web: `pnpm --filter @repo/web dev` — http://localhost:3000
 - Agents command: `pnpm --filter @repo/agents eve:dev` — http://localhost:3004/eve/v1/health

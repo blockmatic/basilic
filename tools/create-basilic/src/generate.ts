@@ -107,7 +107,6 @@ Requires Node.js 24.x and ${pnpmReq}.
 \`\`\`bash
 pnpm setup
 pnpm db:start
-pnpm reset
 pnpm dev
 \`\`\`
 

@@ -23,7 +23,14 @@ export default [
           ],
           patterns: [
             {
-              group: ['@repo/db/*', 'drizzle-orm/*', 'fastify/*', '@repo/api', '@repo/api/*'],
+              group: [
+                '@repo/db/schema',
+                '@repo/db/schema/*',
+                'drizzle-orm/*',
+                'fastify/*',
+                '@repo/api',
+                '@repo/api/*',
+              ],
               message: 'Eve stays off Fastify, @repo/db/schema, and drizzle-orm.',
             },
           ],

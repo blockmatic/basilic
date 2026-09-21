@@ -26,7 +26,7 @@ Local Workflow data is `.eve/.workflow-data` (gitignored). CI does not run live 
 
 ## Ports
 
-Command binds **3004**. Chat binds **3005**. Root `pnpm dev` starts both as Turbo TUI panes (`@repo/agents#dev`, `@repo/agents#eve:dev:chat`). Generated projects omit this app.
+Command binds **3004**. Chat binds **3005**. Root `pnpm dev` starts both as Turbo TUI panes (`@repo/agents#dev`, `@repo/agents#eve:dev:chat`). `bootHost` applies Drizzle migrations on start (same advisory lock as Fastify). Generated projects omit this app.
 
 ## pnpm commands
 

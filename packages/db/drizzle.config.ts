@@ -1,4 +1,4 @@
-/** Schema + migrations for `@repo/db`. Local data seed stays in `apps/api` (`pnpm reset`). */
+/** Schema + migrations for `@repo/db`. Local Docker Postgres is `pnpm db:start`. Identity seed stays in `apps/api`. */
 import 'dotenv/config'
 import { defineConfig } from 'drizzle-kit'
 

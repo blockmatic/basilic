@@ -13,6 +13,6 @@ export {
   QueryCoinsResponseSchema,
   SearchQuerySchema,
 } from './search-query.js'
-export { type CoinsDb, seedIdentity } from './seed.js'
+export { type CoinsDb, seedIdentity, seedIdentityIfEmpty } from './seed.js'
 export { describeQuery, spokenSummary } from './spoken-summary.js'
 export { toWatchItem, WatchItemSchema } from './watch.js'

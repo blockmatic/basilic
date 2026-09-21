@@ -35,6 +35,10 @@
     "test:unit": "vitest run",
     "db:generate": "NODE_OPTIONS='--import tsx' drizzle-kit generate",
     "db:push": "drizzle-kit push",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:status": "supabase status",
+    "db:reset": "supabase db reset",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs"
   },

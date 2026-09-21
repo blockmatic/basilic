@@ -1,7 +1,7 @@
 import { assets } from '@repo/db/schema'
 import { getMarkets, type MarketRow, type Provenance } from '@repo/markets'
 import { eq } from 'drizzle-orm'
-import { type CoinsDb, seedIdentity } from './seed.js'
+import { type CoinsDb, seedIdentityIfEmpty } from './seed.js'
 
 const coinGeckoAttribution = 'Data by CoinGecko'
 
@@ -41,8 +41,7 @@ function toSync({ source, markets }: { source: Provenance; markets: MarketRow[] 
 }
 
 export async function listMarkets({ db }: { db: CoinsDb }) {
-  const existing = await db.select({ id: assets.id }).from(assets).limit(1)
-  if (existing.length === 0) await seedIdentity({ db })
+  await seedIdentityIfEmpty({ db })
 
   const rows = await db.select().from(assets).where(eq(assets.enabled, true))
   const { markets, source } = await getMarkets({})

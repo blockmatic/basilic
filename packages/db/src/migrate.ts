@@ -1,30 +1,74 @@
-import { readdir, readFile } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { getDb, getPgliteClient, isPgliteConfigured } from './client.js'
+import { getDb, getPgliteClient, getPgPool, isPgliteConfigured } from './client.js'
+import {
+  type MigrateLogger,
+  readSqlMigrationFiles,
+  runPostgresMigrations,
+} from './postgres-migrate.js'
 
 const migrateFile = fileURLToPath(import.meta.url)
 export const migrationsDir = join(dirname(migrateFile), 'migrations')
 
-async function readMigrationFiles(migrationDir: string): Promise<string[]> {
-  try {
-    const files = await readdir(migrationDir)
-    return files.filter(file => file.endsWith('.sql')).sort()
-  } catch {
-    return []
+export type { MigrateLogger }
+export { runPostgresMigrations }
+
+export function shouldApplyPostgresAtRuntime({
+  nodeEnv,
+  vercelEnv,
+}: {
+  nodeEnv?: string
+  vercelEnv?: string
+} = {}): boolean {
+  if (nodeEnv === 'production') return false
+  if (vercelEnv === 'preview') return false
+  return true
+}
+
+async function applyPgliteFiles({
+  migrationFiles,
+  logger,
+}: {
+  migrationFiles: string[]
+  logger?: MigrateLogger
+}): Promise<void> {
+  logger?.info(`Found ${migrationFiles.length} migration file(s), running migrations...`)
+  await getDb()
+  const pgliteInstance = getPgliteClient()
+  if (!pgliteInstance) throw new Error('PGLite client missing after getDb()')
+
+  for (const file of migrationFiles) {
+    const sqlPath = join(migrationsDir, file)
+    const sql = (await readFile(sqlPath, 'utf-8'))
+      .replace(/--> statement-breakpoint\s*/gi, '\n')
+      .trim()
+    try {
+      await pgliteInstance.exec(sql)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (!errorMessage.includes('already exists')) throw error
+    }
   }
+
+  logger?.info('Migrations completed successfully (PGLite)')
 }
 
 /**
- * Run PGLite SQL migrations from this package. PostgreSQL applies migrations at
- * build time via `apps/api` `scripts/migrate.ts` and skips here.
+ * PGLite: apply SQL at runtime. PostgreSQL: apply at runtime in development;
+ * production and Vercel Preview skip (build-time `db:migrate`).
  */
-export async function runMigrations(logger?: {
-  info: (msg: string) => void
-  error: (msg: string, err?: unknown) => void
-}): Promise<void> {
+export async function runMigrations({
+  logger,
+  nodeEnv,
+  vercelEnv,
+}: {
+  logger?: MigrateLogger
+  nodeEnv?: string
+  vercelEnv?: string
+} = {}): Promise<void> {
   const pglite = isPgliteConfigured()
-  const migrationFiles = await readMigrationFiles(migrationsDir)
+  const migrationFiles = await readSqlMigrationFiles(migrationsDir)
 
   if (migrationFiles.length === 0) {
     if (pglite)
@@ -36,31 +80,22 @@ export async function runMigrations(logger?: {
   }
 
   try {
-    if (!pglite) {
+    if (pglite) {
+      await applyPgliteFiles({ migrationFiles, logger })
+      return
+    }
+
+    if (!shouldApplyPostgresAtRuntime({ nodeEnv, vercelEnv })) {
       logger?.info(
         'PostgreSQL detected: migrations already applied at build time, skipping runtime migrations',
       )
       return
     }
 
-    logger?.info(`Found ${migrationFiles.length} migration file(s), running migrations...`)
     await getDb()
-    const pgliteInstance = getPgliteClient()
-    if (!pgliteInstance) throw new Error('PGLite client missing after getDb()')
-
-    for (const file of migrationFiles) {
-      const sqlPath = join(migrationsDir, file)
-      let sql = await readFile(sqlPath, 'utf-8')
-      sql = sql.replace(/--> statement-breakpoint\s*/gi, '\n').trim()
-      try {
-        await pgliteInstance.exec(sql)
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        if (!errorMessage.includes('already exists')) throw error
-      }
-    }
-
-    logger?.info('Migrations completed successfully (PGLite)')
+    const pool = getPgPool()
+    if (!pool) throw new Error('PostgreSQL pool missing after getDb()')
+    await runPostgresMigrations({ pool, migrationsDir, logger, nodeEnv })
   } catch (err) {
     logger?.error('Migration failed', err)
     throw err

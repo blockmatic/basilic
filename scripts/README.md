@@ -19,7 +19,7 @@ node scripts/run-qa.mjs
 
 ### `dev.mjs`
 
-Root `pnpm dev` entry. Ensures local Postgres (`pnpm --filter @repo/api db:start`) unless `SKIP_DB_START=1` or `PGLITE=true`, then runs Turbo TUI (`dev`, including eve chat via `@repo/agents#dev` `with`) at `--concurrency=20`. Does not reset or seed.
+Root `pnpm dev` entry. Ensures local Postgres (`pnpm --filter @repo/db db:start`) unless `SKIP_DB_START=1` or `PGLITE=true`, then runs Turbo TUI (`dev`, including eve chat via `@repo/agents#dev` `with`) at `--concurrency=20`. Schema and identity seed run on API boot.
 
 ```bash
 pnpm dev
@@ -307,7 +307,7 @@ node scripts/setup-database.mjs
 
 **Note**: Docker and Docker Compose are required for Supabase CLI to function. Supabase CLI is optional. Used for local PostgreSQL development with Supabase. Database features will skip if Supabase CLI is not available.
 
-After Supabase is running, a full local wipe + migrations + data seed is **`pnpm reset`** from the repository root (`pnpm --filter @repo/api reset`). Daily start is **`pnpm db:start`** (or root `pnpm dev`, which calls it) then **`pnpm dev`**. See `apps/api/README.md`.
+After Supabase is running, daily start is **`pnpm db:start`** then **`pnpm dev`** (migrate + seed on API boot). A full wipe is **`pnpm reset`**. See `apps/api/README.md`.
 
 ## Notes
 

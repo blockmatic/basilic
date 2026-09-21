@@ -41,9 +41,9 @@
     "setup:database": "node scripts/setup-database.mjs",
     "setup:deepsec": "pnpm --dir=.deepsec install --frozen-lockfile",
     "setup:playwright": "pnpm --filter @repo/api exec playwright install chromium && pnpm --filter @repo/web exec playwright install chromium",
-    "db:start": "pnpm --filter @repo/api db:start",
-    "db:stop": "pnpm --filter @repo/api db:stop",
-    "db:status": "pnpm --filter @repo/api db:status",
+    "db:start": "pnpm --filter @repo/db db:start",
+    "db:stop": "pnpm --filter @repo/db db:stop",
+    "db:status": "pnpm --filter @repo/db db:status",
     "reset": "pnpm --filter @repo/api reset",
     "update-deps": "node scripts/update-deps.mjs"
   },
