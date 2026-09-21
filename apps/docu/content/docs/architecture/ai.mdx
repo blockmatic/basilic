@@ -67,7 +67,7 @@ Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`.
 
 ## Web catalog contract
 
-The dashboard does not mount a Fastify assistant. Home is the coin board: spoken-query chips write nuqs `SearchQuery`; Commands | Chat chrome stays on the same client island. Typed Send is disabled (`agent not wired`) until G-cmd. Do not wire `useChatFromConfig` from the dashboard.
+The dashboard does not mount a Fastify assistant. Home is the coin board: spoken-query chips write nuqs `SearchQuery`; Commands | Chat chrome stays on the same client island. Canned **Who am I?** in Commands writes `surface=account` (not a chip, not `POST /ai/chat`). Typed Send is disabled (`agent not wired`) until G-cmd. Do not wire `useChatFromConfig` from the dashboard.
 
 `POST /ai/chat` stays on Fastify. Catalogs `user-info-catalog.tsx` and `market-card-catalog.tsx` remain for G1.
 
@@ -98,7 +98,7 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 ## Testing
 
 - **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): `test/utils/ai-remote.ts` skips **402** only when the response is `INSUFFICIENT_CREDITS` (quota is infra). Skips 502/504/connection only when `ANTHROPIC_API_KEY` is missing or placeholder `sk-ant-xxx`. A real key → 502 fails the suite.
-- **Web E2E** (`dashboard.spec.ts`): chromium covers chip “What moved?” and `?sidebar=close`. There is no chat Playwright project. See [E2E Testing](/docs/testing/e2e-testing).
+- **Web E2E** (`dashboard.spec.ts`): chromium covers chip “What moved?”, `?sidebar=close`, `?surface=account` vs chip “What's on my list?”, and canned Who am I?. There is no chat Playwright project. See [E2E Testing](/docs/testing/e2e-testing).
 
 ## Related
 

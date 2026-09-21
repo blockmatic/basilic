@@ -2,11 +2,22 @@
 
 import { Button } from '@repo/ui/components/button'
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
+import { useSessionStorageState } from 'ahooks'
 import { PanelRightCloseIcon } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
 import type { ReactNode } from 'react'
 import { Input, PromptInputSubmit, PromptInputTextarea } from '@/components/assistant/prompt-input'
 import { chromeParsers, parseRailValue } from '@/lib/coins/chrome'
+import {
+  boardViewParsers,
+  type CommandHistoryEntry,
+  commandHistoryKey,
+  parseCommandHistory,
+  viewConfigToSearchPatch,
+  whoamiCommand,
+  whoamiViewConfig,
+  whoamiViewPatch,
+} from '@/lib/genui'
 import { BoardChips } from './chips'
 
 function BoardComposer() {
@@ -29,11 +40,31 @@ function BoardComposer() {
 
 function BoardRail({ onClose }: { onClose: () => void }) {
   const [{ rail }, setChrome] = useQueryStates(chromeParsers)
+  const [, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
+  const [history, setHistory] = useSessionStorageState<CommandHistoryEntry[]>(commandHistoryKey, {
+    defaultValue: [],
+    deserializer: value => parseCommandHistory({ value }),
+  })
 
   function handleRailChange(value: unknown) {
     const next = parseRailValue({ value })
     if (!next) return
     setChrome(next)
+  }
+
+  async function handleWhoami() {
+    const viewConfig = whoamiViewConfig()
+    await setView(whoamiViewPatch, { history: 'push', shallow: true })
+    await setChrome({ q: whoamiCommand })
+    setHistory(current => [...(current ?? []), { command: whoamiCommand, viewConfig }])
+  }
+
+  async function handleRestore({ entry }: { entry: CommandHistoryEntry }) {
+    await setView(viewConfigToSearchPatch({ viewConfig: entry.viewConfig }), {
+      history: 'push',
+      shallow: true,
+    })
+    await setChrome({ q: entry.command })
   }
 
   return (
@@ -67,7 +98,34 @@ function BoardRail({ onClose }: { onClose: () => void }) {
       >
         <div className="flex flex-col gap-4">
           <BoardChips />
-          <p className="text-muted-foreground text-sm">No prompts yet</p>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11 rounded-lg"
+            data-testid="whoami-command"
+            onClick={handleWhoami}
+          >
+            {whoamiCommand}
+          </Button>
+          {(history ?? []).length === 0 ? (
+            <p className="text-muted-foreground text-sm">No prompts yet</p>
+          ) : (
+            <ul className="flex flex-col gap-1" data-testid="command-history">
+              {(history ?? []).map((entry, index) => (
+                <li key={`${entry.command}-${index}`}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="min-h-11 w-full justify-start rounded-lg"
+                    data-testid="command-history-row"
+                    onClick={() => handleRestore({ entry })}
+                  >
+                    {entry.command}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
       <div

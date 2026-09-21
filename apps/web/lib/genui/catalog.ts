@@ -101,7 +101,7 @@ export const boardCatalog = defineCatalog(schema, {
   actions: {
     reset_view: {
       params: z.object({}),
-      description: 'Clear SearchQuery to the default ranked table',
+      description: 'Clear SearchQuery and surface to the default ranked table',
     },
   },
 })

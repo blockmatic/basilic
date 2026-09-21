@@ -53,19 +53,19 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-coderabbit/SKILL.md",
-      "computedHash": "784a9ee02058bd4c3cdb89f236e3cd389941a6dfbaf75ecd2ec2bf54989f6ae8"
+      "computedHash": "aa36f9b410c2eec1f4542e9b734beb1c572b251eb4c1241450262403e300c9f0"
     },
     "w-comments": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-comments/SKILL.md",
-      "computedHash": "caf5c9cda55aa803bcedb266f72c52f38f01f48387d63778ee35e3b3f1940449"
+      "computedHash": "a7c7d608f6a09d0e006f208b0c163853dd50155a707c199a233b4f5d7ddea356"
     },
     "w-commit": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-commit/SKILL.md",
-      "computedHash": "c9986a818f28edb69a18bf4db85af9815c2a4ff1f1129bce49fac249e58718c6"
+      "computedHash": "2186d97ecaa95960a7aa006289757ae4b92b034cb971b0eae75669c2e219fd5f"
     },
     "w-council": {
       "source": "blockmatic/basilic-skills",
@@ -113,7 +113,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-fix-push/SKILL.md",
-      "computedHash": "ebd0f356d487cac78edfccbdb2259f307dea7d7349a31db27695de80900f65f2"
+      "computedHash": "ded87495d4c6af872c21eba069f6aeaa91baba2fb8a9576da8915a05a7b0cbcb"
     },
     "w-form": {
       "source": "blockmatic/basilic-skills",
@@ -125,13 +125,13 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-gha/SKILL.md",
-      "computedHash": "0e3df9de1c2e981c12aae7edf44eeb5318b6ccb094ddc2c091d627ce77e7b4a4"
+      "computedHash": "22d4ccdb4b8cbaa3356eddea258385cdacd44894014b6b4745ae954e678992d0"
     },
     "w-git-repair": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-git-repair/SKILL.md",
-      "computedHash": "0879f6d853ae65b56b3fd05c64e3b1f2b14c5ffb04d72eb88ec20b61a00dc56f"
+      "computedHash": "2c76f58ddea77024c01a763fe198a4aa2af8c0fd5080850b760527b1631e25b1"
     },
     "w-grill": {
       "source": "blockmatic/basilic-skills",
@@ -167,13 +167,13 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-pr/SKILL.md",
-      "computedHash": "aacfd8813bfa7185f1342d43cfd935adb9dffa9f73aa2f23751a7c2c4e697105"
+      "computedHash": "053a1427118f9fca907190f6234bbdd74daf9061fa8528d9de985949fffc56d9"
     },
     "w-push": {
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-push/SKILL.md",
-      "computedHash": "68a95f9830911d49432d4f2dff95297a3f43e39ce98146c8dacefde6480e5d78"
+      "computedHash": "a8dcda4294e95fb8fc8749af2d3f3a57128a07b0913b7966cba540ea0d4b6018"
     },
     "w-refactor": {
       "source": "blockmatic/basilic-skills",
@@ -227,7 +227,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-ship/SKILL.md",
-      "computedHash": "75eb4d32f585a52e86171cdb30a5daf5c2529a8c4df4b64d68e4a7f4658d4421"
+      "computedHash": "fa99fb4e0f13e3c069a78a6d469fd9c870d040b4abe502480dbc3d92922794dc"
     },
     "w-tdd": {
       "source": "blockmatic/basilic-skills",
@@ -263,7 +263,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-vercel/SKILL.md",
-      "computedHash": "323218b4f90c711ea4db7140321dfcca036caf226341a09ac732d1f15754161a"
+      "computedHash": "7a3eb7ec9f096e509efbae700b2df8b92b762463d43fb3512e1a7d331526e2d9"
     },
     "w-wayfinder": {
       "source": "blockmatic/basilic-skills",
@@ -275,7 +275,7 @@
       "source": "blockmatic/basilic-skills",
       "sourceType": "github",
       "skillPath": "skills/w-yolo/SKILL.md",
-      "computedHash": "e4d9e3c807c3756e042bcf7602654c11676f3f29b115d0b578c1feb3c6141064"
+      "computedHash": "c507396bfe04d2f997d2c0a0891e65606f7b19906058277fcf828134ea3880f8"
     }
   }
 }

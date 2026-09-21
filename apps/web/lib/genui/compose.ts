@@ -93,11 +93,11 @@ function buildSurfaceSpec({ view }: { view: ViewConfig }): Spec {
             account: {
               type: 'UserInfo',
               props: {
-                name: null,
-                email: null,
-                image: null,
-                username: null,
-                joinedAt: null,
+                name: { $state: '/account/name' },
+                email: { $state: '/account/email' },
+                image: { $state: '/account/image' },
+                username: { $state: '/account/username' },
+                joinedAt: { $state: '/account/joinedAt' },
               },
               ...leaf,
             },
