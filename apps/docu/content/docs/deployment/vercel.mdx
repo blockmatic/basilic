@@ -140,6 +140,16 @@ The docs app (`apps/docu`) welcomes crawlers on HTML pages (opposite of the web 
 - Absolute `loc` URLs use `NEXT_PUBLIC_SITE_URL`.
 - LLM crawlers: start at `/llms.txt`, then fetch `/llms-full.txt`.
 
+## API host crawl
+
+The Fastify API (`apps/api`) publishes a crawlable public surface for agents. Paths and landing contract: [API Architecture](/docs/architecture/api).
+
+- `GET /robots.txt` allows `/`, `/reference`, `/openapi.json`, `/health`, `/llms.txt`, `/sitemap.xml`, `/.well-known/api-catalog`, and `/.well-known/oauth-protected-resource`, and points at `/sitemap.xml`.
+- `GET /sitemap.xml` lists those discovery URLs (not `/robots.txt` or itself).
+- LLM crawlers: start at `/llms.txt`, then `/.well-known/api-catalog` (RFC 9727) and live `GET /openapi.json`.
+- Keep those Allow paths, plus `/robots.txt` and `/sitemap.xml`, reachable without a Vercel login. Use **Standard Protection** so production domains stay public. Do not use **All Deployments** on the API project. OPTIONS Allowlist is CORS preflight only; it does not unblock GET.
+- To crawl a protected preview, add that preview domain to [Deployment Protection Exceptions](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/deployment-protection-exceptions) (the whole domain, not individual paths).
+
 ## Troubleshooting
 
 ### Build Fails

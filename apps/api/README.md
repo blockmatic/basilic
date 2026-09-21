@@ -14,6 +14,8 @@ Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as t
 
 **OPTIONS Allowlist (CORS preflight):** When Deployment Protection is enabled on preview deployments, add `/` (or `/auth`) to **Project Settings > Deployment Protection > OPTIONS Allowlist**. Otherwise, preflight OPTIONS requests are blocked before reaching Fastify and CORS fails for cross-origin clients.
 
+**Public discovery GETs:** `/`, `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/openapi.json`, and `/.well-known/*` must stay reachable without a Vercel login (Is Agentic). Use Standard Protection so the production domain stays public. The OPTIONS allowlist above is CORS preflight only. How: [API host crawl](https://basilic-docs.vercel.app/docs/deployment/vercel#api-host-crawl).
+
 **CI & Builds** (`api-e2e.yml`): Unit tests and E2E run on PR when `apps/api` or its dependencies change. Spawns API locally via `test:e2e:local`; no Vercel deploy required.
 
 ## Testing

@@ -95,6 +95,8 @@ Run with `pnpm <script>`.
 
 ## Documentation
 
+The Fastify API host exposes unauthenticated `/llms.txt`, live `/openapi.json`, and `/.well-known/api-catalog` (RFC 9727). Agents use the OpenAPI spec, `@repo/core`, and `@repo/cli`. There is no product MCP. Paths and landing contract: [API architecture](https://basilic-docs.vercel.app/docs/architecture/api).
+
 Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 
 - [Getting Started](https://basilic-docs.vercel.app/docs/development) — `npx create-basilic@latest`, `pnpm setup`, `db:start`, `pnpm reset`, `pnpm dev`
