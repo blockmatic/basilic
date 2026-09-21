@@ -2,18 +2,21 @@
 
 import { Button } from '@repo/ui/components/button'
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
+import { useMutation } from '@tanstack/react-query'
 import { useSessionStorageState } from 'ahooks'
 import { PanelRightCloseIcon } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
-import { type ReactNode, useSyncExternalStore } from 'react'
+import { type ReactNode, useState, useSyncExternalStore } from 'react'
 import { toast } from 'sonner'
 import { Input, PromptInputSubmit, PromptInputTextarea } from '@/components/assistant/prompt-input'
 import { type ChromeState, chromeParsers, parseRailValue } from '@/lib/coins/chrome'
+import { sendCommandTurn } from '@/lib/eve'
 import {
   boardViewParsers,
   type CommandHistoryEntry,
   commandHistoryKey,
   parseCommandHistory,
+  splitBoardView,
   viewConfigToSearchPatch,
   whoamiCommand,
   whoamiViewConfig,
@@ -57,19 +60,61 @@ function ShareBoardButton() {
 }
 
 function BoardComposer() {
+  const [prompt, setPrompt] = useState('')
+  const [, setChrome] = useQueryStates(chromeParsers)
+  const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
+  const [, setHistory] = useSessionStorageState<CommandHistoryEntry[]>(commandHistoryKey, {
+    defaultValue: [],
+    deserializer: value => parseCommandHistory({ value }),
+  })
+  const mutation = useMutation({
+    mutationFn: () =>
+      sendCommandTurn({
+        prompt: prompt.trim(),
+        boardQuery: splitBoardView({ view }).query,
+      }),
+    async onSuccess(result) {
+      const command = prompt.trim()
+      await setView(viewConfigToSearchPatch({ viewConfig: result.viewConfig }), {
+        history: 'push',
+        shallow: true,
+      })
+      await setChrome({ q: command })
+      setHistory(current => [
+        ...(current ?? []),
+        { command, viewConfig: result.viewConfig, eveTurnId: result.eveTurnId },
+      ])
+      if (result.honesty) toast.message(result.honesty)
+      setPrompt('')
+    },
+    onError() {
+      toast.error('Command failed')
+    },
+  })
+  const canSend = prompt.trim().length > 0 && !mutation.isPending
+
   return (
     <div className="space-y-2">
-      <Input>
+      <Input
+        onSubmit={() => {
+          if (canSend) mutation.mutate()
+        }}
+      >
         <div className="relative">
           <PromptInputTextarea
             placeholder="Ask the board"
             aria-label="Command"
             className="min-h-11 rounded-lg pr-12"
+            value={prompt}
+            onChange={event => setPrompt(event.target.value)}
           />
-          <PromptInputSubmit disabled aria-label="Send, agent not wired" />
+          <PromptInputSubmit
+            disabled={!canSend}
+            status={mutation.isPending ? 'submitted' : 'ready'}
+            aria-label="Send"
+          />
         </div>
       </Input>
-      <p className="text-muted-foreground text-xs">Agent not wired</p>
     </div>
   )
 }

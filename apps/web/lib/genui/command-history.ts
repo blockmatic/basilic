@@ -12,11 +12,13 @@ export const commandHistoryKey = 'basilic.board.commands'
 export type CommandHistoryEntry = {
   command: string
   viewConfig: ViewConfig
+  eveTurnId?: string
 }
 
 const historyEntrySchema = z.object({
   command: z.string().min(1),
   viewConfig: z.unknown(),
+  eveTurnId: z.string().optional(),
 })
 
 export function whoamiViewConfig(): ViewConfig {
@@ -34,7 +36,7 @@ export function parseCommandHistory({ value }: { value: string }): CommandHistor
     return parsed.data.flatMap(entry => {
       const viewConfig = parseViewConfig({ value: entry.viewConfig })
       if (!viewConfig) return []
-      return [{ command: entry.command, viewConfig }]
+      return [{ command: entry.command, viewConfig, eveTurnId: entry.eveTurnId }]
     })
   } catch {
     return []

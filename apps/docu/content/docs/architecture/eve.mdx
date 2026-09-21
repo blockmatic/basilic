@@ -9,7 +9,7 @@ The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` o
 
 ## Session model
 
-Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. Commands and Chat UI tabs still land later.
+Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The Commands rail talks to eve `command` with JWT `GET /agents` then `fetch` to `POST /eve/v1/session` (not `eve/client` — that entry is not webpack-safe). Chat UI still lands later.
 
 ## Hosts
 
@@ -27,7 +27,7 @@ Eve consumes `@repo/db` **named functions** and `@repo/markets` for market HTTP.
 
 ## Jev
 
-`getEvaluationModel()` in `apps/agents/lib/evaluate` builds a Gateway evaluation model when `AI_GATEWAY_API_KEY` or Vercel `VERCEL_OIDC_TOKEN` is set. `evaluateBoardTurn` runs one `experimental_evaluate` over prompt plus boardQuery JSON (not coin rows). Missing credentials or Gateway 401/429/529/timeout skip the hop (`skip: missing-model | upstream`). G-cmd wires that result before the command tool loop. Jev is not a chat model.
+`getEvaluationModel()` in `apps/agents/lib/evaluate` builds a Gateway evaluation model when `AI_GATEWAY_API_KEY` or Vercel `VERCEL_OIDC_TOKEN` is set. `evaluateBoardTurn` runs one `experimental_evaluate` over prompt plus boardQuery JSON (not coin rows). Missing credentials or Gateway 401/429/529/timeout skip the hop (`skip: missing-model | upstream`). The command agent calls that result on `step.started` before Haiku; high-confidence refuse/canned/surface skip the language model. Chat still does not run Jev.
 
 ## Identity
 
