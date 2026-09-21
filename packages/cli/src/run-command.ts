@@ -26,13 +26,6 @@ function buildClientPath(spec: CommandSpec): string[] {
 }
 
 function parseBodyValue({ name, value }: { name: string; value: string }): unknown {
-  if (name === 'messages')
-    try {
-      return JSON.parse(value) as unknown
-    } catch {
-      return [{ role: 'user', content: value }]
-    }
-
   if (name === 'stream') {
     if (value === 'true' || value === '1') return true
     if (value === 'false' || value === '0') return false
@@ -45,13 +38,6 @@ function parseBodyValue({ name, value }: { name: string; value: string }): unkno
       throw new Error(`Invalid --temperature value: ${value}. Must be a finite number`)
     return n
   }
-
-  if (name === 'tools')
-    try {
-      return JSON.parse(value) as unknown
-    } catch {
-      throw new Error(`Invalid --tools JSON: ${value}`)
-    }
 
   return value
 }

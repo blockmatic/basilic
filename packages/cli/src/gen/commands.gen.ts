@@ -210,25 +210,6 @@ export const operationMeta = {
     "pathParams": [],
     "bodyParams": []
   },
-  "chat": {
-    "summary": "Generate AI chat response",
-    "description": "Chat with AI via Anthropic, Open Router, or Ollama. Set ANTHROPIC_API_KEY, OPEN_ROUTER_API_KEY, or OLLAMA_BASE_URL. Default model configurable via AI_DEFAULT_MODEL. Supports streaming and tools.",
-    "pathParams": [],
-    "bodyParams": [
-      {
-        "name": "messages"
-      },
-      {
-        "name": "stream"
-      },
-      {
-        "name": "model"
-      },
-      {
-        "name": "temperature"
-      }
-    ]
-  },
   "generate": {
     "summary": "Generate text from prompt",
     "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic, Open Router, or Ollama. Returns SSE (text/event-stream) when streaming.",
@@ -496,13 +477,6 @@ export const commandSpecs = [
       "list-agents"
     ],
     "operationId": "listAgents"
-  },
-  {
-    "path": [
-      "ai",
-      "chat"
-    ],
-    "operationId": "chat"
   },
   {
     "path": [

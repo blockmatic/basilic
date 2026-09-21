@@ -47,7 +47,6 @@ agents: {
 },
 listAgents: gen.listAgents,
 ai: {
-  chat: gen.chat,
   generate: gen.generate,
 },
 auth: {

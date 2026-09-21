@@ -12,7 +12,6 @@ export { useWebAuthnAvailable } from './hooks/passkey/use-webauthn-available'
 export { useApiKeysList, useCreateApiKey, useRevokeApiKey } from './hooks/use-api-keys'
 export { useChangeEmail } from './hooks/use-change-email'
 // Export hooks
-export { useChatFromConfig } from './hooks/use-chat'
 export { useHealthCheck } from './hooks/use-health-check'
 export { useLinkEmail } from './hooks/use-link-email'
 export { useProfileUpdate } from './hooks/use-profile-update'

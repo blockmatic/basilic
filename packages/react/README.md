@@ -12,7 +12,6 @@ This package provides React Query hooks that wrap `@repo/core` API client method
 - `createReactApiConfig` - Utility function to normalize API configuration
 - `useReactApiConfig` - Hook to access API client and query defaults from context
 - `useApiKeysList`, `useCreateApiKey`, `useRevokeApiKey` - API keys CRUD hooks
-- `useChatFromConfig` - Chat hook with AI SDK integration
 - `useHealthCheck` - React Query hook for health check endpoint
 - `useLinkEmail` - Mutation hook for link-email request
 - `useMagicLink` - Mutation hook for magic link request endpoint

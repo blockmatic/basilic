@@ -28,7 +28,7 @@ Stop if any step fails. Do not skip `db:start` or `pnpm reset` and treat a hangi
 - Production deploy, Sentry, or PostHog
 - Wallet UI or a mobile `@repo/core` client
 - Coverage floors
-- Fastify `POST /ai/chat` (needs a real Anthropic/OpenRouter key or local Ollama). Optional [API chrome](/docs/architecture/ai). The dashboard does not mount it.
+- Fastify `POST /ai/generate` and eve Chat (need a real Anthropic/OpenRouter/Gateway key or local Ollama). Optional [API chrome](/docs/architecture/ai) and [Eve](/docs/architecture/eve). Not required to sign in.
 
 Those are later bets, optional demo chrome, or non-goals.
 

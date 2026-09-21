@@ -25,11 +25,9 @@
     "test:unit": "vitest run"
   },
   "dependencies": {
-    "@ai-sdk/react": "^4.0.105",
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "@simplewebauthn/browser": "^14.0.0",
-    "ai": "^7.0.102",
     "jose": "^6.2.12",
     "zod": "^4.6.5"
   },

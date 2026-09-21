@@ -237,18 +237,14 @@ curl -s https://ollama.example.com/api/generate -d '{"model":"qwen2.5:3b","promp
 
 ## AI Provider in Fastify
 
-The Fastify API supports **Anthropic** (default), **Open Router**, and **Ollama**. Routes, env vars, streaming, tools, and the web assistant contract are documented in [AI Architecture](/docs/architecture/ai).
+The Fastify API supports **Anthropic** (default), **Open Router**, and **Ollama**. Routes, env vars, streaming, and generate contract are documented in [AI Architecture](/docs/architecture/ai).
 
 Privacy-first routing with Ollama requires `AI_PROVIDER=ollama` when other keys exist.
-
-### Tool support (Ollama)
-
-Open Router and capable Ollama models support tools (`getAccountInfo`, `getMarketSnapshot`, optional `braveSearch`). Small Ollama models (e.g. `qwen2.5:3b`) may not; use 7B+ such as `llama3.1:8b` or the runtime default `qwen3:8b` for reliable tool calling.
 
 ---
 
 ## Related Documentation
 
-- [AI Architecture](/docs/architecture/ai) — Routes, env table, `lib/ai`, web contract
+- [AI Architecture](/docs/architecture/ai) — Routes, env table, `lib/ai`
 - [Vercel Deployment](/docs/deployment/vercel) — Frontend and API deployment
 - [Portability Strategy](/docs/architecture/portability) — Migration paths

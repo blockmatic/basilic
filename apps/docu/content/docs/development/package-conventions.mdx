@@ -121,7 +121,7 @@ PostgreSQL access for Fastify and the eve host. Schema barrel `@repo/db/schema`,
 
 ### 5) `packages/markets`
 
-CoinGecko Demo + Binance public REST. Zero Fastify, zero `@repo/db`, zero Alchemy. Hosts call `configureMarkets` from their env. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Fastify `GET /coins` and `getMarketSnapshot` call `getMarkets`. Eve command tools call the same fns. Next.js must not import this package.
+CoinGecko Demo + Binance public REST. Zero Fastify, zero `@repo/db`, zero Alchemy. Hosts call `configureMarkets` from their env. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Fastify `GET /coins` calls `getMarkets`. Eve command tools call the same fns. Next.js must not import this package.
 
 ## Import and export conventions
 

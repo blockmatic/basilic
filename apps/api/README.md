@@ -49,5 +49,5 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 - [Deployment](https://basilic-docs.vercel.app/docs/deployment) — Vercel, Cloud Run, ECS
 - [Authentication](https://basilic-docs.vercel.app/docs/architecture/authentication) — JWT, magic link, API keys
 - [API architecture](https://basilic-docs.vercel.app/docs/architecture/api) — Routes, OpenAPI, clients
-- [AI architecture](https://basilic-docs.vercel.app/docs/architecture/ai) — Providers, `/ai/*`, streaming, tools
+- [AI architecture](https://basilic-docs.vercel.app/docs/architecture/ai) — Providers, `/ai/generate`, streaming
 - [Database migrations](https://basilic-docs.vercel.app/docs/adrs/008-database) — PostgreSQL vs PGLite

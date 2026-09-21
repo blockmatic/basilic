@@ -21,14 +21,12 @@ export type ReactApiConfig = {
   client: ReturnType<typeof createClient>
 
   /**
-   * Base URL for chat API. Optional when client is from createClient with baseUrl.
-   * Required for useChatFromConfig unless derived from client.
+   * Base URL for the API. Optional when client is from createClient with baseUrl.
    */
   baseUrl?: string
 
   /**
-   * Callback to get Bearer token for chat requests. Optional when client is from
-   * createClient with getAuthToken. Required for useChatFromConfig unless derived from client.
+   * Callback to get Bearer token. Optional when client is from createClient with getAuthToken.
    */
   getAuthToken?: () => Promise<string | null>
 
@@ -53,10 +51,10 @@ export type ReactApiConfigValue = {
   /** API client instance from `@repo/core` */
   client: ReturnType<typeof createClient>
 
-  /** Base URL for chat API */
+  /** Base URL for the API */
   baseUrl?: string
 
-  /** Callback to get Bearer token for chat requests */
+  /** Callback to get Bearer token */
   getAuthToken?: () => Promise<string | null>
 
   /** Optional TanStack Query client instance */
