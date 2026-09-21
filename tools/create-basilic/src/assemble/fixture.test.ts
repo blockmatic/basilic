@@ -16,6 +16,7 @@ const sentinelPaths = [
   ['apps/web/package.json', 'transform'],
   ['apps/mobile/app.json', 'transform'],
   ['apps/docu/package.json', 'exclude'],
+  ['apps/agents/package.json', 'exclude'],
   ['packages/cli/package.json', 'transform'],
   ['tools/eslint/package.json', 'include'],
   ['tools/typescript/package.json', 'include'],
@@ -37,6 +38,7 @@ describe('exact-version fixture', () => {
     expect(manifest).toEqual({
       exclude: [
         'apps/docu/',
+        'apps/agents/',
         'tools/create-basilic/',
         'scripts/prepare-publish.mjs',
         'scripts/restore-publish.mjs',

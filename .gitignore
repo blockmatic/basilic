@@ -28,6 +28,11 @@ cypress/downloads/
 # Turbo
 .turbo
 
+# eve (apps/agents)
+.eve
+.output
+.nitro
+
 # Vercel
 .vercel
 

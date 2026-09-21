@@ -1,12 +1,12 @@
 ---
 title: "AI"
-description: "Four planes, Fastify /ai/* control-plane APIs, and the GenUI split. Durable agents are eve — not in the tree until E1."
+description: "Four planes, Fastify /ai/* control-plane APIs, and the GenUI split. Durable agents are eve in apps/agents."
 ---
 
 Four planes:
 
 - **Control** — Fastify product HTTP. `POST /ai/generate` stays. `POST /ai/chat` is demo chrome scheduled to retire once eve command and chat agents land.
-- **Interaction and execution** — eve on a separate host. **Queued until E1** — [Eve](/docs/architecture/eve). Not a Fastify proxy. No coordinator agent.
+- **Interaction and execution** — eve on a separate host. Hello lives in `apps/agents` — [Eve](/docs/architecture/eve). Not a Fastify proxy. No coordinator agent.
 - **Domain** — `@repo/db` named functions; market HTTP still `apps/api/src/lib/markets/` until extract to `@repo/markets`. Next keeps `@repo/core`.
 - **Presentation** — json-render on Next. `composeSurface` in `apps/web/lib/genui` builds Specs. Board chrome lives on [Frontend](/docs/architecture/frontend).
 

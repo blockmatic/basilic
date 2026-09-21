@@ -18,6 +18,7 @@ import { applyAssembleTransforms } from './transforms.js'
 
 export const forbiddenGeneratedPaths = [
   'apps/docu',
+  'apps/agents',
   'tools/create-basilic',
   'scripts/prepare-publish.mjs',
   'scripts/restore-publish.mjs',

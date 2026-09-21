@@ -22,6 +22,7 @@ flowchart TB
     API["api — Fastify 5"]
     Web["web — Next.js 16"]
     Mobile["mobile — Expo 57"]
+    Agents["agents — eve hello (sibling, not scored)"]
     Docu["docu — Fumadocs (upstream only)"]
   end
 
@@ -47,7 +48,7 @@ flowchart TB
   Cli -->|HTTP| API
 ```
 
-**Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shares **tokens** later, not components/`@repo/core` types yet), `docu` (Fumadocs, not copied into generated projects).
+**Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shares **tokens** later, not components/`@repo/core` types yet), `agents` (eve hello sibling; not scored; not copied by `create-basilic` yet), `docu` (Fumadocs, not copied into generated projects).
 
 **Tools:** `eslint`, `typescript` (copied), `create-basilic` (generator; excluded from generated projects). See [ADR 012](/docs/adrs/012-scaffolding-and-releases).
 

@@ -31,7 +31,7 @@ apps/
 
 - `@repo/core` → owns generated code, exports API types
 - `@repo/react` → depends on `@repo/core` (and React/TanStack Query via peer deps)
-- `@repo/db` → Drizzle schema, `configureDb` / `getDb`, named fns (`listAssets`, watches, `getValidSession`). Fastify and later eve host import it. Next.js must not.
+- `@repo/db` → Drizzle schema, `configureDb` / `getDb`, named fns (`listAssets`, watches, `getValidSession`). Fastify imports it. Eve hello (`apps/agents`) must not; named fns on the eve host land in E2. Next.js must not.
 
 No reverse dependencies. `@repo/db` does not import Fastify env or the api test harness.
 
@@ -109,7 +109,7 @@ React-only helpers using **TanStack Query**.
 
 ### 4) `packages/db`
 
-PostgreSQL access for Fastify (and later eve host). Schema barrel `@repo/db/schema`, factory `configureDb` / `getDb`, PGLite `runMigrations` on `@repo/db/migrate`. Named RORO fns take `{ userId }` for user-scoped rows. Encrypt helpers and identity seed stay in `apps/api`.
+PostgreSQL access for Fastify (and the eve host from E2). Schema barrel `@repo/db/schema`, factory `configureDb` / `getDb`, PGLite `runMigrations` on `@repo/db/migrate`. Named RORO fns take `{ userId }` for user-scoped rows. Encrypt helpers and identity seed stay in `apps/api`.
 
 **Hard rules**
 

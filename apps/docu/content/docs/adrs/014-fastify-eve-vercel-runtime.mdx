@@ -3,7 +3,7 @@ title: "ADR 014: Fastify, eve, and Vercel runtime"
 description: "Keep Fastify as the product API. Adopt eve as the durable agent runtime on a separate host. Optimize for Vercel; keep a Node/container exit."
 ---
 
-Status: **Accepted.** Companion to [ADR 002](/docs/adrs/002-backend-framework). Eve is **not in this repository** until the E1 workspace; this ADR records the runtime decision.
+Status: **Accepted.** Companion to [ADR 002](/docs/adrs/002-backend-framework). E1 landed a hello workspace in `apps/agents`; product JWT and `command`/`chat` remain E2.
 
 ## Context
 
@@ -18,14 +18,14 @@ Keep Fastify. Adopt eve. Optimize for Vercel. Preserve a Node/container exit. Us
 - Default deploy is Vercel. Exit is ordinary Node / container: Fastify `listen`, `eve start`, and `eve build` → Nitro for the agent host.
 - Core API = Node + Fluid Compute, not Edge Runtime wholesale. Edge is CDN, WAF, redirects, auth precheck, geo, and cache — not the API, not eve, not Drizzle.
 - Domain functions live in `@repo/*`. `@repo/db` named fns are landed. Market vendor HTTP extracts to `@repo/markets` later. Next keeps `@repo/core`. Fastify is not a database proxy for eve.
-- Track A discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) stays on Fastify. There is **no product MCP**. Do not advertise `/eve/` from `llms.txt`.
+- Track A discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) stays on Fastify. OpenAPI is the agent contract. There is **no product MCP**. If MCP is justified later, add a logically isolated capability surface inside Fastify — not a second application. Do not advertise MCP or `/eve/` from `llms.txt`.
 - Fastify is the **control plane**, not a universal proxy. Interactive agent transport belongs to eve. No coordinator: two first-class agents (`command` and `chat`). `GET /agents` is discoverability (JWT), not the authorization boundary.
 
 Four planes: Fastify control; eve interaction and execution; shared domain packages; GenUI presentation. Models are implementation details; agents are product capabilities. Jev judges closed labels (refuse / canned / surface); Next `composeSurface` builds json-render Specs. Do not treat Commands as a Fastify `ToolLoopAgent`.
 
 ## Consequences
 
-- `apps/agents` and the `eve` package are **queued until E1**. Pages that name eve must say they are not in the tree.
+- `apps/agents` is a hello-only sibling process (`@repo/agents`). Product JWT, CORS, and `command`/`chat` ids are still E2.
 - `POST /ai/generate` stays. `POST /ai/chat` remains demo chrome until command and chat agents land on eve; then retire the Fastify chat route.
 - Two Vercel projects: Fastify Function + Fluid; eve on a sibling project (Workflow + Sandbox). Self-host proxies must keep `/eve/` and `/.well-known/workflow/` un-rewritten.
 - Identity: Fastify mints JWT. Eve verifies **access** tokens from E2. Nitro is eve’s server, not an identity provider. Channels are inbound ingress; connections are outbound.
@@ -35,7 +35,7 @@ Four planes: Fastify control; eve interaction and execution; shared domain packa
 Implementation, not this merge:
 
 - **Landed:** `@repo/db` (D0)
-- **E1** workspace (`apps/agents` hello)
+- **Landed:** E1 hello workspace (`apps/agents`)
 - **E2** access-JWT + `@repo/markets`; fold `GET /agents` if cheap
 - Command and chat agents on eve, then retire `POST /ai/chat`
 - **E3** self-host smoke
