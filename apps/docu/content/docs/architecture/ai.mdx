@@ -10,7 +10,7 @@ Four planes:
 - **Domain** — `@repo/db` named functions and `@repo/markets` vendor HTTP. Next keeps `@repo/core`.
 - **Presentation** — json-render on Next. `composeSurface` in `apps/web/lib/genui` builds Specs. Board chrome lives on [Frontend](/docs/architecture/frontend).
 
-Models are implementation details; agents are product capabilities (`command`, `chat`). `getProvider()` resolves Fastify language models. Jev (`getEvaluationModel` / `experimental_evaluate`) **judges** refuse / canned / surface and is **not in the tree** until it lands on eve. Jev does not author json-render trees. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
+Models are implementation details; agents are product capabilities (`command`, `chat`). Fastify `getProvider()` resolves language models for `/ai/generate` and demo `/ai/chat`. Eve hosts Jev: `getEvaluationModel()` plus `evaluateBoardTurn` in `apps/agents/lib/evaluate` call `experimental_evaluate` on Vercel AI Gateway (`typesafe-ai/jev`). Unset `AI_GATEWAY_API_KEY` (and no `VERCEL_OIDC_TOKEN`) returns a null model and skips the hop. Jev judges refuse / canned / surface; it does not author json-render trees. Commands still wire that hop in G-cmd. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
 
 Fastify `/ai/*` is **control-plane API chrome**, not the Product Ready bar and not the durable agent runtime. Agent **skills** (`AGENTS.md`, Basilic `/w-*`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
 
@@ -72,7 +72,7 @@ File parts in UIMessage payloads must use `data:` URLs only (`maxLength` 2048). 
 | `AI_UPSTREAM_TIMEOUT_MS` | No | `120000` | Upstream abort timeout (ms) |
 | `BRAVE_SEARCH_API_KEY` | No | — | Enables optional `braveSearch` tool |
 
-Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`.
+Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`. Jev Gateway credentials live on the eve host (`apps/agents/.env.defaults.example`): optional `AI_GATEWAY_API_KEY`, `JEV_MODEL` (default `typesafe-ai/jev`), `AI_EVALUATE_TIMEOUT_MS`. Do not put `AI_PROVIDER=jev` on Fastify.
 
 ## Fastify chat tools (demo chrome)
 

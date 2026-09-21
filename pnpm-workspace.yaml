@@ -41,8 +41,8 @@ overrides:
   flatted: 3.4.2
   # Pin h3 1.x only; eve's Nitro 3 needs h3 2 (`./rules/compiler`)
   'h3@<2': 1.15.9
-  # One `ai` copy; eve would otherwise hoist 7.0.107 next to @ai-sdk/react's 7.0.102
-  ai: 7.0.102
+  # One `ai` copy across Fastify, eve, and @ai-sdk/react. Evaluate needs ≥ 7.0.105.
+  ai: 7.0.107
   socket.io-parser: 4.2.7
   undici@5.28.4: 6.28.0
   undici@6.23.0: 6.28.0

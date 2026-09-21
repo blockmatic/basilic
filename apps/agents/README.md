@@ -45,6 +45,8 @@ pnpm --filter @repo/agents eve:dev
 curl -sS http://127.0.0.1:3004/eve/v1/health
 ```
 
-Session routes need a Fastify access JWT. One model turn needs `AI_GATEWAY_API_KEY`, Vercel OIDC, or a provider key.
+Session routes need a Fastify access JWT. One **chat/command language** turn needs `AI_GATEWAY_API_KEY`, Vercel OIDC, or a provider key.
+
+Jev (T4g) is separate: `getEvaluationModel()` is `null` without `AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN`. Optional `JEV_MODEL` (default `typesafe-ai/jev`) and `AI_EVALUATE_TIMEOUT_MS`. Unit tests: `pnpm --filter @repo/agents test` (live Gateway is skipped unless `AI_GATEWAY_API_KEY` is set).
 
 Architecture: [Eve](https://basilic-docs.vercel.app/docs/architecture/eve). Runtime: [ADR 014](https://basilic-docs.vercel.app/docs/adrs/014-fastify-eve-vercel-runtime).

@@ -3,7 +3,7 @@ title: "ADR 014: Fastify, eve, and Vercel runtime"
 description: "Keep Fastify as the product API. Adopt eve as the durable agent runtime on a separate host. Optimize for Vercel; keep a Node/container exit."
 ---
 
-Status: **Accepted.** Companion to [ADR 002](/docs/adrs/002-backend-framework). E1 landed the hello workspace; E2 landed access-JWT, `@repo/markets`, and product ids `command`/`chat`. Commands/Chat UX remains later.
+Status: **Accepted.** Companion to [ADR 002](/docs/adrs/002-backend-framework). E1 landed the hello workspace; E2 landed access-JWT, `@repo/markets`, and product ids `command`/`chat`. T4g landed Gateway Jev (`getEvaluationModel` / `evaluateBoardTurn`) on the eve host. Commands/Chat UX remains later.
 
 ## Context
 
@@ -37,6 +37,7 @@ Implementation, not this merge:
 - **Landed:** `@repo/db` (D0)
 - **Landed:** E1 hello workspace (`apps/agents`)
 - **Landed:** E2 access-JWT + `@repo/markets` + `GET /agents` + `command`/`chat`
+- **Landed:** T4g Gateway Jev factory on eve (`evaluateBoardTurn`; Commands still unwired)
 - Command and chat **UI** on the board, then retire `POST /ai/chat`
 - **E3** self-host smoke
 - OpenTelemetry correlation after issue #183

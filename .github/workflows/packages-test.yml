@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - 'packages/**'
+      - 'apps/agents/**'
       - 'tools/**'
       - 'apps/api/openapi/**'
       - '.github/workflows/packages-test.yml'
       - '.github/actions/setup-pnpm/**'
       - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
       - 'package.json'
       - 'turbo.json'
 
@@ -33,5 +35,5 @@ jobs:
       - uses: ./.github/actions/setup-pnpm
       - name: Build packages
         run: pnpm turbo run build --filter=@repo/error... --filter=@repo/core --filter=@repo/react --filter=@repo/db --filter=@repo/markets
-      - name: Unit tests (packages only)
-        run: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/db --filter=@repo/markets
+      - name: Unit tests (packages + agents)
+        run: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/db --filter=@repo/markets --filter=@repo/agents

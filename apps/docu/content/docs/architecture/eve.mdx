@@ -25,6 +25,10 @@ Keep `/eve/` and `/.well-known/workflow/` un-rewritten behind a reverse proxy. N
 
 Eve consumes `@repo/db` **named functions** and `@repo/markets` for market HTTP. Next.js keeps `@repo/core` HTTP clients and does not import those packages. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP.
 
+## Jev
+
+`getEvaluationModel()` in `apps/agents/lib/evaluate` builds a Gateway evaluation model when `AI_GATEWAY_API_KEY` or Vercel `VERCEL_OIDC_TOKEN` is set. `evaluateBoardTurn` runs one `experimental_evaluate` over prompt plus boardQuery JSON (not coin rows). Missing credentials or Gateway 401/429/529/timeout skip the hop (`skip: missing-model | upstream`). G-cmd wires that result before the command tool loop. Jev is not a chat model.
+
 ## Identity
 
 Fastify **mints** JWT (access, refresh, API keys). Eve is a resource, not an IdP. The HTTP channel verifies Fastify **access** JWTs (`typ=access`) via `basilicAccessJwt`, then `vercelOidc()` and `localDev()`. Refresh tokens are rejected. A channel is inbound ingress plus route auth. A connection is outbound (MCP/OpenAPI to someone else) — not the same thing.
