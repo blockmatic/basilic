@@ -9,7 +9,7 @@ Cursor slash, glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the
 
 Judgment lives in planning and review. Implementation is incremental. See [Engineering in the AI Era](https://gaboesquivel.com/blog/2026-02-engineering-ai-era).
 
-Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. `/w-build` verifies locally and does not commit. Publish with `/w-ship`. `/w-tdd` is opt-in. Fastify `/ai/chat` is optional [API chrome](/docs/architecture/ai), not this page.
+Visual language is root `DESIGN.md`. Technical adopter docs live in `apps/docu`. `/w-build` verifies locally and does not commit. Publish with `/w-ship`. `/w-tdd` is opt-in. Fastify `/ai/generate` is optional [API chrome](/docs/architecture/ai), not this page.
 
 ## Sources of truth
 
@@ -109,7 +109,7 @@ Further polish is later and small. See [Skills](/docs/development/cursor-skills)
 | **Composer 2.5** | Fast multi-file execution after a reviewed plan |
 | **Claude Code** (Opus 5) | Same `AGENTS.md` and `.agents/skills/` |
 
-In-app chat (Fastify `/ai/chat`) defaults to Claude Haiku 4.5 — product model, not this page. Pass `model: "sonnet"` for Sonnet 4.6. See [Self-Hosted LLM](/docs/deployment/self-hosted-llm).
+Dashboard Chat (eve) and Fastify `/ai/generate` default to Claude Haiku 4.5 — product models, not this page. Pass `model: "sonnet"` on generate for Sonnet 4.6. See [Self-Hosted LLM](/docs/deployment/self-hosted-llm).
 
 CodeRabbit reviews PRs against project standards. Local gates: Biome, ESLint, [pre-commit security](/docs/architecture/security).
 

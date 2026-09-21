@@ -21,12 +21,12 @@ basilic config set-api-key bask_xxx_yyy
 
 ## Commands
 
-Commands mirror core API nesting: `health-check`, `account apikeys create`, `account apikeys list`, `ai chat`, etc. Use `--help` for OpenAPI-derived descriptions.
+Commands mirror core API nesting: `health-check`, `account apikeys create`, `account apikeys list`, `ai generate`, etc. Use `--help` for OpenAPI-derived descriptions.
 
 ```bash
 basilic health-check
 basilic account apikeys list
-basilic ai chat --body '{"messages":[{"role":"user","content":"Hello"}]}'
+basilic ai generate --prompt "Hello"
 ```
 
 ## Local testing
@@ -43,6 +43,6 @@ The CLI is a simple alternative to MCP for agents (Cursor, Claude Code, scripts)
 
 - Standard stdout/JSON
 - No server setup
-- Easy to wrap in scripts: `result=$(basilic ai chat --body '...')`
+- Easy to wrap in scripts: `result=$(basilic ai generate --prompt '...')`
 
 Agents can shell out to the CLI and parse JSON output without running an MCP server.

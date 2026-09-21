@@ -43,7 +43,7 @@ Vitest `include` is `**/*.spec.ts` only. Every `*.test.ts` must be imported by a
 
 ## AI test split
 
-- **Contract (local, hard)** — `POST /ai/chat` and `/ai/generate` validation: 401 unauthenticated, 400 bad payloads, SSRF file-URL matrix (`data:` only). No provider calls; no soft skip.
+- **Contract (local, hard)** — `POST /ai/generate` validation: 401 unauthenticated, 400 bad payloads, model allowlist. Eve Chat file-URL / system-role matrix lives in `apps/agents/lib/ingress.test.ts`. No provider calls; no soft skip.
 - **Remote (provider-dependent)** — Live Anthropic/Open Router/Ollama paths. The remote `describe` blocks skip entirely when `ANTHROPIC_API_KEY` is missing or placeholder (`sk-ant-xxx`). With a real key, `test/utils/ai-remote.ts` skips on 402 credits; 502/503/504 fail the suite.
 
 ## Auth helpers
@@ -60,4 +60,4 @@ Vitest pins `ALLOWED_ORIGINS` to `http://localhost:3000,http://127.0.0.1:3000,ht
 
 - **OAuth IdP exchange** — Unit tests assert unconfigured 503 and link-authorize-url 401/503 only. No live GitHub/Google/Facebook/Twitter calls in CI.
 - **AI remote** — Skips (not passes) on 402 or upstream errors when `ANTHROPIC_API_KEY` is missing or placeholder (`sk-ant-xxx`). Default model: `claude-haiku-4-5` (alias `sonnet` → `claude-sonnet-4-6`). See [AI Architecture](/docs/architecture/ai).
-- **Unresolved** — eval datasets for `/ai/chat` and `/ai/generate`; performance budgets; visual-regression CI. `/w-tdd` is opt-in, not the default for docs or small fixes.
+- **Unresolved** — eval datasets for `/ai/generate` and eve chat; performance budgets; visual-regression CI. `/w-tdd` is opt-in, not the default for docs or small fixes.

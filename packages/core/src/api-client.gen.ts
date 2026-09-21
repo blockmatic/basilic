@@ -52,8 +52,6 @@ import type {
   AuthSessionsListResponse,
   AuthSessionsRevokeData,
   AuthSessionsRevokeResponse,
-  ChatData,
-  ChatResponse,
   DeleteCoinWatchByIdData,
   DeleteCoinWatchByIdResponse,
   GenerateData,
@@ -171,7 +169,6 @@ export type CoreApiClient = {
   };
   listAgents: (opts?: Options<ListAgentsData>) => Promise<ListAgentsResponse>;
   ai: {
-    chat: (opts: Options<ChatData>) => Promise<ChatResponse>;
     generate: (opts: Options<GenerateData>) => Promise<GenerateResponse>
   };
   auth: {
