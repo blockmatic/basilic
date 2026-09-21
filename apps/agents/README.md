@@ -1,6 +1,6 @@
 # Agents
 
-Eve workspace (`@repo/agents`) with product agents **command** (port **3004**) and **chat** (port **3005**). Sibling process of Fastify (`apps/api`). This app is excluded from `create-basilic` until a later E PR.
+Eve workspace (`@repo/agents`) with product agents **command** (port **3004**) and **chat** (port **3005**). Sibling process of Fastify (`apps/api`). Default deploy is a sibling Vercel project (Workflow + Sandbox). Local `eve:dev` / `eve:start` first. This app is excluded from `create-basilic` until a later E PR.
 
 Read bundled docs before changing eve files: `node_modules/eve/docs/README.md`.
 

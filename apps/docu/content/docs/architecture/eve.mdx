@@ -1,9 +1,9 @@
 ---
 title: "Eve"
-description: "Durable agent runtime on a sibling host. Product command and chat live in apps/agents."
+description: "Default host is Vercel (Workflow + Sandbox). Product command and chat live in apps/agents."
 ---
 
-Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The workspace is `apps/agents` (`@repo/agents`) with separately addressable agents `command` (port **3004**) and `chat` (port **3005**). Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
+Default host is Vercel (Workflow + Sandbox) on a sibling project. Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The workspace is `apps/agents` (`@repo/agents`) with separately addressable agents `command` (port **3004**) and `chat` (port **3005**). Local `eve:dev` / `eve start` (Nitro `.output`) is the exit. Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
 
 The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. Authenticated Fastify `GET /agents` lists command and chat origins. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` excludes `apps/agents/` until a later E PR.
 
