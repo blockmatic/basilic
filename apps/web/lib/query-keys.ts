@@ -8,4 +8,6 @@ export const coinsListQueryKeyPrefix = ['coins', 'list'] as const
 export const coinsListQueryKey = (query: SearchQueryState) =>
   [...coinsListQueryKeyPrefix, toCoinsQuery({ query })] as const
 export const coinWatchesQueryKey = ['coins', 'watches'] as const
+export const coinsCandlesQueryKey = ({ assetId, period }: { assetId: string; period: string }) =>
+  ['coins', 'candles', assetId, period] as const
 export const accountWalletQueryKey = ['account', 'wallet'] as const

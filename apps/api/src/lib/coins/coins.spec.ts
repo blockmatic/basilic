@@ -9,6 +9,7 @@ afterAll(async () => {
   await cleanupGroupDatabase()
 })
 
+import './kline-period.test'
 import './query.test'
 import './read.test'
 import './search-query.test'

@@ -27,7 +27,10 @@ import {
   type AccountState,
   boardViewParsers,
   composeSurface,
+  defaultCandlePeriod,
+  emptySeriesState,
   overlayAccountQuery,
+  seriesAssetId,
   specFromSelection,
   splitBoardView,
   type ViewPeriod,
@@ -37,6 +40,7 @@ import {
 } from '@/lib/genui'
 import {
   accountWalletQueryKey,
+  coinsCandlesQueryKey,
   coinsListQueryKey,
   coinsListQueryKeyPrefix,
   coinWatchesQueryKey,
@@ -99,6 +103,7 @@ export function CoinBoard({
       error: initialError,
       account: initialAccount,
       wallet: emptyWalletState,
+      series: emptySeriesState,
     }),
   )
 
@@ -126,6 +131,20 @@ export function CoinBoard({
   const walletQuery = useQuery({
     queryKey: accountWalletQueryKey,
     queryFn: () => client.account.wallet(),
+    staleTime: boardStaleMs,
+  })
+  const seriesAsset = seriesAssetId({
+    query: fetchQuery,
+    coins: listQuery.data?.coins ?? initialCoins,
+  })
+  const candlePeriod = period ?? defaultCandlePeriod
+  const seriesQuery = useQuery({
+    queryKey: coinsCandlesQueryKey({ assetId: seriesAsset, period: candlePeriod }),
+    queryFn: () =>
+      client.coins.assetId.candles({
+        path: { assetId: seriesAsset },
+        query: { period: candlePeriod },
+      }),
     staleTime: boardStaleMs,
   })
   const watchMutation = useMutation({
@@ -178,8 +197,9 @@ export function CoinBoard({
       '/error': error,
       '/account': initialAccount,
       '/wallet': walletQuery.data ?? emptyWalletState,
+      '/series': seriesQuery.data ?? emptySeriesState,
     })
-  }, [store, coins, sync, caption, error, initialAccount, walletQuery.data])
+  }, [store, coins, sync, caption, error, initialAccount, walletQuery.data, seriesQuery.data])
 
   function handleToggleWatch({ assetId, watched }: { assetId: string; watched: boolean }) {
     if (!watched && isAtCap) {

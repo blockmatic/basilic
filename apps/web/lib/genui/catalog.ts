@@ -108,6 +108,18 @@ export const boardCatalog = defineCatalog(schema, {
       props: z.object({ hidden: z.boolean() }),
       description: 'Linked wallet NFTs bound to $state.wallet',
     },
+    LineChart: {
+      props: z.object({ scale: z.enum(['price', 'normalized']).nullable() }),
+      description: 'Close series line bound to $state.series',
+    },
+    AreaChart: {
+      props: z.object({}),
+      description: 'Close series area bound to $state.series',
+    },
+    BarChart: {
+      props: z.object({}),
+      description: 'Close series bars bound to $state.series',
+    },
   },
   actions: {
     reset_view: {

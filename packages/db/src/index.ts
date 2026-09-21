@@ -1,5 +1,5 @@
 export { type AccountSnapshot, getAccountSnapshot } from './account-snapshot.js'
-export { findAssetIdByNetwork, getAsset, listAssets } from './assets.js'
+export { findAssetIdByNetwork, findBinanceMarket, getAsset, listAssets } from './assets.js'
 export type { Db } from './client.js'
 export { closeDb, configureDb, getDb, isDbReady, resetDbInstance } from './client.js'
 export { getValidSession } from './sessions.js'

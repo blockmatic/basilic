@@ -21,7 +21,7 @@ describe('composeSurface', () => {
     })
   })
 
-  it('keeps a DataTable and honesty string for reserved chart', () => {
+  it('keeps a LineChart, DataTable, and no deferred chart honesty for surface=chart', () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({
         query: defaultSearchQuery,
@@ -30,7 +30,10 @@ describe('composeSurface', () => {
       }),
     })
     expect(tableElement(spec)?.repeat).toBeUndefined()
-    expect(JSON.stringify(spec)).toContain('Charting lands next.')
+    expect(Object.values(spec.elements).some(element => element.type === 'LineChart')).toBe(true)
+    expect(JSON.stringify(spec)).not.toContain('Charting lands next.')
+    expect(JSON.stringify(spec)).not.toContain('No Binance market')
+    expect(JSON.stringify(spec)).not.toMatch(/openTime/)
   })
 
   it('uses movers columns when sortBy is change24h', () => {
@@ -135,5 +138,11 @@ describe('specFromSelection', () => {
     expect(specFromSelection({ elements: ['summary', 'account'], view })).toEqual(
       composeSurface({ view }),
     )
+  })
+
+  it('restores a chart recipe without embedding series', () => {
+    const spec = specFromSelection({ elements: ['summary', 'chart-line', 'table-ranked'], view })
+    expect(Object.values(spec.elements).some(element => element.type === 'LineChart')).toBe(true)
+    expect(JSON.stringify(spec)).not.toMatch(/openTime/)
   })
 })

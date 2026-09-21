@@ -1,4 +1,3 @@
-import type { Experimental_CompositionCandidate } from '@json-render/core'
 import type { ColumnId, ViewConfig, ViewSurface } from './view-config'
 
 const leaf = { children: [] as string[] }
@@ -22,7 +21,7 @@ export const comparisonColumns: ColumnId[] = [
 ]
 
 export const honestyBySurface: Partial<Record<ViewSurface, string>> = {
-  chart: 'Charting lands next.',
+  chart: 'No Binance market for this asset. Showing the table.',
   news: "Headlines aren't a generated surface yet.",
   dashboard: 'Dashboards come later. Showing a table.',
   coin: 'No coin page yet. Highlighting that row.',
@@ -91,7 +90,7 @@ export const boardRecipes = {
   reset: { element: resetElement, description: 'Clear filters back to the ranked table' },
   'honesty-chart': {
     element: honestyElement({ title: honestyBySurface.chart ?? '' }),
-    description: 'Honesty notice that charting is not shipped',
+    description: 'Honesty notice when this asset has no Binance pair',
   },
   'honesty-news': {
     element: honestyElement({ title: honestyBySurface.news ?? '' }),
@@ -149,6 +148,22 @@ export const boardRecipes = {
     element: walletLinkElement,
     description: 'Prompt to link an Ethereum wallet in Settings',
   },
+  'chart-line': {
+    element: { type: 'LineChart', props: { scale: 'price' as const } },
+    description: 'Close price line chart bound to $state.series',
+  },
+  'chart-area': {
+    element: { type: 'AreaChart', props: {} },
+    description: 'Close price area chart bound to $state.series',
+  },
+  'chart-bar': {
+    element: { type: 'BarChart', props: {} },
+    description: 'Close price bar chart bound to $state.series',
+  },
+  'chart-normalized': {
+    element: { type: 'LineChart', props: { scale: 'normalized' as const } },
+    description: 'Normalized close line chart bound to $state.series',
+  },
 } as const
 
 export const tableCandidateIds = [
@@ -156,6 +171,13 @@ export const tableCandidateIds = [
   'table-movers',
   'table-comparison',
   'table-watchlist',
+] as const
+
+export const chartCandidateIds = [
+  'chart-line',
+  'chart-area',
+  'chart-bar',
+  'chart-normalized',
 ] as const
 
 export type BoardRecipeId = keyof typeof boardRecipes
@@ -170,49 +192,8 @@ export function isTableRecipeId(id: string): id is (typeof tableCandidateIds)[nu
   return tableCandidateIds.includes(id as (typeof tableCandidateIds)[number])
 }
 
-function sameColumnList({ a, b }: { a: unknown; b: readonly string[] }): boolean {
-  return Array.isArray(a) && a.length === b.length && a.every((id, index) => id === b[index])
-}
-
-export function tableIdFromChoice({ choice }: { choice: string }): BoardRecipeId | undefined {
-  const id = choice.startsWith('use:') ? choice.slice(4) : choice
-  return isTableRecipeId(id) ? id : undefined
-}
-
-export function recipeIdFromElement({
-  element,
-  tableId,
-}: {
-  element: { type: string; props?: Record<string, unknown> }
-  tableId?: BoardRecipeId
-}): BoardRecipeId | undefined {
-  if (element.type === 'QuerySummary') return 'summary'
-  if (element.type === 'UserInfo') return 'account'
-  if (element.type === 'Button') return 'reset'
-  if (element.type === 'TokenTable') {
-    const network = element.props?.network
-    if (network === 'eth-mainnet') return 'token-table-eth'
-    if (network === 'base-mainnet') return 'token-table-base'
-    return 'token-table-all'
-  }
-  if (element.type === 'NftGrid') return element.props?.hidden ? 'nft-hide' : 'nft-grid'
-  if (element.type === 'Text') return 'wallet-link-cta'
-  if (element.type === 'Alert') {
-    const title = element.props?.title
-    if (title === honestyBySurface.chart) return 'honesty-chart'
-    if (title === honestyBySurface.news) return 'honesty-news'
-    if (title === honestyBySurface.dashboard) return 'honesty-dashboard'
-    if (title === honestyBySurface.coin) return 'honesty-coin'
-    if (title === honestyBySurface.account) return 'honesty-account'
-    return undefined
-  }
-  if (element.type !== 'DataTable') return undefined
-  if (tableId && isTableRecipeId(tableId)) return tableId
-  const columns = element.props?.columns
-  if (sameColumnList({ a: columns, b: moversColumns })) return 'table-movers'
-  if (sameColumnList({ a: columns, b: comparisonColumns })) return 'table-comparison'
-  if (element.props?.emptyLabel == null) return 'table-watchlist'
-  return 'table-ranked'
+export function isChartRecipeId(id: string): id is (typeof chartCandidateIds)[number] {
+  return chartCandidateIds.includes(id as (typeof chartCandidateIds)[number])
 }
 
 export function honestyIdForSurface({
@@ -241,30 +222,4 @@ export function recipeSpecElement({ id, view }: { id: BoardRecipeId; view: ViewC
     props: { ...element.props, emptyLabel: tableEmptyLabel({ view }) },
     ...leaf,
   }
-}
-
-export function boardCandidates(): Experimental_CompositionCandidate[] {
-  return [
-    {
-      id: 'board',
-      description: 'Vertical stack that holds board chrome and one table',
-      element: { type: 'Stack', props: { direction: 'vertical', gap: 'md' } },
-      root: true,
-    },
-    ...Object.entries(boardRecipes).map(([id, recipe]) => ({
-      id,
-      description: recipe.description,
-      element: recipe.element,
-      root: false as const,
-      resource: isTableRecipeId(id)
-        ? 'table'
-        : id.startsWith('honesty-')
-          ? 'honesty'
-          : id.startsWith('token-')
-            ? 'tokens'
-            : id.startsWith('nft-')
-              ? 'nfts'
-              : undefined,
-    })),
-  ]
 }

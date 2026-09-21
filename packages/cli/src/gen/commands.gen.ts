@@ -281,6 +281,16 @@ export const operationMeta = {
       }
     ]
   },
+  "getCoinCandles": {
+    "summary": "Get coin candles",
+    "description": "Public Binance klines for an identity asset id, mapped from asset_markets. Unmapped assets and vendor failure return empty fixture candles (HTTP 200). period maps to interval plus range; 7d is 1h × 7d, not a kline interval.",
+    "pathParams": [
+      {
+        "name": "assetId"
+      }
+    ],
+    "bodyParams": []
+  },
   "deleteCoinWatchById": {
     "summary": "Unwatch a coin",
     "description": "Remove an asset id from the access JWT user watchlist. Missing rows still return 204.",
@@ -510,6 +520,14 @@ export const commandSpecs = [
       "query"
     ],
     "operationId": "queryCoins"
+  },
+  {
+    "path": [
+      "coins",
+      "asset-id",
+      "candles"
+    ],
+    "operationId": "getCoinCandles"
   },
   {
     "path": [

@@ -6,7 +6,7 @@ Drizzle PostgreSQL schema, client factory, and named data-access functions. Fast
 
 | Path | Use for |
 |------|--------|
-| `@repo/db` | `configureDb`, `getDb`, `closeDb`, `resetDbInstance`, asset/watch/session/account-snapshot/linked-wallet fns |
+| `@repo/db` | `configureDb`, `getDb`, `closeDb`, `resetDbInstance`, asset/watch/session/account-snapshot/linked-wallet fns (`findBinanceMarket`) |
 | `@repo/db/schema` | Table defs for Fastify auth and coins routes |
 | `@repo/db/migrate` | `runMigrations`, `migrationsDir` |
 
