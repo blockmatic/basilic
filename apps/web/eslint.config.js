@@ -76,6 +76,7 @@ export default [
       'playwright-report/**',
       'playwright/.cache/**',
       'playwright/.auth/**',
+      'webpack/**',
     ],
   },
 ]

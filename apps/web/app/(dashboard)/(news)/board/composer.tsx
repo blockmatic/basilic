@@ -2,7 +2,6 @@
 
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
-import { useMutation } from '@tanstack/react-query'
 import { useSessionStorageState } from 'ahooks'
 import { MicIcon } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
@@ -10,7 +9,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Input, PromptInputSubmit, PromptInputTextarea } from '@/components/assistant/prompt-input'
 import { type ChromeState, chromeParsers } from '@/lib/coins/chrome'
-import { sendChatTurn, sendCommandTurn } from '@/lib/eve'
+import { viewConfigFromEvents } from '@/lib/eve'
 import {
   boardViewParsers,
   type CommandHistoryEntry,
@@ -21,16 +20,21 @@ import {
   viewFromSearchQuery,
 } from '@/lib/genui'
 import { composeBoardSpec } from '@/lib/genui/compose-spec'
-import type { ChatTurn } from './chat-pane'
+import { useChatEve, useCommandEve } from './eve-session'
 import { useBoardDictation } from './use-board-dictation'
 
-export function BoardComposer({
-  rail,
-  onChatTurns,
+function promptStatus({
+  status,
 }: {
-  rail: ChromeState['rail']
-  onChatTurns: (update: (turns: ChatTurn[]) => ChatTurn[]) => void
-}) {
+  status: ReturnType<typeof useChatEve>['status']
+}): 'ready' | 'submitted' | 'streaming' | 'error' {
+  if (status === 'streaming') return 'streaming'
+  if (status === 'submitted' || status === 'resuming') return 'submitted'
+  if (status === 'error') return 'error'
+  return 'ready'
+}
+
+export function BoardComposer({ rail }: { rail: ChromeState['rail'] }) {
   const [prompt, setPrompt] = useState('')
   const [, setChrome] = useQueryStates(chromeParsers)
   const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
@@ -38,87 +42,65 @@ export function BoardComposer({
     defaultValue: [],
     deserializer: value => parseCommandHistory({ value }),
   })
+  const chat = useChatEve()
+  const command = useCommandEve()
   const isChat = rail === 'chat'
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const text = prompt.trim()
-      const split = splitBoardView({ view })
-      if (isChat) {
-        onChatTurns(turns => [...turns, { role: 'user', text }, { role: 'assistant', text: '' }])
-        const viewConfig = viewFromSearchQuery({
-          query: split.query,
-          title: split.surface === 'account' ? 'Your profile' : 'Board',
-          surface: split.surface,
-          period: split.period,
-          columns: split.columns,
+  const agent = isChat ? chat : command
+  const status = promptStatus({ status: agent.status })
+  const isBusy = status === 'submitted' || status === 'streaming'
+  const dictation = useBoardDictation({ prompt, onDraft: setPrompt })
+  const canSend = prompt.trim().length > 0 && agent.hasHost && !isBusy
+
+  async function handleSubmit() {
+    const text = prompt.trim()
+    if (dictation.listening || !text || isBusy || !agent.hasHost) return
+    const split = splitBoardView({ view })
+    if (isChat) {
+      const viewConfig = viewFromSearchQuery({
+        query: split.query,
+        title: split.surface === 'account' ? 'Your profile' : 'Board',
+        surface: split.surface,
+        period: split.period,
+        columns: split.columns,
+        elements: split.elements,
+      })
+      try {
+        await chat.send(text, {
+          boardQuery: split.query,
+          viewConfig,
           elements: split.elements,
         })
-        return {
-          kind: 'chat' as const,
-          result: await sendChatTurn({
-            prompt: text,
-            boardQuery: split.query,
-            viewConfig,
-            elements: split.elements,
-            onAssistantDelta: delta =>
-              onChatTurns(turns => {
-                if (turns.length === 0) return turns
-                const last = turns.at(-1)
-                if (last?.role !== 'assistant') return turns
-                return [...turns.slice(0, -1), { role: 'assistant', text: delta }]
-              }),
-          }),
-        }
-      }
-      return {
-        kind: 'command' as const,
-        result: await sendCommandTurn({
-          prompt: text,
-          boardQuery: split.query,
-        }),
-      }
-    },
-    async onSuccess(payload) {
-      const command = prompt.trim()
-      if (payload.kind === 'chat') {
         setPrompt('')
+      } catch {
         return
       }
-      const composed = await composeBoardSpec({
-        prompt: command,
-        view: payload.result.viewConfig,
-      })
+      return
+    }
+    try {
+      const events = await command.send(text, { boardQuery: split.query })
+      const parsed = viewConfigFromEvents({ events })
+      if (!parsed) throw new Error('command agent did not return a ViewConfig')
+      const composed = await composeBoardSpec({ prompt: text, view: parsed.viewConfig })
       const viewConfig =
         composed.skip || !composed.elements.length
-          ? payload.result.viewConfig
-          : { ...payload.result.viewConfig, elements: composed.elements }
-      await setView(viewConfigToSearchPatch({ viewConfig }), {
-        history: 'push',
-        shallow: true,
-      })
-      await setChrome({ q: command })
+          ? parsed.viewConfig
+          : { ...parsed.viewConfig, elements: composed.elements }
+      await setView(viewConfigToSearchPatch({ viewConfig }), { history: 'push', shallow: true })
+      await setChrome({ q: text })
       setHistory(current => [
         ...(current ?? []),
-        { command, viewConfig, eveTurnId: payload.result.eveTurnId },
+        { command: text, viewConfig, eveTurnId: command.sessionId },
       ])
-      if (payload.result.honesty) toast.message(payload.result.honesty)
+      if (parsed.honesty) toast.message(parsed.honesty)
       setPrompt('')
-    },
-    onError() {
-      toast.error(isChat ? 'Chat failed' : 'Command failed')
-    },
-  })
-  const canSend = prompt.trim().length > 0 && !mutation.isPending
-  const dictation = useBoardDictation({ prompt, onDraft: setPrompt })
+    } catch {
+      toast.error('Command failed')
+    }
+  }
 
   return (
     <div className="space-y-2">
-      <Input
-        onSubmit={() => {
-          if (dictation.listening || !canSend) return
-          mutation.mutate()
-        }}
-      >
+      <Input onSubmit={() => void handleSubmit()}>
         <div className="relative">
           <PromptInputTextarea
             placeholder={isChat ? 'Ask about the board' : 'Ask the board'}
@@ -151,8 +133,9 @@ export function BoardComposer({
             ) : null}
             <PromptInputSubmit
               disabled={!canSend || dictation.listening}
-              status={mutation.isPending ? 'submitted' : 'ready'}
-              aria-label="Send"
+              status={isBusy ? status : 'ready'}
+              onStop={() => void agent.cancel()}
+              aria-label={isBusy ? 'Stop' : 'Send'}
             />
           </div>
         </div>

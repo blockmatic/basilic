@@ -8,14 +8,14 @@ import type { ChangeEvent, ComponentProps, FormEvent, KeyboardEvent } from 'reac
 
 type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
 
-export type PromptInputFormProps = ComponentProps<'form'> & {
+export type PromptInputProps = ComponentProps<'form'> & {
   onSubmit?: (e: FormEvent<HTMLFormElement>) => void
 }
 
-export function Input({ onSubmit, className, children, ...props }: PromptInputFormProps) {
+export function PromptInput({ onSubmit, className, children, ...props }: PromptInputProps) {
   return (
     <form
-      className={cn('relative', className)}
+      className={cn('relative rounded-xl bg-muted/40 p-1', className)}
       onSubmit={e => {
         e.preventDefault()
         onSubmit?.(e)
@@ -26,6 +26,8 @@ export function Input({ onSubmit, className, children, ...props }: PromptInputFo
     </form>
   )
 }
+
+export const Input = PromptInput
 
 export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
   submitOnEnter?: boolean
@@ -74,7 +76,10 @@ export function PromptInputTextarea({
   }
   return (
     <Textarea
-      className={cn('min-h-12 resize-none pr-14', className)}
+      className={cn(
+        'min-h-11 resize-none rounded-lg border-0 bg-transparent shadow-none dark:bg-transparent',
+        className,
+      )}
       rows={1}
       onKeyDown={handleKeyDown}
       onChange={onChange}
@@ -96,22 +101,18 @@ export function PromptInputSubmit({
   children,
   ...props
 }: PromptInputSubmitProps) {
-  const isStreaming = status === 'streaming'
+  const isStreaming = status === 'streaming' || status === 'submitted'
   return (
     <Button
       type={isStreaming ? 'button' : 'submit'}
       size="icon"
-      disabled={disabled}
+      disabled={disabled && !isStreaming}
       onClick={isStreaming ? onStop : undefined}
-      className={cn('size-11 rounded-lg', className)}
+      className={cn('size-11 rounded-lg active:scale-[0.96]', className)}
       {...props}
     >
       {children ??
-        (isStreaming ? (
-          <SquareIcon className="size-4" aria-label="Stop" />
-        ) : (
-          <SendIcon className="size-4" aria-label="Send" />
-        ))}
+        (isStreaming ? <SquareIcon className="size-4" /> : <SendIcon className="size-4" />)}
     </Button>
   )
 }

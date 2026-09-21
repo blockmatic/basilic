@@ -9,7 +9,7 @@ The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` o
 
 ## Session model
 
-Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The Commands rail talks to eve `command` with JWT `GET /agents` then `fetch` to `POST /eve/v1/session` (not `eve/client` — that entry is not webpack-safe). The Chat tab uses the same hop against eve `chat`.
+Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The web rail uses **`useEveAgent` from `eve/react`** with `host` from Fastify `GET /agents` and a Bearer access JWT (`headers`). Persist the `session` cursor (`sessionId`, `streamIndex`). Do not import `eve/client` into Next (not webpack-safe). Next webpack rewrites eve’s `using` syntax in the react store so SWC can parse it. Do not wrap Next with **`withEve()`** — the frontend is a peer of `apps/agents`, not one Vercel project. Do not use AI SDK `useChat` / `DefaultChatTransport` against eve (UIMessage HTTP is not the eve NDJSON session protocol). `clientContext` on `send()` carries `boardQuery` / `viewConfig` / `elements`. Commands still have no assistant bubbles.
 
 ## Hosts
 
