@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { composeSurface } from './compose'
+import { specFromSelection } from './spec-from-selection'
 import { defaultSearchQuery, viewFromSearchQuery } from './view-config'
 
 function tableElement(spec: ReturnType<typeof composeSurface>) {
@@ -7,13 +8,14 @@ function tableElement(spec: ReturnType<typeof composeSurface>) {
 }
 
 describe('composeSurface', () => {
-  it('repeats the default table on $state.coins', () => {
+  it('binds the default table to $state.coins without spec repeat', () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({ query: defaultSearchQuery, title: 'Top coins' }),
     })
     const table = tableElement(spec)
     expect(spec.root).toBe('board')
-    expect(table?.repeat).toEqual({ statePath: '/coins', key: 'id' })
+    expect(table?.repeat).toBeUndefined()
+    expect(table?.children).toEqual([])
     expect(table?.props).toMatchObject({
       columns: ['rank', 'identity', 'price', 'change24h', 'marketCap', 'volume', 'watch'],
     })
@@ -27,7 +29,7 @@ describe('composeSurface', () => {
         surface: 'chart',
       }),
     })
-    expect(tableElement(spec)?.repeat).toEqual({ statePath: '/coins', key: 'id' })
+    expect(tableElement(spec)?.repeat).toBeUndefined()
     expect(JSON.stringify(spec)).toContain('Charting lands next.')
   })
 
@@ -65,7 +67,7 @@ describe('composeSurface', () => {
       }),
     })
     expect(Object.values(spec.elements).some(element => element.type === 'QuerySummary')).toBe(true)
-    expect(tableElement(spec)?.repeat?.statePath).toBe('/coins')
+    expect(tableElement(spec)?.type).toBe('DataTable')
   })
 
   it('paints account as UserInfo plus an empty-safe DataTable', () => {
@@ -84,7 +86,7 @@ describe('composeSurface', () => {
       username: { $state: '/account/username' },
       joinedAt: { $state: '/account/joinedAt' },
     })
-    expect(tableElement(spec)?.repeat).toEqual({ statePath: '/coins', key: 'id' })
+    expect(tableElement(spec)?.repeat).toBeUndefined()
     expect(JSON.stringify(spec)).toContain('Your profile. Favorites below.')
   })
 
@@ -105,5 +107,31 @@ describe('composeSurface', () => {
       columns: ['identity', 'price'],
     })
     expect(composeSurface({ view })).toEqual(composeSurface({ view }))
+  })
+})
+
+describe('specFromSelection', () => {
+  const view = viewFromSearchQuery({
+    query: { ...defaultSearchQuery, sortBy: 'change24h' },
+    title: 'What moved?',
+  })
+
+  it('rebuilds the same spec shape from the same elements', () => {
+    const elements = ['summary', 'table-movers']
+    expect(specFromSelection({ elements, view })).toEqual(specFromSelection({ elements, view }))
+    expect(tableElement(specFromSelection({ elements, view }))?.props).toMatchObject({
+      columns: ['identity', 'price', 'change24h', 'volume', 'watch'],
+    })
+  })
+
+  it('falls back to composeSurface for empty or unknown ids', () => {
+    expect(specFromSelection({ elements: [], view })).toEqual(composeSurface({ view }))
+    expect(specFromSelection({ elements: ['nope'], view })).toEqual(composeSurface({ view }))
+  })
+
+  it('falls back when the selection has no DataTable recipe', () => {
+    expect(specFromSelection({ elements: ['summary', 'account'], view })).toEqual(
+      composeSurface({ view }),
+    )
   })
 })

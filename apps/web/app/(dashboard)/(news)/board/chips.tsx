@@ -5,6 +5,7 @@ import { cn } from '@repo/ui/lib/utils'
 import { useQueryStates } from 'nuqs'
 import { chromeParsers } from '@/lib/coins/chrome'
 import { type SearchQueryState, searchQueryParsers } from '@/lib/coins/search-query'
+import { surfaceParsers } from '@/lib/genui'
 
 interface BoardChip {
   label: string
@@ -23,6 +24,7 @@ export const boardChips: BoardChip[] = [
 const chipUrlParsers = {
   ...searchQueryParsers,
   q: chromeParsers.q,
+  elements: surfaceParsers.elements,
 }
 
 export function matchesChipPatch({
@@ -54,7 +56,12 @@ export function BoardChips() {
               'active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100',
               isActive && 'bg-secondary text-secondary-foreground',
             )}
-            onClick={() => setState({ ...chip.patch, q: null }, { history: 'push', shallow: true })}
+            onClick={() =>
+              setState(
+                { ...chip.patch, q: null, elements: null },
+                { history: 'push', shallow: true },
+              )
+            }
           >
             {chip.label}
           </Button>

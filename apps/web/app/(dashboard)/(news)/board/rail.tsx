@@ -22,6 +22,7 @@ import {
   whoamiViewConfig,
   whoamiViewPatch,
 } from '@/lib/genui'
+import { composeBoardSpec } from '@/lib/genui/compose-spec'
 import { BoardChips } from './chips'
 
 function useIsHydrated(): boolean {
@@ -75,14 +76,22 @@ function BoardComposer() {
       }),
     async onSuccess(result) {
       const command = prompt.trim()
-      await setView(viewConfigToSearchPatch({ viewConfig: result.viewConfig }), {
+      const composed = await composeBoardSpec({
+        prompt: command,
+        view: result.viewConfig,
+      })
+      const viewConfig =
+        composed.skip || !composed.elements.length
+          ? result.viewConfig
+          : { ...result.viewConfig, elements: composed.elements }
+      await setView(viewConfigToSearchPatch({ viewConfig }), {
         history: 'push',
         shallow: true,
       })
       await setChrome({ q: command })
       setHistory(current => [
         ...(current ?? []),
-        { command, viewConfig: result.viewConfig, eveTurnId: result.eveTurnId },
+        { command, viewConfig, eveTurnId: result.eveTurnId },
       ])
       if (result.honesty) toast.message(result.honesty)
       setPrompt('')

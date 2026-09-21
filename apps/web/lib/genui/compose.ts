@@ -1,5 +1,13 @@
 import { type Spec, validateSpec } from '@json-render/core'
 import { isSameSearchQuery } from '@/lib/coins/search-query'
+import {
+  type BoardRecipeId,
+  comparisonColumns,
+  honestyIdForSurface,
+  moversColumns,
+  rankedColumns,
+  recipeSpecElement,
+} from './candidates'
 import { boardCatalog } from './catalog'
 import {
   type ColumnId,
@@ -7,30 +15,9 @@ import {
   defaultSearchQuery,
   parseViewConfig,
   type ViewConfig,
-  type ViewSurface,
 } from './view-config'
 
 const columnIdSet = new Set<string>(columnIds)
-
-const rankedColumns: ColumnId[] = [
-  'rank',
-  'identity',
-  'price',
-  'change24h',
-  'marketCap',
-  'volume',
-  'watch',
-]
-const moversColumns: ColumnId[] = ['identity', 'price', 'change24h', 'volume', 'watch']
-const comparisonColumns: ColumnId[] = ['identity', 'price', 'change24h', 'marketCap', 'watch']
-
-const honestyBySurface: Partial<Record<ViewSurface, string>> = {
-  chart: 'Charting lands next.',
-  news: "Headlines aren't a generated surface yet.",
-  dashboard: 'Dashboards come later. Showing a table.',
-  coin: 'No coin page yet. Highlighting that row.',
-  account: 'Your profile. Favorites below. Onchain tokens appear after a wallet snapshot.',
-}
 
 const defaultView: ViewConfig = {
   version: 1,
@@ -39,32 +26,46 @@ const defaultView: ViewConfig = {
   query: defaultSearchQuery,
 }
 
-const leaf = { children: [] as string[] }
+function sameColumns({ a, b }: { a: ColumnId[]; b: readonly ColumnId[] }): boolean {
+  return a.length === b.length && a.every((id, index) => id === b[index])
+}
 
-function resolveColumns({ view }: { view: ViewConfig }): ColumnId[] {
+export function resolveColumns({ view }: { view: ViewConfig }): ColumnId[] {
   if (view.columns?.length) {
     const subset = view.columns.filter((id): id is ColumnId => columnIdSet.has(id))
     if (subset.length) return subset
   }
   const symbols = view.query.symbols
   if (view.surface === 'comparison' || (symbols.length > 0 && symbols.length <= 5))
-    return comparisonColumns
-  if (view.query.sortBy === 'change24h') return moversColumns
-  return rankedColumns
+    return [...comparisonColumns]
+  if (view.query.sortBy === 'change24h') return [...moversColumns]
+  return [...rankedColumns]
+}
+
+function resolveTableRecipeId({ view }: { view: ViewConfig }): BoardRecipeId {
+  const columns = resolveColumns({ view })
+  if (sameColumns({ a: columns, b: moversColumns })) return 'table-movers'
+  if (sameColumns({ a: columns, b: comparisonColumns })) return 'table-comparison'
+  if (view.query.universe === 'watchlist') return 'table-watchlist'
+  return 'table-ranked'
+}
+
+function chromeRecipeIds({ view }: { view: ViewConfig }): BoardRecipeId[] {
+  const honesty = honestyIdForSurface({ surface: view.surface })
+  const showReset = !isSameSearchQuery({ a: view.query, b: defaultSearchQuery })
+  const ids: BoardRecipeId[] = ['summary']
+  if (honesty) ids.push(honesty)
+  if (view.surface === 'account') ids.push('account')
+  if (showReset) ids.push('reset')
+  return ids
 }
 
 function buildSurfaceSpec({ view }: { view: ViewConfig }): Spec {
   const columns = resolveColumns({ view })
-  const honesty = honestyBySurface[view.surface]
-  const showReset = !isSameSearchQuery({ a: view.query, b: defaultSearchQuery })
-  const emptyLabel = view.query.universe === 'watchlist' ? null : 'No market data available.'
-  const boardChildren = [
-    'summary',
-    ...(honesty ? ['honesty'] : []),
-    ...(view.surface === 'account' ? ['account'] : []),
-    ...(showReset ? ['reset'] : []),
-    'table',
-  ]
+  const tableId = resolveTableRecipeId({ view })
+  const chromeIds = chromeRecipeIds({ view })
+  const childIds = [...chromeIds, tableId]
+  const table = recipeSpecElement({ id: tableId, view })
 
   return {
     root: 'board',
@@ -72,76 +73,12 @@ function buildSurfaceSpec({ view }: { view: ViewConfig }): Spec {
       board: {
         type: 'Stack',
         props: { direction: 'vertical', gap: 'md' },
-        children: boardChildren,
+        children: childIds,
       },
-      summary: {
-        type: 'QuerySummary',
-        props: { caption: { $state: '/caption' } },
-        ...leaf,
-      },
-      ...(honesty
-        ? {
-            honesty: {
-              type: 'Alert',
-              props: { variant: 'default', title: honesty, description: null },
-              ...leaf,
-            },
-          }
-        : {}),
-      ...(view.surface === 'account'
-        ? {
-            account: {
-              type: 'UserInfo',
-              props: {
-                name: { $state: '/account/name' },
-                email: { $state: '/account/email' },
-                image: { $state: '/account/image' },
-                username: { $state: '/account/username' },
-                joinedAt: { $state: '/account/joinedAt' },
-              },
-              ...leaf,
-            },
-          }
-        : {}),
-      ...(showReset
-        ? {
-            reset: {
-              type: 'Button',
-              props: { label: 'Reset view', variant: 'outline' },
-              on: { press: { action: 'reset_view' } },
-              ...leaf,
-            },
-          }
-        : {}),
-      table: {
-        type: 'DataTable',
-        props: { columns, emptyLabel },
-        repeat: { statePath: '/coins', key: 'id' },
-        children: ['row'],
-      },
-      row: {
-        type: 'Stack',
-        props: { direction: 'horizontal', gap: 'md' },
-        children: ['identity', 'price', 'change'],
-      },
-      identity: {
-        type: 'CoinIdentity',
-        props: {
-          name: { $item: 'name' },
-          symbol: { $item: 'symbol' },
-          imageUrl: { $item: 'imageUrl' },
-        },
-        ...leaf,
-      },
-      price: {
-        type: 'Price',
-        props: { value: { $item: 'priceUsd' } },
-        ...leaf,
-      },
-      change: {
-        type: 'PercentageChange',
-        props: { value: { $item: 'change24h' } },
-        ...leaf,
+      ...Object.fromEntries(chromeIds.map(id => [id, recipeSpecElement({ id, view })])),
+      [tableId]: {
+        ...table,
+        props: { ...table.props, columns },
       },
     },
   }

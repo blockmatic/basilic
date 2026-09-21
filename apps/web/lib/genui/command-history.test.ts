@@ -26,6 +26,7 @@ describe('parseCommandHistory', () => {
           ...whoamiViewConfig(),
           period: '7d',
           columns: ['identity', 'price'],
+          elements: ['summary', 'account', 'table-watchlist'],
         },
       }),
     ).toMatchObject({
@@ -33,6 +34,7 @@ describe('parseCommandHistory', () => {
       universe: 'watchlist',
       period: '7d',
       columns: ['identity', 'price'],
+      elements: ['summary', 'account', 'table-watchlist'],
     })
   })
 })

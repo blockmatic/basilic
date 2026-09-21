@@ -704,10 +704,10 @@ importers:
   apps/web:
     dependencies:
       '@json-render/core':
-        specifier: ^0.21.0
+        specifier: 0.21.0
         version: 0.21.0(zod@4.6.5)
       '@json-render/react':
-        specifier: ^0.21.0
+        specifier: 0.21.0
         version: 0.21.0(react@19.3.0)(zod@4.6.5)
       '@repo/core':
         specifier: workspace:*

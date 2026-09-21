@@ -48,6 +48,7 @@ export function viewConfigToSearchPatch({ viewConfig }: { viewConfig: ViewConfig
     surface: viewConfig.surface,
     period: viewConfig.period ?? null,
     columns: viewConfig.columns ?? null,
+    elements: viewConfig.elements ?? null,
     ...viewConfig.query,
   }
 }

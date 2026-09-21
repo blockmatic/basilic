@@ -28,6 +28,7 @@ import {
   boardViewParsers,
   composeSurface,
   overlayAccountQuery,
+  specFromSelection,
   splitBoardView,
   type ViewPeriod,
   type ViewSurface,
@@ -46,6 +47,7 @@ type CoinBoardProps = {
   initialSurface: ViewSurface
   initialPeriod: ViewPeriod | null
   initialColumns: string[]
+  initialElements: string[]
   initialChrome: ChromeState
   initialAccount: AccountState
   initialCoins: CoinMarket[]
@@ -61,6 +63,7 @@ export function CoinBoard({
   initialSurface,
   initialPeriod,
   initialColumns,
+  initialElements,
   initialChrome,
   initialAccount,
   initialCoins,
@@ -72,13 +75,15 @@ export function CoinBoard({
   const { client } = useReactApiConfig()
   const queryClient = useQueryClient()
   const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
-  const { query, surface, period, columns } = splitBoardView({ view })
+  const { query, surface, period, columns, elements } = splitBoardView({ view })
   const fetchQuery = overlayAccountQuery({ query, surface })
   const isInitial =
     surface === initialSurface &&
     period === initialPeriod &&
     columns.length === initialColumns.length &&
     columns.every((id, index) => id === initialColumns[index]) &&
+    elements.length === initialElements.length &&
+    elements.every((id, index) => id === initialElements[index]) &&
     isSameSearchQuery({ a: query, b: initialQuery })
   const [store] = useState(() =>
     createStateStore({
@@ -139,17 +144,19 @@ export function CoinBoard({
   const isAtCap = watchedIds.size >= watchCap
   const notices = error ? [] : boardNotices({ sync })
   const emptyWatchlist = fetchQuery.universe === 'watchlist' && coins.length === 0 && !error
+  const liveView = viewFromSearchQuery({
+    query: fetchQuery,
+    title: viewTitle({ surface, caption }),
+    surface,
+    period,
+    columns,
+    elements,
+  })
   const liveSpec = isInitial
     ? spec
-    : composeSurface({
-        view: viewFromSearchQuery({
-          query: fetchQuery,
-          title: viewTitle({ surface, caption }),
-          surface,
-          period,
-          columns,
-        }),
-      })
+    : elements.length
+      ? specFromSelection({ elements, view: liveView })
+      : composeSurface({ view: liveView })
 
   useEffect(() => {
     store.update({
@@ -170,7 +177,13 @@ export function CoinBoard({
   }
 
   async function handleResetView() {
-    await setView({ ...clearedSearchQuery, surface: null, period: null, columns: null })
+    await setView({
+      ...clearedSearchQuery,
+      surface: null,
+      period: null,
+      columns: null,
+      elements: null,
+    })
   }
 
   return (

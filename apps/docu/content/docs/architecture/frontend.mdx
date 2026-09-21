@@ -60,7 +60,7 @@ Stream with `loading.tsx` and Suspense. Mark search/filter updates as transition
 
 - Do not export `dynamic = 'force-dynamic'` from the root layout. That sets `fetchCache: 'force-no-store'` for the route and voids fetch-level `next.revalidate`.
 - [`proxy.ts`](/docs/architecture/authentication) gates requests. Cookie reads there do **not** make RSC segments dynamic. A page becomes dynamic when a Server Component calls `cookies()` (for example `getUserInfo` → `getServerAuthToken`).
-- Coin board: RSC `createLoader` reads the URL `SearchQuery` plus ViewConfig fields (`surface`, `period`, `columns`) and chrome (`q`, `sidebar`, `rail`) via `loadBoardView` + `loadChrome` (`clearOnDefault`). First HTML matches `?sidebar=close` / `?rail=chat` as well as the composed spec. `surface=account` overlays `universe=watchlist` for that fetch and paints catalog `UserInfo` from `$state.account` (`getUserInfo`) plus the favorites table. The client island hydrates the same parsers with shallow `history: 'push'` for board keys and `history: 'replace'` for chrome keys. Share copies `location.href`. Chip writes set SearchQuery and clear `q`. Do not set `shallow: false`. Do not put `version` or a JSON ViewConfig blob on the query string. `period` is parsed for the contract; nothing writes it until charts.
+- Coin board: RSC `createLoader` reads the URL `SearchQuery` plus ViewConfig fields (`surface`, `period`, `columns`, `elements`) and chrome (`q`, `sidebar`, `rail`) via `loadBoardView` + `loadChrome` (`clearOnDefault`). First HTML matches `?sidebar=close` / `?rail=chat` as well as the composed spec. `surface=account` overlays `universe=watchlist` for that fetch and paints catalog `UserInfo` from `$state.account` (`getUserInfo`) plus the favorites table. When `elements` is set, `specFromSelection` rebuilds the Spec from allowlisted candidate ids and does not call Jev. The client island hydrates the same parsers with shallow `history: 'push'` for board keys and `history: 'replace'` for chrome keys. Share copies `location.href`. Chip writes set SearchQuery and clear `q` and `elements`. Do not set `shallow: false`. Do not put `version` or a JSON ViewConfig blob on the query string. `period` is parsed for the contract; nothing writes it until charts.
 - Semi-static RSC data still using `fetch` with `next: { revalidate: N }`: unused headlines helper (`NEWSAPI_KEY`).
 - Auth / Fastify: `cache: 'no-store'`. Identical GET `fetch` calls are request-memoized; do not wrap them in `React.cache()`.
 - No `revalidateTag` until something is tagged. Mutations stay on Fastify, not Server Actions.
@@ -79,15 +79,15 @@ Pending and optimistic UI for mutations stays on TanStack mutation flags (`isPen
 | Client async | TanStack Query 5 via `@repo/react` |
 | API client | `@repo/core` |
 | Query keys | Handwritten in `@repo/react` hooks and `apps/web/lib/query-keys.ts` |
-| URL state | `nuqs` (SearchQuery, `surface` / `period` / `columns`, chrome `q` / `sidebar` / `rail`) |
+| URL state | `nuqs` (SearchQuery, `surface` / `period` / `columns` / `elements`, chrome `q` / `sidebar` / `rail`) |
 | Grouped / persisted UI | `ahooks` (`useSetState`, `useLocalStorageState`) |
 | Validation | Zod at boundaries |
 | Errors | `react-error-boundary` + [Error Handling](/docs/architecture/error-handling) |
 
 ### Server vs client fetch
 
-- **RSC:** home coin board (`createLoader` + `listCoins` + `composeSurface` + `getUserInfo` into `$state.account`) and profile (`getUserInfo` in the page, `initialData` on `useUser`).
-- **Client TanStack:** coin-board island hydrates a json-render `Renderer` with `StateProvider` `{ coins, sync, account }`, then refetches and watch stars; settings/security (API keys, passkeys, TOTP). Security surfaces are mutation-first and need WebAuthn or OTP browser APIs. Do not duplicate their GETs in Server Components; an empty first paint until hydration is accepted. Commands canned **Who am I?** writes `surface=account` and `q`, and appends `{ command, viewConfig }` to `sessionStorage`; history rows restore nuqs with `history: 'push'` and keep `q`. Spoken-query chips write SearchQuery and **clear `q`**. Share copies the current href (clipboard + toast). Typed Send uses `GET /agents` then eve `command` (`set_view` → nuqs). Never Fastify `/ai/chat`.
+- **RSC:** home coin board (`createLoader` + `listCoins` + `specFromSelection` or `composeSurface` + `getUserInfo` into `$state.account`) and profile (`getUserInfo` in the page, `initialData` on `useUser`).
+- **Client TanStack:** coin-board island hydrates a json-render `Renderer` with `StateProvider` `{ coins, sync, account }`, then refetches and watch stars; settings/security (API keys, passkeys, TOTP). Security surfaces are mutation-first and need WebAuthn or OTP browser APIs. Do not duplicate their GETs in Server Components; an empty first paint until hydration is accepted. Commands canned **Who am I?** writes `surface=account` and `q`, and appends `{ command, viewConfig }` to `sessionStorage`; history rows restore nuqs with `history: 'push'` and keep `q`. Spoken-query chips write SearchQuery and **clear `q` and `elements`**. Share copies the current href (clipboard + toast). Typed Send uses `GET /agents` then eve `command` (`set_view` → nuqs), then Next `composeBoardSpec` to persist `elements`. Never Fastify `/ai/chat`. ComposeSpec is a `'use server'` module in `lib/genui`; it is not re-exported from the client barrel and is not a Fastify domain BFF.
 
 ```tsx
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs"
@@ -112,4 +112,4 @@ The Fastify API supports Web3 auth and account linking (EIP-155 / Solana). `apps
 
 ## Testing
 
-Frontend apps use Playwright E2E. `composeSurface` is Vitest in `apps/web/lib/genui` (not a React Testing Library suite). See [E2E Testing](/docs/testing/e2e-testing). Playwright specs are not a substitute for the `/ui` rendered pass (desktop and mobile screenshots plus keyboard). Visual-regression CI is not shipped.
+Frontend apps use Playwright E2E. Board compose (`composeSurface`, `specFromSelection`, mock composeSpec evaluator) is Vitest in `apps/web/lib/genui` (not a React Testing Library suite). See [E2E Testing](/docs/testing/e2e-testing). Playwright specs are not a substitute for the `/ui` rendered pass (desktop and mobile screenshots plus keyboard). Visual-regression CI is not shipped.
