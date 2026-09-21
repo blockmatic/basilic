@@ -60,6 +60,8 @@ import type {
   GenerateResponse,
   GetAgentByIdData,
   GetAgentByIdResponse,
+  GetCoinCandlesData,
+  GetCoinCandlesResponse,
   GetUserData,
   GetUserResponse,
   HealthCheckData,
@@ -236,6 +238,9 @@ export type CoreApiClient = {
   listCoins: (opts?: Options<ListCoinsData>) => Promise<ListCoinsResponse>;
   coins: {
     query: (opts: Options<QueryCoinsData>) => Promise<QueryCoinsResponse>;
+    assetId: {
+      candles: (opts: Options<GetCoinCandlesData>) => Promise<GetCoinCandlesResponse>
+    };
     watches: {
       assetId: {
         id: (opts: Options<DeleteCoinWatchByIdData>) => Promise<DeleteCoinWatchByIdResponse>;

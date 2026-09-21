@@ -60,6 +60,7 @@
     "react-dom": "^19.3.0",
     "react-error-boundary": "^6.1.5",
     "react-markdown": "^10.1.0",
+    "recharts": "3.10.1",
     "require-in-the-middle": "^8.0.1",
     "sonner": "^2.0.8",
     "use-stick-to-bottom": "^1.1.6",

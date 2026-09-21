@@ -20,3 +20,4 @@ export { fastify }
 import './list.test'
 import './query.test'
 import './watches/watches.test'
+import './candles/get.test'

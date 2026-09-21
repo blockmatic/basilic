@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm'
 import { getDb } from './client.js'
-import { type Asset, assetNetworks, assets } from './schema/index.js'
+import { type Asset, assetMarkets, assetNetworks, assets } from './schema/index.js'
 
 export async function listAssets(): Promise<{ assets: Asset[] }> {
   const db = await getDb()
@@ -44,4 +44,18 @@ export async function findAssetIdByNetwork({
           .limit(1)
       : []
   return { assetId: rows[0]?.assetId ?? null }
+}
+
+export async function findBinanceMarket({
+  assetId,
+}: {
+  assetId: string
+}): Promise<{ market: { symbol: string } | null }> {
+  const db = await getDb()
+  const [row] = await db
+    .select({ symbol: assetMarkets.symbol })
+    .from(assetMarkets)
+    .where(and(eq(assetMarkets.assetId, assetId), eq(assetMarkets.provider, 'binance')))
+    .limit(1)
+  return { market: row ?? null }
 }

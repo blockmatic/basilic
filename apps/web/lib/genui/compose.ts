@@ -50,11 +50,19 @@ function resolveTableRecipeId({ view }: { view: ViewConfig }): BoardRecipeId {
   return 'table-ranked'
 }
 
+function resolveChartRecipeId({ view }: { view: ViewConfig }): BoardRecipeId {
+  if (view.chart === 'area') return 'chart-area'
+  if (view.chart === 'bar') return 'chart-bar'
+  if (view.chart === 'normalized') return 'chart-normalized'
+  return 'chart-line'
+}
+
 function chromeRecipeIds({ view }: { view: ViewConfig }): BoardRecipeId[] {
   const honesty = honestyIdForSurface({ surface: view.surface })
   const showReset = !isSameSearchQuery({ a: view.query, b: defaultSearchQuery })
   const ids: BoardRecipeId[] = ['summary']
-  if (honesty) ids.push(honesty)
+  if (honesty && view.surface !== 'chart') ids.push(honesty)
+  if (view.surface === 'chart') ids.push(resolveChartRecipeId({ view }))
   if (view.surface === 'account')
     ids.push('account', 'token-table-all', 'nft-grid', 'wallet-link-cta')
   if (showReset) ids.push('reset')

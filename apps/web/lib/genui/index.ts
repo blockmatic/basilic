@@ -9,6 +9,8 @@ export {
   whoamiViewConfig,
 } from './command-history'
 export { composeSurface } from './compose'
+export { defaultCandlePeriod, klineQueryFromPeriod } from './kline-period'
+export { emptySeriesState, type SeriesState, seriesAssetId } from './series'
 export { specFromSelection } from './spec-from-selection'
 export {
   type BoardViewState,

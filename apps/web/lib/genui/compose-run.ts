@@ -6,13 +6,9 @@ import {
   experimental_createEvaluator,
   type Spec,
 } from '@json-render/core'
-import {
-  boardCandidates,
-  isTableRecipeId,
-  recipeIdFromElement,
-  tableIdFromChoice,
-} from './candidates'
+import { isChartRecipeId, isTableRecipeId } from './candidates'
 import { boardCatalog } from './catalog'
+import { boardCandidates, recipeIdFromElement, tableIdFromChoice } from './recipe-map'
 import type { AccountState, ViewConfig } from './view-config'
 
 export type ComposeBoardResult =
@@ -63,6 +59,13 @@ function specHasDataTable({ spec }: { spec: Spec }): boolean {
   return Object.values(spec.elements).some(element => element.type === 'DataTable')
 }
 
+function specHasChart({ spec }: { spec: Spec }): boolean {
+  return Object.values(spec.elements).some(
+    element =>
+      element.type === 'LineChart' || element.type === 'AreaChart' || element.type === 'BarChart',
+  )
+}
+
 export async function runComposeBoardSpec({
   prompt,
   view,
@@ -94,7 +97,7 @@ export async function runComposeBoardSpec({
     initialState: { caption, account },
     instructions: {
       root: 'Use the board stack as the root.',
-      next: 'Always include one DataTable recipe. Prefer table-movers when the user asks what moved. Include account when the surface is the signed-in profile.',
+      next: 'Always include one DataTable recipe unless the surface is chart, then include one chart recipe and optionally a DataTable. Prefer table-movers when the user asks what moved. Include account when the surface is the signed-in profile.',
     },
     context: { surface: view.surface, title: view.title },
   }))
@@ -103,11 +106,15 @@ export async function runComposeBoardSpec({
   if (!complete) return { skip: true, reason: 'unavailable' }
   if (complete.stopReason === 'unavailable') return { skip: true, reason: 'unavailable' }
   if (complete.stopReason === 'limit') return { skip: true, reason: 'limit' }
-  if (!complete.spec || !specHasDataTable({ spec: complete.spec }))
+  if (
+    !complete.spec ||
+    (!specHasDataTable({ spec: complete.spec }) && !specHasChart({ spec: complete.spec }))
+  )
     return { skip: true, reason: 'no-table' }
 
   const elements = elementsFromSpec({ spec: complete.spec, steps: complete.steps })
-  if (!elements.some(id => isTableRecipeId(id))) return { skip: true, reason: 'no-table' }
+  if (!elements.some(id => isTableRecipeId(id) || isChartRecipeId(id)))
+    return { skip: true, reason: 'no-table' }
 
   return {
     skip: false,

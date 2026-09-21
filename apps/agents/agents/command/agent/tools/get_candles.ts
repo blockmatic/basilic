@@ -1,3 +1,4 @@
+import { findBinanceMarket } from '@repo/db'
 import { getCandles } from '@repo/markets'
 import { defineTool } from 'eve/tools'
 import { z } from 'zod'
@@ -9,5 +10,11 @@ export default defineTool({
     interval: z.string().optional(),
     range: z.string().optional(),
   }),
-  execute: input => getCandles(input),
+  execute: async input => {
+    const { market } = await findBinanceMarket({ assetId: input.assetId })
+    return getCandles({
+      ...input,
+      mapping: market ? { binanceSymbol: market.symbol } : undefined,
+    })
+  },
 })

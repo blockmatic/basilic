@@ -3596,6 +3596,68 @@ export type QueryCoinsResponses = {
 
 export type QueryCoinsResponse = QueryCoinsResponses[keyof QueryCoinsResponses];
 
+export type GetCoinCandlesData = {
+  body?: never;
+  path: {
+    assetId: string;
+  };
+  query?: {
+    period?: '24h' | '7d' | '30d' | '90d' | '1y' | '6m';
+  };
+  url: '/coins/{assetId}/candles';
+};
+
+export type GetCoinCandlesErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type GetCoinCandlesError = GetCoinCandlesErrors[keyof GetCoinCandlesErrors];
+
+export type GetCoinCandlesResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    assetId: string;
+    interval: string;
+    candles: Array<{
+      openTime: number;
+      open: number;
+      high: number;
+      low: number;
+      close: number;
+      volume: number;
+      closeTime: number;
+    }>;
+    source: 'live' | 'fixture' | 'stale';
+    provider: 'coingecko' | 'binance' | 'fixture';
+  };
+};
+
+export type GetCoinCandlesResponse = GetCoinCandlesResponses[keyof GetCoinCandlesResponses];
+
 export type DeleteCoinWatchByIdData = {
   body?: never;
   path: {

@@ -1,4 +1,6 @@
 export { fixtureQuotes, fixtureSync } from '@repo/markets'
+export { getCoinCandles } from './candles.js'
+export { candlePeriods, defaultCandlePeriod, klineQueryFromPeriod } from './kline-period.js'
 export { queryCoins } from './query.js'
 export { listMarkets } from './read.js'
 export { coinsRouteRateLimit, coinsRouteRateLimitConfig } from './route-rate-limit.js'

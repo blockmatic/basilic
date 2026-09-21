@@ -9,6 +9,8 @@ function pickChoice({ keys, includeTable }: { keys: string[]; includeTable: bool
   if (keys.includes('board')) return 'board'
   const table = keys.find(key => key.startsWith('use:table-'))
   if (table) return includeTable ? table : keys.includes('omit') ? 'omit' : table
+  const chart = keys.find(key => key.startsWith('use:chart-'))
+  if (chart) return includeTable ? chart : keys.includes('omit') ? 'omit' : chart
   const useKey = keys.find(key => key.startsWith('use:') && key !== 'use:board')
   if (useKey) return useKey
   return keys.find(key => key !== 'omit' && key !== 'unavailable') ?? keys[0] ?? ''
