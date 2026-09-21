@@ -4,7 +4,7 @@ CoinGecko Demo and Binance public REST for quotes, discovery, and candles. Fasti
 
 ## Usage
 
-Call `configureMarkets({ coinGeckoDemoApiKey, coinsUseFixture, cacheMs })` from the host env. The package does not import app `env`. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Fastify `GET /coins/:assetId/candles` and eve `get_candles` pass `mapping.binanceSymbol` from `@repo/db`. There is no wallet or NFT helper.
+Call `configureMarkets({ coinGeckoDemoApiKey, coinsUseFixture, cacheMs })` from the host env. The package does not import app `env`. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Fastify `GET /coins/:assetId/candles` and eve `get_candles` pass `mapping.binanceSymbol` from `@repo/db`. Fastify `GET /coins/global` and `GET /coins/trending` wrap `getGlobal` / `getTrending`. There is no wallet or NFT helper.
 
 Architecture: [Package conventions](https://basilic-docs.vercel.app/docs/development/package-conventions).
 

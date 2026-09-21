@@ -5,9 +5,11 @@ import {
   comparisonColumns,
   honestyBySurface,
   isChartRecipeId,
+  isOverviewRecipeId,
   isTableRecipeId,
   moversColumns,
 } from './candidates'
+import type { ViewSurface } from './view-config'
 
 function sameColumnList({ a, b }: { a: unknown; b: readonly string[] }): boolean {
   return Array.isArray(a) && a.length === b.length && a.every((id, index) => id === b[index])
@@ -28,6 +30,13 @@ function recipeIdFromChart({
   if (type === 'LineChart') return scale === 'normalized' ? 'chart-normalized' : 'chart-line'
   if (type === 'AreaChart') return 'chart-area'
   if (type === 'BarChart') return 'chart-bar'
+  return undefined
+}
+
+function recipeIdFromMetric({ field }: { field: unknown }): BoardRecipeId | undefined {
+  if (field === 'btcDominance') return 'metric-btc-d'
+  if (field === 'marketCapUsd') return 'metric-market-cap'
+  if (field === 'volumeUsd') return 'metric-volume'
   return undefined
 }
 
@@ -74,6 +83,8 @@ export function recipeIdFromElement({
   }
   if (element.type === 'NftGrid') return element.props?.hidden ? 'nft-hide' : 'nft-grid'
   if (element.type === 'Text') return 'wallet-link-cta'
+  if (element.type === 'TrendingTable') return 'table-trending'
+  if (element.type === 'MetricTile') return recipeIdFromMetric({ field: element.props?.field })
   const chartId = recipeIdFromChart({ type: element.type, scale: element.props?.scale })
   if (chartId) return chartId
   if (element.type === 'Alert') return recipeIdFromAlert({ title: element.props?.title })
@@ -88,13 +99,29 @@ export function recipeIdFromElement({
 function candidateResource({ id }: { id: string }) {
   if (isTableRecipeId(id)) return 'table'
   if (isChartRecipeId(id)) return 'chart'
+  if (id === 'table-trending') return 'trending'
   if (id.startsWith('honesty-')) return 'honesty'
   if (id.startsWith('token-')) return 'tokens'
   if (id.startsWith('nft-')) return 'nfts'
   return undefined
 }
 
-export function boardCandidates(): Experimental_CompositionCandidate[] {
+function includeRecipe({ id, surface }: { id: string; surface?: ViewSurface }) {
+  const overview = isOverviewRecipeId(id)
+  if (surface === 'dashboard') {
+    if (overview) return true
+    if (id === 'summary' || id === 'reset') return true
+    if (id === 'table-ranked' || id === 'table-watchlist') return true
+    return isChartRecipeId(id)
+  }
+  return !overview
+}
+
+export function boardCandidates({
+  surface,
+}: {
+  surface?: ViewSurface
+} = {}): Experimental_CompositionCandidate[] {
   return [
     {
       id: 'board',
@@ -102,12 +129,14 @@ export function boardCandidates(): Experimental_CompositionCandidate[] {
       element: { type: 'Stack', props: { direction: 'vertical', gap: 'md' } },
       root: true,
     },
-    ...Object.entries(boardRecipes).map(([id, recipe]) => ({
-      id,
-      description: recipe.description,
-      element: recipe.element,
-      root: false as const,
-      resource: candidateResource({ id }),
-    })),
+    ...Object.entries(boardRecipes)
+      .filter(([id]) => includeRecipe({ id, surface }))
+      .map(([id, recipe]) => ({
+        id,
+        description: recipe.description,
+        element: recipe.element,
+        root: false as const,
+        resource: candidateResource({ id }),
+      })),
   ]
 }

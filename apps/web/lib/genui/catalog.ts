@@ -108,6 +108,17 @@ export const boardCatalog = defineCatalog(schema, {
       props: z.object({ hidden: z.boolean() }),
       description: 'Linked wallet NFTs bound to $state.wallet',
     },
+    MetricTile: {
+      props: z.object({
+        field: z.enum(['btcDominance', 'marketCapUsd', 'volumeUsd']),
+        label: z.string(),
+      }),
+      description: 'Global metric tile bound to $state.global',
+    },
+    TrendingTable: {
+      props: z.object({}),
+      description: 'Trending coins bound to $state.trending',
+    },
     LineChart: {
       props: z.object({ scale: z.enum(['price', 'normalized']).nullable() }),
       description: 'Close series line bound to $state.series',

@@ -114,6 +114,7 @@ export function overlayAccountQuery({
 
 export function viewTitle({ surface, caption }: { surface: ViewSurface; caption: string }): string {
   if (surface === 'account') return caption || 'Your profile'
+  if (surface === 'dashboard') return caption || 'Market overview'
   return caption
 }
 

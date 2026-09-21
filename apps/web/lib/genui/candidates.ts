@@ -23,7 +23,7 @@ export const comparisonColumns: ColumnId[] = [
 export const honestyBySurface: Partial<Record<ViewSurface, string>> = {
   chart: 'No Binance market for this asset. Showing the table.',
   news: "Headlines aren't a generated surface yet.",
-  dashboard: 'Dashboards come later. Showing a table.',
+  dashboard: 'Ephemeral overview. Nothing is pinned.',
   coin: 'No coin page yet. Highlighting that row.',
   account: 'Your profile. Favorites below. Linked wallet tokens load live from Alchemy.',
 }
@@ -84,6 +84,21 @@ const walletLinkElement = {
   props: { text: 'Link an Ethereum wallet in Settings to load tokens.', tone: 'muted' as const },
 }
 
+const trendingTableElement = {
+  type: 'TrendingTable',
+  props: {},
+}
+
+function metricElement({
+  field,
+  label,
+}: {
+  field: 'btcDominance' | 'marketCapUsd' | 'volumeUsd'
+  label: string
+}) {
+  return { type: 'MetricTile', props: { field, label } }
+}
+
 export const boardRecipes = {
   summary: { element: summaryElement, description: 'Caption of the current SearchQuery' },
   account: { element: accountElement, description: 'Signed-in profile card' },
@@ -98,7 +113,23 @@ export const boardRecipes = {
   },
   'honesty-dashboard': {
     element: honestyElement({ title: honestyBySurface.dashboard ?? '' }),
-    description: 'Honesty notice that dashboards come later',
+    description: 'Honesty notice that overview widgets are not pinned',
+  },
+  'metric-btc-d': {
+    element: metricElement({ field: 'btcDominance', label: 'BTC dominance' }),
+    description: 'BTC.D metric tile bound to $state.global',
+  },
+  'metric-market-cap': {
+    element: metricElement({ field: 'marketCapUsd', label: 'Total market cap' }),
+    description: 'Total crypto market cap tile bound to $state.global',
+  },
+  'metric-volume': {
+    element: metricElement({ field: 'volumeUsd', label: '24h volume' }),
+    description: 'Global 24h volume tile bound to $state.global',
+  },
+  'table-trending': {
+    element: trendingTableElement,
+    description: 'Trending coins bound to $state.trending',
   },
   'honesty-coin': {
     element: honestyElement({ title: honestyBySurface.coin ?? '' }),
@@ -180,6 +211,10 @@ export const chartCandidateIds = [
   'chart-normalized',
 ] as const
 
+export const metricCandidateIds = ['metric-btc-d', 'metric-market-cap', 'metric-volume'] as const
+
+export const overviewCandidateIds = [...metricCandidateIds, 'table-trending'] as const
+
 export type BoardRecipeId = keyof typeof boardRecipes
 
 export const recipeIdSet = new Set<string>(Object.keys(boardRecipes))
@@ -196,6 +231,10 @@ export function isChartRecipeId(id: string): id is (typeof chartCandidateIds)[nu
   return chartCandidateIds.includes(id as (typeof chartCandidateIds)[number])
 }
 
+export function isOverviewRecipeId(id: string): id is (typeof overviewCandidateIds)[number] {
+  return overviewCandidateIds.includes(id as (typeof overviewCandidateIds)[number])
+}
+
 export function honestyIdForSurface({
   surface,
 }: {
@@ -203,7 +242,6 @@ export function honestyIdForSurface({
 }): (typeof honestyCandidateIds)[keyof typeof honestyCandidateIds] | undefined {
   if (surface === 'chart') return honestyCandidateIds.chart
   if (surface === 'news') return honestyCandidateIds.news
-  if (surface === 'dashboard') return honestyCandidateIds.dashboard
   if (surface === 'coin') return honestyCandidateIds.coin
   if (surface === 'account') return honestyCandidateIds.account
   return undefined

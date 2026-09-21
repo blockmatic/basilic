@@ -21,7 +21,7 @@ Keep Fastify. Adopt eve. Optimize for Vercel. Preserve a Node/container exit. Us
 - Track A discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) stays on Fastify. OpenAPI is the agent contract. There is **no product MCP**. If MCP is justified later, add a logically isolated capability surface inside Fastify — not a second application. Do not advertise MCP or `/eve/` from `llms.txt`.
 - Fastify is the **control plane**, not a universal proxy. Interactive agent transport belongs to eve. No coordinator: two first-class agents (`command` and `chat`). `GET /agents` is discoverability (JWT), not the authorization boundary.
 
-Four planes: Fastify control; eve interaction and execution; shared domain packages; GenUI presentation. Models are implementation details; agents are product capabilities. Jev on eve judges closed labels (refuse / canned / surface). On Commands Send, Next `experimental_composeSpec` lets Jev pick table/account candidates and writes the Spec; GET / chips restore from nuqs `elements` and do not re-run Jev. `composeSurface` remains the skip path. Do not treat Commands as a Fastify `ToolLoopAgent`.
+Four planes: Fastify control; eve interaction and execution; shared domain packages; GenUI presentation. Models are implementation details; agents are product capabilities. Jev on eve judges closed labels (refuse / canned / surface). On Commands Send, Next `experimental_composeSpec` lets Jev pick table, account, chart, or dashboard-overview candidates and writes the Spec; GET / chips restore from nuqs `elements` and do not re-run Jev. `composeSurface` remains the skip path. Do not treat Commands as a Fastify `ToolLoopAgent`.
 
 ## Consequences
 

@@ -9,8 +9,31 @@ import {
   type MarketsSync,
   mapListCoins,
 } from '@/lib/coins/board'
+import {
+  emptyGlobalState,
+  emptyTrendingState,
+  type GlobalState,
+  type TrendingState,
+} from '@/lib/genui'
 
 export type { CoinMarket, MarketsSync }
+
+export async function fetchOverview(): Promise<{
+  global: GlobalState
+  trending: TrendingState
+}> {
+  const { token } = await getServerAuthToken()
+  if (!token) return { global: emptyGlobalState, trending: emptyTrendingState }
+  const { client } = createBffClient({ token })
+  const [globalResult, trendingResult] = await Promise.allSettled([
+    client.coins.global(),
+    client.coins.trending(),
+  ])
+  return {
+    global: globalResult.status === 'fulfilled' ? globalResult.value : emptyGlobalState,
+    trending: trendingResult.status === 'fulfilled' ? trendingResult.value : emptyTrendingState,
+  }
+}
 
 export async function fetchMarkets({
   query,

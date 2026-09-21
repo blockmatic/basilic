@@ -91,4 +91,19 @@ describe('resolveCommandTurn', () => {
     expect(result.viewConfig.surface).toBe('account')
     expect(result.viewConfig.query.universe).toBe('watchlist')
   })
+
+  it('maps high-confidence dashboard surface onto canned turns', () => {
+    const result = resolveCommandTurn({
+      answers: answers({
+        cannedIntent: { choice: 'movers', probabilities: { movers: 0.92 } },
+        surface: { choice: 'dashboard', probabilities: { dashboard: 0.91 } },
+      }),
+      cannedPatch: { sortBy: 'change24h', sortDir: 'desc' },
+      ...thresholds,
+    })
+    expect(result.kind).toBe('canned')
+    if (result.kind !== 'canned') return
+    expect(result.viewConfig.surface).toBe('dashboard')
+    expect(result.honesty).toBeUndefined()
+  })
 })

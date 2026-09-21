@@ -11,9 +11,11 @@ import type { ReactNode } from 'react'
 import { UserInfoComponent } from '@/components/assistant/user-info-catalog'
 import { boardCatalog } from '@/lib/genui'
 import { DataTable } from './data-table'
+import { MetricTile } from './metric-tile'
 import { NftGrid } from './nft-grid'
 import { AreaChartComponent, BarChartComponent, LineChartComponent } from './price-chart'
 import { TokenTable } from './token-table'
+import { TrendingTable } from './trending-table'
 
 const stackGapClass = { sm: 'gap-2', md: 'gap-4', lg: 'gap-6' } as const
 
@@ -131,6 +133,8 @@ export const { registry: boardRegistry } = defineRegistry(boardCatalog, {
     ),
     QuerySummary,
     DataTable,
+    MetricTile,
+    TrendingTable,
     CoinIdentity,
     Price,
     PercentageChange,

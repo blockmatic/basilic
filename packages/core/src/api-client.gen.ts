@@ -62,6 +62,10 @@ import type {
   GetAgentByIdResponse,
   GetCoinCandlesData,
   GetCoinCandlesResponse,
+  GetCoinGlobalData,
+  GetCoinGlobalResponse,
+  GetCoinTrendingData,
+  GetCoinTrendingResponse,
   GetUserData,
   GetUserResponse,
   HealthCheckData,
@@ -241,6 +245,8 @@ export type CoreApiClient = {
     assetId: {
       candles: (opts: Options<GetCoinCandlesData>) => Promise<GetCoinCandlesResponse>
     };
+    global: (opts?: Options<GetCoinGlobalData>) => Promise<GetCoinGlobalResponse>;
+    trending: (opts?: Options<GetCoinTrendingData>) => Promise<GetCoinTrendingResponse>;
     watches: {
       assetId: {
         id: (opts: Options<DeleteCoinWatchByIdData>) => Promise<DeleteCoinWatchByIdResponse>;

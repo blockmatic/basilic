@@ -73,6 +73,29 @@ describe('composeSurface', () => {
     expect(tableElement(spec)?.type).toBe('DataTable')
   })
 
+  it('paints dashboard metrics, trending, and a table without honesty', () => {
+    const spec = composeSurface({
+      view: viewFromSearchQuery({
+        query: defaultSearchQuery,
+        title: 'Market overview',
+        surface: 'dashboard',
+      }),
+    })
+    const types = Object.values(spec.elements).map(element => element.type)
+    expect(types).toContain('MetricTile')
+    expect(types).toContain('TrendingTable')
+    expect(types).toContain('DataTable')
+    expect(JSON.stringify(spec)).not.toContain('Dashboards come later')
+    expect(spec.elements.board?.children).toEqual([
+      'summary',
+      'metric-btc-d',
+      'metric-market-cap',
+      'metric-volume',
+      'table-trending',
+      'table-ranked',
+    ])
+  })
+
   it('paints account as UserInfo plus an empty-safe DataTable', () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({
@@ -137,6 +160,17 @@ describe('specFromSelection', () => {
   it('falls back when the selection has no DataTable recipe', () => {
     expect(specFromSelection({ elements: ['summary', 'account'], view })).toEqual(
       composeSurface({ view }),
+    )
+  })
+
+  it('restores overview recipes without a DataTable', () => {
+    const spec = specFromSelection({
+      elements: ['summary', 'metric-btc-d', 'table-trending'],
+      view,
+    })
+    expect(Object.values(spec.elements).some(element => element.type === 'MetricTile')).toBe(true)
+    expect(Object.values(spec.elements).some(element => element.type === 'TrendingTable')).toBe(
+      true,
     )
   })
 

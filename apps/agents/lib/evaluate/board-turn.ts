@@ -39,7 +39,7 @@ export const boardTurnQuestions = {
       comparison: 'Compare a few coins',
       chart: 'Price candles or series',
       news: 'Headlines',
-      dashboard: 'Pinned widgets',
+      dashboard: 'Ephemeral market overview widgets (global metrics, trending, watchlist)',
       coin: 'Single-asset detail',
       account: 'Signed-in profile and watches',
       other: 'Unclear',

@@ -28,7 +28,9 @@ import {
   boardViewParsers,
   composeSurface,
   defaultCandlePeriod,
+  emptyGlobalState,
   emptySeriesState,
+  emptyTrendingState,
   overlayAccountQuery,
   seriesAssetId,
   specFromSelection,
@@ -38,11 +40,14 @@ import {
   viewFromSearchQuery,
   viewTitle,
 } from '@/lib/genui'
+import type { GlobalState, TrendingState } from '@/lib/genui/overview'
 import {
   accountWalletQueryKey,
   coinsCandlesQueryKey,
+  coinsGlobalQueryKey,
   coinsListQueryKey,
   coinsListQueryKeyPrefix,
+  coinsTrendingQueryKey,
   coinWatchesQueryKey,
 } from '@/lib/query-keys'
 import { emptyWalletState } from '@/lib/wallet'
@@ -65,6 +70,8 @@ type CoinBoardProps = {
   initialCaption: string
   initialError: string | null
   initialWatchedIds: string[]
+  initialGlobal: GlobalState
+  initialTrending: TrendingState
 }
 
 export function CoinBoard({
@@ -81,6 +88,8 @@ export function CoinBoard({
   initialCaption,
   initialError,
   initialWatchedIds,
+  initialGlobal,
+  initialTrending,
 }: CoinBoardProps) {
   const { client } = useReactApiConfig()
   const queryClient = useQueryClient()
@@ -104,6 +113,8 @@ export function CoinBoard({
       account: initialAccount,
       wallet: emptyWalletState,
       series: emptySeriesState,
+      global: initialGlobal,
+      trending: initialTrending,
     }),
   )
 
@@ -145,6 +156,18 @@ export function CoinBoard({
         path: { assetId: seriesAsset },
         query: { period: candlePeriod },
       }),
+    staleTime: boardStaleMs,
+  })
+  const globalQuery = useQuery({
+    queryKey: coinsGlobalQueryKey,
+    queryFn: () => client.coins.global(),
+    initialData: isInitial ? initialGlobal : undefined,
+    staleTime: boardStaleMs,
+  })
+  const trendingQuery = useQuery({
+    queryKey: coinsTrendingQueryKey,
+    queryFn: () => client.coins.trending(),
+    initialData: isInitial ? initialTrending : undefined,
     staleTime: boardStaleMs,
   })
   const watchMutation = useMutation({
@@ -198,8 +221,21 @@ export function CoinBoard({
       '/account': initialAccount,
       '/wallet': walletQuery.data ?? emptyWalletState,
       '/series': seriesQuery.data ?? emptySeriesState,
+      '/global': globalQuery.data ?? emptyGlobalState,
+      '/trending': trendingQuery.data ?? emptyTrendingState,
     })
-  }, [store, coins, sync, caption, error, initialAccount, walletQuery.data, seriesQuery.data])
+  }, [
+    store,
+    coins,
+    sync,
+    caption,
+    error,
+    initialAccount,
+    walletQuery.data,
+    seriesQuery.data,
+    globalQuery.data,
+    trendingQuery.data,
+  ])
 
   function handleToggleWatch({ assetId, watched }: { assetId: string; watched: boolean }) {
     if (!watched && isAtCap) {

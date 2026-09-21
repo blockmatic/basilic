@@ -119,6 +119,14 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByRole('button', { name: 'Send' })).toBeDisabled()
   })
 
+  test('surface=dashboard paints overview widgets', async ({ page }) => {
+    await page.goto('/?surface=dashboard')
+    await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('metric-tile')).toHaveCount(3)
+    await expect(page.getByTestId('trending-table')).toBeVisible()
+    await expect(visibleCoinRow(page, 'btc')).toBeVisible()
+  })
+
   test('Who am I? writes account surface and restores from history', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })

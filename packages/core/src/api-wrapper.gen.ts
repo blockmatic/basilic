@@ -115,6 +115,8 @@ coins: {
   assetId: {
     candles: gen.getCoinCandles,
   },
+  global: gen.getCoinGlobal,
+  trending: gen.getCoinTrending,
   watches: {
     assetId: {
       id: gen.deleteCoinWatchById,
