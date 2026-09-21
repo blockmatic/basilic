@@ -150,6 +150,12 @@ The Fastify API (`apps/api`) publishes a crawlable public surface for agents. Pa
 - Keep those Allow paths, plus `/robots.txt` and `/sitemap.xml`, reachable without a Vercel login. Use **Standard Protection** so production domains stay public. Do not use **All Deployments** on the API project. OPTIONS Allowlist is CORS preflight only; it does not unblock GET.
 - To crawl a protected preview, add that preview domain to [Deployment Protection Exceptions](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/deployment-protection-exceptions) (the whole domain, not individual paths).
 
+## Fastify Fluid and eve sibling
+
+The Fastify API runs as one Vercel Function with **Fluid Compute**. Do not move that process to Edge Runtime. Discovery stays on Fastify public GETs (see [API host crawl](#api-host-crawl)); do not advertise `/eve/` from `llms.txt`.
+
+Eve, when it lands (E1), is a **separate Vercel project** — Workflow + Sandbox — not a route on the scored Fastify host. Edge is for CDN, WAF, redirects, and auth precheck. Node workloads: Fastify API, eve, Drizzle. Decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Topology: [Eve](/docs/architecture/eve).
+
 ## Troubleshooting
 
 ### Build Fails

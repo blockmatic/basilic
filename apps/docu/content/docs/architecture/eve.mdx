@@ -1,0 +1,37 @@
+---
+title: "Eve"
+description: "Durable agent runtime on a sibling host. Queued until E1 — not in this repository yet."
+---
+
+Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. It is **queued / not in this repo until E1**. There is no `apps/agents` app and no `eve` package today. Do not treat the `.agents/skills/eve` coding skill as a shipped runtime.
+
+The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
+
+## Session model
+
+Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here after E1; they are not a Fastify proxy and there is no coordinator agent in front of them. Product agent ids are `command` and `chat` (those land after the hello workspace).
+
+## Hosts
+
+| Host | What runs |
+| --- | --- |
+| Default | Separate Vercel project: Workflow + Sandbox. Fastify stays Function + Fluid on its own project. |
+| Exit | `eve build` → Nitro `.output/`, then `eve start`. Ordinary Node / container. Not `vercel()` sandbox as the only self-host path. |
+
+Keep `/eve/` and `/.well-known/workflow/` un-rewritten behind a reverse proxy. Nitro is eve’s build and server, not Basilic’s product API and not an identity provider.
+
+## Domain logic
+
+Eve consumes `@repo/db` **named functions** and, later, `@repo/markets` for market HTTP. It does not use Fastify as a database hop. Next.js keeps `@repo/core` HTTP clients and does not import those packages. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP.
+
+## Identity
+
+Fastify **mints** JWT (access, refresh, API keys). Eve is a resource, not an IdP. From E2 the eve HTTP **channel** verifies **access** tokens (`typ === 'access'`); refresh never goes to eve. A channel is inbound ingress plus route auth. A connection is outbound (MCP/OpenAPI to someone else) — not the same thing. E1 keeps scaffold channel auth; production browser traffic stays rejected until E2.
+
+## Related
+
+- [ADR 014: Fastify, eve, and Vercel runtime](/docs/adrs/014-fastify-eve-vercel-runtime)
+- [AI](/docs/architecture/ai) — Fastify `/ai/*` as-built
+- [API Architecture](/docs/architecture/api) — scored host, discovery, no MCP
+- [Portability](/docs/architecture/portability)
+- [Vercel Deployment](/docs/deployment/vercel)

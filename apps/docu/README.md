@@ -15,7 +15,8 @@ Content is `content/docs/` (`architecture`, `development`, `testing`, `deploymen
 - [Getting Started](content/docs/development/index.mdx)
 - [Product Ready](content/docs/testing/product-ready.mdx)
 - [AI Workflow](content/docs/development/ai-workflow.mdx) — Basilic `/w-*` daily path; not in-app chat
-- [AI](content/docs/architecture/ai.mdx) — optional Fastify/web demo assistant
+- [AI](content/docs/architecture/ai.mdx) — Fastify `/ai/*` control-plane APIs; four planes
+- [Eve](content/docs/architecture/eve.mdx) — durable agent runtime (queued until E1)
 - [Architecture](content/docs/architecture/index.mdx)
 - [Security](content/docs/architecture/security.mdx)
 - [Deployment](content/docs/deployment/index.mdx)

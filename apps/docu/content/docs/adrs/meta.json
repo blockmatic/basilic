@@ -14,6 +14,7 @@
     "010-expo-cicd",
     "011-product-analytics",
     "012-scaffolding-and-releases",
-    "013-shadcn-base-ui"
+    "013-shadcn-base-ui",
+    "014-fastify-eve-vercel-runtime"
   ]
 }

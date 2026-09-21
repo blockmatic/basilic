@@ -174,8 +174,10 @@ when those paths are in scope.
 
 Visual language is [`DESIGN.md`](DESIGN.md). Technical adopter documentation
 lives in `apps/docu`. Read the matching MDX or ADR before changing an
-architecture, convention, command, or documented behavior. Do not create
-`PRODUCT.md` or `ROADMAP.md`.
+architecture, convention, command, or documented behavior. Durable agents:
+[ADR 014](apps/docu/content/docs/adrs/014-fastify-eve-vercel-runtime.mdx) and
+[`architecture/eve.mdx`](apps/docu/content/docs/architecture/eve.mdx) (queued
+until E1). Do not create `PRODUCT.md` or `ROADMAP.md`.
 
 ## Working contract
 
