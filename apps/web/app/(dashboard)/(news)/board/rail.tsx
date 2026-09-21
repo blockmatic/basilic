@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
 import { useSessionStorageState } from 'ahooks'
 import { PanelRightCloseIcon } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
-import { type ReactNode, useState, useSyncExternalStore } from 'react'
+import { type ReactNode, useSyncExternalStore } from 'react'
 import { toast } from 'sonner'
 import { type ChromeState, chromeParsers, parseRailValue } from '@/lib/coins/chrome'
 import {
@@ -18,9 +18,10 @@ import {
   whoamiViewConfig,
   whoamiViewPatch,
 } from '@/lib/genui'
-import { ChatPane, type ChatTurn } from './chat-pane'
+import { ChatPane } from './chat-pane'
 import { BoardChips } from './chips'
 import { BoardComposer } from './composer'
+import { BoardEveProviders } from './eve-session'
 
 function useIsHydrated(): boolean {
   return useSyncExternalStore(
@@ -64,8 +65,6 @@ function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['
     defaultValue: [],
     deserializer: value => parseCommandHistory({ value }),
   })
-  const [chatTurns, setChatTurns] = useState<ChatTurn[]>([])
-
   function handleRailChange(value: unknown) {
     const next = parseRailValue({ value })
     if (!next) return
@@ -151,11 +150,11 @@ function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['
       <div
         hidden={rail !== 'chat'}
         inert={rail !== 'chat' ? true : undefined}
-        className="min-h-0 flex-1 overflow-y-auto"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
       >
-        <ChatPane turns={chatTurns} />
+        <ChatPane />
       </div>
-      <BoardComposer rail={rail} onChatTurns={setChatTurns} />
+      <BoardComposer rail={rail} />
     </div>
   )
 }
@@ -187,7 +186,9 @@ export function BoardLayout({
       </div>
       {isOpen ? (
         <aside className="flex max-h-[min(42vh,24rem)] w-full shrink-0 flex-col overflow-hidden rounded-3xl border bg-card p-4 md:sticky md:top-0 md:max-h-none md:h-full md:w-80">
-          <BoardRail onClose={handleClose} rail={rail} />
+          <BoardEveProviders>
+            <BoardRail onClose={handleClose} rail={rail} />
+          </BoardEveProviders>
         </aside>
       ) : null}
     </div>

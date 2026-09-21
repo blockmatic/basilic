@@ -1,23 +1,39 @@
-export type ChatTurn = { role: 'user' | 'assistant'; text: string }
+'use client'
 
-export function ChatPane({ turns }: { turns: ChatTurn[] }) {
-  if (turns.length === 0)
+import {
+  Conversation,
+  ConversationContent,
+  ConversationEmptyState,
+} from '@/components/assistant/conversation'
+import { Message, MessageContent } from '@/components/assistant/message'
+import { useChatEve } from './eve-session'
+
+function textFromParts({ parts }: { parts: readonly { type: string; text?: string }[] }): string {
+  return parts.flatMap(part => (part.type === 'text' && part.text ? [part.text] : [])).join('')
+}
+
+export function ChatPane() {
+  const { messages, error, status } = useChatEve()
+  if (messages.length === 0)
     return (
-      <p className="text-muted-foreground text-sm" data-testid="chat-empty">
+      <ConversationEmptyState data-testid="chat-empty">
         Ask about this board. Advice is not a trade. Use Commands to change the table.
-      </p>
+      </ConversationEmptyState>
     )
   return (
-    <ul className="flex flex-col gap-3" data-testid="chat-transcript">
-      {turns.map((turn, index) => (
-        <li
-          key={`${turn.role}-${index}`}
-          data-role={turn.role}
-          className="text-sm whitespace-pre-wrap"
-        >
-          {turn.text}
-        </li>
-      ))}
-    </ul>
+    <Conversation>
+      <ConversationContent data-testid="chat-transcript">
+        {messages.map(message => (
+          <Message key={message.id} from={message.role === 'user' ? 'user' : 'assistant'}>
+            <MessageContent>{textFromParts({ parts: message.parts })}</MessageContent>
+          </Message>
+        ))}
+        {status === 'error' && error ? (
+          <p className="text-destructive text-sm" role="alert">
+            {error.message || 'Chat failed'}
+          </p>
+        ) : null}
+      </ConversationContent>
+    </Conversation>
   )
 }

@@ -1,6 +1,27 @@
 /** @type {import('next').NextConfig} */
 
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { withSentryConfig } from '@sentry/nextjs'
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url))
+
+function prependEveUsingLoader(rules) {
+  for (const rule of rules ?? []) {
+    if (rule.oneOf) prependEveUsingLoader(rule.oneOf)
+    if (rule.rules) prependEveUsingLoader(rule.rules)
+    const uses = Array.isArray(rule.use) ? rule.use : rule.use ? [rule.use] : []
+    const hasSwc = uses.some(entry => {
+      const loader = typeof entry === 'string' ? entry : entry?.loader
+      return typeof loader === 'string' && loader.includes('next-swc-loader')
+    })
+    if (!hasSwc) continue
+    rule.use = [
+      { loader: path.join(scriptDir, 'webpack/eve-using-loader.cjs'), ident: 'eve-using' },
+      ...(Array.isArray(rule.use) ? rule.use : [rule.use]),
+    ]
+  }
+}
 
 // Must match basilic-fastify Vercel deployment URL pattern. Fork/deploy: change API_PROJECT_NAME
 // and TEAM_SLUG to your Fastify project and Vercel team slug.
@@ -112,6 +133,9 @@ const nextConfig = {
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.jsx': ['.tsx', '.jsx'],
     }
+    // eve 0.63 ships `using` in eve/react; Next webpack SWC does not parse it yet.
+    // eve 0.63 ships `using` in eve/react; Next webpack SWC does not parse it yet.
+    prependEveUsingLoader(config.module.rules)
     return config
   },
 }

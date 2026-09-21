@@ -11,3 +11,4 @@ export const coinWatchesQueryKey = ['coins', 'watches'] as const
 export const coinsCandlesQueryKey = ({ assetId, period }: { assetId: string; period: string }) =>
   ['coins', 'candles', assetId, period] as const
 export const accountWalletQueryKey = ['account', 'wallet'] as const
+export const eveHostQueryKey = (id: 'chat' | 'command') => ['eve', 'host', id] as const

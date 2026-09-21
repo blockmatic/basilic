@@ -3,7 +3,7 @@ title: "ADR 014: Fastify, eve, and Vercel runtime"
 description: "Keep Fastify as the product API. Adopt eve as the durable agent runtime on a separate host. Optimize for Vercel; keep a Node/container exit."
 ---
 
-Status: **Accepted.** Companion to [ADR 002](/docs/adrs/002-backend-framework). E1 landed the hello workspace; E2 landed access-JWT, `@repo/markets`, and product ids `command`/`chat`. T4g landed Gateway Jev (`getEvaluationModel` / `evaluateBoardTurn`) on the eve host. G-cmd wired Commands to eve; G-chat wired the Chat tab to eve `chat`. R-ai retired Fastify `POST /ai/chat`.
+Status: **Accepted.** Companion to [ADR 002](/docs/adrs/002-backend-framework). E1 landed the hello workspace; E2 landed access-JWT, `@repo/markets`, and product ids `command`/`chat`. T4g landed Gateway Jev (`getEvaluationModel` / `evaluateBoardTurn`) on the eve host. G-cmd wired Commands to eve; G-chat wired the Chat tab to eve `chat`. R-ai retired Fastify `POST /ai/chat`. G-eveui moved the web rail to `useEveAgent` (`eve/react`).
 
 ## Context
 
@@ -25,7 +25,7 @@ Four planes: Fastify control; eve interaction and execution; shared domain packa
 
 ## Consequences
 
-- `apps/agents` is an eve workspace with JWT-gated `command` and `chat` agents. Commands and Chat UI talk to eve.
+- `apps/agents` is an eve workspace with JWT-gated `command` and `chat` agents. The web rail uses **`useEveAgent` (`eve/react`)** with `host` + Bearer. Do not `withEve()`. Do not `useChat` for eve.
 - `POST /ai/generate` stays. Fastify `POST /ai/chat` is gone; dashboard Chat uses eve.
 - Two Vercel projects: Fastify Function + Fluid; eve on a sibling project (Workflow + Sandbox). Self-host proxies must keep `/eve/` and `/.well-known/workflow/` un-rewritten. The agents Vercel project is not required for this merge.
 - Identity: Fastify mints JWT. Eve verifies **access** tokens. Nitro is eve’s server, not an identity provider. Channels are inbound ingress; connections are outbound.
@@ -41,7 +41,8 @@ Implementation, not this merge:
 - **Landed:** G-cmd Commands rail → eve `command` + `evals/`
 - **Landed:** G-chat Chat tab → eve `chat` + one chat eval
 - **Landed:** R-ai retired Fastify `POST /ai/chat` (generate-only Fastify AI; CLI dropped `basilic ai chat`)
-- **E3** self-host smoke
+- **Cancelled:** E3 self-host smoke. Default host is Vercel; `eve start` remains the Node/container exit on [Portability](/docs/architecture/portability)
+- **Landed:** G-eveui web `useEveAgent` (`eve/react`) + `host`; PromptInput. Not `withEve`. Not `useChat`.
 - OpenTelemetry correlation after issue #183
 - Data-region (no multi-region now)
 
