@@ -12,16 +12,17 @@ import {
   viewTitle,
 } from '@/lib/genui'
 import { loadBoardView } from '@/lib/genui/surface.server'
-import { fetchMarkets } from '../markets/fetch-markets'
+import { fetchMarkets, fetchOverview } from '../markets/fetch-markets'
 import { CoinBoard } from './board'
 
 export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const [view, chrome] = await Promise.all([loadBoardView(searchParams), loadChrome(searchParams)])
   const { query, surface, period, columns, elements } = splitBoardView({ view })
   const fetchQuery = overlayAccountQuery({ query, surface })
-  const [markets, user] = await Promise.all([
+  const [markets, user, overview] = await Promise.all([
     fetchMarkets({ query: toCoinsQuery({ query: fetchQuery }) }),
     getUserInfo(),
+    fetchOverview(),
   ])
   const title = viewTitle({ surface, caption: markets.queryCaption })
   const viewConfig = viewFromSearchQuery({
@@ -51,6 +52,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
       initialCaption={markets.queryCaption}
       initialError={markets.error}
       initialWatchedIds={markets.watchedIds}
+      initialGlobal={overview.global}
+      initialTrending={overview.trending}
     />
   )
 }

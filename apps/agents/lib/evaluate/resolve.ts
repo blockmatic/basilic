@@ -102,8 +102,8 @@ function paintSurface({
   if (probability == null || probability < min) return { surface: 'table' }
   if (choice === 'account') return { surface: 'account' }
   if (choice === 'screener' || choice === 'comparison') return { surface: choice }
-  if (choice === 'chart' || choice === 'news' || choice === 'dashboard' || choice === 'coin')
-    return { surface: 'table', honesty: laterSurfaceCopy }
+  if (choice === 'chart' || choice === 'dashboard') return { surface: choice }
+  if (choice === 'news' || choice === 'coin') return { surface: 'table', honesty: laterSurfaceCopy }
   return { surface: 'table' }
 }
 

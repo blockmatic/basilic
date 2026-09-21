@@ -291,6 +291,18 @@ export const operationMeta = {
     ],
     "bodyParams": []
   },
+  "getCoinGlobal": {
+    "summary": "Get global market stats",
+    "description": "Cached CoinGecko global market stats (total cap, volume, BTC dominance). Vendor failure returns fixture stats (HTTP 200).",
+    "pathParams": [],
+    "bodyParams": []
+  },
+  "getCoinTrending": {
+    "summary": "Get trending coins",
+    "description": "Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200).",
+    "pathParams": [],
+    "bodyParams": []
+  },
   "deleteCoinWatchById": {
     "summary": "Unwatch a coin",
     "description": "Remove an asset id from the access JWT user watchlist. Missing rows still return 204.",
@@ -528,6 +540,20 @@ export const commandSpecs = [
       "candles"
     ],
     "operationId": "getCoinCandles"
+  },
+  {
+    "path": [
+      "coins",
+      "global"
+    ],
+    "operationId": "getCoinGlobal"
+  },
+  {
+    "path": [
+      "coins",
+      "trending"
+    ],
+    "operationId": "getCoinTrending"
   },
   {
     "path": [

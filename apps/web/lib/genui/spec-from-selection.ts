@@ -3,6 +3,7 @@ import {
   type BoardRecipeId,
   isBoardRecipeId,
   isChartRecipeId,
+  isOverviewRecipeId,
   isTableRecipeId,
   recipeSpecElement,
 } from './candidates'
@@ -29,7 +30,7 @@ export function specFromSelection({
 }): Spec {
   const parsed = parseViewConfig({ value: view }) ?? view
   const childIds = uniqueRecipeIds({ ids: elements })
-  if (!childIds.some(id => isTableRecipeId(id) || isChartRecipeId(id)))
+  if (!childIds.some(id => isTableRecipeId(id) || isChartRecipeId(id) || isOverviewRecipeId(id)))
     return composeSurface({ view: parsed })
 
   return {

@@ -3658,6 +3658,108 @@ export type GetCoinCandlesResponses = {
 
 export type GetCoinCandlesResponse = GetCoinCandlesResponses[keyof GetCoinCandlesResponses];
 
+export type GetCoinGlobalData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/coins/global';
+};
+
+export type GetCoinGlobalErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type GetCoinGlobalError = GetCoinGlobalErrors[keyof GetCoinGlobalErrors];
+
+export type GetCoinGlobalResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    marketCapUsd: number;
+    volumeUsd: number;
+    btcDominance: number;
+    source: 'live' | 'fixture' | 'stale';
+  };
+};
+
+export type GetCoinGlobalResponse = GetCoinGlobalResponses[keyof GetCoinGlobalResponses];
+
+export type GetCoinTrendingData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/coins/trending';
+};
+
+export type GetCoinTrendingErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    type?: string;
+    title?: string;
+    status?: number;
+    detail?: string;
+  };
+};
+
+export type GetCoinTrendingError = GetCoinTrendingErrors[keyof GetCoinTrendingErrors];
+
+export type GetCoinTrendingResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    coins: Array<{
+      id: string;
+      symbol: string;
+      name: string;
+      rank: number | unknown;
+      source: 'live' | 'fixture' | 'stale';
+    }>;
+    source: 'live' | 'fixture' | 'stale';
+  };
+};
+
+export type GetCoinTrendingResponse = GetCoinTrendingResponses[keyof GetCoinTrendingResponses];
+
 export type DeleteCoinWatchByIdData = {
   body?: never;
   path: {

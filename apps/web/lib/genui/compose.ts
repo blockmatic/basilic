@@ -58,6 +58,21 @@ function resolveChartRecipeId({ view }: { view: ViewConfig }): BoardRecipeId {
 }
 
 function chromeRecipeIds({ view }: { view: ViewConfig }): BoardRecipeId[] {
+  if (view.surface === 'dashboard') {
+    const ids: BoardRecipeId[] = [
+      'summary',
+      'metric-btc-d',
+      'metric-market-cap',
+      'metric-volume',
+      'table-trending',
+    ]
+    ids.push(
+      view.query.universe === 'watchlist' ? 'table-watchlist' : resolveTableRecipeId({ view }),
+    )
+    if (view.query.symbols.length > 0) ids.push(resolveChartRecipeId({ view }))
+    if (!isSameSearchQuery({ a: view.query, b: defaultSearchQuery })) ids.push('reset')
+    return ids
+  }
   const honesty = honestyIdForSurface({ surface: view.surface })
   const showReset = !isSameSearchQuery({ a: view.query, b: defaultSearchQuery })
   const ids: BoardRecipeId[] = ['summary']
@@ -73,7 +88,7 @@ function buildSurfaceSpec({ view }: { view: ViewConfig }): Spec {
   const columns = resolveColumns({ view })
   const tableId = resolveTableRecipeId({ view })
   const chromeIds = chromeRecipeIds({ view })
-  const childIds = [...chromeIds, tableId]
+  const childIds = view.surface === 'dashboard' ? chromeIds : [...chromeIds, tableId]
   const table = recipeSpecElement({ id: tableId, view })
 
   return {
@@ -85,10 +100,14 @@ function buildSurfaceSpec({ view }: { view: ViewConfig }): Spec {
         children: childIds,
       },
       ...Object.fromEntries(chromeIds.map(id => [id, recipeSpecElement({ id, view })])),
-      [tableId]: {
-        ...table,
-        props: { ...table.props, columns },
-      },
+      ...(view.surface === 'dashboard'
+        ? {}
+        : {
+            [tableId]: {
+              ...table,
+              props: { ...table.props, columns },
+            },
+          }),
     },
   }
 }
