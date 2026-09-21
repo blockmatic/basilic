@@ -5,6 +5,7 @@ on:
     paths:
       - 'apps/api/**'
       - 'packages/db/**'
+      - 'packages/markets/**'
       - 'packages/email/**'
       - 'packages/error/**'
       - 'packages/utils/**'

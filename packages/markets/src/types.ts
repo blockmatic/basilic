@@ -1,3 +1,10 @@
+export type CacheRecord = { value: unknown; expiresAt: number }
+
+export type CachePort = {
+  get: (key: string) => Promise<CacheRecord | undefined> | CacheRecord | undefined
+  set: (key: string, record: CacheRecord) => Promise<void> | void
+}
+
 export type Provenance = 'live' | 'fixture' | 'stale'
 export type MarketProvider = 'coingecko' | 'binance' | 'fixture'
 export type Vendor = 'coingecko' | 'binance'

@@ -9,3 +9,5 @@ process.env.AI_PROVIDER = 'anthropic'
 process.env.AI_DEFAULT_MODEL = 'claude-haiku-4-5'
 Reflect.deleteProperty(process.env, 'OPEN_ROUTER_API_KEY')
 Reflect.deleteProperty(process.env, 'OLLAMA_BASE_URL')
+
+await import('./src/lib/markets-host.js')

@@ -24,7 +24,7 @@ Two parallel jobs when `apps/api/**` or shared packages change:
 
 ### Packages (`packages-test.yml`)
 
-Unit tests for packages that define a `test` script (`core`, `react`, `error`). Triggers on pull request when `packages/**`, `tools/**`, `apps/api/openapi/**`, or the workflow/action files change. Uses committed OpenAPI artifacts (no Fastify boot). Excludes app tests (handled by api-e2e, web-e2e). Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
+Unit tests for packages that define a `test` script (`core`, `react`, `error`, `db`, `markets`). Triggers on pull request when `packages/**`, `tools/**`, `apps/api/openapi/**`, or the workflow/action files change. Uses committed OpenAPI artifacts (no Fastify boot). Excludes app tests (handled by api-e2e, web-e2e). Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
 
 ### API drift check (`api-e2e.yml`)
 

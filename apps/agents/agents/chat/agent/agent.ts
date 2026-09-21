@@ -1,3 +1,4 @@
+import '#lib/host.js'
 import { defineAgent } from 'eve'
 
 export default defineAgent({

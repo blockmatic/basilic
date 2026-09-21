@@ -1,6 +1,6 @@
 import { assets } from '@repo/db/schema'
+import { getMarkets, type MarketRow, type Provenance } from '@repo/markets'
 import { eq } from 'drizzle-orm'
-import { getMarkets, type MarketRow, type Provenance } from '../markets/index.js'
 import { type CoinsDb, seedIdentity } from './seed.js'
 
 const coinGeckoAttribution = 'Data by CoinGecko'

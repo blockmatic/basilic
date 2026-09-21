@@ -43,6 +43,7 @@ Examples:
 | `@repo/error` | Error reporting interface | B | `@repo/error/node`, `/nextjs`, `/browser`, `/react` |
 | `@repo/email` | Email templates + renderer | B | `@repo/email/emails/*`, `@repo/email/render` |
 | `@repo/db` | Drizzle schema, factory, named fns | B | `@repo/db`, `@repo/db/schema`, `@repo/db/migrate` |
+| `@repo/markets` | CoinGecko + Binance vendor HTTP | B | `@repo/markets` |
 
 ## Core packages
 
@@ -149,11 +150,15 @@ logger.info('delayed')
 
 ### `@repo/db` — Drizzle schema and named fns
 
-Pattern B. Fastify (and later eve host) only. Next.js must not import this package.
+Pattern B. Fastify and the eve host. Next.js must not import this package.
 
 - `@repo/db` — `configureDb`, `getDb`, asset/watch/session fns
 - `@repo/db/schema` — table defs
 - `@repo/db/migrate` — `runMigrations`, `migrationsDir`
+
+### `@repo/markets` — CoinGecko + Binance HTTP
+
+Pattern B. Fastify and the eve host. Next.js must not import this package. Call `configureMarkets` from host env. Named fns: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`.
 
 ### `@repo/ui` — UI components
 

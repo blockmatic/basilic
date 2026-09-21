@@ -16,13 +16,14 @@ flowchart TB
     Email["email — React Email"]
     Cli["cli — API key CLI"]
     Db["db — Drizzle + named fns"]
+    Markets["markets — CoinGecko + Binance"]
   end
 
   subgraph Apps["apps/"]
     API["api — Fastify 5"]
     Web["web — Next.js 16"]
     Mobile["mobile — Expo 57"]
-    Agents["agents — eve hello (sibling, not scored)"]
+    Agents["agents — eve command and chat (sibling, not scored)"]
     Docu["docu — Fumadocs (upstream only)"]
   end
 
@@ -44,14 +45,17 @@ flowchart TB
   Utils --> Web
   Email --> API
   Db --> API
+  Markets --> API
+  Db --> Agents
+  Markets --> Agents
   Web -->|HTTP| API
   Cli -->|HTTP| API
 ```
 
-**Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shares **tokens** later, not components/`@repo/core` types yet), `agents` (eve hello sibling; not scored; not copied by `create-basilic` yet), `docu` (Fumadocs, not copied into generated projects).
+**Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shares **tokens** later, not components/`@repo/core` types yet), `agents` (eve `command`/`chat` sibling; not scored; not copied by `create-basilic` yet), `docu` (Fumadocs, not copied into generated projects).
 
 **Tools:** `eslint`, `typescript` (copied), `create-basilic` (generator; excluded from generated projects). See [ADR 012](/docs/adrs/012-scaffolding-and-releases).
 
-**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils`, `cli`, `db` (Drizzle schema + named fns; Fastify only).
+**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils`, `cli`, `db` (Drizzle schema + named fns; Fastify + eve host), `markets` (CoinGecko + Binance; Fastify + eve host).
 
 Dependency rule: `core` → `react`; apps depend on packages, never the reverse. Pattern A packages import `src/` in the workspace; Pattern B Node consumers (Fastify, serverless) use `dist/`. `prepack` switches to `dist/` for npm. See [Publishing](/docs/deployment/publishing) and [ESM & TypeScript](/docs/architecture/esm-strategy).

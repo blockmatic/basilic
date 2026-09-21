@@ -1,5 +1,5 @@
 import { Coingecko } from '@coingecko/coingecko-typescript'
-import { env } from '../env.js'
+import { getMarketsConfig } from './config.js'
 import { fetchAllowed, fetchTimeoutMs } from './policy.js'
 import type {
   AssetDetail,
@@ -19,7 +19,7 @@ function getClient(): Coingecko {
     environment: 'demo',
     baseURL: null,
     proAPIKey: null,
-    demoAPIKey: env.COINGECKO_DEMO_API_KEY ?? null,
+    demoAPIKey: getMarketsConfig().coinGeckoDemoApiKey ?? null,
     defaultHeaders: { 'x-cg-pro-api-key': null },
     fetch: fetchAllowed,
     maxRetries: 0,

@@ -1,43 +1,42 @@
 # Agents
 
-Hello-only eve workspace (`@repo/agents`). Sibling process of Fastify (`apps/api`). Product agents `command` and `chat` are E2. This app is excluded from `create-basilic` until a later E PR.
+Eve workspace (`@repo/agents`) with product agents **command** (port **3004**) and **chat** (port **3005**). Sibling process of Fastify (`apps/api`). This app is excluded from `create-basilic` until a later E PR.
 
 Read bundled docs before changing eve files: `node_modules/eve/docs/README.md`.
 
 ## HTTP
 
-eve 0.63 default channel (`agent/channels/eve.ts`):
+Each workspace member serves eve 0.63 channel routes on its own origin:
 
 - `GET /eve/v1/health` — public `{ ok: true, status: "ready", workflowId }`
 - `GET /eve/v1/info` — route auth
-- `POST /eve/v1/session` — create session (optional first message)
+- `POST /eve/v1/session` — create session
 - `POST /eve/v1/session/:sessionId` — follow-up
 - `GET /eve/v1/session/:sessionId/stream` — NDJSON
-- session controls: `cancel`, `clear`, `compact`, `reset`
 
-Do not invent `/agents/command`. Do not mount `/eve/` on Fastify.
+Do not invent `/agents/command` on eve. Do not mount `/eve/` on Fastify. Fastify `GET /agents` (JWT) advertises these origins.
 
-Route auth is `vercelOidc()`, `localDev()`, `placeholderAuth()`. Production browser traffic is rejected until E2 JWT. There is no `none()`.
+Route auth is `basilicAccessJwt()`, `vercelOidc()`, `localDev()`. Access JWT only (`typ=access`). There is no `none()` and no `placeholderAuth()`.
 
 ## Sandbox and workflow
 
-`agent/sandbox.ts` uses `defaultBackend()`: Vercel Sandbox only when `VERCEL` is set; otherwise Docker → microsandbox → just-bash. Host secrets stay in the app runtime. Sandbox env does not receive `JWT_SECRET`, `DATABASE_URL`, or provider keys.
+`agent/sandbox.ts` uses `defaultBackend()`. Host secrets stay in the app runtime. Sandbox env does not receive `JWT_SECRET`, `DATABASE_URL`, or provider keys.
 
 Local Workflow data is `.eve/.workflow-data` (gitignored). CI does not run live Vercel Workflow.
 
 ## Ports
 
-`eve start` defaults to `$PORT` then **3000** (collides with Next). `eve dev` defaults to `$PORT` then **2000**. This app binds **3004**.
-
-Root `pnpm dev` does not start eve (no `dev` script). Use the filter below.
+Command binds **3004**. Chat binds **3005**. Root `pnpm dev` does not start eve (no `dev` script).
 
 ## pnpm commands
 
-- `pnpm --filter @repo/agents eve:dev` — `eve dev --port 3004 --no-ui`
-- `pnpm --filter @repo/agents eve:build` — `eve build` → `.output/`
+- `pnpm --filter @repo/agents eve:dev` — command on 3004
+- `pnpm --filter @repo/agents eve:dev:chat` — chat on 3005
+- `pnpm --filter @repo/agents eve:build` — `eve build`
 - `pnpm --filter @repo/agents eve:start` — `eve start --port 3004`
 - `pnpm --filter @repo/agents checktypes`
 - `pnpm --filter @repo/agents lint:eslint`
+- `pnpm --filter @repo/agents test`
 
 Health:
 
@@ -46,6 +45,6 @@ pnpm --filter @repo/agents eve:dev
 curl -sS http://127.0.0.1:3004/eve/v1/health
 ```
 
-One turn needs a model credential (`AI_GATEWAY_API_KEY`, Vercel OIDC, or a provider key). Without one, skip `eve invoke` and treat health 200 as the hello check.
+Session routes need a Fastify access JWT. One model turn needs `AI_GATEWAY_API_KEY`, Vercel OIDC, or a provider key.
 
 Architecture: [Eve](https://basilic-docs.vercel.app/docs/architecture/eve). Runtime: [ADR 014](https://basilic-docs.vercel.app/docs/adrs/014-fastify-eve-vercel-runtime).

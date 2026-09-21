@@ -1,33 +1,33 @@
 ---
 title: "Eve"
-description: "Durable agent runtime on a sibling host. Hello app lives in apps/agents; product command and chat are still queued."
+description: "Durable agent runtime on a sibling host. Product command and chat live in apps/agents."
 ---
 
-Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The hello workspace is `apps/agents` (`@repo/agents`). Product agent ids `command` and `chat` are still queued (E2). Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
+Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The workspace is `apps/agents` (`@repo/agents`) with separately addressable agents `command` (port **3004**) and `chat` (port **3005**). Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
 
-The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` excludes `apps/agents/` until a later E PR.
+The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. Authenticated Fastify `GET /agents` lists command and chat origins. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` excludes `apps/agents/` until a later E PR.
 
 ## Session model
 
-Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Hello is one agent directory (`agent/`). Product ids `command` and `chat` land after this workspace.
+Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. Commands and Chat UI tabs still land later.
 
 ## Hosts
 
 | Host | What runs |
 | --- | --- |
-| Default | Separate Vercel project: Workflow + Sandbox. Fastify stays Function + Fluid on its own project. This PR does not add that Vercel project. |
-| Local | `pnpm --filter @repo/agents eve:dev` on port **3004**. Health: `GET /eve/v1/health`. |
-| Exit | `eve build` → Nitro `.output/`, then `eve start --port 3004`. Ordinary Node / container. Not `vercel()` sandbox as the only self-host path. Local Workflow data is `.eve/.workflow-data`. |
+| Default | Separate Vercel project: Workflow + Sandbox. Fastify stays Function + Fluid on its own project. This queue has not added that Vercel project. |
+| Local | `pnpm --filter @repo/agents eve:dev` on port **3004**; `eve:dev:chat` on **3005**. Health: `GET /eve/v1/health`. |
+| Exit | `eve build` → Nitro `.output/`, then `eve start`. Ordinary Node / container. Not `vercel()` sandbox as the only self-host path. Local Workflow data is `.eve/.workflow-data`. |
 
 Keep `/eve/` and `/.well-known/workflow/` un-rewritten behind a reverse proxy. Nitro is eve’s build and server, not Basilic’s product API and not an identity provider.
 
 ## Domain logic
 
-Eve will consume `@repo/db` **named functions** and, later, `@repo/markets` for market HTTP (E2). The hello app must not import those packages or Fastify. Next.js keeps `@repo/core` HTTP clients and does not import those packages. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP.
+Eve consumes `@repo/db` **named functions** and `@repo/markets` for market HTTP. Next.js keeps `@repo/core` HTTP clients and does not import those packages. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP.
 
 ## Identity
 
-Fastify **mints** JWT (access, refresh, API keys). Eve is a resource, not an IdP. Hello keeps scaffold channel auth: `vercelOidc()`, `localDev()`, `placeholderAuth()`. Production browser traffic stays rejected until E2. A channel is inbound ingress plus route auth. A connection is outbound (MCP/OpenAPI to someone else) — not the same thing.
+Fastify **mints** JWT (access, refresh, API keys). Eve is a resource, not an IdP. The HTTP channel verifies Fastify **access** JWTs (`typ=access`) via `basilicAccessJwt`, then `vercelOidc()` and `localDev()`. Refresh tokens are rejected. A channel is inbound ingress plus route auth. A connection is outbound (MCP/OpenAPI to someone else) — not the same thing.
 
 ## Related
 

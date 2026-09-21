@@ -1,0 +1,39 @@
+{
+  "name": "@repo/markets",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "description": "CoinGecko and Binance vendor HTTP for quotes, discovery, and candles",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "source": "./src/index.ts",
+      "import": "./dist/index.js",
+      "node": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "checktypes": "tsc --noEmit",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
+    "postpack": "node ../../scripts/restore-publish.mjs"
+  },
+  "dependencies": {
+    "@coingecko/coingecko-typescript": "^8.1.0",
+    "@repo/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.13.5",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "eslint": "^10.10.0",
+    "vitest": "^5.0.1"
+  }
+}

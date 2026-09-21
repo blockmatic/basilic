@@ -1,6 +1,6 @@
+import { resetCoinGeckoClient, resetMarketsRuntime } from '@repo/markets'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { getOrCreateSession } from '../../../test/utils/auth-helper.js'
-import { resetCoinGeckoClient, resetMarketsRuntime } from '../../lib/markets/index.js'
 import { fastify } from './coins.spec.js'
 
 const frozenMarkets = Object.freeze([

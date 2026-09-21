@@ -1,6 +1,6 @@
+import { fixtureMarkets, getMarkets, type MarketRow as QuoteRow } from '@repo/markets'
 import { tool } from 'ai'
 import { z } from 'zod'
-import { fixtureMarkets, getMarkets, type MarketRow as QuoteRow } from '../../markets/index.js'
 
 export type MarketRow = {
   id: string

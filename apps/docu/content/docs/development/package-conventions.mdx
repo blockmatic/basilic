@@ -22,6 +22,7 @@ packages/
   core/        # generated client + types (runtime-agnostic)
   react/       # handwritten TanStack Query hooks (built on core)
   db/          # Drizzle schema, factory, named data-access fns
+  markets/     # CoinGecko + Binance vendor HTTP
 apps/
   api/         # Fastify 5 + TypeBox routes → generates OpenAPI
   web/         # Next.js 16 consuming core/react
@@ -31,7 +32,8 @@ apps/
 
 - `@repo/core` → owns generated code, exports API types
 - `@repo/react` → depends on `@repo/core` (and React/TanStack Query via peer deps)
-- `@repo/db` → Drizzle schema, `configureDb` / `getDb`, named fns (`listAssets`, watches, `getValidSession`). Fastify imports it. Eve hello (`apps/agents`) must not; named fns on the eve host land in E2. Next.js must not.
+- `@repo/db` → Drizzle schema, `configureDb` / `getDb`, named fns (`listAssets`, watches, `getValidSession`). Fastify and the eve host import it. Next.js must not.
+- `@repo/markets` → CoinGecko + Binance HTTP. Fastify and eve command tools import it. Next.js must not.
 
 No reverse dependencies. `@repo/db` does not import Fastify env or the api test harness.
 
@@ -109,7 +111,7 @@ React-only helpers using **TanStack Query**.
 
 ### 4) `packages/db`
 
-PostgreSQL access for Fastify (and the eve host from E2). Schema barrel `@repo/db/schema`, factory `configureDb` / `getDb`, PGLite `runMigrations` on `@repo/db/migrate`. Named RORO fns take `{ userId }` for user-scoped rows. Encrypt helpers and identity seed stay in `apps/api`.
+PostgreSQL access for Fastify and the eve host. Schema barrel `@repo/db/schema`, factory `configureDb` / `getDb`, PGLite `runMigrations` on `@repo/db/migrate`. Named RORO fns take `{ userId }` for user-scoped rows. Encrypt helpers and identity seed stay in `apps/api`.
 
 **Hard rules**
 
@@ -117,9 +119,9 @@ PostgreSQL access for Fastify (and the eve host from E2). Schema barrel `@repo/d
 - Next.js must not import `@repo/db` or `drizzle-orm` (eslint in `apps/web`)
 - Do not add a second Vercel `db:migrate` filter; api still runs `turbo run db:migrate --filter=@repo/api`
 
-### 5) Markets (collocated until E2)
+### 5) `packages/markets`
 
-CoinGecko + Binance HTTP lives in `apps/api/src/lib/markets/` until extract to `@repo/markets`. Zero Fastify, zero `@repo/db`, zero Alchemy. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Fastify `GET /coins` and `getMarketSnapshot` call `getMarkets`. Next.js must not import this folder.
+CoinGecko Demo + Binance public REST. Zero Fastify, zero `@repo/db`, zero Alchemy. Hosts call `configureMarkets` from their env. Named exports: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`. Fastify `GET /coins` and `getMarketSnapshot` call `getMarkets`. Eve command tools call the same fns. Next.js must not import this package.
 
 ## Import and export conventions
 

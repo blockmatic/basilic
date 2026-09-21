@@ -1,6 +1,6 @@
 import { getDb } from '@repo/db'
+import { resetCoinGeckoClient, resetMarketsRuntime } from '@repo/markets'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { resetCoinGeckoClient, resetMarketsRuntime } from '../markets/index.js'
 import { queryCoins } from './query.js'
 
 function jsonResponse(body: unknown, status = 200): Response {
