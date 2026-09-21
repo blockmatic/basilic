@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { BoardWatchProvider, boardRegistry } from '@/components/genui'
 import { boardNotices, type CoinMarket, type MarketsSync, mapListCoins } from '@/lib/coins/board'
+import type { ChromeState } from '@/lib/coins/chrome'
 import {
   clearedSearchQuery,
   isSameSearchQuery,
@@ -28,6 +29,7 @@ import {
   composeSurface,
   overlayAccountQuery,
   splitBoardView,
+  type ViewPeriod,
   type ViewSurface,
   viewFromSearchQuery,
   viewTitle,
@@ -42,6 +44,9 @@ type CoinBoardProps = {
   spec: Spec
   initialQuery: SearchQueryState
   initialSurface: ViewSurface
+  initialPeriod: ViewPeriod | null
+  initialColumns: string[]
+  initialChrome: ChromeState
   initialAccount: AccountState
   initialCoins: CoinMarket[]
   initialSync: MarketsSync
@@ -54,6 +59,9 @@ export function CoinBoard({
   spec,
   initialQuery,
   initialSurface,
+  initialPeriod,
+  initialColumns,
+  initialChrome,
   initialAccount,
   initialCoins,
   initialSync,
@@ -64,9 +72,14 @@ export function CoinBoard({
   const { client } = useReactApiConfig()
   const queryClient = useQueryClient()
   const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
-  const { query, surface } = splitBoardView({ view })
+  const { query, surface, period, columns } = splitBoardView({ view })
   const fetchQuery = overlayAccountQuery({ query, surface })
-  const isInitial = surface === initialSurface && isSameSearchQuery({ a: query, b: initialQuery })
+  const isInitial =
+    surface === initialSurface &&
+    period === initialPeriod &&
+    columns.length === initialColumns.length &&
+    columns.every((id, index) => id === initialColumns[index]) &&
+    isSameSearchQuery({ a: query, b: initialQuery })
   const [store] = useState(() =>
     createStateStore({
       coins: initialCoins,
@@ -133,6 +146,8 @@ export function CoinBoard({
           query: fetchQuery,
           title: viewTitle({ surface, caption }),
           surface,
+          period,
+          columns,
         }),
       })
 
@@ -155,12 +170,12 @@ export function CoinBoard({
   }
 
   async function handleResetView() {
-    await setView({ ...clearedSearchQuery, surface: null })
+    await setView({ ...clearedSearchQuery, surface: null, period: null, columns: null })
   }
 
   return (
     <div className="w-full" data-testid="coin-board" data-spec-root={liveSpec.root}>
-      <BoardLayout>
+      <BoardLayout initialChrome={initialChrome}>
         <div className="space-y-4">
           {notices.map(notice => (
             <p key={notice} className="text-muted-foreground text-sm">

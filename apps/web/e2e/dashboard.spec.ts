@@ -142,6 +142,56 @@ test.describe('Dashboard routes', () => {
     await expect(page).not.toHaveURL(/surface=account/)
     await expect(page.getByTestId('user-info-card')).toHaveCount(0)
   })
+
+  test('q plus filters compose without chat and keep chrome on refresh', async ({ page }) => {
+    const chatHits: string[] = []
+    page.on('request', request => {
+      if (request.url().includes('/ai/chat')) chatHits.push(request.url())
+    })
+    await page.goto('/?q=What+moved%3F&sortBy=change24h&sortDir=desc&sidebar=close')
+    await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('coin-board')).toHaveAttribute('data-spec-root', 'board')
+    await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'doge')
+    await expect(page.getByTestId('board-rail')).toHaveCount(0)
+    expect(chatHits).toEqual([])
+    await page.reload()
+    await expect(page.getByTestId('board-rail')).toHaveCount(0)
+    await expect(page).toHaveURL(/sortBy=change24h/)
+    await expect(page).toHaveURL(/sidebar=close/)
+  })
+
+  test('rail=chat survives reload', async ({ page }) => {
+    await page.goto('/?rail=chat')
+    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Chat is not wired yet.')).toBeVisible()
+    await page.reload()
+    await expect(page.getByText('Chat is not wired yet.')).toBeVisible()
+    await expect(page).toHaveURL(/rail=chat/)
+  })
+
+  test('chip click drops q and whoami keeps it', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
+    await page.getByTestId('whoami-command').click()
+    await expect(page).toHaveURL(/surface=account/)
+    await expect(page).toHaveURL(/q=/)
+    await expect(page.getByTestId('user-info-card')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('user-info-card')).toContainText('test@test.ai')
+    await page.getByRole('button', { name: 'What moved?' }).click()
+    await expect(page).toHaveURL(/sortBy=change24h/)
+    await expect(page).not.toHaveURL(/[?&]q=/)
+    await expect(page.getByTestId('user-info-card')).toBeVisible()
+  })
+
+  test('Share copies the current href', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+    await page.goto('/?sortBy=change24h&sidebar=close')
+    await expect(page.getByTestId('share-board')).toBeVisible({ timeout: 15_000 })
+    await page.getByTestId('share-board').click()
+    await expect(page.getByText('Copied to clipboard')).toBeVisible()
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('sortBy=change24h')
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('sidebar=close')
+  })
 })
 
 test.describe('Coin board SSR', () => {
@@ -154,5 +204,11 @@ test.describe('Coin board SSR', () => {
     await expect(page.getByTestId('coin-row').first()).toHaveAttribute('data-symbol', 'doge')
     const html = await page.content()
     expect(html.includes('"root"') || html.includes('/coins')).toBe(true)
+  })
+
+  test('sidebar=close hides the rail without JS', async ({ page }) => {
+    await page.goto('/?sidebar=close')
+    await expect(page.getByTestId('coin-board')).toBeAttached({ timeout: 15_000 })
+    await expect(page.getByTestId('board-rail')).toHaveCount(0)
   })
 })

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseCommandHistory, whoamiViewConfig } from './command-history'
+import { parseCommandHistory, viewConfigToSearchPatch, whoamiViewConfig } from './command-history'
 
 describe('parseCommandHistory', () => {
   it('restores valid command and viewConfig rows', () => {
@@ -17,5 +17,22 @@ describe('parseCommandHistory', () => {
         value: JSON.stringify([{ command: 'Who am I?', viewConfig: { surface: 'nope' } }]),
       }),
     ).toEqual([])
+  })
+
+  it('flattens surface period and columns onto the search patch', () => {
+    expect(
+      viewConfigToSearchPatch({
+        viewConfig: {
+          ...whoamiViewConfig(),
+          period: '7d',
+          columns: ['identity', 'price'],
+        },
+      }),
+    ).toMatchObject({
+      surface: 'account',
+      universe: 'watchlist',
+      period: '7d',
+      columns: ['identity', 'price'],
+    })
   })
 })

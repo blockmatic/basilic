@@ -52,19 +52,22 @@ export const viewSurfaces = [
   'account',
 ] as const
 
+export const periodValues = ['24h', '7d', '30d', '90d', '1y', '6m'] as const
+
 export const viewConfigSchema = z.object({
   version: z.literal(1),
   surface: z.enum(viewSurfaces),
   title: z.string(),
   query: searchQuerySchema,
   columns: z.array(z.string()).optional(),
-  period: z.enum(['24h', '7d', '30d', '90d', '1y', '6m']).optional(),
+  period: z.enum(periodValues).optional(),
   benchmark: z.string().optional(),
   chart: z.enum(['line', 'area', 'bar', 'normalized']).optional(),
 })
 
 export type ViewConfig = z.infer<typeof viewConfigSchema>
 export type ViewSurface = (typeof viewSurfaces)[number]
+export type ViewPeriod = (typeof periodValues)[number]
 
 export type AccountState = {
   name: string | null
@@ -123,10 +126,21 @@ export function viewFromSearchQuery({
   query,
   title,
   surface = 'table',
+  period,
+  columns,
 }: {
   query: SearchQueryState
   title: string
   surface?: ViewSurface
+  period?: ViewPeriod | null
+  columns?: string[]
 }): ViewConfig {
-  return { version: 1, surface, title, query }
+  return {
+    version: 1,
+    surface,
+    title,
+    query,
+    ...(period ? { period } : {}),
+    ...(columns?.length ? { columns } : {}),
+  }
 }
