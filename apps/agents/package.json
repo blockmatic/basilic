@@ -31,24 +31,24 @@
     "test:unit": "vitest run && node --test scripts/*.test.mjs"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.54",
-    "@openrouter/ai-sdk-provider": "^3.0.0",
+    "@ai-sdk/anthropic": "^4.0.58",
+    "@openrouter/ai-sdk-provider": "^3.1.0",
     "@repo/db": "workspace:*",
     "@repo/markets": "workspace:*",
     "@repo/onchain": "workspace:*",
     "@repo/utils": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
-    "@vercel/connect": "2.2.0",
+    "@vercel/connect": "2.3.0",
     "ai": "^7.0.107",
     "ai-sdk-ollama": "^4.3.0",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.1",
     "eve": "^0.63.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "^24.13.5",
-    "eslint": "^10.10.0",
+    "@types/node": "^26.6.2",
+    "eslint": "^10.11.0",
     "microsandbox": "^0.7.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vitest": "^5.0.1"
