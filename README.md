@@ -20,7 +20,7 @@ Fork this repository to contribute. [Docs](https://basilic-docs.vercel.app/docs)
 - 🚀 **Vercel by default, portable** — Shipped path is Vercel + Supabase; ordinary Node, HTTP, and Postgres if you leave.
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks.
 - 🛡️ **Security built in** — Automated checks in CI (Gitleaks, OSV, DeepSec).
-- ⛓️ **Multichain (API)** — EVM and Solana SIWE/SIWS on Fastify; shared `@repo/utils/web3` helpers — not a web wallet demo.
+- ⛓️ **Multichain (API)** — EVM and Solana SIWE/SIWS on Fastify; shared `@repo/utils/web3` helpers.
 
 ## Technology stack
 
