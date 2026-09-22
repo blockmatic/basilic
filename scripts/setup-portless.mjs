@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * One-time Portless machine setup: trust the local CA and start the HTTPS proxy.
- * Idempotent. Skips in CI. Privileged prompts belong here, not in `pnpm dev`.
+ * Idempotent. Skips in CI. `pnpm dev` starts the proxy again when it is down,
+ * once, before Turbo — not once per app inside the TUI.
  */
 import { spawnSync } from 'node:child_process'
 import { dirname, resolve } from 'node:path'

@@ -19,7 +19,7 @@ node scripts/run-qa.mjs
 
 ### `dev.mjs`
 
-Root `pnpm dev` entry. Starts local Postgres (`pnpm --filter @repo/db db:start`) unless `SKIP_DB_START=1`, prints Portless `https://*.localhost` URLs (worktree-aware via `portless get`), then Turbo TUI with `SKIP_DB_START=1` so the eve `db:start` wait is a no-op. Schema and identity seed run on API boot.
+Root `pnpm dev` entry. Starts the Portless HTTPS proxy on port 443 when it is down (one sudo prompt in this process, before Turbo), then local Postgres (`pnpm --filter @repo/db db:start`) unless `SKIP_DB_START=1`, prints Portless `https://*.localhost` URLs (worktree-aware via `portless get`), then Turbo TUI with `SKIP_DB_START=1` so the eve `db:start` wait is a no-op. Schema and identity seed run on API boot. Skips the proxy when `CI=1` or `PORTLESS=0`.
 
 ```bash
 pnpm dev
