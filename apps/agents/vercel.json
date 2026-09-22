@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "npx turbo-ignore @repo/agents --fallback=HEAD^1",
+  "installCommand": "cd ../.. && node scripts/vercel-install.mjs",
+  "buildCommand": "cd ../.. && node scripts/vercel-install.mjs turbo run build --filter=@repo/agents^... && node scripts/vercel-install.mjs --filter @repo/agents eve:build",
+  "git": { "deploymentEnabled": { "main": true, "develop": true } }
+}

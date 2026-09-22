@@ -16,6 +16,8 @@ export const defaultE2eEnv = {
   WEBAUTHN_RP_NAME: 'Test App',
   TOTP_ISSUER: 'Test App',
   COINS_USE_FIXTURE: 'true',
+  EVE_COMMAND_URL: 'http://127.0.0.1:3004',
+  EVE_CHAT_URL: 'http://127.0.0.1:3005',
 }
 
 export const defaultE2eJwt = 'e2e-jwt-secret-min-32-chars-for-tests'

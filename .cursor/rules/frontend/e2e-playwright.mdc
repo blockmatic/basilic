@@ -9,7 +9,7 @@ alwaysApply: false
 - No webServer; URLs from `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL` (env or `--app` / `--api` params)
 - Fastify: only `--api` param; `test:e2e` = URL-based, `test:e2e:local` = spawn API, poll, run, cleanup
 - Param format: `--app=URL` or `--app URL`, `--api=URL` or `--api URL`
-- CI: test:e2e:local only (spawn local servers; no Vercel URLs)
+- CI: test:e2e:local only (spawn local servers; no Vercel URLs). Loopback `http://localhost:3000` / `:3001` — Portless is skipped in CI (no sudo/CA). Eve is not in the Playwright DAG; spawn pins `EVE_COMMAND_URL` / `EVE_CHAT_URL` to `http://127.0.0.1:3004` / `:3005`.
 - Local: Next `test:e2e:local` = spawn Fastify + Next, poll, run all projects, kill. Fastify `test:e2e:local` = spawn API only. Root `pnpm test:e2e` = run both via scripts/run-e2e.mjs
 - workers: 1, fullyParallel: false — PGLite does not support concurrent writers; tests must run in series
 - Do not filter `--project=` in spawn scripts; run the full project DAG

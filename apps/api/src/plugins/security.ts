@@ -55,7 +55,7 @@ const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
         "img-src 'self' data: https:",
         "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.scalar.com", // Allow Scalar fonts
-        "connect-src 'self' http://localhost:* https://fonts.scalar.com", // Allow localhost with any port and Scalar fonts
+        "connect-src 'self' http://localhost:* https://basilic.localhost https://*.basilic.localhost https://fonts.scalar.com",
         "frame-ancestors 'none'",
       ]
       reply.header('Content-Security-Policy', cspDirectives.join('; '))

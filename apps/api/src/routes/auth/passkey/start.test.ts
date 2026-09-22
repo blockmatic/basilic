@@ -36,7 +36,7 @@ describe('POST /auth/passkey/start', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/start',
-      headers: { origin: 'http://localhost:3000' },
+      headers: { origin: 'https://basilic.localhost' },
     })
     expect(res.statusCode).toBe(200)
     const body = res.json()

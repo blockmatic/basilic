@@ -19,7 +19,7 @@ node scripts/run-qa.mjs
 
 ### `dev.mjs`
 
-Root `pnpm dev` entry. Starts local Postgres (`pnpm --filter @repo/db db:start`) unless `SKIP_DB_START=1`, then Turbo TUI with `SKIP_DB_START=1` so the eve `db:start` wait is a no-op. Schema and identity seed run on API boot.
+Root `pnpm dev` entry. Starts local Postgres (`pnpm --filter @repo/db db:start`) unless `SKIP_DB_START=1`, prints Portless `https://*.localhost` URLs (worktree-aware via `portless get`), then Turbo TUI with `SKIP_DB_START=1` so the eve `db:start` wait is a no-op. Schema and identity seed run on API boot.
 
 ```bash
 pnpm dev
@@ -273,6 +273,18 @@ node scripts/setup-env.mjs
 ```
 
 **Note**: Idempotent. Skips dest files that already exist so local secrets are preserved. Edit copied files to set real values.
+
+### `setup-portless.mjs`
+
+Trusts the Portless local CA and starts the HTTPS proxy on port 443. Skips when `CI=1`. May prompt for OS confirmation or sudo. Re-run is safe. Daily `pnpm dev` does not repeat these steps.
+
+```bash
+pnpm setup:portless
+# or
+node scripts/setup-portless.mjs
+```
+
+**Note**: Existing `.env` dest files are not rewritten. Update app URLs to `https://*.basilic.localhost` if they still use `localhost:<port>`. Eve catalog URLs are `https://agents.basilic.localhost/eve/command` and `/eve/chat`.
 
 ## Database Development Scripts
 

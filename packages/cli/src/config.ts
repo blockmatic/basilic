@@ -54,6 +54,9 @@ export function resolveApiKey(): string | undefined {
 
 export function resolveBaseUrl(): string {
   return (
-    process.env.BASE_URL ?? process.env.API_URL ?? loadConfig().baseUrl ?? 'http://localhost:3000'
+    process.env.BASE_URL ??
+    process.env.API_URL ??
+    loadConfig().baseUrl ??
+    'https://api.basilic.localhost'
   )
 }

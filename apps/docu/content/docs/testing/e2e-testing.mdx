@@ -20,7 +20,7 @@ Root `pnpm qa` builds, then ends with `pnpm test:e2e` (`SKIP_BUILD=1`, `scripts/
 | `pnpm --filter @repo/api test:e2e:local` | Spawn API (`RATE_LIMIT_MAX=10000`, `COINS_RATE_LIMIT_MAX=10000`), run Scalar login E2E — no `ANTHROPIC_API_KEY` required |
 | `pnpm test:e2e:ui` / `test:e2e:debug` | Playwright UI or debug (in the app) |
 
-Pass URLs with `--app` / `--api`, or `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL`. Defaults: `http://localhost:3000` and `http://localhost:3001`.
+Pass URLs with `--app` / `--api`, or `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL`. Spawned local/CI suites still default to `http://localhost:3000` and `http://localhost:3001` — no Portless, no eve process. `scripts/e2e-local-shared.mjs` pins `EVE_COMMAND_URL` / `EVE_CHAT_URL` to `http://127.0.0.1:3004` / `:3005` so Fastify `GET /agents` does not advertise `https://agents.basilic.localhost` (that host is not listening in Playwright, and the rail would hang with Send disabled). Against a running `pnpm dev`, use `https://basilic.localhost` and `https://api.basilic.localhost` (eve mounts stay on `https://agents.basilic.localhost/eve/command` and `/eve/chat`; the current Playwright DAG does not hit them).
 
 ```bash
 pnpm test:e2e --app=https://my-app.vercel.app --api=https://my-api.vercel.app

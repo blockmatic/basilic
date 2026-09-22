@@ -2,10 +2,13 @@
 /**
  * Daily local start: ensure Supabase Postgres is up, then Turbo TUI.
  * Schema and identity seed run on Fastify boot. Wipe remains `pnpm reset`.
+ * HTTP apps are reached via Portless https://*.localhost names, not bind ports.
  */
 import { spawnSync } from 'node:child_process'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { formatLocalUrlBanner, localDevChildEnv, resolveLocalAppUrls } from './local-urls.mjs'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = dirname(scriptDir)
@@ -15,8 +18,8 @@ export function envFlagIsTrue(value) {
   return value === '1' || value === 'true'
 }
 
-export function turboChildEnv({ env = process.env } = {}) {
-  return { ...env, SKIP_DB_START: '1' }
+export function turboChildEnv({ env = process.env, urls } = {}) {
+  return { ...localDevChildEnv({ env, ...(urls ? { urls } : {}) }), SKIP_DB_START: '1' }
 }
 
 export function turboDevCommand({ extraArgs = [] } = {}) {
@@ -46,11 +49,14 @@ function main() {
     }
   }
 
+  const urls = resolveLocalAppUrls({ cwd: repoRoot })
+  console.log(`\n${formatLocalUrlBanner({ urls })}\n`)
+
   const { cmd, args } = turboDevCommand({ extraArgs: process.argv.slice(2) })
   const result = spawnSync(cmd, args, {
     cwd: repoRoot,
     stdio: 'inherit',
-    env: turboChildEnv(),
+    env: turboChildEnv({ urls }),
   })
   process.exit(result.status ?? 1)
 }

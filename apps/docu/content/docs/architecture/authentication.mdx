@@ -16,7 +16,7 @@ Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3**
 
 ## New-device email
 
-`createSessionAndIssueTokens` writes IP, user-agent, `deviceLabel`, `location` (Vercel/Cloudflare geo headers only), and `deviceFingerprint` (`browserFamily|osFamily`). Fastify emails only when **no other session row** for that user shares the fingerprint (the new row is excluded). Users without email skip mail. `WEB_APP_URL` (default `http://localhost:3000`) must pass `isAllowedUrl` or the email is skipped. The CTA is `${WEB_APP_URL}/auth/session/revoke?verificationId=&token=` (`session_revoke` verification, `hashToken`, CAS consume). Send is fire-and-forget via `emailProvider` (render + send errors are caught and logged). There is no queue; completion is not guaranteed under serverless freeze.
+`createSessionAndIssueTokens` writes IP, user-agent, `deviceLabel`, `location` (Vercel/Cloudflare geo headers only), and `deviceFingerprint` (`browserFamily|osFamily`). Fastify emails only when **no other session row** for that user shares the fingerprint (the new row is excluded). Users without email skip mail. `WEB_APP_URL` (default `https://basilic.localhost`) must pass `isAllowedUrl` or the email is skipped. The CTA is `${WEB_APP_URL}/auth/session/revoke?verificationId=&token=` (`session_revoke` verification, `hashToken`, CAS consume). Send is fire-and-forget via `emailProvider` (render + send errors are caught and logged). There is no queue; completion is not guaranteed under serverless freeze.
 
 `GET /auth/sessions` and `DELETE /auth/sessions/:id` are JWT-only (**400** `USE_KEY_REVOKE` for API keys). List never returns `userAgent` or `deviceFingerprint`.
 

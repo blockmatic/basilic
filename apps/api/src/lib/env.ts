@@ -49,7 +49,7 @@ const jwtSecretSchema = isProduction
       )
   : z.string().min(32).default(rejectedDevDefault)
 
-const defaultWebAppUrl = 'http://localhost:3000'
+const defaultWebAppUrl = 'https://basilic.localhost'
 
 function originFromWebAppUrl(webAppUrl: string): string {
   try {
@@ -177,8 +177,8 @@ export const env = createEnv({
       .default('Your App'),
     WEB_APP_URL: z.string().url().default(defaultWebAppUrl),
     DOCS_SITE_URL: z.string().url().default('https://basilic-docs.vercel.app'),
-    EVE_COMMAND_URL: z.string().url().default('http://127.0.0.1:3004'),
-    EVE_CHAT_URL: z.string().url().default('http://127.0.0.1:3005'),
+    EVE_COMMAND_URL: z.string().url().default('https://agents.basilic.localhost/eve/command'),
+    EVE_CHAT_URL: z.string().url().default('https://agents.basilic.localhost/eve/chat'),
     ALLOW_TEST: z
       .string()
       .optional()

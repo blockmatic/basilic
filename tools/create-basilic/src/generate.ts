@@ -110,8 +110,8 @@ pnpm db:start
 pnpm dev
 \`\`\`
 
-- API: http://localhost:3001
-- Web: http://localhost:3000 — first login \`test@test.ai\` (\`ALLOW_TEST=true\` in copied env)
+- API: https://api.basilic.localhost
+- Web: https://basilic.localhost — first login \`test@test.ai\` (\`ALLOW_TEST=true\` in copied env)
 - Mobile: \`pnpm --filter @repo/mobile start\`
 
 Local starter docs: [\`docs/basilic/\`](docs/basilic/). Hosted: [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).

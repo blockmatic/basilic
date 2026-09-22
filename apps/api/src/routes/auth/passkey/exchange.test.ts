@@ -7,7 +7,7 @@ import { encryptCallbackTokens } from '../../../db/callback-tokens.js'
 import { generateToken, hashToken } from '../../../lib/jwt.js'
 import { fastify } from './passkey.spec.js'
 
-const testCallbackOrigin = 'http://localhost:3000'
+const testCallbackOrigin = 'https://basilic.localhost'
 
 describe('POST /auth/passkey/exchange', () => {
   it('should return tokens for valid code and delete row', async () => {

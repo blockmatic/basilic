@@ -19,6 +19,16 @@ describe('applyAssembleTransforms', () => {
         },
       }),
     )
+    writeFileSync(
+      join(destRoot, 'portless.json'),
+      JSON.stringify({
+        apps: {
+          'apps/web': { name: 'basilic', script: 'dev:app' },
+          'apps/docu': { name: 'docu.basilic', script: 'dev:app' },
+          'apps/agents': { name: 'agents.basilic', script: 'dev:app' },
+        },
+      }),
+    )
     applyAssembleTransforms({ destRoot })
     const lock = JSON.parse(readFileSync(join(destRoot, 'skills-lock.json'), 'utf8')) as {
       skills: { 'w-plan': { source: string; sourceType: string; skillPath: string }; f?: unknown }
@@ -27,5 +37,11 @@ describe('applyAssembleTransforms', () => {
     expect(lock.skills['w-plan'].sourceType).toBe('github')
     expect(lock.skills['w-plan'].skillPath).toBe('skills/w-plan/SKILL.md')
     expect(lock.skills.f).toBeUndefined()
+    const portless = JSON.parse(readFileSync(join(destRoot, 'portless.json'), 'utf8')) as {
+      apps: Record<string, unknown>
+    }
+    expect(portless.apps['apps/web']).toEqual({ name: 'basilic', script: 'dev:app' })
+    expect(portless.apps['apps/docu']).toBeUndefined()
+    expect(portless.apps['apps/agents']).toBeUndefined()
   })
 })

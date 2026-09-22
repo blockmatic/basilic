@@ -71,11 +71,11 @@ Generated client and types from `apps/api/openapi/openapi.json`.
 import { createClient } from '@repo/core'
 
 // No-auth (callbacks, health checks)
-const client = createClient({ baseUrl: 'http://localhost:3001' })
+const client = createClient({ baseUrl: 'https://api.basilic.localhost' })
 
 // JWT mode (web app—use getAuthToken, getRefreshToken, updateAuthTokens from lib/auth/auth-client)
 const client = createClient({
-  baseUrl: 'http://localhost:3001',
+  baseUrl: 'https://api.basilic.localhost',
   getAuthToken,
   getRefreshToken,
   onTokensRefreshed: updateAuthTokens,
@@ -83,12 +83,12 @@ const client = createClient({
 
 // API key mode (servers, CLIs)
 const client = createClient({
-  baseUrl: 'http://localhost:3001',
+  baseUrl: 'https://api.basilic.localhost',
   apiKey: 'bask_xxx_secret',
 })
 
 await client.auth.magiclink.request({
-  body: { email: 'me@example.com', callbackUrl: 'http://localhost:3000' },
+  body: { email: 'me@example.com', callbackUrl: 'https://basilic.localhost' },
 })
 ```
 
@@ -108,7 +108,7 @@ import { ApiProvider, useHealthCheck } from '@repo/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const queryClient = new QueryClient()
-const coreClient = createClient({ baseUrl: 'http://localhost:3001' })
+const coreClient = createClient({ baseUrl: 'https://api.basilic.localhost' })
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

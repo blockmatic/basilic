@@ -13,7 +13,7 @@ describe('POST /account/link/passkey/finish', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/account/link/passkey/finish',
-      headers: { Origin: 'http://localhost:3000' },
+      headers: { Origin: 'https://basilic.localhost' },
       payload: {
         credential: {
           id: 'x',
@@ -34,7 +34,7 @@ describe('POST /account/link/passkey/finish', () => {
       url: '/account/link/passkey/finish',
       headers: {
         Authorization: `Bearer ${isolatedJwt}`,
-        Origin: 'http://localhost:3000',
+        Origin: 'https://basilic.localhost',
       },
       payload: {
         credential: {
@@ -55,7 +55,7 @@ describe('POST /account/link/passkey/finish', () => {
       url: '/account/link/passkey/start',
       headers: {
         Authorization: `Bearer ${jwt}`,
-        Origin: 'http://localhost:3000',
+        Origin: 'https://basilic.localhost',
       },
     })
     expect(startRes.statusCode).toBe(200)
@@ -65,7 +65,7 @@ describe('POST /account/link/passkey/finish', () => {
       url: '/account/link/passkey/finish',
       headers: {
         Authorization: `Bearer ${jwt}`,
-        Origin: 'http://localhost:3000',
+        Origin: 'https://basilic.localhost',
       },
       payload: {
         credential: {

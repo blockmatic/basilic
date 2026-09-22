@@ -42,7 +42,7 @@ describe('basilicAccessJwt', () => {
     })
     const auth = basilicAccessJwt()
     const session = await auth(
-      new Request('http://127.0.0.1:3004/eve/v1/session', {
+      new Request('https://agents.basilic.localhost/eve/command/v1/session', {
         headers: { authorization: `Bearer ${token}` },
       }),
     )
@@ -71,7 +71,7 @@ describe('basilicAccessJwt', () => {
     const auth = basilicAccessJwt()
     expect(
       await auth(
-        new Request('http://127.0.0.1:3004/eve/v1/session', {
+        new Request('https://agents.basilic.localhost/eve/command/v1/session', {
           headers: { authorization: `Bearer ${token}` },
         }),
       ),

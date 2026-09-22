@@ -3,7 +3,7 @@ title: "Eve"
 description: "Default host is Vercel (Workflow + Sandbox). Product command and chat live in apps/agents."
 ---
 
-Default host is Vercel (Workflow + Sandbox) on a sibling project. Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The workspace is `apps/agents` (`@repo/agents`) with separately addressable agents `command` (port **3004**) and `chat` (port **3005**). Local `eve:dev` / `eve start` (Nitro `.output`) is the exit. Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
+Default host is Vercel (Workflow + Sandbox) on a sibling project. Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The workspace is `apps/agents` (`@repo/agents`) with separately addressable agents `command` and `chat` on one origin (`/eve/command`, `/eve/chat`). Local `eve:dev` / `eve start` (Nitro `.output`) is the exit. Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
 
 The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. Authenticated Fastify `GET /agents` lists command and chat origins. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` excludes `apps/agents/` until a later E PR.
 
@@ -16,10 +16,10 @@ Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive st
 | Host | What runs |
 | --- | --- |
 | Default | Separate Vercel project: Workflow + Sandbox. Fastify stays Function + Fluid on its own project. This queue has not added that Vercel project. |
-| Local | Root `pnpm dev` starts command (**3004**) and chat (**3005**) as TUI panes after `@repo/db#db:start`. Manual: `pnpm --filter @repo/agents eve:dev` / `eve:dev:chat`. Health: `GET /eve/v1/health`. `PGLITE=false` is local Postgres. |
+| Local | Root `pnpm dev` starts one Portless host (`https://agents.basilic.localhost`) after `@repo/db#db:start`. Health: `GET /eve/command/v1/health` and `GET /eve/chat/v1/health`. Manual: `pnpm --filter @repo/agents eve:dev`. `PGLITE=false` is local Postgres. |
 | Exit | `eve build` → Nitro `.output/`, then `eve start`. Ordinary Node / container. Not `vercel()` sandbox as the only self-host path. Local Workflow data is `.eve/.workflow-data`. |
 
-Keep `/eve/` and `/.well-known/workflow/` un-rewritten behind a reverse proxy. Nitro is eve’s build and server, not Basilic’s product API and not an identity provider.
+On a single-member host, keep `/eve/` and `/.well-known/workflow/` un-rewritten. The workspace public mounts `/eve/command` and `/eve/chat` are stripped before each member (local `dev-workspace.mjs`, Vercel `eve deploy`). Nitro is eve’s build and server, not Basilic’s product API and not an identity provider.
 
 Command and chat `defineAgent` set `build.externalDependencies` to `@repo/db`, `@electric-sql/pglite`, and `pg`. Eve must not bundle PGLite into authored modules (WASM / `eval`). `bootHost` runs from the HTTP channel, not `agent.ts`, so eve can read that list before it evaluates `@repo/db`. It is once-per-process: `eve dev` re-evaluates the compiled channel after listen, and a second eval must not construct PGLite (Node 24 V8 `Check failed: end > addr`).
 
