@@ -3,7 +3,17 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSessionStorageState } from 'ahooks'
 import { type EveMessage, type UseEveAgentStatus, useEveAgent } from 'eve/react'
-import { createContext, type ReactNode, useContext, useRef, useSyncExternalStore } from 'react'
+import {
+  createContext,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+  useContext,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 import { toast } from 'sonner'
 import {
   chatSessionKey,
@@ -76,13 +86,11 @@ function useAgentHost({ id }: { id: 'chat' | 'command' }) {
 function EveSession({
   host,
   storageKey,
-  context,
-  children,
+  onHandle,
 }: {
   host: string
   storageKey: string
-  context: typeof ChatEveContext
-  children: ReactNode
+  onHandle: Dispatch<SetStateAction<BoardEveHandle>>
 }) {
   const [raw, setRaw] = useSessionStorageState<string | undefined>(storageKey)
   const boot = parseEveSessionCursor({ value: raw })
@@ -103,30 +111,50 @@ function EveSession({
       toast.error(error.message || 'Agent failed')
     },
   })
-  const handle: BoardEveHandle = {
-    hasHost: true,
-    status: agent.status,
-    sessionId: agent.session?.sessionId,
-    error: agent.error,
-    messages: agent.data.messages,
-    send: (text, clientContext) =>
-      sendWithEveRefresh({
-        run: async () => {
-          const eventsPromise = new Promise<readonly BoardEveEvent[]>(resolve => {
-            finishWait.current = resolve
-          })
-          try {
-            await agent.send(text, { clientContext })
-          } catch (error) {
-            finishWait.current = null
-            throw error
-          }
-          return eventsPromise
-        },
-      }),
-    cancel: () => agent.cancel().then(() => undefined),
-  }
-  return <context.Provider value={handle}>{children}</context.Provider>
+  const sendRef = useRef(agent.send)
+  const cancelRef = useRef(agent.cancel)
+  sendRef.current = agent.send
+  cancelRef.current = agent.cancel
+  const status = agent.status
+  const sessionId = agent.session?.sessionId
+  const error = agent.error
+  const messages = agent.data.messages
+  useLayoutEffect(() => {
+    const next: BoardEveHandle = {
+      hasHost: true,
+      status,
+      sessionId,
+      error,
+      messages,
+      send: (text, clientContext) =>
+        sendWithEveRefresh({
+          run: async () => {
+            const eventsPromise = new Promise<readonly BoardEveEvent[]>(resolve => {
+              finishWait.current = resolve
+            })
+            try {
+              await sendRef.current(text, { clientContext })
+            } catch (caught) {
+              finishWait.current = null
+              throw caught
+            }
+            return eventsPromise
+          },
+        }),
+      cancel: () => cancelRef.current().then(() => undefined),
+    }
+    onHandle(current =>
+      current.hasHost === next.hasHost &&
+      current.status === next.status &&
+      current.sessionId === next.sessionId &&
+      current.error === next.error &&
+      current.messages === next.messages
+        ? current
+        : next,
+    )
+  }, [error, messages, onHandle, sessionId, status])
+  useLayoutEffect(() => () => onHandle(idleHandle), [onHandle])
+  return null
 }
 
 function EveHost({
@@ -142,12 +170,15 @@ function EveHost({
 }) {
   const hydrated = useIsHydrated()
   const host = useAgentHost({ id })
-  if (!hydrated || !host.data)
-    return <context.Provider value={idleHandle}>{children}</context.Provider>
+  const [liveHandle, setLiveHandle] = useState(idleHandle)
+  const endpoint = hydrated ? host.data : undefined
   return (
-    <EveSession host={host.data} storageKey={storageKey} context={context}>
+    <context.Provider value={endpoint ? liveHandle : idleHandle}>
+      {endpoint ? (
+        <EveSession host={endpoint} storageKey={storageKey} onHandle={setLiveHandle} />
+      ) : null}
       {children}
-    </EveSession>
+    </context.Provider>
   )
 }
 
