@@ -292,7 +292,7 @@ node scripts/setup-env.mjs
 
 ### `setup-portless.mjs`
 
-Trusts the Portless local CA and starts the HTTPS proxy on port 443. Skips when `CI=1`. May prompt for OS confirmation or sudo. Re-run is safe. Daily `pnpm dev` does not repeat these steps.
+Trusts the Portless local CA and starts the HTTPS proxy on port 443. Skips when `CI=1`. May prompt for OS confirmation or sudo. Re-run is safe. Daily `pnpm dev` does not repeat CA trust, but may restart the proxy when it is unavailable.
 
 ```bash
 pnpm setup:portless

@@ -39,7 +39,7 @@ The monorepo must work consistently whether you develop locally (macOS, Linux, W
 
 Linked git worktrees prefix the branch: `https://fix-ui.api.basilic.localhost`. `scripts/dev.mjs` exports sibling URLs from `portless get` so worktrees do not call the main checkout.
 
-`pnpm dev` starts the Portless HTTPS proxy on **443** before Turbo when it is down, so sudo is prompted once in your terminal. It does not touch the Keychain (`--skip-trust`). Parallel app tasks no longer each try to bind 443 inside the TUI. `pnpm setup` / `pnpm setup:portless` trusts the local CA and starts that proxy (may prompt for sudo and a Keychain confirmation; re-run is safe; CI skips it). After reboot, the next `pnpm dev`, `pnpm exec portless proxy start`, or `portless service install` brings :443 back. `portless get` may print `:1355` if the HTTPS proxy was never started; Basilic env still uses `https://<name>.localhost` (port 443).
+`pnpm dev` starts the Portless HTTPS proxy on **443** before Turbo when it is down, so sudo is prompted once in your terminal. It does not touch the Keychain (`--skip-trust`). Parallel app tasks no longer each try to bind 443 inside the TUI. `pnpm setup` / `pnpm setup:portless` trusts the local CA and starts that proxy (may prompt for sudo and a Keychain confirmation; re-run is safe; CI skips it). After reboot, the next `pnpm dev`, `pnpm exec portless proxy start`, or `pnpm exec portless service install` brings :443 back. `portless get` may print `:1355` if the HTTPS proxy was never started; Basilic env still uses `https://<name>.localhost` (port 443).
 
 Safari: `.localhost` may need `pnpm exec portless hosts sync`. Diagnose with `pnpm exec portless doctor` and `pnpm exec portless list`.
 

@@ -86,7 +86,7 @@ export async function ensurePortlessProxy({
   const result = spawn(
     'pnpm',
     ['exec', 'portless', 'proxy', 'start', '--https', '--port', String(port), '--skip-trust'],
-    { cwd, env, stdio: 'inherit' },
+    { cwd, env, stdio: 'inherit', shell: process.platform === 'win32' },
   )
   if (result.status !== 0) {
     log.error(

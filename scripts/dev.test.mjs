@@ -80,6 +80,9 @@ test('ensurePortlessProxy starts the proxy once when it is down', async () => {
     '443',
     '--skip-trust',
   ])
+  assert.equal(calls[0].options.stdio, 'inherit')
+  assert.deepEqual(calls[0].options.env, {})
+  assert.equal(calls[0].options.shell, process.platform === 'win32')
 })
 
 test('ensurePortlessProxy fails when proxy start exits non-zero', async () => {
