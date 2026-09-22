@@ -31,14 +31,14 @@ try {
   if (process.env.VERCEL_ENV === 'preview' && !forcePg) {
     logger.info(
       { context: 'migrate', vercelEnv: 'preview' },
-      'Skipping PostgreSQL migrations on Vercel Preview. Set RUN_PG_MIGRATE=true with an isolated DATABASE_URL to apply Preview migrations.',
+      'Skipping PostgreSQL migrations on Vercel Preview. Set RUN_PG_MIGRATE=true with an isolated POSTGRES_URL to apply Preview migrations.',
     )
     process.exit(0)
   }
 
-  if (!env.DATABASE_URL) throw new Error('DATABASE_URL is required when PGLITE is false')
+  if (!env.POSTGRES_URL) throw new Error('POSTGRES_URL is required when PGLITE is false')
 
-  const pool = new Pool({ connectionString: env.DATABASE_URL })
+  const pool = new Pool({ connectionString: env.POSTGRES_URL })
   try {
     await runPostgresMigrations({
       pool,

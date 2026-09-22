@@ -105,7 +105,7 @@ and tests instead of relying on memory or assuming that documentation is current
 
 - No UPPER_SNAKE_CASE constants—use camelCase for all variables and const
   declarations.
-- Uppercase allowed only for env var keys (e.g. `env.DATABASE_URL`,
+- Uppercase allowed only for env var keys (e.g. `env.POSTGRES_URL`,
   `process.env.NODE_ENV`).
 - Prefer collocation: keep data in the same file as its consumer; avoid
   separate `*-titles.ts`, `*-constants.ts` files.

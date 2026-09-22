@@ -41,7 +41,7 @@ async function initialize(): Promise<void> {
 
   try {
     configureDb({
-      databaseUrl: env.DATABASE_URL,
+      databaseUrl: env.POSTGRES_URL,
       pglite: env.PGLITE === true || env.NODE_ENV === 'test',
     })
 

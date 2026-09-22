@@ -80,7 +80,7 @@ async function loadDb(): Promise<Db> {
     return state.db
   }
 
-  if (!databaseUrl) throw new Error('DATABASE_URL is required when pglite is false')
+  if (!databaseUrl) throw new Error('POSTGRES_URL is required when pglite is false')
   if (!state.pgPool) state.pgPool = new Pool({ connectionString: databaseUrl })
   state.db = drizzle(state.pgPool, { schema })
   return state.db

@@ -28,7 +28,7 @@ PostgreSQL database with Supabase as initial managed provider, using Drizzle ORM
 - **Initial setup**: Fast setup with Supabase for rapid iteration
 - **Production ready**: Yes, suitable for production workloads
 - **Enterprise support**: Available through Supabase and migration to cloud providers
-- **Migration path**: Easy - only requires changing `DATABASE_URL`
+- **Migration path**: Easy - only requires changing `POSTGRES_URL`
 - **Zero vendor lock-in**: Standard PostgreSQL, no proprietary APIs
 - **Security flexibility**: Can migrate to environments with KMS, VPC, Cloud HSM
 - **Supabase benefits**: Managed Postgres with backups, monitoring, branching for preview environments
@@ -50,7 +50,7 @@ PostgreSQL database with AWS RDS or Google Cloud SQL as managed provider.
 - **ACID transactions**: Full support
 - **Production ready**: Yes
 - **Enterprise support**: Available
-- **Migration path**: Change `DATABASE_URL`
+- **Migration path**: Change `POSTGRES_URL`
 - **Security controls**: Native KMS, VPC isolation, IAM/Cloud IAM
 
 **Cons**
@@ -121,15 +121,15 @@ We will use **PostgreSQL** as the single database engine with **Supabase** as th
 | **Initial setup** | ✅ Fast | ⚠️ More config | ⚠️ Complex | ✅ Very fast | ⚠️ Varies |
 | **Production ready** | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No (dev/test only) | ⚠️ Depends |
 | **Enterprise support** | ✅ Available | ✅ Available | ✅ Available | ❌ Limited | ⚠️ Varies |
-| **Migration path** | ✅ Change DATABASE_URL | ✅ Change DATABASE_URL | ✅ Standard | ❌ Rewrite needed | ❌ Rewrite needed |
+| **Migration path** | ✅ Change POSTGRES_URL | ✅ Change POSTGRES_URL | ✅ Standard | ❌ Rewrite needed | ❌ Rewrite needed |
 
 **Main reasons:**
 
 - PostgreSQL provides ACID guarantees, mature extensions, and enterprise acceptance
 - Supabase accelerates initial development with managed Postgres, branching, and local development
 - Drizzle ORM ensures **zero vendor lock-in** by generating plain SQL with no proprietary runtime
-- **Portability**: Migration requires only changing `DATABASE_URL` - no code changes
-- **Clear migration path**: Adopter may point `DATABASE_URL` at another Postgres host. Basilic ships Vercel + Postgres; GCP/AWS are not a Basilic destination.
+- **Portability**: Migration requires only changing `POSTGRES_URL` - no code changes
+- **Clear migration path**: Adopter may point `POSTGRES_URL` at another Postgres host. Basilic ships Vercel + Postgres; GCP/AWS are not a Basilic destination.
 - **Complements Fastify**: Both stay portable; Basilic’s shipped path is Vercel.
 
 ## Migration Strategy
@@ -160,9 +160,9 @@ Database migrations follow a host-agnostic strategy that works across all deploy
 The system uses a `PGLITE` environment variable to control database selection:
 
 - **`PGLITE=true`**: Uses in-memory PGLite database (useful for preview branches, local dev without PostgreSQL)
-- **`PGLITE=false`** (default): Uses PostgreSQL via `DATABASE_URL`
-- When `PGLITE=true`, `DATABASE_URL` is optional and defaults to PGLite URL
-- When `PGLITE=false`, `DATABASE_URL` is required
+- **`PGLITE=false`** (default): Uses PostgreSQL via `POSTGRES_URL`
+- When `PGLITE=true`, `POSTGRES_URL` is optional and defaults to PGLite URL
+- When `PGLITE=false`, `POSTGRES_URL` is required
 - Parse `PGLITE` with `parseBool` (`1` / `true` / `yes` / `on`). Do not use `z.coerce.boolean()` — the string `"false"` would enable PGLite.
 
 ### Migration Flow
@@ -201,7 +201,7 @@ All platforms use the same build command pattern:
 For local Postgres via Supabase CLI (`project_id: basilic-api` in `packages/db/supabase/config.toml`), **`pnpm db:start`** then **`pnpm dev`** applies schema on boot. **`pnpm reset`** from the repo root (runs `pnpm --filter @repo/api reset`) is a wipe:
 
 1. **`supabase db reset`** (`@repo/db` `db:reset`) — Drops and recreates the database. `[db.seed]` is off; no `seed.sql`.
-2. **Drizzle migrations** — `scripts/migrate.ts` via `pnpm db:migrate` with `RUN_PG_MIGRATE=true` and the local Supabase `DATABASE_URL`.
+2. **Drizzle migrations** — `scripts/migrate.ts` via `pnpm db:migrate` with `RUN_PG_MIGRATE=true` and the local Supabase `POSTGRES_URL`.
 3. **Data seed** — `scripts/seed.ts` (`runSeed`). Same identity rows Fastify seeds on boot when `assets` is empty.
 
 Run `pnpm db:stop` before switching to another project's Supabase instance (e.g. different repo); only one Supabase runs per host.
@@ -216,7 +216,7 @@ Run `pnpm db:stop` before switching to another project's Supabase instance (e.g.
 
 ## Notes
 
-- **Strategic approach**: Basilic ships Vercel + Postgres (`DATABASE_URL`). Other hosts (Supabase, GCP, AWS, on-prem) remain an adopter choice via the connection string, not a Basilic destination.
+- **Strategic approach**: Basilic ships Vercel + Postgres (`POSTGRES_URL`). Other hosts (Supabase, GCP, AWS, on-prem) remain an adopter choice via the connection string, not a Basilic destination.
 - Supabase used as "Postgres as a service", not as platform dependency
 - No Supabase SDKs, auth, storage, or proprietary APIs used - only standard PostgreSQL connection
 - PGlite suitable for local dev/testing and preview branches, not production

@@ -4,7 +4,7 @@
  * Not from `pnpm db:migrate` / `pnpm build` alone.
  *
  * Add idempotent inserts here (`onConflictDoNothing()` / upserts). Uses the same
- * PostgreSQL vs PGLite rules as `scripts/migrate.ts` (`RUN_PG_MIGRATE`, `DATABASE_URL`).
+ * PostgreSQL vs PGLite rules as `scripts/migrate.ts` (`RUN_PG_MIGRATE`, `POSTGRES_URL`).
  */
 import 'dotenv/config'
 import { resolve } from 'node:path'
@@ -31,9 +31,9 @@ export async function runSeed(): Promise<void> {
     return
   }
 
-  if (!env.DATABASE_URL) throw new Error('DATABASE_URL is required when PGLITE is false')
+  if (!env.POSTGRES_URL) throw new Error('POSTGRES_URL is required when PGLITE is false')
 
-  const pool = new Pool({ connectionString: env.DATABASE_URL })
+  const pool = new Pool({ connectionString: env.POSTGRES_URL })
   const db = drizzle(pool, { schema })
   try {
     await applySeed(db)

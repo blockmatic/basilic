@@ -15,7 +15,7 @@ export async function bootHost(): Promise<void> {
 
 async function startHost(): Promise<void> {
   configureDb({
-    databaseUrl: env.DATABASE_URL,
+    databaseUrl: env.POSTGRES_URL,
     pglite: env.PGLITE === true,
   })
   configureMarkets({

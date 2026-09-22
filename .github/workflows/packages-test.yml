@@ -22,7 +22,7 @@ env:
   NODE_ENV: test
   CI: true
   PGLITE: true
-  DATABASE_URL: postgresql://localhost/test
+  POSTGRES_URL: postgresql://localhost/test
   ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-dummy-for-packages-test' }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}

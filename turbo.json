@@ -91,7 +91,7 @@
     "@repo/api#db:migrate": {
       "dependsOn": ["^build"],
       "cache": false,
-      "env": ["DATABASE_URL", "PGLITE", "RUN_PG_MIGRATE", "NODE_ENV", "VERCEL_ENV"]
+      "env": ["POSTGRES_URL", "PGLITE", "RUN_PG_MIGRATE", "NODE_ENV", "VERCEL_ENV"]
     },
     "lint": {},
     "lint:eslint": {
@@ -114,7 +114,7 @@
         "VERCEL_OIDC_TOKEN",
         "NODE_ENV",
         "CI",
-        "DATABASE_URL",
+        "POSTGRES_URL",
         "PGLITE",
         "RUN_PG_MIGRATE",
         "OLLAMA_BASE_URL",
@@ -168,7 +168,7 @@
         "ANTHROPIC_API_KEY",
         "NODE_ENV",
         "CI",
-        "DATABASE_URL",
+        "POSTGRES_URL",
         "PGLITE",
         "RUN_PG_MIGRATE",
         "OLLAMA_BASE_URL",
@@ -212,7 +212,7 @@
       "cache": false,
       "env": [
         "NODE_ENV",
-        "DATABASE_URL",
+        "POSTGRES_URL",
         "PGLITE",
         "RUN_PG_MIGRATE",
         "AI_PROVIDER",
@@ -230,7 +230,7 @@
       "cache": false,
       "env": [
         "NODE_ENV",
-        "DATABASE_URL",
+        "POSTGRES_URL",
         "PGLITE",
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
@@ -258,7 +258,7 @@
         "CI",
         "PORT",
         "HOST",
-        "DATABASE_URL",
+        "POSTGRES_URL",
         "PGLITE",
         "RUN_PG_MIGRATE",
         "AI_DEFAULT_MODEL",
@@ -293,7 +293,7 @@
         "HOST",
         "PORTLESS_URL",
         "NODE_EXTRA_CA_CERTS",
-        "DATABASE_URL",
+        "POSTGRES_URL",
         "PGLITE",
         "RUN_PG_MIGRATE",
         "AI_PROVIDER",

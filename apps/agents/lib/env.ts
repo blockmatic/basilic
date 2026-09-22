@@ -23,7 +23,7 @@ export const env = createEnv({
       .string()
       .optional()
       .transform(val => parseBool(val, false)),
-    DATABASE_URL: z
+    POSTGRES_URL: z
       .string()
       .optional()
       .transform(val => {
@@ -31,7 +31,7 @@ export const env = createEnv({
         return val ?? ''
       })
       .refine(val => parseBool(process.env.PGLITE, false) || val.length > 0, {
-        message: 'DATABASE_URL is required when PGLITE is not enabled',
+        message: 'POSTGRES_URL is required when PGLITE is not enabled',
       }),
     JWT_SECRET: jwtSecretSchema,
     JWT_ISSUER: z.string().default('api.yourapp.com'),

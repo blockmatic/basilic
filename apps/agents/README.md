@@ -25,13 +25,13 @@ Route auth is `basilicAccessJwt()`, `vercelOidc()`, `localDev()`. Access JWT onl
 
 ## Sandbox and workflow
 
-`agent/sandbox.ts` uses `defaultBackend()`. Host secrets stay in the app runtime. Sandbox env does not receive `JWT_SECRET`, `DATABASE_URL`, or provider keys.
+`agent/sandbox.ts` uses `defaultBackend()`. Host secrets stay in the app runtime. Sandbox env does not receive `JWT_SECRET`, `POSTGRES_URL`, or provider keys.
 
 Local Workflow data is `.eve/.workflow-data` (gitignored). CI does not run live Vercel Workflow.
 
 ## Local process
 
-Root `pnpm dev` starts one Portless host after `@repo/db#db:start`. That process spawns command and chat on loopback (`EVE_COMMAND_INTERNAL_PORT` / `EVE_CHAT_INTERNAL_PORT`, defaults 3104 / 3105) and proxies `/eve/command` and `/eve/chat`. Direct unprefixed eve: `pnpm --filter @repo/agents eve:dev:command:app` / `eve:dev:chat:app`. `eve:start` still binds `--port 3004` as a production-like single-member escape hatch. `bootHost` runs from the HTTP channel (once per process — `eve dev` re-evaluates the compiled channel after listen) and applies Drizzle migrations on start. Local default is `PGLITE=false` plus `DATABASE_URL`. A second eval must not construct PGLite: Node 24 V8 aborts (`Check failed: end > addr`) when that WASM is torn down. Both agents set `build.externalDependencies` to `@repo/db`, `@electric-sql/pglite`, and `pg`. Generated projects omit this app.
+Root `pnpm dev` starts one Portless host after `@repo/db#db:start`. That process spawns command and chat on loopback (`EVE_COMMAND_INTERNAL_PORT` / `EVE_CHAT_INTERNAL_PORT`, defaults 3104 / 3105) and proxies `/eve/command` and `/eve/chat`. Direct unprefixed eve: `pnpm --filter @repo/agents eve:dev:command:app` / `eve:dev:chat:app`. `eve:start` still binds `--port 3004` as a production-like single-member escape hatch. `bootHost` runs from the HTTP channel (once per process — `eve dev` re-evaluates the compiled channel after listen) and applies Drizzle migrations on start. Local default is `PGLITE=false` plus `POSTGRES_URL`. A second eval must not construct PGLite: Node 24 V8 aborts (`Check failed: end > addr`) when that WASM is torn down. Both agents set `build.externalDependencies` to `@repo/db`, `@electric-sql/pglite`, and `pg`. Generated projects omit this app.
 
 ## pnpm commands
 

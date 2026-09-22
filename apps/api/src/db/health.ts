@@ -26,7 +26,7 @@ export async function waitForDatabase(logger?: {
       1000, // Minimum 1 second timeout
     )
     const pool = new Pool({
-      connectionString: env.DATABASE_URL,
+      connectionString: env.POSTGRES_URL,
       connectionTimeoutMillis,
     })
 
@@ -47,7 +47,7 @@ export async function waitForDatabase(logger?: {
       if (elapsed >= maxWaitTime) {
         logger?.error(`Database connection timeout after ${maxWaitTime}ms`, err)
         throw new Error(
-          `Database connection failed after ${maxWaitTime}ms. Make sure your database is running and accessible via DATABASE_URL. Error: ${err instanceof Error ? err.message : String(err)}`,
+          `Database connection failed after ${maxWaitTime}ms. Make sure your database is running and accessible via POSTGRES_URL. Error: ${err instanceof Error ? err.message : String(err)}`,
           { cause: err },
         )
       }
@@ -65,6 +65,6 @@ export async function waitForDatabase(logger?: {
   const elapsed = Date.now() - startTime
   logger?.error(`Database connection failed after ${attempt} attempts (${elapsed}ms)`)
   throw new Error(
-    `Database connection failed after ${attempt} attempts. Make sure your database is running and accessible via DATABASE_URL`,
+    `Database connection failed after ${attempt} attempts. Make sure your database is running and accessible via POSTGRES_URL`,
   )
 }

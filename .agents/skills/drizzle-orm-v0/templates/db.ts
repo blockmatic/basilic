@@ -4,7 +4,7 @@
  * Usage:
  * 1. Copy this file to src/db/index.ts
  * 2. Uncomment the connection method you need
- * 3. Set DATABASE_URL in .env
+ * 3. Set POSTGRES_URL in .env
  */
 
 // === NEON SERVERLESS (HTTP) ===
@@ -13,8 +13,8 @@ import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
 import * as schema from './schema'
 
-const databaseUrl = process.env.DATABASE_URL
-if (!databaseUrl) throw new Error('DATABASE_URL environment variable is required')
+const databaseUrl = process.env.POSTGRES_URL
+if (!databaseUrl) throw new Error('POSTGRES_URL environment variable is required')
 
 const sql = neon(databaseUrl)
 export const db = drizzle(sql, { schema })
@@ -24,7 +24,7 @@ export const db = drizzle(sql, { schema })
 // import { Pool } from "@neondatabase/serverless";
 // import { drizzle } from "drizzle-orm/neon-serverless";
 //
-// const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// const pool = new Pool({ connectionString: process.env.POSTGRES_URL });
 // export const db = drizzle(pool, { schema });
 
 // === NODE POSTGRES ===
@@ -32,7 +32,7 @@ export const db = drizzle(sql, { schema })
 // import { Pool } from "pg";
 // import { drizzle } from "drizzle-orm/node-postgres";
 //
-// const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// const pool = new Pool({ connectionString: process.env.POSTGRES_URL });
 // export const db = drizzle(pool, { schema });
 
 // === POSTGRES.JS ===
@@ -40,7 +40,7 @@ export const db = drizzle(sql, { schema })
 // import postgres from "postgres";
 // import { drizzle } from "drizzle-orm/postgres-js";
 //
-// const databaseUrl = process.env.DATABASE_URL;
-// if (!databaseUrl) throw new Error('DATABASE_URL environment variable is required');
+// const databaseUrl = process.env.POSTGRES_URL;
+// if (!databaseUrl) throw new Error('POSTGRES_URL environment variable is required');
 // const client = postgres(databaseUrl);
 // export const db = drizzle(client, { schema });

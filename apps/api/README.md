@@ -10,7 +10,7 @@ Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (
 
 ## Vercel
 
-Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time on non-preview deploys (advisory-locked); Preview skips unless `RUN_PG_MIGRATE=true` with an isolated `DATABASE_URL`. PGLite migrations run at runtime.
+Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time on non-preview deploys (advisory-locked); Preview skips unless `RUN_PG_MIGRATE=true` with an isolated `POSTGRES_URL`. PGLite migrations run at runtime.
 
 **OPTIONS Allowlist (CORS preflight):** When Deployment Protection is enabled on preview deployments, add `/` (or `/auth`) to **Project Settings > Deployment Protection > OPTIONS Allowlist**. Otherwise, preflight OPTIONS requests are blocked before reaching Fastify and CORS fails for cross-origin clients.
 
@@ -43,7 +43,7 @@ Copy `.env.test.example` to `.env.test` (gitignored) for unit tests. Vitest load
 
 ## Links
 
-- [Environment setup](https://basilic-docs.vercel.app/docs/development) — Env vars, `DATABASE_URL`, `PGLITE`
+- [Environment setup](https://basilic-docs.vercel.app/docs/development) — Env vars, `POSTGRES_URL`, `PGLITE`
 - [Deployment](https://basilic-docs.vercel.app/docs/deployment) — Vercel, Cloud Run, ECS
 - [Authentication](https://basilic-docs.vercel.app/docs/architecture/authentication) — JWT, magic link, API keys
 - [API architecture](https://basilic-docs.vercel.app/docs/architecture/api) — Routes, OpenAPI, clients
