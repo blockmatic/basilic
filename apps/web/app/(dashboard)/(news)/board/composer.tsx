@@ -50,6 +50,12 @@ export function BoardComposer({ rail }: { rail: ChromeState['rail'] }) {
   const isBusy = status === 'submitted' || status === 'streaming'
   const dictation = useBoardDictation({ prompt, onDraft: setPrompt })
   const canSend = prompt.trim().length > 0 && agent.hasHost && !isBusy
+  const hostHint =
+    agent.hostStatus === 'hydrating' || agent.hostStatus === 'loading'
+      ? 'Connecting to the agent host…'
+      : agent.hostStatus === 'unavailable'
+        ? 'Commands and Chat need the eve host. In this repo run `pnpm dev` (agents on Portless). Generated projects without `apps/agents` omit eve.'
+        : null
 
   async function handleSubmit() {
     const text = prompt.trim()
@@ -140,6 +146,11 @@ export function BoardComposer({ rail }: { rail: ChromeState['rail'] }) {
           </div>
         </div>
       </Input>
+      {hostHint ? (
+        <p className="text-muted-foreground text-xs" role="status">
+          {hostHint}
+        </p>
+      ) : null}
       {dictation.supported ? (
         <p className="text-muted-foreground text-xs">
           Words stay in this box until you send. Chrome may use the browser recognizer; we do not

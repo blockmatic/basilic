@@ -1,24 +1,21 @@
-# Basilic: API-first agentic TypeScript swissknife
+# Basilic: Vercel-oriented agentic product foundation
 
-Fastify OpenAPI, Next.js, and Expo in one TypeScript repo. Deploy on [Vercel](https://basilic-docs.vercel.app/docs/deployment/vercel). Run Fastify, Next.js, and eve locally first (`pnpm setup`, `pnpm db:start`, `pnpm dev`). Typed SDKs, self-hosted auth, a shared `AGENTS.md` agent contract. Fastify • OpenAPI • Next.js • Expo scaffold. Node / container / `eve start` are the exit — [Portability](https://basilic-docs.vercel.app/docs/architecture/portability).
+Own the API. Hang web, mobile, and coding agents off it.
 
-The in-box web sample is a **coin tracker** (not Markets, not a signer). **J1:** signed-in board and chips with no LLM (cached `GET /coins`, fixture if vendors are down). **J2:** Commands type or talk → generated table, chart, account, or ephemeral dashboard; share restores `elements` with no model. Chat is an eve transcript, not navigation.
+Opinionated TypeScript monorepo for Vercel-oriented workflows: a Fastify API agents can discover (OpenAPI, `llms.txt`), eve for durable command and chat, Next.js as a client. The in-box sample is a coin tracker. Default host is Vercel; exit is ordinary Node (`listen` / `eve start`). Agents read `AGENTS.md` and the spec — the same surface you ship.
 
-MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tools/create-basilic/README.md) (independent history; no docu app; no generator). **Fork** this repo to contribute. First successful use is [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) (`pnpm setup`, `pnpm db:start`, `pnpm dev`, `test@test.ai`). After you own the copy: [After fork](https://basilic-docs.vercel.app/docs/development/after-fork).
+**Start a product** (when published): `npx create-basilic@latest my-app`. The npm package is not on `latest` yet — use this repository with `pnpm setup` to run the full reference (including `apps/agents`).
+
+Fork this repository to contribute. [Docs](https://basilic-docs.vercel.app/docs)
 
 ## Features
 
-- 🤖 **Agent skills** — `AGENTS.md`, Basilic `/w-*` (`/w-plan` `/w-grill` `/w-wayfinder` `/w-build` `/w-ship`), and CodeRabbit. Any coding agent or IDE that can read those files.
-- 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
-- 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
-- 🧩 **Web + API starters** — Next.js coin tracker, React hooks, Expo UI scaffold, Fastify API (not a signer or OpenAI template)
-- 🚀 **Vercel default** — Shipped path is Vercel + Supabase; ordinary Node/HTTP/Postgres if you leave
-- 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities
-- ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks
-- 🛡️ **Security & quality** — Automated checks in CI (Gitleaks, OSV, DeepSec)
-- ⛓️ **Multichain (API)** — EVM and Solana SIWE/SIWS on Fastify; shared `@repo/utils/web3` helpers — not a web wallet demo
-- 📐 **Conventions** — `AGENTS.md`, glob Cursor rules as adapters, @repo/error, Pino logging, shared TS and style
-- 🧑‍💻 **TypeScript-first** — End-to-end types from database to frontend
+- **Agent contract** — `AGENTS.md`, Basilic `/w-*` playbooks, and stack skills in git for any coding agent or IDE
+- **OpenAPI and auth** — Fastify REST, Swagger UI, JWT and API key auth for all clients
+- **Generated clients** — Type-safe SDKs from OpenAPI via HeyAPI
+- **Web and mobile on the API** — Next.js coin tracker, React Query hooks, Expo UI scaffold
+- **Vercel by default, portable** — Shipped on Vercel + Supabase; ordinary Node, HTTP, and Postgres if you leave
+- **Security built in** — Pre-commit checks, Gitleaks, OSV, and DeepSec in CI
 
 ## Technology stack
 
@@ -109,4 +106,6 @@ Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 - Visual: [`DESIGN.md`](DESIGN.md)
 - [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Portless `.localhost` URLs, remote, Expo
 - [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)
+
+MIT licensed.
 

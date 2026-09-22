@@ -166,6 +166,26 @@ Eve is a **separate Vercel project** (`apps/agents`, Root Directory `apps/agents
 
 Set those values on the **API** project as `EVE_COMMAND_URL` and `EVE_CHAT_URL` (no trailing slash). Fastify `GET /agents` advertises them; the web rail uses each string as `useEveAgent` `host`. Local Portless uses the same path shape on `https://agents.basilic.localhost`. Edge is for CDN, WAF, redirects, and auth precheck. Node workloads: Fastify API, eve, Drizzle. Decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Topology: [Eve](/docs/architecture/eve).
 
+## Vercel ecosystem map (this repo)
+
+Basilic is **not** an official Vercel project. It is built around Vercel-oriented primitives where they fit the product cut. Extensions are intentional.
+
+| Primitive | In Basilic | Notes |
+| --- | --- | --- |
+| **AI SDK** (`ai`) | Used | `streamText` / `generateText` on Fastify `/ai/generate`; `experimental_evaluate` (Jev) on eve and Next composeSpec |
+| **AI Gateway** | Used | `AI_GATEWAY_API_KEY` on eve (triage) and web (composeSpec); independent skips |
+| **Fluid Compute** | Used | Fastify API as one Node Function (not Edge wholesale) |
+| **eve** (Agent Stack) | Used | `apps/agents` sibling; `command` + `chat`; Workflow + Sandbox |
+| **`useEveAgent`** (`eve/react`) | Used | Web Commands/Chat rail + Bearer; not `withEve()` |
+| **Turborepo / previews** | Used | Monorepo builds; PR preview deploys per app |
+| **skills CLI** | Used | `pnpm setup:skills` → `blockmatic/basilic-skills` `/w-*` |
+| **is-agentic** | Adjacent | Operator `pnpm agentic:scan` when discovery GETs are public |
+| **OpenAPI + `@repo/core`** | Used | Agent HTTP contract; no product MCP |
+| **json-render + `@repo/ui`** | Used | Board presentation; not Vercel GenUI / microfrontends |
+| **`useChat` / Chat SDK** | Not used | Product chat is eve NDJSON |
+| **Vercel Connect / Flags** | Not used | — |
+| **Sentry / PostHog** | Deferred | Packages or hooks present; not active in Product Ready |
+
 ## Troubleshooting
 
 ### Build Fails

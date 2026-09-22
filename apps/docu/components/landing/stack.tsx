@@ -3,9 +3,9 @@ import { LandingSection } from '@/components/landing/section'
 
 const facts = [
   {
-    title: 'Production-Ready REST API',
+    title: 'Fastify OpenAPI API',
     href: '/docs/architecture/api',
-    body: 'Ship a Fastify REST API with automatic OpenAPI docs, JWT authentication, and AI and Web3 routes included.',
+    body: 'Typed REST with generated OpenAPI, JWT and API key auth, discovery routes (`llms.txt`, RFC 9727 catalog), and optional `/ai/generate` chrome.',
   },
   {
     title: 'Auto-Generated SDKs',
@@ -18,24 +18,24 @@ const facts = [
     body: 'TypeScript from database to frontend with full IntelliSense. Catch errors at compile time, not in production.',
   },
   {
-    title: 'Next.js and Expo apps',
+    title: 'Next.js client + Expo scaffold',
     href: '/docs/architecture/frontend',
-    body: 'Launch-ready web and mobile apps sharing one design system and a typed API—start shipping on day one.',
+    body: 'Coin-tracker sample on Next.js with `@repo/core`. Expo shares tokens via `@repo/ui`; not a mobile API client yet.',
   },
   {
     title: 'Agent skills and playbooks',
     href: '/docs/development/cursor-skills',
-    body: 'Recommended mattpocock/skills (`/grill-me`, `/implement`, `/tdd`); Basilic `/w-*` is a lightweight alternative.',
+    body: 'Basilic `/w-*` on skills.sh for daily workflow; committed stack skills in git. `AGENTS.md` for any coding agent.',
   },
   {
-    title: 'Zero Vendor Lock-in',
+    title: 'Vercel default, portable runtime',
     href: '/docs/architecture/portability',
-    body: 'Shipped on Vercel and Supabase, built on ordinary Node, Fastify, Next.js, and Postgres—switch hosts, not stacks.',
+    body: 'Shipped on Vercel + Supabase; Fastify `listen` and `eve start` when you leave. Ordinary Node, HTTP, and Postgres.',
   },
   {
-    title: 'Agent Assistant Demo',
-    href: '/docs/architecture/ai',
-    body: 'A streaming in-app assistant with tools, UI catalogs, and core components you can extend for your product.',
+    title: 'eve + json-render sample',
+    href: '/docs/architecture/eve',
+    body: 'Durable command and chat on a sibling host; Next composeSpec and URL restore for the board. Needs keys or Ollama for LLM paths.',
   },
   {
     title: 'Quality & Security Built-In',
@@ -53,12 +53,12 @@ export function Stack() {
   return (
     <LandingSection id="features" bordered>
       <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-        Everything you need to ship fast
+        What ships in the tree
       </h2>
       <p className="mt-2 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
-        Typed Fastify API, generated clients, Next.js, an Expo UI scaffold, and an{' '}
+        Typed Fastify API, generated clients, Next.js sample, Expo UI scaffold, and an{' '}
         <code className="font-mono text-foreground">AGENTS.md</code> contract any coding agent can
-        read. Each card is the pitch; the docs page has the how.
+        read. Each card links the how in the docs.
       </p>
       <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
         {facts.map(fact => (

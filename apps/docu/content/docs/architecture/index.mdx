@@ -1,36 +1,73 @@
 ---
 title: "Architecture Overview"
-description: "Technical stack and design decisions."
+description: "Four planes, Vercel default, portable runtime."
 ---
 
-Principles: composability, TypeBox on Fastify routes generate OpenAPI, multiple clients, documented Vercel + Supabase path, tooling with long-term support.
+Basilic assembles a **product cut** on the Vercel ecosystem: Fastify as the scored API and agent-discovery host, eve as the durable agent runtime on a **sibling** project, Next.js as a typed client, and `@repo/*` packages for domain logic. The in-box web sample is a coin tracker so the cut is visible — not a second product.
+
+**Default host:** [Vercel](/docs/deployment/vercel) + Supabase. **Exit:** ordinary Node (`Fastify listen`, `eve start`) and PostgreSQL — see [Portability](/docs/architecture/portability).
 
 ```mermaid
-sequenceDiagram
-  participant Client
-  participant API as Fastify API
-  participant Drizzle as Drizzle ORM
-  participant DB as PostgreSQL
-
-  Client->>API: HTTP Request
-  API->>API: Validate
-  API->>Drizzle: Type-safe query
-  Drizzle->>DB: SQL
-  DB-->>Drizzle: Result
-  Drizzle-->>API: Typed data
-  API-->>Client: JSON
+flowchart TB
+  subgraph clients [Clients]
+    Web[Next_board]
+    CLI[repo_cli]
+    Mobile[Expo_scaffold]
+  end
+  subgraph control [Fastify_control]
+    API[OpenAPI_auth_coins]
+    Generate[POST_ai_generate]
+    AgentsMeta[GET_agents]
+  end
+  subgraph eveHost [eve_sibling]
+    Command[command_agent]
+    Chat[chat_agent]
+    Jev[Gateway_Jev]
+  end
+  subgraph domain [Domain_packages]
+    Db[repo_db]
+    Markets[repo_markets]
+    Onchain[repo_onchain]
+  end
+  subgraph present [Next_presentation]
+    Compose[composeSpec]
+    Board[json_render]
+  end
+  Web --> API
+  CLI --> API
+  Web --> Command
+  Web --> Chat
+  AgentsMeta --> Command
+  Command --> Jev
+  Command --> Markets
+  Command --> Onchain
+  API --> Db
+  Compose --> Board
 ```
+
+## Four planes
+
+| Plane | Role | Where |
+| --- | --- | --- |
+| **Control** | Product HTTP, OpenAPI, auth, `POST /ai/generate`, `GET /agents` metadata | `apps/api` (Fluid Function on Vercel) |
+| **Interaction** | Durable command and chat agents, tools, Workflow + Sandbox | `apps/agents` (eve sibling; not on the scored Fastify URL) |
+| **Domain** | DB, markets, on-chain reads — no Next imports | `@repo/db`, `@repo/markets`, `@repo/onchain` |
+| **Presentation** | json-render board, composeSpec on Send, URL restore | `apps/web` |
+
+Why this split: agents discover and call **HTTP** on Fastify (`/openapi.json`, `/llms.txt`, RFC 9727 catalog). Interactive streams and durable turns belong on **eve**, not a Fastify proxy. Next renders the board and calls `@repo/core`; it does not own the API. Detail: [AI](/docs/architecture/ai), [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
+
+Machine contract for API consumers is **OpenAPI** + `@repo/core` + CLI — not product MCP ([ADR 009](/docs/adrs/009-api-architecture)).
 
 ## Topics
 
 - [Monorepo](/docs/architecture/monorepo) — Turborepo, apps, packages
 - [API](/docs/architecture/api) — Fastify 5, TypeBox, OpenAPI, `@repo/core`
 - [Data](/docs/architecture/data) — Drizzle tables; `oauth_state` is a verification type
-- [AI](/docs/architecture/ai) — Fastify `/ai/*` control-plane APIs; four planes; chat is demo chrome
-- [Eve](/docs/architecture/eve) — Durable agent runtime; hello in `apps/agents`
+- [AI](/docs/architecture/ai) — Four planes, Fastify `/ai/generate`, composeSpec
+- [Eve](/docs/architecture/eve) — Durable agent runtime in `apps/agents`
 - [Authentication](/docs/architecture/authentication) — Magic link, OAuth, Web3
 - [Account linking](/docs/architecture/account-linking) — Email change, OAuth, wallets
-- [Frontend](/docs/architecture/frontend) — Next.js 16, React 19, Tailwind 4. No wallet UI in `apps/web`.
+- [Frontend](/docs/architecture/frontend) — Next.js 16, json-render board, custom wallet modal (optional login; not required for Product Ready)
 - [Error handling](/docs/architecture/error-handling) — `@repo/error`, log-only capture (Sentry installed, inactive)
 - [Logging](/docs/architecture/logging) — Pino / console, `reqId`
 - [Product analytics](/docs/architecture/analytics) — PostHog chosen, not shipped; web instrumented, not collected

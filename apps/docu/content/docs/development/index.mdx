@@ -25,7 +25,7 @@ cd my-app
 pnpm run setup
 ```
 
-This repository is for contributing to Basilic. Generated apps use `docs/basilic/` instead of `apps/docu` (already in the bullets below). [After fork](/docs/development/after-fork) lists what to replace when the generated copy is your product.
+This repository is for contributing to Basilic and for running the **full reference** (including `apps/agents`). `create-basilic` is not published on npm `latest` yet (`0.0.0` in tree); until it is, clone here and use `pnpm setup` below. Generated apps use `docs/basilic/` instead of `apps/docu`. [After fork](/docs/development/after-fork) lists what to replace when the generated copy is your product.
 
 `setup` installs dependencies, git hooks, **agent skills** (`blockmatic/basilic-skills` `/w-*`; lockfile hashes stay pinned), security tools, **Portless** (CA trust + HTTPS proxy), and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
