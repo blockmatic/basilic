@@ -111,14 +111,9 @@ function EveSession({
       toast.error(error.message || 'Agent failed')
     },
   })
-  const sendRef = useRef(agent.send)
-  const cancelRef = useRef(agent.cancel)
-  sendRef.current = agent.send
-  cancelRef.current = agent.cancel
-  const status = agent.status
-  const sessionId = agent.session?.sessionId
-  const error = agent.error
+  const { cancel, error, send, session, status } = agent
   const messages = agent.data.messages
+  const sessionId = session?.sessionId
   useLayoutEffect(() => {
     const next: BoardEveHandle = {
       hasHost: true,
@@ -133,7 +128,7 @@ function EveSession({
               finishWait.current = resolve
             })
             try {
-              await sendRef.current(text, { clientContext })
+              await send(text, { clientContext })
             } catch (caught) {
               finishWait.current = null
               throw caught
@@ -141,7 +136,7 @@ function EveSession({
             return eventsPromise
           },
         }),
-      cancel: () => cancelRef.current().then(() => undefined),
+      cancel: () => cancel().then(() => undefined),
     }
     onHandle(current =>
       current.hasHost === next.hasHost &&
@@ -152,7 +147,7 @@ function EveSession({
         ? current
         : next,
     )
-  }, [error, messages, onHandle, sessionId, status])
+  }, [cancel, error, messages, onHandle, send, sessionId, status])
   useLayoutEffect(() => () => onHandle(idleHandle), [onHandle])
   return null
 }
