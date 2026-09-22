@@ -73,7 +73,7 @@ Monorepo apps use custom configs. Example for `apps/web`:
 }
 ```
 
-Root Directory must be set in Vercel project settings (e.g. `apps/web`).
+Root Directory must be set in Vercel project settings (e.g. `apps/web`, `apps/api`, `apps/docu`, `apps/agents`).
 
 **API (`apps/api`)** compiles via `turbo run build`, then Vercel’s Fastify bundler type-checks `server.ts`. Do not set `functions` on `server.ts` — that key only matches files under `api/`. Keep colocated `*.spec.ts` / `*.test.ts` out of the upload with `apps/api/.vercelignore`. Then `db:migrate` runs only when `VERCEL_ENV` is not `preview` (or when `RUN_PG_MIGRATE=true`):
 
@@ -114,7 +114,7 @@ Next's `apps/web/next.config.mjs` derives `NEXT_PUBLIC_API_URL` for preview bran
 For monorepo apps, Vercel needs to know the root directory:
 
 1. Go to Vercel project settings
-2. Set "Root Directory" to `apps/web` (or `apps/docu`, `apps/api`)
+2. Set "Root Directory" to `apps/web` (or `apps/docu`, `apps/api`, `apps/agents`)
 3. Vercel automatically detects package dependencies
 
 **Fork or different project names**: Next's `next.config.mjs` uses `API_PROJECT_NAME` and `TEAM_SLUG` to compute preview API URLs. Update these constants to match your Fastify Vercel project name and team slug.
@@ -157,7 +157,7 @@ The Fastify API (`apps/api`) publishes a crawlable public surface for agents. Pa
 
 The Fastify API runs as one Vercel Function with **Fluid Compute**. Do not move that process to Edge Runtime. Discovery stays on Fastify public GETs (see [API host crawl](#api-host-crawl)); do not advertise `/eve/` from `llms.txt`.
 
-Eve is a **separate Vercel project** (`eve link` / `eve deploy` from `apps/agents`) — Workflow + Sandbox — not a route on the scored Fastify host. Command and chat deploy together in that one project. Public mounts:
+Eve is a **separate Vercel project** (`apps/agents`, Root Directory `apps/agents`) — Workflow + Sandbox — not a route on the scored Fastify host. Command and chat deploy together in that one project. Git builds must not run Vercel’s `pnpm install` shim: `apps/agents/vercel.json` uses `scripts/vercel-install.mjs`, then `turbo run build --filter=@repo/agents^...` and `eve build` (writes `.vercel/output` when `VERCEL` is set). `eve link` / `eve deploy` remain the CLI path. Public mounts:
 
 - `https://<agents-project>.vercel.app/eve/command`
 - `https://<agents-project>.vercel.app/eve/chat`
@@ -182,7 +182,7 @@ Set those values on the **API** project as `EVE_COMMAND_URL` and `EVE_CHAT_URL` 
 
 ### "spawn pnpm ENOENT", missing pnpm wrapper, or path ".../apps/docu/apps/docu"
 - **pnpm ENOENT / wrapper missing**: Vercel’s `packageManager` provisioning skips lifecycle scripts, so the pnpm 12 on `PATH` is a placeholder. `vercel.json` runs `node scripts/vercel-install.mjs` for install, build, and dev: `npm install -g pnpm@<pin>` with scripts, then that binary with `PNPM_HOME` isolated and package-manager switching off. That `npm install -g` uses the version string only; it does not verify the `packageManager` sha512.
-- **Path duplication**: Ensure Vercel project settings → General → Root Directory is `apps/web`, `apps/docu`, or `apps/api` (not `.` or blank). `vercel.json` install/build commands `cd ../..` to the monorepo root.
+- **Path duplication**: Ensure Vercel project settings → General → Root Directory is `apps/web`, `apps/docu`, `apps/api`, or `apps/agents` (not `.` or blank). `vercel.json` install/build commands `cd ../..` to the monorepo root.
 
 ## Related Documentation
 
