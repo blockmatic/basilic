@@ -30,7 +30,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^26.6.2",
+    "@types/node": "~26.6.2",
     "@typescript/native": "npm:typescript@^7.0.2",
     "tsup": "^8.5.1",
     "tsx": "^4.23.15"

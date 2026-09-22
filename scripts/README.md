@@ -82,6 +82,22 @@ Updates pnpm via Corepack (`corepack use pnpm@latest`; Corepack owns the install
 pnpm update-deps
 ```
 
+### Monorepo hygiene
+
+- **`pnpm knip`** — unused files (`knip.json`; CI in `lint.yml`)
+- **`pnpm sherif`** — workspace dependency version alignment
+- **`pnpm openapi:drift`** — `pnpm generate` then fail on OpenAPI/client git drift (same paths as `run-qa.mjs`)
+- **`pnpm openapi:lint`** — Redocly lint on `apps/api/openapi/openapi.json` (`.redocly.yaml`)
+- **`pnpm agentic:scan`** — `is-agentic` against `AGENTIC_SCAN_URL` (operator tool; not required CI)
+
+### `check-openapi-drift.mjs`
+
+Used by `pnpm openapi:drift` and `lint.yml`. Boots codegen with a JWT placeholder when `JWT_SECRET` is unset.
+
+### `agentic-scan.mjs`
+
+Wraps pinned `is-agentic`. Default host comes from `AGENTIC_SCAN_URL` (optional `https://` prefix stripped to hostname).
+
 ### `vercel-install.mjs`
 
 Vercel pnpm 12 runner: `npm install -g` the `packageManager` pin with scripts, then invoke that binary (never Vercel’s PATH shim). Isolates `PNPM_HOME` and disables package-manager version switching. `installCommand` / `buildCommand` / `devCommand` in `apps/*/vercel.json`. Pin equality lives in `vercel-pnpm.mjs` (`pnpm test:scripts`).

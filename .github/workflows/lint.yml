@@ -32,6 +32,18 @@ jobs:
       - name: Run lint
         run: pnpm lint
 
+      - name: Check OpenAPI drift
+        run: pnpm openapi:drift
+
+      - name: Lint OpenAPI spec
+        run: pnpm openapi:lint
+
+      - name: Run knip
+        run: pnpm knip
+
+      - name: Run sherif
+        run: pnpm sherif
+
       - name: Run script tests
         run: pnpm test:scripts
 

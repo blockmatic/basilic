@@ -18,7 +18,7 @@ const facts = [
     body: 'TypeScript from database to frontend with full IntelliSense. Catch errors at compile time, not in production.',
   },
   {
-    title: 'Next.js and Expo Starters',
+    title: 'Next.js and Expo apps',
     href: '/docs/architecture/frontend',
     body: 'Launch-ready web and mobile apps sharing one design system and a typed API—start shipping on day one.',
   },

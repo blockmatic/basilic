@@ -1,0 +1,98 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "rules": {
+    "binaries": "off",
+    "unlisted": "off",
+    "unresolved": "off",
+    "duplicates": "off",
+    "dependencies": "off",
+    "devDependencies": "off",
+    "optionalPeerDependencies": "off",
+    "exports": "off",
+    "types": "off",
+    "nsExports": "off",
+    "nsTypes": "off",
+    "enumMembers": "off",
+    "namespaceMembers": "off"
+  },
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.{mjs,ts}", "eslint.config.mjs"],
+      "project": ["scripts/**/*.{mjs,ts}"]
+    },
+    "apps/agents": {
+      "entry": [
+        "lib/**/*.ts",
+        "scripts/**/*.{mjs,ts}",
+        "agents/**/agent.ts",
+        "agents/**/channels/**/*.ts",
+        "agents/**/tools/**/*.ts",
+        "agents/**/evals/**/*.{ts,eval.ts}",
+        "agents/**/evals.config.ts",
+        "agents/**/sandbox.ts"
+      ],
+      "project": ["**/*.{ts,mjs}"]
+    },
+    "apps/api": {
+      "entry": [
+        "server.ts",
+        "scripts/**/*.{mjs,ts}",
+        "src/routes/**/*.ts",
+        "src/plugins/**/*.ts",
+        "src/app.ts"
+      ],
+      "project": ["src/**/*.{ts,mjs}"]
+    },
+    "apps/web": {
+      "entry": [
+        "app/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+        "lib/**/*.{ts,tsx}",
+        "scripts/**/*.{mjs,ts}",
+        "proxy.ts"
+      ],
+      "project": ["**/*.{ts,tsx,mjs}"]
+    },
+    "apps/docu": {
+      "entry": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx,mjs}"]
+    },
+    "apps/mobile": {
+      "entry": ["src/**/*.{ts,tsx}", "app.json"],
+      "project": ["**/*.{ts,tsx,mjs}"]
+    },
+    "packages/*": {
+      "entry": ["src/**/*.{ts,tsx}", "scripts/**/*.{mjs,ts}"],
+      "project": ["**/*.{ts,tsx,mjs}"]
+    },
+    "tools/*": {
+      "entry": ["src/**/*.{ts,tsx}", "scripts/**/*.{mjs,ts}"],
+      "project": ["**/*.{ts,tsx,mjs}"]
+    }
+  },
+  "ignore": [
+    "**/*.gen.ts",
+    "packages/core/src/gen/**",
+    "packages/cli/src/gen/**",
+    ".agents/skills/**",
+    "tools/create-basilic/**",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/e2e/**",
+    "apps/web/components/assistant/market-card-catalog.tsx",
+    "apps/web/lib/coins/search-query.server.ts",
+    "apps/api/src/routes/**/template*.ts",
+    "apps/api/src/routes/reference/**"
+  ],
+  "ignoreDependencies": ["@typescript/native", "@tailwindcss/postcss", "typescript"],
+  "ignoreBinaries": [
+    "simple-git-hooks",
+    "gitleaks",
+    "osv-scanner",
+    "supabase",
+    "deepsec",
+    "maestro",
+    "where",
+    "dpkg"
+  ]
+}

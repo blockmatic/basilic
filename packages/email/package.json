@@ -52,7 +52,7 @@
     "@react-email/ui": "6.9.5",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^26.6.2",
+    "@types/node": "~26.6.2",
     "@types/react": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "cross-env": "^10.1.0",

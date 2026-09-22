@@ -96,6 +96,8 @@ describe('exact-version fixture', () => {
         'LICENSE',
         'README.md',
         'biome.json',
+        'knip.json',
+        '.redocly.yaml',
         'eslint.config.mjs',
         'osv-scanner.toml',
         'package.json',

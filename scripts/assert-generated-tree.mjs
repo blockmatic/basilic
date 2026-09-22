@@ -44,6 +44,8 @@ const required = [
   '.cursor/rules/base/general.mdc',
   'skills-lock.json',
   'scripts/vercel-install.mjs',
+  'knip.json',
+  '.redocly.yaml',
 ]
 
 let failed = false

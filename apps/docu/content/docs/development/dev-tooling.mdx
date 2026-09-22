@@ -7,6 +7,17 @@ Package manager is **pnpm 12.4.2** (see root `packageManager`). Decision: [ADR 0
 
 **Biome** formats and applies style (imports, unused). **ESLint** owns TypeScript, React, Next.js 16, Expo, and Fastify correctness. `pnpm lint` runs Biome then ESLint. Pre-commit formats staged files with Biome after security hooks. CI runs both (`lint.yml`).
 
+Monorepo hygiene (also in `lint.yml` on every PR):
+
+```bash
+pnpm knip              # unused files (see knip.json)
+pnpm sherif            # workspace dependency version alignment
+pnpm openapi:drift     # regenerate OpenAPI + clients, fail on git drift
+pnpm openapi:lint      # Redocly rules on apps/api/openapi/openapi.json
+pnpm agentic:scan      # is-agentic score (set AGENTIC_SCAN_URL; operator-only)
+pnpm db:studio         # Drizzle Studio (needs pnpm db:start + POSTGRES_URL)
+```
+
 ```bash
 pnpm lint
 pnpm lint:fix

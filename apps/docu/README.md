@@ -1,6 +1,6 @@
 # Documentation
 
-Fumadocs (Next.js 16 + MDX) site for Basilic, the API-First AI TypeScript FullStack Starter: architecture, ADRs, development, testing, and deployment. Visual language is root `DESIGN.md`.
+Fumadocs (Next.js 16 + MDX) site for Basilic, the API-first agentic TypeScript swissknife: architecture, ADRs, development, testing, and deployment. Visual language is root `DESIGN.md`.
 
 ```bash
 pnpm --filter @repo/docu dev
