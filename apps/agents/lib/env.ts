@@ -19,6 +19,8 @@ const jwtSecretSchema = isProduction
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),
+    EVE_INTERNAL_HOST_BUILD_OUTPUT_DIRECTORY: z.string().min(1).optional(),
     PGLITE: z
       .string()
       .optional()

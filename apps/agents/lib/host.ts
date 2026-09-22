@@ -8,7 +8,7 @@ import { env } from './env.js'
 type HostGlobal = typeof globalThis & { __basilicEveHostBoot?: Promise<void> }
 
 export function isEveHostBuild() {
-  return Boolean(process.env.EVE_INTERNAL_HOST_BUILD_OUTPUT_DIRECTORY)
+  return Boolean(env.EVE_INTERNAL_HOST_BUILD_OUTPUT_DIRECTORY)
 }
 
 export async function bootHost(): Promise<void> {
@@ -37,7 +37,7 @@ async function startHost(): Promise<void> {
       error: (msg, err) => logger.error({ err }, msg),
     },
     nodeEnv: env.NODE_ENV,
-    vercelEnv: process.env.VERCEL_ENV,
+    vercelEnv: env.VERCEL_ENV,
   })
 }
 
