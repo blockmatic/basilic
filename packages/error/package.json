@@ -85,7 +85,7 @@
     "@sentry/browser": "^10.75.0",
     "@sentry/nextjs": "^10.75.0",
     "@sentry/node": "^10.75.0",
-    "@types/node": "^26.6.2",
+    "@types/node": "~26.6.2",
     "@types/react": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "eslint": "^10.11.0",

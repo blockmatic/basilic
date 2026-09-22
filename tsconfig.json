@@ -1,4 +1,4 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "include": ["config/typescript/reset.d.ts"]
+  "include": ["config/typescript/reset.d.ts", "nativewind-env.d.ts"]
 }

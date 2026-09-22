@@ -157,6 +157,8 @@ Pattern B. Fastify and the eve host. Next.js must not import this package.
 - `@repo/db/schema` — table defs
 - `@repo/db/migrate` — `runMigrations`, `runPostgresMigrations`, `migrationsDir`
 
+Local schema browser: `pnpm db:studio` (Drizzle Studio on `http://127.0.0.1:4983` by default). Requires `POSTGRES_URL` and a running database (`pnpm db:start`).
+
 ### `@repo/markets` — CoinGecko + Binance HTTP
 
 Pattern B. Fastify and the eve host. Next.js must not import this package. Call `configureMarkets` from host env. Named fns: `searchAssets`, `getMarkets`, `getQuote`, `getCandles`, `getTrending`, `getAsset`, `getGlobal`.

@@ -22,7 +22,9 @@ pnpm --filter @repo/api generate:openapi   # apps/api/openapi/openapi.json only
 pnpm --filter @repo/core generate          # packages/core/src/gen/
 ```
 
-`@repo/web`, `@repo/docu`, and package CI builds use committed `openapi.json` and `src/gen/`. Regenerate after route changes; `api-e2e` runs `pnpm generate && git diff --exit-code` on API PRs. The API Vercel build still runs `generate:openapi` inside `@repo/api` `build`.
+`@repo/web`, `@repo/docu`, and package CI builds use committed `openapi.json` and `src/gen/`. Regenerate after route changes. Every PR runs `pnpm openapi:drift` and `pnpm openapi:lint` in `lint.yml`; `api-e2e` repeats drift when API paths change. The API Vercel build still runs `generate:openapi` inside `@repo/api` `build`.
+
+Redocly config: root `.redocly.yaml` (operationId uniqueness, path query segments; TypeBox null unions stay allowed via disabled `struct` / trailing-slash rules until the generator changes).
 
 Live OpenAPI is `GET /openapi.json` (`/reference/openapi.json` is an alias); Scalar UI at `/reference`. Config: `packages/core/openapi-ts.config.ts`.
 

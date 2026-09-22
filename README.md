@@ -1,6 +1,6 @@
-# Basilic: API-First AI TypeScript FullStack Starter
+# Basilic: API-first agentic TypeScript swissknife
 
-Deploy on [Vercel](https://basilic-docs.vercel.app/docs/deployment/vercel). Run Fastify, Next.js, and eve locally first (`pnpm setup`, `pnpm db:start`, `pnpm dev`). Typed SDKs, self-hosted auth, a shared `AGENTS.md` agent contract. Fastify • OpenAPI • Next.js • Expo scaffold. Node / container / `eve start` are the exit — [Portability](https://basilic-docs.vercel.app/docs/architecture/portability).
+Fastify OpenAPI, Next.js, and Expo in one TypeScript repo. Deploy on [Vercel](https://basilic-docs.vercel.app/docs/deployment/vercel). Run Fastify, Next.js, and eve locally first (`pnpm setup`, `pnpm db:start`, `pnpm dev`). Typed SDKs, self-hosted auth, a shared `AGENTS.md` agent contract. Fastify • OpenAPI • Next.js • Expo scaffold. Node / container / `eve start` are the exit — [Portability](https://basilic-docs.vercel.app/docs/architecture/portability).
 
 The in-box web sample is a **coin tracker** (not Markets, not a signer). **J1:** signed-in board and chips with no LLM (cached `GET /coins`, fixture if vendors are down). **J2:** Commands type or talk → generated table, chart, account, or ephemeral dashboard; share restores `elements` with no model. Chat is an eve transcript, not navigation.
 
@@ -8,7 +8,7 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 
 ## Features
 
-- 🤖 **AI-first skills** — `AGENTS.md`, Basilic `/w-*` (`/w-plan` `/w-grill` `/w-wayfinder` `/w-build` `/w-ship`), and CodeRabbit. Any coding agent or IDE that can read those files.
+- 🤖 **Agent skills** — `AGENTS.md`, Basilic `/w-*` (`/w-plan` `/w-grill` `/w-wayfinder` `/w-build` `/w-ship`), and CodeRabbit. Any coding agent or IDE that can read those files.
 - 🔌 **REST API & JWT** — OpenAPI spec, Swagger UI, JWT and API key auth for all clients
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI
 - 🧩 **Web + API starters** — Next.js coin tracker, React hooks, Expo UI scaffold, Fastify API (not a signer or OpenAI template)

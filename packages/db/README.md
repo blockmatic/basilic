@@ -23,3 +23,4 @@ Local Docker Postgres is `pnpm db:start` (Supabase CLI in this package; no-op wh
 - `pnpm --filter @repo/db checktypes` — Type-check
 - `pnpm --filter @repo/db test` — PGLite unit tests
 - `pnpm --filter @repo/db db:generate` — Generate migrations from schema
+- `pnpm db:studio` (root) / `pnpm --filter @repo/db db:studio` — Drizzle Studio (`http://127.0.0.1:4983`; needs `POSTGRES_URL` and `pnpm db:start`)

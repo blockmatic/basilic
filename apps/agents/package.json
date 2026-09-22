@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "^26.6.2",
+    "@types/node": "~26.6.2",
     "eslint": "^10.11.0",
     "microsandbox": "^0.7.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",

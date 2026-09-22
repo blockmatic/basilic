@@ -48,7 +48,9 @@ gh run view <run-id> --log-failed
 
 ### Lint (`lint.yml`)
 
-Linting, `pnpm test:scripts`, and type checking on every PR (`pnpm lint`, then `pnpm test:scripts`, then `pnpm exec turbo run checktypes`). Supports `workflow_dispatch` for manual runs. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
+On every PR: `pnpm lint`, OpenAPI drift (`pnpm openapi:drift`), OpenAPI lint (`pnpm openapi:lint`), `pnpm knip`, `pnpm sherif`, `pnpm test:scripts`, then `pnpm exec turbo run checktypes`. Supports `workflow_dispatch`. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
+
+The API **unit** job in `api-e2e.yml` still runs the same OpenAPI drift check when API paths change (before Vitest coverage).
 
 ### Scaffold (`pr-title.yml`, `scaffold.yml`, `release-impact.yml`, `scaffold-acceptance.yml`)
 

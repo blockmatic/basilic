@@ -91,7 +91,7 @@
     "@electric-sql/pglite": "^0.5.8",
     "@playwright/test": "~1.63.0",
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "^26.6.2",
+    "@types/node": "~26.6.2",
     "@types/pg": "^8.23.1",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",

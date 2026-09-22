@@ -39,6 +39,7 @@
     "db:stop": "supabase stop",
     "db:status": "supabase status",
     "db:reset": "supabase db reset",
+    "db:studio": "drizzle-kit studio",
     "prepack": "pnpm build && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs"
   },
@@ -50,7 +51,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^26.6.2",
+    "@types/node": "~26.6.2",
     "@types/pg": "^8.23.1",
     "@typescript/native": "npm:typescript@^7.0.2",
     "dotenv": "^18.0.1",

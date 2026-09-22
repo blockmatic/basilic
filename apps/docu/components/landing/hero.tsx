@@ -8,13 +8,13 @@ export function Hero() {
   return (
     <LandingSection hero>
       <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-[1.1]">
-        API-First AI TypeScript
+        API-first agentic TypeScript
         <br />
-        FullStack Starter
+        swissknife
       </h1>
       <p className="mt-5 max-w-xl text-pretty text-base text-muted-foreground md:mt-6 md:text-lg">
-        Typed Fastify + OpenAPI clients, Next.js and Expo, self-hosted auth, and an AGENTS.md
-        contract plus skills any coding agent can read.
+        Typed Fastify + OpenAPI clients, a full-stack Next.js and Expo workspace, self-hosted auth,
+        and an AGENTS.md contract plus skills any coding agent can read.
       </p>
       <div className="mt-10 md:mt-12">
         <CommandPanel />
