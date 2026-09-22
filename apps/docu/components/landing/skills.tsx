@@ -14,8 +14,8 @@ const groups = [
   },
   {
     title: 'Workflow',
-    body: 'Recommended Matt pack; Basilic `/w-*` is a lightweight alternative.',
-    items: ['/grill-me', '/implement', '/tdd'],
+    body: 'Basilic `/w-*` playbooks (skills.sh); install with `pnpm setup:skills`.',
+    items: ['/w-plan', '/w-build', '/w-ship'],
   },
 ]
 
@@ -25,21 +25,21 @@ export function Skills() {
       <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">Skills</h2>
       <p className="mt-2 max-w-xl text-sm text-muted-foreground">
         On-demand expertise under <code className="font-mono text-foreground">.agents/skills/</code>
-        : in-repo stack skills, recommended{' '}
-        <Link
-          href="https://www.aihero.dev/skills"
-          className="text-primary underline-offset-4 hover:underline"
-        >
-          mattpocock/skills
-        </Link>
-        , and{' '}
+        : committed stack skills plus{' '}
         <Link
           href="https://github.com/blockmatic/basilic-skills"
           className="text-primary underline-offset-4 hover:underline"
         >
           Basilic `/w-*`
         </Link>{' '}
-        as a lightweight alternative.{' '}
+        from{' '}
+        <Link
+          href="https://skills.sh/blockmatic/basilic-skills"
+          className="text-primary underline-offset-4 hover:underline"
+        >
+          skills.sh
+        </Link>
+        .{' '}
         <Link
           href="/docs/development/cursor-skills"
           className="text-primary underline-offset-4 hover:underline"

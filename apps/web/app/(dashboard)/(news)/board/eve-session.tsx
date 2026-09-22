@@ -29,8 +29,11 @@ import { eveHostQueryKey } from '@/lib/query-keys'
 
 export type BoardEveEvent = { type: string; data?: unknown }
 
+export type BoardEveHostStatus = 'hydrating' | 'loading' | 'ready' | 'unavailable'
+
 export type BoardEveHandle = {
   hasHost: boolean
+  hostStatus: BoardEveHostStatus
   status: UseEveAgentStatus
   sessionId: string | undefined
   error: Error | undefined
@@ -46,6 +49,7 @@ export type BoardEveHandle = {
 
 const idleHandle: BoardEveHandle = {
   hasHost: false,
+  hostStatus: 'unavailable',
   status: 'ready',
   sessionId: undefined,
   error: undefined,
@@ -117,6 +121,7 @@ function EveSession({
   useLayoutEffect(() => {
     const next: BoardEveHandle = {
       hasHost: true,
+      hostStatus: 'ready',
       status,
       sessionId,
       error,
@@ -152,6 +157,19 @@ function EveSession({
   return null
 }
 
+function idleHostStatus({
+  hydrated,
+  host,
+}: {
+  hydrated: boolean
+  host: ReturnType<typeof useAgentHost>
+}): BoardEveHostStatus {
+  if (!hydrated) return 'hydrating'
+  if (host.isPending) return 'loading'
+  if (host.isError || !host.data) return 'unavailable'
+  return 'ready'
+}
+
 function EveHost({
   id,
   storageKey,
@@ -167,8 +185,12 @@ function EveHost({
   const host = useAgentHost({ id })
   const [liveHandle, setLiveHandle] = useState(idleHandle)
   const endpoint = hydrated ? host.data : undefined
+  const idle: BoardEveHandle = {
+    ...idleHandle,
+    hostStatus: idleHostStatus({ hydrated, host }),
+  }
   return (
-    <context.Provider value={endpoint ? liveHandle : idleHandle}>
+    <context.Provider value={endpoint ? liveHandle : idle}>
       {endpoint ? (
         <EveSession host={endpoint} storageKey={storageKey} onHandle={setLiveHandle} />
       ) : null}
