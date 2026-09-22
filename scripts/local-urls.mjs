@@ -62,6 +62,7 @@ export function portlessGetUrl({ name, spawn = spawnSync, cwd, env = process.env
     cwd,
     env,
     encoding: 'utf-8',
+    shell: process.platform === 'win32',
   })
   if (result.status !== 0) return null
   const url = result.stdout?.trim()

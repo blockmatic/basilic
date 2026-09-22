@@ -19,6 +19,7 @@ function runPortless(args, { stdio = 'inherit' } = {}) {
     cwd: repoRoot,
     stdio,
     encoding: 'utf-8',
+    shell: process.platform === 'win32',
   })
 }
 

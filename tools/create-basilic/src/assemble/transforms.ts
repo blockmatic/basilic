@@ -3,6 +3,7 @@ import { join } from 'node:path'
 
 export function applyAssembleTransforms({ destRoot }: { destRoot: string }) {
   dropDocuTurboTask({ destRoot })
+  dropExcludedPortlessApps({ destRoot })
   stripVercelMcp({ destRoot })
   placeholderDeepsec({ destRoot })
   dropDocuCoderabbitPath({ destRoot })
@@ -16,6 +17,15 @@ function dropDocuTurboTask({ destRoot }: { destRoot: string }) {
   }
   delete turbo.tasks['@repo/docu#build']
   writeFileSync(path, `${JSON.stringify(turbo, null, 2)}\n`)
+}
+
+function dropExcludedPortlessApps({ destRoot }: { destRoot: string }) {
+  const path = join(destRoot, 'portless.json')
+  if (!existsSync(path)) return
+  const config = JSON.parse(readFileSync(path, 'utf8')) as { apps?: Record<string, unknown> }
+  delete config.apps?.['apps/docu']
+  delete config.apps?.['apps/agents']
+  writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`)
 }
 
 function stripVercelMcp({ destRoot }: { destRoot: string }) {

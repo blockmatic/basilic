@@ -13,10 +13,28 @@ const hopByHop = new Set([
   'proxy-authenticate',
   'proxy-authorization',
   'te',
-  'trailers',
+  'trailer',
   'transfer-encoding',
   'upgrade',
 ])
+
+export function stripHopByHopHeaders(headers) {
+  const out = { ...headers }
+  const nominated = new Set()
+  for (const [key, value] of Object.entries(out)) {
+    if (key.toLowerCase() !== 'connection' || value == null) continue
+    const raw = Array.isArray(value) ? value.join(',') : String(value)
+    for (const token of raw.split(',')) {
+      const name = token.trim().toLowerCase()
+      if (name) nominated.add(name)
+    }
+  }
+  for (const key of Object.keys(out)) {
+    const lower = key.toLowerCase()
+    if (hopByHop.has(lower) || nominated.has(lower)) delete out[key]
+  }
+  return out
+}
 
 export const eveAgentIds = ['command', 'chat']
 
@@ -40,9 +58,7 @@ export function eveAgentUrl({ origin, id }) {
 }
 
 function proxyHeaders({ headers, host }) {
-  const out = { ...headers, host }
-  for (const name of hopByHop) delete out[name]
-  return out
+  return { ...stripHopByHopHeaders(headers), host }
 }
 
 export function createWorkspaceProxy({ commandOrigin, chatOrigin }) {
@@ -64,7 +80,7 @@ export function createWorkspaceProxy({ commandOrigin, chatOrigin }) {
         headers: proxyHeaders({ headers: req.headers, host: target.host }),
       },
       proxyRes => {
-        res.writeHead(proxyRes.statusCode ?? 502, proxyRes.headers)
+        res.writeHead(proxyRes.statusCode ?? 502, stripHopByHopHeaders(proxyRes.headers))
         proxyRes.pipe(res)
       },
     )
@@ -80,15 +96,27 @@ function spawnEve({ agentId, port, env }) {
   const childEnv = { ...env, HOST: '127.0.0.1', PORT: String(port) }
   delete childEnv.PORTLESS_URL
   childEnv.EVE_PUBLIC_ROUTE_PREFIX = evePublicMount({ id: agentId })
-  const child = spawn('pnpm', ['exec', 'eve', 'dev', '--agent', agentId, '--no-ui'], {
+  return spawn('pnpm', ['exec', 'eve', 'dev', '--agent', agentId, '--no-ui'], {
     cwd: packageRoot,
     env: childEnv,
     stdio: 'inherit',
+    shell: process.platform === 'win32',
   })
-  child.on('exit', code => {
-    if (code) process.exit(code)
+}
+
+function waitChildExit(child) {
+  return new Promise(resolve => {
+    if (child.exitCode != null || child.signalCode != null) return resolve()
+    child.once('exit', resolve)
   })
-  return child
+}
+
+export function createIdempotentShutdown(run) {
+  let started
+  return () => {
+    started ??= Promise.resolve().then(run)
+    return started
+  }
 }
 
 function isMain() {
@@ -103,16 +131,30 @@ function main({ env = process.env } = {}) {
   const listenPort = env.PORT ?? '3100'
   const command = spawnEve({ agentId: 'command', port: commandPort, env })
   const chat = spawnEve({ agentId: 'chat', port: chatPort, env })
-  const shutdown = () => {
-    command.kill('SIGTERM')
-    chat.kill('SIGTERM')
-  }
-  process.on('SIGINT', shutdown)
-  process.on('SIGTERM', shutdown)
+  const children = [command, chat]
   const server = createWorkspaceProxy({
     commandOrigin: `http://127.0.0.1:${commandPort}`,
     chatOrigin: `http://127.0.0.1:${chatPort}`,
   })
+  let exitCode = 0
+  let stopping = false
+  const shutdown = createIdempotentShutdown(async () => {
+    for (const child of children)
+      if (child.exitCode == null && child.signalCode == null) child.kill('SIGTERM')
+    await Promise.all([
+      new Promise(resolve => server.close(() => resolve())),
+      ...children.map(waitChildExit),
+    ])
+  })
+  const stop = ({ code } = {}) => {
+    if (!stopping && code != null) exitCode = code
+    stopping = true
+    void shutdown().then(() => process.exit(exitCode))
+  }
+  process.on('SIGINT', () => stop({ code: 130 }))
+  process.on('SIGTERM', () => stop({ code: 143 }))
+  for (const child of children)
+    child.on('exit', (code, signal) => stop({ code: signal ? 1 : (code ?? 0) }))
   server.listen(Number(listenPort), env.HOST ?? '0.0.0.0')
 }
 

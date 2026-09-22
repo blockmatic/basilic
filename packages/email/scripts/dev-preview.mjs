@@ -11,5 +11,6 @@ const port = process.env.PORT ?? '3000'
 const child = spawn('pnpm', ['exec', 'email', 'dev', '-p', port], {
   cwd: packageRoot,
   stdio: 'inherit',
+  shell: process.platform === 'win32',
 })
 child.on('exit', code => process.exit(code ?? 1))
