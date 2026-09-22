@@ -14,7 +14,7 @@ export async function GET(): Promise<Response> {
     })
     .join('\n')
 
-  const body = `# Basilic: Vercel-oriented agentic product foundation
+  const body = `# Basilic: API-First Agentic TypeScript FullStack Swissknife
 
 Full text dump: ${fullDumpUrl}
 

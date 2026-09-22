@@ -1,8 +1,8 @@
-# Basilic: Vercel-oriented agentic product foundation
+# Basilic: API-First Agentic TypeScript FullStack Swissknife
 
 Own the API. Hang web, mobile, and coding agents off it.
 
-Opinionated TypeScript monorepo for Vercel-oriented workflows: a Fastify API agents can discover (OpenAPI, `llms.txt`), eve for durable command and chat, Next.js as a client. The in-box sample is a coin tracker. Default host is Vercel; exit is ordinary Node (`listen` / `eve start`). Agents read `AGENTS.md` and the spec — the same surface you ship.
+API-first agentic TypeScript fullstack: a Fastify API agents can discover (OpenAPI, `llms.txt`), eve for durable command and chat, Next.js and Expo as clients. The in-box sample is a coin tracker. Deploy on [Vercel](https://basilic-docs.vercel.app/docs/deployment/vercel); exit is ordinary Node (`listen` / `eve start`). Agents read `AGENTS.md` and the spec — the same surface you ship.
 
 **Start a product** (when published): `npx create-basilic@latest my-app`. The npm package is not on `latest` yet — use this repository with `pnpm setup` to run the full reference (including `apps/agents`).
 

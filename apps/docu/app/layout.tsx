@@ -23,9 +23,9 @@ const fontMono = Geist_Mono({
   variable: '--font-geist-mono',
 })
 
-const siteTitle = 'Basilic · Vercel-oriented agentic product foundation'
+const siteTitle = 'Basilic · API-First Agentic TypeScript FullStack Swissknife'
 const siteDescription =
-  'Own the API. Hang web, mobile, and coding agents off it. Fastify OpenAPI, eve, Next.js client — built around the Vercel ecosystem, portable Node and Postgres.'
+  'Own the API. Hang web, mobile, and coding agents off it. Fastify OpenAPI, Next.js, and Expo. Deploy on Vercel; ordinary Node and Postgres if you leave.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),

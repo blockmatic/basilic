@@ -8,9 +8,9 @@ export function Hero() {
   return (
     <LandingSection hero>
       <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-[1.1]">
-        Vercel-oriented agentic
+        API-First Agentic TypeScript
         <br />
-        product foundation
+        FullStack Swissknife
       </h1>
       <p className="mt-5 max-w-xl text-pretty text-base text-muted-foreground md:mt-6 md:text-lg">
         Own the API. Hang web, mobile, and coding agents off it.
