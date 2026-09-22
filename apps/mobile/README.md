@@ -37,7 +37,7 @@ Try **Expo Go** first—most apps work without a custom native build. Use a **de
 | Remote + Cursor (port forwarding) | `pnpm --filter @repo/mobile start:localhost` |
 | Remote + no forwarding / physical device | `pnpm --filter @repo/mobile start:tunnel` |
 
-See [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) for ports (8081, 19000, 19001), tunneling, and troubleshooting.
+See [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) for Portless API URLs, Metro 8081, tunneling, and troubleshooting.
 
 ## Styling (Tailwind + NativeWind)
 
@@ -59,7 +59,7 @@ Global styles live in `src/global.css`. Use StyleSheet for complex cases. See `.
 
 ## API / Environment
 
-Configure `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` for API reachability (see `.env.defaults.example`). When Fastify runs on a remote VPC and Cursor forwards port 3001, use `EXPO_PUBLIC_API_URL=http://localhost:3001` so the simulator hits the tunneled API.
+Configure `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` (template defaults to `https://api.basilic.localhost`). Physical devices need a LAN/tunnel URL; `.localhost` is the host machine.
 
 ## EAS Builds & PR Preview
 

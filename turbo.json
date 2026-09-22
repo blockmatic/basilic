@@ -291,6 +291,8 @@
         "NODE_ENV",
         "PORT",
         "HOST",
+        "PORTLESS_URL",
+        "NODE_EXTRA_CA_CERTS",
         "DATABASE_URL",
         "PGLITE",
         "RUN_PG_MIGRATE",
@@ -300,17 +302,16 @@
         "OPEN_ROUTER_API_KEY",
         "NEXT_PUBLIC_API_URL",
         "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_SITE_URL",
+        "WEB_APP_URL",
+        "EVE_COMMAND_URL",
+        "EVE_CHAT_URL",
+        "EXPO_PUBLIC_API_URL",
         "AUTH_COOKIE_NAME",
         "NEXT_PUBLIC_AUTH_COOKIE_NAME"
       ]
     },
     "@repo/agents#dev": {
-      "dependsOn": ["@repo/db#db:start"],
-      "cache": false,
-      "persistent": true,
-      "with": ["@repo/agents#eve:dev:chat"]
-    },
-    "@repo/agents#eve:dev:chat": {
       "dependsOn": ["@repo/db#db:start"],
       "cache": false,
       "persistent": true

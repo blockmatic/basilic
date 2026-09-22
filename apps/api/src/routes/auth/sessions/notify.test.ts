@@ -34,7 +34,7 @@ function newDeviceMails(email: string) {
 describe('new-device notify', () => {
   it('skips email when WEB_APP_URL origin is not allowlisted', () => {
     expect(allowlistedWebAppOrigin('http://evil.example')).toBeNull()
-    expect(allowlistedWebAppOrigin('http://localhost:3000')).toBe('http://localhost:3000')
+    expect(allowlistedWebAppOrigin('https://basilic.localhost')).toBe('https://basilic.localhost')
   })
 
   it('persists IP, UA, and fingerprint and emails the first device', async () => {

@@ -10,8 +10,11 @@ test('envFlagIsTrue accepts 1 and true only', () => {
   assert.equal(envFlagIsTrue(undefined), false)
 })
 
-test('turboChildEnv sets SKIP_DB_START for the Turbo child only', () => {
-  assert.equal(turboChildEnv({ env: { PATH: '/bin' } }).SKIP_DB_START, '1')
+test('turboChildEnv sets SKIP_DB_START and named local URLs', () => {
+  const env = turboChildEnv({ env: { PATH: '/bin' } })
+  assert.equal(env.SKIP_DB_START, '1')
+  assert.equal(env.NEXT_PUBLIC_API_URL, 'https://api.basilic.localhost')
+  assert.equal(env.NEXT_PUBLIC_APP_URL, 'https://basilic.localhost')
   assert.equal(turboChildEnv({ env: { SKIP_DB_START: '1', PATH: '/bin' } }).SKIP_DB_START, '1')
 })
 

@@ -52,11 +52,12 @@ MIT licensed. **Start a product** with [`npx create-basilic@latest my-app`](tool
 Run with `pnpm <script>`.
 
 **Setup**
-  - `setup` — Full setup (install, hooks, agent skills from basilic-skills `/w-*` plus antislop and make-interfaces-feel-better, gitleaks, osv, env templates, database, deepsec, Playwright Chromium)
+  - `setup` — Full setup (install, hooks, agent skills from basilic-skills `/w-*` plus antislop and make-interfaces-feel-better, gitleaks, osv, env templates, **Portless CA/proxy**, database, deepsec, Playwright Chromium)
   - `setup:skills` — Install `/w-*` playbooks, `antislop`, and `make-interfaces-feel-better` into `.agents/skills/` (restores `skills-lock.json`)
   - `setup:gitleaks`, `setup:osv` — Install Gitleaks, OSV scanner
   - `setup:playwright` — Install Playwright Chromium for API and web E2E
   - `setup:env` — Copy `.env.<qualifier>.example` templates to dest files when missing
+  - `setup:portless` — Trust the Portless CA and start the HTTPS proxy (skip in CI; may prompt for sudo)
   - `setup:database` — Database tools (Docker, Supabase CLI)
   - `setup:deepsec` — Install DeepSec workspace (`.deepsec/`)
   - `db:start` / `db:stop` / `db:status` — Local Supabase Postgres (`pnpm --filter @repo/db …`)
@@ -64,7 +65,7 @@ Run with `pnpm <script>`.
 
 **Primary**
   - `build` — Build packages and apps
-  - `dev` — Ensure Postgres, then Turbo TUI (api, web, agents, package watchers)
+  - `dev` — Ensure Postgres, then Turbo TUI (named `https://*.localhost` URLs)
   - `qa` — Full check: install (if needed) → checktypes → lint → OpenAPI drift → build → test:scripts → test (unit) → test:e2e (Fastify + Next, `SKIP_BUILD=1`)
 **Format / Lint**
   - `checktypes` — Type-check all packages
@@ -106,6 +107,6 @@ Full docs: [basilic-docs.vercel.app](https://basilic-docs.vercel.app/docs)
 - [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready) — generate-and-run bar (not CI green)
 - [After fork](https://basilic-docs.vercel.app/docs/development/after-fork) — generator vs fork, what to replace, CI secrets
 - Visual: [`DESIGN.md`](DESIGN.md)
-- [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Local vs remote (ports 3000, 3001, 3004, 3005, 8081; `start:localhost`, `start:tunnel`)
+- [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-environments) — Portless `.localhost` URLs, remote, Expo
 - [AI Workflow](https://basilic-docs.vercel.app/docs/development/ai-workflow)
 

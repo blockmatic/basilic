@@ -40,6 +40,7 @@ describe('isAllowedUrl', () => {
   })
 
   it('accepts valid http URL when origin is allowlisted', () => {
+    expect(isAllowedUrl('https://basilic.localhost/auth/callback')).toBe(true)
     expect(isAllowedUrl('http://localhost:3000/auth/callback')).toBe(true)
   })
 

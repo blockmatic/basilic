@@ -1,0 +1,9 @@
+{
+  "apps": {
+    "apps/web": { "name": "basilic", "script": "dev:app" },
+    "apps/api": { "name": "api.basilic", "script": "dev:app" },
+    "apps/docu": { "name": "docu.basilic", "script": "dev:app" },
+    "apps/agents": { "name": "agents.basilic", "script": "dev:app" },
+    "packages/email": { "name": "email.basilic", "script": "dev:app" }
+  }
+}

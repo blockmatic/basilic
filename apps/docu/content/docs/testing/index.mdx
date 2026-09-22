@@ -54,7 +54,7 @@ Vitest `include` is `**/*.spec.ts` only. Every `*.test.ts` must be imported by a
 
 When `ALLOW_TEST=true` (non-production), magic-link and change-email flows for `*@test.ai` store plain tokens in `verification.token_plain`. E2E reads them via `GET /test/verification/last?type=&email=` or `GET /test/magic-link/last?email=` (both require a `@test.ai` email). Do not enable on production deployments.
 
-Vitest pins `ALLOWED_ORIGINS` to `http://localhost:3000,http://127.0.0.1:3000,https://example.com` unconditionally so passkey origin tests are not no-ops under `*` or inherited CI values.
+Vitest pins `ALLOWED_ORIGINS` to `https://basilic.localhost,http://localhost:3000,http://127.0.0.1:3000,https://example.com` unconditionally so passkey origin tests are not no-ops under `*` or inherited CI values.
 
 ## Known gaps
 

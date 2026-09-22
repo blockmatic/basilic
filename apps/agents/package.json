@@ -2,6 +2,10 @@
   "name": "@repo/agents",
   "version": "0.0.0",
   "private": true,
+  "portless": {
+    "name": "agents.basilic",
+    "script": "dev:app"
+  },
   "type": "module",
   "engines": {
     "node": "24.x"
@@ -11,17 +15,20 @@
   },
   "scripts": {
     "checktypes": "tsc --noEmit",
-    "dev": "eve dev --agent command --port 3004 --no-ui",
+    "dev": "portless",
+    "dev:app": "node scripts/dev-workspace.mjs",
     "eve:build": "eve build",
     "eve:dev": "pnpm run dev",
-    "eve:dev:chat": "eve dev --agent chat --port 3005 --no-ui",
+    "eve:dev:command:app": "eve dev --agent command --no-ui",
+    "eve:dev:chat": "eve dev --agent chat --no-ui",
+    "eve:dev:chat:app": "eve dev --agent chat --no-ui",
     "eve:start": "eve start --port 3004",
     "eve:eval": "eve eval --agent command",
     "eve:eval:chat": "eve eval --agent chat",
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
-    "test": "vitest run",
-    "test:unit": "vitest run"
+    "test": "vitest run && node --test scripts/*.test.mjs",
+    "test:unit": "vitest run && node --test scripts/*.test.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.54",

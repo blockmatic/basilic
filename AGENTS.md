@@ -30,6 +30,19 @@ overrides guidance for its subtree and must be read before changing files there.
 5. Read the target app or package `README.md` and `package.json` before choosing
    setup, generation, validation, or test commands.
 
+Local HTTP apps use Portless named HTTPS hosts. Do not discover bind ports.
+
+- Web: `https://basilic.localhost`
+- API: `https://api.basilic.localhost`
+- Docs: `https://docu.basilic.localhost`
+- Email preview: `https://email.basilic.localhost`
+- Eve: `https://agents.basilic.localhost` (`/eve/command`, `/eve/chat`)
+
+Linked git worktrees prefix the branch (`https://fix-ui.api.basilic.localhost`).
+Escape hatch: `pnpm --filter <pkg> dev:app` or `PORTLESS=0`. Postgres stays on
+`127.0.0.1:54322`. Playwright/CI spawn `localhost:3000` / `:3001` (no Portless;
+eve is not in the Playwright DAG).
+
 Search first and keep reads targeted. Inspect the implementation, configuration,
 and tests instead of relying on memory or assuming that documentation is current.
 

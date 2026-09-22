@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
+  "portless": {
+    "name": "email.basilic",
+    "script": "dev:app"
+  },
   "exports": {
     "./emails/*": {
       "types": "./emails/*.tsx",
@@ -26,7 +30,8 @@
     "lint:eslint:fix": "eslint . --fix --max-warnings 0",
     "format": "biome format --write .",
     "checktypes": "tsc --noEmit",
-    "dev": "email dev -p 3003",
+    "dev": "portless",
+    "dev:app": "node scripts/dev-preview.mjs",
     "build": "tsc",
     "build:preview": "NEXT_TELEMETRY_DISABLED=1 email build",
     "start": "email start"

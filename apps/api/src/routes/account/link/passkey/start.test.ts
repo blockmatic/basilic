@@ -13,7 +13,7 @@ describe('POST /account/link/passkey/start', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/account/link/passkey/start',
-      headers: { Origin: 'http://localhost:3000' },
+      headers: { Origin: 'https://basilic.localhost' },
     })
     expect(res.statusCode).toBe(401)
     expect(JSON.parse(res.body).code).toBe('UNAUTHORIZED')
@@ -35,7 +35,7 @@ describe('POST /account/link/passkey/start', () => {
       url: '/account/link/passkey/start',
       headers: {
         Authorization: `Bearer ${jwt}`,
-        Origin: 'http://localhost:3000',
+        Origin: 'https://basilic.localhost',
       },
     })
     expect(res.statusCode).toBe(200)

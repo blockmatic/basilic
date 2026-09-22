@@ -5,7 +5,8 @@
 
 process.env.NODE_ENV = 'test'
 process.env.ALLOW_TEST = 'true'
-process.env.ALLOWED_ORIGINS = 'http://localhost:3000,http://127.0.0.1:3000,https://example.com'
+process.env.ALLOWED_ORIGINS =
+  'https://basilic.localhost,http://localhost:3000,http://127.0.0.1:3000,https://example.com'
 
 import type { GlobalSetupContext } from 'vitest/node'
 

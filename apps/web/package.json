@@ -3,11 +3,16 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
+  "portless": {
+    "name": "basilic",
+    "script": "dev:app"
+  },
   "engines": {
     "node": "24.x"
   },
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "portless",
+    "dev:app": "next dev --webpack",
     "dev:local": "NODE_ENV=development next dev --webpack",
     "dev:staging": "NODE_ENV=development NEXT_PUBLIC_APP_ENV=staging next dev --webpack",
     "build": "NODE_ENV=production next build --webpack",

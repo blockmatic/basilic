@@ -157,7 +157,12 @@ The Fastify API (`apps/api`) publishes a crawlable public surface for agents. Pa
 
 The Fastify API runs as one Vercel Function with **Fluid Compute**. Do not move that process to Edge Runtime. Discovery stays on Fastify public GETs (see [API host crawl](#api-host-crawl)); do not advertise `/eve/` from `llms.txt`.
 
-Eve, when it lands (E1), is a **separate Vercel project** — Workflow + Sandbox — not a route on the scored Fastify host. Edge is for CDN, WAF, redirects, and auth precheck. Node workloads: Fastify API, eve, Drizzle. Decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Topology: [Eve](/docs/architecture/eve).
+Eve is a **separate Vercel project** (`eve link` / `eve deploy` from `apps/agents`) — Workflow + Sandbox — not a route on the scored Fastify host. Command and chat deploy together in that one project. Public mounts:
+
+- `https://<agents-project>.vercel.app/eve/command`
+- `https://<agents-project>.vercel.app/eve/chat`
+
+Set those values on the **API** project as `EVE_COMMAND_URL` and `EVE_CHAT_URL` (no trailing slash). Fastify `GET /agents` advertises them; the web rail uses each string as `useEveAgent` `host`. Local Portless uses the same path shape on `https://agents.basilic.localhost`. Edge is for CDN, WAF, redirects, and auth precheck. Node workloads: Fastify API, eve, Drizzle. Decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Topology: [Eve](/docs/architecture/eve).
 
 ## Troubleshooting
 

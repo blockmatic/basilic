@@ -17,7 +17,7 @@ describe('POST /auth/passkey/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/verify',
-      headers: { origin: 'http://localhost:3000' },
+      headers: { origin: 'https://basilic.localhost' },
       payload: { assertion: minimalAssertion },
     })
     expect(res.statusCode).toBe(400)
@@ -30,7 +30,7 @@ describe('POST /auth/passkey/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/verify',
-      headers: { origin: 'http://localhost:3000' },
+      headers: { origin: 'https://basilic.localhost' },
       payload: {
         assertion: minimalAssertion,
         sessionId: 'non-existent-session-id',
@@ -47,7 +47,7 @@ describe('POST /auth/passkey/verify', () => {
     const startRes = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/start',
-      headers: { origin: 'http://localhost:3000' },
+      headers: { origin: 'https://basilic.localhost' },
     })
     expect(startRes.statusCode).toBe(200)
     const { sessionId } = startRes.json() as { sessionId: string }
@@ -56,7 +56,7 @@ describe('POST /auth/passkey/verify', () => {
     const res = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/verify',
-      headers: { origin: 'http://localhost:3000' },
+      headers: { origin: 'https://basilic.localhost' },
       payload: {
         assertion: minimalAssertion,
         sessionId,
@@ -74,7 +74,7 @@ describe('POST /auth/passkey/verify', () => {
     const startRes = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/start',
-      headers: { origin: 'http://localhost:3000' },
+      headers: { origin: 'https://basilic.localhost' },
     })
     expect(startRes.statusCode).toBe(200)
     const { sessionId } = startRes.json() as { sessionId: string }
@@ -82,7 +82,7 @@ describe('POST /auth/passkey/verify', () => {
     const first = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/verify',
-      headers: { origin: 'http://localhost:3000' },
+      headers: { origin: 'https://basilic.localhost' },
       payload: { assertion: minimalAssertion, sessionId },
     })
     expect(first.statusCode).toBe(401)
@@ -91,7 +91,7 @@ describe('POST /auth/passkey/verify', () => {
     const second = await fastify.inject({
       method: 'POST',
       url: '/auth/passkey/verify',
-      headers: { origin: 'http://localhost:3000' },
+      headers: { origin: 'https://basilic.localhost' },
       payload: { assertion: minimalAssertion, sessionId },
     })
     expect(second.statusCode).toBe(401)

@@ -6,7 +6,7 @@ Fumadocs (Next.js 16 + MDX) site for Basilic, the API-First AI TypeScript FullSt
 pnpm --filter @repo/docu dev
 ```
 
-http://localhost:3002. Live: [https://basilic-docs.vercel.app/docs](https://basilic-docs.vercel.app/docs).
+https://docu.basilic.localhost. Live: [https://basilic-docs.vercel.app/docs](https://basilic-docs.vercel.app/docs).
 
 Content is `content/docs/` (`architecture`, `development`, `testing`, `deployment`, `adrs`). Sidebar order is each folder’s `meta.json`.
 

@@ -1,18 +1,21 @@
 ---
 title: "Dev Environments"
-description: "Local vs remote VPC development, port requirements, and Expo workflow across IDEs."
+description: "Portless named .localhost URLs, local vs remote VPC development, and Expo."
 ---
 
 Strategy for supporting all IDEs, local PC development, and remote VPC development across the basilic monorepo.
+
+Local HTTP apps use [Vercel Labs Portless](https://github.com/vercel-labs/portless): stable `https://*.localhost` names, HTTPS with a local CA, ephemeral bind ports. Humans and agents should use the names, not ports.
 
 ## Quick Reference
 
 | Context | Web + API | Mobile (Expo) |
 |---------|-----------|---------------|
-| Local | `pnpm dev` | `pnpm --filter @repo/mobile start` |
-| Remote + Cursor | `pnpm dev` (ports auto-tunnel) | `pnpm --filter @repo/mobile start:localhost` |
-| Remote + other IDE | Forward 3000, 3001, 3004, 3005; run `pnpm dev` | Forward 8081 + `start:localhost`, or use `start:tunnel` |
+| Local | `pnpm setup` then `pnpm dev` | `pnpm --filter @repo/mobile start` |
+| Remote + Cursor | Forward **443**; `pnpm dev` | `pnpm --filter @repo/mobile start:localhost` |
+| Remote + other IDE | Forward 443; run `pnpm dev` | Forward 8081 + `start:localhost`, or use `start:tunnel` |
 | Physical device (remote Metro) | — | Use `start:tunnel` (port forwarding does not help devices) |
+| Bypass Portless | `pnpm --filter <pkg> dev:app` or `PORTLESS=0` | Metro is not wrapped |
 
 ## Overview
 
@@ -21,22 +24,38 @@ The monorepo must work consistently whether you develop locally (macOS, Linux, W
 ## Core Principles
 
 1. **IDE-agnostic** – No assumptions about Cursor, VS Code Remote, or other tools. Docs and scripts work for any setup.
-2. **Port transparency** – All required ports are documented. **Cursor automatically tunnels ports** when connected to a remote host; VS Code Remote-SSH can auto-forward. Other IDEs rely on manual port forwarding or `--tunnel` for mobile.
+2. **Named local URLs** – Application traffic uses Portless `.localhost` hosts. Bind ports are assigned in 4000–4999 and are not part of the public contract.
 3. **Environment detection** – Commands and env vars support both local and remote contexts; docs explain both paths.
 
-## Required Ports
+## Canonical local URLs
 
-| Port | App/Service | Purpose |
-|------|-------------|---------|
-| 3000 | Next.js (web) | Web dev server |
-| 3001 | Fastify (api) | API dev server |
-| 3004 | eve command | Root `pnpm dev` TUI pane `@repo/agents#dev`. Health `GET /eve/v1/health`. |
-| 3005 | eve chat | Root `pnpm dev` TUI pane `@repo/agents#eve:dev:chat`. Health `GET /eve/v1/health`. |
-| 8081 | Expo (mobile) | Metro bundler |
-| 19000 | Expo | Expo DevTools / manifest |
-| 19001 | Expo | Expo DevTools (alt) |
+| URL | App | Notes |
+|-----|-----|-------|
+| `https://basilic.localhost` | Next.js web | Login `test@test.ai` |
+| `https://api.basilic.localhost` | Fastify API | `GET /health`, `/reference` |
+| `https://docu.basilic.localhost` | Fumadocs | This repo only |
+| `https://email.basilic.localhost` | React Email preview | |
+| `https://agents.basilic.localhost` | eve workspace | `/eve/command` and `/eve/chat` (`GET …/v1/health`) |
 
-**Cursor** automatically tunnels these ports when connected to a remote host; no manual config needed. VS Code Remote-SSH can auto-forward when servers start. With other IDEs, manually forward these ports or use Expo `--tunnel` for mobile.
+Linked git worktrees prefix the branch: `https://fix-ui.api.basilic.localhost`. `scripts/dev.mjs` exports sibling URLs from `portless get` so worktrees do not call the main checkout.
+
+`pnpm setup` / `pnpm setup:portless` trusts the local CA and starts the proxy on **443** (may prompt for sudo once). Re-run is safe. CI skips this step. After reboot, run `pnpm exec portless proxy start` or install `portless service install`. `portless get` may print `:1355` if the HTTPS proxy was never started; Basilic env still uses `https://<name>.localhost` (port 443).
+
+Safari: `.localhost` may need `pnpm exec portless hosts sync`. Diagnose with `pnpm exec portless doctor` and `pnpm exec portless list`.
+
+### Still numeric (not Portless)
+
+| Port | Service |
+|------|---------|
+| 54322 | Local Supabase Postgres |
+| 8081 / 19000 / 19001 | Expo Metro / DevTools |
+| 3000 / 3001 | Playwright and CI spawned web/API (no Portless, no eve) |
+| 3104 / 3105 | Local eve command/chat loopback behind the agents gateway |
+| 11434 | Optional Ollama |
+
+Direct-run debugging: `pnpm --filter @repo/web dev:app` (and sibling `dev:app` scripts). `PORTLESS=0 pnpm --filter @repo/web dev` bypasses the proxy. Node processes outside Portless need `NODE_EXTRA_CA_CERTS=~/.portless/ca.pem` to fetch the named HTTPS URLs.
+
+Google/Apple OAuth may reject `.localhost` redirect URIs. Local callbacks are still documented as `https://basilic.localhost/auth/callback/oauth/...`. Use the provider's localhost exception or a custom TLD if they refuse.
 
 ## Local PC Development
 
@@ -48,7 +67,7 @@ Standard workflow: run everything on the same machine where the IDE and simulato
 pnpm dev
 ```
 
-Ensures local Postgres is up, then starts Turborepo's TUI (same left-pane logs as `pnpm lint:eslint` / `pnpm test`): Fastify, Next.js, eve command/chat in this repo, and dependent package watchers. Uses LAN addresses by default. Mobile stays a separate command. Generated projects omit agents.
+Ensures local Postgres is up, then starts Turborepo's TUI (same left-pane logs as `pnpm lint:eslint` / `pnpm test`): Fastify, Next.js, eve workspace (`/eve/command` and `/eve/chat`) in this repo, and dependent package watchers. Prints the named `.localhost` URLs, then the TUI. Mobile stays a separate command. Generated projects omit agents.
 
 ### Mobile (Expo)
 
@@ -71,7 +90,7 @@ When the repo and dev servers run on a remote VPC, the simulator and browser run
 
 If your IDE forwards ports from remote to local:
 
-1. Ensure ports `3000`, `3001`, `3004`, `3005`, `8081` (and optionally `19000`, `19001`) are forwarded. Cursor does this automatically; in VS Code, check the Ports view.
+1. Forward **443** so `https://*.localhost` on your laptop hits the remote Portless proxy. Also forward `8081` (and optionally `19000`, `19001`) for Expo. Trust the remote Portless CA on the client (`NODE_EXTRA_CA_CERTS` / `portless trust`), or use `PORTLESS=0` / `dev:app` with raw loopback ports.
 2. Run Expo with `--localhost` so it advertises `localhost:8081` instead of the VPC's LAN IP:
 
    ```bash
@@ -95,7 +114,7 @@ Expo creates a public URL (via ngrok). Simulators and physical devices can conne
 If the VPC is reachable from your machine (VPN or shared network):
 
 - Use `--lan` (or default). Expo will advertise the VPC's IP.
-- Ensure your local machine can reach the VPC IP on ports `3000`, `3001`, `8081`.
+- Ensure your local machine can reach the VPC Portless proxy (443) and Metro (`8081`). Portless is loopback-only unless LAN mode is enabled.
 
 ## App-Specific Notes
 
@@ -135,7 +154,8 @@ Scripts `start:localhost` and `start:tunnel` are available in `apps/mobile` for 
 **API / env for mobile**
 
 - The app runs in the simulator on your local machine. API requests must reach wherever your backend is.
-- If Fastify runs on the remote VPC and Cursor forwards 3001: configure `EXPO_PUBLIC_API_URL=http://localhost:3001` (or equivalent) in `apps/mobile/.env`. The simulator will hit localhost:3001, which Cursor tunnels to the remote API.
+- Simulator on the same machine as Portless: `EXPO_PUBLIC_API_URL=https://api.basilic.localhost`.
+- Physical devices do not resolve `.localhost` to your computer; use Expo LAN/tunnel and a reachable API URL.
 - If using tunnel for Expo, the API must be reachable from the device—use a public URL or ensure the device is on the same network.
 
 **Troubleshooting Expo**
@@ -150,7 +170,7 @@ Scripts `start:localhost` and `start:tunnel` are available in `apps/mobile` for 
 
 ### Next.js / Fastify
 
-These run where you execute `pnpm dev`. Browsers reach them via `localhost` (when forwarded) or VPC IP (when on VPN). Local Postgres is Docker via `pnpm db:start` (Supabase CLI in `packages/db`).
+These run where you execute `pnpm dev`. Browsers use the named `.localhost` URLs (forward **443** on remote). Local Postgres is Docker via `pnpm db:start` (Supabase CLI in `packages/db`).
 
 ## Scripts (apps/mobile)
 
@@ -175,13 +195,13 @@ These run where you execute `pnpm dev`. Browsers reach them via `localhost` (whe
 - **Remote + simulator won't connect** – Forgot `--localhost`? Without it, Expo advertises the VPC IP, which your laptop may not reach. Use `start:localhost` when using port forwarding.
 - **Physical device + remote Metro** – Port forwarding does not help. The device runs the app; its `localhost` is the device itself. Use `start:tunnel`.
 - **iOS Simulator on Linux VPC** – Impossible. Xcode is macOS-only. Use a local Mac or a physical iPhone + tunnel.
-- **API unreachable from app** – Set `EXPO_PUBLIC_API_URL` (or equivalent) to a URL the simulator can reach: `http://localhost:3001` when 3001 is forwarded.
+- **API unreachable from app** – Simulator: `https://api.basilic.localhost`. Device: LAN/tunnel URL, not `.localhost`.
 
 ## Environment Variables
 
 No special env vars are required to distinguish local vs remote. The same `.env` files work in both contexts. Ensure:
 
-- `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_*` (and `EXPO_PUBLIC_*` for mobile) must point to a host your browser/simulator can reach: `localhost` when ports are forwarded, or VPC/public URL when on VPN or tunnel.
+- `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_APP_URL` / `EXPO_PUBLIC_API_URL` default to `https://api.basilic.localhost` and `https://basilic.localhost`. Worktree `pnpm dev` overrides via `portless get`.
 
 ## Checklist: New Developer Setup
 

@@ -27,7 +27,7 @@ pnpm run setup
 
 This repository is for contributing to Basilic. Generated apps use `docs/basilic/` instead of `apps/docu` (already in the bullets below). [After fork](/docs/development/after-fork) lists what to replace when the generated copy is your product.
 
-`setup` installs dependencies, git hooks, **agent skills** (`blockmatic/basilic-skills` `/w-*`; lockfile hashes stay pinned), security tools, and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
+`setup` installs dependencies, git hooks, **agent skills** (`blockmatic/basilic-skills` `/w-*`; lockfile hashes stay pinned), security tools, **Portless** (CA trust + HTTPS proxy), and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
 ## First run
 
@@ -46,20 +46,20 @@ pnpm dev
 
 Ensures Docker Postgres is up, then starts Turborepo's TUI — the same left-pane task list as `pnpm lint:eslint` / `pnpm test`. Eve `dev` waits on `@repo/db#db:start`. Skip Docker with `SKIP_DB_START=1` (use that for PGLite-only generated apps). Click or arrow-key between logs. Ctrl-C stops Node watchers; Postgres stays up until `pnpm db:stop`.
 
-This repo's TUI includes API (http://localhost:3001, `GET /health`, `/reference`), web (http://localhost:3000 — login `test@test.ai`), eve command (http://localhost:3004/eve/v1/health), eve chat (http://localhost:3005/eve/v1/health), docs (http://localhost:3002), email preview (http://localhost:3003), and Pattern B package watchers. Mobile stays `pnpm --filter @repo/mobile start`. Generated projects omit `apps/agents` and `apps/docu`.
+This repo's TUI includes API (`https://api.basilic.localhost`, `GET /health`, `/reference`), web (`https://basilic.localhost` — login `test@test.ai`), eve (`https://agents.basilic.localhost/eve/command/v1/health` and `/eve/chat/v1/health`), docs (`https://docu.basilic.localhost`), email preview (`https://email.basilic.localhost`), and Pattern B package watchers. Mobile stays `pnpm --filter @repo/mobile start`. Generated projects omit `apps/agents` and `apps/docu`. `pnpm setup` trusts the Portless CA and starts the HTTPS proxy on port 443 (may prompt once).
 
 ## Manual
 
 Separate terminals, always from the repo root (no `cd`):
 
 - Postgres: `pnpm db:start`. Status: `pnpm db:status`. Stop: `pnpm db:stop`. Wipe: `pnpm reset`.
-- API: `pnpm --filter @repo/api dev` — http://localhost:3001
-- Web: `pnpm --filter @repo/web dev` — http://localhost:3000
-- Agents command: `pnpm --filter @repo/agents eve:dev` — http://localhost:3004/eve/v1/health
-- Agents chat: `pnpm --filter @repo/agents eve:dev:chat` — http://localhost:3005/eve/v1/health
-- Docs: `pnpm --filter @repo/docu dev` (this repo) — http://localhost:3002. Generated projects use `docs/basilic/` instead.
-- Email: `pnpm --filter @repo/email dev` — http://localhost:3003
+- API: `pnpm --filter @repo/api dev` — https://api.basilic.localhost
+- Web: `pnpm --filter @repo/web dev` — https://basilic.localhost
+- Agents: `pnpm --filter @repo/agents eve:dev` — https://agents.basilic.localhost/eve/command/v1/health and `/eve/chat/v1/health`
+- Docs: `pnpm --filter @repo/docu dev` (this repo) — https://docu.basilic.localhost. Generated projects use `docs/basilic/` instead.
+- Email: `pnpm --filter @repo/email dev` — https://email.basilic.localhost
 - Mobile: `pnpm --filter @repo/mobile start`
+- Bypass Portless: `pnpm --filter @repo/web dev:app` (and sibling `dev:app` scripts) or `PORTLESS=0`
 
 **Apps:** `apps/api` (Fastify 5), `apps/web` (Next.js 16), `apps/mobile` (Expo 57), `apps/agents` (eve command and chat), `apps/docu` (Fumadocs).
 
@@ -69,7 +69,7 @@ Separate terminals, always from the repo root (no `cd`):
 
 - [Product Ready](/docs/testing/product-ready) — generate-and-run bar (not CI green)
 - [After fork](/docs/development/after-fork) — generator vs fork, identity, CI secrets
-- [Dev Environments](/docs/development/dev-environments) — ports, remote, Expo
+- [Dev Environments](/docs/development/dev-environments) — Portless `.localhost` URLs, remote, Expo
 - [AI Workflow](/docs/development/ai-workflow) — Basilic `/w-*` daily path; not in-app chat
 - [Agent setup](/docs/development/cursor-setup) — optional Cursor extras (indexed docs, MCP)
 - [Skills](/docs/development/cursor-skills) — tech skills catalog and skills CLI
