@@ -7,6 +7,10 @@ import { env } from './env.js'
 
 type HostGlobal = typeof globalThis & { __basilicEveHostBoot?: Promise<void> }
 
+export function isEveHostBuild() {
+  return Boolean(process.env.EVE_INTERNAL_HOST_BUILD_OUTPUT_DIRECTORY)
+}
+
 export async function bootHost(): Promise<void> {
   const g = globalThis as HostGlobal
   g.__basilicEveHostBoot ??= startHost()
@@ -14,22 +18,26 @@ export async function bootHost(): Promise<void> {
 }
 
 async function startHost(): Promise<void> {
-  configureDb({
-    databaseUrl: env.POSTGRES_URL,
-    pglite: env.PGLITE === true,
-  })
   configureMarkets({
     coinGeckoDemoApiKey: env.COINGECKO_DEMO_API_KEY,
     coinsUseFixture: env.COINS_USE_FIXTURE,
     cacheMs: env.MARKETS_CACHE_MS,
   })
   configureOnchain({ alchemyApiKey: env.ALCHEMY_API_KEY })
+
+  if (isEveHostBuild()) return
+
+  configureDb({
+    databaseUrl: env.POSTGRES_URL,
+    pglite: env.PGLITE === true,
+  })
   await runMigrations({
     logger: {
       info: msg => logger.info(msg),
       error: (msg, err) => logger.error({ err }, msg),
     },
     nodeEnv: env.NODE_ENV,
+    vercelEnv: process.env.VERCEL_ENV,
   })
 }
 
