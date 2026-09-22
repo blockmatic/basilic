@@ -191,7 +191,7 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
 import * as schema from './schema'
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const pool = new Pool({ connectionString: process.env.POSTGRES_URL })
 export const db = drizzle(pool, { schema })
 ```
 
@@ -204,7 +204,7 @@ export default defineConfig({
   dialect: 'postgresql',
   schema: './src/db/schema/index.ts',
   out: './src/db/migrations',
-  dbCredentials: { url: process.env.DATABASE_URL! },
+  dbCredentials: { url: process.env.POSTGRES_URL! },
   migrations: {
     table: '__drizzle_migrations',
     schema: 'public',

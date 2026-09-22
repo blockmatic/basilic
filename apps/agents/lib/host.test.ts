@@ -30,4 +30,22 @@ describe('bootHost', () => {
     expect(configureDb).toHaveBeenCalledTimes(1)
     expect(runMigrations).toHaveBeenCalledTimes(1)
   })
+
+  it('skips database boot during eve host build', async () => {
+    vi.stubEnv('EVE_INTERNAL_HOST_BUILD_OUTPUT_DIRECTORY', '../../.vercel/output')
+    await import('./host.js')
+    expect(configureMarkets).toHaveBeenCalledTimes(1)
+    expect(configureDb).not.toHaveBeenCalled()
+    expect(runMigrations).not.toHaveBeenCalled()
+    vi.unstubAllEnvs()
+  })
+
+  it('passes VERCEL_ENV into runMigrations', async () => {
+    vi.stubEnv('VERCEL_ENV', 'preview')
+    await import('./host.js')
+    expect(runMigrations).toHaveBeenCalledWith(
+      expect.objectContaining({ vercelEnv: 'preview', nodeEnv: expect.any(String) }),
+    )
+    vi.unstubAllEnvs()
+  })
 })

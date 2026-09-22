@@ -20,7 +20,7 @@ Set environment variables in Vercel project settings:
 
 **For API (`apps/api`):**
 ```bash
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
+POSTGRES_URL=postgresql://user:pass@host:5432/dbname
 ENCRYPTION_KEY=<64-char-hex>
 JWT_SECRET=<min-32-chars-not-dev-default>
 WEB_APP_URL=https://app.yourdomain.com
@@ -37,7 +37,7 @@ SENTRY_DSN=https://...
 # Optional: OAuth. See [Authentication](/docs/architecture/authentication) for GITHUB_*, GOOGLE_*, OAUTH_*_CALLBACK_URL(S).
 ```
 
-Scope `DATABASE_URL` per Vercel environment. Production and Preview must not share a URL. Preview builds skip `db:migrate` unless `RUN_PG_MIGRATE=true` (use that only with an isolated Preview database).
+Scope `POSTGRES_URL` per Vercel environment. Production and Preview must not share a URL. Preview builds skip `db:migrate` unless `RUN_PG_MIGRATE=true` (use that only with an isolated Preview database). Vercel Marketplace Postgres already injects `POSTGRES_URL`.
 
 **For Web (`apps/web`):**
 ```bash
@@ -83,7 +83,7 @@ Root Directory must be set in Vercel project settings (e.g. `apps/web`, `apps/ap
 }
 ```
 
-Production migrations run against that environment's Postgres and take a PostgreSQL advisory lock so concurrent deploys serialize. They no-op under `PGLITE` or `NODE_ENV=test` (CI E2E). Preview defaults to skip so a shared Production `DATABASE_URL` cannot be migrated from a PR build.
+Production migrations run against that environment's Postgres and take a PostgreSQL advisory lock so concurrent deploys serialize. They no-op under `PGLITE` or `NODE_ENV=test` (CI E2E). Preview defaults to skip so a shared Production `POSTGRES_URL` cannot be migrated from a PR build.
 
 ## Turbo remote cache
 
@@ -132,7 +132,7 @@ CI runs E2E against local servers only (no Vercel URLs). For manual E2E against 
 
 ## Migration to Other Platforms
 
-You can deploy this project on other hosts. When you need to move away from Vercel, see [Portability Strategy](/docs/architecture/portability) for host options and `DATABASE_URL` configuration — not a step-by-step migration guide.
+You can deploy this project on other hosts. When you need to move away from Vercel, see [Portability Strategy](/docs/architecture/portability) for host options and `POSTGRES_URL` configuration — not a step-by-step migration guide.
 
 ## Docs host crawl
 

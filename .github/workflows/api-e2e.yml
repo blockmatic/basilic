@@ -30,7 +30,7 @@ env:
   NODE_ENV: test
   CI: true
   PGLITE: true
-  DATABASE_URL: postgresql://localhost/test
+  POSTGRES_URL: postgresql://localhost/test
   JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
 
 jobs:

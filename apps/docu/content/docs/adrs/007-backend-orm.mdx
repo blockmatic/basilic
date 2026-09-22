@@ -42,7 +42,7 @@ Lightweight, type-safe ORM with a focus on SQL-like syntax and minimal abstracti
 - **Plain SQL generation**: Generates standard PostgreSQL queries, no ORM-specific runtime
 - **Zero vendor lock-in**: Works with any PostgreSQL host (Supabase, AWS RDS, Google Cloud SQL, self-hosted)
 - **Migration path**: Easy to move from Supabase → AWS RDS → Google Cloud SQL → on-premises
-- **No proprietary APIs**: Standard `DATABASE_URL`, no platform-specific code
+- **No proprietary APIs**: Standard `POSTGRES_URL`, no platform-specific code
 - **Security flexibility**: Can migrate to environments with KMS encryption, VPC isolation, HSMs
 
 **Cons**
@@ -214,9 +214,9 @@ We will use **Drizzle ORM** for database operations in the backend API.
 - **Plain SQL generation**: Drizzle generates standard PostgreSQL queries, no ORM-specific runtime
 - **Zero vendor lock-in**: Works with any PostgreSQL host (Supabase, AWS RDS, Google Cloud SQL, self-hosted)
 - **Migration path**: Easy to move from Supabase → AWS RDS → Google Cloud SQL → on-premises
-- **No proprietary APIs**: Standard `DATABASE_URL`, no platform-specific code
+- **No proprietary APIs**: Standard `POSTGRES_URL`, no platform-specific code
 - **Security flexibility**: Can migrate to environments with KMS encryption, VPC isolation, HSMs
-- **Chosen for portability**: SQL + Drizzle stay host-agnostic. Basilic’s shipped path is Vercel + `DATABASE_URL` Postgres; GCP/AWS remain unresolved adopter choices.
+- **Chosen for portability**: SQL + Drizzle stay host-agnostic. Basilic’s shipped path is Vercel + `POSTGRES_URL` Postgres; GCP/AWS remain unresolved adopter choices.
 
 ## Implementation Details
 
@@ -241,7 +241,7 @@ Drizzle is integrated with the Fastify-based API through functional patterns:
 - Database connection (supports both PGLite and PostgreSQL)
 - Drizzle instance with schema exported from `@repo/db/schema`
 - Schema exports for type inference
-- Standard `DATABASE_URL` connection string
+- Standard `POSTGRES_URL` connection string
 
 ### Migrations
 
@@ -269,7 +269,7 @@ Queries use Drizzle's composable query builder:
 - Queries are composable and type-safe at compile time
 - No runtime code generation required
 - Regular schema reviews and migrations as requirements evolve
-- **Portability**: Migration between database hosts requires only changing `DATABASE_URL`
+- **Portability**: Migration between database hosts requires only changing `POSTGRES_URL`
 - **Complements Fastify**: Both stay portable; Basilic ships on Vercel. GCP/AWS are adopter options, not a Basilic destination.
 
 ## Related Documentation

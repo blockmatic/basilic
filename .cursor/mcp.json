@@ -57,6 +57,10 @@
     "next": {
       "url": "https://mcp.vercel.com/gaboesquivel/basilic-next",
       "description": "Next.js web application context"
+    },
+    "agents": {
+      "url": "https://mcp.vercel.com/gaboesquivel/basilic-agents",
+      "description": "Eve Agents context"
     }
   }
 }

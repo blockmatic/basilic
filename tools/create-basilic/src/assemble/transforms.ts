@@ -35,7 +35,7 @@ function stripVercelMcp({ destRoot }: { destRoot: string }) {
     mcpServers: Record<string, { url?: string }>
   }
   for (const [name, server] of Object.entries(mcp.mcpServers))
-    if (typeof server.url === 'string' && /basilic-(docu|fastify|next)/.test(server.url))
+    if (typeof server.url === 'string' && /mcp\.vercel\.com\/[^/]+\/basilic-/.test(server.url))
       delete mcp.mcpServers[name]
   writeFileSync(path, `${JSON.stringify(mcp, null, 2)}\n`)
 }

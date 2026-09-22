@@ -38,7 +38,7 @@ declare global {
 let pgLiteInstance: PGlite | null = null
 let dbUrl: string | null = null
 
-export const TEST_DATABASE_URL = 'postgresql://localhost/test'
+const testPostgresUrl = 'postgresql://localhost/test'
 
 /**
  * Get the database directory path for the current worker.
@@ -64,13 +64,13 @@ export async function getTestDatabase() {
     // Use in-memory PGLite - more stable than file-based with Vitest (avoids Aborted)
     pgLiteInstance = new PGlite()
     await pgLiteInstance.waitReady
-    dbUrl = TEST_DATABASE_URL
+    dbUrl = testPostgresUrl
     // Expose for getDb() to use same instance (avoids dynamic import resolution issues in Vitest)
     if (typeof globalThis !== 'undefined') globalThis.__testPgliteInstance = pgLiteInstance
   }
   return {
     instance: pgLiteInstance,
-    url: dbUrl ?? TEST_DATABASE_URL,
+    url: dbUrl ?? testPostgresUrl,
     dir: getWorkerDbDir(),
   }
 }

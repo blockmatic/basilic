@@ -19,11 +19,13 @@ const jwtSecretSchema = isProduction
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),
+    EVE_INTERNAL_HOST_BUILD_OUTPUT_DIRECTORY: z.string().min(1).optional(),
     PGLITE: z
       .string()
       .optional()
       .transform(val => parseBool(val, false)),
-    DATABASE_URL: z
+    POSTGRES_URL: z
       .string()
       .optional()
       .transform(val => {
@@ -31,7 +33,7 @@ export const env = createEnv({
         return val ?? ''
       })
       .refine(val => parseBool(process.env.PGLITE, false) || val.length > 0, {
-        message: 'DATABASE_URL is required when PGLITE is not enabled',
+        message: 'POSTGRES_URL is required when PGLITE is not enabled',
       }),
     JWT_SECRET: jwtSecretSchema,
     JWT_ISSUER: z.string().default('api.yourapp.com'),

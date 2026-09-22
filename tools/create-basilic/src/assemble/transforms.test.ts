@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -29,6 +29,23 @@ describe('applyAssembleTransforms', () => {
         },
       }),
     )
+    mkdirSync(join(destRoot, '.cursor'), { recursive: true })
+    writeFileSync(
+      join(destRoot, '.cursor/mcp.json'),
+      `${JSON.stringify(
+        {
+          mcpServers: {
+            github: { command: 'npx', args: ['@modelcontextprotocol/server-github'] },
+            docu: { url: 'https://mcp.vercel.com/gaboesquivel/basilic-docu' },
+            fastify: { url: 'https://mcp.vercel.com/gaboesquivel/basilic-fastify' },
+            next: { url: 'https://mcp.vercel.com/gaboesquivel/basilic-next' },
+            agents: { url: 'https://mcp.vercel.com/gaboesquivel/basilic-agents' },
+          },
+        },
+        null,
+        2,
+      )}\n`,
+    )
     applyAssembleTransforms({ destRoot })
     const lock = JSON.parse(readFileSync(join(destRoot, 'skills-lock.json'), 'utf8')) as {
       skills: { 'w-plan': { source: string; sourceType: string; skillPath: string }; f?: unknown }
@@ -43,5 +60,13 @@ describe('applyAssembleTransforms', () => {
     expect(portless.apps['apps/web']).toEqual({ name: 'basilic', script: 'dev:app' })
     expect(portless.apps['apps/docu']).toBeUndefined()
     expect(portless.apps['apps/agents']).toBeUndefined()
+    const mcp = JSON.parse(readFileSync(join(destRoot, '.cursor/mcp.json'), 'utf8')) as {
+      mcpServers: Record<string, unknown>
+    }
+    expect(mcp.mcpServers.github).toBeDefined()
+    expect(mcp.mcpServers.docu).toBeUndefined()
+    expect(mcp.mcpServers.fastify).toBeUndefined()
+    expect(mcp.mcpServers.next).toBeUndefined()
+    expect(mcp.mcpServers.agents).toBeUndefined()
   })
 })

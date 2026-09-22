@@ -228,7 +228,8 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
     await expect(page.getByRole('button', { name: 'Dictate to the board' })).toHaveCount(0)
     await page.getByRole('textbox', { name: 'Command' }).fill('top 10 coins today')
-    await expect(page.getByRole('button', { name: 'Send' })).toBeEnabled()
+    await expect(page.getByRole('textbox', { name: 'Command' })).toHaveValue('top 10 coins today')
+    await expect(page.getByRole('button', { name: 'Send' })).toBeEnabled({ timeout: 15_000 })
   })
 
   test('typed command talks to eve', async ({ page }) => {
