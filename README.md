@@ -10,12 +10,12 @@ Fork this repository to contribute. [Docs](https://basilic-docs.vercel.app/docs)
 
 ## Features
 
-- **Agent contract** — `AGENTS.md`, Basilic `/w-*` playbooks, and stack skills in git for any coding agent or IDE
-- **OpenAPI and auth** — Fastify REST, Swagger UI, JWT and API key auth for all clients
-- **Generated clients** — Type-safe SDKs from OpenAPI via HeyAPI
-- **Web and mobile on the API** — Next.js coin tracker, React Query hooks, Expo UI scaffold
-- **Vercel by default, portable** — Shipped on Vercel + Supabase; ordinary Node, HTTP, and Postgres if you leave
-- **Security built in** — Pre-commit checks, Gitleaks, OSV, and DeepSec in CI
+- 🤖 **Agent contract** — `AGENTS.md`, Basilic `/w-*` (`/w-plan` `/w-grill` `/w-wayfinder` `/w-build` `/w-ship`), stack skills in git, and CodeRabbit. Glob Cursor rules as adapters, `@repo/error`, Pino logging, shared TypeScript and style. Any coding agent or IDE that can read those files.
+- 🔌 **OpenAPI and auth** — Fastify REST, Swagger UI, JWT and API key auth for all clients. Type-safe SDKs from OpenAPI via HeyAPI. End-to-end types from database to frontend.
+- 🧩 **Web and mobile on the API** — Next.js coin tracker, React hooks, Expo UI scaffold, Fastify API (not a signer or OpenAI template). ShadcnUI design system and shared utilities in a Turbo monorepo.
+- 🚀 **Vercel by default, portable** — Shipped path is Vercel + Supabase; ordinary Node, HTTP, and Postgres if you leave.
+- 🛡️ **Security built in** — Biome, Git workflows, and pre-commit hooks. Automated checks in CI (Gitleaks, OSV, DeepSec).
+- ⛓️ **Multichain (API)** — EVM and Solana SIWE/SIWS on Fastify; shared `@repo/utils/web3` helpers — not a web wallet demo.
 
 ## Technology stack
 
