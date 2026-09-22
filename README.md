@@ -69,7 +69,7 @@ Run with `pnpm <script>`.
 
 **Primary**
   - `build` — Build packages and apps
-  - `dev` — Ensure Postgres, then Turbo TUI (named `https://*.localhost` URLs)
+  - `dev` — Ensure the Portless proxy and Postgres, then Turbo TUI (named `https://*.localhost` URLs)
   - `qa` — Full check: install (if needed) → checktypes → lint → OpenAPI drift → build → test:scripts → test (unit) → test:e2e (Fastify + Next, `SKIP_BUILD=1`)
 **Format / Lint**
   - `checktypes` — Type-check all packages

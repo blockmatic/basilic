@@ -46,7 +46,7 @@ pnpm dev
 
 Ensures Docker Postgres is up, then starts Turborepo's TUI — the same left-pane task list as `pnpm lint:eslint` / `pnpm test`. Eve `dev` waits on `@repo/db#db:start`. Skip Docker with `SKIP_DB_START=1` (use that for PGLite-only generated apps). Click or arrow-key between logs. Ctrl-C stops Node watchers; Postgres stays up until `pnpm db:stop`.
 
-This repo's TUI includes API (`https://api.basilic.localhost`, `GET /health`, `/reference`), web (`https://basilic.localhost` — login `test@test.ai`), eve (`https://agents.basilic.localhost/eve/command/v1/health` and `/eve/chat/v1/health`), docs (`https://docu.basilic.localhost`), email preview (`https://email.basilic.localhost`), and Pattern B package watchers. Mobile stays `pnpm --filter @repo/mobile start`. Generated projects omit `apps/agents` and `apps/docu`. `pnpm setup` trusts the Portless CA and starts the HTTPS proxy on port 443 (may prompt once).
+This repo's TUI includes API (`https://api.basilic.localhost`, `GET /health`, `/reference`), web (`https://basilic.localhost` — login `test@test.ai`), eve (`https://agents.basilic.localhost/eve/command/v1/health` and `/eve/chat/v1/health`), docs (`https://docu.basilic.localhost`), email preview (`https://email.basilic.localhost`), and Pattern B package watchers. Mobile stays `pnpm --filter @repo/mobile start`. Generated projects omit `apps/agents` and `apps/docu`. If the Portless proxy is down, `pnpm dev` starts it on port 443 before Turbo (one sudo prompt). `pnpm setup` trusts the local CA.
 
 ## Manual
 

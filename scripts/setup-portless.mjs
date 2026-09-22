@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * One-time Portless machine setup: trust the local CA and start the HTTPS proxy.
- * Idempotent. Skips in CI. Privileged prompts belong here, not in `pnpm dev`.
+ * Idempotent. Skips in CI. `pnpm dev` starts the proxy again when it is down,
+ * once, before Turbo — not once per app inside the TUI.
  */
 import { spawnSync } from 'node:child_process'
 import { dirname, resolve } from 'node:path'
@@ -37,7 +38,9 @@ export function main({ env = process.env, log = console } = {}) {
 
   log.log('\n🔐 Setting up Portless (named https://*.localhost URLs)...\n')
   log.log('This may ask for OS confirmation or sudo to trust the local CA and bind port 443.')
-  log.log('Re-running this script is safe. Daily `pnpm dev` does not repeat these steps.\n')
+  log.log(
+    'Re-running this script is safe. Daily `pnpm dev` does not repeat CA trust, but may restart the proxy when it is unavailable.\n',
+  )
 
   const trust = runPortless(['trust'])
   if (trust.status !== 0) {
@@ -65,7 +68,7 @@ export function main({ env = process.env, log = console } = {}) {
     '\nExisting .env files are not overwritten. Update app URLs to those hosts if they still use localhost:<port>.',
   )
   log.log(
-    'After reboot, `pnpm exec portless proxy start` or `portless service install` keeps :443 available.\n',
+    'After reboot, `pnpm exec portless proxy start` or `pnpm exec portless service install` keeps :443 available.\n',
   )
   return 0
 }
