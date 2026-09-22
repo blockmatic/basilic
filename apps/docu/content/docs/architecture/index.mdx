@@ -3,19 +3,19 @@ title: "Architecture Overview"
 description: "Four planes, Vercel default, portable runtime."
 ---
 
-Basilic assembles a **product cut** on the Vercel ecosystem: Fastify as the scored API and agent-discovery host, eve as the durable agent runtime on a **sibling** project, Next.js as a typed client, and `@repo/*` packages for domain logic. The in-box web sample is a coin tracker so the cut is visible — not a second product.
+**Basilic** is a starter for Agentic Systems. Fastify is the scored API and agent-discovery host, eve is the durable agent runtime on a **sibling** project, Next.js is a typed client, and `@repo/*` packages hold domain logic. Default host is the Vercel ecosystem.
 
 **Default host:** [Vercel](/docs/deployment/vercel) + Supabase. **Exit:** ordinary Node (`Fastify listen`, `eve start`) and PostgreSQL — see [Portability](/docs/architecture/portability).
 
 ```mermaid
 flowchart TB
   subgraph clients [Clients]
-    Web[Next_board]
+    Web[Next_client]
     CLI[repo_cli]
     Mobile[Expo_scaffold]
   end
   subgraph control [Fastify_control]
-    API[OpenAPI_auth_coins]
+    API[OpenAPI_auth]
     Generate[POST_ai_generate]
     AgentsMeta[GET_agents]
   end
@@ -52,9 +52,9 @@ flowchart TB
 | **Control** | Product HTTP, OpenAPI, auth, `POST /ai/generate`, `GET /agents` metadata | `apps/api` (Fluid Function on Vercel) |
 | **Interaction** | Durable command and chat agents, tools, Workflow + Sandbox | `apps/agents` (eve sibling; not on the scored Fastify URL) |
 | **Domain** | DB, markets, on-chain reads — no Next imports | `@repo/db`, `@repo/markets`, `@repo/onchain` |
-| **Presentation** | json-render board, composeSpec on Send, URL restore | `apps/web` |
+| **Presentation** | Next.js client, json-render specs, `@repo/core` | `apps/web` |
 
-Why this split: agents discover and call **HTTP** on Fastify (`/openapi.json`, `/llms.txt`, RFC 9727 catalog). Interactive streams and durable turns belong on **eve**, not a Fastify proxy. Next renders the board and calls `@repo/core`; it does not own the API. Detail: [AI](/docs/architecture/ai), [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
+Why this split: agents discover and call **HTTP** on Fastify (`/openapi.json`, `/llms.txt`, RFC 9727 catalog). Interactive streams and durable turns belong on **eve**, not a Fastify proxy. Next calls `@repo/core`; it does not own the API. Detail: [AI](/docs/architecture/ai), [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
 
 Machine contract for API consumers is **OpenAPI** + `@repo/core` + CLI — not product MCP ([ADR 009](/docs/adrs/009-api-architecture)).
 

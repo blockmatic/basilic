@@ -20,7 +20,7 @@ const facts = [
   {
     title: 'Next.js client + Expo scaffold',
     href: '/docs/architecture/frontend',
-    body: 'Coin-tracker sample on Next.js with `@repo/core`. Expo shares tokens via `@repo/ui`; not a mobile API client yet.',
+    body: 'Next.js client on `@repo/core`. Expo shares tokens via `@repo/ui`; not a mobile API client yet.',
   },
   {
     title: 'Agent skills and playbooks',
@@ -33,9 +33,9 @@ const facts = [
     body: 'Shipped on Vercel + Supabase; Fastify `listen` and `eve start` when you leave. Ordinary Node, HTTP, and Postgres.',
   },
   {
-    title: 'eve + json-render sample',
+    title: 'eve + json-render',
     href: '/docs/architecture/eve',
-    body: 'Durable command and chat on a sibling host; Next composeSpec and URL restore for the board. Needs keys or Ollama for LLM paths.',
+    body: 'Durable command and chat on a sibling host. Next composeSpec renders json-render specs. Needs keys or Ollama for LLM paths.',
   },
   {
     title: 'Quality & Security Built-In',

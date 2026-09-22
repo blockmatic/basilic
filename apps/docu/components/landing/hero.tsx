@@ -13,7 +13,8 @@ export function Hero() {
         FullStack Swissknife
       </h1>
       <p className="mt-5 max-w-xl text-pretty text-base text-muted-foreground md:mt-6 md:text-lg">
-        Own the API. Hang web, mobile, and coding agents off it.
+        Basilic is a starter for Agentic Systems. Own the API. Hang web, mobile, and coding agents
+        off it.
       </p>
       <div className="mt-10 md:mt-12">
         <CommandPanel />

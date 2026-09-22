@@ -1,8 +1,10 @@
 # Basilic: API-First Agentic TypeScript FullStack Swissknife
 
+Basilic is a starter for Agentic Systems.
+
 Own the API. Hang web, mobile, and coding agents off it.
 
-API-first agentic TypeScript fullstack: a Fastify API agents can discover (OpenAPI, `llms.txt`), eve for durable command and chat, Next.js and Expo as clients. The in-box sample is a coin tracker. Deploy on [Vercel](https://basilic-docs.vercel.app/docs/deployment/vercel); exit is ordinary Node (`listen` / `eve start`). Agents read `AGENTS.md` and the spec — the same surface you ship.
+Fastify OpenAPI agents can discover (`llms.txt`, RFC 9727 catalog), eve for durable command and chat, Next.js and Expo as clients, generated SDKs from the spec. Deploy on [Vercel](https://basilic-docs.vercel.app/docs/deployment/vercel); exit is ordinary Node (`listen` / `eve start`). Agents read `AGENTS.md` and the spec — the same surface you ship.
 
 **Start a product** (when published): `npx create-basilic@latest my-app`. The npm package is not on `latest` yet — use this repository with `pnpm setup` to run the full reference (including `apps/agents`).
 
@@ -15,7 +17,7 @@ Fork this repository to contribute. [Docs](https://basilic-docs.vercel.app/docs)
 - 🔌 **OpenAPI and auth** — Fastify REST, Swagger UI, JWT and API key auth for all clients.
 - 📦 **SDK generation** — Type-safe clients from OpenAPI via HeyAPI.
 - 🧑‍💻 **TypeScript-first** — End-to-end types from database to frontend.
-- 🧩 **Web and mobile on the API** — Next.js coin tracker, React hooks, Expo UI scaffold, Fastify API (not a signer or OpenAI template).
+- 🧩 **Web and mobile on the API** — Next.js client, React Query hooks, Expo UI scaffold, Fastify API.
 - 🎨 **Turbo monorepo + design system** — ShadcnUI components with shared utilities.
 - 🚀 **Vercel by default, portable** — Shipped path is Vercel + Supabase; ordinary Node, HTTP, and Postgres if you leave.
 - ⚙️ **Preconfigured dev tools** — Biome, Git workflows, hooks, and security checks.
@@ -33,7 +35,7 @@ Fork this repository to contribute. [Docs](https://basilic-docs.vercel.app/docs)
 ## Apps
 
 - **[API](apps/api/README.md)** — Type-safe REST API built with Fastify & OpenAPI
-- **[Web App](apps/web/README.md)** — Next.js coin tracker sample
+- **[Web App](apps/web/README.md)** — Next.js client on `@repo/core`
 - **[Mobile App](apps/mobile/README.md)** — Expo UI scaffold (shared `@repo/ui`; not an API client yet)
 - **[Documentation](apps/docu/README.md)** — Fumadocs site (architecture, ADRs, development)
 
