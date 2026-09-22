@@ -3,8 +3,8 @@
  * Data seed after a local wipe. Invoked from `pnpm reset` and Fastify boot (`seedIdentityIfEmpty`).
  * Not from `pnpm db:migrate` / `pnpm build` alone.
  *
- * Add idempotent inserts here (`onConflictDoNothing()` / upserts). Uses the same
- * PostgreSQL vs PGLite rules as `scripts/migrate.ts` (`RUN_PG_MIGRATE`, `POSTGRES_URL`).
+ * Add idempotent inserts here (`onConflictDoNothing()` / upserts). Skips when PGLite
+ * or `NODE_ENV=test` (same gate as migrate, without Vercel Preview skip).
  */
 import 'dotenv/config'
 import { resolve } from 'node:path'

@@ -161,7 +161,7 @@ The system uses a `PGLITE` environment variable to control database selection:
 
 - **`PGLITE=true`**: Uses in-memory PGLite database (useful for preview branches, local dev without PostgreSQL)
 - **`PGLITE=false`** (default): Uses PostgreSQL via `POSTGRES_URL`
-- When `PGLITE=true`, `POSTGRES_URL` is optional and defaults to PGLite URL
+- When `PGLITE=true`, `POSTGRES_URL` is optional (PGLite ignores the connection string)
 - When `PGLITE=false`, `POSTGRES_URL` is required
 - Parse `PGLITE` with `parseBool` (`1` / `true` / `yes` / `on`). Do not use `z.coerce.boolean()` — the string `"false"` would enable PGLite.
 

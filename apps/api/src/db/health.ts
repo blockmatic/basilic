@@ -2,36 +2,32 @@ import { Pool } from 'pg'
 import { env } from '../lib/env.js'
 
 const maxRetries = 10
-const initialRetryDelay = 1000 // 1 second
-const maxWaitTime = 30000 // 30 seconds
+const initialRetryDelay = 1000
+const maxWaitTime = 30000
 
-/**
- * Wait for database connection to be available
- * Retries with exponential backoff until connection succeeds or timeout is reached
- */
+function postgresConnectionError({ detail, cause }: { detail: string; cause?: unknown }) {
+  const suffix =
+    cause instanceof Error ? `: ${cause.message}` : cause != null ? `: ${String(cause)}` : ''
+  return new Error(`PostgreSQL connection failed (${detail})${suffix}`, { cause })
+}
+
 export async function waitForDatabase(logger?: {
   info: (msg: string) => void
   error: (msg: string, err?: unknown) => void
 }): Promise<void> {
-  // Skip health check for PGLite (doesn't need connection check)
   if (env.PGLITE === true || env.NODE_ENV === 'test') return
 
   const startTime = Date.now()
   let attempt = 0
 
   while (attempt < maxRetries) {
-    // Calculate timeout per attempt: distribute maxWaitTime across retries
-    const connectionTimeoutMillis = Math.max(
-      Math.floor(maxWaitTime / maxRetries),
-      1000, // Minimum 1 second timeout
-    )
+    const connectionTimeoutMillis = Math.max(Math.floor(maxWaitTime / maxRetries), 1000)
     const pool = new Pool({
       connectionString: env.POSTGRES_URL,
       connectionTimeoutMillis,
     })
 
     try {
-      // Try to connect
       const client = await pool.connect()
       client.release()
       await pool.end()
@@ -46,10 +42,10 @@ export async function waitForDatabase(logger?: {
       const elapsed = Date.now() - startTime
       if (elapsed >= maxWaitTime) {
         logger?.error(`Database connection timeout after ${maxWaitTime}ms`, err)
-        throw new Error(
-          `Database connection failed after ${maxWaitTime}ms. Make sure your database is running and accessible via POSTGRES_URL. Error: ${err instanceof Error ? err.message : String(err)}`,
-          { cause: err },
-        )
+        throw postgresConnectionError({
+          detail: `timeout after ${maxWaitTime}ms`,
+          cause: err,
+        })
       }
 
       if (attempt < maxRetries) {
@@ -64,7 +60,5 @@ export async function waitForDatabase(logger?: {
 
   const elapsed = Date.now() - startTime
   logger?.error(`Database connection failed after ${attempt} attempts (${elapsed}ms)`)
-  throw new Error(
-    `Database connection failed after ${attempt} attempts. Make sure your database is running and accessible via POSTGRES_URL`,
-  )
+  throw postgresConnectionError({ detail: `${attempt} attempts (${elapsed}ms)` })
 }
