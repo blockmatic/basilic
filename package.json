@@ -61,7 +61,7 @@
     "portless": "^0.15.6",
     "simple-git-hooks": "2.14.0",
     "tsup": "^8.5.1",
-    "turbo": "^2.10.13",
+    "turbo": "^2.11.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vitest": "^5.0.1"
   },

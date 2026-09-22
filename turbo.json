@@ -1,5 +1,5 @@
 {
-  "$schema": "https://turbo.build/schema.json",
+  "$schema": "https://v2-11-2.turborepo.dev/schema.json",
   "ui": "tui",
   "globalPassThroughEnv": ["SKIP_KILL_PORTS", "SKIP_BUILD", "SKIP_DB_START"],
   "tasks": {
