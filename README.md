@@ -1,8 +1,6 @@
-# Basilic
+![Basilic](docs/basilic-hero.png)
 
-<p align="center">
-  <img src="docs/basilic-hero.png" alt="Basilic Hero" width="800"/>
-</p>
+# Basilic
 
 Start a product without wiring auth, clients, and agent hosts from scratch. You get a multi-client, agentic architecture already in place — Next.js with Generative UI, an HTTP API, generated clients, and a CLI — so the work goes into features.
 
