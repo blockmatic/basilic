@@ -1,11 +1,15 @@
 ---
 title: "Introduction"
-description: "API-first agentic TypeScript fullstack swissknife: Fastify OpenAPI, eve, Next.js, Expo, and AGENTS.md."
+description: "API-first foundation for agentic products: one HTTP API, durable agents, generated clients, CLI, and Generative UI."
 ---
 
-**Basilic** is a starter for Agentic Systems. It is an API-first agentic TypeScript fullstack swissknife. Own the API; hang web, mobile, and coding agents off it.
+**Basilic** is an API-first foundation for agentic products. Define capabilities on the Fastify API once. Web, CLI, generated SDKs, coding agents, and durable eve agents consume that contract.
 
-Fastify is the control plane (OpenAPI, auth, agent discovery). [Eve](/docs/architecture/eve) runs command and chat on a sibling host. Next.js and Expo are typed clients; json-render is the UI spec layer. `AGENTS.md` and stack skills serve coding agents. Fastify `/ai/generate` is optional [API chrome](/docs/architecture/ai), not the [Product Ready](/docs/testing/product-ready) bar. **This repository** includes `apps/agents`; [`npx create-basilic`](/docs/development) omits agents until a later release — clone this repo for the full Agent Stack reference.
+API-first here means humans are not the only clients. Session JWTs serve the browser. API keys serve the CLI, scripts, and other machine callers. eve runs `command` and `chat` on a sibling host. Generative UI (Jev, json-render, shadcn/Base UI) is how agents compose the web surface. There is no product MCP.
+
+This repository includes `apps/agents`. [`create-basilic`](/docs/development) omits agents until a later release. Clone this repo for the full reference. Fastify `/ai/generate` is optional [API chrome](/docs/architecture/ai), not the [Product Ready](/docs/testing/product-ready) bar.
+
+Start with [Getting Started](/docs/development). Architecture and the capability set live under [Architecture](/docs/architecture).
 
 LLM-friendly index: [`/llms.txt`](/llms.txt) (table of contents) and [`/llms-full.txt`](/llms-full.txt) (full text dump).
 
@@ -17,11 +21,11 @@ LLM-friendly index: [`/llms.txt`](/llms.txt) (table of contents) and [`/llms-ful
       <h3 className="font-heading text-lg font-semibold">Architecture</h3>
     </div>
     <div className="text-sm text-muted-foreground">
-      Monorepo, API, auth, frontend, AI, observability, and security.
+      Product API, agents, Generative UI, auth, and how the planes fit.
     </div>
     <div className="mt-4">
       <a href="/docs/architecture" className="text-sm font-medium text-primary hover:underline">
-        Learn more →
+        Architecture overview →
       </a>
     </div>
   </div>
@@ -31,11 +35,11 @@ LLM-friendly index: [`/llms.txt`](/llms.txt) (table of contents) and [`/llms-ful
       <h3 className="font-heading text-lg font-semibold">Development</h3>
     </div>
     <div className="text-sm text-muted-foreground">
-      Setup, tooling, packages, and workflow playbooks plus skills.
+      Clone, setup, packages, CLI, and the coding-agent contract.
     </div>
     <div className="mt-4">
       <a href="/docs/development" className="text-sm font-medium text-primary hover:underline">
-        Learn more →
+        Getting started →
       </a>
     </div>
   </div>
@@ -45,11 +49,11 @@ LLM-friendly index: [`/llms.txt`](/llms.txt) (table of contents) and [`/llms-ful
       <h3 className="font-heading text-lg font-semibold">Testing</h3>
     </div>
     <div className="text-sm text-muted-foreground">
-      Vitest, Playwright, and the Product Ready generate-and-run bar.
+      Product Ready bar, then Vitest and Playwright.
     </div>
     <div className="mt-4">
       <a href="/docs/testing" className="text-sm font-medium text-primary hover:underline">
-        Learn more →
+        Testing →
       </a>
     </div>
   </div>
@@ -63,7 +67,7 @@ LLM-friendly index: [`/llms.txt`](/llms.txt) (table of contents) and [`/llms-ful
     </div>
     <div className="mt-4">
       <a href="/docs/deployment" className="text-sm font-medium text-primary hover:underline">
-        Learn more →
+        Deployment →
       </a>
     </div>
   </div>

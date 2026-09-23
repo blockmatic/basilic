@@ -3,9 +3,9 @@ title: Authentication
 description: JWT access + refresh. Magic link, OAuth, Web3, passkeys, TOTP, and API keys.
 ---
 
-Auth lives in `apps/api` as JWT Bearer over Drizzle sessions. Fastify is the only issuer and revocation authority. Web cookie work uses **Next client → Next route → `@repo/core` SDK → Fastify**; the Next `api.session` cookie is an SSR/security copy, not a second session store. Domain data (profile, API keys, AI) stays browser SDK → Fastify Bearer. Next.js `proxy.ts` is a UI gate that verifies JWTs with the shared `JWT_SECRET`. It does not revoke sessions.
+Auth lives in `apps/api` as JWT Bearer over Drizzle sessions. Fastify is the only issuer and revocation authority. The browser uses a session JWT (Next cookie hop). The CLI and other machine clients use API keys (`bask_<prefix>_<secret>`, hashed at rest). Web cookie work uses **Next client → Next route → `@repo/core` SDK → Fastify**; the Next `api.session` cookie is an SSR/security copy, not a second session store. Domain data (profile, API keys, AI) stays browser SDK → Fastify Bearer. Next.js `proxy.ts` is a UI gate that verifies JWTs with the shared `JWT_SECRET`. It does not revoke sessions.
 
-Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3** (EIP-155 / Solana), **passkeys**, **TOTP** (2FA only — not a standalone sign-in method), **API keys** (`bask_<prefix>_<secret>`, hashed at rest). Linking (email, wallet, OAuth) is [Account linking](/docs/architecture/account-linking). Exact paths: `/reference` or [OpenAPI](/docs/development/openapi-generation).
+Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3** (EIP-155 / Solana), **passkeys**, **TOTP** (2FA only — not a standalone sign-in method), **API keys**. Linking (email, wallet, OAuth) is [Account linking](/docs/architecture/account-linking). Exact paths: `/reference` or [OpenAPI](/docs/development/openapi-generation).
 
 ## Tokens
 

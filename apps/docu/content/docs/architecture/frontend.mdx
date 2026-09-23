@@ -3,7 +3,7 @@ title: "Frontend Architecture"
 description: "Next.js 16 (App Router, RSC-first), React 19, Tailwind 4, and handwritten TanStack Query hooks in @repo/react."
 ---
 
-`apps/web` consumes `@repo/core` and `@repo/ui`. `apps/mobile` is a UI scaffold: it may share **tokens** later, not components or generated API types today. `apps/docu` uses `@repo/ui` only — it does not depend on `@repo/core` or `@repo/react`. It loads the same Inter, Poppins, and Geist Mono CSS variables as `apps/web`. Web → Core; Error → Web.
+`apps/web` consumes `@repo/core` and `@repo/ui` and hosts Generative UI (json-render `Renderer` + `@repo/ui` catalog). `apps/mobile` is a UI scaffold: it shares `@repo/ui` CSS **tokens** today, while its native theme values remain local; it does not share components or generated API types. `apps/docu` uses `@repo/ui` only — it does not depend on `@repo/core` or `@repo/react`. It loads the same Inter, Poppins, and Geist Mono CSS variables as `apps/web`. Web → Core; Error → Web.
 
 ## Layout
 
@@ -103,7 +103,7 @@ const [filters, setFilters] = useQueryStates({
 
 Compose with Base UI `render` (and `nativeButton={false}` when the node is not a button), not Radix `asChild`. Style parts with `data-slot` and open/checked with `data-open` / `data-checked` (Tailwind `data-open:*`, not `data-[state=open]:`). Full attribute list: [ADR 013](/docs/adrs/013-shadcn-base-ui).
 
-The dashboard composer lives on the coin board (`Commands` | `Chat` chrome inside the same client island as the table). Dictation is Web Speech into that box (review, then Send). The board catalog is `apps/web/lib/genui` plus `apps/web/components/genui` (names map to `@repo/ui`). Catalogs in `apps/web/components/assistant` stay as chat fallbacks. Fastify has no `POST /ai/chat`; Chat Send uses eve. Agent UI work: `/ui` for surfaces. Reuse `@repo/ui` before new primitives (`/shadcn`). Compound APIs: `composition-patterns`. Visual direction stays `frontend-design`; existing tokens win. Brand and palette rules: root `DESIGN.md`. UI code checklist: `web-design-guidelines`. Do not add a second design skill or generate `DESIGN.md` from `tokens.css`.
+The dashboard composer lives on the coin board (`Commands` | `Chat` chrome inside the same client island as the table). Dictation is Web Speech into that box (review, then Send). The board catalog is `apps/web/lib/genui` plus `apps/web/components/genui` (names map to `@repo/ui`). Catalogs in `apps/web/components/assistant` stay as chat fallbacks. Fastify has no `POST /ai/chat`; Chat Send uses eve. Agent UI work: `/ui` for surfaces. Reuse `@repo/ui` before new primitives (`/shadcn`). Compound APIs: `vercel-composition-patterns`. Existing tokens win over craft skills. Brand and palette rules: root `DESIGN.md`. UI code checklist: `web-design-guidelines`. Do not add a second design skill or generate `DESIGN.md` from `tokens.css`.
 
 ## Web3 (apps/web)
 

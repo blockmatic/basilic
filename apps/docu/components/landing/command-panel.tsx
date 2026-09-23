@@ -3,7 +3,8 @@
 import { Button } from '@repo/ui/components/button'
 import { useRef, useState } from 'react'
 
-const createCommand = 'npx create-basilic@latest my-app'
+const setupCommand =
+  'git clone https://github.com/blockmatic/basilic.git && cd basilic && pnpm setup'
 
 export function CommandPanel() {
   const [copied, setCopied] = useState(false)
@@ -11,7 +12,7 @@ export function CommandPanel() {
 
   async function copyCommand() {
     try {
-      await navigator.clipboard.writeText(createCommand)
+      await navigator.clipboard.writeText(setupCommand)
       setCopied(true)
       window.clearTimeout(timeoutRef.current)
       timeoutRef.current = window.setTimeout(() => setCopied(false), 2000)
@@ -26,7 +27,7 @@ export function CommandPanel() {
         <span className="text-muted-foreground" aria-hidden="true">
           {'$ '}
         </span>
-        <code className="whitespace-nowrap text-foreground">{createCommand}</code>
+        <code className="whitespace-nowrap text-foreground">{setupCommand}</code>
       </pre>
       <Button
         type="button"

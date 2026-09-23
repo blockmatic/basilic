@@ -1,6 +1,6 @@
 # @repo/react
 
-Provides React Query hooks for `@repo/core` API functions.
+Provides React Query hooks for `@repo/core` API functions. Auth-focused surface (session, OAuth, passkeys, API keys, web3). Docs: [OpenAPI generation](https://basilic-docs.vercel.app/docs/development/openapi-generation).
 
 ## Overview
 

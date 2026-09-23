@@ -1,8 +1,8 @@
 # Web App
 
-In-box **coin tracker** sample (not Markets, not a signer). **J1:** cached `GET /coins` (fixture if vendors are down) and chips with no LLM. **J2:** Commands type or talk → generated table, chart, account, or dashboard; GET restores `elements` with no model. Chat is an eve transcript, not nav. Live CoinGecko Demo boards keep CoinGecko attribution.
+Next.js 16 client on the Basilic product API (`@repo/core`, `@repo/react`). Host for Generative UI: json-render `Renderer` plus `@repo/ui` (shadcn/Base UI). The in-box sample is a coin tracker demo shell; product architecture is [Frontend](https://basilic-docs.vercel.app/docs/architecture/frontend) and [AI](https://basilic-docs.vercel.app/docs/architecture/ai).
 
-Next.js 16 dashboard for the Basilic stack: signed-in home is a json-render `Renderer` on the coin island (`GET /coins` + nuqs `SearchQuery` + `surface` / `elements` / chrome). Share copies the current `/` href. `surface=account` is catalog UserInfo plus this JWT’s watchlist, TokenTable, and NftGrid from `GET /account/wallet`. `surface=chart` is Line/Area/Bar recipes bound to `$state.series` from `GET /coins/:assetId/candles`. `surface=dashboard` is ephemeral overview widgets (`$state.global` from `GET /coins/global`, `$state.trending` from `GET /coins/trending`, plus a table). The catalog lives in `lib/genui`; `components/genui` maps names to `@repo/ui`. Typed Commands send to the eve **command** agent through **`useEveAgent` (`eve/react`)** (`GET /agents` for `host`, Bearer `headers`), then Next `composeBoardSpec` when `AI_GATEWAY_API_KEY` is set; otherwise `composeSurface`. Composer can dictate into the same input; full dictation behavior is in [Frontend Architecture](../docu/content/docs/architecture/frontend.mdx). Chat tab uses a second `useEveAgent` against eve **chat** (`https://agents.basilic.localhost/eve/chat`; `pnpm --filter @repo/agents eve:dev:chat`); it does not compose or call Fastify `/ai/generate`. Do not import `eve/client` into Next. Uses `@repo/core` and `@repo/react` against the Fastify API. From the monorepo root: `pnpm db:start`, then `pnpm dev` (Turbo TUI includes web, API, and eve command/chat). See [Product Ready](../docu/content/docs/testing/product-ready.mdx).
+Typed Commands use eve **command** through `useEveAgent` (`eve/react`). Chat uses eve **chat**. Do not import `eve/client` into Next. From the repo root: `pnpm db:start`, then `pnpm dev`. [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready).
 
 ## Tech Stack
 
@@ -27,7 +27,7 @@ See the [monorepo documentation](../docu/content/docs/architecture/monorepo.mdx)
 ### Prerequisites
 
 - **Node.js** 24.x (LTS Krypton)
-- **pnpm** 12.4.2
+- **pnpm** 12.5.1
 
 ### Installation
 

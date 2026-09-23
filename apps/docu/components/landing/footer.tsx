@@ -16,7 +16,7 @@ export function Footer() {
     <LandingSection as="footer" bordered>
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-          Fork it. Ship it.
+          Clone the reference
         </h2>
         <Link
           href="/docs/development"

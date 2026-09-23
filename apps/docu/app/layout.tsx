@@ -23,9 +23,9 @@ const fontMono = Geist_Mono({
   variable: '--font-geist-mono',
 })
 
-const siteTitle = 'Basilic · API-First Agentic TypeScript FullStack Swissknife'
+const siteTitle = 'Basilic · API-first foundation for agentic products'
 const siteDescription =
-  'Basilic is a starter for Agentic Systems. Own the API. Hang web, mobile, and coding agents off it. Fastify OpenAPI, Next.js, and Expo. Deploy on Vercel; ordinary Node and Postgres if you leave.'
+  'Define the product API once. Web, CLI, generated clients, and durable agents operate against it. Generative UI: Jev, json-render, shadcn/Base UI.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),

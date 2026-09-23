@@ -30,6 +30,7 @@ const sentinelPaths = [
   ['.github/workflows/release-please.yml', 'exclude'],
   ['.github/workflows/publish-create-basilic.yml', 'exclude'],
   ['CHANGELOG.md', 'exclude'],
+  ['CONTRIBUTING.md', 'exclude'],
 ] as const
 
 describe('exact-version fixture', () => {
@@ -56,6 +57,7 @@ describe('exact-version fixture', () => {
         'release-please-config.json',
         '.release-please-manifest.json',
         'CHANGELOG.md',
+        'CONTRIBUTING.md',
         '__dev/',
       ],
       transform: [

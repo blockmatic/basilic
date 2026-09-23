@@ -1,33 +1,34 @@
 ---
 title: "Getting Started"
-description: "Node 24, pnpm 12.4.2, create-basilic, setup, and run the apps."
+description: "Node 24, pnpm 12.5.1, clone, setup, and run the apps."
 ---
 
-Vercel is the default host. Local `pnpm` is still the first command.
+Clone this repository for the full reference, including `apps/agents`. Local `pnpm` is the first command. The default deploy host is [Vercel](/docs/deployment/vercel) + Supabase.
+
+`create-basilic` is the project starter (`npx create-basilic@latest my-app`). It is not on npm `latest` yet (`0.0.0` in tree). Generated apps omit `apps/agents` and `apps/docu` (local docs land in `docs/basilic/`). The **API CLI** is a different binary (`basilic` in `packages/cli`) — [CLI](/docs/development/cli). [After fork](/docs/development/after-fork) lists what to replace when a generated copy is your product.
 
 ## Prerequisites
 
-Node.js **24.x (LTS Krypton)** is pinned in `.nvmrc` and `.node-version`. pnpm is pinned as `packageManager`: **12.4.2**.
+Node.js **24.x (LTS Krypton)** is pinned in `.nvmrc` and `.node-version`. pnpm is pinned as `packageManager`: **12.5.1**.
 
 ```bash
 nvm install lts/krypton
 nvm alias default lts/krypton
 nvm use
 corepack enable
-corepack prepare pnpm@12.4.2 --activate
+corepack prepare pnpm@12.5.1 --activate
 ```
 
 ## Setup
 
 ```bash
-npx create-basilic@latest my-app
-cd my-app
-pnpm run setup
+git clone https://github.com/blockmatic/basilic.git
+cd basilic
+pnpm setup
 ```
 
-This repository is for contributing to Basilic and for running the **full reference** (including `apps/agents`). `create-basilic` is not published on npm `latest` yet (`0.0.0` in tree); until it is, clone here and use `pnpm setup` below. Generated apps use `docs/basilic/` instead of `apps/docu`. [After fork](/docs/development/after-fork) lists what to replace when the generated copy is your product.
 
-`setup` installs dependencies, git hooks, **agent skills** (`blockmatic/basilic-skills` `/w-*`; lockfile hashes stay pinned), security tools, **Portless** (CA trust + HTTPS proxy), and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
+`setup` installs dependencies, git hooks, **agent skills** (`pnpm setup:skills` from `skills-lock.json`), security tools, **Portless** (CA trust + HTTPS proxy), and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
 ## First run
 

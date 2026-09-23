@@ -4,9 +4,12 @@ globs: "**/README.md"
 alwaysApply: false
 ---
 
-- Simple, succinct, technical, factual
-- Active voice, concrete examples, consistent terminology
-- Lean with links to docs site
-- Structure:  
- - Apps: Description -> Additional Info (optional) → Links, no duplication ( links to docs site ) -> pnpm commands list
- - Packages: Description -> Usage -> Additional Info (optional) → Links, no duplication ( links to docs site ) -> pnpm commands list
+- Simple, succinct, technical, factual; active voice
+- Root README owns the Basilic product story; other READMEs do not repeat it
+- Capability names match `apps/docu` architecture overview
+- Lean with links to the docs site; no duplication of MDX
+- Follow `.agents/skills/technical-writing/` when rewriting public READMEs
+- Structure:
+ - Root: discover → understand → try → explore (not a script encyclopedia)
+ - Apps: Description → fit → Links to docs → pnpm commands
+ - Packages: Description → Usage → Links to docs → pnpm commands

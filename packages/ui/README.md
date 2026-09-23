@@ -1,6 +1,6 @@
 # @repo/ui
 
-Shared UI component library built with Shadcn/ui and Tailwind CSS.
+Shared UI component library: shadcn/ui on Base UI (`base-vega`) and Tailwind. Catalog for Generative UI and the web/docs/mobile shells. [ADR 004](https://basilic-docs.vercel.app/docs/adrs/004-design-system), [ADR 013](https://basilic-docs.vercel.app/docs/adrs/013-shadcn-base-ui).
 
 ## Overview
 
