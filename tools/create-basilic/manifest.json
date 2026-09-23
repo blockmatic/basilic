@@ -19,6 +19,7 @@
     "release-please-config.json",
     ".release-please-manifest.json",
     "CHANGELOG.md",
+    "CONTRIBUTING.md",
     "__dev/"
   ],
   "transform": [

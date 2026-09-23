@@ -12,7 +12,7 @@ Canonical commands: [Getting Started](/docs/development). After you own the copy
 Do these in order. `pnpm setup` installs tools, copies env templates, and installs agent skills into `.agents/skills/`. It does **not** start Postgres.
 
 1. **Node 24 + pnpm** — `.nvmrc` / `packageManager` (`12.5.1`). `corepack enable` then `corepack prepare pnpm@12.5.1 --activate`.
-2. **Create the repo** — `npx create-basilic@latest my-app`.
+2. **Create the repo** — until `create-basilic` is on npm `latest`, assemble and run the local generator: `pnpm --filter create-basilic assemble && pnpm --filter create-basilic build && node tools/create-basilic/dist/cli.js my-app --yes`. To run this tree (including `apps/agents`), clone instead.
 3. **`pnpm setup`** at the repo root (install, hooks, **`pnpm setup:skills`** from `skills-lock.json`, scanners, env templates, Portless CA/proxy, Docker/Supabase CLI, Playwright Chromium). Copied API/web env sets `ALLOW_TEST=true` for local login. Setup copies templates only when dest files are **missing**; an existing `apps/api/.env` / `apps/web/.env.local` is left alone — set `ALLOW_TEST=true` yourself if those files predate this default.
 4. **`pnpm db:start`** — local Supabase Postgres (`packages/db/supabase/`). One instance per host; `pnpm db:stop` before changing `project_id`.
 5. **`pnpm dev`** — Turbo TUI. API migrates and seeds identity on boot. API at https://api.basilic.localhost (`GET /health`, `/reference`), web at https://basilic.localhost. **This repository** also starts eve (`https://agents.basilic.localhost/eve/command`, `/eve/chat`) — Commands and Chat need that host. `npx create-basilic` generated trees omit `apps/agents` until a later release. Eve is not required to sign in.

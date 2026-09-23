@@ -27,7 +27,7 @@ pnpm dev
 
 Local starter docs: `docs/basilic/`. Hosted: [Product Ready](https://basilic-docs.vercel.app/docs/testing/product-ready).
 
-Generated projects ship `skills-lock.json`, `scripts/skills-lock-manifest.mjs`, and `scripts/setup-skills.mjs`; `pnpm setup` runs `pnpm setup:skills` to install into `.agents/skills/`. Documentation pointers are rewritten to the local snapshot. The agent contract (`AGENTS.md`, `.agents/rules/always.md`) ships with the tree.
+Generated projects ship `skills-lock.json` and `scripts/setup-skills.mjs`; `pnpm setup` runs `pnpm setup:skills` to install into `.agents/skills/`. Documentation pointers are rewritten to the local snapshot. The agent contract (`AGENTS.md`, `.agents/rules/always.md`) ships with the tree.
 
 The API CLI remains `packages/cli` (`basilic` binary). This package is only the project generator.
 

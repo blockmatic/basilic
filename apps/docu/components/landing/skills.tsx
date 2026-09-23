@@ -14,7 +14,7 @@ const groups = [
   },
   {
     title: 'Workflow',
-    body: 'Basilic `/w-*` playbooks under `.agents/skills/workflow/`.',
+    body: 'Basilic `/w-*` playbooks under `.agents/skills/w-*/SKILL.md`.',
     items: ['/w-plan', '/w-build', '/w-ship'],
   },
 ]

@@ -18,10 +18,11 @@ overrides guidance for its subtree and must be read before changing files there.
    read that `.cursor/rules` file (Cursor auto-attaches it).
 3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
    task matches (after `pnpm setup` / `pnpm setup:skills`, which installs
-   catalogs from `scripts/skills-lock-manifest.mjs`; hashes in
-   `skills-lock.json` via `pnpm setup:skills` with `--agent cursor` only).
+   catalogs selected from `skills-lock.json` by `scripts/setup-skills.mjs`;
+   preserves the committed `skills-lock.json` snapshot and targets all
+   agents, not `--agent cursor` only).
    Daily path: Basilic `/w-*` under
-   `.agents/skills/workflow/w-<name>/` (`/w-plan`, `/w-grill`, `/w-wayfinder`,
+   `.agents/skills/w-<name>/` (`/w-plan`, `/w-grill`, `/w-wayfinder`,
    `/w-build`, `/w-ship`). If the harness has no `/` menu, open the
    `SKILL.md` file. Catalog:
    [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
@@ -146,8 +147,8 @@ and tests instead of relying on memory or assuming that documentation is current
   lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`,
   `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit.
 - Branch/validate/commit/push/PR: read
-  `.agents/skills/workflow/w-ship/SKILL.md`. Commit message:
-  `.agents/skills/workflow/w-commit/SKILL.md`. Slash names `/w-ship`,
+  `.agents/skills/w-ship/SKILL.md`. Commit message:
+  `.agents/skills/w-commit/SKILL.md`. Slash names `/w-ship`,
   `/w-push`, `/w-commit`, and `/w-pr` are Cursor extras.
 
 ### GitHub Actions
