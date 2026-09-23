@@ -2,7 +2,7 @@
 
 Project starter: scaffold an independent Basilic API, web, and mobile monorepo. The documentation app, this generator, and `apps/agents` are not copied into the result.
 
-The package is **not published on npm `latest` yet** (`0.0.0` in this tree). Until it is, clone the Basilic repository and run `pnpm setup`. See [Getting Started](https://basilic-docs.vercel.app/docs/development).
+The package is **not published on npm `latest` yet** (`0.0.0` in this tree). Until it is, assemble and run this CLI from the Basilic repository, then work in the generated directory. See [Getting Started](https://basilic-docs.vercel.app/docs/development).
 
 ```bash
 npx create-basilic@latest my-app

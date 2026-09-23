@@ -1,11 +1,11 @@
 ---
 title: "Getting Started"
-description: "Node 24, pnpm 12.5.1, clone, setup, and run the apps."
+description: "Node 24, pnpm 12.5.1, create-basilic, setup, and run the apps."
 ---
 
-Clone this repository for the full reference, including `apps/agents`. Local `pnpm` is the first command. The default deploy host is [Vercel](/docs/deployment/vercel) + Supabase.
+Start a product with `npx create-basilic@latest my-app`. The generator copies API, web, mobile, and shared packages into a new repo and leaves out `apps/docu`, `apps/agents`, and `tools/create-basilic`. Local docs land in `docs/basilic/`. Fork or clone this repository only to contribute upstream.
 
-`create-basilic` is the project starter (`npx create-basilic@latest my-app`). It is not on npm `latest` yet (`0.0.0` in tree). Generated apps omit `apps/agents` and `apps/docu` (local docs land in `docs/basilic/`). The **API CLI** is a different binary (`basilic` in `packages/cli`) — [CLI](/docs/development/cli). [After fork](/docs/development/after-fork) lists what to replace when a generated copy is your product.
+The package is not on npm `latest` yet (`0.0.0` in tree). Until it is, assemble and run the CLI from this repository, then work in the generated directory. The **API CLI** is a different binary (`basilic` in `packages/cli`) — [CLI](/docs/development/cli). [After fork](/docs/development/after-fork) lists what to replace when a generated copy is your product. The default deploy host is [Vercel](/docs/deployment/vercel) + Supabase.
 
 ## Prerequisites
 
@@ -19,14 +19,31 @@ corepack enable
 corepack prepare pnpm@12.5.1 --activate
 ```
 
+## Create a product
+
+```bash
+npx create-basilic@latest my-app
+cd my-app
+```
+
+`--yes` accepts safe defaults and never overwrites. The destination must be empty. `pnpm dlx create-basilic@latest my-app` is equivalent.
+
+Until `create-basilic` is on npm `latest`, from a clone of this repository:
+
+```bash
+pnpm install
+pnpm --filter create-basilic assemble && pnpm --filter create-basilic build
+node tools/create-basilic/dist/cli.js my-app --yes
+cd my-app
+```
+
+Run the rest of this page in that generated directory, not in the Basilic clone.
+
 ## Setup
 
 ```bash
-git clone https://github.com/blockmatic/basilic.git
-cd basilic
 pnpm setup
 ```
-
 
 `setup` installs dependencies, git hooks, **agent skills** (`pnpm setup:skills` from `skills-lock.json`), security tools, **Portless** (CA trust + HTTPS proxy), and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
@@ -37,7 +54,7 @@ pnpm db:start
 pnpm dev
 ```
 
-`pnpm db:start` is Supabase CLI in `@repo/db` (`packages/db/supabase/`). Fastify (and eve) apply Drizzle migrations on boot in development and seed identity when `assets` is empty. `pnpm reset` is a wipe (drop + migrate + seed), not a first-run requirement. See [ADR 008](/docs/adrs/008-database) and [Product Ready](/docs/testing/product-ready).
+`pnpm db:start` is Supabase CLI in `@repo/db` (`packages/db/supabase/`). Fastify applies Drizzle migrations on boot in development and seeds identity when `assets` is empty (eve does the same in this upstream tree). `pnpm reset` is a wipe (drop + migrate + seed), not a first-run requirement. See [ADR 008](/docs/adrs/008-database) and [Product Ready](/docs/testing/product-ready).
 
 ## Daily
 
@@ -45,9 +62,9 @@ pnpm dev
 pnpm dev
 ```
 
-Ensures Docker Postgres is up, then starts Turborepo's TUI — the same left-pane task list as `pnpm lint:eslint` / `pnpm test`. Eve `dev` waits on `@repo/db#db:start`. Skip Docker with `SKIP_DB_START=1` (use that for PGLite-only generated apps). Click or arrow-key between logs. Ctrl-C stops Node watchers; Postgres stays up until `pnpm db:stop`.
+Ensures Docker Postgres is up, then starts Turborepo's TUI — the same left-pane task list as `pnpm lint:eslint` / `pnpm test`. In this upstream repository, eve `dev` waits on `@repo/db#db:start`. Skip Docker with `SKIP_DB_START=1` (use that for PGLite-only generated apps). Click or arrow-key between logs. Ctrl-C stops Node watchers; Postgres stays up until `pnpm db:stop`.
 
-This repo's TUI includes API (`https://api.basilic.localhost`, `GET /health`, `/reference`), web (`https://basilic.localhost` — login `test@test.ai`), eve (`https://agents.basilic.localhost/eve/command/v1/health` and `/eve/chat/v1/health`), docs (`https://docu.basilic.localhost`), email preview (`https://email.basilic.localhost`), and Pattern B package watchers. Mobile stays `pnpm --filter @repo/mobile start`. Generated projects omit `apps/agents` and `apps/docu`. If the Portless proxy is down, `pnpm dev` starts it on port 443 before Turbo (one sudo prompt). `pnpm setup` trusts the local CA.
+A generated project's TUI includes API (`https://api.basilic.localhost`, `GET /health`, `/reference`), web (`https://basilic.localhost` — login `test@test.ai`), email preview (`https://email.basilic.localhost`), and Pattern B package watchers. Mobile stays `pnpm --filter @repo/mobile start`. Generated projects omit `apps/agents` and `apps/docu`. This upstream repository also starts eve (`https://agents.basilic.localhost/eve/command/v1/health` and `/eve/chat/v1/health`) and docs (`https://docu.basilic.localhost`). If the Portless proxy is down, `pnpm dev` starts it on port 443 before Turbo (one sudo prompt). `pnpm setup` trusts the local CA.
 
 ## Manual
 
@@ -56,15 +73,29 @@ Separate terminals, always from the repo root (no `cd`):
 - Postgres: `pnpm db:start`. Status: `pnpm db:status`. Stop: `pnpm db:stop`. Wipe: `pnpm reset`.
 - API: `pnpm --filter @repo/api dev` — https://api.basilic.localhost
 - Web: `pnpm --filter @repo/web dev` — https://basilic.localhost
-- Agents: `pnpm --filter @repo/agents eve:dev` — https://agents.basilic.localhost/eve/command/v1/health and `/eve/chat/v1/health`
+- Agents: `pnpm --filter @repo/agents eve:dev` (this repo) — https://agents.basilic.localhost/eve/command/v1/health and `/eve/chat/v1/health`
 - Docs: `pnpm --filter @repo/docu dev` (this repo) — https://docu.basilic.localhost. Generated projects use `docs/basilic/` instead.
 - Email: `pnpm --filter @repo/email dev` — https://email.basilic.localhost
 - Mobile: `pnpm --filter @repo/mobile start`
 - Bypass Portless: `pnpm --filter @repo/web dev:app` (and sibling `dev:app` scripts) or `PORTLESS=0`
 
-**Apps:** `apps/api` (Fastify 5), `apps/web` (Next.js 16), `apps/mobile` (Expo 57), `apps/agents` (eve command and chat), `apps/docu` (Fumadocs).
+**Apps (generated):** `apps/api` (Fastify 5), `apps/web` (Next.js 16), `apps/mobile` (Expo 57). This upstream repository also has `apps/agents` (eve command and chat) and `apps/docu` (Fumadocs).
 
 **Packages:** `core`, `react`, `ui`, `utils`, `error`, `email`, `cli`, `db`. Catalog: [Packages](/docs/development/packages).
+
+## Contribute
+
+Fork or clone this repository only to change Basilic itself.
+
+```bash
+git clone https://github.com/blockmatic/basilic.git
+cd basilic
+pnpm setup
+pnpm db:start
+pnpm dev
+```
+
+See [Contributing](https://github.com/blockmatic/basilic/blob/main/CONTRIBUTING.md).
 
 ## Next
 

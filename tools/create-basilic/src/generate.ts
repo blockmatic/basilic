@@ -98,7 +98,7 @@ function adopterReadme({ name, pnpmVersion }: { name: ProjectName; pnpmVersion: 
   const pnpmReq = pnpmVersion ? `pnpm ${pnpmVersion}` : 'pnpm (see packageManager)'
   return `# ${name.displayName}
 
-Generated with [create-basilic](https://www.npmjs.com/package/create-basilic). This tree is an independent monorepo (API, web, mobile). It does not include Basilic's documentation app or generator.
+Generated with [create-basilic](https://www.npmjs.com/package/create-basilic). This tree is an independent monorepo (API, web, mobile). It does not include Basilic's documentation app, generator, or apps/agents.
 
 ## Setup
 

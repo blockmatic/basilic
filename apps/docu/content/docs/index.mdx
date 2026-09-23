@@ -7,7 +7,7 @@ description: "API-first foundation for agentic products: one HTTP API, durable a
 
 API-first here means humans are not the only clients. Session JWTs serve the browser. API keys serve the CLI, scripts, and other machine callers. eve runs `command` and `chat` on a sibling host. Generative UI (Jev, json-render, shadcn/Base UI) is how agents compose the web surface. There is no product MCP.
 
-This repository includes `apps/agents`. [`create-basilic`](/docs/development) omits agents until a later release. Clone this repo for the full reference. Fastify `/ai/generate` is optional [API chrome](/docs/architecture/ai), not the [Product Ready](/docs/testing/product-ready) bar.
+Start a product with [`create-basilic`](/docs/development). The generator omits `apps/agents` and `apps/docu` until later releases; those apps live in this upstream repository. Fastify `/ai/generate` is optional [API chrome](/docs/architecture/ai), not the [Product Ready](/docs/testing/product-ready) bar.
 
 Start with [Getting Started](/docs/development). Architecture and the capability set live under [Architecture](/docs/architecture).
 
@@ -35,7 +35,7 @@ LLM-friendly index: [`/llms.txt`](/llms.txt) (table of contents) and [`/llms-ful
       <h3 className="font-heading text-lg font-semibold">Development</h3>
     </div>
     <div className="text-sm text-muted-foreground">
-      Clone, setup, packages, CLI, and the coding-agent contract.
+      create-basilic, setup, packages, CLI, and the coding-agent contract.
     </div>
     <div className="mt-4">
       <a href="/docs/development" className="text-sm font-medium text-primary hover:underline">

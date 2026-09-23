@@ -5,7 +5,7 @@ description: "TypeScript CLI to interact with the Basilic API via API key. Ideal
 
 The `@repo/cli` package is the **API CLI** (`basilic` binary): call the Fastify API with an API key. It is for developers, scripts, and agents operating in a shell. It is not the project generator.
 
-The **project generator** is source-only `tools/create-basilic` (`0.0.0`, not on npm `latest`). Clone this repository, or assemble and run that CLI locally. Do not use `npx create-basilic@latest` until the package is published. See [Getting Started](/docs/development) and [`tools/create-basilic/README.md`](https://github.com/blockmatic/basilic/blob/main/tools/create-basilic/README.md).
+The **project generator** is `create-basilic` (`npx create-basilic@latest my-app`). Source lives in `tools/create-basilic` (`0.0.0`, not on npm `latest` yet). Until it is published, assemble and run that CLI locally as in [Getting Started](/docs/development). Maintainer notes: [`tools/create-basilic/README.md`](https://github.com/blockmatic/basilic/blob/main/tools/create-basilic/README.md).
 
 The `@repo/cli` package uses `@repo/core` for all requests and supports only API key auth. Auth endpoints (magic link, OAuth, passkey, etc.) are excluded. Prefer `API_KEY` or `BASILIC_API_KEY` in non-interactive environments. Stdout is always JSON (`JSON.stringify`); there is no `--json` flag. Use `--help` on any command. Basilic does not ship an API MCP server.
 

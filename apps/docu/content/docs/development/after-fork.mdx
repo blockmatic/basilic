@@ -3,13 +3,13 @@ title: After fork
 description: Generator vs fork, Product Ready, and what to replace when the copy is your product.
 ---
 
-Basilic stays the upstream brand. **Start a product** with `npx create-basilic@latest my-app` so the new repo has no Basilic git history, no `apps/docu`, and no generator — when the package is published on npm. **Clone this repository** to run the full reference (including `apps/agents` and eve). **Fork** only to contribute upstream. GitHub **Use this template** is not a product start path. Generated projects omit `apps/agents` until a later release; Commands/Chat on the web sample need eve in this upstream tree. First run is still [Product Ready](/docs/testing/product-ready). There is no rename script and no upgrade CLI.
+Basilic stays the upstream brand. **Start a product** with `npx create-basilic@latest my-app` so the new repo has no Basilic git history, no `apps/docu`, no generator, and no `apps/agents`. **Fork** only to contribute upstream. GitHub **Use this template** or a clone of this repository is not a product start path. Generated projects omit `apps/agents` until a later release; Commands/Chat on the web sample need eve in this upstream tree. First run is still [Product Ready](/docs/testing/product-ready). There is no rename script and no upgrade CLI. The generator is `0.0.0` in this tree and is not on npm `latest` yet; until it is, assemble and run it from this repository as in [Getting Started](/docs/development).
 
 ## Generator vs fork
 
-- **`npx create-basilic@latest`** — start a product. Independent git history; no docu app; no generator; local docs snapshot in `docs/basilic/`.
+- **`npx create-basilic@latest`** — start a product. Independent git history; no docu app; no generator; no `apps/agents`; local docs snapshot in `docs/basilic/`.
 - **Fork** — contribute back to Basilic. Keep the upstream remote.
-- **Use this template / clone of this repo** — not a product start path. The copy includes the documentation app and generator.
+- **Use this template / clone of this repo** — not a product start path. The copy includes the documentation app, generator, and agents workspace.
 
 ## Run
 
