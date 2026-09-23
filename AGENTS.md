@@ -1,7 +1,7 @@
 # Repository agent instructions
 
 This repository has one shared agent contract: this file plus
-`.agents/skills/` (committed tech/pattern skills and Basilic `/w-*`
+`.agents/skills/` (lock-installed stack skills and Basilic `/w-*`
 playbooks). Cursor slash, glob `.mdc` attach, and `.cursor/mcp.json`
 are adapters. Other harnesses load the same contract through this file and
 open `SKILL.md` when there is no `/` menu. Do not create a second workflow
@@ -17,10 +17,11 @@ overrides guidance for its subtree and must be read before changing files there.
 2. When editing files that match a glob in [File-scoped rules](#file-scoped-rules),
    read that `.cursor/rules` file (Cursor auto-attaches it).
 3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the
-   task matches (after `pnpm setup` / `pnpm setup:skills`, which runs
-   `skills add` for `blockmatic/basilic-skills --all` plus allowed extra
-   catalogs, then restores `skills-lock.json`). Daily path: Basilic `/w-*` under
-   `.agents/skills/w-<name>/` (`/w-plan`, `/w-grill`, `/w-wayfinder`,
+   task matches (after `pnpm setup` / `pnpm setup:skills`, which installs
+   catalogs from `scripts/skills-lock-manifest.mjs`; hashes in
+   `skills-lock.json` via `pnpm setup:skills` with `--agent cursor` only).
+   Daily path: Basilic `/w-*` under
+   `.agents/skills/workflow/w-<name>/` (`/w-plan`, `/w-grill`, `/w-wayfinder`,
    `/w-build`, `/w-ship`). If the harness has no `/` menu, open the
    `SKILL.md` file. Catalog:
    [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
@@ -145,8 +146,8 @@ and tests instead of relying on memory or assuming that documentation is current
   lowercase, summary imperative, ≤60 chars, no period. Scope: app (`next`,
   `fastify`, `docu`), package (`ui`, `core`, `utils`), or omit.
 - Branch/validate/commit/push/PR: read
-  `.agents/skills/w-ship/SKILL.md`. Commit message:
-  `.agents/skills/w-commit/SKILL.md`. Slash names `/w-ship`,
+  `.agents/skills/workflow/w-ship/SKILL.md`. Commit message:
+  `.agents/skills/workflow/w-commit/SKILL.md`. Slash names `/w-ship`,
   `/w-push`, `/w-commit`, and `/w-pr` are Cursor extras.
 
 ### GitHub Actions
@@ -185,12 +186,24 @@ when those paths are in scope.
 
 ## Product and docs
 
+Public one-liner: **Basilic — API-first foundation for agentic products.**
+Do not use swissknife or Vercel-identity copy. **Starter** is only for
+`create-basilic` / clone onboarding. Agents participate through the product
+API, eve, CLI, generated clients, and Generative UI (Jev + json-render +
+shadcn/Base UI tooling)—not a separate AI app. Canonical capability names
+live on [architecture overview](apps/docu/content/docs/architecture/index.mdx);
+README and Docu homepage summarize that set. `__dev/` is not public evidence.
+
 Visual language is [`DESIGN.md`](DESIGN.md). Technical adopter documentation
-lives in `apps/docu`. Read the matching MDX or ADR before changing an
-architecture, convention, command, or documented behavior. Durable agents:
+lives in `apps/docu`. Public MDX and README changes follow lock-installed
+`.agents/skills/technical-writing/` (research, edit, review); glob
+`.cursor/rules/base/docs.mdc` and `readme.mdc` override eve-repo paths.
+Read the matching MDX or ADR before changing an architecture, convention,
+command, or documented behavior. Durable agents:
 [ADR 014](apps/docu/content/docs/adrs/014-fastify-eve-vercel-runtime.mdx) and
-[`architecture/eve.mdx`](apps/docu/content/docs/architecture/eve.mdx) (hello in
-`apps/agents`). Do not create `PRODUCT.md` or `ROADMAP.md`.
+[`architecture/eve.mdx`](apps/docu/content/docs/architecture/eve.mdx)
+(`command` and `chat` in `apps/agents`). Do not create `PRODUCT.md` or
+`ROADMAP.md`.
 
 ## Working contract
 

@@ -3,18 +3,18 @@ import { LandingSection } from '@/components/landing/section'
 
 const groups = [
   {
-    title: 'Tech',
-    body: 'Versioned stack skills. Agent loads when relevant.',
-    items: ['next-v16', 'fastify-v5', 'tanstack-query-v5'],
+    title: 'Stack',
+    body: 'Lock-installed from upstream catalogs (`pnpm setup:skills`).',
+    items: ['nextjs', 'ai-sdk', 'shadcn'],
   },
   {
-    title: 'Patterns',
-    body: 'Unversioned craft and guidelines.',
-    items: ['composition-patterns', 'frontend-design', 'vercel-react'],
+    title: 'Craft',
+    body: 'Motion, UI review, and composition skills.',
+    items: ['animate', 'vercel-composition-patterns', 'web-design-guidelines'],
   },
   {
     title: 'Workflow',
-    body: 'Basilic `/w-*` playbooks (skills.sh); install with `pnpm setup:skills`.',
+    body: 'Basilic `/w-*` playbooks under `.agents/skills/workflow/`.',
     items: ['/w-plan', '/w-build', '/w-ship'],
   },
 ]
@@ -22,10 +22,12 @@ const groups = [
 export function Skills() {
   return (
     <LandingSection bordered>
-      <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">Skills</h2>
+      <h2 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
+        Coding-agent contract
+      </h2>
       <p className="mt-2 max-w-xl text-sm text-muted-foreground">
         On-demand expertise under <code className="font-mono text-foreground">.agents/skills/</code>
-        : committed stack skills plus{' '}
+        : lock-installed stack skills plus{' '}
         <Link
           href="https://github.com/blockmatic/basilic-skills"
           className="text-primary underline-offset-4 hover:underline"

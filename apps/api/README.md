@@ -1,6 +1,6 @@
 # API
 
-Type-safe REST API built with Fastify & OpenAPI. This process is the product API; eve is a sibling host in `apps/agents` (hello only). OpenAPI is the agent contract; there is no product MCP. Routes in `src/routes/` are the source of truth; OpenAPI spec is generated from them. Clients generated via Hey API in `@repo/core`. `GET /` negotiates HTML vs markdown and unknown paths are real 404s. Live OpenAPI is `GET /openapi.json`. Unauthenticated discovery files (`/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/.well-known/api-catalog`, `/.well-known/oauth-protected-resource`) are listed in [API architecture](https://basilic-docs.vercel.app/docs/architecture/api).
+Type-safe REST API built with Fastify and OpenAPI. This process is the product API; eve `command` and `chat` run on a sibling host in `apps/agents`. OpenAPI is the agent contract; there is no product MCP. Routes in `src/routes/` are the source of truth; OpenAPI spec is generated from them. Clients generated via Hey API in `@repo/core`. `GET /` negotiates HTML vs markdown and unknown paths are real 404s. Live OpenAPI is `GET /openapi.json`. Unauthenticated discovery files (`/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/.well-known/api-catalog`, `/.well-known/oauth-protected-resource`) are listed in [API architecture](https://basilic-docs.vercel.app/docs/architecture/api).
 
 ## Development
 

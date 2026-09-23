@@ -8,22 +8,23 @@ export function Hero() {
   return (
     <LandingSection hero>
       <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-[1.1]">
-        API-First Agentic TypeScript
+        API-first foundation
         <br />
-        FullStack Swissknife
+        for agentic products
       </h1>
       <p className="mt-5 max-w-xl text-pretty text-base text-muted-foreground md:mt-6 md:text-lg">
-        Basilic is a starter for Agentic Systems. Own the API. Hang web, mobile, and coding agents
-        off it.
+        Define the product API once. Web, CLI, generated clients, and durable agents operate against
+        it. Generative UI uses Jev, json-render, and shadcn/Base UI.
       </p>
       <div className="mt-10 md:mt-12">
         <CommandPanel />
       </div>
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-xl text-pretty text-sm text-muted-foreground">
-          Then <code className="font-mono text-foreground">pnpm setup</code>,{' '}
-          <code className="font-mono text-foreground">pnpm db:start</code> and{' '}
-          <code className="font-mono text-foreground">pnpm dev</code>.
+          Then <code className="font-mono text-foreground">pnpm db:start</code> and{' '}
+          <code className="font-mono text-foreground">pnpm dev</code>.{' '}
+          <code className="font-mono text-foreground">create-basilic</code> is not on npm{' '}
+          <code className="font-mono text-foreground">latest</code> yet.
         </p>
         <Link
           href="/docs/development"

@@ -1,9 +1,9 @@
 ---
 title: "Development Tooling"
-description: "pnpm 12.4.2 workspaces; Biome for format/style; ESLint for correctness."
+description: "pnpm 12.5.1 workspaces; Biome for format/style; ESLint for correctness."
 ---
 
-Package manager is **pnpm 12.4.2** (see root `packageManager`). Decision: [ADR 005](/docs/adrs/005-package-manager). Lint split: [ADR 006](/docs/adrs/006-linters).
+Package manager is **pnpm 12.5.1** (see root `packageManager`). Decision: [ADR 005](/docs/adrs/005-package-manager). Lint split: [ADR 006](/docs/adrs/006-linters).
 
 **Biome** formats and applies style (imports, unused). **ESLint** owns TypeScript, React, Next.js 16, Expo, and Fastify correctness. `pnpm lint` runs Biome then ESLint. Pre-commit formats staged files with Biome after security hooks. CI runs both (`lint.yml`).
 
@@ -23,7 +23,22 @@ pnpm lint
 pnpm lint:fix
 ```
 
-Turborepo caches `build`, `checktypes`, and `lint:eslint`. `test`, `test:unit`, and `test:e2e` are not cached (`cache: false` in `turbo.json`). `pnpm dev` uses the same TUI left pane as `pnpm lint:eslint` / `pnpm test` (`"ui": "tui"` in `turbo.json`). `@repo/agents#dev` depends on `@repo/db#db:start` so Postgres is up before eve boots. Per-package `build.env` in `turbo.json` hashes only vars that change emitted output (e.g. `VERCEL_GIT_COMMIT_REF` on `@repo/web#build` only). Consumer app builds no longer run OpenAPI codegen — use `pnpm generate` when API routes change. Commands: root README.
+Turborepo caches `build`, `checktypes`, and `lint:eslint`. `test`, `test:unit`, and `test:e2e` are not cached (`cache: false` in `turbo.json`). `pnpm dev` uses the same TUI left pane as `pnpm lint:eslint` / `pnpm test` (`"ui": "tui"` in `turbo.json`). `@repo/agents#dev` depends on `@repo/db#db:start` so Postgres is up before eve boots. Per-package `build.env` in `turbo.json` hashes only vars that change emitted output (e.g. `VERCEL_GIT_COMMIT_REF` on `@repo/web#build` only). Consumer app builds no longer run OpenAPI codegen — use `pnpm generate` when API routes change.
+
+## Root scripts
+
+Run with `pnpm <script>` from the repository root.
+
+**Setup:** `setup` (install, hooks, skills, gitleaks, osv, env templates, Portless, database, deepsec, Playwright Chromium), `setup:skills`, `setup:env`, `setup:portless`, `setup:database`, `db:start` / `db:stop` / `db:status`, `reset` (API wipe + migrate + seed).
+
+**Primary:** `build`, `dev` (Portless proxy + Postgres, then Turbo TUI), `qa` (checktypes, lint, OpenAPI drift, build, unit and E2E).
+
+**Quality:** `checktypes`, `format`, `lint`, `lint:fix`, `test`, `test:e2e`.
+
+**Security:** `security:secrets`, `security:secrets:full`, `security:osv`, `security:audit`, `security:check`, `security:deepsec:scan`, `security:deepsec:process:diff`. Pre-commit: `hooks:pre-commit`.
+
+CI: lint and `security.yml` on every PR. App E2E and package tests run when relevant paths change. See [GitHub Actions](/docs/deployment/github-actions).
+
 
 ## Build performance
 

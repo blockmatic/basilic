@@ -1,6 +1,8 @@
 # Documentation
 
-Fumadocs (Next.js 16 + MDX) site for Basilic, the API-first agentic TypeScript fullstack swissknife: architecture, ADRs, development, testing, and deployment. Visual language is root `DESIGN.md`.
+# Documentation
+
+Fumadocs (Next.js 16 + MDX) site for Basilic. Canonical technical docs: architecture, ADRs, development, testing, deployment. Visual language is root `DESIGN.md`.
 
 ```bash
 pnpm --filter @repo/docu dev
@@ -16,7 +18,7 @@ Content is `content/docs/` (`architecture`, `development`, `testing`, `deploymen
 - [Product Ready](content/docs/testing/product-ready.mdx)
 - [AI Workflow](content/docs/development/ai-workflow.mdx) — Basilic `/w-*` daily path; not in-app chat
 - [AI](content/docs/architecture/ai.mdx) — Fastify `/ai/*` control-plane APIs; four planes
-- [Eve](content/docs/architecture/eve.mdx) — durable agent runtime (hello in `apps/agents`)
+- [Eve](content/docs/architecture/eve.mdx) — durable agent runtime (`command` and `chat`)
 - [Architecture](content/docs/architecture/index.mdx)
 - [Security](content/docs/architecture/security.mdx)
 - [Deployment](content/docs/deployment/index.mdx)

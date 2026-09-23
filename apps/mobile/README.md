@@ -1,6 +1,6 @@
 # Mobile App (Expo)
 
-Expo app for Android, iOS, and Web. Part of the basilic monorepo.
+Expo UI scaffold for Android, iOS, and Web. Shares `@repo/ui` tokens. It is **not** an API client yet (`@repo/core` is not a dependency). Canonical notes: [Frontend](https://basilic-docs.vercel.app/docs/architecture/frontend).
 
 ## Prerequisites
 
@@ -55,11 +55,11 @@ export function MyScreen() {
 }
 ```
 
-Global styles live in `src/global.css`. Use StyleSheet for complex cases. See `.cursor/rules/frontend/expo.mdc` and `@.agents/skills/expo-tailwind-setup-v55`.
+Global styles live in `src/global.css`. Use StyleSheet for complex cases. See `.cursor/rules/frontend/expo.mdc` and `@.agents/skills/expo-native-ui`.
 
-## API / Environment
+## Environment
 
-Configure `EXPO_PUBLIC_API_URL` in `apps/mobile/.env` (template defaults to `https://api.basilic.localhost`). Physical devices need a LAN/tunnel URL; `.localhost` is the host machine.
+`EXPO_PUBLIC_API_URL` exists in the env template (`https://api.basilic.localhost`) for a future client. The app does not call the API today. Physical devices would need a LAN or tunnel URL; `.localhost` is the host machine.
 
 ## EAS Builds & PR Preview
 
@@ -83,7 +83,7 @@ CI builds Android preview via EAS. **EXPO_TOKEN** required in GitHub Secrets. Re
 |-------|-----|
 | "Unable to resolve module" / red box | Run `pnpm install` at repo root; restart Metro with `pnpm start -c` (clear cache). |
 | Simulator can't connect to Metro (remote) | Use `start:localhost` when Cursor forwards ports; or `start:tunnel` if not. |
-| "Network response timed out" | Check `EXPO_PUBLIC_API_URL`; ensure API host is reachable from simulator. |
+| "Network response timed out" | The scaffold does not call the API. If you add a client, check `EXPO_PUBLIC_API_URL` and that the API host is reachable. |
 | iOS Simulator not found | Open Xcode Simulator first: `open -a Simulator`. |
 | Android emulator not found | Start an AVD from Android Studio; run `adb devices`. |
 

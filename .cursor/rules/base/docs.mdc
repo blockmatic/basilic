@@ -5,25 +5,26 @@ alwaysApply: false
 ---
 
 ## Writing Principles
-- Simple, succinct, technical, factual
-- Active voice, concrete examples, consistent terminology
-- 300-500 words/section, remove redundancy
+- Simple, succinct, technical, factual; lead with the answer
+- Active voice, present tense, concrete nouns; `eve` lowercase
+- Consistent capability names with architecture overview
+- Follow `.agents/skills/technical-writing/` (verify against this repo)
+- 300-500 words/section, remove redundancy; no promotional adjectives
 
 ## Content Structure
-- Most important information first
-- Clear headings, one concept per section
-- Link related pages at end (optional)
-- Page structure: Title/description → short intro → Main content (H2/H3) → Examples → Related links (when relevant)
+- Title/description → short intro → H2/H3 → examples → related links
+- One concept per section; happy path before alternatives
+- Personas: intro = evaluate; architecture = mental model; development = task; reference-dense pages = scan
 
 ## Navigation
-- Max 5-7 top categories, max 2 levels deep
-- Breadcrumb-friendly, bidirectional links, search-optimized
+- Max 5-7 top categories, max 2 levels deep; inbound body links, no orphans
 
 ## Organization
-- DRY, progressive complexity (simple → advanced)
-- Task-based guides, separate reference from tutorials, modular
+- DRY: one canonical home; README/homepage summarize and link
+- Progressive disclosure; do not invent pages to fill Diátaxis slots
+- Semantic feature parity with root README (same capabilities, different copy)
 
 ## Layers
-- This MDX is canonical **technical** docs (architecture, ADRs, how-to). Visual language is root `DESIGN.md`. Rules do not `@`-attach MDX
+- This MDX is canonical **technical** docs. Visual language is root `DESIGN.md`. Rules do not `@`-attach MDX
 - READMEs are how to run the app/package; they link here, no duplication
-- Update this page when behavior, architecture, commands, or conventions change (same change as the code)
+- Update this page when behavior, architecture, commands, or conventions change

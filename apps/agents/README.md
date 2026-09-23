@@ -1,6 +1,6 @@
 # Agents
 
-Eve workspace (`@repo/agents`) with product agents **command** and **chat** on one origin: `https://agents.basilic.localhost/eve/command` and `https://agents.basilic.localhost/eve/chat` (same path mounts as a Vercel workspace deploy). Sibling process of Fastify (`apps/api`). Default deploy is a sibling Vercel project (Workflow + Sandbox). Git builds use `vercel.json` (`scripts/vercel-install.mjs`, then `eve build`) so pnpm 12 is a real binary. Local `eve:dev` / `eve:start` first. This app is excluded from `create-basilic` until a later E PR.
+Eve workspace (`@repo/agents`) with product agents **command** and **chat**. Canonical docs: [Eve](https://basilic-docs.vercel.app/docs/architecture/eve). Sibling process of Fastify (`apps/api`). Excluded from `create-basilic` until a later E PR.
 
 Read bundled docs before changing eve files: `node_modules/eve/docs/README.md`.
 
