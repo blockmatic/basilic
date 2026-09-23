@@ -17,7 +17,7 @@ Components in `packages/ui/src/components/`. App's `components.json`: `"utils": 
 `import { Button } from "@repo/ui/components/button"`, `import { cn } from "@repo/ui/lib/utils"`
 
 ## Component Patterns
-Use cva for variants, `cn` for class merging. See @.agents/skills/shadcn-v3
+Use cva for variants, `cn` for class merging. See @.agents/skills/shadcn
 
 Tailwind on wrappers: `data-open:`, `data-closed:`, `data-checked:`, `data-[slot=...]`. Do not add Radix `data-[state=open]:` on new code. `data-slot` names parts; `data-open` is not ARIA.
 

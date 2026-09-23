@@ -4,6 +4,8 @@ globs: "apps/web/e2e/**/*,apps/web/playwright.config.ts,apps/api/test/**/*,apps/
 alwaysApply: false
 ---
 
+Playwright patterns: @.agents/skills/playwright
+
 ## Config
 - Frontend apps (`apps/web`) use **Playwright E2E only** — no Vitest/Testing Library unit or integration tests
 - No webServer; URLs from `PLAYWRIGHT_APP_URL` / `PLAYWRIGHT_API_URL` (env or `--app` / `--api` params)

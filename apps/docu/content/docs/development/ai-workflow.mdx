@@ -1,9 +1,9 @@
 ---
 title: "AI Development Workflow"
-description: "Daily path is Basilic /w-*. AGENTS.md plus in-repo stack skills."
+description: "Daily path is Basilic /w-*. AGENTS.md plus lock-installed stack skills."
 ---
 
-Root `AGENTS.md` plus `.agents/skills/` is the contract. The **daily workflow** is [Basilic `/w-*` playbooks](https://github.com/blockmatic/basilic-skills): `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-tdd`, `/w-review`, and git close-out (`/w-commit` … `/w-ship`). Versioned **tech** skills and unversioned **patterns** are committed here. Any agent or IDE that can read those files. If the harness has no `/` menu, open the `SKILL.md`. Do not create a parallel process.
+Root `AGENTS.md` plus `.agents/skills/` is the contract. The **daily workflow** is [Basilic `/w-*` playbooks](https://github.com/blockmatic/basilic-skills): `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-tdd`, `/w-review`, and git close-out (`/w-commit` … `/w-ship`). Stack and craft skills install with `pnpm setup:skills` (see [Skills](/docs/development/cursor-skills)). Any agent or IDE that can read those files. If the harness has no `/` menu, open the `SKILL.md`. Do not create a parallel process.
 
 Cursor slash, glob auto-attach, and `.cursor/mcp.json` are **adapters**, not the contract. Catalog and install: [Skills](/docs/development/cursor-skills). Optional Cursor indexing/MCP: [Agent setup](/docs/development/cursor-setup).
 
@@ -21,9 +21,9 @@ Root `AGENTS.md` holds always-on constraints (behavior, naming, file organizatio
 | --- | --- | --- |
 | **AGENTS.md** | Always-on contract | Cursor, Codex, Claude Code, and Gemini CLI read it; Antigravity via `.agents/rules/always.md` |
 | **Glob rules** (`.cursor/rules/*.mdc`) | File-scoped constraints | Cursor attaches by glob. Other harnesses read the matching file when those paths are in scope (table in `AGENTS.md`) |
-| **Basilic playbooks** (`.agents/skills/w-<name>/`) | Daily path and git close-out | Cursor: `/w-<name>`. Otherwise open `SKILL.md` |
-| **Tech skills** (`.agents/skills/<topic>-v<major>/`) | Stack patterns | Agent loads when relevant; `@` or `/` to force |
-| **Pattern skills** (unversioned) | Craft and guidelines | Agent loads when relevant; `@` or `/` to force |
+| **Basilic playbooks** (`.agents/skills/workflow/w-<name>/`) | Daily path and git close-out | Cursor: `/w-<name>`. Otherwise open `SKILL.md` |
+| **Lock-installed skills** (`.agents/skills/<name>/`) | Upstream stack and craft | Agent loads when relevant; `@` or `/` to force |
+| **Glob rules** | Stack without a forked skill (Fastify, Drizzle, wagmi, …) | Read matching `.mdc` when paths are in scope |
 | **Indexed docs** | Advisory | Never override `AGENTS.md`, glob rules, or source |
 
 Cursor slash menus, `.cursor/mcp.json`, and glob auto-attach are **Cursor extras**, not the portable contract.
@@ -88,7 +88,7 @@ Compose skills. This is not a router.
 4. **Publish when requested** — `/w-commit`, `/w-push`, or `/w-pr`. `/w-ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/w-commit` owns Conventional Commit format. `/w-ship` requires `pnpm qa`. `/w-yolo` does not; it fixes failing or requested local checks without publish.
 5. **Learn** — `/w-retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
 
-Tech skills (`fastify-v5`, `ai-sdk-core-v7`, `json-render-core-v0`, `eve`, `typesafe-ai`) load when relevant. Playbooks do not add another backlog or quality policy.
+Lock-installed skills (`nextjs`, `ai-sdk`, `core`, `react`, `eve`, `typesafe-ai`, …) load when relevant; stack gaps are covered by glob rules. Playbooks do not add another backlog or quality policy.
 
 The generator retains this catalog and rewrites its documentation pointers to the adopter’s local docs snapshot. `/release` is advisory and preserves the release tooling’s human gates.
 

@@ -9,38 +9,6 @@ eve is a filesystem-first framework for durable backend AI agents. An agent is
 a directory on disk — instructions, skills, tools, connections, channels,
 subagents, and schedules are all files — and eve compiles and runs it.
 
-## Scope
-
-- Applies to: eve filesystem agents, local `eve` CLI, Workflow/Sandbox adapters
-- Does NOT cover: short request-handler tool loops (see [ai-sdk-core-v7](../ai-sdk-core-v7/SKILL.md)), public OpenAPI product HTTP
-
-## Assumptions
-
-- Bundled `node_modules/eve/docs/` matches the installed package; read it before writing eve code
-- Product HTTP and durable agents can be sibling processes
-
-## Principles
-
-- An agent is files on disk; eve compiles and runs that directory
-- Domain functions stay callable from HTTP tools and from eve tools
-
-## Constraints
-
-### MUST
-
-- Read `node_modules/eve/docs/README.md` (or `npx eve init` docs) before scaffolding
-- Keep durable sessions in the eve app, not by wrapping the product API host as eve
-
-### AVOID
-
-- Mounting `/eve/` or `/.well-known/workflow/` on the product OpenAPI HTTP host
-- Replacing Fastify with Nitro as the product API
-- Advertising MCP because eve is present
-
-## Interactions
-
-- Complements [ai-sdk-core-v7](../ai-sdk-core-v7/SKILL.md), [fastify-v5](../fastify-v5/SKILL.md)
-
 ## Source of truth
 
 The complete documentation ships inside the `eve` package. Do not rely on this

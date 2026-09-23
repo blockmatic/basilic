@@ -178,7 +178,7 @@ Basilic is **not** an official Vercel project. It is built around Vercel-oriente
 | **eve** (Agent Stack) | Used | `apps/agents` sibling; `command` + `chat`; Workflow + Sandbox |
 | **`useEveAgent`** (`eve/react`) | Used | Web Commands/Chat rail + Bearer; not `withEve()` |
 | **Turborepo / previews** | Used | Monorepo builds; PR preview deploys per app |
-| **skills CLI** | Used | `pnpm setup:skills` → `blockmatic/basilic-skills` `/w-*` |
+| **skills CLI** | Used | `pnpm setup:skills` from `skills-lock.json` |
 | **is-agentic** | Adjacent | Operator `pnpm agentic:scan` when discovery GETs are public |
 | **OpenAPI + `@repo/core`** | Used | Agent HTTP contract; no product MCP |
 | **json-render + `@repo/ui`** | Used | Board presentation; not Vercel GenUI / microfrontends |

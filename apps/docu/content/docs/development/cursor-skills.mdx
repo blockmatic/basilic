@@ -1,127 +1,57 @@
 ---
 title: "Skills"
-description: "Committed stack skills and Basilic /w-* daily playbooks."
+description: "Lock-installed stack skills and Basilic /w-* daily playbooks."
 ---
 
-Project skills live under `.agents/skills/`. **Tech and pattern** skills are committed in this repo (list in `scripts/owned-agent-skills.txt`). Daily workflow is [Basilic `/w-*` playbooks](https://github.com/blockmatic/basilic-skills). `pnpm setup:skills` installs that catalog plus [antislop](https://github.com/miqdadbadjuber/anti-slop) and [make-interfaces-feel-better](https://github.com/jakubkrehel/make-interfaces-feel-better); those stay gitignored. `skills-lock.json` pins those GitHub catalogs: `blockmatic/basilic-skills` (`w-*`), `miqdadbadjuber/anti-slop` (`antislop`), and `jakubkrehel/make-interfaces-feel-better`. Setup restores the lock after install so hashes stay pinned. It fails on any other GitHub catalog or on `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks come from `../basilic-skills`). Do not use `skills experimental_install`.
+Project skills live under `.agents/skills/`. The tree is **gitignored**; install with `pnpm setup:skills` from [`scripts/skills-lock-manifest.mjs`](https://github.com/blockmatic/basilic/blob/main/scripts/skills-lock-manifest.mjs). The CLI writes [`skills-lock.json`](https://github.com/blockmatic/basilic/blob/main/skills-lock.json) (hashes for CI). Use `--agent cursor` only so the canonical copy lands in `.agents/skills/` (not `.claude/` or `.cursor/skills/`). Do not use `skills experimental_install`.
 
-The [skills CLI](https://github.com/vercel-labs/skills) writes the tree for any agent that reads Agent Skills. This repo’s basilic-skills install is `--all` into `.agents/skills/`. Extra lock catalogs use `--skill <name> -y --agent '*'` so CI is non-interactive (`--skill` alone prompts for agents). Claude Code’s default dir is `.claude/skills/`; do not commit that tree. Project skills stay in `.agents/skills/`.
-
-Cursor also reads `.cursor/skills/` if present; this repo does not commit that tree. Cursor requires `name` in each `SKILL.md` to match the folder (`fastify-v5`, not `fastify`).
-
-Rules override skills. Skills override the model. Indexed docs are advisory. Daily workflow: [AI Workflow](/docs/development/ai-workflow). Optional Cursor extras: [Agent setup](/docs/development/cursor-setup).
+Cursor requires `name` in each `SKILL.md` to match the folder (`nextjs`, not `next-v16`). Rules override skills. Skills override the model. Daily workflow: [AI Workflow](/docs/development/ai-workflow).
 
 ## Catalogs
 
-**Basilic playbooks** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills) on [skills.sh](https://skills.sh/blockmatic/basilic-skills). Each playbook is a top-level skill (`--skill w-plan` or `--all`). Slash names are `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-review`. This repo uses them for the daily path and for git/docs close-out (`/w-commit` … `/w-ship`).
+**Basilic playbooks** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills). Skill `workflow` installs nested `/w-*` under `.agents/skills/workflow/w-<name>/`. Slash names: `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-review`, plus git close-out (`/w-commit` … `/w-ship`).
 
-**antislop** — [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop). Installed filter for generic AI UI slop. Not a committed stack skill.
-
-**make-interfaces-feel-better** — [jakubkrehel/make-interfaces-feel-better](https://github.com/jakubkrehel/make-interfaces-feel-better). Installed UI polish filter. Not a committed stack skill.
-
-**Stack skills** — committed here (`next-v16`, `fastify-v5`, …). Not installable from basilic-skills.
+**Stack and craft** — upstream GitHub catalogs listed in `scripts/skills-lock-manifest.mjs` (Emil motion, Next.js, Expo EAS, Vercel agent-skills, json-render, eve, shadcn, and others). Do not restyle installed copies to match Biome; `biome.json` excludes `.agents/skills/**`. Repo-specific layout and style stay in `AGENTS.md` and `.cursor/rules/`.
 
 ## What’s in git
 
-**48** tech/pattern skills are committed under `.agents/skills/` (list: `scripts/owned-agent-skills.txt`). `.gitignore` ignores `.agents/skills/*` then un-ignores those owned dirs. Installed `w-*` playbooks stay gitignored. A setup or lock PR does not list `.agents/skills/**` because those trees were already committed.
+- `skills-lock.json` — pin record after install or catalog refresh
+- `scripts/skills-lock-manifest.mjs` — which `--skill` names `setup:skills` installs per source
+- `scripts/setup-skills.mjs` — runs the manifest, removes `.claude/` and `.cursor/skills/`
 
 ```bash
 pnpm setup:skills
 ```
 
-Full installer options: [basilic-skills README](https://github.com/blockmatic/basilic-skills).
-
-Root `skills-lock.json` tracks hashes for the **installed** catalogs (`w-*`, `antislop`, `make-interfaces-feel-better`). `pnpm setup:skills` restores the lock after install. Commit the lock after an explicit catalog refresh. Do not commit `.agents/skills/w-*`, `.agents/skills/antislop`, or `.agents/skills/make-interfaces-feel-better`.
+`pnpm setup` runs the same step.
 
 ## Three kinds
 
-**Tech** — committed `.agents/skills/<topic>-v<major>/` (example: `fastify-v5`). Agent-invocable. Required sections: Scope, Assumptions, Principles, Constraints, Interactions. Force with `@.agents/skills/<topic>-v<major>` or `/<topic>-v<major>`.
+**Workflow** — Basilic playbooks at `.agents/skills/workflow/w-<name>/`. `disable-model-invocation: true` on playbooks. One-line `description`.
 
-**Patterns** — unversioned craft and guidelines (example: `composition-patterns`, `frontend-design`, `vercel-react`). Same loading as tech skills. This repo does not commit an Emil `prototype` skill.
+**Lock-installed skills** — upstream folder names (`nextjs`, `shadcn`, `vercel-composition-patterns`). Invoke with `@.agents/skills/<name>` or `/<name>` when the harness exposes slash skills.
 
-**Workflow** — daily path is Basilic playbooks at `.agents/skills/w-<name>/` (example: `w-commit`). Slash is the folder name (`/w-plan`). Set `disable-model-invocation: true`. One-line `description`. Not versioned.
+**Rules** — always-on constraints (Fastify, wagmi, file layout, TypeScript). Stack topics with no published skill (Drizzle, TanStack Query, Fastify, Solana wallet flows) are covered here instead of forked `SKILL.md` trees.
 
 `name` is lowercase letters, digits, and hyphens, max 64 characters, equal to the folder name. Basilic playbook names start with `w-`.
 
 ## Workflow install
 
-The published catalog is **44** `/w-*` skills. Git playbooks ship `references/git-publish.md`; `/w-review` ships `references/review-dimensions.md`; `/w-plan` ships `references/plan-output.md`; `/w-grill` ships `references/round-format.md`; `/w-wayfinder` ships `references/map-output.md`. `/w-plan` explores via `/w-council` first. Git, TDD, lint, generate, and publish stay single-writer.
-
-After a refresh, preserve committed stack skills (setup stashes them). Catalog validation: `node scripts/validate-catalog.mjs` in [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills).
-
-## Versioning
-
-`<topic>-v<major>` is the **library or SDK major**, not a skill-file revision.
-
-- Library major change → new folder (`next-v17`). Drop the old folder when the repo no longer uses that major.
-- Stack skill wording → edit the committed tree in this repo.
-- Playbook wording → edit [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills), then refresh the lock.
-- Pattern and craft skills stay unversioned. Library skills use the npm major (`motion-v13`).
-
-This repo’s Expo app is SDK 57; Expo skills are still `*-v55`. Do not invent empty `*-v57` folders.
+**44** `/w-*` playbooks ship inside the `workflow` pack. `/w-plan` explores via `/w-council` first. Catalog validation: `node scripts/validate-catalog.mjs` in [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills).
 
 ## Update procedure
 
-```bash
-pnpm setup:skills
-```
-
-Maintainer preview of a sibling basilic-skills clone:
-
-```bash
-BASILIC_SKILLS_LOCAL=1 pnpm setup:skills
-```
-
-Refresh hashes (review and commit `skills-lock.json`). Do not run `pnpm setup:skills` afterward if you intend to keep the new hashes.
-
-```bash
-npx skills@latest add blockmatic/basilic-skills --all
-```
-
-Do not reformat skill copies to match this repo's Biome rules; `biome.json` excludes `.agents/skills/**`.
+1. Edit `scripts/skills-lock-manifest.mjs` (add/remove a source or `--skill` name).
+2. Run `pnpm setup:skills`.
+3. Commit `skills-lock.json` (and the manifest change).
 
 Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
 
-Repo-specific overlays stay in `.cursor/rules/`.
-
-## Upstream provenance
-
-Committed stack copies may differ from upstream. Original sources:
-
-- `expo-cicd-workflows-v55` ← `eas-workflows` in [expo/skills](https://github.com/expo/skills)
-- `expo-deployment-v55` ← `eas-app-stores`
-- `expo-dev-client-v55` ← `expo-dev-client`
-- `expo-tailwind-setup-v55` ← `expo-tailwind-setup`
-- `expo-upgrading-v55` ← `expo-upgrade`
-- `expo-use-dom-v55` ← `expo-dom`
-- `vercel-react` ← `react-best-practices` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
-- `web-design-guidelines` ← `web-design-guidelines` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (fetches a pinned [web-interface-guidelines `command.md`](https://github.com/vercel-labs/web-interface-guidelines/blob/e3d624baaf29dc1fc645aff3e38f03e564d2d6b1/command.md) revision)
-- `composition-patterns` ← `composition-patterns` in [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
-- `next-v16` ← `nextjs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
-- `nuqs-v2` ← `nuqs` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
-- `vitest-v5` ← `vitest` in [pproenca/dot-skills](https://github.com/pproenca/dot-skills)
-- `viem-v2` ← `viem-integration` in [uniswap/uniswap-ai](https://github.com/uniswap/uniswap-ai)
-- `nodejs-keccak256-v1` ← `nodejs-keccak256` in [affaan-m/ecc](https://github.com/affaan-m/ecc)
-- `frontend-design` ← [anthropics/skills](https://github.com/anthropics/skills) `frontend-design`
-- `emilkowal-animations` ← pproenca/dot-skills `emilkowal-animations`
-- [emilkowalski/skills](https://github.com/emilkowalski/skills) at [`85e8e236`](https://github.com/emilkowalski/skills/commit/85e8e2363b713506e1d5b6e07a0eb2da66be1bc3): `emil-design-eng`, `review-animations`, `animation-vocabulary`, `apple-design`, `improve-animations`, `find-animation-opportunities`, `pick-ui-library`, `animate`, `ask-sonner`, `animate-expo`
-- `better-ui` ← [jakubkrehel/skills](https://github.com/jakubkrehel/skills) at [`267330e1`](https://github.com/jakubkrehel/skills/commit/267330e1adfc66a718fb65fa6918c1f06d0a689e)
-- `react-email` ← [resend/react-email](https://github.com/resend/react-email) `skills/react-email`
-- `typesafe-ai` ← [typesafe-ai/skills](https://github.com/typesafe-ai/skills) `typesafe-ai` (Gateway / `experimental_evaluate` overlay)
-- `eve` ← [vercel/eve](https://github.com/vercel/eve) `skills/eve`
-- `json-render-core-v0` ← [vercel-labs/json-render](https://github.com/vercel-labs/json-render) `skills/core`
-- `json-render-react-v0` ← same repo `skills/react`
-- `alchemy-api` ← [alchemyplatform/skills](https://github.com/alchemyplatform/skills) `alchemy-api` (Portfolio / webhook / ops refs only)
-
-This product uses Base UI (`base-vega`, `render`, `data-slot` / `data-open`). Committed `shadcn-v3` and `/w-shadcn` match that stack.
-
-**Intended unused stack** (committed, not installed app deps): `wagmi-v3`, `motion-v13`, `emilkowal-animations`, `pick-ui-library`, `better-ui`. `ask-sonner` matches `@repo/ui` Sonner.
-
 ## Design
 
-UI craft also comes from [emilkowalski/skills](https://github.com/emilkowalski/skills). Project tokens in `DESIGN.md` still win.
+`DESIGN.md` and glob rules win over craft skills. UI work: `/w-ui`. New shadcn primitive: `/w-shadcn` (follow `@shadcn`). Component APIs: `@vercel-composition-patterns`. UI code audit: `@web-design-guidelines`. React/Next performance: `@vercel-react-best-practices`. Motion: `@animate` (web) or `@animate-expo` (native). Toasts: `@ask-sonner`. Do not run `@pick-ui-library` to replace shadcn in this repo.
 
-New or reshaped UI: `/w-ui`. New shadcn primitive: `/w-shadcn` (follow `shadcn-v3`). Visual direction only: `@frontend-design`. Component APIs: `@composition-patterns`. UI code audit: `@web-design-guidelines`. Quality a11y report: `/w-a11y`. Runtime bugs: `/w-debug-browser`. Explore variants: `/w-v0` or `/w-ui`. Motion: `@animate` (web) or `@animate-expo` (native). Toasts: `@ask-sonner`. Do not run `@pick-ui-library` to replace shadcn in this repo.
+This product uses Base UI (`base-vega`, `render`, `data-slot` / `data-open`). The official `shadcn` skill reads `components.json`.
 
 ## Related
 

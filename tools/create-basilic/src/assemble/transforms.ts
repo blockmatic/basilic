@@ -72,7 +72,13 @@ function rewriteLocalSkillSources({ destRoot }: { destRoot: string }) {
     if (skill.sourceType !== 'local') continue
     skill.source = 'blockmatic/basilic-skills'
     skill.sourceType = 'github'
-    if (!skill.skillPath) skill.skillPath = `skills/${name}/SKILL.md`
+    if (!skill.skillPath)
+      skill.skillPath =
+        name === 'workflow' || name.startsWith('w-')
+          ? name === 'workflow'
+            ? 'skills/workflow/SKILL.md'
+            : `skills/workflow/${name}/SKILL.md`
+          : `skills/${name}/SKILL.md`
   }
   writeFileSync(path, `${JSON.stringify(lock, null, 2)}\n`)
 }

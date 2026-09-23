@@ -8,8 +8,8 @@ alwaysApply: false
 1. CSS + data attributes: `tw-animate-css` with Base UI / shadcn attrs (`data-open`, `data-closed`, `data-slot`, `animate-in`, `fade-in-0`, `zoom-in-95`, `slide-in-from-*`)
 2. Shadcn built-in Dialog/Popover/Sheet/Dropdown animations
 3. Custom `data-*` + Tailwind `data-open:*` / `data-closed:*` (not Radix `data-[state=*]` on new wrappers)
-4. Motion only for drag, scroll-linked, layout, gestures, shared-element. See @.agents/skills/motion-v13
-If `transition-*` or `animate-*` works, do not use Motion.
+4. Motion library only for drag, scroll-linked, layout, gestures, shared-element — see @.agents/skills/animate
+If `transition-*` or `animate-*` works, do not add Motion.
 
 ## Spacing (8pt)
 xs `gap-1 p-1` · sm `gap-2 p-2 space-y-2` · md `gap-3 gap-4 p-4 space-y-4` · lg `gap-6 p-6` · xl `gap-8 p-8` · 2xl `p-10`
@@ -20,9 +20,9 @@ xs captions · sm secondary/labels · base body · lg card titles · xl page tit
 Page titles: `text-lg md:text-xl font-heading font-semibold`. Card: `text-lg font-heading font-semibold`. Secondary: `text-sm text-muted-foreground`.
 
 ## Design
-- Distinctive fonts; dashboard exception Inter + Poppins. `font-sans` UI, `font-heading` titles, `tabular-nums` prices, `font-mono` code. See @.agents/skills/frontend-design
-- UI code review: @.agents/skills/web-design-guidelines (pinned checklist). Do not invent a WCAG level.
-- Semantic tokens (`bg-primary`, `text-muted-foreground`). See @.agents/skills/tailwind-design-system-v4
-- Motion: feedback, orientation, focus—never decorate. 100–150ms micro, 200–300ms transitions, 500ms drawers. `ease-out` default. Animate `transform`/`opacity` only. Never `scale(0)`—min 0.95. See @.agents/skills/emilkowal-animations
+- Distinctive fonts; dashboard exception Inter + Poppins. `font-sans` UI, `font-heading` titles, `tabular-nums` prices, `font-mono` code. Brand and palette: root `DESIGN.md` (overrides craft skills).
+- UI code review: @.agents/skills/web-design-guidelines. Do not invent a WCAG level.
+- Semantic tokens (`bg-primary`, `text-muted-foreground`). Tailwind v4 `@theme` tokens in app CSS — do not invent a parallel design system.
+- Motion: feedback, orientation, focus—never decorate. 100–150ms micro, 200–300ms transitions, 500ms drawers. `ease-out` default. Animate `transform`/`opacity` only. Never `scale(0)`—min 0.95. See @.agents/skills/emilkowal-animations and @.agents/skills/animate
 - Loading: skeleton that preserves layout; toasts for async success/failure; hover/focus states before extra animation
 - Respect `prefers-reduced-motion`. Opacity fallback. Motion: `MotionConfig reducedMotion="user"`

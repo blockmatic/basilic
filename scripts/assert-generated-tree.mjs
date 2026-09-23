@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { allowedGithubCatalogs } from './skills-lock-manifest.mjs'
 
 const dest = process.argv[2]
 if (!dest) {
@@ -118,11 +119,7 @@ if (existsSync(lockPath)) {
         .map(skill => skill.source),
     ),
   ]
-  const allowed = new Set([
-    'blockmatic/basilic-skills',
-    'miqdadbadjuber/anti-slop',
-    'jakubkrehel/make-interfaces-feel-better',
-  ])
+  const allowed = new Set(allowedGithubCatalogs)
   const unexpected = github.filter(source => !allowed.has(source))
   if (unexpected.length > 0) {
     console.error(`skills-lock.json has unsupported catalogs (${unexpected.join(', ') || 'none'})`)

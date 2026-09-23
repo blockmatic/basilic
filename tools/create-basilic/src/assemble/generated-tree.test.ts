@@ -30,7 +30,7 @@ describe('assert-generated-tree', () => {
         version: 1,
         skills: {
           'w-plan': { source: 'blockmatic/basilic-skills', sourceType: 'github' },
-          other: { source: 'resend/react-email', sourceType: 'github' },
+          other: { source: 'example/unknown-catalog', sourceType: 'github' },
         },
       })}\n`,
     )
@@ -40,7 +40,7 @@ describe('assert-generated-tree', () => {
       { encoding: 'utf8' },
     )
     expect(result.status).toBe(1)
-    expect(result.stderr).toContain('unsupported catalogs (resend/react-email)')
+    expect(result.stderr).toContain('unsupported catalogs (example/unknown-catalog)')
   })
 
   it('does not treat allowed extra catalogs as unsupported', async () => {
@@ -50,12 +50,9 @@ describe('assert-generated-tree', () => {
       `${JSON.stringify({
         version: 1,
         skills: {
-          'w-plan': { source: 'blockmatic/basilic-skills', sourceType: 'github' },
-          antislop: { source: 'miqdadbadjuber/anti-slop', sourceType: 'github' },
-          'make-interfaces-feel-better': {
-            source: 'jakubkrehel/make-interfaces-feel-better',
-            sourceType: 'github',
-          },
+          workflow: { source: 'blockmatic/basilic-skills', sourceType: 'github' },
+          'react-email': { source: 'resend/react-email', sourceType: 'github' },
+          'ai-sdk': { source: 'vercel/ai', sourceType: 'github' },
         },
       })}\n`,
     )

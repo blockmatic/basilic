@@ -66,7 +66,7 @@ Runs during `postpack` lifecycle hook (after packing):
 
 ### `setup-skills.mjs`
 
-Installs `blockmatic/basilic-skills --all` and any other allowed lock catalogs (`miqdadbadjuber/anti-slop`, `jakubkrehel/make-interfaces-feel-better`) with `--skill <name> -y --agent '*'` so extra catalogs are non-interactive, stashes committed stack skills so the CLI cannot wipe them, then restores `skills-lock.json`. Fails if the lock is missing, lists an unsupported GitHub catalog, or has `sourceType: local` unless `BASILIC_SKILLS_LOCAL=1` (then playbooks add `../basilic-skills`). Used by `pnpm setup` and CI `setup-pnpm`. Never uses `experimental_install`. On Windows the script runs `pnpm.cmd` through a shell because Node cannot spawn `.cmd` shims without one. Refresh hashes with `npx skills add`, then commit the lock.
+Reads [`skills-lock-manifest.mjs`](skills-lock-manifest.mjs), runs `pnpm dlx skills@latest add <source> --skill <name> … -y --agent cursor` per catalog, and removes `.claude/` and `.cursor/skills/` if present. The skills CLI updates [`skills-lock.json`](../skills-lock.json). Used by `pnpm setup` and CI `setup-pnpm`.
 
 ```bash
 pnpm setup:skills
@@ -106,7 +106,7 @@ Vercel pnpm 12 runner: `npm install -g` the `packageManager` pin with scripts, t
 
 ### `assert-generated-tree.mjs`
 
-Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files. `skills-lock.json` must not use local sources and must pin `blockmatic/basilic-skills`. Allowed extra catalogs: `miqdadbadjuber/anti-slop`, `jakubkrehel/make-interfaces-feel-better`.
+Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files. `skills-lock.json` must not use local sources, must pin `blockmatic/basilic-skills`, and may only list GitHub catalogs from `skills-lock-manifest.mjs`.
 
 ```bash
 node scripts/assert-generated-tree.mjs /path/to/assembled-template

@@ -2,11 +2,15 @@
 name: typesafe-ai
 license: MIT
 description: >
-  Build AI-powered software with TypeSafe System One models (Jev): typed
-  judgments and probabilities, not generated text. Use when routing, refusing,
-  classifying, or scoring with experimental_evaluate, Vercel AI Gateway
-  typesafe-ai/jev, choice/noul/score questions, or when an LLM prompt-and-parse
-  step should become a structured decision.
+  Build AI-powered software with TypeSafe: small units of AI intelligence you
+  can use like programming primitives. Its System One models, including Jev,
+  turn natural language and application state into typed judgments and
+  probabilities that code can combine. Use when a feature needs programmable
+  common sense, when brainstorming what AI could make possible in an app, or
+  when an LLM prompt-and-parse step could become a structured decision.
+  Applications include routing, ranking, extraction, verification, and
+  interactive experiences; these are starting points, not the limits.
+  Read live docs and cookbooks to find useful patterns and discover new combinations.
 ---
 
 # Build with TypeSafe
@@ -18,40 +22,6 @@ flagship and first System One model. It understands natural language and returns
 typed answers and probabilities rather
 than generating text or reasoning explanations. Code owns the workflow; the model
 supplies programmable common sense where ordinary code needs semantic understanding.
-
-## Scope
-
-- Applies to: System One / Jev judgments (`choice`, `noul`, `score`) consumed by application code
-- Does NOT cover: chat streaming, tool loops, or json-render spec authoring (see [ai-sdk-core-v7](../ai-sdk-core-v7/SKILL.md), [json-render-core-v0](../json-render-core-v0/SKILL.md))
-
-## Assumptions
-
-- Jev is not a `LanguageModel`; it cannot `streamText`, call tools, or emit prose
-- Default host for AI SDK apps is Vercel AI Gateway (`typesafe-ai/jev`) plus `experimental_evaluate`
-
-## Principles
-
-- Code owns control flow; the model returns typed answers and probabilities
-- Ask independent questions over the same state in one evaluate call
-- Fall through to the existing LLM path when evaluate is missing, throws, or confidence is too low
-
-## Constraints
-
-### MUST
-
-- Call `experimental_evaluate` (AI SDK ≥ 7.0.105) with an evaluation model, not `streamText({ model: jev })`
-- Keep credentials server-side (`AI_GATEWAY_API_KEY` or a later TypeSafe factory swap)
-
-### AVOID
-
-- OpenRouter or OpenAI-compatible chat URLs as a Jev host
-- Sending large table dumps as evaluate `state`
-- Using Jev to write json-render trees or fill novel tool arguments
-
-## Interactions
-
-- Complements [ai-sdk-core-v7](../ai-sdk-core-v7/SKILL.md) for `experimental_evaluate`
-- Live TypeSafe docs remain the primitive reference below
 
 ## Read the live docs
 
