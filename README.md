@@ -8,8 +8,6 @@ Define capabilities on one HTTP API. Web, CLI, generated clients, coding agents,
 
 ## Capabilities
 
-Same set as the docs homepage. Detail lives in [Architecture](https://basilic-docs.vercel.app/docs/architecture).
-
 **Product contract**
 
 - **Product API** — Fastify REST, generated OpenAPI, `/llms.txt`, RFC 9727 catalog
@@ -31,7 +29,7 @@ Same set as the docs homepage. Detail lives in [Architecture](https://basilic-do
 
 **How you ship**
 
-- **Deploy** — Vercel + Supabase default; Fastify `listen` / `eve start` exit
+- **Deploy** — Vercel + Supabase default
 - **Quality and security** — Biome, Gitleaks, OSV, DeepSec
 - **Multichain** — SIWE/SIWS, wallet modal, Alchemy reads (not send/swap)
 
