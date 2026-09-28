@@ -14,14 +14,6 @@ Methods: **magic link**, **OAuth** (GitHub, Google, Facebook, Twitter), **Web3**
 - **Web refresh hop:** the browser never calls Fastify refresh. On 401, `createClient` calls same-origin `POST /api/auth/refresh`, which uses `createBffClient` → Fastify refresh and `Set-Cookie`. `proxy.ts` shares `refreshTokensWithRefreshToken`. Non-Next JWT consumers still call Fastify refresh directly. `httpOnly` stays false so the browser can send Bearer to Fastify for domain data.
 - **Session**: created on login, rotated on refresh, deleted on logout (`POST /auth/session/logout` returns **204** for JWT sessions) or via `DELETE /auth/sessions/:id` / public `POST /auth/sessions/revoke`.
 
-## New-device email
-
-`createSessionAndIssueTokens` writes IP, user-agent, `deviceLabel`, `location` (Vercel/Cloudflare geo headers only), and `deviceFingerprint` (`browserFamily|osFamily`). Fastify emails only when **no other session row** for that user shares the fingerprint (the new row is excluded). Users without email skip mail. `WEB_APP_URL` (default `https://basilic.localhost`) must pass `isAllowedUrl` or the email is skipped. The CTA is `${WEB_APP_URL}/auth/session/revoke?verificationId=&token=` (`session_revoke` verification, `hashToken`, CAS consume). Send is fire-and-forget via `emailProvider` (render + send errors are caught and logged). There is no queue; completion is not guaranteed under serverless freeze.
-
-`GET /auth/sessions` and `DELETE /auth/sessions/:id` are JWT-only (**400** `USE_KEY_REVOKE` for API keys). List never returns `userAgent` or `deviceFingerprint`.
-
-## Magic link verify
-
 ```mermaid
 stateDiagram-v2
   [*] --> Unauthenticated
@@ -29,11 +21,17 @@ stateDiagram-v2
   Authenticated --> Authenticated: API calls (Bearer)
   Authenticated --> Refreshing: 401 or expired access
   Authenticated --> Unauthenticated: Logout / revoked
-  Refreshing --> Authenticated: Refresh OK
+  Refreshing --> Authenticated: same-origin refresh hop OK
   Refreshing --> Unauthenticated: Refresh fail
 ```
 
-`createClient` modes: no-auth, JWT (`getAuthToken` / `getRefreshToken` / `onTokensRefreshed`, optional `refreshTokens`), API key. See [Packages](/docs/development/packages).
+`createClient` modes: no-auth, JWT (`getAuthToken` / `getRefreshToken` / `onTokensRefreshed`, optional `refreshTokens`), API key. See [Packages](/docs/development/packages). The browser refresh hop is same-origin `POST /api/auth/refresh`; non-Next JWT consumers call Fastify refresh directly.
+
+## New-device email
+
+`createSessionAndIssueTokens` writes IP, user-agent, `deviceLabel`, `location` (Vercel/Cloudflare geo headers only), and `deviceFingerprint` (`browserFamily|osFamily`). Fastify emails only when **no other session row** for that user shares the fingerprint (the new row is excluded). Users without email skip mail. `WEB_APP_URL` (default `https://basilic.localhost`) must pass `isAllowedUrl` or the email is skipped. The CTA is `${WEB_APP_URL}/auth/session/revoke?verificationId=&token=` (`session_revoke` verification, `hashToken`, CAS consume). Send is fire-and-forget via `emailProvider` (render + send errors are caught and logged). There is no queue; completion is not guaranteed under serverless freeze.
+
+`GET /auth/sessions` and `DELETE /auth/sessions/:id` are JWT-only (**400** `USE_KEY_REVOKE` for API keys). List never returns `userAgent` or `deviceFingerprint`.
 
 ## Magic link verify
 

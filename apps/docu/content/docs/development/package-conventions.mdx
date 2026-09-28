@@ -54,12 +54,16 @@ flowchart TB
   subgraph A[apps]
     API["api<br/>Fastify 5 + TypeBox"]
     WEB["web<br/>Next.js 16"]
+    AGENTS["agents<br/>eve command and chat"]
   end
 
   K --> R
   D --> API
   M --> API
   O --> API
+  D --> AGENTS
+  M --> AGENTS
+  O --> AGENTS
 
   API -->|OpenAPI JSON| GEN[hey-api Generator]
   GEN -->|Generated Code| K

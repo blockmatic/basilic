@@ -25,7 +25,7 @@ Route auth is `basilicAccessJwt()`, `vercelOidc()`, `localDev()`. Access JWT onl
 
 ## Sandbox and workflow
 
-`agent/sandbox.ts` uses `defaultBackend()`. Host secrets stay in the app runtime. Sandbox env does not receive `JWT_SECRET`, `POSTGRES_URL`, or provider keys.
+`agent/sandbox.ts` uses `defaultBackend()`. Host secrets stay in the app runtime. Sandbox env does not receive `JWT_SECRET`, `POSTGRES_URL`, or provider keys. Both agents set `defaultTools: false`, so the model does not get shell, file, or web tools. Command re-exports `load_skill` for `view-config`.
 
 Local Workflow data is `.eve/.workflow-data` (gitignored). CI does not run live Vercel Workflow.
 

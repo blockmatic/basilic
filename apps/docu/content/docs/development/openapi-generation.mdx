@@ -10,8 +10,9 @@ flowchart LR
   TypeBox[TypeBox on Fastify routes] --> OpenAPI[openapi.json]
   OpenAPI --> Core["@repo/core client + types"]
   Core --> React["@repo/react handwritten hooks"]
-  Core --> Apps[web / mobile / CLI]
-  React --> Apps
+  Core --> Web[web]
+  Core --> Cli[CLI]
+  React --> Web
 ```
 
 ## Commands

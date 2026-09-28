@@ -164,7 +164,7 @@ Eve is a **separate Vercel project** (`apps/agents`, Root Directory `apps/agents
 - `https://<agents-project>.vercel.app/eve/command`
 - `https://<agents-project>.vercel.app/eve/chat`
 
-Set those values on the **API** project as `EVE_COMMAND_URL` and `EVE_CHAT_URL` (no trailing slash). Fastify `GET /agents` advertises them; the web rail uses each string as `useEveAgent` `host`. Local Portless uses the same path shape on `https://agents.basilic.localhost`. Edge is for CDN, WAF, redirects, and auth precheck. Node workloads: Fastify API, eve, Drizzle. Decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Topology: [Eve](/docs/architecture/eve).
+Set those values on the **API** project as `EVE_COMMAND_URL` and `EVE_CHAT_URL` (no trailing slash). Fastify `GET /agents` advertises them; the web rail uses each string as `useEveAgent` `host`. Local Portless uses the same path shape on `https://agents.basilic.localhost`. Edge is for CDN, WAF, redirects, and auth precheck. Node workloads: Fastify API, eve, Drizzle. Decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Diagram: [eve interaction](/docs/architecture/eve#interaction).
 
 ## Vercel ecosystem map (this repo)
 
@@ -209,5 +209,6 @@ Basilic is **not** an official Vercel project. It is built around Vercel-oriente
 ## Related Documentation
 
 - [Deployment Overview](/docs/deployment) - GitHub Flow and CI/CD pipelines
+- [eve interaction](/docs/architecture/eve#interaction) — `GET /agents`, access JWT, command and chat hosts
 - [Portability Strategy](/docs/architecture/portability) - Migration to Google Cloud, AWS, or self-hosted
 - [Installation](/docs/development) - Environment variable configuration

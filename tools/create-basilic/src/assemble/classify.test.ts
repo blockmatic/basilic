@@ -41,6 +41,7 @@ describe('classifyPath', () => {
     expect(classifyPath({ path: 'scripts/prepare-publish.mjs', manifest })?.kind).toBe('exclude')
     expect(classifyPath({ path: 'CHANGELOG.md', manifest })?.kind).toBe('exclude')
     expect(classifyPath({ path: 'CONTRIBUTING.md', manifest })?.kind).toBe('exclude')
+    expect(classifyPath({ path: 'docs/basilic-hero.png', manifest })?.kind).toBe('exclude')
   })
 })
 
