@@ -43,6 +43,7 @@ Implementation, not this merge:
 - **Landed:** R-ai retired Fastify `POST /ai/chat` (generate-only Fastify AI; CLI dropped `basilic ai chat`)
 - **Cancelled:** E3 self-host smoke. Default host is Vercel; `eve start` remains the Node/container exit on [Portability](/docs/architecture/portability)
 - **Landed:** G-eveui web `useEveAgent` (`eve/react`) + `host`; PromptInput. Not `withEve`. Not `useChat`.
+- **Landed:** Gateway-only language models (`createGateway`) for Fastify generate and eve command/chat; Anthropic direct, Open Router, and Ollama removed
 - OpenTelemetry correlation after issue #183
 - Data-region (no multi-region now)
 

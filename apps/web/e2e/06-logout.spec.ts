@@ -4,12 +4,13 @@ import { authHelpers } from './auth-helpers'
 test.describe('Logout', () => {
   test('header sign out revokes session and returns to login', async ({ page }) => {
     await authHelpers.loginAsTestUser(page)
-    await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible({ timeout: 10_000 })
+    await authHelpers.openAccountMenu(page)
+    await expect(page.getByRole('menuitem', { name: 'Sign out' })).toBeVisible({ timeout: 10_000 })
 
     const token = await authHelpers.extractSessionToken(page)
     expect(token).toMatch(/^eyJ[\w-]+\.[\w-]+\.[\w-]+$/)
 
-    await page.getByRole('button', { name: 'Sign out' }).click()
+    await page.getByRole('menuitem', { name: 'Sign out' }).click()
     await expect
       .poll(() => new URL(page.url()).pathname, { timeout: 15_000 })
       .toMatch(/\/auth\/login/)

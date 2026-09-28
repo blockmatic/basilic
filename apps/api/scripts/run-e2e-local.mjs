@@ -3,7 +3,7 @@
  * E2E local: spawn Fastify API, poll until healthy, run Playwright, cleanup on exit.
  * No wait-on. Uses ALLOW_TEST, PGLITE, NODE_ENV=test, RATE_LIMIT_MAX=10000,
  * COINS_RATE_LIMIT_MAX=10000.
- * Scalar login E2E does not call AI; Anthropic is not required for this spawn.
+ * Scalar login E2E does not call AI; a Gateway key is not required for this spawn.
  */
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -75,11 +75,9 @@ async function main() {
     TOTP_ISSUER: loaded.TOTP_ISSUER ?? process.env.TOTP_ISSUER ?? 'Test App',
     JWT_SECRET: jwtSecret,
   }
-  delete env.OPEN_ROUTER_API_KEY
-  delete env.OLLAMA_BASE_URL
   delete env.AI_DEFAULT_MODEL
-  delete env.AI_PROVIDER
-  delete env.ANTHROPIC_API_KEY
+  delete env.AI_GATEWAY_API_KEY
+  delete env.VERCEL_OIDC_TOKEN
 
   const fastify = spawn(process.execPath, ['--import', 'tsx', 'server.ts'], {
     cwd: fastifyDir,

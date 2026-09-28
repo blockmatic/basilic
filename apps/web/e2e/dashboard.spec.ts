@@ -24,7 +24,7 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByText('Showing a sample board.')).toBeVisible()
     await expect(visibleCoinRow(page, 'btc')).toContainText('$67,420.12')
     await expect(page.getByRole('heading', { name: 'Headlines' })).toHaveCount(0)
-    await expect(page.locator('text=Signed In')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('button', { name: 'Account' })).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('text=API OK')).toBeVisible({ timeout: 15_000 })
   })
 

@@ -4,7 +4,8 @@
  * Run in one terminal, then in another: pnpm test:e2e
  *
  * Use when Playwright's webServer spawns processes that get OOM killed (exit 137) on constrained VMs.
- * Pins AI to Anthropic for API (same as test:e2e:local).
+ * Pins Fastify generate to Vercel AI Gateway when AI_GATEWAY_API_KEY is set.
+ * Playwright does not call live AI, so a missing key warns and the servers still start.
  */
 import { spawn } from 'node:child_process'
 import { dirname } from 'node:path'
@@ -19,16 +20,11 @@ const env = {
   PGLITE: 'true',
   NODE_ENV: 'test',
   NEXT_PUBLIC_API_URL: 'http://localhost:3001',
-  AI_PROVIDER: 'anthropic',
 }
-if (env.AI_PROVIDER === 'anthropic' && !String(env.ANTHROPIC_API_KEY ?? '').trim()) {
+if (!String(env.AI_GATEWAY_API_KEY ?? '').trim())
   process.stderr.write(
-    'start-e2e-servers: ANTHROPIC_API_KEY is required when AI_PROVIDER is anthropic. Set it in the environment (e.g. .env.local) before starting E2E servers.\n',
+    'start-e2e-servers: AI_GATEWAY_API_KEY is not set; Fastify AI generation will be unavailable.\n',
   )
-  process.exit(1)
-}
-delete env.OPEN_ROUTER_API_KEY
-delete env.OLLAMA_BASE_URL
 delete env.AI_DEFAULT_MODEL
 
 const api = spawn('pnpm', ['--filter', '@repo/api', 'start:ci'], {

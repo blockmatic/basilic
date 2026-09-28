@@ -35,11 +35,21 @@ export function setViewLanguageModel({ input }: { input: SetViewInput }) {
 }
 
 export function finishLanguageModel() {
+  return textLanguageModel({ text: '', modelId: 'set-view-done' })
+}
+
+export function textLanguageModel({
+  text,
+  modelId = 'account-reply',
+}: {
+  text: string
+  modelId?: string
+}) {
   return new MockLanguageModelV4({
     provider: 'basilic-canned',
-    modelId: 'set-view-done',
+    modelId,
     doGenerate: {
-      content: [{ type: 'text', text: '' }],
+      content: [{ type: 'text', text }],
       finishReason: stopFinish,
       usage: emptyUsage,
       warnings: emptyWarnings,
@@ -48,6 +58,7 @@ export function finishLanguageModel() {
       stream: simulateReadableStream({
         chunks: [
           { type: 'text-start', id: 't' },
+          ...(text ? [{ type: 'text-delta' as const, id: 't', delta: text }] : []),
           { type: 'text-end', id: 't' },
           { type: 'finish', finishReason: stopFinish, usage: emptyUsage },
         ],

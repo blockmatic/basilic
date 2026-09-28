@@ -256,7 +256,11 @@ export function CoinBoard({
   }
 
   return (
-    <div className="w-full" data-testid="coin-board" data-spec-root={liveSpec.root}>
+    <div
+      className="flex h-full min-h-0 w-full flex-col"
+      data-testid="coin-board"
+      data-spec-root={liveSpec.root}
+    >
       <BoardLayout initialChrome={initialChrome}>
         <div className="space-y-4">
           {notices.map(notice => (

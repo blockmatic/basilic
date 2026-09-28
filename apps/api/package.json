@@ -47,7 +47,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.58",
     "@faker-js/faker": "^10.6.0",
     "@fastify/autoload": "^6.5.0",
     "@fastify/cors": "^11.3.0",
@@ -56,7 +55,6 @@
     "@fastify/static": "^10.1.4",
     "@fastify/swagger": "^9.8.1",
     "@fastify/type-provider-typebox": "^6.1.0",
-    "@openrouter/ai-sdk-provider": "^3.1.0",
     "@repo/db": "workspace:*",
     "@repo/email": "workspace:*",
     "@repo/error": "workspace:*",
@@ -70,7 +68,6 @@
     "@solana/web3.js": "^1.99.0",
     "@t3-oss/env-core": "^0.13.11",
     "ai": "^7.0.107",
-    "ai-sdk-ollama": "^4.3.0",
     "bs58": "^6.0.0",
     "dotenv": "^18.0.1",
     "drizzle-orm": "^0.45.2",

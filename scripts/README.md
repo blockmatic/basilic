@@ -6,7 +6,7 @@ Utility scripts for this monorepo.
 
 ### `run-qa.mjs`
 
-Runs the full QA pipeline sequentially: install (skipped when `node_modules` exists), checktypes, lint, OpenAPI generate + drift check, build, `test:scripts`, test, test:e2e (`SKIP_BUILD=1`). Stops immediately on the first failure and prints a clear error banner.
+Runs the full QA pipeline sequentially: install (skipped when `node_modules` exists), checktypes, lint, `openapi:drift`, `openapi:lint`, `sherif`, build, `test:scripts`, test, test:e2e (`SKIP_BUILD=1`). Stops immediately on the first failure and prints a clear error banner. `knip` is not a phase; `lint.yml` runs it on every PR.
 
 **Usage**: Via pnpm at repository root:
 ```bash
@@ -84,11 +84,12 @@ pnpm update-deps
 
 ### Monorepo hygiene
 
-- **`pnpm knip`** — unused files (`knip.json`; CI in `lint.yml`)
-- **`pnpm sherif`** — workspace dependency version alignment
-- **`pnpm openapi:drift`** — `pnpm generate` then fail on OpenAPI/client git drift (same paths as `run-qa.mjs`)
-- **`pnpm openapi:lint`** — Redocly lint on `apps/api/openapi/openapi.json` (`.redocly.yaml`)
-- **`pnpm agentic:scan`** — `is-agentic` against `AGENTIC_SCAN_URL` (operator tool; not required CI)
+- **`pnpm knip`** — unused files (`knip.json`). Every PR via `lint.yml`. Not part of `pnpm qa`.
+- **`pnpm sherif`** — workspace dependency version alignment. `pnpm qa` and `lint.yml`.
+- **`pnpm openapi:drift`** — regenerate OpenAPI and clients, fail on git drift and untracked `gen/` files. `pnpm qa` and `lint.yml`.
+- **`pnpm openapi:lint`** — Redocly lint on `apps/api/openapi/openapi.json` (`.redocly.yaml`). `pnpm qa` and `lint.yml`.
+- **`pnpm agentic:scan`** — `is-agentic` against `AGENTIC_SCAN_URL`. Operator only. Not `pnpm qa` and not CI.
+- **`pnpm db:studio`** — Drizzle Studio. Local only. Needs `pnpm db:start` and `POSTGRES_URL`.
 
 ### `check-openapi-drift.mjs`
 

@@ -2,19 +2,15 @@
 
 import { Button } from '@repo/ui/components/button'
 import { ScrollArea } from '@repo/ui/components/scroll-area'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@repo/ui/components/sidebar'
-import { useQueryClient } from '@tanstack/react-query'
 import { ApiHealthBadge } from 'components/shared/api-health-badge'
-import { AuthBadge } from 'components/shared/auth-badge'
-import { LogOut, PanelRightOpenIcon } from 'lucide-react'
+import { GalleryVerticalEnd, PanelRightOpenIcon } from 'lucide-react'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useQueryStates } from 'nuqs'
 import { Suspense } from 'react'
-import { toast } from 'sonner'
 import { chromeParsers } from '@/lib/coins/chrome'
-import { authSessionJwtQueryKey, authSessionUserQueryKey } from '@/lib/query-keys'
+import { AccountMenu } from './account-menu'
 import { PageTitle } from './page-title'
-import { DashboardSidebar } from './sidebar'
 
 function isBoardPath({ pathname }: { pathname: string }): boolean {
   return pathname === '/' || pathname === '/markets'
@@ -41,62 +37,40 @@ function BoardRailOpenButton() {
 export function DashboardShell({
   children,
 }: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
-  const queryClient = useQueryClient()
-
-  async function handleSignOut() {
-    const response = await fetch('/auth/logout', { redirect: 'manual' })
-    const isSuccess =
-      response.type === 'opaqueredirect' ||
-      response.status === 0 ||
-      (response.status >= 200 && response.status < 400)
-    if (!isSuccess) {
-      toast.error('Sign out failed. Please try again.')
-      return
-    }
-    queryClient.invalidateQueries({ queryKey: authSessionUserQueryKey })
-    queryClient.invalidateQueries({ queryKey: authSessionJwtQueryKey })
-    window.location.href = '/'
-  }
+  const pathname = usePathname()
+  const isBoard = isBoardPath({ pathname })
 
   return (
-    <SidebarProvider className="h-dvh min-h-0 overflow-hidden">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1">
-        <SidebarInset className="flex min-w-0 flex-1 flex-col">
-          <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b px-4 md:gap-4 md:px-6">
-            <div className="flex min-h-11 items-center md:hidden">
-              <SidebarTrigger className="size-11 shrink-0" />
+    <div className="flex h-dvh min-h-0 flex-col overflow-hidden">
+      <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b px-4 md:gap-4 md:px-6">
+        <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
+          <Link href="/" className="font-heading flex shrink-0 items-center gap-2 font-medium">
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+              <GalleryVerticalEnd />
             </div>
-            <div className="flex min-w-0 flex-1 items-center">
-              <PageTitle />
-            </div>
-            <div className="flex min-h-11 items-center gap-3 md:gap-4">
-              <Suspense fallback={null}>
-                <BoardRailOpenButton />
-              </Suspense>
-              <ApiHealthBadge />
-              <AuthBadge />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-11 sm:size-9"
-                aria-label="Sign out"
-                type="button"
-                onClick={handleSignOut}
-              >
-                <LogOut />
-              </Button>
-            </div>
-          </header>
-          <ScrollArea
-            orientation="vertical"
-            className="min-h-0 min-w-0 flex-1"
-            style={{ height: 'calc(100dvh - 3.5rem)' }}
-          >
-            <main className="block p-4 md:p-6">{children}</main>
-          </ScrollArea>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+            Basilic
+          </Link>
+          <PageTitle />
+        </div>
+        <div className="flex min-h-11 items-center gap-3 md:gap-4">
+          <Suspense fallback={null}>
+            <BoardRailOpenButton />
+          </Suspense>
+          <ApiHealthBadge />
+          <AccountMenu />
+        </div>
+      </header>
+      {isBoard ? (
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</main>
+      ) : (
+        <ScrollArea
+          orientation="vertical"
+          className="min-h-0 min-w-0 flex-1"
+          style={{ height: 'calc(100dvh - 3.5rem)' }}
+        >
+          <main className="block p-4 md:p-6">{children}</main>
+        </ScrollArea>
+      )}
+    </div>
   )
 }

@@ -1,5 +1,5 @@
 import { defineAgent, defineDynamic } from 'eve'
-import { getProvider } from '#lib/provider.js'
+import { selectChatLanguageModel } from '#lib/chat-select-model.js'
 
 export default defineAgent({
   defaultTools: false,
@@ -8,11 +8,8 @@ export default defineAgent({
   },
   model: defineDynamic({
     events: {
-      'step.started': () => {
-        const model = getProvider()
-        if (!model) throw new Error('chat language model is not configured')
-        return { model, modelContextWindowTokens: 200_000 }
-      },
+      'step.started': (_event, ctx) =>
+        selectChatLanguageModel({ messages: [...ctx.messages], ctx }),
     },
   }),
 })

@@ -25,10 +25,10 @@ const isConnectionClassFailure = (res: ResponseLike): boolean =>
 export const isProviderUnavailable = (res: ResponseLike): boolean =>
   res.statusCode === 502 || isConnectionClassFailure(res)
 
-export const hasRealAnthropicKey = (): boolean => {
-  const key = process.env.ANTHROPIC_API_KEY
-  if (!key || key === 'sk-ant-xxx') return false
-  if (key.startsWith('sk-ant-dummy')) return false
+export const hasRealGatewayKey = (): boolean => {
+  const key = process.env.AI_GATEWAY_API_KEY
+  if (!key) return false
+  if (key.includes('dummy') || key.includes('placeholder') || key.includes('xxx')) return false
   return true
 }
 
@@ -37,7 +37,7 @@ export const skipIfProviderUnavailable = (
   res: ResponseLike,
   name: string,
 ): void => {
-  if (hasRealAnthropicKey()) return
+  if (hasRealGatewayKey()) return
   if (isProviderUnavailable(res))
     ctx.skip(`[AI test] ${name}: AI provider unreachable (${res.statusCode})`)
 }

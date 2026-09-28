@@ -1,4 +1,6 @@
+import isEqual from 'lodash-es/isEqual'
 import { z } from 'zod'
+import { type BoardViewState, splitBoardView } from './surface'
 import {
   defaultSearchQuery,
   parseViewConfig,
@@ -51,4 +53,30 @@ export function viewConfigToSearchPatch({ viewConfig }: { viewConfig: ViewConfig
     elements: viewConfig.elements ?? null,
     ...viewConfig.query,
   }
+}
+
+export function isActiveCommandHistoryEntry({
+  entry,
+  q,
+  view,
+}: {
+  entry: CommandHistoryEntry
+  q: string | null
+  view: BoardViewState
+}): boolean {
+  if (!q || entry.command !== q) return false
+  const split = splitBoardView({ view })
+  return isEqual(
+    viewConfigToSearchPatch({
+      viewConfig: viewFromSearchQuery({
+        query: split.query,
+        title: entry.viewConfig.title,
+        surface: split.surface,
+        period: split.period,
+        columns: split.columns,
+        elements: split.elements,
+      }),
+    }),
+    viewConfigToSearchPatch({ viewConfig: entry.viewConfig }),
+  )
 }

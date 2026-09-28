@@ -295,7 +295,7 @@ export const listAgents = <ThrowOnError extends boolean = false>(options?: Optio
 /**
  * Generate text from prompt
  *
- * Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic, Open Router, or Ollama. Returns SSE (text/event-stream) when streaming.
+ * Generate text from a single prompt (CLI, scripts, pipelines). Uses Vercel AI Gateway. Returns SSE (text/event-stream) when streaming.
  */
 export const generate = <ThrowOnError extends boolean = false>(options: Options<GenerateData, ThrowOnError>): RequestResult<GenerateResponses, GenerateErrors, ThrowOnError> => (options.client ?? client).post<GenerateResponses, GenerateErrors, ThrowOnError>({
   security: [{ scheme: 'bearer', type: 'http' }],

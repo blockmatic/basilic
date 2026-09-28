@@ -37,11 +37,8 @@ async function main() {
     loaded,
     extra: {
       NEXT_PUBLIC_API_URL: 'http://localhost:3001',
-      AI_PROVIDER: 'anthropic',
     },
   })
-  delete env.OPEN_ROUTER_API_KEY
-  delete env.OLLAMA_BASE_URL
 
   const api = spawn('node', ['--import', 'tsx', 'server.ts'], {
     cwd: join(repoRoot, 'apps/api'),

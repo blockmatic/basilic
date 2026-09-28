@@ -7,15 +7,26 @@ Package manager is **pnpm 12.5.1** (see root `packageManager`). Decision: [ADR 0
 
 **Biome** formats and applies style (imports, unused). **ESLint** owns TypeScript, React, Next.js 16, Expo, and Fastify correctness. `pnpm lint` runs Biome then ESLint. Pre-commit formats staged files with Biome after security hooks. CI runs both (`lint.yml`).
 
-Monorepo hygiene (also in `lint.yml` on every PR):
+Where each hygiene command runs:
+
+| Command | `pnpm qa` | `lint.yml` (every PR) | Notes |
+| --- | --- | --- | --- |
+| `pnpm openapi:drift` | yes | yes | Regenerates the spec and clients. Fails on git drift and untracked `gen/` files. |
+| `pnpm openapi:lint` | yes | yes | Redocly on `apps/api/openapi/openapi.json`. |
+| `pnpm sherif` | yes | yes | Workspace dependency versions. |
+| `pnpm knip` | no | yes | Unused files. Slower than sherif; CI is enough. |
+| `pnpm agentic:scan` | no | no | Operator score. Set `AGENTIC_SCAN_URL`. |
+| `pnpm db:studio` | no | no | Local Drizzle Studio. Needs `pnpm db:start` and `POSTGRES_URL`. |
+
+`api-e2e.yml` still repeats OpenAPI drift on API path changes, before unit tests.
 
 ```bash
-pnpm knip              # unused files (see knip.json)
-pnpm sherif            # workspace dependency version alignment
-pnpm openapi:drift     # regenerate OpenAPI + clients, fail on git drift
-pnpm openapi:lint      # Redocly rules on apps/api/openapi/openapi.json
-pnpm agentic:scan      # is-agentic score (set AGENTIC_SCAN_URL; operator-only)
-pnpm db:studio         # Drizzle Studio (needs pnpm db:start + POSTGRES_URL)
+pnpm knip
+pnpm sherif
+pnpm openapi:drift
+pnpm openapi:lint
+pnpm agentic:scan
+pnpm db:studio
 ```
 
 ```bash
@@ -31,7 +42,7 @@ Run with `pnpm <script>` from the repository root.
 
 **Setup:** `setup` (install, hooks, skills, gitleaks, osv, env templates, Portless, database, deepsec, Playwright Chromium), `setup:skills`, `setup:env`, `setup:portless`, `setup:database`, `db:start` / `db:stop` / `db:status`, `reset` (API wipe + migrate + seed).
 
-**Primary:** `build`, `dev` (Portless proxy + Postgres, then Turbo TUI), `qa` (checktypes, lint, OpenAPI drift, build, unit and E2E).
+**Primary:** `build`, `dev` (Portless proxy + Postgres, then Turbo TUI), `qa` (checktypes, lint, OpenAPI drift and lint, sherif, build, unit and E2E). Knip is not in `qa`.
 
 **Quality:** `checktypes`, `format`, `lint`, `lint:fix`, `test`, `test:e2e`.
 

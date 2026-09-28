@@ -1,16 +1,12 @@
 export {
-  defaultAnthropicModel,
-  defaultOllamaModel,
-  defaultOpenRouterModel,
+  defaultGatewayModel,
   defaultProvider,
   getProvider,
   getResolvedProvider,
   isAllowedRequestModel,
   type ResolvedProvider,
-  resolveAnthropicModel,
-  resolveOpenRouterModel,
-  upgradeSonnetAnthropicModel,
-  upgradeSonnetOpenRouterModel,
+  resolveGatewayModel,
+  upgradeSonnetGatewayModel,
 } from './provider.js'
 export { aiRouteRateLimit, aiRouteRateLimitConfig } from './route-rate-limit.js'
 export {

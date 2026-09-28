@@ -1,61 +1,26 @@
-import { createAnthropic } from '@ai-sdk/anthropic'
-import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import type { LanguageModel } from 'ai'
-import { createOllama } from 'ai-sdk-ollama'
+import { createGateway } from 'ai'
 import { env } from '../env.js'
 
-export const defaultOllamaModel = 'qwen3:8b'
-export const defaultOpenRouterModel = 'anthropic/claude-haiku-4.5'
-export const defaultAnthropicModel = 'claude-haiku-4-5'
+export const defaultGatewayModel = 'anthropic/claude-haiku-4.5'
 /** Explicit Sonnet tier when callers request `sonnet` (not the default — Haiku is cheaper). */
-export const upgradeSonnetAnthropicModel = 'claude-sonnet-4-6'
-export const upgradeSonnetOpenRouterModel = 'anthropic/claude-sonnet-4.6'
+export const upgradeSonnetGatewayModel = 'anthropic/claude-sonnet-4.6'
 
-/** Default provider when AI_PROVIDER is unset; Anthropic direct API is preferred. */
-export const defaultProvider: ResolvedProvider = 'anthropic'
+export const defaultProvider: ResolvedProvider = 'gateway'
 
-export type ResolvedProvider = 'ollama' | 'openrouter' | 'anthropic'
+export type ResolvedProvider = 'gateway'
 
-/**
- * Resolve AI provider from env. When AI_PROVIDER is unset, uses Anthropic → Open Router → Ollama.
- * Anthropic AI SDK (direct API) is the default; Open Router is fallback.
- */
+function gatewayToken() {
+  return env.AI_GATEWAY_API_KEY ?? env.VERCEL_OIDC_TOKEN
+}
+
 export function getResolvedProvider(): ResolvedProvider | null {
-  if (env.AI_PROVIDER === 'anthropic') {
-    if (env.ANTHROPIC_API_KEY) return 'anthropic'
-    return null
-  }
-  if (env.AI_PROVIDER === 'openrouter') {
-    if (env.OPEN_ROUTER_API_KEY) return 'openrouter'
-    return null
-  }
-  if (env.AI_PROVIDER === 'ollama') {
-    if (env.OLLAMA_BASE_URL) return 'ollama'
-    return null
-  }
-  if (env.ANTHROPIC_API_KEY) return defaultProvider
-  if (env.OPEN_ROUTER_API_KEY) return 'openrouter'
-  if (env.OLLAMA_BASE_URL) return 'ollama'
-  return null
+  return gatewayToken() ? defaultProvider : null
 }
 
-const openRouterFreeModel = 'meta-llama/llama-3.3-70b-instruct:free'
-const openRouterModelAliases: Record<string, string> = {
-  'openrouter/free': openRouterFreeModel,
-  grok: 'x-ai/grok-3-mini',
-  'grok-3-mini': 'x-ai/grok-3-mini',
-  haiku: defaultOpenRouterModel,
-  sonnet: upgradeSonnetOpenRouterModel,
-}
-
-const anthropicModelAliases: Record<string, string> = {
-  haiku: defaultAnthropicModel,
-  sonnet: upgradeSonnetAnthropicModel,
-  'claude-3-5-sonnet': upgradeSonnetAnthropicModel,
-  'claude-sonnet-4': upgradeSonnetAnthropicModel,
-  'claude-sonnet-4-5': upgradeSonnetAnthropicModel,
-  'claude-sonnet-4-6': upgradeSonnetAnthropicModel,
-  'claude-sonnet-4-20250514': upgradeSonnetAnthropicModel,
+const gatewayModelAliases: Record<string, string> = {
+  haiku: defaultGatewayModel,
+  sonnet: upgradeSonnetGatewayModel,
 }
 
 function resolveModelParam({
@@ -79,96 +44,41 @@ function resolveModelParam({
   return aliases[effective] ?? effective
 }
 
-export function resolveAnthropicModel(
-  modelParam?: string,
-  opts?: { defaultModel?: string },
-): string {
+export function resolveGatewayModel(modelParam?: string, opts?: { defaultModel?: string }): string {
   return resolveModelParam({
     modelParam,
-    runtimeDefault: defaultAnthropicModel,
+    runtimeDefault: defaultGatewayModel,
     defaultAliases: ['default', 'haiku'],
-    aliases: anthropicModelAliases,
+    aliases: gatewayModelAliases,
     defaultModelOverride: opts?.defaultModel,
   })
 }
 
-function resolveOllamaModel(modelParam?: string, opts?: { defaultModel?: string }): string {
-  return resolveModelParam({
-    modelParam,
-    runtimeDefault: defaultOllamaModel,
-    defaultAliases: ['default'],
-    aliases: {},
-    defaultModelOverride: opts?.defaultModel,
-  })
-}
-
-export function resolveOpenRouterModel(
-  modelParam?: string,
-  opts?: { defaultModel?: string },
-): string {
-  const effective = resolveModelParam({
-    modelParam,
-    runtimeDefault: defaultOpenRouterModel,
-    defaultAliases: ['default', 'haiku'],
-    aliases: openRouterModelAliases,
-    defaultModelOverride: opts?.defaultModel,
-  })
-  return (
-    openRouterModelAliases[effective] ??
-    (effective.startsWith('gpt') ? `openai/${effective}` : effective)
-  )
-}
-
-function requestModelAllowlist({ provider }: { provider?: ResolvedProvider | null }): Set<string> {
-  const shared = ['default', ...(env.AI_DEFAULT_MODEL ? [env.AI_DEFAULT_MODEL] : [])]
-  const anthropic = [
-    ...shared,
+function requestModelAllowlist(): Set<string> {
+  return new Set([
+    'default',
+    ...(env.AI_DEFAULT_MODEL ? [env.AI_DEFAULT_MODEL] : []),
     'haiku',
     'sonnet',
-    defaultAnthropicModel,
-    upgradeSonnetAnthropicModel,
-    ...Object.keys(anthropicModelAliases),
-  ]
-  const openrouter = [
-    ...shared,
-    'haiku',
-    'sonnet',
-    defaultOpenRouterModel,
-    upgradeSonnetOpenRouterModel,
-    ...Object.keys(openRouterModelAliases),
-    ...Object.values(openRouterModelAliases),
-  ]
-  const ollama = [...shared, defaultOllamaModel]
-  if (provider === 'anthropic') return new Set(anthropic)
-  if (provider === 'openrouter') return new Set(openrouter)
-  if (provider === 'ollama') return new Set(ollama)
-  return new Set([...anthropic, ...openrouter, ...ollama])
+    defaultGatewayModel,
+    upgradeSonnetGatewayModel,
+    ...Object.keys(gatewayModelAliases),
+  ])
 }
 
 export function isAllowedRequestModel({
   model,
-  provider,
 }: {
   model?: string
   provider?: ResolvedProvider | null
 }): boolean {
   const trimmed = model?.trim()
   if (!trimmed) return true
-  return requestModelAllowlist({ provider }).has(trimmed)
+  return requestModelAllowlist().has(trimmed)
 }
 
-export function getProvider(provider: ResolvedProvider, modelParam?: string): LanguageModel {
-  if (provider === 'anthropic') {
-    const apiKey = env.ANTHROPIC_API_KEY
-    if (!apiKey) throw new Error('ANTHROPIC_API_KEY required for Anthropic')
-    return createAnthropic({ apiKey })(resolveAnthropicModel(modelParam))
-  }
-  if (provider === 'ollama') {
-    const baseURL = env.OLLAMA_BASE_URL
-    if (!baseURL) throw new Error('OLLAMA_BASE_URL required for Ollama')
-    return createOllama({ baseURL })(resolveOllamaModel(modelParam))
-  }
-  const apiKey = env.OPEN_ROUTER_API_KEY
-  if (!apiKey) throw new Error('OPEN_ROUTER_API_KEY required for Open Router')
-  return createOpenRouter({ apiKey }).chat(resolveOpenRouterModel(modelParam))
+export function getProvider(_provider: ResolvedProvider, modelParam?: string): LanguageModel {
+  const apiKey = gatewayToken()
+  if (!apiKey) throw new Error('AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN required for AI Gateway')
+  return createGateway({ apiKey }).languageModel(resolveGatewayModel(modelParam))
 }

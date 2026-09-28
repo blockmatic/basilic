@@ -57,7 +57,7 @@ export const boardTurnQuestions = {
   },
 } as const
 
-const skipStatuses = new Set([401, 429, 529])
+const skipStatuses = new Set([401, 403, 429, 529])
 
 function statusCodeOf(err: unknown) {
   if (typeof err !== 'object' || err === null || !('statusCode' in err)) return
@@ -69,10 +69,15 @@ function isTimeout(err: unknown) {
   return err.name === 'AbortError' || err.name === 'TimeoutError'
 }
 
+function isPlanLimited(err: unknown) {
+  const message = err instanceof Error ? err.message : String(err)
+  return /Zero Data Retention|Free tier users do not have access/i.test(message)
+}
+
 function isUpstreamSkip(err: unknown) {
   const status = statusCodeOf(err)
   if (status != null && skipStatuses.has(status)) return true
-  return isTimeout(err)
+  return isTimeout(err) || isPlanLimited(err)
 }
 
 export async function evaluateBoardTurn({

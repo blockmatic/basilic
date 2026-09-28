@@ -4,7 +4,8 @@ import { z } from 'zod'
 import { userIdFromCtx } from '#lib/principal.js'
 
 export default defineTool({
-  description: "Return this caller's profile. Read-only. No wallet balances.",
+  description:
+    "Read this caller's users row from Postgres (name, email, username, joinedAt). Call this before answering who they are, their profile, or their account. Empty input. No wallet balances.",
   inputSchema: z.object({}),
   execute: (_input, ctx) => getAccountSnapshot({ userId: userIdFromCtx({ ctx }) }),
 })

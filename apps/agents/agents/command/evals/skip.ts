@@ -1,11 +1,6 @@
 export function skipIfNoCommandModel({ skip }: { skip: (reason: string) => void }) {
   /* eslint-disable no-restricted-properties -- eval skipIf must not load createEnv */
-  if (
-    process.env.ANTHROPIC_API_KEY ||
-    process.env.OPEN_ROUTER_API_KEY ||
-    process.env.OLLAMA_BASE_URL
-  )
-    return false
+  if (process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN) return false
   /* eslint-enable no-restricted-properties */
   skip('no command language model')
   return true

@@ -54,7 +54,7 @@ curl -sS https://agents.basilic.localhost/eve/command/v1/health
 curl -sS https://agents.basilic.localhost/eve/chat/v1/health
 ```
 
-Session routes need a Fastify access JWT. Optional `ALCHEMY_API_KEY` on this host enables command `get_wallet` / `get_nfts`. Command and chat turns use `getProvider()` (Anthropic → OpenRouter → Ollama). Jev `evaluateBoardTurn` runs first on **command** when Gateway credentials exist; refuse/canned/surface can skip Haiku. Chat does not run Jev. Runtime skill: `agents/command/agent/skills/view-config.md`. Command evals: `agents/command/evals/*.eval.ts`. Chat evals: `agents/chat/evals/*.eval.ts`.
+Session routes need a Fastify access JWT. Optional `ALCHEMY_API_KEY` on this host enables command `get_wallet` / `get_nfts`. Command and chat turns use `getProvider()` (Vercel AI Gateway). Eve does not read Fastify's `apps/api/.env`; set `AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN` in `apps/agents/.env`. Chat and non-canned command turns fail with "language model is not configured" when those vars are unset. Jev `evaluateBoardTurn` runs first on **command** when Gateway credentials exist; refuse/canned/surface can skip the language model. Chat does not run Jev. Chat who-am-I reads `getAccountSnapshot` on `step.started` (JWT `users` row). Runtime skill: `agents/command/agent/skills/view-config.md`. Command evals: `agents/command/evals/*.eval.ts`. Chat evals: `agents/chat/evals/*.eval.ts`.
 
 Jev factory: `getEvaluationModel()` is `null` without `AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN`. Optional `JEV_MODEL` (default `typesafe-ai/jev`) and `AI_EVALUATE_TIMEOUT_MS`. Unit tests: `pnpm --filter @repo/agents test` (live Gateway is skipped unless `AI_GATEWAY_API_KEY` is set). `eve eval` is not in packages CI.
 

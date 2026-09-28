@@ -23,7 +23,6 @@ env:
   CI: true
   PGLITE: true
   POSTGRES_URL: postgresql://localhost/test
-  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-dummy-for-packages-test' }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 

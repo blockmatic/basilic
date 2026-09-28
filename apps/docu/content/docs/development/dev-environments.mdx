@@ -51,7 +51,6 @@ Safari: `.localhost` may need `pnpm exec portless hosts sync`. Diagnose with `pn
 | 8081 / 19000 / 19001 | Expo Metro / DevTools |
 | 3000 / 3001 | Playwright and CI spawned web/API (no Portless, no eve) |
 | 3104 / 3105 | Local eve command/chat loopback behind the agents gateway |
-| 11434 | Optional Ollama |
 
 Direct-run debugging: `pnpm --filter @repo/web dev:app` (and sibling `dev:app` scripts). `PORTLESS=0 pnpm --filter @repo/web dev` bypasses the proxy. Node processes outside Portless need `NODE_EXTRA_CA_CERTS=~/.portless/ca.pem` to fetch the named HTTPS URLs.
 

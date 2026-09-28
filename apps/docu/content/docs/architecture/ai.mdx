@@ -10,13 +10,13 @@ Four planes:
 - **Domain** — `@repo/db` named functions, `@repo/markets` vendor HTTP, and `@repo/onchain` wallet HTTP. Next keeps `@repo/core`.
 - **Presentation** — Generative UI on Next: Jev on eve triages command turns (`experimental_evaluate`); it does not author json-render trees. Commands Send runs `experimental_composeSpec` on the Next server (`apps/web/lib/genui/compose-spec.ts`). The json-render `Renderer` paints `@repo/ui` (shadcn/Base UI, `base-vega`). Closed `elements` (candidate ids) persist on nuqs; GET, chips, Back, and share restore with `specFromSelection` and never re-run Jev. Unset web `AI_GATEWAY_API_KEY` or compose `unavailable`/`limit` falls back to `composeSurface`. Composer dictation is Web Speech on Next (never auto-send, never Fastify audio). Board chrome lives on [Frontend](/docs/architecture/frontend).
 
-Models are implementation details; agents are product capabilities (`command`, `chat`). Fastify `getProvider()` resolves language models for `/ai/generate`. Eve hosts Jev for Commands triage: `getEvaluationModel()` plus `evaluateBoardTurn` in `apps/agents/lib/evaluate` call `experimental_evaluate` on Vercel AI Gateway (`typesafe-ai/jev`). Unset eve `AI_GATEWAY_API_KEY` (and no `VERCEL_OIDC_TOKEN`) returns a null model and skips that hop. After `set_view`, Next composeSpec uses a separate web Gateway key so Jev can pick table, account, chart, or dashboard-overview candidate membership. The command agent wires the eve hop on `step.started`. Chat uses the same eve `getProvider()` on `step.started` and does not run Jev. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
+Models are implementation details; agents are product capabilities (`command`, `chat`). Fastify `getProvider()` resolves a Vercel AI Gateway language model for `/ai/generate`. Eve hosts Jev for Commands triage: `getEvaluationModel()` plus `evaluateBoardTurn` in `apps/agents/lib/evaluate` call `experimental_evaluate` on Vercel AI Gateway (`typesafe-ai/jev`). Unset eve `AI_GATEWAY_API_KEY` (and no `VERCEL_OIDC_TOKEN`) returns a null evaluation model and skips that hop; command and chat language models use the same credentials. After `set_view`, Next composeSpec uses a separate web Gateway key so Jev can pick table, account, chart, or dashboard-overview candidate membership. The command agent wires the eve hop on `step.started`. Chat uses the same eve `getProvider()` on `step.started` and does not run Jev. Do not treat Commands as a Fastify `ToolLoopAgent`. Runtime decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
 
 Fastify `/ai/generate` is **control-plane API chrome**, not the Product Ready bar and not the durable agent runtime. Agent **skills** (`AGENTS.md`, Basilic `/w-*`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
 
 The Fastify API exposes one AI endpoint under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; the route file in `apps/api/src/routes/ai/` is a thin handler (schema + auth + delegation). The browser talks to Fastify directly (Bearer). There is no Next.js AI BFF.
 
-There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store, no `ToolLoopAgent`, and no mobile assistant. Generate is `streamText` / `generateText` with `maxOutputTokens` from `AI_MAX_OUTPUT_TOKENS` (default 4096). `body.model` is an allowlist scoped to the resolved provider (`default`, `haiku`/`sonnet` where that provider maps them, that provider's runtime default, plus `AI_DEFAULT_MODEL` on every provider). Unknown ids including `opus` are 400 even when no provider is configured. Cross-provider ids (for example `anthropic/claude-haiku-4.5` on Anthropic) are 400 before `getProvider`. `POST /ai/generate` uses a tighter route rate limit (`AI_RATE_LIMIT_MAX`, default 20) than global `RATE_LIMIT_MAX`. `GET /coins` is tighter still (`COINS_RATE_LIMIT_MAX`, default 10).
+There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store, no `ToolLoopAgent`, and no mobile assistant. Generate is `streamText` / `generateText` with `maxOutputTokens` from `AI_MAX_OUTPUT_TOKENS` (default 4096). `body.model` is an allowlist (`default`, `haiku`, `sonnet`, `anthropic/claude-haiku-4.5`, `anthropic/claude-sonnet-4.6`, plus `AI_DEFAULT_MODEL` when set). Unknown ids including `opus` and bare Anthropic ids (`claude-haiku-4-5`) are 400 even when Gateway is unconfigured. `POST /ai/generate` uses a tighter route rate limit (`AI_RATE_LIMIT_MAX`, default 20) than global `RATE_LIMIT_MAX`. `GET /coins` is tighter still (`COINS_RATE_LIMIT_MAX`, default 10).
 
 ## Routes
 
@@ -26,11 +26,9 @@ There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store,
 
 Bearer auth is required (session JWT or API key). Set `Accept: text/event-stream` or `stream: true` for SSE. Generate is prompt-only (no tools). Interactive Chat is the eve `chat` agent — [Eve](/docs/architecture/eve). Fastify does not expose `POST /ai/chat`.
 
-## Provider chain
+## Provider
 
-When `AI_PROVIDER` is unset, resolution order is **Anthropic → Open Router → Ollama if `OLLAMA_BASE_URL` is set** (`getResolvedProvider()` in `lib/ai/provider.ts`). Missing keys and no Ollama URL yields `null` (500 `SERVER_ERROR`). Request alias `sonnet` maps to Claude Sonnet 4.6; default model is Haiku 4.5.
-
-For Ollama installation and ops, see [Self-Hosted LLM](/docs/deployment/self-hosted-llm). The example pull model there is `qwen2.5:3b`; the runtime default when using Ollama is `qwen3:8b`.
+`getResolvedProvider()` in `lib/ai/provider.ts` returns `gateway` when `AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN` is set, otherwise `null` (500 `SERVER_ERROR`). Fastify generate, eve command, and eve chat all use `createGateway` from `ai`. Default model is Claude Haiku 4.5 (`anthropic/claude-haiku-4.5`). Request alias `sonnet` maps to `anthropic/claude-sonnet-4.6`. Anthropic BYOK is configured on the Vercel AI Gateway team, not as `ANTHROPIC_API_KEY` in the app.
 
 ## `lib/ai` layout
 
@@ -51,16 +49,14 @@ Eve Chat sanitizes inbound session payloads: client `{ role: 'system' }` message
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `ANTHROPIC_API_KEY` | Conditional (preferred) | — | Anthropic direct API |
-| `OPEN_ROUTER_API_KEY` | Conditional (fallback) | — | Open Router when Anthropic unavailable |
-| `OLLAMA_BASE_URL` | Conditional | — | Self-hosted Ollama (not inferred from localhost) |
-| `AI_PROVIDER` | No | Inferred | `anthropic`, `openrouter`, or `ollama` |
-| `AI_DEFAULT_MODEL` | No | Provider-specific | Haiku / `anthropic/claude-haiku-4.5` / `qwen3:8b` |
+| `AI_GATEWAY_API_KEY` | Conditional | — | Vercel AI Gateway. Unset (and no OIDC) yields 500 on generate |
+| `VERCEL_OIDC_TOKEN` | Conditional | — | Vercel injects this on deploy; same Gateway auth as the key |
+| `AI_DEFAULT_MODEL` | No | `anthropic/claude-haiku-4.5` | Gateway model id |
 | `AI_MAX_OUTPUT_TOKENS` | No | `4096` | Completion cap (`maxOutputTokens`) |
 | `AI_RATE_LIMIT_MAX` | No | `20` | Per-route `/ai/*` max in the rate-limit window |
 | `AI_UPSTREAM_TIMEOUT_MS` | No | `120000` | Upstream abort timeout (ms) |
 
-Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`. Eve Jev credentials live on the eve host (`apps/agents/.env.defaults.example`): optional `AI_GATEWAY_API_KEY`, `JEV_MODEL` (default `typesafe-ai/jev`), `AI_EVALUATE_TIMEOUT_MS`. Next composeSpec uses the same var names on `apps/web` (`lib/env.ts`, `.env.local.example`) — independent skip from eve. Do not put `AI_PROVIDER=jev` on Fastify.
+Templates: `apps/api/.env.defaults.example`, `apps/api/.env.test.example`. Eve does not read Fastify's `apps/api/.env`. Chat and non-canned command turns need `AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN` in `apps/agents/.env` (same names as Fastify generate; see `apps/agents/.env.defaults.example`). Jev on eve uses those credentials plus `JEV_MODEL` (default `typesafe-ai/jev`) and `AI_EVALUATE_TIMEOUT_MS`. Next composeSpec uses `AI_GATEWAY_API_KEY` on `apps/web` (`lib/env.ts`, `.env.local.example`) — independent skip from eve.
 
 ## Dashboard Chat (eve)
 
@@ -72,7 +68,7 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 
 ## Testing
 
-- **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): `test/utils/ai-remote.ts` skips **402** only when the response is `INSUFFICIENT_CREDITS` (quota is infra). Skips 502/504/connection only when `ANTHROPIC_API_KEY` is missing or placeholder `sk-ant-xxx`. A real key → 502 fails the suite. Generate contract: 401 unauthenticated, 400 bad payloads, model allowlist, rate limit.
+- **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): `test/utils/ai-remote.ts` skips **402** only when the response is `INSUFFICIENT_CREDITS` (quota is infra). Skips 502/504/connection only when `AI_GATEWAY_API_KEY` is missing or a placeholder (`dummy` / `placeholder` / `xxx`). A real key → 502 fails the suite. Generate contract: 401 unauthenticated, 400 bad payloads, model allowlist, rate limit.
 - Board chrome, eve Chat, and compose tests: [Frontend](/docs/architecture/frontend), [Eve](/docs/architecture/eve), and [E2E Testing](/docs/testing/e2e-testing). Dashboard Playwright still asserts Send paths do not hit `/ai/chat`. Missing SpeechRecognition hides the mic; keyboard Send still works. There is no Fastify chat Playwright project.
 
 ## Related
@@ -81,7 +77,6 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 - [eve](/docs/architecture/eve#interaction) — durable runtime, command and chat agents, Jev hop
 - [Frontend](/docs/architecture/frontend) — presentation plane, composeSpec / `specFromSelection`
 - [AI Workflow](/docs/development/ai-workflow) — skills (`AGENTS.md`, Basilic `/w-*`)
-- [Self-Hosted LLM](/docs/deployment/self-hosted-llm) — Ollama ops
 - [Vercel Deployment](/docs/deployment/vercel) — env vars for hosted API
 - [API Architecture](/docs/architecture/api) — OpenAPI, `@repo/core`
 - [Error handling](/docs/architecture/error-handling) — catalog errors

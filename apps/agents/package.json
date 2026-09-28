@@ -31,8 +31,6 @@
     "test:unit": "vitest run && node --test scripts/*.test.mjs"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.58",
-    "@openrouter/ai-sdk-provider": "^3.1.0",
     "@repo/db": "workspace:*",
     "@repo/markets": "workspace:*",
     "@repo/onchain": "workspace:*",
@@ -40,7 +38,6 @@
     "@t3-oss/env-core": "^0.13.11",
     "@vercel/connect": "2.3.0",
     "ai": "^7.0.107",
-    "ai-sdk-ollama": "^4.3.0",
     "dotenv": "^18.0.1",
     "eve": "^0.63.0",
     "zod": "^4.6.5"
