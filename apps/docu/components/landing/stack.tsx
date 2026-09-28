@@ -71,14 +71,24 @@ const groups = [
     title: 'How you ship',
     facts: [
       {
+        title: 'CI/CD',
+        href: '/docs/deployment/github-actions',
+        body: 'GitHub Actions on pull requests. Release Please publishes create-basilic.',
+      },
+      {
+        title: 'Automated tests',
+        href: '/docs/testing',
+        body: 'Vitest for the API and packages. Playwright for web and the API reference.',
+      },
+      {
+        title: 'Security',
+        href: '/docs/architecture/security',
+        body: 'Gitleaks, OSV, and DeepSec on pre-commit and in CI.',
+      },
+      {
         title: 'Deploy',
         href: '/docs/architecture/portability',
         body: 'Shipped path is Vercel + Supabase. Exit is Fastify `listen`, `eve start`, and PostgreSQL.',
-      },
-      {
-        title: 'Quality and security',
-        href: '/docs/architecture/security',
-        body: 'Biome, pre-commit secret scanning, OSV, and DeepSec in CI.',
       },
       {
         title: 'Multichain',

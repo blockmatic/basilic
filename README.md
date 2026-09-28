@@ -8,30 +8,21 @@ Start a product without wiring auth, clients, and agent hosts from scratch. You 
 
 ## Capabilities
 
-**Product contract**
-
-- **Product API** — Fastify REST, generated OpenAPI, `/llms.txt`, RFC 9727 catalog
-- **Multi-client auth** — session JWT, API keys, OAuth/passkey/magic, SIWE/SIWS
-- **Generated clients** — `@repo/core` from the spec; `@repo/react` hooks
-
-**Agentic surfaces**
-
-- **Durable agents** — eve `command` and `chat` in `apps/agents` (this upstream tree; omitted from `create-basilic`)
-- **Generative UI** — Jev + json-render + shadcn/Base UI
-- **API CLI** — `basilic` for humans, scripts, and shell agents; API key; JSON stdout
-- **Coding-agent contract** — `AGENTS.md`, Basilic `/w-*`, lock-installed skills
-
-**Human clients**
-
-- **Web** — Next.js on the API; host for Generative UI
+- **Product API** — Fastify REST, OpenAPI, `/llms.txt`
+- **Multi-client auth** — session JWT, API keys, OAuth, passkey, magic link, SIWE/SIWS
+- **Generated clients** — `@repo/core` and `@repo/react`
+- **Durable agents** — eve `command` and `chat` (omitted from `create-basilic`)
+- **Generative UI** — Jev, json-render, shadcn/Base UI
+- **API CLI** — `basilic` for humans, scripts, and agents
+- **Coding-agent contract** — `AGENTS.md` and `/w-*`
+- **Web** — Next.js on the API
 - **Mobile** — Expo UI scaffold
-- **End-to-end TypeScript** — schema → OpenAPI → clients
-
-**How you ship**
-
-- **Deploy** — Vercel + Supabase default
-- **Quality and security** — Biome, Gitleaks, OSV, DeepSec
-- **Multichain** — SIWE/SIWS, wallet modal, Alchemy reads (not send/swap)
+- **End-to-end TypeScript** — schema to OpenAPI to clients
+- **CI/CD** — GitHub Actions on pull requests; Release Please publishes `create-basilic`
+- **Automated tests** — Vitest and Playwright
+- **Security** — Gitleaks, OSV, and DeepSec on pre-commit and in CI
+- **Deploy** — Vercel + Supabase
+- **Multichain** — SIWE/SIWS and Alchemy reads
 
 ## How it fits
 
