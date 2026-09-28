@@ -31,6 +31,7 @@ const sentinelPaths = [
   ['.github/workflows/publish-create-basilic.yml', 'exclude'],
   ['CHANGELOG.md', 'exclude'],
   ['CONTRIBUTING.md', 'exclude'],
+  ['docs/basilic-hero.png', 'exclude'],
 ] as const
 
 describe('exact-version fixture', () => {
@@ -58,6 +59,7 @@ describe('exact-version fixture', () => {
         '.release-please-manifest.json',
         'CHANGELOG.md',
         'CONTRIBUTING.md',
+        'docs/basilic-hero.png',
         '__dev/',
       ],
       transform: [
