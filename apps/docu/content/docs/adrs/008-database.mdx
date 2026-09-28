@@ -169,23 +169,28 @@ The system uses a `PGLITE` environment variable to control database selection:
 
 ```mermaid
 flowchart TD
-    Start[Application Start] --> CheckEnv{Check PGLITE env var}
-    CheckEnv -->|PGLITE=true| UsePGLite[Use PGLite]
-    CheckEnv -->|PGLITE=false| UsePostgres[Use PostgreSQL]
+  subgraph fastifyBoot [Fastify_boot]
+    FStart[Fastify start] --> FCheck{"PGLITE or NODE_ENV test"}
+    FCheck -->|yes| FLite[PGLite runMigrations]
+    FCheck -->|no| FPg[PostgreSQL]
+    FPg --> FProd{"NODE_ENV production"}
+    FProd -->|no| FDev[runMigrations no vercelEnv]
+    FProd -->|yes| MigratePhase[pnpm db:migrate]
+    FLite --> FReady[Fastify ready]
+    FDev --> FReady
+    MigratePhase --> FReady
+  end
 
-    UsePGLite --> RuntimeMigrate[PGLite migrations at runtime]
-    RuntimeMigrate --> CreateInstance[Create PGLite Instance]
-    CreateInstance --> AppReady[App Ready]
+  subgraph eveBoot [eve_boot]
+    EStart[eve start] --> ECheck{"PGLITE true"}
+    ECheck -->|yes| ELite[PGLite runMigrations]
+    ECheck -->|no| EPg[PostgreSQL runMigrations vercelEnv]
+    ELite --> EReady[eve ready]
+    EPg --> EReady
+  end
 
-    UsePostgres --> RuntimeOrBuild{NODE_ENV production?}
-    RuntimeOrBuild -->|no| DevMigrate[runMigrations on boot]
-    RuntimeOrBuild -->|yes| MigratePhase[pnpm db:migrate]
-    DevMigrate --> ConnectPG[Connect to PostgreSQL]
-    MigratePhase --> ConnectPG
-    ConnectPG --> AppReady
-
-    MigratePhase -.->|Separate from pnpm build| Deploy[Docker / Railway / Fly.io / Render / local]
-    Deploy --> MigratePhase
+  MigratePhase -.->|Separate from pnpm build| Deploy[Docker / Railway / Fly.io / Render / local]
+  Deploy --> MigratePhase
 ```
 
 ### Deployment Platform Examples

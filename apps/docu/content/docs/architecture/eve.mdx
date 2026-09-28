@@ -7,6 +7,23 @@ Default host is Vercel (Workflow + Sandbox) on a sibling project. Eve is the rec
 
 The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. Authenticated Fastify `GET /agents` lists command and chat origins. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` excludes `apps/agents/` until a later E PR.
 
+## Interaction
+
+```mermaid
+flowchart LR
+  Web[Next_useEveAgent] --> AgentsMeta[Fastify_GET_agents]
+  AgentsMeta --> Command["/eve/command"]
+  AgentsMeta --> Chat["/eve/chat"]
+  Web -->|access_JWT| Command
+  Web -->|access_JWT| Chat
+  Command --> Jev[Gateway_Jev]
+  Jev -.-> Compose[Next_composeSpec]
+  Command --> Domain["db_markets_onchain"]
+  Chat --> Domain
+```
+
+Fastify mints the access JWT. Eve verifies `typ=access`. Chat does not run Jev.
+
 ## Session model
 
 Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The web rail uses **`useEveAgent` from `eve/react`** with `host` from Fastify `GET /agents` and a Bearer access JWT (`headers`). Persist the `session` cursor (`sessionId`, `streamIndex`). Do not import `eve/client` into Next (not webpack-safe). Next webpack rewrites eve’s `using` syntax in the react store so SWC can parse it. Do not wrap Next with **`withEve()`** — the frontend is a peer of `apps/agents`, not one Vercel project. Do not use AI SDK `useChat` / `DefaultChatTransport` against eve (UIMessage HTTP is not the eve NDJSON session protocol). `clientContext` on `send()` carries `boardQuery` / `viewConfig` / `elements`. Commands still have no assistant bubbles.
@@ -25,7 +42,7 @@ Command and chat `defineAgent` set `build.externalDependencies` to `@repo/db`, `
 
 ## Domain logic
 
-Eve consumes `@repo/db` **named functions**, `@repo/markets` for market HTTP, and `@repo/onchain` for live wallet reads. Next.js keeps `@repo/core` HTTP clients and does not import those packages. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP.
+Eve consumes `@repo/db` **named functions**, `@repo/markets` for market HTTP, and `@repo/onchain` for live wallet reads. Next.js keeps `@repo/core` HTTP clients and does not import those packages. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP. Both agents set `defaultTools: false`. The model sees authored tools only; command also re-exports `load_skill` so `view-config` still loads.
 
 ## Jev
 

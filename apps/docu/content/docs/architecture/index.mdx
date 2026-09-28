@@ -39,13 +39,17 @@ flowchart TB
   Web --> API
   CLI --> API
   SDK --> API
+  Web --> AgentsMeta
   Web --> Command
   Web --> Chat
   AgentsMeta --> Command
+  AgentsMeta --> Chat
   Command --> Jev
   Command --> Markets
   Command --> Onchain
   API --> Db
+  API --> Markets
+  API --> Onchain
   Compose --> Spec
   Jev -.-> Compose
 ```
