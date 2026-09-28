@@ -7,11 +7,17 @@ describe('isAccountAsk', () => {
     expect(isAccountAsk({ prompt: 'Who am I?' })).toBe(true)
     expect(isAccountAsk({ prompt: 'whoami' })).toBe(true)
     expect(isAccountAsk({ prompt: "what's my email" })).toBe(true)
+    expect(isAccountAsk({ prompt: 'what is my name' })).toBe(true)
+    expect(isAccountAsk({ prompt: 'my profile' })).toBe(true)
+    expect(isAccountAsk({ prompt: 'signed in as' })).toBe(true)
   })
 
   it('ignores board questions', () => {
     expect(isAccountAsk({ prompt: 'what moved?' })).toBe(false)
     expect(isAccountAsk({ prompt: 'Reply with the single word ok.' })).toBe(false)
+    expect(isAccountAsk({ prompt: 'Who am I watching?' })).toBe(false)
+    expect(isAccountAsk({ prompt: 'who am i and what moved' })).toBe(false)
+    expect(isAccountAsk({ prompt: 'update my account and show btc' })).toBe(false)
   })
 })
 

@@ -8,14 +8,14 @@ export function isAccountAsk({ prompt }: { prompt: string }) {
     .trim()
     .toLowerCase()
     .replace(/[?!.,]+$/g, '')
+    .trim()
   if (!text) return false
   return (
-    /who\s+am\s+i/.test(text) ||
+    /^who\s+am\s+i$/.test(text) ||
     text === 'whoami' ||
-    /who\s+i\s+am/.test(text) ||
-    /\bmy\s+(name|email|username|profile|account)\b/.test(text) ||
-    /what(?:'s| is) my (name|email|username)/.test(text) ||
-    /signed in as/.test(text)
+    /^who\s+i\s+am$/.test(text) ||
+    /^(?:what(?:'s| is)\s+)?my\s+(?:name|email|username|profile|account)$/.test(text) ||
+    /^signed in as$/.test(text)
   )
 }
 

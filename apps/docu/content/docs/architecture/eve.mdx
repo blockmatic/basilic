@@ -46,7 +46,7 @@ Eve consumes `@repo/db` **named functions**, `@repo/markets` for market HTTP, an
 
 ## Jev
 
-`getEvaluationModel()` in `apps/agents/lib/evaluate` builds a Gateway evaluation model when `AI_GATEWAY_API_KEY` or Vercel `VERCEL_OIDC_TOKEN` is set. `evaluateBoardTurn` runs one `experimental_evaluate` over prompt plus boardQuery JSON (not coin rows). Missing credentials or Gateway 401/429/529/timeout skip the hop (`skip: missing-model | upstream`). The command agent calls that result on `step.started` before the language model; high-confidence refuse/canned/surface skip the language model. Chat still does not run Jev. Command and chat language models use the same Gateway credentials via `getProvider()`.
+`getEvaluationModel()` in `apps/agents/lib/evaluate` builds a Gateway evaluation model when `AI_GATEWAY_API_KEY` or Vercel `VERCEL_OIDC_TOKEN` is set. `evaluateBoardTurn` runs one `experimental_evaluate` over prompt plus boardQuery JSON (not coin rows). Missing credentials or Gateway 401/403/429/529, timeout, or plan-limit errors skip the hop (`skip: missing-model | upstream`). The command agent calls that result on `step.started` before the language model; high-confidence refuse/canned/surface skip the language model. Chat still does not run Jev. Command and chat language models use the same Gateway credentials via `getProvider()`.
 
 ## Identity
 
