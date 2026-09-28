@@ -155,6 +155,10 @@ export const authHelpers = {
     return parsed.token ?? null
   },
 
+  async openAccountMenu(page: Page) {
+    await page.getByRole('button', { name: 'Account' }).click()
+  },
+
   async loginAsTestUser(page: Page, email = defaultTestEmail) {
     const response = await this.sendMagicLink(page, email)
     if (response.status() !== 200) throw new Error('Magic link request failed')

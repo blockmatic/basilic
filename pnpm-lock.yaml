@@ -279,12 +279,6 @@ importers:
 
   apps/agents:
     dependencies:
-      '@ai-sdk/anthropic':
-        specifier: ^4.0.58
-        version: 4.0.58(zod@4.6.5)
-      '@openrouter/ai-sdk-provider':
-        specifier: ^3.1.0
-        version: 3.1.0(ai@7.0.107(zod@4.6.5))(zod@4.6.5)
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -306,9 +300,6 @@ importers:
       ai:
         specifier: 7.0.107
         version: 7.0.107(zod@4.6.5)
-      ai-sdk-ollama:
-        specifier: ^4.3.0
-        version: 4.3.0(ai@7.0.107(zod@4.6.5))(zod@4.6.5)
       dotenv:
         specifier: ^18.0.1
         version: 18.0.1
@@ -340,9 +331,6 @@ importers:
 
   apps/api:
     dependencies:
-      '@ai-sdk/anthropic':
-        specifier: ^4.0.58
-        version: 4.0.58(zod@4.6.5)
       '@faker-js/faker':
         specifier: ^10.6.0
         version: 10.6.0
@@ -367,9 +355,6 @@ importers:
       '@fastify/type-provider-typebox':
         specifier: ^6.1.0
         version: 6.1.0(typebox@1.3.34)
-      '@openrouter/ai-sdk-provider':
-        specifier: ^3.1.0
-        version: 3.1.0(ai@7.0.107(zod@4.6.5))(zod@4.6.5)
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -409,9 +394,6 @@ importers:
       ai:
         specifier: 7.0.107
         version: 7.0.107(zod@4.6.5)
-      ai-sdk-ollama:
-        specifier: ^4.3.0
-        version: 4.3.0(ai@7.0.107(zod@4.6.5))(zod@4.6.5)
       bs58:
         specifier: ^6.0.0
         version: 6.0.0
@@ -1468,12 +1450,6 @@ packages:
 
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
-
-  '@ai-sdk/anthropic@4.0.58':
-    resolution: {integrity: sha512-vhXKBz7jnIhBlOoj2d0joyHicWISuIxDNha65SLrAnagAkVgulLoZBRLZRazstxlO/BtXU+cDERe1opVKte2OQ==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
 
   '@ai-sdk/gateway@4.0.87':
     resolution: {integrity: sha512-6wJmX/D5OO7tvDJbtFdXdBuRt8AkCnW+FLK+W35UHe/tHgolAa4hclXtJcMSYnlTDy/t5DNRgdesVaoMXtwzow==}
@@ -3255,13 +3231,6 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
-
-  '@openrouter/ai-sdk-provider@3.1.0':
-    resolution: {integrity: sha512-BQy1TA9fKrh47s9ivsO6FY5QimN7GUF0i8Qon3pkxQclEgShso0dClpcWn8OIyPLEZZPFaFKgI8TW4S/O0p0Dw==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      ai: 7.0.107
-      zod: ^3.25.76 || ^4.1.8
 
   '@opentelemetry/api-logs@0.220.0':
     resolution: {integrity: sha512-CmVa4ImJ+ynfrPMNaAXHET6Bhb44SwzmfyVJFq9ni2jgXJR/l7C6gfVFddNmHP+ZOkP9cf4f9DBe68qVLTHc9w==}
@@ -6708,12 +6677,6 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  ai-sdk-ollama@4.3.0:
-    resolution: {integrity: sha512-3rvaWZJvprmt707WnbkeEvMJc6XZHwfgXbF73g8fQhn4spGWOdeASnFd/xH9hmrdml7oTtZLFqzk6Fvkr/q8Ig==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      ai: 7.0.107
-
   ai@7.0.107:
     resolution: {integrity: sha512-PVYQ3W9kR8oYiGQxbg4aFIlhQzKskZm8UV+4E0zB2uKOzFr8ju3bXQncOOZtLsOgJY8vdpgyu3cXtomsfcdQYg==}
     engines: {node: '>=22'}
@@ -9527,10 +9490,6 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  jsonrepair@3.15.0:
-    resolution: {integrity: sha512-wy8OTjwsJwQRnQJkKnMJJ9vcytRdBPAgIF/Hy6+s1dAj42BHMKiyL8JzEieIl3JY7idt8eyHwBWTO8mh/+mtwA==}
-    hasBin: true
-
   jsx-ast-utils@3.3.5:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
@@ -10528,9 +10487,6 @@ packages:
 
   ohash@2.0.12:
     resolution: {integrity: sha512-65S/5gk9YSsaRjcyf7Nfa6h/d3E8/1gslpXfI4W7Dxn/oap8IKRuNT5VXkLQ1YFKIEg4apRY4Pj6aiwFzrDdmw==}
-
-  ollama@0.6.3:
-    resolution: {integrity: sha512-KEWEhIqE5wtfzEIZbDCLH51VFZ6Z3ZSa6sIOg/E/tBV8S51flyqBOXi+bRxlOYKDf8i327zG9eSTb8IJxvm3Zg==}
 
   on-exit-leak-free@2.1.2:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
@@ -12973,12 +12929,6 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
-  '@ai-sdk/anthropic@4.0.58(zod@4.6.5)':
-    dependencies:
-      '@ai-sdk/provider': 4.0.17
-      '@ai-sdk/provider-utils': 5.0.45(zod@4.6.5)
-      zod: 4.6.5
-
   '@ai-sdk/gateway@4.0.87(zod@4.6.5)':
     dependencies:
       '@ai-sdk/provider': 4.0.17
@@ -14909,11 +14859,6 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.3
-
-  '@openrouter/ai-sdk-provider@3.1.0(ai@7.0.107(zod@4.6.5))(zod@4.6.5)':
-    dependencies:
-      ai: 7.0.107(zod@4.6.5)
-      zod: 4.6.5
 
   '@opentelemetry/api-logs@0.220.0':
     dependencies:
@@ -19073,16 +19018,6 @@ snapshots:
       screenfull: 5.2.0
       tslib: 2.8.1
 
-  ai-sdk-ollama@4.3.0(ai@7.0.107(zod@4.6.5))(zod@4.6.5):
-    dependencies:
-      '@ai-sdk/provider': 4.0.17
-      '@ai-sdk/provider-utils': 5.0.45(zod@4.6.5)
-      ai: 7.0.107(zod@4.6.5)
-      jsonrepair: 3.15.0
-      ollama: 0.6.3
-    transitivePeerDependencies:
-      - zod
-
   ai@7.0.107(zod@4.6.5):
     dependencies:
       '@ai-sdk/gateway': 4.0.87(zod@4.6.5)
@@ -22224,8 +22159,6 @@ snapshots:
 
   json5@2.2.3: {}
 
-  jsonrepair@3.15.0: {}
-
   jsx-ast-utils@3.3.5:
     dependencies:
       array-includes: 3.2.0
@@ -23689,10 +23622,6 @@ snapshots:
       ufo: 1.6.4
 
   ohash@2.0.12: {}
-
-  ollama@0.6.3:
-    dependencies:
-      whatwg-fetch: 3.6.20
 
   on-exit-leak-free@2.1.2: {}
 

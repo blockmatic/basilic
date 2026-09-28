@@ -24,7 +24,6 @@ jobs:
       POSTGRES_URL: postgresql://localhost/test
       JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
       NEXT_PUBLIC_API_URL: http://localhost:3001
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-dummy-for-scaffold' }}
     steps:
       - name: Skip on feature PRs
         if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please--')

@@ -3,6 +3,7 @@ export { boardCatalog } from './catalog'
 export {
   type CommandHistoryEntry,
   commandHistoryKey,
+  isActiveCommandHistoryEntry,
   parseCommandHistory,
   viewConfigToSearchPatch,
   whoamiCommand,

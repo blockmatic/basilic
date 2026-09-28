@@ -30,7 +30,8 @@ test.describe('Passkey sign-in', () => {
     await page.getByRole('button', { name: /^add$/i }).click()
     await expect(page.getByText(/passkey added/i)).toBeVisible({ timeout: 10_000 })
 
-    await page.getByRole('button', { name: 'Sign out' }).click()
+    await authHelpers.openAccountMenu(page)
+    await page.getByRole('menuitem', { name: 'Sign out' }).click()
     await expect
       .poll(() => new URL(page.url()).pathname, { timeout: 15_000 })
       .toMatch(/\/auth\/login/)
@@ -41,7 +42,7 @@ test.describe('Passkey sign-in', () => {
     await page.getByRole('button', { name: /Continue with Passkey/i }).click()
 
     await expect(page).toHaveURL(/^https?:\/\/[^/]+\/?$/, { timeout: 15_000 })
-    await expect(page.locator('text=Signed In')).toBeVisible({ timeout: 5000 })
-    await expect(page.getByRole('link', { name: 'Profile' }).first()).toBeVisible({ timeout: 5000 })
+    await authHelpers.openAccountMenu(page)
+    await expect(page.getByRole('menuitem', { name: 'Profile' })).toBeVisible({ timeout: 5000 })
   })
 })

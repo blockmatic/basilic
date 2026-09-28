@@ -218,7 +218,7 @@ export const operationMeta = {
   },
   "generate": {
     "summary": "Generate text from prompt",
-    "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic, Open Router, or Ollama. Returns SSE (text/event-stream) when streaming.",
+    "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Vercel AI Gateway. Returns SSE (text/event-stream) when streaming.",
     "pathParams": [],
     "bodyParams": [
       {

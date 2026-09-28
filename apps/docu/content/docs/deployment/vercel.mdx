@@ -26,10 +26,8 @@ JWT_SECRET=<min-32-chars-not-dev-default>
 WEB_APP_URL=https://app.yourdomain.com
 # ALLOWED_ORIGINS=https://app.yourdomain.com,https://preview.yourdomain.com
 # Omit ALLOWED_ORIGINS or set * in production: CORS uses WEB_APP_URL origin (wildcard never ships).
-# AI: Anthropic direct API (preferred). See [AI Architecture](/docs/architecture/ai).
-ANTHROPIC_API_KEY=sk-ant-...
-# OPEN_ROUTER_API_KEY=sk-or-...
-# OLLAMA_BASE_URL=https://ollama.yourdomain.com
+# AI: Vercel AI Gateway. See [AI Architecture](/docs/architecture/ai).
+AI_GATEWAY_API_KEY=
 RESEND_API_KEY=re_...
 PORT=3001
 NODE_ENV=production
@@ -173,7 +171,7 @@ Basilic is **not** an official Vercel project. It is built around Vercel-oriente
 | Primitive | In Basilic | Notes |
 | --- | --- | --- |
 | **AI SDK** (`ai`) | Used | `streamText` / `generateText` on Fastify `/ai/generate`; `experimental_evaluate` (Jev) on eve and Next composeSpec |
-| **AI Gateway** | Used | `AI_GATEWAY_API_KEY` on eve (triage) and web (composeSpec); independent skips |
+| **AI Gateway** | Used | `AI_GATEWAY_API_KEY` on API (generate), eve (language models + Jev), and web (composeSpec); independent skips |
 | **Fluid Compute** | Used | Fastify API as one Node Function (not Edge wholesale) |
 | **eve** (Agent Stack) | Used | `apps/agents` sibling; `command` + `chat`; Workflow + Sandbox |
 | **`useEveAgent`** (`eve/react`) | Used | Web Commands/Chat rail + Bearer; not `withEve()` |

@@ -2,7 +2,6 @@
 
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
-import { useSessionStorageState } from 'ahooks'
 import { MicIcon } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
 import { useState } from 'react'
@@ -13,8 +12,6 @@ import { viewConfigFromEvents } from '@/lib/eve'
 import {
   boardViewParsers,
   type CommandHistoryEntry,
-  commandHistoryKey,
-  parseCommandHistory,
   splitBoardView,
   viewConfigToSearchPatch,
   viewFromSearchQuery,
@@ -34,14 +31,16 @@ function promptStatus({
   return 'ready'
 }
 
-export function BoardComposer({ rail }: { rail: ChromeState['rail'] }) {
+export function BoardComposer({
+  rail,
+  onRecord,
+}: {
+  rail: ChromeState['rail']
+  onRecord: ({ entry }: { entry: CommandHistoryEntry }) => void
+}) {
   const [prompt, setPrompt] = useState('')
   const [, setChrome] = useQueryStates(chromeParsers)
   const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
-  const [, setHistory] = useSessionStorageState<CommandHistoryEntry[]>(commandHistoryKey, {
-    defaultValue: [],
-    deserializer: value => parseCommandHistory({ value }),
-  })
   const chat = useChatEve()
   const command = useCommandEve()
   const isChat = rail === 'chat'
@@ -82,10 +81,18 @@ export function BoardComposer({ rail }: { rail: ChromeState['rail'] }) {
       }
       return
     }
+    let events: readonly { type: string; data?: unknown }[]
     try {
-      const events = await command.send(text, { boardQuery: split.query })
-      const parsed = viewConfigFromEvents({ events })
-      if (!parsed) throw new Error('command agent did not return a ViewConfig')
+      events = await command.send(text, { boardQuery: split.query })
+    } catch {
+      return
+    }
+    const parsed = viewConfigFromEvents({ events })
+    if (!parsed) {
+      toast.error('command agent did not return a ViewConfig')
+      return
+    }
+    try {
       const composed = await composeBoardSpec({ prompt: text, view: parsed.viewConfig })
       const viewConfig =
         composed.skip || !composed.elements.length
@@ -93,14 +100,13 @@ export function BoardComposer({ rail }: { rail: ChromeState['rail'] }) {
           : { ...parsed.viewConfig, elements: composed.elements }
       await setView(viewConfigToSearchPatch({ viewConfig }), { history: 'push', shallow: true })
       await setChrome({ q: text })
-      setHistory(current => [
-        ...(current ?? []),
-        { command: text, viewConfig, eveTurnId: command.sessionId },
-      ])
+      onRecord({
+        entry: { command: text, viewConfig, eveTurnId: command.sessionId },
+      })
       if (parsed.honesty) toast.message(parsed.honesty)
       setPrompt('')
-    } catch {
-      toast.error('Command failed')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Command failed')
     }
   }
 

@@ -93,9 +93,6 @@ function removeDefaultsFromRequired(schema: unknown): unknown {
 async function generateOpenAPI() {
   // Stub env for OpenAPI generation when missing (e.g. Vercel Next build)
   const stubs: Record<string, string> = {
-    ANTHROPIC_API_KEY: 'sk-ant-dummy-for-openapi-generation',
-    OLLAMA_BASE_URL: 'https://ollama.example.com',
-    OPEN_ROUTER_API_KEY: 'sk-or-v1-dummy-for-openapi-generation',
     PGLITE: 'true',
     ENCRYPTION_KEY: 'deadbeef'.repeat(8), // 64-char hex (valid, not weak)
     JWT_SECRET: 'openapi-gen-jwt-secret-placeholder-32ch',

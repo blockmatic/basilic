@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { parseCommandHistory, viewConfigToSearchPatch, whoamiViewConfig } from './command-history'
+import {
+  isActiveCommandHistoryEntry,
+  parseCommandHistory,
+  viewConfigToSearchPatch,
+  whoamiViewConfig,
+} from './command-history'
+import { defaultSearchQuery } from './view-config'
 
 describe('parseCommandHistory', () => {
   it('restores valid command and viewConfig rows', () => {
@@ -36,5 +42,56 @@ describe('parseCommandHistory', () => {
       columns: ['identity', 'price'],
       elements: ['summary', 'account', 'table-watchlist'],
     })
+  })
+})
+
+describe('isActiveCommandHistoryEntry', () => {
+  it('matches the current command and board view', () => {
+    const viewConfig = whoamiViewConfig()
+    expect(
+      isActiveCommandHistoryEntry({
+        entry: { command: 'Who am I?', viewConfig },
+        q: 'Who am I?',
+        view: {
+          ...defaultSearchQuery,
+          universe: 'watchlist',
+          surface: 'account',
+          period: null,
+          columns: [],
+          elements: [],
+        },
+      }),
+    ).toBe(true)
+  })
+
+  it('rejects a different prompt or view', () => {
+    const viewConfig = whoamiViewConfig()
+    expect(
+      isActiveCommandHistoryEntry({
+        entry: { command: 'Who am I?', viewConfig },
+        q: 'What moved?',
+        view: {
+          ...defaultSearchQuery,
+          universe: 'watchlist',
+          surface: 'account',
+          period: null,
+          columns: [],
+          elements: [],
+        },
+      }),
+    ).toBe(false)
+    expect(
+      isActiveCommandHistoryEntry({
+        entry: { command: 'Who am I?', viewConfig },
+        q: 'Who am I?',
+        view: {
+          ...defaultSearchQuery,
+          surface: 'table',
+          period: null,
+          columns: [],
+          elements: [],
+        },
+      }),
+    ).toBe(false)
   })
 })

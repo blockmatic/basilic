@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Run QA pipeline: install (if needed), checktypes, lint, OpenAPI drift, build, test:scripts, test, e2e.
- * Stops immediately on first failure and reports which phase failed.
+ * Run QA pipeline: install (if needed), checktypes, lint, OpenAPI drift and lint,
+ * sherif, build, test:scripts, test, e2e.
+ * Knip stays in lint.yml only. Stops on the first failure.
  */
 import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
@@ -25,26 +26,9 @@ const phases = [
     args: ['exec', 'turbo', 'run', 'checktypes', '--concurrency=100%'],
   },
   { name: 'lint', cmd: 'pnpm', args: ['lint'] },
-  {
-    name: 'openapi-drift',
-    cmd: 'pnpm',
-    args: ['generate'],
-    env: qaBuildEnv,
-  },
-  {
-    name: 'openapi-drift-check',
-    cmd: 'git',
-    args: [
-      'diff',
-      '--exit-code',
-      '--',
-      'apps/api/openapi/openapi.json',
-      'packages/core/src/gen',
-      'packages/core/src/api-wrapper.gen.ts',
-      'packages/core/src/api-client.gen.ts',
-      'packages/cli/src/gen',
-    ],
-  },
+  { name: 'openapi-drift', cmd: 'pnpm', args: ['openapi:drift'] },
+  { name: 'openapi-lint', cmd: 'pnpm', args: ['openapi:lint'] },
+  { name: 'sherif', cmd: 'pnpm', args: ['sherif'] },
   {
     name: 'build',
     cmd: 'pnpm',

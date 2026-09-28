@@ -17,8 +17,8 @@ Build → E2E. Triggers on pull request when `apps/web/**`, API routes the suite
 
 Two parallel jobs when `apps/api/**` or shared packages change:
 
-- **unit** — OpenAPI drift check (`pnpm generate && git diff --exit-code`), then `pnpm --filter @repo/api test:cov`. Uploads `api-vitest-coverage` artifact. No API `tsc` build (Vitest runs TypeScript source; `lint.yml` runs `checktypes`). Does not require `ANTHROPIC_API_KEY`; remote AI tests skip when the secret is absent.
-- **e2e** — Scalar login E2E via `test:e2e:local` (builds `@repo/api` deps, spawns API with `RATE_LIMIT_MAX=10000` and `COINS_RATE_LIMIT_MAX=10000`; does not require `ANTHROPIC_API_KEY`).
+- **unit** — OpenAPI drift check (`pnpm generate && git diff --exit-code`), then `pnpm --filter @repo/api test:cov`. Uploads `api-vitest-coverage` artifact. No API `tsc` build (Vitest runs TypeScript source; `lint.yml` runs `checktypes`). Does not require `AI_GATEWAY_API_KEY`; remote AI tests skip when the secret is absent.
+- **e2e** — Scalar login E2E via `test:e2e:local` (builds `@repo/api` deps, spawns API with `RATE_LIMIT_MAX=10000` and `COINS_RATE_LIMIT_MAX=10000`; does not require `AI_GATEWAY_API_KEY`).
 
 `cancel-in-progress: true`.
 
@@ -50,6 +50,8 @@ gh run view <run-id> --log-failed
 
 On every PR: `pnpm lint`, OpenAPI drift (`pnpm openapi:drift`), OpenAPI lint (`pnpm openapi:lint`), `pnpm knip`, `pnpm sherif`, `pnpm test:scripts`, then `pnpm exec turbo run checktypes`. Supports `workflow_dispatch`. Sets `TURBO_TOKEN` / `TURBO_TEAM` when configured.
 
+Local `pnpm qa` runs the same OpenAPI drift, OpenAPI lint, and sherif steps, then build, unit tests, and E2E. It does not run knip. Knip stays on this workflow only.
+
 The API **unit** job in `api-e2e.yml` still runs the same OpenAPI drift check when API paths change (before Vitest coverage).
 
 ### Scaffold (`pr-title.yml`, `scaffold.yml`, `release-impact.yml`, `scaffold-acceptance.yml`)
@@ -61,7 +63,7 @@ Always report on pull requests:
 - **Generator tests** — `create-basilic` unit tests on Ubuntu, macOS, and Windows (copy/generate). Full-stack Product Ready remains Unix-oriented.
 - **Release impact** — payload path changes behind `docs`/`chore`/`test`/`ci`/`style` titles fail unless the body has `skip-release: true`.
 
-**Generated tree QA** (`scaffold-acceptance.yml`) runs the assembled template’s `pnpm qa` (types, lint, OpenAPI drift, build, unit, API/web E2E) on **release-please PRs** and `workflow_dispatch`. Feature PRs skip that job with success so the required check is not pending.
+**Generated tree QA** (`scaffold-acceptance.yml`) runs the assembled template’s `pnpm qa` (types, lint, OpenAPI drift and lint, sherif, build, unit, API/web E2E) on **release-please PRs** and `workflow_dispatch`. Feature PRs skip that job with success so the required check is not pending.
 
 ### Release Please and publish
 

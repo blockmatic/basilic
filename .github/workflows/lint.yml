@@ -22,7 +22,6 @@ jobs:
     env:
       PGLITE: true
       POSTGRES_URL: postgresql://localhost/test
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'sk-ant-dummy-for-lint' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

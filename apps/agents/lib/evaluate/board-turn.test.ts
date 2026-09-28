@@ -34,6 +34,26 @@ describe('evaluateBoardTurn', () => {
     if ('cannedPatch' in result) expect(result.cannedPatch).toEqual(cannedSearchPatches.movers)
   })
 
+  it('skips on 403', async () => {
+    const model = new Experimental_EvaluationMockModelV4({
+      doEvaluate: async () => {
+        throw Object.assign(new Error('forbidden'), { statusCode: 403 })
+      },
+    })
+    expect(await evaluateBoardTurn({ prompt: 'what moved?', model })).toEqual({ skip: 'upstream' })
+  })
+
+  it('skips Gateway hobby ZDR', async () => {
+    const model = new Experimental_EvaluationMockModelV4({
+      doEvaluate: async () => {
+        throw new Error(
+          'Zero Data Retention (ZDR) is only available for Pro and Enterprise plans. Current plan: hobby.',
+        )
+      },
+    })
+    expect(await evaluateBoardTurn({ prompt: 'what moved?', model })).toEqual({ skip: 'upstream' })
+  })
+
   it('skips on 401', async () => {
     const model = new Experimental_EvaluationMockModelV4({
       doEvaluate: async () => {
