@@ -169,16 +169,20 @@ The system uses a `PGLITE` environment variable to control database selection:
 
 ```mermaid
 flowchart TD
+  subgraph migratePhase [Migrate_phase]
+    Deploy[Docker / Railway / Fly.io / Render / local] --> Migrate[pnpm db:migrate]
+  end
+
   subgraph fastifyBoot [Fastify_boot]
     FStart[Fastify start] --> FCheck{"PGLITE or NODE_ENV test"}
     FCheck -->|yes| FLite[PGLite runMigrations]
     FCheck -->|no| FPg[PostgreSQL]
     FPg --> FProd{"NODE_ENV production"}
     FProd -->|no| FDev[runMigrations no vercelEnv]
-    FProd -->|yes| MigratePhase[pnpm db:migrate]
+    FProd -->|yes| FSkip[skip runtime migrate]
     FLite --> FReady[Fastify ready]
     FDev --> FReady
-    MigratePhase --> FReady
+    FSkip --> FReady
   end
 
   subgraph eveBoot [eve_boot]
@@ -189,8 +193,7 @@ flowchart TD
     EPg --> EReady
   end
 
-  MigratePhase -.->|Separate from pnpm build| Deploy[Docker / Railway / Fly.io / Render / local]
-  Deploy --> MigratePhase
+  Migrate -->|before production listen| FStart
 ```
 
 ### Deployment Platform Examples
