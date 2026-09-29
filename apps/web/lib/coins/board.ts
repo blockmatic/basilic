@@ -35,6 +35,10 @@ function asNullableString(value: unknown) {
   return typeof value === 'string' ? value : null
 }
 
+function asNullableNumber(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
 export function mapListCoins({ data }: { data: ListCoinsResponse }): CoinBoardData {
   return {
     coins: data.coins.map(coin => ({
@@ -44,7 +48,7 @@ export function mapListCoins({ data }: { data: ListCoinsResponse }): CoinBoardDa
       imageUrl: asNullableString(coin.imageUrl),
       priceUsd: coin.priceUsd,
       change24h: coin.change24h,
-      change7d: coin.change7d,
+      change7d: asNullableNumber(coin.change7d),
       sparkline7d: coin.sparkline7d,
       volumeUsd: coin.volumeUsd,
       marketCapUsd: coin.marketCapUsd,

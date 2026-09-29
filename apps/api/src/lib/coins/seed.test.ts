@@ -54,4 +54,39 @@ describe('seedIdentity', () => {
     const [row] = await db.select({ n: count() }).from(assets)
     expect(row?.n).toBe(fixtureQuotes.length)
   })
+
+  it('inserts missing catalog ids when the row count is already full', async () => {
+    const db = await getDb()
+    await db.delete(coinWatches)
+    await db.delete(assetMarkets)
+    await db.delete(assetNetworks)
+    await db.delete(assetProviders)
+    await db.delete(assets)
+    const now = new Date()
+    await db.insert(assets).values(
+      Array.from({ length: fixtureQuotes.length }, (_, index) => ({
+        id: `extra-${index}`,
+        symbol: `x${index}`,
+        name: `Extra ${index}`,
+        imageUrl: null,
+        enabled: true,
+        createdAt: now,
+        updatedAt: now,
+      })),
+    )
+
+    await seedIdentityIfEmpty({ db })
+
+    const ids = (await db.select({ id: assets.id }).from(assets)).map(item => item.id)
+    expect(ids).toEqual(expect.arrayContaining(fixtureQuotes.map(row => row.id)))
+  })
+
+  it('does not re-enable a disabled catalog asset on upsert', async () => {
+    const db = await getDb()
+    await seedIdentity({ db })
+    await db.update(assets).set({ enabled: false }).where(eq(assets.id, 'bitcoin'))
+    await seedIdentity({ db })
+    const [bitcoin] = await db.select().from(assets).where(eq(assets.id, 'bitcoin'))
+    expect(bitcoin?.enabled).toBe(false)
+  })
 })

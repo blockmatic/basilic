@@ -49,7 +49,6 @@ export async function seedIdentity({ db }: { db: CoinsDb }): Promise<void> {
             symbol: row.symbol,
             name: row.name,
             imageUrl: row.imageUrl,
-            enabled: true,
             updatedAt: now,
           },
         })
@@ -115,5 +114,6 @@ export async function seedIdentity({ db }: { db: CoinsDb }): Promise<void> {
 
 export async function seedIdentityIfEmpty({ db }: { db: CoinsDb }): Promise<void> {
   const existing = await db.select({ id: assets.id }).from(assets)
-  if (existing.length < fixtureQuotes.length) await seedIdentity({ db })
+  const have = new Set(existing.map(row => row.id))
+  if (fixtureQuotes.some(row => !have.has(row.id))) await seedIdentity({ db })
 }

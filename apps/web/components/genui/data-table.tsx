@@ -48,7 +48,7 @@ function hasColumn({ columns, id }: { columns: string[]; id: ColumnId }) {
   return columns.includes(id)
 }
 
-function Spark7d({ prices, up }: { prices: number[]; up: boolean }) {
+function Spark7d({ prices, up }: { prices: number[]; up: boolean | null }) {
   if (prices.length < 2) return null
   const min = Math.min(...prices)
   const max = Math.max(...prices)
@@ -67,7 +67,10 @@ function Spark7d({ prices, up }: { prices: number[]; up: boolean }) {
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
-      className={cn('shrink-0', up ? 'text-chart-2' : 'text-destructive')}
+      className={cn(
+        'shrink-0',
+        up == null ? 'text-muted-foreground' : up ? 'text-chart-2' : 'text-destructive',
+      )}
       aria-hidden="true"
       data-testid="coin-spark-7d"
     >
@@ -76,9 +79,17 @@ function Spark7d({ prices, up }: { prices: number[]; up: boolean }) {
   )
 }
 
+function sparkUp({ change7d, sparkline7d }: CoinMarket) {
+  if (change7d != null) return change7d >= 0
+  const first = sparkline7d[0]
+  const last = sparkline7d.at(-1)
+  if (first == null || last == null) return null
+  return last >= first
+}
+
 function Spark7dCell({ coin }: { coin: CoinMarket }) {
   if (!coin.sparkline7d.length && coin.change7d == null) return null
-  const up = (coin.change7d ?? 0) >= 0
+  const up = sparkUp(coin)
   return (
     <div className="flex items-center justify-end gap-2">
       <Spark7d prices={coin.sparkline7d} up={up} />
@@ -86,7 +97,7 @@ function Spark7dCell({ coin }: { coin: CoinMarket }) {
         <span
           className={cn(
             'text-xs font-medium tabular-nums',
-            up ? 'text-chart-2' : 'text-destructive',
+            up == null ? 'text-muted-foreground' : up ? 'text-chart-2' : 'text-destructive',
           )}
         >
           {formatChange(coin.change7d)}
@@ -166,6 +177,9 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
 
   function onRowKeyDown(event: KeyboardEvent<HTMLElement>, assetId: string) {
     if (event.key !== 'Enter' && event.key !== ' ') return
+    const origin = event.target
+    if (origin instanceof Element && origin !== event.currentTarget && origin.closest('button'))
+      return
     event.preventDefault()
     openChart({ assetId })
   }
