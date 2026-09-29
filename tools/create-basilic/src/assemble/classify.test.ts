@@ -24,9 +24,9 @@ describe("classifyPath", () => {
   });
 
   it("includes portable tools and packages", () => {
-    expect(
-      classifyPath({ path: "tools/eslint/package.json", manifest })?.kind
-    ).toBe("include");
+    expect(classifyPath({ path: "oxlint.config.ts", manifest })?.kind).toBe(
+      "include"
+    );
     expect(
       classifyPath({ path: "packages/core/src/index.ts", manifest })?.kind
     ).toBe("include");
