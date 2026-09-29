@@ -25,6 +25,7 @@ export async function waitForDatabase(logger?: {
     const pool = createPgPool({
       connectionString: env.POSTGRES_URL,
       connectionTimeoutMillis,
+      vercel: env.VERCEL,
     })
 
     try {

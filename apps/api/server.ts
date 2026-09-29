@@ -43,6 +43,7 @@ async function initialize(): Promise<void> {
     configureDb({
       databaseUrl: env.POSTGRES_URL,
       pglite: env.PGLITE === true || env.NODE_ENV === 'test',
+      vercel: env.VERCEL,
     })
 
     // 1. Wait for database connection

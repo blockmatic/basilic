@@ -30,6 +30,7 @@ async function startHost(): Promise<void> {
   configureDb({
     databaseUrl: env.POSTGRES_URL,
     pglite: env.PGLITE === true,
+    vercel: Boolean(env.VERCEL_ENV),
   })
   await runMigrations({
     logger: {

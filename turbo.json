@@ -91,7 +91,7 @@
     "@repo/api#db:migrate": {
       "dependsOn": ["^build"],
       "cache": false,
-      "env": ["POSTGRES_URL", "PGLITE", "RUN_PG_MIGRATE", "NODE_ENV", "VERCEL_ENV"]
+      "env": ["POSTGRES_URL", "PGLITE", "RUN_PG_MIGRATE", "NODE_ENV", "VERCEL_ENV", "VERCEL"]
     },
     "lint": {},
     "lint:eslint": {

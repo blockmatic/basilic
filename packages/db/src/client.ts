@@ -13,6 +13,7 @@ interface DbConfig {
   databaseUrl?: string
   pglite?: boolean
   pgliteInstance?: PGlite
+  vercel?: boolean
 }
 
 interface DbRuntime {
@@ -29,9 +30,9 @@ function runtime(): DbRuntime {
   return g.__basilicDbRuntime
 }
 
-export function configureDb({ databaseUrl, pglite, pgliteInstance }: DbConfig): void {
+export function configureDb({ databaseUrl, pglite, pgliteInstance, vercel }: DbConfig): void {
   const state = runtime()
-  state.config = { databaseUrl, pglite, pgliteInstance }
+  state.config = { databaseUrl, pglite, pgliteInstance, vercel }
   state.db = null
 }
 
@@ -82,7 +83,8 @@ async function loadDb(): Promise<Db> {
   }
 
   if (!databaseUrl) throw new Error('POSTGRES_URL is required when pglite is false')
-  if (!state.pgPool) state.pgPool = createPgPool({ connectionString: databaseUrl })
+  if (!state.pgPool)
+    state.pgPool = createPgPool({ connectionString: databaseUrl, vercel: state.config?.vercel })
   state.db = drizzle(state.pgPool, { schema })
   return state.db
 }

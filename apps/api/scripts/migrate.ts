@@ -38,7 +38,7 @@ try {
 
   if (!env.POSTGRES_URL) throw new Error('POSTGRES_URL is required when PGLITE is false')
 
-  const pool = createPgPool({ connectionString: env.POSTGRES_URL })
+  const pool = createPgPool({ connectionString: env.POSTGRES_URL, vercel: env.VERCEL })
   try {
     await runPostgresMigrations({
       pool,

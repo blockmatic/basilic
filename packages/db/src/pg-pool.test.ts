@@ -4,7 +4,8 @@ import { pgPoolConfig } from './pg-pool.js'
 const connectionString = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
 
 describe('pgPoolConfig', () => {
-  it('leaves ssl unset off Vercel', () => {
+  it('leaves ssl unset when vercel is omitted or false', () => {
+    expect(pgPoolConfig({ connectionString })).toEqual({ connectionString })
     expect(pgPoolConfig({ connectionString, vercel: false })).toEqual({ connectionString })
   })
 

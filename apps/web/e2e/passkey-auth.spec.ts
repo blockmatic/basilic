@@ -32,9 +32,9 @@ test.describe('Passkey sign-in', () => {
 
     await authHelpers.openAccountMenu(page)
     await page.getByRole('menuitem', { name: 'Sign out' }).click()
-    await expect
-      .poll(() => new URL(page.url()).pathname, { timeout: 15_000 })
-      .toMatch(/\/auth\/login/)
+    await expect.poll(() => new URL(page.url()).pathname, { timeout: 15_000 }).toBe('/')
+    await page.getByTestId('header-sign-in').click()
+    await page.waitForURL(/\/auth\/login/, { timeout: 15_000 })
 
     await expect(page.getByRole('button', { name: /Continue with Passkey/i })).toBeVisible({
       timeout: 10_000,

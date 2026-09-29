@@ -76,7 +76,7 @@ Dedicated emails: `test@test.ai` (shared), `e2e-passkey@test.ai`, `e2e-email@tes
 | `03-proxy-gate.spec.ts` | auth | Unauthenticated redirects for settings |
 | `04-update-tokens.spec.ts` | auth | Cookie adapter CSRF/origin |
 | `05-change-email.spec.ts` | auth | In-page email change verify |
-| `06-logout.spec.ts` | auth | Header sign-out revokes sid |
+| `06-logout.spec.ts` | auth | Header sign-out revokes sid and lands on `/` |
 | `auth.setup.ts` | setup | Writes shared storageState |
 | `dashboard.spec.ts` | chromium | Coin board (fixture USD, sort, watch, sidebar/rail chrome, `q`, Copy link, `surface=account`, `surface=dashboard`, Who am I?, stubbed missing SpeechRecognition hides mic), profile, 404 |
 | `security/authenticator.spec.ts` | security | TOTP setup/unlink |

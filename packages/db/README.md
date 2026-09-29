@@ -10,7 +10,7 @@ Drizzle PostgreSQL schema, client factory, and named data-access functions. Fast
 | `@repo/db/schema` | Table defs for Fastify auth and coins routes |
 | `@repo/db/migrate` | `runMigrations`, `runPostgresMigrations`, `migrationsDir` |
 
-Call `configureDb({ databaseUrl, pglite, pgliteInstance })` from the host env; pass `databaseUrl` from `POSTGRES_URL`. The package does not import Fastify `env` or the api test harness. On Vercel (`VERCEL` set), `createPgPool` uses TLS without verifying the Postgres CA — Node 24 and `pg` treat `sslmode=require` as `verify-full`, which fails Marketplace Postgres chains.
+Call `configureDb({ databaseUrl, pglite, pgliteInstance, vercel })` from the host env; pass `databaseUrl` from `POSTGRES_URL`. The package does not import Fastify `env` or the api test harness. Pass `vercel: true` on Vercel so `createPgPool` uses TLS without verifying the Postgres CA — Node 24 and `pg` treat `sslmode=require` as `verify-full`, which fails Marketplace Postgres chains.
 
 Local Docker Postgres is `pnpm db:start` (Supabase CLI in this package; no-op when `SKIP_DB_START=1`). `dev` is `tsc --watch` so Fastify and eve pick up `dist/` changes. Identity seed stays in `apps/api`.
 
