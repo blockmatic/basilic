@@ -19,7 +19,7 @@ describe("eve authored modules", () => {
       );
       expect(source, agent).not.toContain("#lib/host");
       expect(source, agent).toContain(
-        "externalDependencies: ['@repo/db', '@electric-sql/pglite', 'pg']"
+        'externalDependencies: ["@repo/db", "@electric-sql/pglite", "pg"]'
       );
     }
   });
