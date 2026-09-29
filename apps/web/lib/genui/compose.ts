@@ -50,7 +50,7 @@ function resolveTableRecipeId({ view }: { view: ViewConfig }): BoardRecipeId {
   return 'table-ranked'
 }
 
-function resolveChartRecipeId({ view }: { view: ViewConfig }): BoardRecipeId {
+export function resolveChartRecipeId({ view }: { view: ViewConfig }): BoardRecipeId {
   if (view.chart === 'area') return 'chart-area'
   if (view.chart === 'bar') return 'chart-bar'
   if (view.chart === 'normalized') return 'chart-normalized'

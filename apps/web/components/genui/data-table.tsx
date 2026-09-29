@@ -13,6 +13,7 @@ import {
 import { cn } from '@repo/ui/lib/utils'
 import { Star } from 'lucide-react'
 import Image from 'next/image'
+import type { KeyboardEvent } from 'react'
 import type { CoinMarket } from '@/lib/coins/board'
 import type { ColumnId } from '@/lib/genui'
 import { useBoardWatch } from './board-watch'
@@ -38,13 +39,61 @@ function formatSpotPrice(n: number) {
   }).format(n)
 }
 
-function formatChange24h(value: number) {
+function formatChange(value: number) {
   const sign = value >= 0 ? '+' : ''
   return `${sign}${value.toFixed(2)}%`
 }
 
 function hasColumn({ columns, id }: { columns: string[]; id: ColumnId }) {
   return columns.includes(id)
+}
+
+function Spark7d({ prices, up }: { prices: number[]; up: boolean }) {
+  if (prices.length < 2) return null
+  const min = Math.min(...prices)
+  const max = Math.max(...prices)
+  const span = max - min || 1
+  const width = 72
+  const height = 28
+  const d = prices
+    .map((price, index) => {
+      const x = (index / (prices.length - 1)) * width
+      const y = height - ((price - min) / span) * height
+      return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`
+    })
+    .join(' ')
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      className={cn('shrink-0', up ? 'text-chart-2' : 'text-destructive')}
+      aria-hidden="true"
+      data-testid="coin-spark-7d"
+    >
+      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  )
+}
+
+function Spark7dCell({ coin }: { coin: CoinMarket }) {
+  if (!coin.sparkline7d.length && coin.change7d == null) return null
+  const up = (coin.change7d ?? 0) >= 0
+  return (
+    <div className="flex items-center justify-end gap-2">
+      <Spark7d prices={coin.sparkline7d} up={up} />
+      {coin.change7d != null ? (
+        <span
+          className={cn(
+            'text-xs font-medium tabular-nums',
+            up ? 'text-chart-2' : 'text-destructive',
+          )}
+        >
+          {formatChange(coin.change7d)}
+        </span>
+      ) : null}
+    </div>
+  )
 }
 
 function CoinWatchButton({
@@ -70,7 +119,10 @@ function CoinWatchButton({
       aria-pressed={watched}
       data-testid="coin-watch"
       disabled={disabled || pending}
-      onClick={onToggle}
+      onClick={event => {
+        event.stopPropagation()
+        onToggle()
+      }}
     >
       <Star aria-hidden="true" className={watched ? 'fill-current' : undefined} />
     </Button>
@@ -80,7 +132,8 @@ function CoinWatchButton({
 export function DataTable({ props }: { props: { columns: string[]; emptyLabel: string | null } }) {
   const coins = useStateValue<CoinMarket[]>('/coins') ?? []
   const error = useStateValue<string | null>('/error')
-  const { watchedIds, isAtCap, pendingAssetId, onToggleWatch } = useBoardWatch()
+  const { watchedIds, isAtCap, pendingAssetId, focusedAssetId, onToggleWatch, onOpenChart } =
+    useBoardWatch()
   const columns = props.columns
 
   if (error)
@@ -103,8 +156,19 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
   const showIdentity = hasColumn({ columns, id: 'identity' })
   const showPrice = hasColumn({ columns, id: 'price' })
   const showChange = hasColumn({ columns, id: 'change24h' })
+  const showSpark = hasColumn({ columns, id: 'spark7d' })
   const showMarketCap = hasColumn({ columns, id: 'marketCap' })
   const showVolume = hasColumn({ columns, id: 'volume' })
+
+  function openChart({ assetId }: { assetId: string }) {
+    onOpenChart({ assetId })
+  }
+
+  function onRowKeyDown(event: KeyboardEvent<HTMLElement>, assetId: string) {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    openChart({ assetId })
+  }
 
   return (
     <div className="min-w-0 w-full max-w-full">
@@ -112,12 +176,22 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
         {coins.map(coin => {
           const watched = watchedIds.has(coin.id)
           const symbol = coin.symbol.toLowerCase()
+          const focused = focusedAssetId === coin.id
           return (
             <div
               key={coin.id}
               data-testid="coin-row"
               data-symbol={symbol}
-              className="flex min-h-[52px] items-center justify-between gap-3 rounded-xl border border-border/80 bg-card p-4 transition-colors"
+              data-focused={focused ? 'true' : undefined}
+              role="button"
+              tabIndex={0}
+              aria-current={focused ? 'true' : undefined}
+              className={cn(
+                'flex min-h-[52px] cursor-pointer items-center justify-between gap-3 rounded-xl border border-border/80 bg-card p-4 transition-colors',
+                focused && 'ring-2 ring-primary/40',
+              )}
+              onClick={() => openChart({ assetId: coin.id })}
+              onKeyDown={event => onRowKeyDown(event, coin.id)}
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 {showWatch ? (
@@ -160,9 +234,10 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
                       coin.change24h >= 0 ? 'text-chart-2' : 'text-destructive',
                     )}
                   >
-                    {formatChange24h(coin.change24h)}
+                    {formatChange(coin.change24h)}
                   </span>
                 ) : null}
+                {showSpark ? <Spark7dCell coin={coin} /> : null}
               </div>
             </div>
           )
@@ -174,16 +249,17 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
           <TableHeader>
             <TableRow>
               {showWatch ? (
-                <TableHead className="w-[6%] px-1">
+                <TableHead className="w-[5%] px-1">
                   <span className="sr-only">Watch</span>
                 </TableHead>
               ) : null}
               {showRank ? (
                 <TableHead className="hidden w-[4%] px-2 text-left lg:table-cell">#</TableHead>
               ) : null}
-              {showIdentity ? <TableHead className="w-[36%]">Name</TableHead> : null}
-              {showPrice ? <TableHead className="w-[16%] px-2 text-right">Price</TableHead> : null}
-              {showChange ? <TableHead className="w-[8%] px-2 text-right">%</TableHead> : null}
+              {showIdentity ? <TableHead className="w-[28%]">Name</TableHead> : null}
+              {showPrice ? <TableHead className="w-[12%] px-2 text-right">Price</TableHead> : null}
+              {showChange ? <TableHead className="w-[7%] px-2 text-right">24h</TableHead> : null}
+              {showSpark ? <TableHead className="w-[14%] px-2 text-right">7d</TableHead> : null}
               {showMarketCap ? (
                 <TableHead className="hidden w-[15%] px-2 text-right md:table-cell">
                   Market cap
@@ -200,8 +276,19 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
             {coins.map(coin => {
               const watched = watchedIds.has(coin.id)
               const symbol = coin.symbol.toLowerCase()
+              const focused = focusedAssetId === coin.id
               return (
-                <TableRow key={coin.id} data-testid="coin-row" data-symbol={symbol}>
+                <TableRow
+                  key={coin.id}
+                  data-testid="coin-row"
+                  data-symbol={symbol}
+                  data-focused={focused ? 'true' : undefined}
+                  tabIndex={0}
+                  aria-current={focused ? 'true' : undefined}
+                  className={cn('cursor-pointer', focused && 'bg-muted/40')}
+                  onClick={() => openChart({ assetId: coin.id })}
+                  onKeyDown={event => onRowKeyDown(event, coin.id)}
+                >
                   {showWatch ? (
                     <TableCell className="px-1">
                       <CoinWatchButton
@@ -251,7 +338,12 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
                         coin.change24h >= 0 ? 'text-chart-2' : 'text-destructive',
                       )}
                     >
-                      {formatChange24h(coin.change24h)}
+                      {formatChange(coin.change24h)}
+                    </TableCell>
+                  ) : null}
+                  {showSpark ? (
+                    <TableCell className="min-w-0 px-2 text-right">
+                      <Spark7dCell coin={coin} />
                     </TableCell>
                   ) : null}
                   {showMarketCap ? (

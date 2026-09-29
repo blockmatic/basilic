@@ -19,6 +19,8 @@ describe('seriesAssetId', () => {
             imageUrl: null,
             priceUsd: 1,
             change24h: 0,
+            change7d: 1.2,
+            sparkline7d: [1, 2, 3],
             volumeUsd: 0,
             marketCapUsd: 0,
             rank: 2,
@@ -27,5 +29,15 @@ describe('seriesAssetId', () => {
         ],
       }),
     ).toBe('ethereum')
+  })
+
+  it('prefers focus over symbols', () => {
+    expect(
+      seriesAssetId({
+        query: { ...defaultSearchQuery, symbols: ['eth'] },
+        coins: [],
+        focus: 'solana',
+      }),
+    ).toBe('solana')
   })
 })

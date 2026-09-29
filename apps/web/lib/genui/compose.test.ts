@@ -17,7 +17,16 @@ describe('composeSurface', () => {
     expect(table?.repeat).toBeUndefined()
     expect(table?.children).toEqual([])
     expect(table?.props).toMatchObject({
-      columns: ['rank', 'identity', 'price', 'change24h', 'marketCap', 'volume', 'watch'],
+      columns: [
+        'rank',
+        'identity',
+        'price',
+        'change24h',
+        'spark7d',
+        'marketCap',
+        'volume',
+        'watch',
+      ],
     })
   })
 
@@ -44,7 +53,7 @@ describe('composeSurface', () => {
       }),
     })
     expect(tableElement(spec)?.props).toMatchObject({
-      columns: ['identity', 'price', 'change24h', 'volume', 'watch'],
+      columns: ['identity', 'price', 'change24h', 'spark7d', 'volume', 'watch'],
     })
   })
 
@@ -57,7 +66,7 @@ describe('composeSurface', () => {
       }),
     })
     expect(tableElement(spec)?.props).toMatchObject({
-      columns: ['identity', 'price', 'change24h', 'marketCap', 'watch'],
+      columns: ['identity', 'price', 'change24h', 'spark7d', 'marketCap', 'watch'],
     })
   })
 
@@ -148,7 +157,7 @@ describe('specFromSelection', () => {
     const elements = ['summary', 'table-movers']
     expect(specFromSelection({ elements, view })).toEqual(specFromSelection({ elements, view }))
     expect(tableElement(specFromSelection({ elements, view }))?.props).toMatchObject({
-      columns: ['identity', 'price', 'change24h', 'volume', 'watch'],
+      columns: ['identity', 'price', 'change24h', 'spark7d', 'volume', 'watch'],
     })
   })
 
@@ -178,5 +187,16 @@ describe('specFromSelection', () => {
     const spec = specFromSelection({ elements: ['summary', 'chart-line', 'table-ranked'], view })
     expect(Object.values(spec.elements).some(element => element.type === 'LineChart')).toBe(true)
     expect(JSON.stringify(spec)).not.toMatch(/openTime/)
+  })
+
+  it('injects a chart recipe when surface is chart and selection omitted it', () => {
+    const chartView = viewFromSearchQuery({
+      query: defaultSearchQuery,
+      title: 'Chart',
+      surface: 'chart',
+      chart: 'area',
+    })
+    const spec = specFromSelection({ elements: ['summary', 'table-ranked'], view: chartView })
+    expect(Object.values(spec.elements).some(element => element.type === 'AreaChart')).toBe(true)
   })
 })

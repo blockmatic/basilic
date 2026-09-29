@@ -6,7 +6,9 @@ export type BoardWatchValue = {
   watchedIds: Set<string>
   isAtCap: boolean
   pendingAssetId?: string
+  focusedAssetId: string | null
   onToggleWatch: ({ assetId, watched }: { assetId: string; watched: boolean }) => void
+  onOpenChart: ({ assetId }: { assetId: string }) => void
 }
 
 const BoardWatchContext = createContext<BoardWatchValue | null>(null)

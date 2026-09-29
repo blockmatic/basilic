@@ -28,6 +28,7 @@ import {
   seriesAssetId,
   specFromSelection,
   splitBoardView,
+  type ViewChart,
   type ViewPeriod,
   type ViewSurface,
   viewFromSearchQuery,
@@ -56,6 +57,8 @@ type CoinBoardProps = {
   initialQuery: SearchQueryState
   initialSurface: ViewSurface
   initialPeriod: ViewPeriod | null
+  initialChart: ViewChart | null
+  initialFocus: string | null
   initialColumns: string[]
   initialElements: string[]
   initialChrome: ChromeState
@@ -82,6 +85,8 @@ function CoinBoardIsland({
   initialQuery,
   initialSurface,
   initialPeriod,
+  initialChart,
+  initialFocus,
   initialColumns,
   initialElements,
   initialChrome,
@@ -100,13 +105,15 @@ function CoinBoardIsland({
   const { prompted, setPrompted } = useAccountRequiredPrompt()
   const queryClient = useQueryClient()
   const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
-  const { query, surface, period, columns, elements } = splitBoardView({ view })
+  const { query, surface, period, chart, focus, columns, elements } = splitBoardView({ view })
   const fetchQuery = overlayAccountQuery({ query, surface })
   const needsAccount = surface === 'account' || fetchQuery.universe === 'watchlist' || prompted
   const showAuthRequired = !isSessionLoading && !signedIn && needsAccount
   const isInitial =
     surface === initialSurface &&
     period === initialPeriod &&
+    chart === initialChart &&
+    focus === initialFocus &&
     columns.length === initialColumns.length &&
     columns.every((id, index) => id === initialColumns[index]) &&
     elements.length === initialElements.length &&
@@ -158,6 +165,7 @@ function CoinBoardIsland({
   const seriesAsset = seriesAssetId({
     query: fetchQuery,
     coins: listQuery.data?.coins ?? initialCoins,
+    focus,
   })
   const candlePeriod = period ?? defaultCandlePeriod
   const seriesQuery = useQuery({
@@ -215,6 +223,7 @@ function CoinBoardIsland({
     title: viewTitle({ surface, caption }),
     surface,
     period,
+    chart,
     columns,
     elements,
   })
@@ -266,7 +275,17 @@ function CoinBoardIsland({
       ...clearedSearchQuery,
       surface: null,
       period: null,
+      chart: null,
+      focus: null,
       columns: null,
+      elements: null,
+    })
+  }
+
+  async function handleOpenChart({ assetId }: { assetId: string }) {
+    await setView({
+      focus: assetId,
+      surface: 'chart',
       elements: null,
     })
   }
@@ -288,7 +307,9 @@ function CoinBoardIsland({
             watchedIds={watchedIds}
             isAtCap={isAtCap}
             pendingAssetId={watchMutation.isPending ? watchMutation.variables?.assetId : undefined}
+            focusedAssetId={focus}
             onToggleWatch={handleToggleWatch}
+            onOpenChart={handleOpenChart}
             onResetView={handleResetView}
           />
         </div>

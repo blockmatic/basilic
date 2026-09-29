@@ -30,11 +30,13 @@ export const emptySeriesState: SeriesState = {
 export function seriesAssetId({
   query,
   coins,
+  focus,
 }: {
   query: SearchQueryState
   coins: CoinMarket[]
+  focus?: string | null
 }): string {
-  const token = query.symbols[0] ?? query.highlight[0]
+  const token = focus ?? query.symbols[0] ?? query.highlight[0]
   if (!token) return 'bitcoin'
   const match = coins.find(coin => coin.id === token || coin.symbol.toLowerCase() === token)
   return match?.id ?? (token === 'btc' ? 'bitcoin' : token)

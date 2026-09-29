@@ -2,9 +2,11 @@ import type { ViewSurface } from '@repo/utils/view-config'
 import type { SearchQueryState } from '@/lib/coins/search-query'
 
 export {
+  chartKinds,
   defaultSearchQuery,
   parseViewConfig,
   periodValues,
+  type ViewChart,
   type ViewConfig,
   type ViewPeriod,
   type ViewSurface,
@@ -18,6 +20,7 @@ export const columnIds = [
   'identity',
   'price',
   'change24h',
+  'spark7d',
   'marketCap',
   'volume',
   'watch',

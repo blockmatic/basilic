@@ -49,6 +49,8 @@ export function viewConfigToSearchPatch({ viewConfig }: { viewConfig: ViewConfig
   return {
     surface: viewConfig.surface,
     period: viewConfig.period ?? null,
+    chart: viewConfig.chart ?? null,
+    focus: null,
     columns: viewConfig.columns ?? null,
     elements: viewConfig.elements ?? null,
     ...viewConfig.query,
@@ -75,6 +77,7 @@ export function isActiveCommandHistoryEntry({
         period: split.period,
         columns: split.columns,
         elements: split.elements,
+        chart: split.chart,
       }),
     }),
     viewConfigToSearchPatch({ viewConfig: entry.viewConfig }),

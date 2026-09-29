@@ -43,6 +43,7 @@ export const viewSurfaces = [
   'account',
 ] as const
 
+export const chartKinds = ['line', 'area', 'bar', 'normalized'] as const
 export const periodValues = ['24h', '7d', '30d', '90d', '1y', '6m'] as const
 
 export const viewConfigSchema = z.object({
@@ -54,12 +55,13 @@ export const viewConfigSchema = z.object({
   period: z.enum(periodValues).optional(),
   elements: z.array(z.string()).optional(),
   benchmark: z.string().optional(),
-  chart: z.enum(['line', 'area', 'bar', 'normalized']).optional(),
+  chart: z.enum(chartKinds).optional(),
 })
 
 export type ViewConfig = z.infer<typeof viewConfigSchema>
 export type ViewSurface = (typeof viewSurfaces)[number]
 export type ViewPeriod = (typeof periodValues)[number]
+export type ViewChart = (typeof chartKinds)[number]
 export type SearchQuery = ViewConfig['query']
 
 export function parseViewConfig({ value }: { value: unknown }): ViewConfig | null {
@@ -75,6 +77,7 @@ export function viewFromSearchQuery({
   period,
   columns,
   elements,
+  chart,
 }: {
   query: SearchQuery
   title: string
@@ -82,6 +85,7 @@ export function viewFromSearchQuery({
   period?: ViewPeriod | null
   columns?: string[]
   elements?: string[]
+  chart?: ViewChart | null
 }): ViewConfig {
   return {
     version: 1,
@@ -91,5 +95,6 @@ export function viewFromSearchQuery({
     ...(period ? { period } : {}),
     ...(columns?.length ? { columns } : {}),
     ...(elements?.length ? { elements } : {}),
+    ...(chart ? { chart } : {}),
   }
 }

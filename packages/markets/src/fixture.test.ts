@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fixtureAsset, fixtureMarkets, fixtureQuote } from './fixture.js'
+import { fixtureAsset, fixtureMarkets, fixtureQuote, fixtureQuotes } from './fixture.js'
 
 describe('market fixtures', () => {
   it('filters fixture markets by ids and topN', () => {
@@ -7,6 +7,8 @@ describe('market fixtures', () => {
       'solana',
     ])
     expect(fixtureMarkets({ topN: 1 }).markets.map(row => row.id)).toEqual(['bitcoin'])
+    expect(fixtureQuotes).toHaveLength(20)
+    expect(fixtureMarkets().markets[0]?.sparkline7d.length).toBeGreaterThan(1)
   })
 
   it('returns no fixture markets for an unsatisfied category', () => {

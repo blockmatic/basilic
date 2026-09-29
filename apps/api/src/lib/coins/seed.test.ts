@@ -1,9 +1,9 @@
 import { getDb } from '@repo/db'
-import { assetMarkets, assetNetworks, assetProviders, assets } from '@repo/db/schema'
+import { assetMarkets, assetNetworks, assetProviders, assets, coinWatches } from '@repo/db/schema'
 import { fixtureQuotes } from '@repo/markets'
 import { count, eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
-import { seedIdentity } from './seed.js'
+import { binanceCatalogPairCount, seedIdentity, seedIdentityIfEmpty } from './seed.js'
 
 describe('seedIdentity', () => {
   it('upserts identity rows without duplicating', async () => {
@@ -21,7 +21,7 @@ describe('seedIdentity', () => {
     expect(providers?.n).toBe(fixtureQuotes.length)
 
     const [markets] = await db.select({ n: count() }).from(assetMarkets)
-    expect(markets?.n).toBe(fixtureQuotes.length)
+    expect(markets?.n).toBe(binanceCatalogPairCount)
 
     const [native] = await db
       .select()
@@ -30,5 +30,28 @@ describe('seedIdentity', () => {
     expect(native?.assetId).toBe('ethereum')
     expect(native?.isNative).toBe(true)
     expect(native?.chainCaip2).toBe('eip155:1')
+  })
+
+  it('upserts missing catalog rows when the registry is short', async () => {
+    const db = await getDb()
+    await db.delete(coinWatches)
+    await db.delete(assetMarkets)
+    await db.delete(assetNetworks)
+    await db.delete(assetProviders)
+    await db.delete(assets)
+    await db.insert(assets).values({
+      id: 'bitcoin',
+      symbol: 'btc',
+      name: 'Bitcoin',
+      imageUrl: null,
+      enabled: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
+    await seedIdentityIfEmpty({ db })
+
+    const [row] = await db.select({ n: count() }).from(assets)
+    expect(row?.n).toBe(fixtureQuotes.length)
   })
 })

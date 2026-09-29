@@ -68,6 +68,7 @@ export function BoardComposer({
         title: split.surface === 'account' ? 'Your profile' : 'Board',
         surface: split.surface,
         period: split.period,
+        chart: split.chart,
         columns: split.columns,
         elements: split.elements,
       })

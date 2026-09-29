@@ -20,7 +20,11 @@ describe('serializeBoardUrl', () => {
         columns: ['identity', 'price'],
         elements: ['summary', 'table-ranked'],
         period: '7d',
+        chart: 'area',
+        focus: 'solana',
       }),
-    ).toBe('/?period=7d&columns=identity,price&elements=summary,table-ranked&rail=chat')
+    ).toBe(
+      '/?period=7d&chart=area&focus=solana&columns=identity,price&elements=summary,table-ranked&rail=chat',
+    )
   })
 })

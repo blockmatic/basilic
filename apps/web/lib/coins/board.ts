@@ -7,6 +7,8 @@ export type CoinMarket = {
   imageUrl: string | null
   priceUsd: number
   change24h: number
+  change7d: number | null
+  sparkline7d: number[]
   volumeUsd: number
   marketCapUsd: number
   rank: number
@@ -42,6 +44,8 @@ export function mapListCoins({ data }: { data: ListCoinsResponse }): CoinBoardDa
       imageUrl: asNullableString(coin.imageUrl),
       priceUsd: coin.priceUsd,
       change24h: coin.change24h,
+      change7d: coin.change7d,
+      sparkline7d: coin.sparkline7d,
       volumeUsd: coin.volumeUsd,
       marketCapUsd: coin.marketCapUsd,
       rank: coin.rank,

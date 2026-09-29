@@ -19,6 +19,8 @@ function toCoinDto({
     imageUrl: asset.imageUrl ?? quote.imageUrl,
     priceUsd: quote.priceUsd,
     change24h: quote.change24h,
+    change7d: quote.change7d,
+    sparkline7d: quote.sparkline7d,
     volumeUsd: quote.volumeUsd,
     marketCapUsd: quote.marketCapUsd,
     rank: quote.rank,
@@ -44,7 +46,12 @@ export async function listMarkets({ db }: { db: CoinsDb }) {
   await seedIdentityIfEmpty({ db })
 
   const rows = await db.select().from(assets).where(eq(assets.enabled, true))
-  const { markets, source } = await getMarkets({})
+  const ids = rows.map(row => row.id)
+  const { markets, source } = await getMarkets({
+    ids,
+    sparkline: true,
+    topN: ids.length || undefined,
+  })
   const quotes = new Map(markets.map(quote => [quote.id, quote]))
   const coins = rows
     .flatMap(asset => {

@@ -16,6 +16,8 @@ const frozenMarkets = Object.freeze([
     market_cap: 1_000,
     market_cap_rank: 1,
     last_updated: '2026-01-01T00:00:00.000Z',
+    price_change_percentage_7d_in_currency: 4.2,
+    sparkline_in_7d: { price: [100, 102, 101] },
   }),
 ])
 
@@ -71,6 +73,8 @@ describe('listMarkets', () => {
         id: 'bitcoin',
         rank: 1,
         priceUsd: 100,
+        change7d: 4.2,
+        sparkline7d: [100, 102, 101],
         fetchedAt: '2026-01-01T00:00:00.000Z',
       }),
     ])

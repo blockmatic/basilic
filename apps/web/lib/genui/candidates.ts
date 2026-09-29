@@ -7,15 +7,24 @@ export const rankedColumns: ColumnId[] = [
   'identity',
   'price',
   'change24h',
+  'spark7d',
   'marketCap',
   'volume',
   'watch',
 ]
-export const moversColumns: ColumnId[] = ['identity', 'price', 'change24h', 'volume', 'watch']
+export const moversColumns: ColumnId[] = [
+  'identity',
+  'price',
+  'change24h',
+  'spark7d',
+  'volume',
+  'watch',
+]
 export const comparisonColumns: ColumnId[] = [
   'identity',
   'price',
   'change24h',
+  'spark7d',
   'marketCap',
   'watch',
 ]
