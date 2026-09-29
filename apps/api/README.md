@@ -10,7 +10,7 @@ Copy [`.env.defaults.example`](.env.defaults.example) to `.env` and set values (
 
 ## Vercel
 
-Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time on non-preview deploys (advisory-locked); Preview skips unless `RUN_PG_MIGRATE=true` with an isolated `POSTGRES_URL`. PGLite migrations run at runtime.
+Uses `framework: "fastify"` in vercel.json. Vercel auto-detects `server.ts` as the entrypoint. PostgreSQL migrations run at build time on non-preview deploys (advisory-locked); Preview skips unless `RUN_PG_MIGRATE=true` with an isolated `POSTGRES_URL`. PGLite migrations run at runtime. Pools on Vercel skip Postgres CA verification so `db:migrate` can reach Marketplace Postgres.
 
 **OPTIONS Allowlist (CORS preflight):** When Deployment Protection is enabled on preview deployments, add `/` (or `/auth`) to **Project Settings > Deployment Protection > OPTIONS Allowlist**. Otherwise, preflight OPTIONS requests are blocked before reaching Fastify and CORS fails for cross-origin clients.
 

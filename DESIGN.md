@@ -4,7 +4,7 @@
 
 ## Product
 
-**Basilic** is the demo shell brand (sidebar). The in-box sample is a **coin tracker**, not a news site and not private Markets. Signed-in home is a generated **table** (json-render) plus a prompt rail: Commands history is navigation; the Chat tab is an eve transcript; chips and mic write URL state with no LLM; Commands have no assistant bubbles. Ephemeral dashboard widgets (`surface=dashboard`) are not pinned. Live boards that use CoinGecko Demo must keep CoinGecko attribution. Apps consume `@repo/ui` (shadcn/ui, Base UI, Tailwind 4). App-only UI stays in `apps/web`, `apps/mobile`, and `apps/docu`. See [ADR 004](apps/docu/content/docs/adrs/004-design-system.mdx), [ADR 013](apps/docu/content/docs/adrs/013-shadcn-base-ui.mdx), and [Frontend](apps/docu/content/docs/architecture/frontend.mdx).
+**Basilic** is the demo shell brand (sidebar). The in-box sample is a **coin tracker**, not a news site and not private Markets. Signed-in home is a generated **table** (json-render) plus a prompt rail: Commands history is navigation; the Chat tab is an eve transcript; the mic writes a draft with no LLM; sort and filter come from the command box or the URL; Commands have no assistant bubbles. Ephemeral dashboard widgets (`surface=dashboard`) are not pinned. Live boards that use CoinGecko Demo must keep CoinGecko attribution. Apps consume `@repo/ui` (shadcn/ui, Base UI, Tailwind 4). App-only UI stays in `apps/web`, `apps/mobile`, and `apps/docu`. See [ADR 004](apps/docu/content/docs/adrs/004-design-system.mdx), [ADR 013](apps/docu/content/docs/adrs/013-shadcn-base-ui.mdx), and [Frontend](apps/docu/content/docs/architecture/frontend.mdx).
 
 ## Docs
 

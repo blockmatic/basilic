@@ -15,7 +15,7 @@ export function TrendingTable() {
       <h2 className="font-heading text-base font-semibold md:text-lg">Trending</h2>
       <ul className="divide-y divide-border rounded-md border">
         {coins.map(coin => (
-          <li key={coin.id} className="flex items-center justify-between gap-3 px-3 py-2">
+          <li key={coin.id} className="flex items-center justify-between gap-3 px-4 py-2">
             <div className="min-w-0">
               <p className="truncate font-medium">{coin.name}</p>
               <p className="text-muted-foreground text-sm uppercase">{coin.symbol}</p>

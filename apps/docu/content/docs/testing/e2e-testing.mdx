@@ -60,7 +60,7 @@ Local spawn scripts set `ALLOW_TEST`. The API process exits if `ALLOW_TEST` is t
 1. **public** — legal pages, login smoke, robots/sitemap
 2. **auth** — `01-callbacks` … `06-logout` (empty storage; depends on public; file-name order)
 3. **setup** — writes `user.json` (depends on auth)
-4. **chromium** — dashboard smokes, coin-board chips, 404 (storageState)
+4. **chromium** — dashboard smokes, coin-board URL sort, 404 (storageState)
 5. **security** — TOTP, API keys, passkeys CRUD (storageState; never logout)
 6. **passkey-login** — passkey sign-in with `e2e-passkey@test.ai` (empty storage; depends on setup)
 
@@ -70,15 +70,15 @@ Dedicated emails: `test@test.ai` (shared), `e2e-passkey@test.ai`, `e2e-email@tes
 
 | Spec | Project | Coverage |
 | --- | --- | --- |
-| `public.spec.ts` | public | Privacy, terms, login, robots/sitemap |
+| `public.spec.ts` | public | Privacy, terms, login, robots/sitemap, logged-out board |
 | `01-callbacks.spec.ts` | auth | OAuth/passkey/web3 missing-param errors |
 | `02-magic-link-auth.spec.ts` | auth | Login, token errors, JWT session |
-| `03-proxy-gate.spec.ts` | auth | Unauthenticated redirects |
+| `03-proxy-gate.spec.ts` | auth | Unauthenticated redirects for settings |
 | `04-update-tokens.spec.ts` | auth | Cookie adapter CSRF/origin |
 | `05-change-email.spec.ts` | auth | In-page email change verify |
-| `06-logout.spec.ts` | auth | Header sign-out revokes sid |
+| `06-logout.spec.ts` | auth | Header sign-out revokes sid and lands on `/` |
 | `auth.setup.ts` | setup | Writes shared storageState |
-| `dashboard.spec.ts` | chromium | Coin board (fixture USD, sort, watch, chips, sidebar/rail chrome, `q`, Share, `surface=account`, `surface=dashboard`, Who am I?, stubbed missing SpeechRecognition hides mic), profile, 404 |
+| `dashboard.spec.ts` | chromium | Coin board (fixture USD, sort, watch, sidebar/rail chrome, `q`, Copy link, `surface=account`, `surface=dashboard`, Who am I?, stubbed missing SpeechRecognition hides mic), profile, 404 |
 | `security/authenticator.spec.ts` | security | TOTP setup/unlink |
 | `security/api-keys.spec.ts` | security | API keys CRUD |
 | `security/passkeys.spec.ts` | security | Passkeys add/remove |

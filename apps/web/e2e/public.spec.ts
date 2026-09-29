@@ -148,4 +148,29 @@ test.describe('Public routes', () => {
     const sitemap = await request.get('/sitemap.xml')
     expect(sitemap.status()).toBe(200)
   })
+
+  test('home shows the market board without login', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('header-sign-in')).toBeVisible({ timeout: 15_000 })
+    await expect(page.locator('input[type="email"]')).toHaveCount(0)
+  })
+
+  test('markets rewrite stays on the board', async ({ page }) => {
+    await page.goto('/markets')
+    await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
+    await expect(page.locator('input[type="email"]')).toHaveCount(0)
+  })
+
+  test('Who am I shows the sign-in card on the board', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByTestId('whoami-command')).toBeVisible({ timeout: 15_000 })
+    await page.getByTestId('whoami-command').click()
+    await expect(page.getByTestId('auth-required')).toBeVisible()
+    await expect(page.getByTestId('auth-required-sign-in')).toBeVisible()
+    await expect(page).not.toHaveURL(/\/auth\/login/)
+    await page.getByTestId('auth-required-sign-in').click()
+    await page.waitForURL(/\/auth\/login/, { timeout: 15_000 })
+    await expect(page.locator('input[type="email"]')).toBeVisible()
+  })
 })

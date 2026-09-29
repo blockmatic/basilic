@@ -212,7 +212,7 @@ export const operationMeta = {
   },
   "listAgents": {
     "summary": "List agents",
-    "description": "List product eve agents (command, chat). JWT required. Endpoints are absolute eve origins.",
+    "description": "List product eve agents (command, chat). Public host discovery. Endpoints are absolute eve origins.",
     "pathParams": [],
     "bodyParams": []
   },
@@ -237,13 +237,13 @@ export const operationMeta = {
   },
   "listCoins": {
     "summary": "List coins",
-    "description": "List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol).",
+    "description": "List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol). Public except universe=watchlist, which needs a session JWT.",
     "pathParams": [],
     "bodyParams": []
   },
   "queryCoins": {
     "summary": "Query coins",
-    "description": "Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Vendor failure returns fixture quotes.",
+    "description": "Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Public except universe=watchlist. Vendor failure returns fixture quotes.",
     "pathParams": [],
     "bodyParams": [
       {
@@ -293,13 +293,13 @@ export const operationMeta = {
   },
   "getCoinGlobal": {
     "summary": "Get global market stats",
-    "description": "Cached CoinGecko global market stats (total cap, volume, BTC dominance). Vendor failure returns fixture stats (HTTP 200).",
+    "description": "Cached CoinGecko global market stats (total cap, volume, BTC dominance). Vendor failure returns fixture stats (HTTP 200). Public.",
     "pathParams": [],
     "bodyParams": []
   },
   "getCoinTrending": {
     "summary": "Get trending coins",
-    "description": "Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200).",
+    "description": "Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200). Public.",
     "pathParams": [],
     "bodyParams": []
   },

@@ -40,13 +40,13 @@ describe('GET /coins/:assetId/candles', () => {
     vi.unstubAllGlobals()
   })
 
-  it('returns 401 without Bearer token', async () => {
+  it('returns candles without a Bearer token', async () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/coins/bitcoin/candles',
     })
-    expect(response.statusCode).toBe(401)
-    expect(response.json().code).toBe('UNAUTHORIZED')
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toMatchObject({ assetId: 'bitcoin' })
   })
 
   it('stubs klines into a live DTO and maps 7d onto interval 1h with limit 168', async () => {

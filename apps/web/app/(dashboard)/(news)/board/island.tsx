@@ -1,20 +1,13 @@
 'use client'
 
 import type { Spec } from '@json-render/core'
-import {
-  ActionProvider,
-  createStateStore,
-  Renderer,
-  StateProvider,
-  VisibilityProvider,
-} from '@json-render/react'
+import { createStateStore } from '@json-render/react'
 import { getErrorMessage } from '@repo/error'
-import { useReactApiConfig } from '@repo/react'
+import { useReactApiConfig, useUser } from '@repo/react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQueryStates } from 'nuqs'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { BoardWatchProvider, boardRegistry } from '@/components/genui'
 import { boardNotices, type CoinMarket, type MarketsSync, mapListCoins } from '@/lib/coins/board'
 import type { ChromeState } from '@/lib/coins/chrome'
 import {
@@ -51,6 +44,8 @@ import {
   coinWatchesQueryKey,
 } from '@/lib/query-keys'
 import { emptyWalletState } from '@/lib/wallet'
+import { AccountRequiredProvider, useAccountRequiredPrompt } from './account-required'
+import { BoardCanvas } from './board-canvas'
 import { BoardLayout } from './rail'
 
 const watchCap = 20
@@ -74,7 +69,15 @@ type CoinBoardProps = {
   initialTrending: TrendingState
 }
 
-export function CoinBoard({
+export function CoinBoard(props: CoinBoardProps) {
+  return (
+    <AccountRequiredProvider>
+      <CoinBoardIsland {...props} />
+    </AccountRequiredProvider>
+  )
+}
+
+function CoinBoardIsland({
   spec,
   initialQuery,
   initialSurface,
@@ -92,10 +95,15 @@ export function CoinBoard({
   initialTrending,
 }: CoinBoardProps) {
   const { client } = useReactApiConfig()
+  const { data: session, isLoading: isSessionLoading } = useUser()
+  const signedIn = Boolean(session?.user)
+  const { prompted, setPrompted } = useAccountRequiredPrompt()
   const queryClient = useQueryClient()
   const [view, setView] = useQueryStates(boardViewParsers, { history: 'push', shallow: true })
   const { query, surface, period, columns, elements } = splitBoardView({ view })
   const fetchQuery = overlayAccountQuery({ query, surface })
+  const needsAccount = surface === 'account' || fetchQuery.universe === 'watchlist' || prompted
+  const showAuthRequired = !isSessionLoading && !signedIn && needsAccount
   const isInitial =
     surface === initialSurface &&
     period === initialPeriod &&
@@ -129,6 +137,7 @@ export function CoinBoard({
       : undefined,
     placeholderData: keepPreviousData,
     staleTime: boardStaleMs,
+    enabled: !showAuthRequired,
   })
   const watchesQuery = useQuery({
     queryKey: coinWatchesQueryKey,
@@ -138,11 +147,13 @@ export function CoinBoard({
     },
     initialData: initialWatchedIds,
     staleTime: boardStaleMs,
+    enabled: signedIn,
   })
   const walletQuery = useQuery({
     queryKey: accountWalletQueryKey,
     queryFn: () => client.account.wallet(),
     staleTime: boardStaleMs,
+    enabled: signedIn,
   })
   const seriesAsset = seriesAssetId({
     query: fetchQuery,
@@ -157,6 +168,7 @@ export function CoinBoard({
         query: { period: candlePeriod },
       }),
     staleTime: boardStaleMs,
+    enabled: !showAuthRequired,
   })
   const globalQuery = useQuery({
     queryKey: coinsGlobalQueryKey,
@@ -238,6 +250,10 @@ export function CoinBoard({
   ])
 
   function handleToggleWatch({ assetId, watched }: { assetId: string; watched: boolean }) {
+    if (!signedIn) {
+      setPrompted(true)
+      return
+    }
     if (!watched && isAtCap) {
       toast.error('Watchlist is full')
       return
@@ -263,32 +279,18 @@ export function CoinBoard({
     >
       <BoardLayout initialChrome={initialChrome}>
         <div className="space-y-4">
-          {notices.map(notice => (
-            <p key={notice} className="text-muted-foreground text-sm">
-              {notice}
-            </p>
-          ))}
-          {emptyWatchlist ? (
-            <p className="text-muted-foreground text-sm">nothing on your list</p>
-          ) : null}
-          <StateProvider store={store}>
-            <VisibilityProvider>
-              <ActionProvider handlers={{ reset_view: handleResetView }}>
-                <BoardWatchProvider
-                  value={{
-                    watchedIds,
-                    isAtCap,
-                    pendingAssetId: watchMutation.isPending
-                      ? watchMutation.variables?.assetId
-                      : undefined,
-                    onToggleWatch: handleToggleWatch,
-                  }}
-                >
-                  <Renderer spec={liveSpec} registry={boardRegistry} />
-                </BoardWatchProvider>
-              </ActionProvider>
-            </VisibilityProvider>
-          </StateProvider>
+          <BoardCanvas
+            showAuthRequired={showAuthRequired}
+            notices={notices}
+            emptyWatchlist={emptyWatchlist}
+            store={store}
+            liveSpec={liveSpec}
+            watchedIds={watchedIds}
+            isAtCap={isAtCap}
+            pendingAssetId={watchMutation.isPending ? watchMutation.variables?.assetId : undefined}
+            onToggleWatch={handleToggleWatch}
+            onResetView={handleResetView}
+          />
         </div>
       </BoardLayout>
     </div>

@@ -1,4 +1,4 @@
-import { Pool } from 'pg'
+import { createPgPool } from '@repo/db'
 import { env } from '../lib/env.js'
 
 const maxRetries = 10
@@ -22,9 +22,10 @@ export async function waitForDatabase(logger?: {
 
   while (attempt < maxRetries) {
     const connectionTimeoutMillis = Math.max(Math.floor(maxWaitTime / maxRetries), 1000)
-    const pool = new Pool({
+    const pool = createPgPool({
       connectionString: env.POSTGRES_URL,
       connectionTimeoutMillis,
+      vercel: env.VERCEL,
     })
 
     try {

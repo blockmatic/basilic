@@ -1,6 +1,7 @@
 'use client'
 
-import { Button } from '@repo/ui/components/button'
+import { useUser } from '@repo/react'
+import { Button, buttonVariants } from '@repo/ui/components/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu'
+import { cn } from '@repo/ui/lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { CircleUserIcon, LogOutIcon, ShieldIcon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -31,6 +33,7 @@ function isActive({
 export function AccountMenu() {
   const pathname = usePathname()
   const queryClient = useQueryClient()
+  const { data, isLoading } = useUser()
 
   async function handleSignOut() {
     const response = await fetch('/auth/logout', { redirect: 'manual' })
@@ -46,6 +49,17 @@ export function AccountMenu() {
     queryClient.invalidateQueries({ queryKey: authSessionJwtQueryKey })
     window.location.href = '/'
   }
+
+  if (!isLoading && !data?.user)
+    return (
+      <Link
+        href="/auth/login"
+        data-testid="header-sign-in"
+        className={cn(buttonVariants(), 'min-h-11')}
+      >
+        Sign in
+      </Link>
+    )
 
   return (
     <DropdownMenu>

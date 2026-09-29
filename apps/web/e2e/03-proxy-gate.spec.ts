@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-const protectedPaths = ['/', '/markets', '/settings', '/settings/security/passkeys']
+const protectedPaths = ['/settings', '/settings/security/passkeys']
 
 test.describe('Proxy auth gate', () => {
   for (const path of protectedPaths)

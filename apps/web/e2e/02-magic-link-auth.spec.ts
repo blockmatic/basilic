@@ -152,13 +152,11 @@ test.describe('Magic Link Authentication', () => {
   test.describe('Protected Route Access', () => {
     test.describe.configure({ mode: 'serial' })
 
-    test('should redirect to login when accessing root without auth', async ({ page }) => {
+    test('should show the market board without auth', async ({ page }) => {
       await page.context().clearCookies()
       await page.goto('/')
-      await page.waitForURL(/\/auth\/login/, { timeout: 5000 })
-
-      const emailInput = page.locator('input[type="email"]')
-      await expect(emailInput).toBeVisible()
+      await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
+      await expect(page.locator('input[type="email"]')).toHaveCount(0)
     })
 
     test('should access root after authentication', async ({ page }) => {

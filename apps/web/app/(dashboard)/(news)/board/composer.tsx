@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Input, PromptInputSubmit, PromptInputTextarea } from '@/components/assistant/prompt-input'
 import { type ChromeState, chromeParsers } from '@/lib/coins/chrome'
-import { viewConfigFromEvents } from '@/lib/eve'
+import { accountRequiredFromEvents, viewConfigFromEvents } from '@/lib/eve'
 import {
   boardViewParsers,
   type CommandHistoryEntry,
@@ -17,6 +17,7 @@ import {
   viewFromSearchQuery,
 } from '@/lib/genui'
 import { composeBoardSpec } from '@/lib/genui/compose-spec'
+import { useAccountRequiredPrompt } from './account-required'
 import { useChatEve, useCommandEve } from './eve-session'
 import { useBoardDictation } from './use-board-dictation'
 
@@ -48,6 +49,7 @@ export function BoardComposer({
   const status = promptStatus({ status: agent.status })
   const isBusy = status === 'submitted' || status === 'streaming'
   const dictation = useBoardDictation({ prompt, onDraft: setPrompt })
+  const { setPrompted } = useAccountRequiredPrompt()
   const canSend = prompt.trim().length > 0 && agent.hasHost && !isBusy
   const hostHint =
     agent.hostStatus === 'hydrating' || agent.hostStatus === 'loading'
@@ -70,11 +72,13 @@ export function BoardComposer({
         elements: split.elements,
       })
       try {
-        await chat.send(text, {
+        const events = await chat.send(text, {
           boardQuery: split.query,
           viewConfig,
           elements: split.elements,
         })
+        if (accountRequiredFromEvents({ events })) setPrompted(true)
+        else setPrompted(false)
         setPrompt('')
       } catch {
         return
@@ -88,6 +92,11 @@ export function BoardComposer({
       return
     }
     const parsed = viewConfigFromEvents({ events })
+    if (accountRequiredFromEvents({ events })) {
+      setPrompted(true)
+      setPrompt('')
+      return
+    }
     if (!parsed) {
       toast.error('command agent did not return a ViewConfig')
       return
@@ -103,6 +112,7 @@ export function BoardComposer({
       onRecord({
         entry: { command: text, viewConfig, eveTurnId: command.sessionId },
       })
+      setPrompted(false)
       if (parsed.honesty) toast.message(parsed.honesty)
       setPrompt('')
     } catch (error) {
@@ -115,7 +125,7 @@ export function BoardComposer({
       <Input onSubmit={() => void handleSubmit()}>
         <div className="relative">
           <PromptInputTextarea
-            placeholder={isChat ? 'Ask about the board' : 'Ask the board'}
+            placeholder={isChat ? 'Ask about the board…' : 'Ask the board…'}
             aria-label={isChat ? 'Chat' : 'Command'}
             className={cn('min-h-11 rounded-lg', dictation.supported ? 'pr-28' : 'pr-14')}
             submitOnEnter={!dictation.listening}
@@ -139,7 +149,7 @@ export function BoardComposer({
                 disabled={dictation.blocked}
                 onClick={dictation.toggle}
               >
-                <MicIcon />
+                <MicIcon aria-hidden="true" />
                 {dictation.listening ? <span className="sr-only">Listening</span> : null}
               </Button>
             ) : null}
@@ -158,10 +168,7 @@ export function BoardComposer({
         </p>
       ) : null}
       {dictation.supported ? (
-        <p className="text-muted-foreground text-xs">
-          Words stay in this box until you send. Chrome may use the browser recognizer; we do not
-          upload audio to Basilic.
-        </p>
+        <p className="text-muted-foreground text-xs">Words stay in this box until you send.</p>
       ) : null}
       {dictation.listening && dictation.interim ? (
         <p className="text-muted-foreground text-xs" aria-live="polite">

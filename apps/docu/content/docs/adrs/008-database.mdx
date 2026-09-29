@@ -139,7 +139,7 @@ Database migrations follow a host-agnostic strategy that works across all deploy
 ### Migration Execution
 
 **PostgreSQL (Production):**
-- Migrations run at **build time** via `pnpm db:migrate` (Vercel: after `turbo run build`, skipped when `VERCEL_ENV=preview` unless `RUN_PG_MIGRATE=true`)
+- Migrations run at **build time** via `pnpm db:migrate` (Vercel: after `turbo run build`, skipped when `VERCEL_ENV=preview` unless `RUN_PG_MIGRATE=true`). Vercel pools skip Postgres CA verification so Marketplace TLS succeeds.
 - Concurrent migrators serialize with a PostgreSQL advisory lock
 - Migrations are **skipped at runtime** (`NODE_ENV=production` / Vercel Preview) so Function cold starts stay cheap
 - Faster startup (migrations already applied)

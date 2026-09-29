@@ -57,23 +57,6 @@ test.describe('Dashboard routes', () => {
     )
   })
 
-  test('chip What moved? lists doge first and Back restores', async ({ page }) => {
-    await page.goto('/')
-    await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'btc', {
-      timeout: 15_000,
-    })
-    await expect(page.getByTestId('board-rail')).toBeVisible()
-    await page.getByRole('button', { name: 'What moved?' }).click()
-    await expect(page).toHaveURL(/sortBy=change24h/)
-    await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'doge', {
-      timeout: 15_000,
-    })
-    await page.goBack()
-    await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'btc', {
-      timeout: 15_000,
-    })
-  })
-
   test('sidebar=close hides the rail and survives reload', async ({ page }) => {
     await page.goto('/?sidebar=close')
     await expect(page.getByTestId('coin-board')).toBeVisible({ timeout: 15_000 })
@@ -142,15 +125,6 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByRole('button', { name: 'Send' })).toBeDisabled()
   })
 
-  test("What's on my list? stays table-only", async ({ page }) => {
-    await page.goto('/')
-    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
-    await page.getByRole('button', { name: "What's on my list?" }).click()
-    await expect(page).toHaveURL(/universe=watchlist/)
-    await expect(page).not.toHaveURL(/surface=account/)
-    await expect(page.getByTestId('user-info-card')).toHaveCount(0)
-  })
-
   test('q plus filters compose without chat and keep chrome on refresh', async ({ page }) => {
     const chatHits: string[] = []
     page.on('request', request => {
@@ -177,21 +151,7 @@ test.describe('Dashboard routes', () => {
     await expect(page).toHaveURL(/rail=chat/)
   })
 
-  test('chip click drops q and whoami keeps it', async ({ page }) => {
-    await page.goto('/')
-    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
-    await page.getByTestId('whoami-command').click()
-    await expect(page).toHaveURL(/surface=account/)
-    await expect(page).toHaveURL(/q=/)
-    await expect(page.getByTestId('user-info-card')).toBeVisible({ timeout: 15_000 })
-    await expect(page.getByTestId('user-info-card')).toContainText('test@test.ai')
-    await page.getByRole('button', { name: 'What moved?' }).click()
-    await expect(page).toHaveURL(/sortBy=change24h/)
-    await expect(page).not.toHaveURL(/[?&]q=/)
-    await expect(page.getByTestId('user-info-card')).toBeVisible()
-  })
-
-  test('GET elements restores the board and chips drop them', async ({ page }) => {
+  test('GET elements restores the board', async ({ page }) => {
     const chatHits: string[] = []
     page.on('request', request => {
       if (request.url().includes('/ai/chat')) chatHits.push(request.url())
@@ -201,19 +161,17 @@ test.describe('Dashboard routes', () => {
     await expect(page.getByTestId('coin-board')).toHaveAttribute('data-spec-root', 'board')
     await expect(visibleCoinRow(page, 'btc')).toBeVisible()
     expect(chatHits).toEqual([])
-    await page.getByRole('button', { name: 'What moved?' }).click()
-    await expect(page).toHaveURL(/sortBy=change24h/)
-    await expect(page).not.toHaveURL(/elements=/)
+    await expect(page).toHaveURL(/elements=summary,table-ranked/)
   })
 
-  test('Share copies the current href', async ({ page, context }) => {
+  test('Copy link copies the current href', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-    await page.goto('/?sortBy=change24h&sidebar=close')
-    await expect(page.getByTestId('share-board')).toBeVisible({ timeout: 15_000 })
+    await page.goto('/?sortBy=change24h')
+    await expect(page.getByTestId('board-rail')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('share-board')).toBeVisible()
     await page.getByTestId('share-board').click()
     await expect(page.getByText('Copied to clipboard')).toBeVisible()
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('sortBy=change24h')
-    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('sidebar=close')
   })
 
   test('missing SpeechRecognition hides the mic and typing still works', async ({ page }) => {

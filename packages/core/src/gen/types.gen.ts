@@ -1167,17 +1167,6 @@ export type ListAgentsErrors = {
   /**
    * Default Response
    */
-  401: {
-    code: string;
-    message: string;
-    type?: string;
-    title?: string;
-    status?: number;
-    detail?: string;
-  };
-  /**
-   * Default Response
-   */
   429: {
     code: string;
     message: string;
@@ -3611,17 +3600,6 @@ export type GetCoinCandlesErrors = {
   /**
    * Default Response
    */
-  401: {
-    code: string;
-    message: string;
-    type?: string;
-    title?: string;
-    status?: number;
-    detail?: string;
-  };
-  /**
-   * Default Response
-   */
   429: {
     code: string;
     message: string;
@@ -3669,17 +3647,6 @@ export type GetCoinGlobalErrors = {
   /**
    * Default Response
    */
-  401: {
-    code: string;
-    message: string;
-    type?: string;
-    title?: string;
-    status?: number;
-    detail?: string;
-  };
-  /**
-   * Default Response
-   */
   429: {
     code: string;
     message: string;
@@ -3715,17 +3682,6 @@ export type GetCoinTrendingData = {
 };
 
 export type GetCoinTrendingErrors = {
-  /**
-   * Default Response
-   */
-  401: {
-    code: string;
-    message: string;
-    type?: string;
-    title?: string;
-    status?: number;
-    detail?: string;
-  };
   /**
    * Default Response
    */

@@ -4,8 +4,10 @@ export async function eveAccessToken(): Promise<string> {
   return (await getAuthToken()) ?? (await refreshSessionViaNext())?.token ?? ''
 }
 
-export async function eveAuthHeaders(): Promise<{ authorization: string }> {
-  return { authorization: `Bearer ${await eveAccessToken()}` }
+export async function eveAuthHeaders(): Promise<Record<string, string>> {
+  const token = await eveAccessToken()
+  if (!token) return {}
+  return { authorization: `Bearer ${token}` }
 }
 
 export function isUnauthorizedEveError(error: unknown): boolean {

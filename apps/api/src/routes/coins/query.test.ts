@@ -45,11 +45,20 @@ describe('POST /coins/query and GET /coins filters', () => {
     await db.delete(coinWatches)
   })
 
-  it('returns 401 without Bearer token', async () => {
+  it('returns filtered markets without a Bearer token', async () => {
     const response = await fastify.inject({
       method: 'POST',
       url: '/coins/query',
       payload: { minChangePct: 5 },
+    })
+    expect(response.statusCode).toBe(200)
+  })
+
+  it('returns 401 for watchlist without a session', async () => {
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/coins/query',
+      payload: { universe: 'watchlist' },
     })
     expect(response.statusCode).toBe(401)
     expect(response.json().code).toBe('UNAUTHORIZED')

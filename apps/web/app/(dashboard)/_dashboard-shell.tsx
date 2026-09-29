@@ -29,7 +29,7 @@ function BoardRailOpenButton() {
       type="button"
       onClick={() => setChrome({ sidebar: 'open' })}
     >
-      <PanelRightOpenIcon />
+      <PanelRightOpenIcon aria-hidden="true" />
     </Button>
   )
 }

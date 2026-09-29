@@ -5,9 +5,9 @@
  * Local `pnpm dev` applies Postgres via `@repo/db` `runMigrations` on boot.
  */
 import 'dotenv/config'
+import { createPgPool } from '@repo/db'
 import { migrationsDir, runPostgresMigrations } from '@repo/db/migrate'
 import { logger } from '@repo/utils/logger/server'
-import { Pool } from 'pg'
 import { env } from '../src/lib/env.js'
 
 const migrateLogger = {
@@ -38,7 +38,7 @@ try {
 
   if (!env.POSTGRES_URL) throw new Error('POSTGRES_URL is required when PGLITE is false')
 
-  const pool = new Pool({ connectionString: env.POSTGRES_URL })
+  const pool = createPgPool({ connectionString: env.POSTGRES_URL, vercel: env.VERCEL })
   try {
     await runPostgresMigrations({
       pool,

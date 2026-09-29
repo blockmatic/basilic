@@ -128,6 +128,10 @@ export const env = createEnv({
     AI_RATE_LIMIT_MAX: z.coerce.number().int().positive().optional().default(20),
     COINS_RATE_LIMIT_MAX: z.coerce.number().int().positive().optional().default(10),
     AI_GATEWAY_API_KEY: z.string().min(1).optional(),
+    VERCEL: z
+      .string()
+      .optional()
+      .transform(val => parseBool(val, false)),
     VERCEL_OIDC_TOKEN: z.string().min(1).optional(),
     AI_DEFAULT_MODEL: z.string().min(1).optional(),
     COINGECKO_DEMO_API_KEY: z.string().min(1).optional(),

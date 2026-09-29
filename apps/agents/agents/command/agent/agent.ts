@@ -8,7 +8,8 @@ export default defineAgent({
   },
   model: defineDynamic({
     events: {
-      'step.started': (_event, ctx) => selectCommandLanguageModel({ messages: [...ctx.messages] }),
+      'step.started': (_event, ctx) =>
+        selectCommandLanguageModel({ messages: [...ctx.messages], ctx }),
     },
   }),
 })

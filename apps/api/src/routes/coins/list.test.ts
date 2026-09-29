@@ -35,17 +35,22 @@ describe('GET /coins', () => {
     vi.unstubAllGlobals()
   })
 
-  it('returns 401 without Bearer token', async () => {
+  it('returns the market list without a Bearer token', async () => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/coins',
     })
+    expect(response.statusCode).toBe(200)
+    expect(Array.isArray(response.json().coins)).toBe(true)
+  })
+
+  it('returns 401 for watchlist without a session', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/coins?universe=watchlist',
+    })
     expect(response.statusCode).toBe(401)
-    const body = response.json()
-    expect(body.code).toBe('UNAUTHORIZED')
-    const challenge = String(response.headers['www-authenticate'] ?? '')
-    expect(challenge).toContain('Bearer')
-    expect(challenge).toContain('ApiKey')
+    expect(response.json().code).toBe('UNAUTHORIZED')
   })
 
   it('returns live ranks and collapses a burst into one CoinGecko fetch', async () => {

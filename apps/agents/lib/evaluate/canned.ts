@@ -1,4 +1,4 @@
-/** Keep patches aligned with T6 chips in apps/web board/chips.tsx and G2 whoamiViewPatch. Do not import the web module. */
+/** Keep patches aligned with board SearchQuery filters and G2 whoamiViewPatch. Do not import the web module. */
 
 export const cannedIntents = [
   'movers',

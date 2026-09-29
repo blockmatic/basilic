@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { adviseCopy, refuseCopy, resolveCommandTurn } from './resolve.js'
+import { adviseCopy, isAccountScopedCanned, refuseCopy, resolveCommandTurn } from './resolve.js'
 import { defaultSearchQuery } from './view-config.js'
 
 function answers(
@@ -90,6 +90,23 @@ describe('resolveCommandTurn', () => {
     if (result.kind !== 'canned') return
     expect(result.viewConfig.surface).toBe('account')
     expect(result.viewConfig.query.universe).toBe('watchlist')
+  })
+
+  it('flags whoami and watchlist canned patches as account-scoped', () => {
+    expect(
+      isAccountScopedCanned({
+        answers: answers({
+          cannedIntent: { choice: 'whoami', probabilities: { whoami: 0.95 } },
+        }),
+        cannedPatch: { universe: 'watchlist', surface: 'account' },
+      }),
+    ).toBe(true)
+    expect(
+      isAccountScopedCanned({
+        answers: answers({ cannedIntent: { choice: 'movers', probabilities: { movers: 0.92 } } }),
+        cannedPatch: { sortBy: 'change24h', sortDir: 'desc' },
+      }),
+    ).toBe(false)
   })
 
   it('maps high-confidence dashboard surface onto canned turns', () => {

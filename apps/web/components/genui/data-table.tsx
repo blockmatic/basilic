@@ -72,7 +72,7 @@ function CoinWatchButton({
       disabled={disabled || pending}
       onClick={onToggle}
     >
-      <Star className={watched ? 'fill-current' : undefined} />
+      <Star aria-hidden="true" className={watched ? 'fill-current' : undefined} />
     </Button>
   )
 }
@@ -140,7 +140,7 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
                 ) : null}
                 {showIdentity ? (
                   <div className="min-w-0">
-                    <p className="truncate font-heading font-medium">{coin.name}</p>
+                    <p className="truncate text-sm font-medium">{coin.name}</p>
                     <p className="text-muted-foreground truncate text-xs uppercase">
                       {coin.symbol}
                     </p>
@@ -149,17 +149,15 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
               </div>
               <div className="flex shrink-0 flex-col items-end gap-1">
                 {showPrice ? (
-                  <span className="font-heading text-base font-semibold tabular-nums">
+                  <span className="text-sm font-medium tabular-nums">
                     {formatSpotPrice(coin.priceUsd)}
                   </span>
                 ) : null}
                 {showChange ? (
                   <span
                     className={cn(
-                      'inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-heading text-xs font-semibold tabular-nums transition-colors',
-                      coin.change24h >= 0
-                        ? 'bg-chart-2/15 text-chart-2'
-                        : 'bg-destructive/12 text-destructive',
+                      'text-xs font-medium tabular-nums',
+                      coin.change24h >= 0 ? 'text-chart-2' : 'text-destructive',
                     )}
                   >
                     {formatChange24h(coin.change24h)}
@@ -233,8 +231,8 @@ export function DataTable({ props }: { props: { columns: string[]; emptyLabel: s
                           />
                         ) : null}
                         <div className="min-w-0">
-                          <span className="truncate font-medium">{coin.name}</span>
-                          <span className="ml-1 shrink-0 text-muted-foreground text-sm uppercase">
+                          <span className="truncate text-sm font-medium">{coin.name}</span>
+                          <span className="ml-1 shrink-0 text-muted-foreground text-xs uppercase">
                             {coin.symbol}
                           </span>
                         </div>

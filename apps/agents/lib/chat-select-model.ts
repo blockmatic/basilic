@@ -1,23 +1,14 @@
 import { type AccountSnapshot, getAccountSnapshot } from '@repo/db'
-import { textLanguageModel } from './evaluate/canned-model.js'
-import { lastUserPrompt } from './evaluate/select-model.js'
+import { isAccountAsk, isAccountScopedAsk, userIdFromAuth } from './account-scope.js'
+import {
+  accountRequiredLanguageModel,
+  finishLanguageModel,
+  textLanguageModel,
+} from './evaluate/canned-model.js'
+import { hasAccountRequiredCall, lastUserPrompt } from './evaluate/select-model.js'
 import { getProvider } from './provider.js'
 
-export function isAccountAsk({ prompt }: { prompt: string }) {
-  const text = prompt
-    .trim()
-    .toLowerCase()
-    .replace(/[?!.,]+$/g, '')
-    .trim()
-  if (!text) return false
-  return (
-    /^who\s+am\s+i$/.test(text) ||
-    text === 'whoami' ||
-    /^who\s+i\s+am$/.test(text) ||
-    /^(?:what(?:'s| is)\s+)?my\s+(?:name|email|username|profile|account)$/.test(text) ||
-    /^signed in as$/.test(text)
-  )
-}
+export { isAccountAsk, isAccountScopedAsk } from './account-scope.js'
 
 export function formatAccountReply({ account }: { account: AccountSnapshot | null }) {
   if (!account) return 'No profile row is stored for this signed-in user.'
@@ -37,16 +28,18 @@ export async function selectChatLanguageModel({
   ctx,
 }: {
   messages: { role?: string; content?: unknown }[]
-  ctx: { session?: { auth?: { current?: { principalId?: string } | null } } }
+  ctx: {
+    session?: { auth?: { current?: { principalId?: string; principalType?: string } | null } }
+  }
 }) {
   const prompt = lastUserPrompt({ messages })
+  if (hasAccountRequiredCall({ messages }))
+    return { model: finishLanguageModel(), modelContextWindowTokens: 8_192 }
+  const userId = userIdFromAuth({ ctx })
+  if (!userId && isAccountScopedAsk({ prompt }))
+    return { model: accountRequiredLanguageModel(), modelContextWindowTokens: 8_192 }
   if (isAccountAsk({ prompt })) {
-    const userId = ctx.session?.auth?.current?.principalId
-    if (!userId)
-      return {
-        model: textLanguageModel({ text: 'Sign in to see your profile.' }),
-        modelContextWindowTokens: 8_192,
-      }
+    if (!userId) return { model: accountRequiredLanguageModel(), modelContextWindowTokens: 8_192 }
     const { account } = await getAccountSnapshot({ userId })
     return {
       model: textLanguageModel({ text: formatAccountReply({ account }) }),
