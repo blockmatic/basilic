@@ -19,7 +19,7 @@ Pattern B JS is `tsup` (`format: ['esm']`); `.d.ts` is `tsc --declaration` (`dts
 
 Prefer subpath imports (`@repo/utils/async`). Do not deep-import `src/`.
 
-Eve and Fastify Vitest resolve Pattern B `import` to `dist/`. After adding a `tsup` entry (for example `@repo/utils/view-config`), run `pnpm --filter @repo/utils build` before `@repo/agents` tests or you get `Cannot find package`. Next can follow `source` / `types` to `src/` without that build.
+eve and Fastify Vitest resolve Pattern B `import` to `dist/`. After adding a `tsup` entry (for example `@repo/utils/view-config`), run `pnpm --filter @repo/utils build` before `@repo/agents` tests or you get `Cannot find package`. Next can follow `source` / `types` to `src/` without that build.
 
 ## TypeScript 7 and 6
 
