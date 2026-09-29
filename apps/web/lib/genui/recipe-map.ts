@@ -1,6 +1,7 @@
 import type { Experimental_CompositionCandidate } from "@json-render/core";
 
 import {
+  type BoardRecipeId,
   boardRecipes,
   comparisonColumns,
   honestyBySurface,
@@ -9,7 +10,6 @@ import {
   isTableRecipeId,
   moversColumns,
 } from "./candidates";
-import type { BoardRecipeId } from "./candidates";
 import type { ViewSurface } from "./view-config";
 
 function sameColumnList({
@@ -42,15 +42,10 @@ function recipeIdFromChart({
   type: string;
   scale: unknown;
 }): BoardRecipeId | undefined {
-  if (type === "LineChart") {
+  if (type === "LineChart")
     return scale === "normalized" ? "chart-normalized" : "chart-line";
-  }
-  if (type === "AreaChart") {
-    return "chart-area";
-  }
-  if (type === "BarChart") {
-    return "chart-bar";
-  }
+  if (type === "AreaChart") return "chart-area";
+  if (type === "BarChart") return "chart-bar";
   return undefined;
 }
 
@@ -59,15 +54,9 @@ function recipeIdFromMetric({
 }: {
   field: unknown;
 }): BoardRecipeId | undefined {
-  if (field === "btcDominance") {
-    return "metric-btc-d";
-  }
-  if (field === "marketCapUsd") {
-    return "metric-market-cap";
-  }
-  if (field === "volumeUsd") {
-    return "metric-volume";
-  }
+  if (field === "btcDominance") return "metric-btc-d";
+  if (field === "marketCapUsd") return "metric-market-cap";
+  if (field === "volumeUsd") return "metric-volume";
   return undefined;
 }
 
@@ -76,21 +65,11 @@ function recipeIdFromAlert({
 }: {
   title: unknown;
 }): BoardRecipeId | undefined {
-  if (title === honestyBySurface.chart) {
-    return "honesty-chart";
-  }
-  if (title === honestyBySurface.news) {
-    return "honesty-news";
-  }
-  if (title === honestyBySurface.dashboard) {
-    return "honesty-dashboard";
-  }
-  if (title === honestyBySurface.coin) {
-    return "honesty-coin";
-  }
-  if (title === honestyBySurface.account) {
-    return "honesty-account";
-  }
+  if (title === honestyBySurface.chart) return "honesty-chart";
+  if (title === honestyBySurface.news) return "honesty-news";
+  if (title === honestyBySurface.dashboard) return "honesty-dashboard";
+  if (title === honestyBySurface.coin) return "honesty-coin";
+  if (title === honestyBySurface.account) return "honesty-account";
   return undefined;
 }
 
@@ -103,18 +82,11 @@ function recipeIdFromTable({
   emptyLabel: unknown;
   tableId?: BoardRecipeId;
 }): BoardRecipeId {
-  if (tableId && isTableRecipeId(tableId)) {
-    return tableId;
-  }
-  if (sameColumnList({ a: columns, b: moversColumns })) {
-    return "table-movers";
-  }
-  if (sameColumnList({ a: columns, b: comparisonColumns })) {
+  if (tableId && isTableRecipeId(tableId)) return tableId;
+  if (sameColumnList({ a: columns, b: moversColumns })) return "table-movers";
+  if (sameColumnList({ a: columns, b: comparisonColumns }))
     return "table-comparison";
-  }
-  if (emptyLabel == null) {
-    return "table-watchlist";
-  }
+  if (emptyLabel == null) return "table-watchlist";
   return "table-ranked";
 }
 
@@ -125,50 +97,29 @@ export function recipeIdFromElement({
   element: { type: string; props?: Record<string, unknown> };
   tableId?: BoardRecipeId;
 }): BoardRecipeId | undefined {
-  if (element.type === "QuerySummary") {
-    return "summary";
-  }
-  if (element.type === "UserInfo") {
-    return "account";
-  }
-  if (element.type === "Button") {
-    return "reset";
-  }
+  if (element.type === "QuerySummary") return "summary";
+  if (element.type === "UserInfo") return "account";
+  if (element.type === "Button") return "reset";
   if (element.type === "TokenTable") {
     const network = element.props?.network;
-    if (network === "eth-mainnet") {
-      return "token-table-eth";
-    }
-    if (network === "base-mainnet") {
-      return "token-table-base";
-    }
+    if (network === "eth-mainnet") return "token-table-eth";
+    if (network === "base-mainnet") return "token-table-base";
     return "token-table-all";
   }
-  if (element.type === "NftGrid") {
+  if (element.type === "NftGrid")
     return element.props?.hidden ? "nft-hide" : "nft-grid";
-  }
-  if (element.type === "Text") {
-    return "wallet-link-cta";
-  }
-  if (element.type === "TrendingTable") {
-    return "table-trending";
-  }
-  if (element.type === "MetricTile") {
+  if (element.type === "Text") return "wallet-link-cta";
+  if (element.type === "TrendingTable") return "table-trending";
+  if (element.type === "MetricTile")
     return recipeIdFromMetric({ field: element.props?.field });
-  }
   const chartId = recipeIdFromChart({
-    scale: element.props?.scale,
     type: element.type,
+    scale: element.props?.scale,
   });
-  if (chartId) {
-    return chartId;
-  }
-  if (element.type === "Alert") {
+  if (chartId) return chartId;
+  if (element.type === "Alert")
     return recipeIdFromAlert({ title: element.props?.title });
-  }
-  if (element.type !== "DataTable") {
-    return undefined;
-  }
+  if (element.type !== "DataTable") return undefined;
   return recipeIdFromTable({
     columns: element.props?.columns,
     emptyLabel: element.props?.emptyLabel,
@@ -177,39 +128,21 @@ export function recipeIdFromElement({
 }
 
 function candidateResource({ id }: { id: string }) {
-  if (isTableRecipeId(id)) {
-    return "table";
-  }
-  if (isChartRecipeId(id)) {
-    return "chart";
-  }
-  if (id === "table-trending") {
-    return "trending";
-  }
-  if (id.startsWith("honesty-")) {
-    return "honesty";
-  }
-  if (id.startsWith("token-")) {
-    return "tokens";
-  }
-  if (id.startsWith("nft-")) {
-    return "nfts";
-  }
-  return;
+  if (isTableRecipeId(id)) return "table";
+  if (isChartRecipeId(id)) return "chart";
+  if (id === "table-trending") return "trending";
+  if (id.startsWith("honesty-")) return "honesty";
+  if (id.startsWith("token-")) return "tokens";
+  if (id.startsWith("nft-")) return "nfts";
+  return undefined;
 }
 
 function includeRecipe({ id, surface }: { id: string; surface?: ViewSurface }) {
   const overview = isOverviewRecipeId(id);
   if (surface === "dashboard") {
-    if (overview) {
-      return true;
-    }
-    if (id === "summary" || id === "reset") {
-      return true;
-    }
-    if (id === "table-ranked" || id === "table-watchlist") {
-      return true;
-    }
+    if (overview) return true;
+    if (id === "summary" || id === "reset") return true;
+    if (id === "table-ranked" || id === "table-watchlist") return true;
     return isChartRecipeId(id);
   }
   return !overview;
@@ -222,19 +155,19 @@ export function boardCandidates({
 } = {}): Experimental_CompositionCandidate[] {
   return [
     {
-      description: "Vertical stack that holds board chrome and one table",
-      element: { props: { direction: "vertical", gap: "md" }, type: "Stack" },
       id: "board",
+      description: "Vertical stack that holds board chrome and one table",
+      element: { type: "Stack", props: { direction: "vertical", gap: "md" } },
       root: true,
     },
     ...Object.entries(boardRecipes)
       .filter(([id]) => includeRecipe({ id, surface }))
       .map(([id, recipe]) => ({
+        id,
         description: recipe.description,
         element: recipe.element,
-        id,
-        resource: candidateResource({ id }),
         root: false as const,
+        resource: candidateResource({ id }),
       })),
   ];
 }

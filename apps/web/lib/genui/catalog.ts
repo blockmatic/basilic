@@ -17,124 +17,84 @@ const buttonVariant = z
   .nullable();
 
 export const boardCatalog = defineCatalog(schema, {
-  actions: {
-    reset_view: {
-      description: "Clear SearchQuery and surface to the default ranked table",
-      params: z.object({}),
-    },
-  },
   components: {
+    Stack: {
+      props: z.object({ direction: stackDirection, gap: stackGap }),
+      slots: ["default"],
+      description: "Flex row or column that groups board sections",
+    },
+    Card: {
+      props: z.object({ title: z.string().nullable() }),
+      slots: ["default"],
+      description: "Surface card with an optional title",
+    },
+    Heading: {
+      props: z.object({ text: z.string(), level: headingLevel }),
+      description: "Page or section heading",
+    },
+    Text: {
+      props: z.object({ text: z.string(), tone: textTone }),
+      description: "Body copy, optionally muted",
+    },
+    Badge: {
+      props: z.object({ text: z.string(), variant: badgeVariant }),
+      description: "Status or label chip",
+    },
     Alert: {
-      description: "Inline notice for honesty fallbacks and errors",
       props: z.object({
         variant: alertVariant,
         title: z.string(),
         description: z.string().nullable(),
       }),
+      description: "Inline notice for honesty fallbacks and errors",
     },
-    AreaChart: {
-      description: "Close series area bound to $state.series",
+    Separator: {
       props: z.object({}),
-    },
-    Badge: {
-      description: "Status or label chip",
-      props: z.object({ text: z.string(), variant: badgeVariant }),
-    },
-    BarChart: {
-      description: "Close series bars bound to $state.series",
-      props: z.object({}),
+      description: "Horizontal rule between board sections",
     },
     Button: {
-      description: "Pressable control that emits press for catalog actions",
-      events: ["press"],
       props: z.object({ label: z.string(), variant: buttonVariant }),
+      events: ["press"],
+      description: "Pressable control that emits press for catalog actions",
     },
-    Card: {
-      description: "Surface card with an optional title",
+    Section: {
       props: z.object({ title: z.string().nullable() }),
       slots: ["default"],
+      description: "Titled region wrapping table or account content",
     },
-    CoinIdentity: {
-      description: "Coin name, symbol, and optional image",
-      props: z.object({
-        name: z.string(),
-        symbol: z.string(),
-        imageUrl: z.string().nullable(),
-      }),
+    QuerySummary: {
+      props: z.object({ caption: z.string() }),
+      description: "Read-only caption of the current SearchQuery",
     },
     DataTable: {
-      description: "Coin rows bound to $state.coins",
       props: z.object({
         columns: z.array(z.string()),
         emptyLabel: z.string().nullable(),
       }),
       slots: ["default"],
+      description: "Coin rows bound to $state.coins",
     },
-    Heading: {
-      description: "Page or section heading",
-      props: z.object({ text: z.string(), level: headingLevel }),
-    },
-    Insight: {
-      description: "Honesty or helper line under the caption",
-      props: z.object({ text: z.string() }),
-    },
-    LineChart: {
-      description: "Close series line bound to $state.series",
-      props: z.object({ scale: z.enum(["price", "normalized"]).nullable() }),
-    },
-    MetricTile: {
-      description: "Global metric tile bound to $state.global",
+    CoinIdentity: {
       props: z.object({
-        field: z.enum(["btcDominance", "marketCapUsd", "volumeUsd"]),
-        label: z.string(),
+        name: z.string(),
+        symbol: z.string(),
+        imageUrl: z.string().nullable(),
       }),
-    },
-    NftGrid: {
-      description: "Linked wallet NFTs bound to $state.wallet",
-      props: z.object({ hidden: z.boolean() }),
-    },
-    PercentageChange: {
-      description: "Signed 24h percent change",
-      props: z.object({ value: z.number() }),
+      description: "Coin name, symbol, and optional image",
     },
     Price: {
-      description: "USD price in tabular numerals",
       props: z.object({ value: z.number() }),
+      description: "USD price in tabular numerals",
     },
-    QuerySummary: {
-      description: "Read-only caption of the current SearchQuery",
-      props: z.object({ caption: z.string() }),
+    PercentageChange: {
+      props: z.object({ value: z.number() }),
+      description: "Signed 24h percent change",
     },
-    Section: {
-      description: "Titled region wrapping table or account content",
-      props: z.object({ title: z.string().nullable() }),
-      slots: ["default"],
-    },
-    Separator: {
-      description: "Horizontal rule between board sections",
-      props: z.object({}),
-    },
-    Stack: {
-      description: "Flex row or column that groups board sections",
-      props: z.object({ direction: stackDirection, gap: stackGap }),
-      slots: ["default"],
-    },
-    Text: {
-      description: "Body copy, optionally muted",
-      props: z.object({ text: z.string(), tone: textTone }),
-    },
-    TokenTable: {
-      description: "Linked wallet tokens bound to $state.wallet",
-      props: z.object({
-        network: z.enum(["all", "eth-mainnet", "base-mainnet"]),
-      }),
-    },
-    TrendingTable: {
-      description: "Trending coins bound to $state.trending",
-      props: z.object({}),
+    Insight: {
+      props: z.object({ text: z.string() }),
+      description: "Honesty or helper line under the caption",
     },
     UserInfo: {
-      description: "Account card with avatar and profile fields",
       props: z.object({
         name: z.string().nullable(),
         email: z.string().nullable(),
@@ -142,6 +102,46 @@ export const boardCatalog = defineCatalog(schema, {
         username: z.string().nullable(),
         joinedAt: z.string().nullable(),
       }),
+      description: "Account card with avatar and profile fields",
+    },
+    TokenTable: {
+      props: z.object({
+        network: z.enum(["all", "eth-mainnet", "base-mainnet"]),
+      }),
+      description: "Linked wallet tokens bound to $state.wallet",
+    },
+    NftGrid: {
+      props: z.object({ hidden: z.boolean() }),
+      description: "Linked wallet NFTs bound to $state.wallet",
+    },
+    MetricTile: {
+      props: z.object({
+        field: z.enum(["btcDominance", "marketCapUsd", "volumeUsd"]),
+        label: z.string(),
+      }),
+      description: "Global metric tile bound to $state.global",
+    },
+    TrendingTable: {
+      props: z.object({}),
+      description: "Trending coins bound to $state.trending",
+    },
+    LineChart: {
+      props: z.object({ scale: z.enum(["price", "normalized"]).nullable() }),
+      description: "Close series line bound to $state.series",
+    },
+    AreaChart: {
+      props: z.object({}),
+      description: "Close series area bound to $state.series",
+    },
+    BarChart: {
+      props: z.object({}),
+      description: "Close series bars bound to $state.series",
+    },
+  },
+  actions: {
+    reset_view: {
+      params: z.object({}),
+      description: "Clear SearchQuery and surface to the default ranked table",
     },
   },
 });

@@ -16,17 +16,17 @@ import { chartKinds, periodValues, viewSurfaces } from "./view-config";
 const viewFieldOptions = { clearOnDefault: true } as const;
 
 export const surfaceParsers = {
+  surface: parseAsStringLiteral(viewSurfaces)
+    .withDefault("table")
+    .withOptions(viewFieldOptions),
+  period: parseAsStringLiteral(periodValues).withOptions(viewFieldOptions),
   chart: parseAsStringLiteral(chartKinds).withOptions(viewFieldOptions),
+  focus: parseAsString.withOptions(viewFieldOptions),
   columns: parseAsArrayOf(parseAsString)
     .withDefault([])
     .withOptions(viewFieldOptions),
   elements: parseAsArrayOf(parseAsString)
     .withDefault([])
-    .withOptions(viewFieldOptions),
-  focus: parseAsString.withOptions(viewFieldOptions),
-  period: parseAsStringLiteral(periodValues).withOptions(viewFieldOptions),
-  surface: parseAsStringLiteral(viewSurfaces)
-    .withDefault("table")
     .withOptions(viewFieldOptions),
 };
 

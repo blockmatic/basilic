@@ -11,13 +11,13 @@ const chromeOptions = {
 } as const;
 
 export const chromeParsers = {
-  q: parseAsString.withOptions(chromeOptions),
-  rail: parseAsStringLiteral(railValues)
-    .withDefault("commands")
-    .withOptions(chromeOptions),
   sidebar: parseAsStringLiteral(sidebarValues)
     .withDefault("open")
     .withOptions(chromeOptions),
+  rail: parseAsStringLiteral(railValues)
+    .withDefault("commands")
+    .withOptions(chromeOptions),
+  q: parseAsString.withOptions(chromeOptions),
 };
 
 export type ChromeState = inferParserType<typeof chromeParsers>;
