@@ -1,26 +1,7 @@
-# Ignore elliptic 6.6.1 - no fix available (Fixed Version: --)
-[[IgnoredVulns]]
-id = "GHSA-848j-6mx2-7j84"
-reason = "Transitive dep, no fix available in ecosystem"
-
-# ajv: transitive deps, fix requires package upgrades
-[[IgnoredVulns]]
-id = "GHSA-2g4f-4pwh-qvx6"
-reason = "Transitive ajv (6.12.6, 8.6.3), fix in 8.18.0"
-
 # @hey-api/openapi-ts@next is 0.0.0-next-*; OSV treats it as older than 0.97.3
 [[IgnoredVulns]]
 id = "GHSA-hhx9-57xq-r5rw"
 reason = "False positive on 0.0.0-next prerelease required for TypeScript 7"
-
-# sandbox: no patched release
-[[IgnoredVulns]]
-id = "GHSA-fm4j-4xhm-xpwx"
-reason = "Transitive sandbox, no fix available in ecosystem"
-
-[[IgnoredVulns]]
-id = "GHSA-gc25-3vc5-2jf9"
-reason = "Transitive sandbox, no fix available in ecosystem"
 
 # stream-json: jayson 4.x pins 1.9.1; patch is 3.5.0 (ESM breaking)
 [[IgnoredVulns]]
