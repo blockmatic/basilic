@@ -7,8 +7,9 @@
  * Wipe remains `pnpm reset`. HTTP apps use https://*.localhost names.
  */
 import { spawnSync } from 'node:child_process'
+import { existsSync, readFileSync, unlinkSync } from 'node:fs'
 import https from 'node:https'
-import { dirname, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { formatLocalUrlBanner, localDevChildEnv, resolveLocalAppUrls } from './local-urls.mjs'
@@ -112,6 +113,71 @@ export function turboDevCommand({ extraArgs = [] } = {}) {
   }
 }
 
+export const nextDevLockRelPaths = ['apps/web/.next/dev/lock', 'apps/docu/.next/dev/lock']
+
+export function parseNextDevLock({ text }) {
+  try {
+    const parsed = JSON.parse(text)
+    if (typeof parsed.pid !== 'number' || !Number.isInteger(parsed.pid) || parsed.pid <= 0)
+      return null
+    return { pid: parsed.pid }
+  } catch {
+    return null
+  }
+}
+
+function pidIsAlive({ pid, kill }) {
+  try {
+    kill(pid, 0)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function clearNextDevLocks({
+  env = process.env,
+  cwd = repoRoot,
+  readFile = readFileSync,
+  unlink = unlinkSync,
+  kill = process.kill,
+  delay = ms => new Promise(resolveDelay => setTimeout(resolveDelay, ms)),
+} = {}) {
+  if (envFlagIsTrue(env.SKIP_KILL_PORTS) || envFlagIsTrue(env.CI))
+    return { skipped: true, stopped: [] }
+  const stopped = []
+  for (const rel of nextDevLockRelPaths) {
+    const lockPath = join(cwd, rel)
+    if (!existsSync(lockPath)) continue
+    const parsed = parseNextDevLock({ text: readFile(lockPath, 'utf8') })
+    if (!parsed) {
+      unlink(lockPath)
+      continue
+    }
+    if (pidIsAlive({ pid: parsed.pid, kill })) {
+      try {
+        kill(parsed.pid, 'SIGTERM')
+      } catch {
+        // process exited between probe and signal
+      }
+      await delay(200)
+      if (pidIsAlive({ pid: parsed.pid, kill }))
+        try {
+          kill(parsed.pid, 'SIGKILL')
+        } catch {
+          // already gone
+        }
+      stopped.push(parsed.pid)
+    }
+    try {
+      unlink(lockPath)
+    } catch {
+      // next may have already removed it
+    }
+  }
+  return { skipped: false, stopped }
+}
+
 function isMain() {
   const entry = process.argv[1]
   if (!entry) return false
@@ -134,6 +200,8 @@ async function main() {
       process.exit(db.status ?? 1)
     }
   }
+
+  await clearNextDevLocks()
 
   const urls = resolveLocalAppUrls({ cwd: repoRoot })
   console.log(`\n${formatLocalUrlBanner({ urls })}\n`)

@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { defaultSearchQuery, parseViewConfig, viewFromSearchQuery } from './view-config.js'
+import { defaultSearchQuery, setViewInputSchema, viewFromSearchQuery } from './view-config.js'
 
-describe('viewConfigSchema', () => {
-  it('parses the closed whoami board shape', () => {
-    expect(
-      parseViewConfig({
-        value: viewFromSearchQuery({
-          query: { ...defaultSearchQuery, universe: 'watchlist' },
-          title: 'Your profile',
-          surface: 'account',
+describe('setViewInputSchema', () => {
+  it('strips elements so the command tool cannot commit candidate ids', () => {
+    const parsed = setViewInputSchema.parse({
+      viewConfig: {
+        ...viewFromSearchQuery({
+          query: defaultSearchQuery,
+          title: 'Board',
+          elements: ['summary', 'table-ranked'],
         }),
-      }),
-    ).toMatchObject({ version: 1, surface: 'account' })
+      },
+    })
+    expect(parsed.viewConfig).not.toHaveProperty('elements')
   })
 })

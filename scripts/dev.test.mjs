@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { test } from 'node:test'
 
 import {
+  clearNextDevLocks,
   ensurePortlessProxy,
   envFlagIsTrue,
+  parseNextDevLock,
   portlessProxyPort,
   shouldEnsurePortlessProxy,
   turboChildEnv,
@@ -107,4 +112,44 @@ test('turboDevCommand runs turbo dev at high concurrency', () => {
     cmd: 'pnpm',
     args: ['exec', 'turbo', 'run', 'dev', '--concurrency=20'],
   })
+})
+
+test('parseNextDevLock reads a Next 16 lock pid', () => {
+  assert.deepEqual(
+    parseNextDevLock({
+      text: JSON.stringify({ pid: 97038, port: 4803, hostname: 'localhost' }),
+    }),
+    { pid: 97038 },
+  )
+  assert.equal(parseNextDevLock({ text: '{' }), null)
+})
+
+test('clearNextDevLocks skips when SKIP_KILL_PORTS is set', async () => {
+  const result = await clearNextDevLocks({ env: { SKIP_KILL_PORTS: '1' }, delay: async () => {} })
+  assert.deepEqual(result, { skipped: true, stopped: [] })
+})
+
+test('clearNextDevLocks stops the pid recorded in a Next lock', async () => {
+  const cwd = mkdtempSync(join(tmpdir(), 'basilic-next-lock-'))
+  mkdirSync(join(cwd, 'apps/docu/.next/dev'), { recursive: true })
+  writeFileSync(
+    join(cwd, 'apps/docu/.next/dev/lock'),
+    JSON.stringify({ pid: 4242, port: 4803, hostname: 'localhost' }),
+  )
+  const signals = []
+  const result = await clearNextDevLocks({
+    cwd,
+    env: {},
+    delay: async () => {},
+    kill: (pid, signal) => {
+      if (signal === 0) {
+        if (signals.some(entry => entry.pid === pid && entry.signal === 'SIGTERM'))
+          throw new Error('ESRCH')
+        return
+      }
+      signals.push({ pid, signal })
+    },
+  })
+  assert.deepEqual(result, { skipped: false, stopped: [4242] })
+  assert.deepEqual(signals, [{ pid: 4242, signal: 'SIGTERM' }])
 })
