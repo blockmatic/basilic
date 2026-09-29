@@ -9,10 +9,10 @@
 import 'dotenv/config'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createPgPool } from '@repo/db'
 import * as schema from '@repo/db/schema'
 import { logger } from '@repo/utils/logger/server'
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres'
-import { Pool } from 'pg'
 import { seedIdentity } from '../src/lib/coins/index.js'
 import { env } from '../src/lib/env.js'
 
@@ -33,7 +33,7 @@ export async function runSeed(): Promise<void> {
 
   if (!env.POSTGRES_URL) throw new Error('POSTGRES_URL is required when PGLITE is false')
 
-  const pool = new Pool({ connectionString: env.POSTGRES_URL })
+  const pool = createPgPool({ connectionString: env.POSTGRES_URL })
   const db = drizzle(pool, { schema })
   try {
     await applySeed(db)

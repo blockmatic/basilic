@@ -1,7 +1,8 @@
 import { PGlite } from '@electric-sql/pglite'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { drizzle as drizzlePGLite } from 'drizzle-orm/pglite'
-import { Pool } from 'pg'
+import type { Pool } from 'pg'
+import { createPgPool } from './pg-pool.js'
 import * as schema from './schema/index.js'
 
 export type Db =
@@ -81,7 +82,7 @@ async function loadDb(): Promise<Db> {
   }
 
   if (!databaseUrl) throw new Error('POSTGRES_URL is required when pglite is false')
-  if (!state.pgPool) state.pgPool = new Pool({ connectionString: databaseUrl })
+  if (!state.pgPool) state.pgPool = createPgPool({ connectionString: databaseUrl })
   state.db = drizzle(state.pgPool, { schema })
   return state.db
 }
