@@ -11,7 +11,7 @@ const bitcoin = 'bitcoin'
 const ethereum = 'ethereum'
 
 function ctxFor(userId: string) {
-  return { session: { auth: { current: { principalId: userId } } } }
+  return { session: { auth: { current: { principalId: userId, principalType: 'user' } } } }
 }
 
 describe('list_watches ACL', () => {

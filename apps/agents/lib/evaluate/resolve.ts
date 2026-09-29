@@ -175,3 +175,17 @@ export function resolveCommandTurn({
   })
   return { kind: 'canned', viewConfig, honesty: painted.honesty }
 }
+
+export function isAccountScopedCanned({
+  answers,
+  cannedPatch,
+}: {
+  answers: BoardTurnAnswers
+  cannedPatch: Record<string, unknown> | null
+}) {
+  if (answers.turnType.choice === 'account') return true
+  if (answers.surface.choice === 'account') return true
+  if (answers.cannedIntent.choice === 'whoami' || answers.cannedIntent.choice === 'watchlist')
+    return true
+  return cannedPatch?.surface === 'account' || cannedPatch?.universe === 'watchlist'
+}

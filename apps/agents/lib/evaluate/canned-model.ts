@@ -10,6 +10,30 @@ const emptyWarnings: [] = []
 const toolFinish = { unified: 'tool-calls' as const, raw: undefined }
 const stopFinish = { unified: 'stop' as const, raw: undefined }
 
+export function accountRequiredLanguageModel() {
+  const toolCall = {
+    type: 'tool-call' as const,
+    toolCallId: 'account_required_canned',
+    toolName: 'account_required',
+    input: '{}',
+  }
+  return new MockLanguageModelV4({
+    provider: 'basilic-canned',
+    modelId: 'account-required',
+    doGenerate: {
+      content: [toolCall],
+      finishReason: toolFinish,
+      usage: emptyUsage,
+      warnings: emptyWarnings,
+    },
+    doStream: {
+      stream: simulateReadableStream({
+        chunks: [toolCall, { type: 'finish', finishReason: toolFinish, usage: emptyUsage }],
+      }),
+    },
+  })
+}
+
 export function setViewLanguageModel({ input }: { input: SetViewInput }) {
   const toolCall = {
     type: 'tool-call' as const,

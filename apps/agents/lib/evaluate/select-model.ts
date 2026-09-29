@@ -1,8 +1,13 @@
 import type { JSONValue } from 'ai'
+import { isAccountScopedAsk, userIdFromAuth } from '../account-scope.js'
 import { env } from '../env.js'
 import { getProvider } from '../provider.js'
 import { evaluateBoardTurn } from './board-turn.js'
-import { finishLanguageModel, setViewLanguageModel } from './canned-model.js'
+import {
+  accountRequiredLanguageModel,
+  finishLanguageModel,
+  setViewLanguageModel,
+} from './canned-model.js'
 import { resolveCommandTurn } from './resolve.js'
 
 type ModelMessage = { role?: string; content?: unknown }
@@ -56,20 +61,45 @@ export function boardQueryFromMessages({
   }
 }
 
-export function hasSetViewCall({ messages }: { messages: ModelMessage[] }) {
+function hasToolCall({ messages, toolName }: { messages: ModelMessage[]; toolName: string }) {
   return messages.some(message =>
     partsOf({ content: message.content }).some(part => {
       if (typeof part !== 'object' || part === null) return false
       const record = part as { toolName?: unknown; type?: unknown }
-      return record.toolName === 'set_view'
+      return record.toolName === toolName
     }),
   )
 }
 
-export async function selectCommandLanguageModel({ messages }: { messages: ModelMessage[] }) {
-  if (hasSetViewCall({ messages }))
+export function hasSetViewCall({ messages }: { messages: ModelMessage[] }) {
+  return hasToolCall({ messages, toolName: 'set_view' })
+}
+
+export function hasAccountRequiredCall({ messages }: { messages: ModelMessage[] }) {
+  return hasToolCall({ messages, toolName: 'account_required' })
+}
+
+const accountRequiredModel = {
+  model: accountRequiredLanguageModel(),
+  modelContextWindowTokens: 8_192,
+}
+
+type CommandAuthCtx = {
+  session?: { auth?: { current?: { principalId?: string; principalType?: string } | null } }
+}
+
+export async function selectCommandLanguageModel({
+  messages,
+  ctx = {},
+}: {
+  messages: ModelMessage[]
+  ctx?: CommandAuthCtx
+}) {
+  if (hasSetViewCall({ messages }) || hasAccountRequiredCall({ messages }))
     return { model: finishLanguageModel(), modelContextWindowTokens: 8_192 }
   const prompt = lastUserPrompt({ messages })
+  const signedIn = Boolean(userIdFromAuth({ ctx }))
+  if (!signedIn && isAccountScopedAsk({ prompt })) return accountRequiredModel
   const boardQuery = boardQueryFromMessages({ messages })
   const evaluated = await evaluateBoardTurn({ prompt, boardQuery })
   if (!('skip' in evaluated)) {
@@ -80,6 +110,13 @@ export async function selectCommandLanguageModel({ messages }: { messages: Model
       cannedMinProbability: env.JEV_CANNED_MIN_PROBABILITY,
       refuseMinProbability: env.JEV_REFUSE_MIN_PROBABILITY,
     })
+    if (
+      !signedIn &&
+      resolved.kind === 'canned' &&
+      (resolved.viewConfig.surface === 'account' ||
+        resolved.viewConfig.query.universe === 'watchlist')
+    )
+      return accountRequiredModel
     if (resolved.kind !== 'tools')
       return {
         model: setViewLanguageModel({

@@ -1,9 +1,8 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { coinsRouteRateLimitConfig, getCoinCandles } from '../../../lib/coins/index.js'
-import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
+import { RateLimitResponseSchema } from '../../schemas.js'
 
 const AssetIdParamsSchema = Type.Object({
   assetId: Type.String({ minLength: 1 }),
@@ -55,18 +54,16 @@ const coinsCandlesGetRoute: FastifyPluginAsync = async fastify => {
           'Public Binance klines for an identity asset id, mapped from asset_markets. Unmapped assets and vendor failure return empty fixture candles (HTTP 200). period maps to interval plus range; 7d is 1h × 7d, not a kline interval.',
         summary: 'Get coin candles',
         tags: ['coins'],
-        security: [{ bearerAuth: [] }],
+        security: [],
         params: AssetIdParamsSchema,
         querystring: CandlesQuerySchema,
         response: {
           200: CandlesResponseSchema,
-          401: ErrorResponseSchema,
           429: RateLimitResponseSchema,
         },
       },
     },
     async (request, reply) => {
-      if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
       return reply
         .code(200)
         .send(

@@ -28,4 +28,17 @@ describe('select-model helpers', () => {
       }),
     ).toBe(true)
   })
+
+  it('returns account_required for an anonymous personal prompt', async () => {
+    const { selectCommandLanguageModel } = await import('./select-model.js')
+    const selected = await selectCommandLanguageModel({
+      messages: [{ role: 'user', content: 'What are my gains?' }],
+      ctx: {
+        session: { auth: { current: { principalId: 'anonymous', principalType: 'anonymous' } } },
+      },
+    })
+    expect(typeof selected.model).toBe('object')
+    if (typeof selected.model === 'object' && selected.model && 'modelId' in selected.model)
+      expect(selected.model.modelId).toBe('account-required')
+  })
 })

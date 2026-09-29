@@ -5,7 +5,7 @@ description: "Default host is Vercel (Workflow + Sandbox). Product command and c
 
 Default host is Vercel (Workflow + Sandbox) on a sibling project. Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The workspace is `apps/agents` (`@repo/agents`) with separately addressable agents `command` and `chat` on one origin (`/eve/command`, `/eve/chat`). Local `eve:dev` / `eve start` (Nitro `.output`) is the exit. Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
 
-The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. Authenticated Fastify `GET /agents` lists command and chat origins. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` excludes `apps/agents/` until a later E PR.
+The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. Fastify `GET /agents` lists command and chat origins. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` excludes `apps/agents/` until a later E PR.
 
 ## Interaction
 
@@ -26,7 +26,7 @@ Fastify mints the access JWT. Eve verifies `typ=access`. Chat does not run Jev.
 
 ## Session model
 
-Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The web rail uses **`useEveAgent` from `eve/react`** with `host` from Fastify `GET /agents` and a Bearer access JWT (`headers`). Persist the `session` cursor (`sessionId`, `streamIndex`). Do not import `eve/client` into Next (not webpack-safe). Next webpack rewrites eve’s `using` syntax in the react store so SWC can parse it. Do not wrap Next with **`withEve()`** — the frontend is a peer of `apps/agents`, not one Vercel project. Do not use AI SDK `useChat` / `DefaultChatTransport` against eve (UIMessage HTTP is not the eve NDJSON session protocol). `clientContext` on `send()` carries `boardQuery` / `viewConfig` / `elements`. Commands still have no assistant bubbles.
+Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The web rail uses **`useEveAgent` from `eve/react`** with `host` from Fastify `GET /agents` and an optional Bearer access JWT (`headers`). Persist the `session` cursor (`sessionId`, `streamIndex`). Do not import `eve/client` into Next (not webpack-safe). Next webpack rewrites eve’s `using` syntax in the react store so SWC can parse it. Do not wrap Next with **`withEve()`** — the frontend is a peer of `apps/agents`, not one Vercel project. Do not use AI SDK `useChat` / `DefaultChatTransport` against eve (UIMessage HTTP is not the eve NDJSON session protocol). `clientContext` on `send()` carries `boardQuery` / `viewConfig` / `elements`. Commands still have no assistant bubbles.
 
 ## Hosts
 
@@ -42,7 +42,7 @@ Command and chat `defineAgent` set `build.externalDependencies` to `@repo/db`, `
 
 ## Domain logic
 
-Eve consumes `@repo/db` **named functions**, `@repo/markets` for market HTTP, and `@repo/onchain` for live wallet reads. Next.js keeps `@repo/core` HTTP clients and does not import those packages. The closed board `ViewConfig` lives in `@repo/utils/view-config`: `set_view` uses that schema with `elements` omitted (`apps/agents/lib/evaluate/view-config.test.ts` asserts the tool strips candidate ids), and the Next board URL uses the same object including optional `elements` after compose. Eve Vitest loads `@repo/utils/*` from `dist/`; after adding a utils subpath, run `pnpm --filter @repo/utils build` before `pnpm --filter @repo/agents test`. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP. Both agents set `defaultTools: false`. The model sees authored tools only; command also re-exports `load_skill` so `view-config` still loads. Chat who-am-I / profile prompts resolve on `step.started`: `selectChatLanguageModel` reads `getAccountSnapshot` for the JWT user and returns a canned reply, so identity does not depend on the language model calling `get_account_snapshot`. Favorites still use `list_watches`.
+Eve consumes `@repo/db` **named functions**, `@repo/markets` for market HTTP, and `@repo/onchain` for live wallet reads. Next.js keeps `@repo/core` HTTP clients and does not import those packages. The closed board `ViewConfig` lives in `@repo/utils/view-config`: `set_view` uses that schema with `elements` omitted (`apps/agents/lib/evaluate/view-config.test.ts` asserts the tool strips candidate ids), and the Next board URL uses the same object including optional `elements` after compose. Eve Vitest loads `@repo/utils/*` from `dist/`; after adding a utils subpath, run `pnpm --filter @repo/utils build` before `pnpm --filter @repo/agents test`. OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP. Both agents set `defaultTools: false`. The model sees authored tools only; command also re-exports `load_skill` so `view-config` still loads. Chat who-am-I / profile prompts resolve on `step.started`: `selectChatLanguageModel` reads `getAccountSnapshot` for the JWT user and returns a canned reply, so identity does not depend on the language model calling `get_account_snapshot`. Without a user principal, command and chat emit `account_required` and the board paints Sign in. Favorites still use `list_watches`.
 
 ## Jev
 
@@ -50,7 +50,7 @@ Eve consumes `@repo/db` **named functions**, `@repo/markets` for market HTTP, an
 
 ## Identity
 
-Fastify **mints** JWT (access, refresh, API keys). Eve is a resource, not an IdP. The HTTP channel verifies Fastify **access** JWTs (`typ=access`) via `basilicAccessJwt`, then `vercelOidc()` and `localDev()`. Refresh tokens are rejected. A channel is inbound ingress plus route auth. A connection is outbound (MCP/OpenAPI to someone else) — not the same thing.
+Fastify **mints** JWT (access, refresh, API keys). Eve is a resource, not an IdP. The HTTP channel verifies Fastify **access** JWTs (`typ=access`) via `basilicAccessJwt`, then accepts a missing Bearer as an anonymous principal (IP rate limit), then `vercelOidc()` and `localDev()`. Refresh tokens are rejected. A channel is inbound ingress plus route auth. A connection is outbound (MCP/OpenAPI to someone else) — not the same thing.
 
 ## Related
 

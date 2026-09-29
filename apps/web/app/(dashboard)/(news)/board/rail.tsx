@@ -28,9 +28,11 @@ import {
   whoamiViewPatch,
 } from '@/lib/genui'
 import { ChatPane } from './chat-pane'
-import { BoardChips } from './chips'
 import { BoardComposer } from './composer'
 import { BoardEveProviders } from './eve-session'
+
+const commandRowClass =
+  'min-h-11 min-w-0 w-full cursor-pointer truncate rounded-lg px-3 text-left text-sm outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50'
 
 function useIsHydrated(): boolean {
   return useSyncExternalStore(
@@ -57,12 +59,12 @@ function ShareBoardButton() {
   return (
     <Button
       type="button"
-      variant="outline"
-      className="min-h-11 rounded-lg"
+      variant="ghost"
+      className="min-h-11 shrink-0 rounded-lg px-3"
       data-testid="share-board"
       onClick={handleShare}
     >
-      Share
+      Copy link
     </Button>
   )
 }
@@ -119,6 +121,7 @@ function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['
               </TabsTrigger>
             </TabsList>
           </Tabs>
+          <ShareBoardButton />
           <Button
             type="button"
             variant="ghost"
@@ -127,7 +130,7 @@ function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['
             aria-label="Close commands"
             onClick={onClose}
           >
-            <PanelRightCloseIcon />
+            <PanelRightCloseIcon aria-hidden="true" />
           </Button>
         </div>
       </SidebarHeader>
@@ -135,19 +138,17 @@ function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['
         <div
           hidden={rail !== 'commands'}
           inert={rail !== 'commands' ? true : undefined}
-          className="min-h-0 flex-1 overflow-y-auto p-2"
+          className="min-h-0 flex-1 overflow-y-auto p-4"
         >
           <div className="flex flex-col gap-4">
-            <BoardChips />
-            <Button
+            <button
               type="button"
-              variant="outline"
-              className="min-h-11 rounded-lg"
+              className={commandRowClass}
               data-testid="whoami-command"
               onClick={handleWhoami}
             >
               {whoamiCommand}
-            </Button>
+            </button>
             {(history ?? []).length === 0 ? (
               <p className="text-muted-foreground text-sm">No prompts yet</p>
             ) : (
@@ -159,20 +160,16 @@ function BoardRail({ onClose, rail }: { onClose: () => void; rail: ChromeState['
                     view,
                   })
                   return (
-                    <li key={`${entry.command}-${index}`}>
-                      <Button
+                    <li key={`${entry.command}-${index}`} className="min-w-0">
+                      <button
                         type="button"
-                        variant="ghost"
                         aria-current={isActive ? 'true' : undefined}
-                        className={cn(
-                          'min-h-11 w-full justify-start rounded-lg',
-                          isActive && 'bg-secondary text-secondary-foreground',
-                        )}
+                        className={cn(commandRowClass, isActive && 'bg-muted')}
                         data-testid="command-history-row"
                         onClick={() => handleRestore({ entry })}
                       >
                         {entry.command}
-                      </Button>
+                      </button>
                     </li>
                   )
                 })}
@@ -214,10 +211,7 @@ export function BoardLayout({
 
   return (
     <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col md:h-[calc(100dvh-3.5rem)] md:flex-row md:items-stretch">
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 p-4 md:p-6">
-        <div className="flex justify-end">
-          <ShareBoardButton />
-        </div>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col p-4 md:p-6">
         <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</div>
       </div>
       {isOpen ? (

@@ -23,8 +23,7 @@ export async function fetchOverview(): Promise<{
   trending: TrendingState
 }> {
   const { token } = await getServerAuthToken()
-  if (!token) return { global: emptyGlobalState, trending: emptyTrendingState }
-  const { client } = createBffClient({ token })
+  const { client } = token ? createBffClient({ token }) : createBffClient({})
   const [globalResult, trendingResult] = await Promise.allSettled([
     client.coins.global(),
     client.coins.trending(),
@@ -41,19 +40,19 @@ export async function fetchMarkets({
   query?: NonNullable<ListCoinsData['query']>
 } = {}): Promise<CoinBoardData & { watchedIds: string[]; error: string | null }> {
   const { token } = await getServerAuthToken()
-  if (!token)
+  if (query?.universe === 'watchlist' && !token)
     return {
       coins: [],
       sync: emptySync,
       queryCaption: '',
       watchedIds: [],
-      error: 'Authentication required',
+      error: null,
     }
 
-  const { client } = createBffClient({ token })
+  const { client } = token ? createBffClient({ token }) : createBffClient({})
   const [coinsResult, watchesResult] = await Promise.allSettled([
     client.listCoins({ query }),
-    client.coins.watches.watches(),
+    token ? client.coins.watches.watches() : Promise.resolve([] as { assetId: string }[]),
   ])
   const watchedIds =
     watchesResult.status === 'fulfilled' ? watchesResult.value.map(watch => watch.assetId) : []

@@ -1,6 +1,6 @@
 export { eveAccessToken, eveAuthHeaders, sendWithEveRefresh } from './headers'
 export { listAgentEndpoint } from './host'
-export { viewConfigFromEvents } from './parse-view'
+export { accountRequiredFromEvents, viewConfigFromEvents } from './parse-view'
 export {
   chatSessionKey,
   commandSessionKey,

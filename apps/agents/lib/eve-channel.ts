@@ -1,5 +1,5 @@
 import '#lib/host.js'
-import { ForbiddenError, localDev, vercelOidc } from 'eve/channels/auth'
+import { extractBearerToken, ForbiddenError, localDev, vercelOidc } from 'eve/channels/auth'
 import { defaultEveAuth, eveChannel } from 'eve/channels/eve'
 import { basilicAccessJwt } from './auth.js'
 import { channelCors } from './cors.js'
@@ -8,30 +8,54 @@ import { inspectSessionPayload } from './ingress.js'
 import { consumeRateLimit } from './rate-limit.js'
 
 const hitsByPrincipal = new Map<string, number[]>()
+const hitsByIp = new Map<string, number[]>()
 
-async function basilicAccessJwtWithLimit(request: Request) {
-  const auth = await basilicAccessJwt()(request)
-  if (!auth) return null
-  const key = auth.principalId
-  const current = hitsByPrincipal.get(key) ?? []
+function clientIp({ request }: { request: Request }) {
+  const forwarded = request.headers.get('x-forwarded-for')
+  if (forwarded) {
+    const first = forwarded.split(',')[0]?.trim()
+    if (first) return first
+  }
+  return request.headers.get('x-real-ip')?.trim() || 'unknown'
+}
+
+function consumeKeyedLimit({ key, hits }: { key: string; hits: Map<string, number[]> }) {
+  const current = hits.get(key) ?? []
   const result = consumeRateLimit({
     hits: current,
     now: Date.now(),
     windowMs: env.EVE_RATE_LIMIT_WINDOW_MS,
     max: env.EVE_RATE_LIMIT_MAX,
   })
-  hitsByPrincipal.set(key, result.hits)
+  hits.set(key, result.hits)
   if (!result.ok)
     throw new ForbiddenError({
       code: 'rate_limited',
       message: `Rate limit exceeded. Retry after ${result.retryAfterSeconds}s`,
     })
+}
+
+async function basilicAccessJwtWithLimit(request: Request) {
+  const auth = await basilicAccessJwt()(request)
+  if (!auth) return null
+  consumeKeyedLimit({ key: auth.principalId, hits: hitsByPrincipal })
   return auth
+}
+
+async function basilicAnonymousWithLimit(request: Request) {
+  if (extractBearerToken(request.headers.get('authorization'))) return null
+  consumeKeyedLimit({ key: clientIp({ request }), hits: hitsByIp })
+  return {
+    attributes: {},
+    authenticator: 'anonymous',
+    principalId: 'anonymous',
+    principalType: 'anonymous' as const,
+  }
 }
 
 export function createBasilicEveChannel() {
   return eveChannel({
-    auth: [basilicAccessJwtWithLimit, vercelOidc(), localDev()],
+    auth: [basilicAccessJwtWithLimit, basilicAnonymousWithLimit, vercelOidc(), localDev()],
     cors: channelCors(),
     async onMessage(ctx, message) {
       const body = await ctx.eve.request

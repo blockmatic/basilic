@@ -22,10 +22,10 @@ const coinsListRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'listCoins',
         description:
-          'List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol).',
+          'List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol). Public except universe=watchlist, which needs a session JWT.',
         summary: 'List coins',
         tags: ['coins'],
-        security: [{ bearerAuth: [] }],
+        security: [],
         querystring: SearchQuerySchema,
         response: {
           200: QueryCoinsResponseSchema,
@@ -36,11 +36,16 @@ const coinsListRoute: FastifyPluginAsync = async fastify => {
       },
     },
     async (request, reply) => {
-      if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
+      if (request.query.universe === 'watchlist' && !request.session)
+        return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
       const db = await getDb()
-      return reply
-        .code(200)
-        .send(await queryCoins({ db, userId: request.session.user.id, query: request.query }))
+      return reply.code(200).send(
+        await queryCoins({
+          db,
+          userId: request.session?.user.id ?? '',
+          query: request.query,
+        }),
+      )
     },
   )
 }

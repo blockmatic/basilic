@@ -3434,12 +3434,8 @@
         "tags": [
           "agents"
         ],
-        "description": "List product eve agents (command, chat). JWT required. Endpoints are absolute eve origins.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "List product eve agents (command, chat). Public host discovery. Endpoints are absolute eve origins.",
+        "security": [],
         "responses": {
           "200": {
             "description": "Default Response",
@@ -3503,40 +3499,6 @@
                           "type": "string"
                         }
                       }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "code",
-                    "message"
-                  ],
-                  "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "status": {
-                      "type": "integer"
-                    },
-                    "detail": {
-                      "type": "string"
                     }
                   }
                 }
@@ -9542,7 +9504,7 @@
         "tags": [
           "coins"
         ],
-        "description": "List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol).",
+        "description": "List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol). Public except universe=watchlist, which needs a session JWT.",
         "parameters": [
           {
             "schema": {
@@ -9707,11 +9669,7 @@
             "required": false
           }
         ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [],
         "responses": {
           "200": {
             "description": "Default Response",
@@ -10068,7 +10026,7 @@
         "tags": [
           "coins"
         ],
-        "description": "Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Vendor failure returns fixture quotes.",
+        "description": "Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Public except universe=watchlist. Vendor failure returns fixture quotes.",
         "requestBody": {
           "required": true,
           "content": {
@@ -10188,11 +10146,7 @@
             }
           }
         },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [],
         "responses": {
           "200": {
             "description": "Default Response",
@@ -10606,11 +10560,7 @@
             "required": true
           }
         ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [],
         "responses": {
           "200": {
             "description": "Default Response",
@@ -10719,40 +10669,6 @@
               }
             }
           },
-          "401": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "code",
-                    "message"
-                  ],
-                  "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "status": {
-                      "type": "integer"
-                    },
-                    "detail": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "429": {
             "description": "Default Response",
             "content": {
@@ -10801,12 +10717,8 @@
         "tags": [
           "coins"
         ],
-        "description": "Cached CoinGecko global market stats (total cap, volume, BTC dominance). Vendor failure returns fixture stats (HTTP 200).",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Cached CoinGecko global market stats (total cap, volume, BTC dominance). Vendor failure returns fixture stats (HTTP 200). Public.",
+        "security": [],
         "responses": {
           "200": {
             "description": "Default Response",
@@ -10851,40 +10763,6 @@
                           ]
                         }
                       ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "code",
-                    "message"
-                  ],
-                  "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "status": {
-                      "type": "integer"
-                    },
-                    "detail": {
-                      "type": "string"
                     }
                   }
                 }
@@ -10939,12 +10817,8 @@
         "tags": [
           "coins"
         ],
-        "description": "Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200).",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200). Public.",
+        "security": [],
         "responses": {
           "200": {
             "description": "Default Response",
@@ -11034,40 +10908,6 @@
                           ]
                         }
                       ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "code",
-                    "message"
-                  ],
-                  "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "status": {
-                      "type": "integer"
-                    },
-                    "detail": {
-                      "type": "string"
                     }
                   }
                 }

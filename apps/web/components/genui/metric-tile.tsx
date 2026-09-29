@@ -5,13 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/ca
 import type { GlobalState } from '@/lib/genui/overview'
 
 function formatUsd(n: number) {
-  if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`
-  if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`
-  if (n >= 1e6) return `$${(n / 1e6).toFixed(2)}M`
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 0,
+    notation: 'compact',
+    maximumFractionDigits: 2,
   }).format(n)
 }
 
@@ -27,12 +25,10 @@ export function MetricTile({
   return (
     <Card data-testid="metric-tile" data-field={props.field}>
       <CardHeader className="pb-2">
-        <CardTitle className="font-heading text-sm font-medium text-muted-foreground">
-          {props.label}
-        </CardTitle>
+        <CardTitle className="text-sm font-medium text-muted-foreground">{props.label}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="font-heading text-lg font-semibold tabular-nums">{value}</p>
+        <p className="font-heading text-xl font-semibold tabular-nums">{value}</p>
       </CardContent>
     </Card>
   )

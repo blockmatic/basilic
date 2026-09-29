@@ -2,9 +2,8 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { getTrending } from '@repo/markets'
 import { Type } from '@sinclair/typebox'
 import type { FastifyPluginAsync } from 'fastify'
-import { sendCatalogError } from '../../../lib/catalogs/mapper.js'
 import { coinsRouteRateLimitConfig } from '../../../lib/coins/index.js'
-import { ErrorResponseSchema, RateLimitResponseSchema } from '../../schemas.js'
+import { RateLimitResponseSchema } from '../../schemas.js'
 
 const ProvenanceSchema = Type.Union([
   Type.Literal('live'),
@@ -33,19 +32,17 @@ const coinsTrendingGetRoute: FastifyPluginAsync = async fastify => {
       schema: {
         operationId: 'getCoinTrending',
         description:
-          'Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200).',
+          'Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200). Public.',
         summary: 'Get trending coins',
         tags: ['coins'],
-        security: [{ bearerAuth: [] }],
+        security: [],
         response: {
           200: TrendingResultSchema,
-          401: ErrorResponseSchema,
           429: RateLimitResponseSchema,
         },
       },
     },
-    async (request, reply) => {
-      if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
+    async (_request, reply) => {
       return reply.code(200).send(await getTrending())
     },
   )

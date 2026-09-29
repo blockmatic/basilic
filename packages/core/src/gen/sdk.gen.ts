@@ -284,13 +284,9 @@ export const getAgentById = <ThrowOnError extends boolean = false>(options: Opti
 /**
  * List agents
  *
- * List product eve agents (command, chat). JWT required. Endpoints are absolute eve origins.
+ * List product eve agents (command, chat). Public host discovery. Endpoints are absolute eve origins.
  */
-export const listAgents = <ThrowOnError extends boolean = false>(options?: Options<ListAgentsData, ThrowOnError>): RequestResult<ListAgentsResponses, ListAgentsErrors, ThrowOnError> => (options?.client ?? client).get<ListAgentsResponses, ListAgentsErrors, ThrowOnError>({
-  security: [{ scheme: 'bearer', type: 'http' }],
-  url: '/agents/',
-  ...options
-});
+export const listAgents = <ThrowOnError extends boolean = false>(options?: Options<ListAgentsData, ThrowOnError>): RequestResult<ListAgentsResponses, ListAgentsErrors, ThrowOnError> => (options?.client ?? client).get<ListAgentsResponses, ListAgentsErrors, ThrowOnError>({ url: '/agents/', ...options });
 
 /**
  * Generate text from prompt
@@ -686,21 +682,16 @@ export const web3SolanaVerify = <ThrowOnError extends boolean = false>(options: 
 /**
  * List coins
  *
- * List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol).
+ * List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol). Public except universe=watchlist, which needs a session JWT.
  */
-export const listCoins = <ThrowOnError extends boolean = false>(options?: Options<ListCoinsData, ThrowOnError>): RequestResult<ListCoinsResponses, ListCoinsErrors, ThrowOnError> => (options?.client ?? client).get<ListCoinsResponses, ListCoinsErrors, ThrowOnError>({
-  security: [{ scheme: 'bearer', type: 'http' }],
-  url: '/coins/',
-  ...options
-});
+export const listCoins = <ThrowOnError extends boolean = false>(options?: Options<ListCoinsData, ThrowOnError>): RequestResult<ListCoinsResponses, ListCoinsErrors, ThrowOnError> => (options?.client ?? client).get<ListCoinsResponses, ListCoinsErrors, ThrowOnError>({ url: '/coins/', ...options });
 
 /**
  * Query coins
  *
- * Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Vendor failure returns fixture quotes.
+ * Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Public except universe=watchlist. Vendor failure returns fixture quotes.
  */
 export const queryCoins = <ThrowOnError extends boolean = false>(options: Options<QueryCoinsData, ThrowOnError>): RequestResult<QueryCoinsResponses, QueryCoinsErrors, ThrowOnError> => (options.client ?? client).post<QueryCoinsResponses, QueryCoinsErrors, ThrowOnError>({
-  security: [{ scheme: 'bearer', type: 'http' }],
   url: '/coins/query',
   ...options,
   headers: {
@@ -714,33 +705,21 @@ export const queryCoins = <ThrowOnError extends boolean = false>(options: Option
  *
  * Public Binance klines for an identity asset id, mapped from asset_markets. Unmapped assets and vendor failure return empty fixture candles (HTTP 200). period maps to interval plus range; 7d is 1h × 7d, not a kline interval.
  */
-export const getCoinCandles = <ThrowOnError extends boolean = false>(options: Options<GetCoinCandlesData, ThrowOnError>): RequestResult<GetCoinCandlesResponses, GetCoinCandlesErrors, ThrowOnError> => (options.client ?? client).get<GetCoinCandlesResponses, GetCoinCandlesErrors, ThrowOnError>({
-  security: [{ scheme: 'bearer', type: 'http' }],
-  url: '/coins/{assetId}/candles',
-  ...options
-});
+export const getCoinCandles = <ThrowOnError extends boolean = false>(options: Options<GetCoinCandlesData, ThrowOnError>): RequestResult<GetCoinCandlesResponses, GetCoinCandlesErrors, ThrowOnError> => (options.client ?? client).get<GetCoinCandlesResponses, GetCoinCandlesErrors, ThrowOnError>({ url: '/coins/{assetId}/candles', ...options });
 
 /**
  * Get global market stats
  *
- * Cached CoinGecko global market stats (total cap, volume, BTC dominance). Vendor failure returns fixture stats (HTTP 200).
+ * Cached CoinGecko global market stats (total cap, volume, BTC dominance). Vendor failure returns fixture stats (HTTP 200). Public.
  */
-export const getCoinGlobal = <ThrowOnError extends boolean = false>(options?: Options<GetCoinGlobalData, ThrowOnError>): RequestResult<GetCoinGlobalResponses, GetCoinGlobalErrors, ThrowOnError> => (options?.client ?? client).get<GetCoinGlobalResponses, GetCoinGlobalErrors, ThrowOnError>({
-  security: [{ scheme: 'bearer', type: 'http' }],
-  url: '/coins/global',
-  ...options
-});
+export const getCoinGlobal = <ThrowOnError extends boolean = false>(options?: Options<GetCoinGlobalData, ThrowOnError>): RequestResult<GetCoinGlobalResponses, GetCoinGlobalErrors, ThrowOnError> => (options?.client ?? client).get<GetCoinGlobalResponses, GetCoinGlobalErrors, ThrowOnError>({ url: '/coins/global', ...options });
 
 /**
  * Get trending coins
  *
- * Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200).
+ * Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200). Public.
  */
-export const getCoinTrending = <ThrowOnError extends boolean = false>(options?: Options<GetCoinTrendingData, ThrowOnError>): RequestResult<GetCoinTrendingResponses, GetCoinTrendingErrors, ThrowOnError> => (options?.client ?? client).get<GetCoinTrendingResponses, GetCoinTrendingErrors, ThrowOnError>({
-  security: [{ scheme: 'bearer', type: 'http' }],
-  url: '/coins/trending',
-  ...options
-});
+export const getCoinTrending = <ThrowOnError extends boolean = false>(options?: Options<GetCoinTrendingData, ThrowOnError>): RequestResult<GetCoinTrendingResponses, GetCoinTrendingErrors, ThrowOnError> => (options?.client ?? client).get<GetCoinTrendingResponses, GetCoinTrendingErrors, ThrowOnError>({ url: '/coins/trending', ...options });
 
 /**
  * Unwatch a coin

@@ -17,15 +17,15 @@ export const boardTurnQuestions = {
   cannedIntent: {
     type: 'choice',
     instructions:
-      'Map typed paraphrases of board chips. Use other for novel filters, symbols, or follow-ups.',
+      'Map typed paraphrases of board sort and filter prompts. Use other for novel filters, symbols, or follow-ups.',
     criteria: {
-      movers: 'What moved / top gainers / 24h winners',
+      movers: 'What moved / top gainers / 24h winners. Not a signed-in users personal gains.',
       losers: 'Biggest losers / dumpers / 24h down',
       volume: 'Sort by volume',
       majors: 'Only majors / BTC ETH SOL basket',
       watchlist: 'What is on my list / favorites',
       reset: 'Clear filters / show everything / default board',
-      whoami: 'Who am I / account / profile',
+      whoami: 'Who am I / account / profile / my gains / portfolio / positions / holdings',
       other: 'Anything else, including novel filters',
     },
   },
@@ -50,7 +50,7 @@ export const boardTurnQuestions = {
     instructions: 'How the product should treat this turn.',
     criteria: {
       board: 'Change the market board',
-      account: 'Account or watchlist surface',
+      account: 'Account, watchlist, portfolio, positions, or personal gains',
       advise: 'Investment advice or should-I-buy',
       refuse: 'Out of product / cannot answer honestly',
     },
