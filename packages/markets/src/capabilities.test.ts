@@ -15,6 +15,8 @@ const frozenMarkets = Object.freeze([
     market_cap: 1_000,
     market_cap_rank: 1,
     last_updated: '2026-01-01T00:00:00.000Z',
+    price_change_percentage_7d_in_currency: 4.2,
+    sparkline_in_7d: { price: [100, 102, 101] },
   }),
 ])
 
@@ -65,6 +67,8 @@ describe('markets capabilities', () => {
       rank: 1,
       source: 'live',
       provider: 'coingecko',
+      change7d: 4.2,
+      sparkline7d: [100, 102, 101],
     })
   })
 
@@ -106,6 +110,15 @@ describe('markets capabilities', () => {
     const url = new URL(requestUrl(fetchMock.mock.calls[0]?.[0] as RequestInfo | URL))
     expect(url.searchParams.has('per_page')).toBe(false)
     expect(url.searchParams.get('vs_currency')).toBe('usd')
+  })
+
+  it('requests sparkline and 7d change when asked', async () => {
+    const fetchMock = vi.fn(async () => jsonResponse(frozenMarkets))
+    vi.stubGlobal('fetch', fetchMock)
+    await getMarkets({ sparkline: true })
+    const url = new URL(requestUrl(fetchMock.mock.calls[0]?.[0] as RequestInfo | URL))
+    expect(url.searchParams.get('sparkline')).toBe('true')
+    expect(url.searchParams.get('price_change_percentage')).toBe('7d')
   })
 
   it('skips live CoinGecko after a 429 until the circuit TTL', async () => {

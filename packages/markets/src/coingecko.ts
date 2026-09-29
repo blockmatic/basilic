@@ -57,11 +57,13 @@ export async function fetchCoinGeckoMarkets({
     ids?: string
     per_page?: number
     sparkline?: boolean
+    price_change_percentage?: string
   } = { vs_currency: vsCurrency }
   if (category) query.category = category
   if (ids?.length) query.ids = ids.join(',')
   if (topN !== undefined) query.per_page = topN
   if (sparkline !== undefined) query.sparkline = sparkline
+  if (sparkline) query.price_change_percentage = '7d'
   const rows = await getClient().coins.markets.get(query)
   return { markets: rows.flatMap(row => toMarketRow({ row, vs: vsCurrency })), source: 'live' }
 }
@@ -77,6 +79,8 @@ function toMarketRow({
     image?: string
     current_price?: number | null
     price_change_percentage_24h?: number | null
+    price_change_percentage_7d_in_currency?: number | null
+    sparkline_in_7d?: { price?: number[] }
     total_volume?: number | null
     market_cap?: number | null
     market_cap_rank?: number | null
@@ -87,6 +91,7 @@ function toMarketRow({
   if (vs.toLowerCase() !== 'usd') return []
   const priceUsd = row.current_price
   if (typeof priceUsd !== 'number' || !Number.isFinite(priceUsd)) return []
+  const change7d = row.price_change_percentage_7d_in_currency
   return [
     {
       id: row.id,
@@ -95,6 +100,8 @@ function toMarketRow({
       imageUrl: row.image ?? null,
       priceUsd,
       change24h: row.price_change_percentage_24h ?? 0,
+      change7d: typeof change7d === 'number' && Number.isFinite(change7d) ? change7d : null,
+      sparkline7d: sparklinePrices({ prices: row.sparkline_in_7d?.price }),
       volumeUsd: row.total_volume ?? 0,
       marketCapUsd: row.market_cap ?? 0,
       rank: row.market_cap_rank ?? 0,
@@ -103,6 +110,11 @@ function toMarketRow({
       provider: 'coingecko',
     },
   ]
+}
+
+function sparklinePrices({ prices }: { prices?: number[] }): number[] {
+  if (!Array.isArray(prices)) return []
+  return prices.filter(value => typeof value === 'number' && Number.isFinite(value))
 }
 
 export async function fetchCoinGeckoQuote({

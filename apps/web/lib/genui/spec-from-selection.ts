@@ -7,7 +7,7 @@ import {
   isTableRecipeId,
   recipeSpecElement,
 } from './candidates'
-import { composeSurface } from './compose'
+import { composeSurface, resolveChartRecipeId } from './compose'
 import { parseViewConfig, type ViewConfig } from './view-config'
 
 function uniqueRecipeIds({ ids }: { ids: string[] }): BoardRecipeId[] {
@@ -21,6 +21,21 @@ function uniqueRecipeIds({ ids }: { ids: string[] }): BoardRecipeId[] {
   return next
 }
 
+function withChartRecipe({
+  ids,
+  view,
+}: {
+  ids: BoardRecipeId[]
+  view: ViewConfig
+}): BoardRecipeId[] {
+  if (view.surface !== 'chart' || ids.some(id => isChartRecipeId(id))) return ids
+  const chartId = resolveChartRecipeId({ view })
+  const summaryIndex = ids.indexOf('summary')
+  if (summaryIndex >= 0)
+    return [...ids.slice(0, summaryIndex + 1), chartId, ...ids.slice(summaryIndex + 1)]
+  return [chartId, ...ids]
+}
+
 export function specFromSelection({
   elements,
   view,
@@ -29,7 +44,7 @@ export function specFromSelection({
   view: ViewConfig
 }): Spec {
   const parsed = parseViewConfig({ value: view }) ?? view
-  const childIds = uniqueRecipeIds({ ids: elements })
+  const childIds = withChartRecipe({ ids: uniqueRecipeIds({ ids: elements }), view: parsed })
   if (!childIds.some(id => isTableRecipeId(id) || isChartRecipeId(id) || isOverviewRecipeId(id)))
     return composeSurface({ view: parsed })
 

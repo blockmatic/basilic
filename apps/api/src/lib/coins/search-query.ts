@@ -50,6 +50,8 @@ export const CoinDtoSchema = Type.Object({
   imageUrl: Type.Union([Type.String(), Type.Null()]),
   priceUsd: Type.Number(),
   change24h: Type.Number(),
+  change7d: Type.Union([Type.Number(), Type.Null()]),
+  sparkline7d: Type.Array(Type.Number()),
   volumeUsd: Type.Number(),
   marketCapUsd: Type.Number(),
   rank: Type.Integer(),

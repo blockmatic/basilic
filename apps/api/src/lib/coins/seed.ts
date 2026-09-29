@@ -4,14 +4,29 @@ import { fixtureQuotes } from '@repo/markets'
 
 export type CoinsDb = Awaited<ReturnType<typeof getDb>>
 
-const binancePairs = {
+const binancePairs: Record<string, { symbol: string; quote: string }> = {
   bitcoin: { symbol: 'BTCUSDT', quote: 'USDT' },
   ethereum: { symbol: 'ETHUSDT', quote: 'USDT' },
   ripple: { symbol: 'XRPUSDT', quote: 'USDT' },
+  binancecoin: { symbol: 'BNBUSDT', quote: 'USDT' },
   solana: { symbol: 'SOLUSDT', quote: 'USDT' },
+  'usd-coin': { symbol: 'USDCUSDT', quote: 'USDT' },
   dogecoin: { symbol: 'DOGEUSDT', quote: 'USDT' },
   cardano: { symbol: 'ADAUSDT', quote: 'USDT' },
-} as const
+  tron: { symbol: 'TRXUSDT', quote: 'USDT' },
+  'avalanche-2': { symbol: 'AVAXUSDT', quote: 'USDT' },
+  chainlink: { symbol: 'LINKUSDT', quote: 'USDT' },
+  'shiba-inu': { symbol: 'SHIBUSDT', quote: 'USDT' },
+  polkadot: { symbol: 'DOTUSDT', quote: 'USDT' },
+  'bitcoin-cash': { symbol: 'BCHUSDT', quote: 'USDT' },
+  sui: { symbol: 'SUIUSDT', quote: 'USDT' },
+  stellar: { symbol: 'XLMUSDT', quote: 'USDT' },
+  uniswap: { symbol: 'UNIUSDT', quote: 'USDT' },
+  litecoin: { symbol: 'LTCUSDT', quote: 'USDT' },
+  near: { symbol: 'NEARUSDT', quote: 'USDT' },
+}
+
+export const binanceCatalogPairCount = Object.keys(binancePairs).length
 
 export async function seedIdentity({ db }: { db: CoinsDb }): Promise<void> {
   const now = new Date()
@@ -34,7 +49,6 @@ export async function seedIdentity({ db }: { db: CoinsDb }): Promise<void> {
             symbol: row.symbol,
             name: row.name,
             imageUrl: row.imageUrl,
-            enabled: true,
             updatedAt: now,
           },
         })
@@ -54,6 +68,7 @@ export async function seedIdentity({ db }: { db: CoinsDb }): Promise<void> {
         })
 
       const pair = binancePairs[row.id]
+      if (!pair) continue
       await tx
         .insert(assetMarkets)
         .values({
@@ -98,6 +113,7 @@ export async function seedIdentity({ db }: { db: CoinsDb }): Promise<void> {
 }
 
 export async function seedIdentityIfEmpty({ db }: { db: CoinsDb }): Promise<void> {
-  const existing = await db.select({ id: assets.id }).from(assets).limit(1)
-  if (existing.length === 0) await seedIdentity({ db })
+  const existing = await db.select({ id: assets.id }).from(assets)
+  const have = new Set(existing.map(row => row.id))
+  if (fixtureQuotes.some(row => !have.has(row.id))) await seedIdentity({ db })
 }

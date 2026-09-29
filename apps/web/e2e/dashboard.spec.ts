@@ -23,9 +23,19 @@ test.describe('Dashboard routes', () => {
     await expect(visibleCoinRows(page).first()).toHaveAttribute('data-symbol', 'btc')
     await expect(page.getByText('Showing a sample board.')).toBeVisible()
     await expect(visibleCoinRow(page, 'btc')).toContainText('$67,420.12')
+    await expect(visibleCoinRow(page, 'btc').getByTestId('coin-spark-7d')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Headlines' })).toHaveCount(0)
     await expect(page.getByRole('button', { name: 'Account' })).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('text=API OK')).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('coin row opens a Binance chart for that asset', async ({ page }) => {
+    await page.goto('/')
+    await expect(visibleCoinRow(page, 'btc')).toBeVisible({ timeout: 15_000 })
+    await visibleCoinRow(page, 'btc').getByText('Bitcoin').click()
+    await expect(page).toHaveURL(/surface=chart/, { timeout: 15_000 })
+    await expect(page).toHaveURL(/focus=bitcoin/)
+    await expect(page.getByRole('group', { name: 'Chart period' })).toBeVisible()
   })
 
   test('sortBy change24h lists doge first and Back restores rank', async ({ page }) => {

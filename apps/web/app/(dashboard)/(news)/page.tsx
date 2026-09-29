@@ -17,7 +17,7 @@ import { CoinBoard } from './board'
 
 export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const [view, chrome] = await Promise.all([loadBoardView(searchParams), loadChrome(searchParams)])
-  const { query, surface, period, columns, elements } = splitBoardView({ view })
+  const { query, surface, period, chart, focus, columns, elements } = splitBoardView({ view })
   const fetchQuery = overlayAccountQuery({ query, surface })
   const [markets, user, overview] = await Promise.all([
     fetchMarkets({ query: toCoinsQuery({ query: fetchQuery }) }),
@@ -30,6 +30,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
     title,
     surface,
     period,
+    chart,
     columns,
     elements,
   })
@@ -43,6 +44,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
       initialQuery={query}
       initialSurface={surface}
       initialPeriod={period}
+      initialChart={chart}
+      initialFocus={focus}
       initialColumns={columns}
       initialElements={elements}
       initialChrome={chrome}

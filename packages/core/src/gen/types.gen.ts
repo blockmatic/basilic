@@ -3449,6 +3449,8 @@ export type ListCoinsResponses = {
       imageUrl: string | unknown;
       priceUsd: number;
       change24h: number;
+      change7d: number | unknown;
+      sparkline7d: Array<number>;
       volumeUsd: number;
       marketCapUsd: number;
       rank: number;
@@ -3552,6 +3554,8 @@ export type QueryCoinsResponses = {
       imageUrl: string | unknown;
       priceUsd: number;
       change24h: number;
+      change7d: number | unknown;
+      sparkline7d: Array<number>;
       volumeUsd: number;
       marketCapUsd: number;
       rank: number;

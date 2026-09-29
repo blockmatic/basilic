@@ -50,6 +50,8 @@ export interface MarketRow {
   imageUrl: string | null
   priceUsd: number
   change24h: number
+  change7d: number | null
+  sparkline7d: number[]
   volumeUsd: number
   marketCapUsd: number
   rank: number

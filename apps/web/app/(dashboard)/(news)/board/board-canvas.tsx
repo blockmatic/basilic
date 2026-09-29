@@ -22,7 +22,9 @@ export function BoardCanvas({
   watchedIds,
   isAtCap,
   pendingAssetId,
+  focusedAssetId,
   onToggleWatch,
+  onOpenChart,
   onResetView,
 }: {
   showAuthRequired: boolean
@@ -33,7 +35,9 @@ export function BoardCanvas({
   watchedIds: Set<string>
   isAtCap: boolean
   pendingAssetId: string | undefined
+  focusedAssetId: string | null
   onToggleWatch: ({ assetId, watched }: { assetId: string; watched: boolean }) => void
+  onOpenChart: ({ assetId }: { assetId: string }) => void
   onResetView: () => Promise<void>
 }) {
   if (showAuthRequired) return <AuthRequired />
@@ -55,7 +59,9 @@ export function BoardCanvas({
                 watchedIds,
                 isAtCap,
                 pendingAssetId,
+                focusedAssetId,
                 onToggleWatch,
+                onOpenChart,
               }}
             >
               <Renderer spec={liveSpec} registry={boardRegistry} />

@@ -9696,6 +9696,8 @@
                           "imageUrl",
                           "priceUsd",
                           "change24h",
+                          "change7d",
+                          "sparkline7d",
                           "volumeUsd",
                           "marketCapUsd",
                           "rank",
@@ -9727,6 +9729,22 @@
                           },
                           "change24h": {
                             "type": "number"
+                          },
+                          "change7d": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "sparkline7d": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            }
                           },
                           "volumeUsd": {
                             "type": "number"
@@ -10173,6 +10191,8 @@
                           "imageUrl",
                           "priceUsd",
                           "change24h",
+                          "change7d",
+                          "sparkline7d",
                           "volumeUsd",
                           "marketCapUsd",
                           "rank",
@@ -10204,6 +10224,22 @@
                           },
                           "change24h": {
                             "type": "number"
+                          },
+                          "change7d": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "sparkline7d": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            }
                           },
                           "volumeUsd": {
                             "type": "number"
