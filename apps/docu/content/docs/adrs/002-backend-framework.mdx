@@ -26,7 +26,7 @@ Before selecting a framework, we evaluated runtime environments:
 
 **Node.js LTS (Chosen)** — currently **24.x (Krypton)**, pinned in `.nvmrc`
 
-- **Pros**: 
+- **Pros**:
   - Long-term support with predictable release cycle
   - Battle-tested stability in production environments
   - Largest npm ecosystem with 100% package compatibility
@@ -34,13 +34,13 @@ Before selecting a framework, we evaluated runtime environments:
   - Best-in-class tooling (debugging, monitoring, APM: DataDog, New Relic, etc.)
   - Universal cloud provider support (AWS, GCP, Azure)
   - Mature ESM support
-- **Cons**: 
+- **Cons**:
   - Slower than Bun (but acceptable for stability and ecosystem)
 
 **Bun**
 
 - **Pros**: Very fast, all-in-one runtime and package manager, modern tooling
-- **Cons**: 
+- **Cons**:
   - Compatibility issues with some npm packages
   - Smaller ecosystem, less enterprise adoption
   - Less mature tooling and monitoring support
@@ -49,7 +49,7 @@ Before selecting a framework, we evaluated runtime environments:
 **Deno**
 
 - **Pros**: Modern security model, TypeScript-first, good standard library
-- **Cons**: 
+- **Cons**:
   - Smaller ecosystem, less npm compatibility
   - Less enterprise adoption
   - Steeper learning curve
@@ -132,7 +132,7 @@ We will use **Node.js LTS** as our runtime and **Fastify** as our backend API fr
 ### TLDR: Comparison Table
 
 | Feature | Node.js LTS + Fastify ✅ | Bun + Elysia | Deno + Hono | Express |
-|---------|-------------------------|--------------|-------------|---------|
+| --- | --- | --- | --- | --- |
 | **Portability** | ✅ Runs anywhere | ⚠️ Bun-specific | ⚠️ Deno-specific | ✅ Runs anywhere |
 | **Vendor lock-in** | ✅ None (standard Node.js) | ❌ Bun runtime required | ❌ Deno runtime required | ✅ None |
 | **Cold starts** | ✅ None (always-on possible) | ⚠️ Serverless constraints | ⚠️ Serverless constraints | ✅ None |

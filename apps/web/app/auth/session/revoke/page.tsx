@@ -1,57 +1,71 @@
-import { ApiError } from '@repo/core'
-import { cookies, headers } from 'next/headers'
-import Link from 'next/link'
-import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
-import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
-import { env } from '@/lib/env'
+import { ApiError } from "@repo/core";
+import { cookies, headers } from "next/headers";
+import Link from "next/link";
+
+import { createBffClient, logAuthBffFailure } from "@/lib/auth/bff-client";
+import { parseAuthCookie } from "@/lib/auth/parse-auth-cookie";
+import { env } from "@/lib/env";
 
 function errorMessage(code: string | undefined) {
-  if (code === 'EXPIRED_TOKEN') return 'This sign-out link has expired.'
-  if (code === 'INVALID_TOKEN') return 'This sign-out link is invalid.'
-  return 'Could not sign out of that device.'
+  if (code === "EXPIRED_TOKEN") {
+    return "This sign-out link has expired.";
+  }
+  if (code === "INVALID_TOKEN") {
+    return "This sign-out link is invalid.";
+  }
+  return "Could not sign out of that device.";
 }
 
 export default async function RevokeSessionPage({
   searchParams,
 }: {
-  searchParams: Promise<{ token?: string; verificationId?: string }>
+  searchParams: Promise<{ token?: string; verificationId?: string }>;
 }) {
-  const { token, verificationId } = await searchParams
-  if (!token || !verificationId)
+  const { token, verificationId } = await searchParams;
+  if (!token || !verificationId) {
     return (
       <RevokeResult
         title="Missing link"
         body="This sign-out link is incomplete. Open the link from your email, or review devices in Settings."
       />
-    )
-
-  const { client, reqId } = createBffClient({ headers: await headers() })
-  try {
-    await client.auth.sessions.revoke({ body: { token, verificationId } })
-  } catch (error) {
-    logAuthBffFailure({ error, reqId, method: 'session_revoke' })
-    const code =
-      error instanceof ApiError ? (error.body as { code?: string } | undefined)?.code : undefined
-    return <RevokeResult title="Could not sign out" body={errorMessage(code)} />
+    );
   }
 
-  const cookieStore = await cookies()
+  const { client, reqId } = createBffClient({ headers: await headers() });
+  try {
+    await client.auth.sessions.revoke({ body: { token, verificationId } });
+  } catch (error) {
+    logAuthBffFailure({ error, method: "session_revoke", reqId });
+    const code =
+      error instanceof ApiError
+        ? (error.body as { code?: string } | undefined)?.code
+        : undefined;
+    return (
+      <RevokeResult title="Could not sign out" body={errorMessage(code)} />
+    );
+  }
+
+  const cookieStore = await cookies();
   const { token: accessToken } = parseAuthCookie(
-    cookieStore.get(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)?.value,
-  )
+    cookieStore.get(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)?.value
+  );
   if (accessToken) {
     const check = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/sessions`, {
-      headers: { Authorization: `Bearer ${accessToken}`, 'x-request-id': reqId },
-      cache: 'no-store',
-    })
-    if (check.status === 401)
-      cookieStore.set(env.NEXT_PUBLIC_AUTH_COOKIE_NAME, '', {
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "x-request-id": reqId,
+      },
+    });
+    if (check.status === 401) {
+      cookieStore.set(env.NEXT_PUBLIC_AUTH_COOKIE_NAME, "", {
         httpOnly: false,
         maxAge: 0,
-        path: '/',
-        sameSite: 'lax',
-        secure: env.NODE_ENV === 'production',
-      })
+        path: "/",
+        sameSite: "lax",
+        secure: env.NODE_ENV === "production",
+      });
+    }
   }
 
   return (
@@ -59,7 +73,7 @@ export default async function RevokeSessionPage({
       title="Device signed out"
       body="That session is no longer active. If this was you, you can sign in again from a trusted device."
     />
-  )
+  );
 }
 
 function RevokeResult({ title, body }: { title: string; body: string }) {
@@ -71,11 +85,11 @@ function RevokeResult({ title, body }: { title: string; body: string }) {
         <Link href="/settings/security/sessions" className="underline">
           Review signed-in devices
         </Link>
-        {' · '}
+        {" · "}
         <Link href="/auth/login" className="underline">
           Sign in
         </Link>
       </p>
     </div>
-  )
+  );
 }

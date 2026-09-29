@@ -1,30 +1,39 @@
-'use client'
+"use client";
 
-import { createContext, type ReactNode, use } from 'react'
+import { createContext, use } from "react";
+import type { ReactNode } from "react";
 
-export type BoardWatchValue = {
-  watchedIds: Set<string>
-  isAtCap: boolean
-  pendingAssetId?: string
-  focusedAssetId: string | null
-  onToggleWatch: ({ assetId, watched }: { assetId: string; watched: boolean }) => void
-  onOpenChart: ({ assetId }: { assetId: string }) => void
+export interface BoardWatchValue {
+  watchedIds: Set<string>;
+  isAtCap: boolean;
+  pendingAssetId?: string;
+  focusedAssetId: string | null;
+  onToggleWatch: ({
+    assetId,
+    watched,
+  }: {
+    assetId: string;
+    watched: boolean;
+  }) => void;
+  onOpenChart: ({ assetId }: { assetId: string }) => void;
 }
 
-const BoardWatchContext = createContext<BoardWatchValue | null>(null)
+const BoardWatchContext = createContext<BoardWatchValue | null>(null);
 
 export function BoardWatchProvider({
   value,
   children,
 }: {
-  value: BoardWatchValue
-  children: ReactNode
+  value: BoardWatchValue;
+  children: ReactNode;
 }) {
-  return <BoardWatchContext value={value}>{children}</BoardWatchContext>
+  return <BoardWatchContext value={value}>{children}</BoardWatchContext>;
 }
 
 export function useBoardWatch() {
-  const value = use(BoardWatchContext)
-  if (!value) throw new Error('BoardWatchProvider is required')
-  return value
+  const value = use(BoardWatchContext);
+  if (!value) {
+    throw new Error("BoardWatchProvider is required");
+  }
+  return value;
 }

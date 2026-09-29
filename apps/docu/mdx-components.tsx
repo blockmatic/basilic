@@ -1,19 +1,20 @@
-import defaultMdxComponents from 'fumadocs-ui/mdx'
-import type { MDXComponents } from 'mdx/types'
-import { ComparisonTable } from '@/components/comparison-table'
-import { Diagram } from '@/components/diagram'
-import { DocsChart } from '@/components/docs-chart'
-import { DocsVideo } from '@/components/docs-video'
-import { Mermaid } from '@/components/mermaid'
+import defaultMdxComponents from "fumadocs-ui/mdx";
+import type { MDXComponents } from "mdx/types";
+
+import { ComparisonTable } from "@/components/comparison-table";
+import { Diagram } from "@/components/diagram";
+import { DocsChart } from "@/components/docs-chart";
+import { DocsVideo } from "@/components/docs-video";
+import { Mermaid } from "@/components/mermaid";
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     ...defaultMdxComponents,
-    Diagram,
     ComparisonTable,
-    DocsVideo,
+    Diagram,
     DocsChart,
+    DocsVideo,
     Mermaid,
     ...components,
-  } as MDXComponents
+  } as MDXComponents;
 }

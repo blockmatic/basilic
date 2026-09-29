@@ -1,4 +1,5 @@
-import { createLoader } from 'nuqs/server'
-import { searchQueryParsers } from './search-query'
+import { createLoader } from "nuqs/server";
 
-export const loadSearchQuery = createLoader(searchQueryParsers)
+import { searchQueryParsers } from "./search-query";
+
+export const loadSearchQuery = createLoader(searchQueryParsers);

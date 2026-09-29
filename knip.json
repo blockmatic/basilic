@@ -17,7 +17,7 @@
   },
   "workspaces": {
     ".": {
-      "entry": ["scripts/*.{mjs,ts}", "eslint.config.mjs"],
+      "entry": ["scripts/*.{mjs,ts}", "oxlint.config.ts"],
       "project": ["scripts/**/*.{mjs,ts}"]
     },
     "apps/agents": {
@@ -54,7 +54,11 @@
       "project": ["**/*.{ts,tsx,mjs}"]
     },
     "apps/docu": {
-      "entry": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+      "entry": [
+        "app/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+        "lib/**/*.{ts,tsx}"
+      ],
       "project": ["**/*.{ts,tsx,mjs}"]
     },
     "apps/mobile": {
@@ -84,7 +88,11 @@
     "apps/api/src/routes/**/template*.ts",
     "apps/api/src/routes/reference/**"
   ],
-  "ignoreDependencies": ["@typescript/native", "@tailwindcss/postcss", "typescript"],
+  "ignoreDependencies": [
+    "@typescript/native",
+    "@tailwindcss/postcss",
+    "typescript"
+  ],
   "ignoreBinaries": [
     "simple-git-hooks",
     "gitleaks",

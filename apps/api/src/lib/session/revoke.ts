@@ -1,43 +1,52 @@
-import type { getDb } from '@repo/db'
-import { sessions, verification } from '@repo/db/schema'
-import { and, eq, isNull } from 'drizzle-orm'
-import { hashToken } from '../jwt.js'
+import type { getDb } from "@repo/db";
+import { sessions, verification } from "@repo/db/schema";
+import { and, eq, isNull } from "drizzle-orm";
 
-type DbForRevoke = Awaited<ReturnType<typeof getDb>>
+import { hashToken } from "../jwt.js";
+
+type DbForRevoke = Awaited<ReturnType<typeof getDb>>;
 
 export async function consumeSessionRevokeToken({
   db,
   token,
   verificationId,
 }: {
-  db: DbForRevoke
-  token: string
-  verificationId: string
-}): Promise<'ok' | 'invalid' | 'expired'> {
-  const tokenHash = hashToken(token)
+  db: DbForRevoke;
+  token: string;
+  verificationId: string;
+}): Promise<"ok" | "invalid" | "expired"> {
+  const tokenHash = hashToken(token);
   const [row] = await db
     .select()
     .from(verification)
     .where(
       and(
         eq(verification.id, verificationId),
-        eq(verification.type, 'session_revoke'),
-        eq(verification.value, tokenHash),
-      ),
-    )
+        eq(verification.type, "session_revoke"),
+        eq(verification.value, tokenHash)
+      )
+    );
 
-  if (!row) return 'invalid'
-  if (row.consumedAt) return 'ok'
-  if (row.expiresAt < new Date()) return 'expired'
+  if (!row) {
+    return "invalid";
+  }
+  if (row.consumedAt) {
+    return "ok";
+  }
+  if (row.expiresAt < new Date()) {
+    return "expired";
+  }
 
   const consumed = await db
     .update(verification)
     .set({ consumedAt: new Date() })
     .where(and(eq(verification.id, row.id), isNull(verification.consumedAt)))
-    .returning()
+    .returning();
 
-  if (consumed.length === 0) return 'ok'
+  if (consumed.length === 0) {
+    return "ok";
+  }
 
-  await db.delete(sessions).where(eq(sessions.id, row.identifier))
-  return 'ok'
+  await db.delete(sessions).where(eq(sessions.id, row.identifier));
+  return "ok";
 }

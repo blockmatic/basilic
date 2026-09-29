@@ -1,25 +1,24 @@
-import { MockLanguageModelV4, simulateReadableStream } from 'ai/test'
-import type { SetViewInput } from './view-config.js'
+import { MockLanguageModelV4, simulateReadableStream } from "ai/test";
+
+import type { SetViewInput } from "./view-config.js";
 
 const emptyUsage = {
-  inputTokens: { total: 0, noCache: 0, cacheRead: 0, cacheWrite: 0 },
-  outputTokens: { total: 0, text: 0, reasoning: 0 },
-}
-const emptyWarnings: [] = []
+  inputTokens: { cacheRead: 0, cacheWrite: 0, noCache: 0, total: 0 },
+  outputTokens: { reasoning: 0, text: 0, total: 0 },
+};
+const emptyWarnings: [] = [];
 
-const toolFinish = { unified: 'tool-calls' as const, raw: undefined }
-const stopFinish = { unified: 'stop' as const, raw: undefined }
+const toolFinish = { raw: undefined, unified: "tool-calls" as const };
+const stopFinish = { raw: undefined, unified: "stop" as const };
 
 export function accountRequiredLanguageModel() {
   const toolCall = {
-    type: 'tool-call' as const,
-    toolCallId: 'account_required_canned',
-    toolName: 'account_required',
-    input: '{}',
-  }
+    input: "{}",
+    toolCallId: "account_required_canned",
+    toolName: "account_required",
+    type: "tool-call" as const,
+  };
   return new MockLanguageModelV4({
-    provider: 'basilic-canned',
-    modelId: 'account-required',
     doGenerate: {
       content: [toolCall],
       finishReason: toolFinish,
@@ -28,22 +27,25 @@ export function accountRequiredLanguageModel() {
     },
     doStream: {
       stream: simulateReadableStream({
-        chunks: [toolCall, { type: 'finish', finishReason: toolFinish, usage: emptyUsage }],
+        chunks: [
+          toolCall,
+          { type: "finish", finishReason: toolFinish, usage: emptyUsage },
+        ],
       }),
     },
-  })
+    modelId: "account-required",
+    provider: "basilic-canned",
+  });
 }
 
 export function setViewLanguageModel({ input }: { input: SetViewInput }) {
   const toolCall = {
-    type: 'tool-call' as const,
-    toolCallId: 'set_view_canned',
-    toolName: 'set_view',
     input: JSON.stringify(input),
-  }
+    toolCallId: "set_view_canned",
+    toolName: "set_view",
+    type: "tool-call" as const,
+  };
   return new MockLanguageModelV4({
-    provider: 'basilic-canned',
-    modelId: 'set-view',
     doGenerate: {
       content: [toolCall],
       finishReason: toolFinish,
@@ -52,28 +54,31 @@ export function setViewLanguageModel({ input }: { input: SetViewInput }) {
     },
     doStream: {
       stream: simulateReadableStream({
-        chunks: [toolCall, { type: 'finish', finishReason: toolFinish, usage: emptyUsage }],
+        chunks: [
+          toolCall,
+          { type: "finish", finishReason: toolFinish, usage: emptyUsage },
+        ],
       }),
     },
-  })
+    modelId: "set-view",
+    provider: "basilic-canned",
+  });
 }
 
 export function finishLanguageModel() {
-  return textLanguageModel({ text: '', modelId: 'set-view-done' })
+  return textLanguageModel({ modelId: "set-view-done", text: "" });
 }
 
 export function textLanguageModel({
   text,
-  modelId = 'account-reply',
+  modelId = "account-reply",
 }: {
-  text: string
-  modelId?: string
+  text: string;
+  modelId?: string;
 }) {
   return new MockLanguageModelV4({
-    provider: 'basilic-canned',
-    modelId,
     doGenerate: {
-      content: [{ type: 'text', text }],
+      content: [{ type: "text", text }],
       finishReason: stopFinish,
       usage: emptyUsage,
       warnings: emptyWarnings,
@@ -81,12 +86,16 @@ export function textLanguageModel({
     doStream: {
       stream: simulateReadableStream({
         chunks: [
-          { type: 'text-start', id: 't' },
-          ...(text ? [{ type: 'text-delta' as const, id: 't', delta: text }] : []),
-          { type: 'text-end', id: 't' },
-          { type: 'finish', finishReason: stopFinish, usage: emptyUsage },
+          { type: "text-start", id: "t" },
+          ...(text
+            ? [{ type: "text-delta" as const, id: "t", delta: text }]
+            : []),
+          { type: "text-end", id: "t" },
+          { type: "finish", finishReason: stopFinish, usage: emptyUsage },
         ],
       }),
     },
-  })
+    modelId,
+    provider: "basilic-canned",
+  });
 }

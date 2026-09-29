@@ -1,44 +1,57 @@
-import { getDb } from '@repo/db'
-import type { VerificationType } from '@repo/db/schema'
-import { sessions, users, verification } from '@repo/db/schema'
-import { and, desc, eq, isNotNull, sql } from 'drizzle-orm'
-import type { FastifyInstance } from 'fastify'
-import { env } from '../../lib/env.js'
+import { getDb } from "@repo/db";
+import type { VerificationType } from "@repo/db/schema";
+import { sessions, users, verification } from "@repo/db/schema";
+import { and, desc, eq, isNotNull, sql } from "drizzle-orm";
+import type { FastifyInstance } from "fastify";
 
-export type VerificationLastResult = {
-  token: string | null
-  verificationId: string | null
+import { env } from "../../lib/env.js";
+
+export interface VerificationLastResult {
+  token: string | null;
+  verificationId: string | null;
 }
 
-const emptyResult: VerificationLastResult = { token: null, verificationId: null }
+const emptyResult: VerificationLastResult = {
+  token: null,
+  verificationId: null,
+};
 
 function escapeLikePattern(value: string): string {
-  return value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_')
+  return value
+    .replaceAll("\\", "\\\\")
+    .replaceAll("%", "\\%")
+    .replaceAll("_", "\\_");
 }
 
 function extractFromScopedFakeEmail({
   fastify,
   email,
 }: {
-  fastify: FastifyInstance
-  email: string
+  fastify: FastifyInstance;
+  email: string;
 }): VerificationLastResult {
-  const captured = fastify.fakeEmail?.all().findLast(e => e.to === email)
-  if (!captured) return emptyResult
-  return {
-    verificationId: fastify.fakeEmail?.extractVerificationId(captured) ?? null,
-    token: fastify.fakeEmail?.extractToken(captured) ?? null,
+  const captured = fastify.fakeEmail?.all().findLast((e) => e.to === email);
+  if (!captured) {
+    return emptyResult;
   }
+  return {
+    token: fastify.fakeEmail?.extractToken(captured) ?? null,
+    verificationId: fastify.fakeEmail?.extractVerificationId(captured) ?? null,
+  };
 }
 
 export function isTestEmailAllowed(email: string | undefined): email is string {
-  return typeof email === 'string' && email.endsWith('@test.ai')
+  return typeof email === "string" && email.endsWith("@test.ai");
 }
 
 export function isAllowedTestType(
-  type: string | undefined,
-): type is 'magic_link' | 'change_email' | 'session_revoke' {
-  return type === 'magic_link' || type === 'change_email' || type === 'session_revoke'
+  type: string | undefined
+): type is "magic_link" | "change_email" | "session_revoke" {
+  return (
+    type === "magic_link" ||
+    type === "change_email" ||
+    type === "session_revoke"
+  );
 }
 
 export async function getLastVerification({
@@ -46,15 +59,17 @@ export async function getLastVerification({
   type,
   email,
 }: {
-  fastify: FastifyInstance
-  type: VerificationType
-  email: string
+  fastify: FastifyInstance;
+  type: VerificationType;
+  email: string;
 }): Promise<VerificationLastResult> {
-  if (!env.ALLOW_TEST || env.NODE_ENV === 'production') return emptyResult
+  if (!env.ALLOW_TEST || env.NODE_ENV === "production") {
+    return emptyResult;
+  }
 
-  const db = await getDb()
+  const db = await getDb();
 
-  if (type === 'session_revoke') {
+  if (type === "session_revoke") {
     const [row] = await db
       .select({ id: verification.id, tokenPlain: verification.tokenPlain })
       .from(verification)
@@ -64,47 +79,55 @@ export async function getLastVerification({
         and(
           eq(verification.type, type),
           eq(users.email, email),
-          isNotNull(verification.tokenPlain),
-        ),
+          isNotNull(verification.tokenPlain)
+        )
       )
       .orderBy(desc(verification.createdAt))
-      .limit(1)
-    if (row) return { token: row.tokenPlain, verificationId: row.id }
-    return extractFromScopedFakeEmail({ fastify, email })
+      .limit(1);
+    if (row) {
+      return { token: row.tokenPlain, verificationId: row.id };
+    }
+    return extractFromScopedFakeEmail({ email, fastify });
   }
 
   const where =
-    type === 'magic_link'
+    type === "magic_link"
       ? and(
           eq(verification.type, type),
           eq(verification.identifier, email),
-          isNotNull(verification.tokenPlain),
+          isNotNull(verification.tokenPlain)
         )
       : and(
           eq(verification.type, type),
           sql`${verification.identifier} LIKE ${`%:${escapeLikePattern(email)}`} ESCAPE '\\'`,
-          isNotNull(verification.tokenPlain),
-        )
+          isNotNull(verification.tokenPlain)
+        );
 
   const [row] = await db
     .select({ id: verification.id, tokenPlain: verification.tokenPlain })
     .from(verification)
     .where(where)
     .orderBy(desc(verification.createdAt))
-    .limit(1)
+    .limit(1);
 
-  if (row) return { token: row.tokenPlain, verificationId: row.id }
-  return extractFromScopedFakeEmail({ fastify, email })
+  if (row) {
+    return { token: row.tokenPlain, verificationId: row.id };
+  }
+  return extractFromScopedFakeEmail({ email, fastify });
 }
 
 export async function getLastMagicLinkForTestAi({
   fastify,
   email,
 }: {
-  fastify: FastifyInstance
-  email: string
+  fastify: FastifyInstance;
+  email: string;
 }): Promise<VerificationLastResult> {
-  if (!env.ALLOW_TEST || env.NODE_ENV === 'production') return emptyResult
-  if (!isTestEmailAllowed(email)) return emptyResult
-  return getLastVerification({ fastify, type: 'magic_link', email })
+  if (!env.ALLOW_TEST || env.NODE_ENV === "production") {
+    return emptyResult;
+  }
+  if (!isTestEmailAllowed(email)) {
+    return emptyResult;
+  }
+  return getLastVerification({ email, fastify, type: "magic_link" });
 }

@@ -1,62 +1,78 @@
-import { createMDX } from 'fumadocs-mdx/next'
+import { createMDX } from "fumadocs-mdx/next";
 
-const withMDX = createMDX()
+const withMDX = createMDX();
 
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  allowedDevOrigins: ['docu.basilic.localhost', '*.basilic.localhost'],
-  transpilePackages: ['@repo/ui'],
+  allowedDevOrigins: ["docu.basilic.localhost", "*.basilic.localhost"],
+  transpilePackages: ["@repo/ui"],
   // Next 16.3 defaults to the TypeScript CLI (`typescript/bin/tsc`). The dual-package
   // alias (`typescript` → @typescript/typescript6) only ships `tsc6` + the compiler API.
   experimental: {
+    optimizePackageImports: ["lucide-react"],
     useTypeScriptCli: false,
-    optimizePackageImports: ['lucide-react'],
   },
   async redirects() {
     return [
       {
-        source: '/docs/ai-workflow',
-        destination: '/docs/development/ai-workflow',
+        destination: "/docs/development/ai-workflow",
         permanent: true,
+        source: "/docs/ai-workflow",
       },
       {
-        source: '/docs/cursor-workflow',
-        destination: '/docs/development/ai-workflow',
+        destination: "/docs/development/ai-workflow",
         permanent: true,
+        source: "/docs/cursor-workflow",
       },
       {
-        source: '/docs/cursor-workflow/:path*',
-        destination: '/docs/development/ai-workflow',
+        destination: "/docs/development/ai-workflow",
         permanent: true,
-      },
-      { source: '/docs/security', destination: '/docs/architecture/security', permanent: true },
-      {
-        source: '/docs/architecture/package-conventions',
-        destination: '/docs/development/package-conventions',
-        permanent: true,
+        source: "/docs/cursor-workflow/:path*",
       },
       {
-        source: '/docs/architecture/frontend-stack',
-        destination: '/docs/architecture/frontend',
+        destination: "/docs/architecture/security",
         permanent: true,
+        source: "/docs/security",
       },
       {
-        source: '/docs/testing/frontend-testing',
-        destination: '/docs/testing/e2e-testing',
+        destination: "/docs/development/package-conventions",
         permanent: true,
+        source: "/docs/architecture/package-conventions",
       },
-      { source: '/docs/api-development', destination: '/docs/architecture/api', permanent: true },
       {
-        source: '/docs/architecture/dev-tooling',
-        destination: '/docs/development/dev-tooling',
+        destination: "/docs/architecture/frontend",
         permanent: true,
+        source: "/docs/architecture/frontend-stack",
       },
-      { source: '/docs/product', destination: '/docs', permanent: true },
-      { source: '/docs/product/features', destination: '/docs', permanent: true },
-      { source: '/docs/product/roadmap', destination: '/docs', permanent: true },
-    ]
+      {
+        destination: "/docs/testing/e2e-testing",
+        permanent: true,
+        source: "/docs/testing/frontend-testing",
+      },
+      {
+        destination: "/docs/architecture/api",
+        permanent: true,
+        source: "/docs/api-development",
+      },
+      {
+        destination: "/docs/development/dev-tooling",
+        permanent: true,
+        source: "/docs/architecture/dev-tooling",
+      },
+      { destination: "/docs", permanent: true, source: "/docs/product" },
+      {
+        destination: "/docs",
+        permanent: true,
+        source: "/docs/product/features",
+      },
+      {
+        destination: "/docs",
+        permanent: true,
+        source: "/docs/product/roadmap",
+      },
+    ];
   },
-}
+};
 
-export default withMDX(config)
+export default withMDX(config);

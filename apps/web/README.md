@@ -71,7 +71,7 @@ pnpm build --filter=@repo/web
 - `pnpm dev` — Start development server
 - `pnpm build` — Build for production
 - `pnpm start` — Start production server
-- `pnpm lint` — Run Biome and ESLint
+- `pnpm lint` — Run Ultracite (Oxlint + Oxfmt)
 - `pnpm test` — Vitest for `lib/**/*.test.ts`, including compose helpers and speech merge
 - `pnpm test:e2e:local` — Build, spawn servers, run E2E, cleanup
 

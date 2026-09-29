@@ -22,10 +22,15 @@ Composition: `render` (and `nativeButton={false}` for non-button nodes), not `as
 ### Basic Component Usage
 
 ```tsx
-import { Button } from '@repo/ui/components/button'
-import { Card, CardHeader, CardTitle, CardContent } from '@repo/ui/components/card'
-import { cn } from '@repo/ui/lib/utils'
-import '@repo/ui/globals.css'
+import { Button } from "@repo/ui/components/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@repo/ui/components/card";
+import { cn } from "@repo/ui/lib/utils";
+import "@repo/ui/globals.css";
 
 function MyComponent() {
   return (
@@ -37,7 +42,7 @@ function MyComponent() {
         <Button variant="default">Click me</Button>
       </CardContent>
     </Card>
-  )
+  );
 }
 ```
 
@@ -46,30 +51,30 @@ function MyComponent() {
 The `cn` utility merges Tailwind classes intelligently:
 
 ```tsx
-import { cn } from '@repo/ui/lib/utils'
+import { cn } from "@repo/ui/lib/utils";
 
 function MyComponent({ className }: { className?: string }) {
   return (
-    <div className={cn('base-classes', className)}>
+    <div className={cn("base-classes", className)}>
       {/* Merges classes, handles conflicts */}
     </div>
-  )
+  );
 }
 ```
 
 ### Using Hooks
 
 ```tsx
-import { useIsMobile } from '@repo/ui/hooks/use-mobile'
+import { useIsMobile } from "@repo/ui/hooks/use-mobile";
 
 function ResponsiveComponent() {
-  const isMobile = useIsMobile()
-  
+  const isMobile = useIsMobile();
+
   return (
-    <div className={isMobile ? 'mobile-layout' : 'desktop-layout'}>
+    <div className={isMobile ? "mobile-layout" : "desktop-layout"}>
       {/* Content */}
     </div>
-  )
+  );
 }
 ```
 
@@ -78,21 +83,27 @@ function ResponsiveComponent() {
 The package includes 50+ pre-built components:
 
 **Layout & Structure:**
+
 - `accordion`, `card`, `separator`, `resizable`, `sidebar`, `tabs`
 
 **Forms & Inputs:**
+
 - `button`, `button-group`, `checkbox`, `input`, `input-group`, `input-otp`, `label`, `radio-group`, `select`, `slider`, `switch`, `textarea`, `toggle`, `toggle-group`, `field`, `form`
 
 **Overlays & Dialogs:**
+
 - `alert-dialog`, `dialog`, `drawer`, `dropdown-menu`, `hover-card`, `popover`, `sheet`, `tooltip`, `context-menu`, `menubar`
 
 **Navigation:**
+
 - `breadcrumb`, `navigation-menu`, `pagination`
 
 **Feedback:**
+
 - `alert`, `progress`, `skeleton`, `sonner` (toast), `spinner`, `empty`
 
 **Data Display:**
+
 - `avatar`, `badge`, `table`, `chart`, `carousel`, `calendar`, `aspect-ratio`, `scroll-area`, `collapsible`, `command`, `kbd`, `item`
 
 See the `src/components/` directory for the complete list and individual component documentation.
@@ -102,7 +113,7 @@ See the `src/components/` directory for the complete list and individual compone
 Components use CSS variables for theming. Import the global styles to get the default theme:
 
 ```tsx
-import '@repo/ui/globals.css'
+import "@repo/ui/globals.css";
 ```
 
 Customize the theme by overriding CSS variables:
@@ -141,6 +152,7 @@ All components are designed mobile-first. They adapt to larger screens using Tai
 ## Architecture
 
 Centralized design system dependencies:
+
 - `@base-ui/react`
 - Styling utilities (`clsx`, `tailwind-merge`, `class-variance-authority`)
 - Single source of truth for component versions

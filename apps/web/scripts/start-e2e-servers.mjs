@@ -7,52 +7,54 @@
  * Pins Fastify generate to Vercel AI Gateway when AI_GATEWAY_API_KEY is set.
  * Playwright does not call live AI, so a missing key warns and the servers still start.
  */
-import { spawn } from 'node:child_process'
-import { dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { spawn } from "node:child_process";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const scriptDir = dirname(fileURLToPath(import.meta.url))
-const repoRoot = dirname(dirname(dirname(scriptDir)))
+const scriptDir = import.meta.dirname;
+const repoRoot = dirname(dirname(dirname(scriptDir)));
 
 const env = {
   ...process.env,
-  ALLOW_TEST: 'true',
-  PGLITE: 'true',
-  NODE_ENV: 'test',
-  NEXT_PUBLIC_API_URL: 'http://localhost:3001',
-}
-if (!String(env.AI_GATEWAY_API_KEY ?? '').trim())
+  ALLOW_TEST: "true",
+  NEXT_PUBLIC_API_URL: "http://localhost:3001",
+  NODE_ENV: "test",
+  PGLITE: "true",
+};
+if (!String(env.AI_GATEWAY_API_KEY ?? "").trim()) {
   process.stderr.write(
-    'start-e2e-servers: AI_GATEWAY_API_KEY is not set; Fastify AI generation will be unavailable.\n',
-  )
-delete env.AI_DEFAULT_MODEL
+    "start-e2e-servers: AI_GATEWAY_API_KEY is not set; Fastify AI generation will be unavailable.\n"
+  );
+}
+delete env.AI_DEFAULT_MODEL;
 
-const api = spawn('pnpm', ['--filter', '@repo/api', 'start:ci'], {
+const api = spawn("pnpm", ["--filter", "@repo/api", "start:ci"], {
   cwd: repoRoot,
   env,
-  stdio: 'inherit',
-})
-const web = spawn('pnpm', ['--filter', '@repo/web', 'start:e2e:server'], {
+  stdio: "inherit",
+});
+const web = spawn("pnpm", ["--filter", "@repo/web", "start:e2e:server"], {
   cwd: repoRoot,
-  env: { ...env, PORT: '3000' },
-  stdio: 'inherit',
-})
+  env: { ...env, PORT: "3000" },
+  stdio: "inherit",
+});
 
-function killAll(signal = 'SIGTERM') {
-  api.kill(signal)
-  web.kill(signal)
+function killAll(signal = "SIGTERM") {
+  api.kill(signal);
+  web.kill(signal);
 }
-process.on('SIGINT', () => {
-  killAll()
-  process.exit(0)
-})
-process.on('SIGTERM', () => {
-  killAll()
-  process.exit(0)
-})
+process.on("SIGINT", () => {
+  killAll();
+  process.exit(0);
+});
+process.on("SIGTERM", () => {
+  killAll();
+  process.exit(0);
+});
 
-for (const proc of [api, web])
-  proc.on('exit', code => {
-    killAll('SIGKILL')
-    process.exit(code ?? 1)
-  })
+for (const proc of [api, web]) {
+  proc.on("exit", (code) => {
+    killAll("SIGKILL");
+    process.exit(code ?? 1);
+  });
+}

@@ -9,6 +9,7 @@ Utility scripts for this monorepo.
 Runs the full QA pipeline sequentially: install (skipped when `node_modules` exists), checktypes, lint, `openapi:drift`, `openapi:lint`, `sherif`, build, `test:scripts`, test, test:e2e (`SKIP_BUILD=1`). Stops immediately on the first failure and prints a clear error banner. `knip` is not a phase; `lint.yml` runs it on every PR.
 
 **Usage**: Via pnpm at repository root:
+
 ```bash
 pnpm qa
 # or
@@ -144,6 +145,7 @@ DeepSec lives in `.deepsec/` and is not part of pre-commit or `security.yml`. `s
 Prevents committing sensitive file types in pre-commit hooks.
 
 **What gets blocked**:
+
 - `.env` and related sensitive paths (see `block-secret-files.mjs`); allowed committed templates — `.env.<qualifier>.example`, `.env.schema`, `.env.{development,staging,production,test}` — use the same patterns in `.trufflehogignore` for TruffleHog
 - `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`
 - `id_rsa*` (SSH private keys)
@@ -157,6 +159,7 @@ Prevents committing sensitive file types in pre-commit hooks.
 Wrapper script for gitleaks staged file scanning.
 
 **What it scans**:
+
 - Cryptocurrency private keys (Ethereum, Solana, Cosmos, etc.)
 - Mnemonic phrases and seed phrases
 - API keys and secrets
@@ -165,6 +168,7 @@ Wrapper script for gitleaks staged file scanning.
 - AWS credentials
 
 **Usage**: Automatically runs in pre-commit hooks. Can be run manually:
+
 ```bash
 pnpm security:secrets
 ```
@@ -176,10 +180,12 @@ If gitleaks is missing, the script skips and prints `pnpm setup:gitleaks`.
 Wrapper script for OSV Scanner vulnerability scanning.
 
 **What it scans**:
+
 - Dependencies in `pnpm-lock.yaml` for known vulnerabilities
 - Checks against OSV (Open Source Vulnerabilities) database
 
 **Usage**: Automatically runs in pre-commit hooks via `hooks:security`. Can be run manually:
+
 ```bash
 pnpm security:osv
 # or
@@ -193,13 +199,16 @@ node scripts/scan-osv.mjs
 Installs gitleaks for secret scanning in git repositories.
 
 **What it installs**:
+
 - **gitleaks** (required): Secret scanning tool that detects hardcoded secrets, API keys, passwords, and other sensitive information
 
 **Installation methods**:
+
 - **macOS / Linux**: Downloads gitleaks **8.30.1** from GitHub releases (`gitleaksVersion` in the script) and verifies a pinned SHA-256 before extract/install
 - **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+
 ```bash
 pnpm setup:gitleaks
 # or
@@ -213,13 +222,16 @@ node scripts/setup-gitleaks.mjs
 Installs osv-scanner for vulnerability scanning in dependencies.
 
 **What it installs**:
+
 - **osv-scanner** (optional): Vulnerability scanner that checks dependencies against OSV database
 
 **Installation methods**:
+
 - **macOS / Linux**: Downloads osv-scanner **2.6.0** from GitHub releases (`osvScannerVersion` in the script; same tag as CI)
 - **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+
 ```bash
 pnpm setup:osv
 # or
@@ -233,9 +245,11 @@ node scripts/setup-osv-scanner.mjs
 Installs the DeepSec workspace in `.deepsec/` (same as CI `deepsec.yml`).
 
 **What it installs**:
+
 - **deepsec** and transitive deps from `.deepsec/pnpm-lock.yaml`
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+
 ```bash
 pnpm setup:deepsec
 ```
@@ -247,6 +261,7 @@ pnpm setup:deepsec
 Installs Playwright Chromium for `@repo/api` and `@repo/web` E2E tests. Default browser cache when `PLAYWRIGHT_BROWSERS_PATH` is unset: Linux `~/.cache/ms-playwright`, macOS `~/Library/Caches/ms-playwright`, Windows `%USERPROFILE%\AppData\Local\ms-playwright`.
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+
 ```bash
 pnpm setup:playwright
 ```
@@ -256,12 +271,14 @@ pnpm setup:playwright
 Comprehensive security check script that runs all security scans.
 
 **What it checks**:
+
 1. Blocked secret files (via `block-secret-files.mjs`)
 2. Secrets in repository (via gitleaks)
 3. Dependency vulnerabilities (via osv-scanner)
 4. pnpm audit for high+ severity vulnerabilities (`pnpm security:audit`; registry errors ignored)
 
 **Usage**: Run manually to perform all security checks:
+
 ```bash
 pnpm security:check
 # or
@@ -277,12 +294,14 @@ node scripts/security-check.mjs
 Copies `.env.<qualifier>.example` templates to gitignored dest files when the dest is missing. Never overwrites existing dest files.
 
 **Mapping**:
+
 - `.env.defaults.example` → `.env`
 - `.env.local.example` → `.env.local`
 - `.env.test.example` → `.env.test`
 - any other `.env.<qualifier>.example` → `.env.<qualifier>`
 
 **Usage**: Automatically runs during `pnpm setup`. Can be run manually:
+
 ```bash
 pnpm setup:env
 # or
@@ -312,22 +331,25 @@ Scripts that install database development tools for PostgreSQL with Supabase.
 Installs Docker, Docker Compose, and Supabase CLI for local PostgreSQL development and database management.
 
 **What it installs**:
+
 - **Docker** (required): Container runtime required by Supabase CLI for local development
 - **Docker Compose** (required): Included with Docker, used by Supabase CLI for orchestrating services
 - **Supabase CLI** (optional): Command-line tool for local PostgreSQL development, migrations, and Supabase project management
 
 **Installation methods**:
-- **macOS**: 
+
+- **macOS**:
   - Docker: Installs Docker Desktop via Homebrew (`brew install --cask docker`)
   - Docker Compose: Included with Docker Desktop
   - Supabase CLI: Uses Homebrew if available (`brew install supabase/tap/supabase`)
-- **Linux**: 
+- **Linux**:
   - Docker: Installs Docker Engine via official Docker repository (Debian/Ubuntu)
   - Docker Compose: Included as plugin with Docker Engine
   - Supabase CLI: Downloads pinned `.deb` **2.117.0** (`supabaseVersion` in the script) and installs with `dpkg`
 - **Windows**: Prints installation instructions (Chocolatey, Scoop, or manual)
 
 **Usage**: Can be run manually:
+
 ```bash
 pnpm setup:database
 # or

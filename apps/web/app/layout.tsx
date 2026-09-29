@@ -1,39 +1,39 @@
-import { Geist_Mono, Inter, Poppins } from 'next/font/google'
+import { Geist_Mono, Inter, Poppins } from "next/font/google";
 
-import '@repo/ui/styles/globals.css'
-import { Providers } from '@/app/providers'
-import { ErrorBoundary } from '@/components/shared/error-boundary'
+import "@repo/ui/styles/globals.css";
+import { Providers } from "@/app/providers";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 
 const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-})
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['500', '600', '700'],
-  variable: '--font-poppins',
-  display: 'swap',
-})
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  weight: ["500", "600", "700"],
+});
 
 const fontMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-})
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 export const metadata = {
+  description: "Basilic web dashboard",
   title: {
-    default: 'Basilic',
-    template: '%s | Basilic',
+    default: "Basilic",
+    template: "%s | Basilic",
   },
-  description: 'Basilic web dashboard',
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
@@ -45,5 +45,5 @@ export default function RootLayout({
         </ErrorBoundary>
       </body>
     </html>
-  )
+  );
 }

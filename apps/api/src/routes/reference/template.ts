@@ -1,14 +1,20 @@
-import { getInitScript } from './template-scripts.js'
-import { scalarStyles } from './template-styles.js'
+import { getInitScript } from "./template-scripts.js";
+import { scalarStyles } from "./template-styles.js";
 
 export function getReferenceHtml(opts: {
-  apiUrl: string
-  openApiUrl: string
-  callbackUrl: string
-  jwtToken?: string | null
-  verificationId?: string
+  apiUrl: string;
+  openApiUrl: string;
+  callbackUrl: string;
+  jwtToken?: string | null;
+  verificationId?: string;
 }): string {
-  const { apiUrl, openApiUrl, callbackUrl, jwtToken = null, verificationId } = opts
+  const {
+    apiUrl,
+    openApiUrl,
+    callbackUrl,
+    jwtToken = null,
+    verificationId,
+  } = opts;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +45,7 @@ export function getReferenceHtml(opts: {
       </form>
     </div>
   </div>
-  <script>${getInitScript({ apiUrl, openApiUrl, callbackUrl, jwtToken, verificationId })}</script>
+  <script>${getInitScript({ apiUrl, callbackUrl, jwtToken, openApiUrl, verificationId })}</script>
 </body>
-</html>`
+</html>`;
 }

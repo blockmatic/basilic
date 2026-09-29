@@ -150,24 +150,24 @@ Since `JSON.parse()` and `response.json()` now return `unknown`, you must valida
 
 ```typescript
 // ✅ Good: Validate with Zod, use @repo/utils utilities
-import { fetchWithTimeout } from '@repo/utils/async'
-import { z } from 'zod'
+import { fetchWithTimeout } from "@repo/utils/async";
+import { z } from "zod";
 
 const response = await fetchWithTimeout({
-  url: '/api/data',
-  options: { method: 'GET' },
-})
+  url: "/api/data",
+  options: { method: "GET" },
+});
 const validated = parseJsonWithSchema({
   jsonString: await response.text(),
   schema: mySchema,
-}) // Type-safe after validation
+}); // Type-safe after validation
 
 // ✅ Good: Type assertion for test utilities
-const data = (await response.json()) as Record<string, unknown>
+const data = (await response.json()) as Record<string, unknown>;
 
 // ❌ Bad: Using without validation
-const data = await response.json()
-const value = data.someProperty // TypeScript error: Property 'someProperty' does not exist on type 'unknown'
+const data = await response.json();
+const value = data.someProperty; // TypeScript error: Property 'someProperty' does not exist on type 'unknown'
 ```
 
 **Important**: Since TypeScript replaces (rather than merges) `include` arrays when extending configs, packages that override the `include` array must explicitly add `reset.d.ts` to their include list. For example:

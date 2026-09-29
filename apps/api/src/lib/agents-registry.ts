@@ -1,53 +1,53 @@
-import { Type } from '@sinclair/typebox'
+import { Type } from "@sinclair/typebox";
 
-export const agentIds = ['command', 'chat'] as const
-export type AgentId = (typeof agentIds)[number]
+export const agentIds = ["command", "chat"] as const;
+export type AgentId = (typeof agentIds)[number];
 
 export const AgentRecordSchema = Type.Object({
-  id: Type.Union([Type.Literal('command'), Type.Literal('chat')]),
-  name: Type.String(),
-  endpoint: Type.String({ minLength: 1 }),
-  transport: Type.Literal('eve'),
-  presentation: Type.String(),
   capabilities: Type.Array(Type.String()),
+  endpoint: Type.String({ minLength: 1 }),
   features: Type.Array(Type.String()),
-})
+  id: Type.Union([Type.Literal("command"), Type.Literal("chat")]),
+  name: Type.String(),
+  presentation: Type.String(),
+  transport: Type.Literal("eve"),
+});
 
 export function agentCatalog({
   commandUrl,
   chatUrl,
 }: {
-  commandUrl: string
-  chatUrl: string
-}): Array<{
-  id: AgentId
-  name: string
-  endpoint: string
-  transport: 'eve'
-  presentation: string
-  capabilities: string[]
-  features: string[]
-}> {
+  commandUrl: string;
+  chatUrl: string;
+}): {
+  id: AgentId;
+  name: string;
+  endpoint: string;
+  transport: "eve";
+  presentation: string;
+  capabilities: string[];
+  features: string[];
+}[] {
   return [
     {
-      id: 'command',
-      name: 'Commands',
-      endpoint: commandUrl.replace(/\/$/, ''),
-      transport: 'eve',
-      presentation: 'commands',
-      capabilities: ['markets', 'watches'],
-      features: ['tools'],
+      capabilities: ["markets", "watches"],
+      endpoint: commandUrl.replace(/\/$/, ""),
+      features: ["tools"],
+      id: "command",
+      name: "Commands",
+      presentation: "commands",
+      transport: "eve",
     },
     {
-      id: 'chat',
-      name: 'Chat',
-      endpoint: chatUrl.replace(/\/$/, ''),
-      transport: 'eve',
-      presentation: 'chat',
-      capabilities: ['watches-read'],
-      features: ['transcript'],
+      capabilities: ["watches-read"],
+      endpoint: chatUrl.replace(/\/$/, ""),
+      features: ["transcript"],
+      id: "chat",
+      name: "Chat",
+      presentation: "chat",
+      transport: "eve",
     },
-  ]
+  ];
 }
 
 export function agentById({
@@ -55,9 +55,12 @@ export function agentById({
   commandUrl,
   chatUrl,
 }: {
-  agentId: string
-  commandUrl: string
-  chatUrl: string
+  agentId: string;
+  commandUrl: string;
+  chatUrl: string;
 }) {
-  return agentCatalog({ commandUrl, chatUrl }).find(row => row.id === agentId) ?? null
+  return (
+    agentCatalog({ chatUrl, commandUrl }).find((row) => row.id === agentId) ??
+    null
+  );
 }

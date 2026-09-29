@@ -53,6 +53,7 @@ Examples:
 Generated client and types from `apps/api/openapi/openapi.json`.
 
 **Exports** (public):
+
 - `createClient()` — nested namespace API
 - `ApiError` — error class for API failures
 - `export type *` — all generated OpenAPI types
@@ -68,28 +69,28 @@ Generated client and types from `apps/api/openapi/openapi.json`.
 **Usage**:
 
 ```ts
-import { createClient } from '@repo/core'
+import { createClient } from "@repo/core";
 
 // No-auth (callbacks, health checks)
-const client = createClient({ baseUrl: 'https://api.basilic.localhost' })
+const client = createClient({ baseUrl: "https://api.basilic.localhost" });
 
 // JWT mode (web app—use getAuthToken, getRefreshToken, updateAuthTokens from lib/auth/auth-client)
 const client = createClient({
-  baseUrl: 'https://api.basilic.localhost',
+  baseUrl: "https://api.basilic.localhost",
   getAuthToken,
   getRefreshToken,
   onTokensRefreshed: updateAuthTokens,
-})
+});
 
 // API key mode (servers, CLIs)
 const client = createClient({
-  baseUrl: 'https://api.basilic.localhost',
-  apiKey: 'bask_xxx_secret',
-})
+  baseUrl: "https://api.basilic.localhost",
+  apiKey: "bask_xxx_secret",
+});
 
 await client.auth.magiclink.request({
-  body: { email: 'me@example.com', callbackUrl: 'https://basilic.localhost' },
-})
+  body: { email: "me@example.com", callbackUrl: "https://basilic.localhost" },
+});
 ```
 
 ### `@repo/react` — React Query hooks
@@ -101,32 +102,32 @@ Handwritten hooks on `@repo/core` (not generated). Public exports include `ApiPr
 **Usage** (minimal):
 
 ```tsx
-'use client'
+"use client";
 
-import { createClient } from '@repo/core'
-import { ApiProvider, useHealthCheck } from '@repo/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createClient } from "@repo/core";
+import { ApiProvider, useHealthCheck } from "@repo/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const queryClient = new QueryClient()
-const coreClient = createClient({ baseUrl: 'https://api.basilic.localhost' })
+const queryClient = new QueryClient();
+const coreClient = createClient({ baseUrl: "https://api.basilic.localhost" });
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ApiProvider client={coreClient}>{children}</ApiProvider>
     </QueryClientProvider>
-  )
+  );
 }
 
 export function HealthStatus() {
-  const { data, isLoading, error } = useHealthCheck()
-  if (isLoading) return <div>Loading…</div>
-  if (error) return <div>Health check failed</div>
+  const { data, isLoading, error } = useHealthCheck();
+  if (isLoading) return <div>Loading…</div>;
+  if (error) return <div>Health check failed</div>;
   return (
     <div>
       API ok: {String(data?.ok)} — DB ready: {String(data?.dbReady)}
     </div>
-  )
+  );
 }
 ```
 
@@ -143,11 +144,11 @@ Prefer subpath imports:
 - `@repo/utils/view-config` — closed board ViewConfig (`set_view` omits `elements`; the Next URL may include them)
 
 ```ts
-import { delay } from '@repo/utils/async'
-import { logger } from '@repo/utils/logger/server'
+import { delay } from "@repo/utils/async";
+import { logger } from "@repo/utils/logger/server";
 
-await delay(250)
-logger.info('delayed')
+await delay(250);
+logger.info("delayed");
 ```
 
 ### `@repo/db` — Drizzle schema and named fns
@@ -178,8 +179,8 @@ Subpath-only exports:
 - `@repo/ui/base`
 
 ```ts
-import { Button } from '@repo/ui/components/button'
-import { cn } from '@repo/ui/lib/utils'
+import { Button } from "@repo/ui/components/button";
+import { cn } from "@repo/ui/lib/utils";
 ```
 
 Style with `base-vega` HTML attrs: `data-slot` for parts, `data-open` / `data-checked` for Base UI state (not Radix `data-state`). Compose with `render`, not `asChild`. Rare primitives: `@repo/ui/base`. See [ADR 013](/docs/adrs/013-shadcn-base-ui).
@@ -197,11 +198,11 @@ Root exports for utilities; platform-specific modules use subpaths:
 - `@repo/error/react`
 
 ```ts
-import { captureError } from '@repo/error/node' // or /nextjs, /browser
-import { getErrorMessage, tryCatch } from '@repo/error' // or @repo/error/nextjs
+import { captureError } from "@repo/error/node"; // or /nextjs, /browser
+import { getErrorMessage, tryCatch } from "@repo/error"; // or @repo/error/nextjs
 
-captureError({ error, label: 'API Call', tags: { app: 'api' } })
-const message = getErrorMessage(error)
+captureError({ error, label: "API Call", tags: { app: "api" } });
+const message = getErrorMessage(error);
 ```
 
 ## Email
@@ -211,16 +212,17 @@ const message = getErrorMessage(error)
 Email template library built with React Email.
 
 Entrypoints:
+
 - `@repo/email/emails/*`
 - `@repo/email/render` (server-only)
 
 `pnpm --filter @repo/email dev` (port 3003) needs `@react-email/ui` at the same version as `react-email`.
 
 **Usage:**
+
 ```typescript
 import { WelcomeEmail } from '@repo/email/emails/welcome'
 import { render } from '@repo/email/render'
 
 const html = await render(<WelcomeEmail fullName="John Doe" />)
 ```
-

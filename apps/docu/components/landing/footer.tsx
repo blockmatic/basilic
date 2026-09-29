@@ -1,15 +1,24 @@
-import { buttonVariants } from '@repo/ui/components/button'
-import { cn } from '@repo/ui/lib/utils'
-import Link from 'next/link'
-import { LandingSection } from '@/components/landing/section'
+import { buttonVariants } from "@repo/ui/components/button";
+import { cn } from "@repo/ui/lib/utils";
+import Link from "next/link";
+
+import { LandingSection } from "@/components/landing/section";
 
 const links = [
-  { href: '/docs', label: 'Docs' },
-  { href: '/docs/development/cursor-skills', label: 'Skills' },
-  { href: '/llms.txt', label: 'LLM' },
-  { href: 'https://github.com/blockmatic/basilic', label: 'GitHub', external: true },
-  { href: 'https://github.com/blockmatic/basilic/blob/main/LICENSE', label: 'MIT', external: true },
-]
+  { href: "/docs", label: "Docs" },
+  { href: "/docs/development/cursor-skills", label: "Skills" },
+  { href: "/llms.txt", label: "LLM" },
+  {
+    external: true,
+    href: "https://github.com/blockmatic/basilic",
+    label: "GitHub",
+  },
+  {
+    external: true,
+    href: "https://github.com/blockmatic/basilic/blob/main/LICENSE",
+    label: "MIT",
+  },
+];
 
 export function Footer() {
   return (
@@ -20,16 +29,19 @@ export function Footer() {
         </h2>
         <Link
           href="/docs/development"
-          className={cn(buttonVariants({ size: 'lg' }), 'min-h-11 w-full sm:w-auto')}
+          className={cn(
+            buttonVariants({ size: "lg" }),
+            "min-h-11 w-full sm:w-auto"
+          )}
         >
           Getting Started
         </Link>
       </div>
       <nav
         aria-label="Footer"
-        className="mt-8 flex flex-wrap gap-x-6 gap-y-4 text-sm text-muted-foreground"
+        className="text-muted-foreground mt-8 flex flex-wrap gap-x-6 gap-y-4 text-sm"
       >
-        {links.map(link =>
+        {links.map((link) =>
           link.external ? (
             <a
               key={link.href}
@@ -41,12 +53,16 @@ export function Footer() {
               {link.label}
             </a>
           ) : (
-            <Link key={link.href} href={link.href} className="underline-offset-4 hover:underline">
+            <Link
+              key={link.href}
+              href={link.href}
+              className="underline-offset-4 hover:underline"
+            >
               {link.label}
             </Link>
-          ),
+          )
         )}
       </nav>
     </LandingSection>
-  )
+  );
 }

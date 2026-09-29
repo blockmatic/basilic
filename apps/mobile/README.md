@@ -32,7 +32,7 @@ Try **Expo Go** first—most apps work without a custom native build. Use a **de
 ## Dev Environments
 
 | Scenario | Command |
-|----------|---------|
+| --- | --- |
 | Local | `pnpm --filter @repo/mobile start` |
 | Remote + Cursor (port forwarding) | `pnpm --filter @repo/mobile start:localhost` |
 | Remote + no forwarding / physical device | `pnpm --filter @repo/mobile start:tunnel` |
@@ -44,14 +44,14 @@ See [Dev Environments](https://basilic-docs.vercel.app/docs/development/dev-envi
 The app uses **Tailwind CSS v4** via **NativeWind v5** + **react-native-css**. Use the `className` prop on React Native primitives:
 
 ```tsx
-import { View, Text } from 'react-native'
+import { View, Text } from "react-native";
 
 export function MyScreen() {
   return (
     <View className="flex-1 p-4 gap-4">
       <Text className="text-xl font-bold text-blue-600">Hello Tailwind!</Text>
     </View>
-  )
+  );
 }
 ```
 
@@ -68,19 +68,19 @@ CI builds Android preview via EAS. **EXPO_TOKEN** required in GitHub Secrets. Re
 ## Scripts
 
 | Script | Command | Use |
-|--------|---------|-----|
+| --- | --- | --- |
 | `start` | `expo start` | Local dev, default LAN |
 | `start:localhost` | `expo start --localhost` | Remote + port forwarding |
 | `start:tunnel` | `expo start --tunnel` | Remote without forwarding, physical device |
 | `checktypes` | `tsc --noEmit` | Type-check |
-| `lint` | Biome + ESLint | Lint |
+| `lint` | Ultracite | Lint |
 | `lint:fix` | — | Auto-fix lint |
 | `test:e2e` | `maestro test .maestro/flows/home.yml` | Maestro E2E (app on emulator/simulator) |
 
 ## Troubleshooting
 
 | Issue | Fix |
-|-------|-----|
+| --- | --- |
 | "Unable to resolve module" / red box | Run `pnpm install` at repo root; restart Metro with `pnpm start -c` (clear cache). |
 | Simulator can't connect to Metro (remote) | Use `start:localhost` when Cursor forwards ports; or `start:tunnel` if not. |
 | "Network response timed out" | The scaffold does not call the API. If you add a client, check `EXPO_PUBLIC_API_URL` and that the API host is reachable. |

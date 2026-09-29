@@ -1,49 +1,52 @@
-import * as path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import AutoLoad, { type AutoloadPluginOptions } from '@fastify/autoload'
-import type { FastifyPluginAsync } from 'fastify'
+import * as path from "node:path";
 
-import { env } from './lib/env.js'
-import './lib/markets-host.js'
-import './lib/onchain-host.js'
+import AutoLoad from "@fastify/autoload";
+import type { AutoloadPluginOptions } from "@fastify/autoload";
+import type { FastifyPluginAsync } from "fastify";
 
-const appFile = fileURLToPath(import.meta.url)
-const appDir = path.dirname(appFile)
+import { env } from "./lib/env.js";
+import "./lib/markets-host.js";
+import "./lib/onchain-host.js";
+
+const appDir = import.meta.dirname;
 
 export type AppOptions = {
   /** Override env.ALLOW_TEST (e.g. for OpenAPI generation to exclude test routes) */
-  allowTest?: boolean
-} & Partial<AutoloadPluginOptions>
+  allowTest?: boolean;
+} & Partial<AutoloadPluginOptions>;
 
 // Pass --options via CLI arguments in command to enable these options.
-const options: AppOptions = {}
+const options: AppOptions = {};
 
-const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void> => {
+const app: FastifyPluginAsync<AppOptions> = async (
+  fastify,
+  opts
+): Promise<void> => {
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
   // through your application
 
   void fastify.register(AutoLoad, {
-    dir: path.join(appDir, 'plugins'),
-    options: opts,
+    dir: path.join(appDir, "plugins"),
     forceESM: true,
     ignorePattern: /\.(spec|test)\.(ts|js)$/,
-  })
+    options: opts,
+  });
 
   // This loads all plugins defined in routes
   // define your routes in one of these
 
   void fastify.register(AutoLoad, {
-    dir: path.join(appDir, 'routes'),
-    options: opts,
+    dir: path.join(appDir, "routes"),
     forceESM: true,
-    ignorePattern: /(\.(spec|test)\.(ts|js)$)|((^|\/)template[^/]*\.(ts|js)$)/,
-    ignoreFilter: path => {
-      const allowTest = opts?.allowTest ?? env.ALLOW_TEST
-      return !allowTest && /\/test\//.test(path)
+    ignoreFilter: (path) => {
+      const allowTest = opts?.allowTest ?? env.ALLOW_TEST;
+      return !allowTest && /\/test\//.test(path);
     },
-  })
-}
+    ignorePattern: /(\.(spec|test)\.(ts|js)$)|((^|\/)template[^/]*\.(ts|js)$)/,
+    options: opts,
+  });
+};
 
-export default app
-export { app, options }
+export default app;
+export { app, options };

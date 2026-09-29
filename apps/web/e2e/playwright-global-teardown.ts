@@ -4,4 +4,4 @@ async function globalTeardown() {
 
 // Playwright requires default export for globalTeardown
 // eslint-disable-next-line import/no-default-export
-export default globalTeardown
+export default globalTeardown;

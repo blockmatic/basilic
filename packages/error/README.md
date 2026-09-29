@@ -5,7 +5,7 @@ Error reporting and utilities for the monorepo. Use **`captureError`** for consi
 ## Exports
 
 | Path | Use for |
-|------|--------|
+| --- | --- |
 | `@repo/error` | Error utils: `getErrorMessage`, `tryCatch`, `toErrorWithMessage`, `isErrorWithMessage`, `ErrorWithMessage`, `Result` |
 | `@repo/error/node` | Node.js / Fastify: `captureError`, `initErrorReporting` |
 | `@repo/error/nextjs` | Next.js (client + server): `captureError`, `initErrorReporting`, `getErrorMessage` |
@@ -23,23 +23,23 @@ Error reporting and utilities for the monorepo. Use **`captureError`** for consi
 **Capture an error** (non-blocking, async):
 
 ```typescript
-import { captureError } from '@repo/error/node' // or /nextjs, /browser
+import { captureError } from "@repo/error/node"; // or /nextjs, /browser
 
 captureError({
   error,
-  label: 'API Call',
-  code: 'NETWORK_ERROR',
-  data: { endpoint: '/api/data' },
-  tags: { app: 'web' },
-})
+  label: "API Call",
+  code: "NETWORK_ERROR",
+  data: { endpoint: "/api/data" },
+  tags: { app: "web" },
+});
 ```
 
 **Extract error message:**
 
 ```typescript
-import { getErrorMessage } from '@repo/error/nextjs' // or @repo/error
+import { getErrorMessage } from "@repo/error/nextjs"; // or @repo/error
 
-const message = getErrorMessage(error)
+const message = getErrorMessage(error);
 ```
 
 ## Initialize error reporting
@@ -49,12 +49,12 @@ Use `initErrorReporting` from the platform path. **Do NOT call it from `instrume
 **Node/Fastify:**
 
 ```typescript
-import { initErrorReporting } from '@repo/error/node'
+import { initErrorReporting } from "@repo/error/node";
 
 initErrorReporting({
   dsn: env.SENTRY_DSN,
   environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
-})
+});
 ```
 
 **Next.js:** Use `error-reporting.server.ts`, `error-reporting.client.ts`, `sentry.edge.config.ts` with thin `sentry.server.config.ts` and `instrumentation-client.ts` shims. See [GlitchTip Next.js docs](https://glitchtip.com/sdkdocs/javascript-nextjs/).

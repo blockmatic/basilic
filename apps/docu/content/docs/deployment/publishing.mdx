@@ -52,6 +52,7 @@ Runs after packing:
 Packages that use these scripts should have:
 
 **Pattern A — development exports** (in `package.json`):
+
 ```json
 {
   "exports": {
@@ -64,11 +65,15 @@ Packages that use these scripts should have:
 ```
 
 **Publishing exports** (automatically transformed by `prepare-publish.mjs`):
+
 ```json
 {
   "exports": {
     ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./async": { "types": "./dist/async/index.d.ts", "import": "./dist/async/index.js" }
+    "./async": {
+      "types": "./dist/async/index.d.ts",
+      "import": "./dist/async/index.js"
+    }
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -102,11 +107,13 @@ These scripts are automatically invoked via npm/pnpm lifecycle hooks in `package
    ```
 
 The `prepack` hook will automatically:
+
 - Build the package
 - Switch exports to `dist/`
 - Create the tarball
 
 The `postpack` hook will automatically:
+
 - Restore the original `package.json`
 - Clean up temporary files
 

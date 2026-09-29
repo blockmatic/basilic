@@ -1,21 +1,23 @@
 /** Schema + migrations for `@repo/db`. Local Docker Postgres is `pnpm db:start`. Identity seed stays in `apps/api`. */
-import 'dotenv/config'
-import { defineConfig } from 'drizzle-kit'
+import "dotenv/config";
+import { defineConfig } from "drizzle-kit";
 
-const databaseUrl = process.env.POSTGRES_URL
-if (!databaseUrl) throw new Error('POSTGRES_URL environment variable is required')
+const databaseUrl = process.env.POSTGRES_URL;
+if (!databaseUrl) {
+  throw new Error("POSTGRES_URL environment variable is required");
+}
 
 export default defineConfig({
-  dialect: 'postgresql',
-  schema: './src/schema/tables/*.ts',
-  out: './src/migrations',
   dbCredentials: {
     url: databaseUrl,
   },
+  dialect: "postgresql",
   migrations: {
-    table: '__drizzle_migrations',
-    schema: 'public',
+    schema: "public",
+    table: "__drizzle_migrations",
   },
-  verbose: true,
+  out: "./src/migrations",
+  schema: "./src/schema/tables/*.ts",
   strict: true,
-})
+  verbose: true,
+});

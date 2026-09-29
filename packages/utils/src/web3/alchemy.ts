@@ -1,30 +1,30 @@
-import { getChainMetadata } from './chain-metadata.js'
+import { getChainMetadata } from "./chain-metadata.js";
 
 // EVM ChainId -> Alchemy network slug mapping
 const alchemyEvmSlugs: Record<number, string> = {
   // Ethereum
-  1: 'eth-mainnet',
-  11155111: 'eth-sepolia',
+  1: "eth-mainnet",
+  11_155_111: "eth-sepolia",
   // Arbitrum
-  42161: 'arb-mainnet',
-  421614: 'arb-sepolia',
+  42_161: "arb-mainnet",
+  421_614: "arb-sepolia",
   // Base
-  8453: 'base-mainnet',
-  84532: 'base-sepolia',
+  8453: "base-mainnet",
+  84_532: "base-sepolia",
   // Optimism
-  10: 'opt-mainnet',
-  11155420: 'opt-sepolia',
+  10: "opt-mainnet",
+  11_155_420: "opt-sepolia",
   // Polygon
-  137: 'polygon-mainnet',
-  80002: 'polygon-amoy',
-} as const
+  137: "polygon-mainnet",
+  80_002: "polygon-amoy",
+} as const;
 
 // Solana cluster -> Alchemy network slug mapping
 const alchemySolanaSlugs: Record<string, string> = {
-  'mainnet-beta': 'solana-mainnet',
-  devnet: 'solana-devnet',
-  testnet: 'solana-testnet',
-} as const
+  devnet: "solana-devnet",
+  "mainnet-beta": "solana-mainnet",
+  testnet: "solana-testnet",
+} as const;
 
 /**
  * Gets the Alchemy RPC endpoint URL for a given chain ID.
@@ -46,19 +46,28 @@ const alchemySolanaSlugs: Record<string, string> = {
  * // Returns: 'https://solana-mainnet.g.alchemy.com/v2/your-api-key'
  * ```
  */
-export function getAlchemyRpcUrl(chainId: number | string, apiKey: string): string | undefined {
-  const metadata = getChainMetadata(chainId)
-  if (!metadata) return undefined
+export function getAlchemyRpcUrl(
+  chainId: number | string,
+  apiKey: string
+): string | undefined {
+  const metadata = getChainMetadata(chainId);
+  if (!metadata) {
+    return undefined;
+  }
 
-  let slug: string | undefined
+  let slug: string | undefined;
 
-  if (metadata.chainType === 'evm' && typeof chainId === 'number') slug = alchemyEvmSlugs[chainId]
-  else if (metadata.chainType === 'solana' && typeof chainId === 'string')
-    slug = alchemySolanaSlugs[chainId]
+  if (metadata.chainType === "evm" && typeof chainId === "number") {
+    slug = alchemyEvmSlugs[chainId];
+  } else if (metadata.chainType === "solana" && typeof chainId === "string") {
+    slug = alchemySolanaSlugs[chainId];
+  }
 
-  if (!slug) return undefined
+  if (!slug) {
+    return undefined;
+  }
 
-  return `https://${slug}.g.alchemy.com/v2/${apiKey}`
+  return `https://${slug}.g.alchemy.com/v2/${apiKey}`;
 }
 
 /**
@@ -83,18 +92,25 @@ export function getAlchemyRpcUrl(chainId: number | string, apiKey: string): stri
  * // Returns: 'https://cloudflare-eth.com'
  * ```
  */
-export function getRpcEndpoint(chainId: number | string, alchemyApiKey?: string): string {
+export function getRpcEndpoint(
+  chainId: number | string,
+  alchemyApiKey?: string
+): string {
   // Try Alchemy first if API key provided
   if (alchemyApiKey) {
-    const alchemyUrl = getAlchemyRpcUrl(chainId, alchemyApiKey)
-    if (alchemyUrl) return alchemyUrl
+    const alchemyUrl = getAlchemyRpcUrl(chainId, alchemyApiKey);
+    if (alchemyUrl) {
+      return alchemyUrl;
+    }
   }
 
   // Fallback to default RPC from chain metadata
-  const metadata = getChainMetadata(chainId)
-  if (metadata?.defaultRpcUrl) return metadata.defaultRpcUrl
+  const metadata = getChainMetadata(chainId);
+  if (metadata?.defaultRpcUrl) {
+    return metadata.defaultRpcUrl;
+  }
 
-  throw new Error(`No RPC endpoint available for chain ${chainId}`)
+  throw new Error(`No RPC endpoint available for chain ${chainId}`);
 }
 
 /**
@@ -111,13 +127,18 @@ export function getRpcEndpoint(chainId: number | string, alchemyApiKey?: string)
  * ```
  */
 export function isAlchemySupported(chainId: number | string): boolean {
-  const metadata = getChainMetadata(chainId)
-  if (!metadata) return false
+  const metadata = getChainMetadata(chainId);
+  if (!metadata) {
+    return false;
+  }
 
-  if (metadata.chainType === 'evm' && typeof chainId === 'number') return chainId in alchemyEvmSlugs
+  if (metadata.chainType === "evm" && typeof chainId === "number") {
+    return chainId in alchemyEvmSlugs;
+  }
 
-  if (metadata.chainType === 'solana' && typeof chainId === 'string')
-    return chainId in alchemySolanaSlugs
+  if (metadata.chainType === "solana" && typeof chainId === "string") {
+    return chainId in alchemySolanaSlugs;
+  }
 
-  return false
+  return false;
 }

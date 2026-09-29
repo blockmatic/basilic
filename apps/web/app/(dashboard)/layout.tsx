@@ -1,5 +1,7 @@
-import { DashboardShell } from './_dashboard-shell'
+import { DashboardShell } from "./_dashboard-shell";
 
-export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <DashboardShell>{children}</DashboardShell>
+export default function Layout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return <DashboardShell>{children}</DashboardShell>;
 }

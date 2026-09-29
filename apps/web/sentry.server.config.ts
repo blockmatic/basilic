@@ -1,1 +1,1 @@
-import './error-reporting.server.js'
+import "./error-reporting.server.js";

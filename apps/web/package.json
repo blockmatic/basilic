@@ -1,15 +1,8 @@
 {
   "name": "@repo/web",
   "version": "0.1.0",
-  "type": "module",
   "private": true,
-  "portless": {
-    "name": "basilic",
-    "script": "dev:app"
-  },
-  "engines": {
-    "node": "24.x"
-  },
+  "type": "module",
   "scripts": {
     "dev": "portless",
     "dev:app": "next dev --webpack",
@@ -21,13 +14,6 @@
     "build:e2e": "NEXT_PUBLIC_API_URL=http://localhost:3001 next build --webpack",
     "start:e2e": "NEXT_PUBLIC_API_URL=http://localhost:3001 next build --webpack && NODE_ENV=test next start",
     "start:e2e:server": "NODE_ENV=test next start",
-    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "lint:biome": "biome check .",
-    "lint:biome:fix": "biome check . --write",
-    "lint:eslint": "eslint . --max-warnings 0",
-    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
-    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
-    "format": "biome format . --write",
     "checktypes": "node ../../node_modules/@typescript/native/bin/tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "node scripts/run-e2e.mjs",
@@ -77,7 +63,6 @@
   },
   "devDependencies": {
     "@playwright/test": "~1.63.0",
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/bs58": "^5.0.0",
@@ -86,9 +71,15 @@
     "@types/react-dom": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "browserslist": "^4.29.0",
-    "eslint": "^10.11.0",
     "postcss": "^8.5.28",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vitest": "^5.0.1"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "portless": {
+    "name": "basilic",
+    "script": "dev:app"
   }
 }

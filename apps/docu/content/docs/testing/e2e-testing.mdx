@@ -33,12 +33,12 @@ Use **one worker** (PGlite cannot take concurrent writers). The setup project lo
 Import `page` from `@playwright/test` in all specs. Navigate to the target route in each authed test (`page.goto('/settings/...')`).
 
 ```typescript
-import { expect, test } from '@playwright/test'
+import { expect, test } from "@playwright/test";
 
-test('shows dashboard when authenticated', async ({ page }) => {
-  await page.goto('/')
-  await expect(page.getByRole('button', { name: 'Account' })).toBeVisible()
-})
+test("shows dashboard when authenticated", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Account" })).toBeVisible();
+});
 ```
 
 API Scalar E2E (`pnpm --filter @repo/api test:e2e:local`) does not call AI and does not require a Gateway key. API remote tests (`ai.spec.ts`) use `test/utils/ai-remote.ts`: skip 402 always; skip 502/503/504 only with placeholder/missing key — real key fails on 502. See [AI Architecture](/docs/architecture/ai).

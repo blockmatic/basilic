@@ -1,3 +1,3 @@
-import { defineEvalConfig } from 'eve/evals'
+import { defineEvalConfig } from "eve/evals";
 
-export default defineEvalConfig({})
+export default defineEvalConfig({});

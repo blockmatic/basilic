@@ -1,10 +1,11 @@
-import { generate, generateSecret, generateURI, verify } from 'otplib'
-import QRCode from 'qrcode'
-import { decrypt, encrypt } from './crypto.js'
-import { env } from './env.js'
+import { generate, generateSecret, generateURI, verify } from "otplib";
+import QRCode from "qrcode";
+
+import { decrypt, encrypt } from "./crypto.js";
+import { env } from "./env.js";
 
 export function generateTotpSecret(): string {
-  return generateSecret()
+  return generateSecret();
 }
 
 export function generateTotpUri({
@@ -12,47 +13,50 @@ export function generateTotpUri({
   issuer,
   label,
 }: {
-  secret: string
-  issuer: string
-  label: string
+  secret: string;
+  issuer: string;
+  label: string;
 }): string {
   return generateURI({
     issuer,
     label,
     secret,
-  })
+  });
 }
 
 export async function generateTotpCode(secret: string): Promise<string> {
-  return generate({ secret })
+  return generate({ secret });
 }
 
 export async function verifyTotpCode({
   secret,
   token,
 }: {
-  secret: string
-  token: string
+  secret: string;
+  token: string;
 }): Promise<boolean> {
-  const result = await verify({ secret, token, epochTolerance: 30 })
-  return result.valid
+  const result = await verify({ epochTolerance: 30, secret, token });
+  return result.valid;
 }
 
 export async function getTotpQrDataUrl(otpauthUri: string): Promise<string> {
-  return QRCode.toDataURL(otpauthUri, { width: 200, margin: 2 })
+  return QRCode.toDataURL(otpauthUri, { margin: 2, width: 200 });
 }
 
 export function encryptTotpSecret(secret: string): string | null {
-  return encrypt(secret)
+  return encrypt(secret);
 }
 
 export function decryptTotpSecret(encrypted: string): string | null {
-  return decrypt(encrypted)
+  return decrypt(encrypted);
 }
 
 export function getTotpIssuer(): string {
-  const issuer = env.TOTP_ISSUER ?? env.JWT_ISSUER
-  if (!issuer || typeof issuer !== 'string')
-    throw new Error('TOTP issuer is required: set TOTP_ISSUER or JWT_ISSUER in environment')
-  return issuer
+  const issuer = env.TOTP_ISSUER ?? env.JWT_ISSUER;
+  if (!issuer || typeof issuer !== "string") {
+    throw new Error(
+      "TOTP issuer is required: set TOTP_ISSUER or JWT_ISSUER in environment"
+    );
+  }
+  return issuer;
 }

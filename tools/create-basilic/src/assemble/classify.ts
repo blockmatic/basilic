@@ -1,74 +1,114 @@
-import { readFileSync } from 'node:fs'
-import { manifestPath } from '../paths.js'
+import { readFileSync } from "node:fs";
 
-export type Classification = 'include' | 'transform' | 'exclude'
+import { manifestPath } from "../paths.js";
 
-export type Manifest = {
-  exclude: string[]
-  transform: string[]
-  include: string[]
+export type Classification = "include" | "transform" | "exclude";
+
+export interface Manifest {
+  exclude: string[];
+  transform: string[];
+  include: string[];
 }
 
-export type ClassifiedPath = {
-  path: string
-  kind: Classification
-  rule: string
+export interface ClassifiedPath {
+  path: string;
+  kind: Classification;
+  rule: string;
 }
 
 export function loadManifest({ path = manifestPath }: { path?: string } = {}) {
-  return JSON.parse(readFileSync(path, 'utf8')) as Manifest
+  return JSON.parse(readFileSync(path, "utf-8")) as Manifest;
 }
 
 export function matchesRule({ path, rule }: { path: string; rule: string }) {
-  const normalized = rule.endsWith('/') ? rule.slice(0, -1) : rule
-  return path === normalized || path.startsWith(`${normalized}/`)
+  const normalized = rule.endsWith("/") ? rule.slice(0, -1) : rule;
+  return path === normalized || path.startsWith(`${normalized}/`);
 }
 
-export function longestMatch({ path, rules }: { path: string; rules: string[] }) {
-  let best: string | undefined
+export function longestMatch({
+  path,
+  rules,
+}: {
+  path: string;
+  rules: string[];
+}) {
+  let best: string | undefined;
   for (const rule of rules) {
-    if (!matchesRule({ path, rule })) continue
-    if (!best || rule.length > best.length) best = rule
+    if (!matchesRule({ path, rule })) {
+      continue;
+    }
+    if (!best || rule.length > best.length) {
+      best = rule;
+    }
   }
-  return best
+  return best;
 }
 
-const kindRank = { exclude: 0, transform: 1, include: 2 } as const
+const kindRank = { exclude: 0, include: 2, transform: 1 } as const;
 
-export function classifyPath({ path, manifest }: { path: string; manifest: Manifest }) {
+export function classifyPath({
+  path,
+  manifest,
+}: {
+  path: string;
+  manifest: Manifest;
+}) {
   const candidates = (
     [
-      { kind: 'exclude', rule: longestMatch({ path, rules: manifest.exclude }) },
-      { kind: 'transform', rule: longestMatch({ path, rules: manifest.transform }) },
-      { kind: 'include', rule: longestMatch({ path, rules: manifest.include }) },
+      {
+        kind: "exclude",
+        rule: longestMatch({ path, rules: manifest.exclude }),
+      },
+      {
+        kind: "transform",
+        rule: longestMatch({ path, rules: manifest.transform }),
+      },
+      {
+        kind: "include",
+        rule: longestMatch({ path, rules: manifest.include }),
+      },
     ] as const
-  ).filter((row): row is { kind: Classification; rule: string } => Boolean(row.rule))
+  ).filter((row): row is { kind: Classification; rule: string } =>
+    Boolean(row.rule)
+  );
 
-  if (candidates.length === 0) return null
-
-  candidates.sort((a, b) => {
-    const byLength = b.rule.length - a.rule.length
-    if (byLength !== 0) return byLength
-    return kindRank[a.kind] - kindRank[b.kind]
-  })
-
-  const winner = candidates[0]
-  if (!winner) return null
-  return { kind: winner.kind, rule: winner.rule }
-}
-
-export function classifyTrackedFiles({ files, manifest }: { files: string[]; manifest: Manifest }) {
-  const classified: ClassifiedPath[] = []
-  const unclassified: string[] = []
-
-  for (const path of files) {
-    const result = classifyPath({ path, manifest })
-    if (!result) {
-      unclassified.push(path)
-      continue
-    }
-    classified.push({ path, kind: result.kind, rule: result.rule })
+  if (candidates.length === 0) {
+    return null;
   }
 
-  return { classified, unclassified }
+  candidates.sort((a, b) => {
+    const byLength = b.rule.length - a.rule.length;
+    if (byLength !== 0) {
+      return byLength;
+    }
+    return kindRank[a.kind] - kindRank[b.kind];
+  });
+
+  const winner = candidates[0];
+  if (!winner) {
+    return null;
+  }
+  return { kind: winner.kind, rule: winner.rule };
+}
+
+export function classifyTrackedFiles({
+  files,
+  manifest,
+}: {
+  files: string[];
+  manifest: Manifest;
+}) {
+  const classified: ClassifiedPath[] = [];
+  const unclassified: string[] = [];
+
+  for (const path of files) {
+    const result = classifyPath({ manifest, path });
+    if (!result) {
+      unclassified.push(path);
+      continue;
+    }
+    classified.push({ kind: result.kind, path, rule: result.rule });
+  }
+
+  return { classified, unclassified };
 }

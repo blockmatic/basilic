@@ -1,23 +1,24 @@
-import fastifyJwt from '@fastify/jwt'
-import type { FastifyPluginAsync } from 'fastify'
-import fp from 'fastify-plugin'
-import { env } from '../lib/env.js'
+import fastifyJwt from "@fastify/jwt";
+import type { FastifyPluginAsync } from "fastify";
+import fp from "fastify-plugin";
 
-const jwtPlugin: FastifyPluginAsync = async fastify => {
+import { env } from "../lib/env.js";
+
+const jwtPlugin: FastifyPluginAsync = async (fastify) => {
   await fastify.register(fastifyJwt, {
     secret: env.JWT_SECRET,
     sign: {
-      algorithm: 'HS256',
+      algorithm: "HS256",
     },
     verify: {
-      allowedIss: env.JWT_ISSUER,
+      algorithms: ["HS256"],
       allowedAud: env.JWT_AUDIENCE,
-      algorithms: ['HS256'],
+      allowedIss: env.JWT_ISSUER,
     },
-  })
-}
+  });
+};
 
 export default fp(jwtPlugin, {
-  name: 'jwt',
   dependencies: [],
-})
+  name: "jwt",
+});

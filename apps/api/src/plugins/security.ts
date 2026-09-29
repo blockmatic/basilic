@@ -1,89 +1,105 @@
-import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify'
-import fp from 'fastify-plugin'
-import { env } from '../lib/env.js'
-import { detectSuspiciousActivity, logSecurityEvent } from '../lib/security.js'
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
+import fp from "fastify-plugin";
 
-type SecurityPluginOptions = Record<string, never>
+import { env } from "../lib/env.js";
+import { detectSuspiciousActivity, logSecurityEvent } from "../lib/security.js";
 
-const security: FastifyPluginAsync<SecurityPluginOptions> = async fastify => {
+type SecurityPluginOptions = Record<string, never>;
+
+const security: FastifyPluginAsync<SecurityPluginOptions> = async (fastify) => {
   // Only add security headers if enabled
-  if (!env.SECURITY_HEADERS_ENABLED) return
+  if (!env.SECURITY_HEADERS_ENABLED) {
+    return;
+  }
 
   // onRequest hook: security headers + suspicious activity detection
-  fastify.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
-    detectSuspiciousActivity(request)
-    // Prevent MIME type sniffing
-    reply.header('X-Content-Type-Options', 'nosniff')
+  fastify.addHook(
+    "onRequest",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      detectSuspiciousActivity(request);
+      // Prevent MIME type sniffing
+      reply.header("X-Content-Type-Options", "nosniff");
 
-    // Prevent clickjacking attacks
-    reply.header('X-Frame-Options', 'DENY')
+      // Prevent clickjacking attacks
+      reply.header("X-Frame-Options", "DENY");
 
-    // Enable XSS protection (legacy but still useful)
-    reply.header('X-XSS-Protection', '1; mode=block')
+      // Enable XSS protection (legacy but still useful)
+      reply.header("X-XSS-Protection", "1; mode=block");
 
-    // Control referrer information
-    reply.header('Referrer-Policy', 'strict-origin-when-cross-origin')
+      // Control referrer information
+      reply.header("Referrer-Policy", "strict-origin-when-cross-origin");
 
-    // Restrict browser features
-    reply.header(
-      'Permissions-Policy',
-      'camera=(), microphone=(), geolocation=(), interest-cohort=()',
-    )
+      // Restrict browser features
+      reply.header(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+      );
 
-    // Content Security Policy - more restrictive in production
-    const path = request.url?.split('?')[0] ?? ''
-    const isReferenceRoute = path.startsWith('/reference')
-    const isRootLanding = path === '/' || path === ''
+      // Content Security Policy - more restrictive in production
+      const path = request.url?.split("?")[0] ?? "";
+      const isReferenceRoute = path.startsWith("/reference");
+      const isRootLanding = path === "/" || path === "";
 
-    if (env.NODE_ENV === 'production' && !isReferenceRoute && !isRootLanding) {
-      // Strict CSP for API routes in production
-      const cspDirectives = [
-        "default-src 'self'",
-        "script-src 'self'",
-        "style-src 'self'",
-        "img-src 'self' data: https:",
-        "font-src 'self' data:",
-        "connect-src 'self'",
-        "frame-ancestors 'none'",
-      ]
-      reply.header('Content-Security-Policy', cspDirectives.join('; '))
-    } else {
-      // Relaxed CSP for Swagger UI (/reference routes) or development
-      const cspDirectives = [
-        "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net", // Allow Scalar CDN
-        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
-        "img-src 'self' data: https:",
-        "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.scalar.com", // Allow Scalar fonts
-        "connect-src 'self' http://localhost:* https://basilic.localhost https://*.basilic.localhost https://fonts.scalar.com",
-        "frame-ancestors 'none'",
-      ]
-      reply.header('Content-Security-Policy', cspDirectives.join('; '))
+      if (
+        env.NODE_ENV === "production" &&
+        !isReferenceRoute &&
+        !isRootLanding
+      ) {
+        // Strict CSP for API routes in production
+        const cspDirectives = [
+          "default-src 'self'",
+          "script-src 'self'",
+          "style-src 'self'",
+          "img-src 'self' data: https:",
+          "font-src 'self' data:",
+          "connect-src 'self'",
+          "frame-ancestors 'none'",
+        ];
+        reply.header("Content-Security-Policy", cspDirectives.join("; "));
+      } else {
+        // Relaxed CSP for Swagger UI (/reference routes) or development
+        const cspDirectives = [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net", // Allow Scalar CDN
+          "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+          "img-src 'self' data: https:",
+          "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.scalar.com", // Allow Scalar fonts
+          "connect-src 'self' http://localhost:* https://basilic.localhost https://*.basilic.localhost https://fonts.scalar.com",
+          "frame-ancestors 'none'",
+        ];
+        reply.header("Content-Security-Policy", cspDirectives.join("; "));
+      }
+
+      // Strict Transport Security (HTTPS only in production)
+      if (env.NODE_ENV === "production") {
+        reply.header(
+          "Strict-Transport-Security",
+          "max-age=31536000; includeSubDomains"
+        );
+      }
     }
-
-    // Strict Transport Security (HTTPS only in production)
-    if (env.NODE_ENV === 'production')
-      reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
-  })
+  );
 
   // onError hook: security event logging
   fastify.addHook(
-    'onError',
+    "onError",
     async (
       request: FastifyRequest,
       _reply: FastifyReply,
-      error: Error & { statusCode?: number },
+      error: Error & { statusCode?: number }
     ) => {
       // Log security-relevant errors
-      if (error.statusCode === 429) logSecurityEvent(request, 'rate_limit_exceeded')
-      else if (error.statusCode === 401 || error.statusCode === 403)
-        logSecurityEvent(request, 'authentication_failure', {
+      if (error.statusCode === 429) {
+        logSecurityEvent(request, "rate_limit_exceeded");
+      } else if (error.statusCode === 401 || error.statusCode === 403) {
+        logSecurityEvent(request, "authentication_failure", {
           statusCode: error.statusCode,
-        })
-    },
-  )
-}
+        });
+      }
+    }
+  );
+};
 
 export default fp(security, {
-  name: 'security-headers',
-})
+  name: "security-headers",
+});

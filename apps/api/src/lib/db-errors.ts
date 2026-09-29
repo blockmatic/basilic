@@ -3,9 +3,9 @@ export function getPgErrorCode(err: unknown): string | undefined {
   return (
     (err as { cause?: { code?: string }; code?: string }).cause?.code ??
     (err as { code?: string }).code
-  )
+  );
 }
 
 export function isUniqueViolation(err: unknown): boolean {
-  return getPgErrorCode(err) === '23505'
+  return getPgErrorCode(err) === "23505";
 }

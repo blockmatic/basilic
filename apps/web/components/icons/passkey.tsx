@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export function Passkey(props: SVGProps<SVGSVGElement>) {
   return (
@@ -14,5 +14,5 @@ export function Passkey(props: SVGProps<SVGSVGElement>) {
         <path d="M7.061 7.662A6.85 6.85 0 0 1 10.13 5.94a6.8 6.8 0 0 1 3.513.033a6.85 6.85 0 0 1 3.036 1.78a6.9 6.9 0 0 1 1.763 3.062m-6.639.893c.615 1.659.802 3.448.542 5.199a10.9 10.9 0 0 1-2.192 4.343M5.916 10.305A5.8 5.8 0 0 0 6.1 13.88a3.82 3.82 0 0 1-.1 2.565a3.8 3.8 0 0 1-1.698 1.915M17.95 5.119c1.723.893 2.857 3.35 3.3 4.963m-2.39 3.4a14.6 14.6 0 0 1-.27 5.162m-9.521-1.352a5.4 5.4 0 0 1-1.983 2.394" />
       </g>
     </svg>
-  )
+  );
 }

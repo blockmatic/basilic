@@ -1,16 +1,18 @@
-import { authCookieSchema } from './auth-schemas'
+import { authCookieSchema } from "./auth-schemas";
 
 export function parseAuthCookie(value: string | undefined): {
-  token: string | null
-  refreshToken: string | null
+  token: string | null;
+  refreshToken: string | null;
 } {
-  if (!value) return { token: null, refreshToken: null }
+  if (!value) {
+    return { token: null, refreshToken: null };
+  }
   try {
-    const parsed = authCookieSchema.safeParse(JSON.parse(value))
+    const parsed = authCookieSchema.safeParse(JSON.parse(value));
     return parsed.success
-      ? { token: parsed.data.token, refreshToken: parsed.data.refreshToken }
-      : { token: null, refreshToken: null }
+      ? { refreshToken: parsed.data.refreshToken, token: parsed.data.token }
+      : { refreshToken: null, token: null };
   } catch {
-    return { token: null, refreshToken: null }
+    return { refreshToken: null, token: null };
   }
 }

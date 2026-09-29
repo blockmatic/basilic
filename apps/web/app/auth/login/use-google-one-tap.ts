@@ -1,21 +1,22 @@
-'use client'
+"use client";
 
-import { ApiError } from '@repo/core'
-import { useReactApiConfig } from '@repo/react'
-import { logger } from '@repo/utils/logger/client'
-import { useMutation } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
-import { capture } from '@/lib/analytics'
-import { updateAuthTokens } from '@/lib/auth/auth-client'
-import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
-import { env } from '@/lib/env'
+import { ApiError } from "@repo/core";
+import { useReactApiConfig } from "@repo/react";
+import { logger } from "@repo/utils/logger/client";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
-type MomentNotification = {
-  isDisplayed: () => boolean
-  isSkippedMoment: () => boolean
-  isNotDisplayed?: () => boolean
+import { capture } from "@/lib/analytics";
+import { updateAuthTokens } from "@/lib/auth/auth-client";
+import { getAuthErrorMessage } from "@/lib/auth/auth-error-messages";
+import { env } from "@/lib/env";
+
+interface MomentNotification {
+  isDisplayed: () => boolean;
+  isSkippedMoment: () => boolean;
+  isNotDisplayed?: () => boolean;
 }
 
 declare global {
@@ -24,67 +25,81 @@ declare global {
       accounts: {
         id: {
           initialize: (config: {
-            client_id: string
-            callback: (response: { credential: string }) => void
-            context?: string
-          }) => void
-          prompt: (momentListener?: (notification: MomentNotification) => void) => void
-        }
-      }
-    }
+            client_id: string;
+            callback: (response: { credential: string }) => void;
+            context?: string;
+          }) => void;
+          prompt: (
+            momentListener?: (notification: MomentNotification) => void
+          ) => void;
+        };
+      };
+    };
   }
 }
 
-const gisScriptUrl = 'https://accounts.google.com/gsi/client'
+const gisScriptUrl = "https://accounts.google.com/gsi/client";
 
-const loadPromises = new Map<string, Promise<void>>()
+const loadPromises = new Map<string, Promise<void>>();
 
 function loadScript(src: string): Promise<void> {
-  const existing = loadPromises.get(src)
-  if (existing) return existing
+  const existing = loadPromises.get(src);
+  if (existing) {
+    return existing;
+  }
 
-  const el = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`)
+  const el = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
   const rawPromise = el
     ? new Promise<void>((resolve, reject) => {
         if (window.google?.accounts?.id) {
-          resolve()
-          return
+          resolve();
+          return;
         }
-        el.addEventListener('load', () => resolve(), { once: true })
+        el.addEventListener("load", () => resolve(), { once: true });
         el.addEventListener(
-          'error',
+          "error",
           () => {
-            el.remove()
-            reject(new Error('Failed to load Google Identity Services'))
+            el.remove();
+            reject(new Error("Failed to load Google Identity Services"));
           },
-          { once: true },
-        )
+          { once: true }
+        );
       })
     : new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        script.onload = () => resolve()
+        const script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        script.onload = () => resolve();
         script.onerror = () => {
-          script.remove()
-          reject(new Error('Failed to load Google Identity Services'))
-        }
-        document.head.appendChild(script)
-      })
-  const promise = rawPromise.catch(err => {
-    loadPromises.delete(src)
-    throw err
-  })
-  loadPromises.set(src, promise)
-  return promise
+          script.remove();
+          reject(new Error("Failed to load Google Identity Services"));
+        };
+        document.head.append(script);
+      });
+  const promise = rawPromise.catch((error) => {
+    loadPromises.delete(src);
+    throw error;
+  });
+  loadPromises.set(src, promise);
+  return promise;
 }
 
-function shouldFallbackToRedirect(notification: MomentNotification | undefined): boolean {
-  if (!notification) return false
-  if (notification.isSkippedMoment?.()) return true
-  if (typeof notification.isNotDisplayed === 'function' && notification.isNotDisplayed())
-    return true
-  return false
+function shouldFallbackToRedirect(
+  notification: MomentNotification | undefined
+): boolean {
+  if (!notification) {
+    return false;
+  }
+  if (notification.isSkippedMoment?.()) {
+    return true;
+  }
+  if (
+    typeof notification.isNotDisplayed === "function" &&
+    notification.isNotDisplayed()
+  ) {
+    return true;
+  }
+  return false;
 }
 
 export function useGoogleOneTap({
@@ -92,122 +107,143 @@ export function useGoogleOneTap({
   onSkipped,
   enabled = true,
 }: {
-  onCredential?: (credential: string) => Promise<void>
-  onSkipped?: () => void
-  enabled?: boolean
+  onCredential?: (credential: string) => Promise<void>;
+  onSkipped?: () => void;
+  enabled?: boolean;
 } = {}) {
-  const router = useRouter()
-  const { client, queryClientDefaults } = useReactApiConfig()
-  const clientId = env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-  const [isReady, setIsReady] = useState(false)
-  const [onCredentialPending, setOnCredentialPending] = useState(false)
-  const [loadError, setLoadError] = useState(false)
-  const handledRef = useRef(false)
+  const router = useRouter();
+  const { client, queryClientDefaults } = useReactApiConfig();
+  const clientId = env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const [isReady, setIsReady] = useState(false);
+  const [onCredentialPending, setOnCredentialPending] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const handledRef = useRef(false);
 
-  const { mutateAsync: verifyIdToken, isPending: isVerifyPending } = useMutation({
-    mutationFn: (credential: string) =>
-      client.auth.oauth.google.verifyIdToken({ body: { credential }, throwOnError: true }),
-    ...queryClientDefaults,
-  })
+  const { mutateAsync: verifyIdToken, isPending: isVerifyPending } =
+    useMutation({
+      mutationFn: (credential: string) =>
+        client.auth.oauth.google.verifyIdToken({
+          body: { credential },
+          throwOnError: true,
+        }),
+      ...queryClientDefaults,
+    });
 
   const handleMoment = useCallback(
     (notification: MomentNotification | undefined) => {
       if (shouldFallbackToRedirect(notification)) {
-        handledRef.current = false
-        onSkipped?.()
+        handledRef.current = false;
+        onSkipped?.();
       }
     },
-    [onSkipped],
-  )
+    [onSkipped]
+  );
 
   const handleCredential = useCallback(
     async (credential: string) => {
-      if (handledRef.current) return
-      handledRef.current = true
+      if (handledRef.current) {
+        return;
+      }
+      handledRef.current = true;
 
       if (onCredential) {
-        setOnCredentialPending(true)
+        setOnCredentialPending(true);
         try {
-          await onCredential(credential)
-        } catch (err) {
-          handledRef.current = false
-          throw err
+          await onCredential(credential);
+        } catch (error) {
+          handledRef.current = false;
+          throw error;
         } finally {
-          setOnCredentialPending(false)
+          setOnCredentialPending(false);
         }
-        return
+        return;
       }
 
       try {
-        const data = await verifyIdToken(credential)
-        await updateAuthTokens({ token: data.token, refreshToken: data.refreshToken })
-        capture({ name: 'auth_succeeded', method: 'oauth_google' })
-        router.push('/')
-      } catch (err) {
+        const data = await verifyIdToken(credential);
+        await updateAuthTokens({
+          refreshToken: data.refreshToken,
+          token: data.token,
+        });
+        capture({ method: "oauth_google", name: "auth_succeeded" });
+        router.push("/");
+      } catch (error) {
         const errorCode =
-          err instanceof ApiError
-            ? err.status === 503
-              ? 'oauth_not_configured'
-              : err.status === 429
-                ? 'rate_limit_exceeded'
-                : 'oauth_failed_google'
-            : 'oauth_failed_google'
-        capture({ name: 'auth_failed', method: 'oauth_google', errorCode })
-        if (err instanceof ApiError)
-          if (err.status === 503) toast.error(getAuthErrorMessage('oauth_not_configured'))
-          else if (err.status === 429) toast.error(getAuthErrorMessage('rate_limit_exceeded'))
-          else toast.error(getAuthErrorMessage('oauth_failed_google'))
-        else toast.error(getAuthErrorMessage('oauth_failed_google'))
+          error instanceof ApiError
+            ? error.status === 503
+              ? "oauth_not_configured"
+              : error.status === 429
+                ? "rate_limit_exceeded"
+                : "oauth_failed_google"
+            : "oauth_failed_google";
+        capture({ name: "auth_failed", method: "oauth_google", errorCode });
+        if (error instanceof ApiError)
+          if (error.status === 503)
+            toast.error(getAuthErrorMessage("oauth_not_configured"));
+          else if (error.status === 429) {
+            toast.error(getAuthErrorMessage("rate_limit_exceeded"));
+          } else {
+            toast.error(getAuthErrorMessage("oauth_failed_google"));
+          }
+        else {
+          toast.error(getAuthErrorMessage("oauth_failed_google"));
+        }
 
-        handledRef.current = false
+        handledRef.current = false;
       }
     },
-    [onCredential, router, verifyIdToken],
-  )
+    [onCredential, router, verifyIdToken]
+  );
 
   useEffect(() => {
-    if (!enabled || !clientId) return
+    if (!enabled || !clientId) {
+      return;
+    }
 
-    let cancelled = false
+    let cancelled = false;
     loadScript(gisScriptUrl)
       .then(() => {
-        if (cancelled || !window.google?.accounts?.id) return
+        if (cancelled || !window.google?.accounts?.id) {
+          return;
+        }
         window.google.accounts.id.initialize({
+          callback: (response) => handleCredential(response.credential),
           client_id: clientId,
-          callback: response => handleCredential(response.credential),
-          context: 'signin',
-        })
-        window.google.accounts.id.prompt(handleMoment)
-        if (!cancelled) setIsReady(true)
+          context: "signin",
+        });
+        window.google.accounts.id.prompt(handleMoment);
+        if (!cancelled) {
+          setIsReady(true);
+        }
       })
-      .catch(err => {
-        if (!cancelled) setLoadError(true)
-        logger.warn({ err }, 'Google Identity Services failed to load')
-      })
+      .catch((error) => {
+        if (!cancelled) setLoadError(true);
+        logger.warn({ error }, "Google Identity Services failed to load");
+      });
 
     return () => {
-      cancelled = true
-    }
-  }, [clientId, enabled, handleCredential, handleMoment])
+      cancelled = true;
+    };
+  }, [clientId, enabled, handleCredential, handleMoment]);
 
   const prompt = useCallback(() => {
     if (loadError) {
-      onSkipped?.()
-      toast.error(getAuthErrorMessage('oauth_not_configured'))
-      return
+      onSkipped?.();
+      toast.error(getAuthErrorMessage("oauth_not_configured"));
+      return;
     }
     if (window.google?.accounts?.id && clientId) {
-      handledRef.current = false
-      window.google.accounts.id.prompt(handleMoment)
+      handledRef.current = false;
+      window.google.accounts.id.prompt(handleMoment);
     } else if (!clientId) {
-      toast.error(getAuthErrorMessage('oauth_not_configured'))
+      toast.error(getAuthErrorMessage("oauth_not_configured"));
     }
-  }, [clientId, handleMoment, loadError, onSkipped])
+  }, [clientId, handleMoment, loadError, onSkipped]);
 
   return {
-    isReady: !!clientId && isReady && !loadError,
-    isPending: onCredential ? onCredentialPending : isVerifyPending,
-    prompt,
     isConfigured: !!clientId,
-  }
+    isPending: onCredential ? onCredentialPending : isVerifyPending,
+    isReady: !!clientId && isReady && !loadError,
+    prompt,
+  };
 }

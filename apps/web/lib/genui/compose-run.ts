@@ -1,75 +1,100 @@
 import {
-  type Experimental_CompositionEvaluator,
-  type Experimental_CompositionEvent,
-  type Experimental_CompositionStep,
   experimental_composeSpec,
   experimental_createEvaluator,
-  type Spec,
-} from '@json-render/core'
-import { isChartRecipeId, isOverviewRecipeId, isTableRecipeId } from './candidates'
-import { boardCatalog } from './catalog'
-import { boardCandidates, recipeIdFromElement, tableIdFromChoice } from './recipe-map'
-import type { AccountState, ViewConfig } from './view-config'
+} from "@json-render/core";
+import type {
+  Experimental_CompositionEvaluator,
+  Experimental_CompositionEvent,
+  Experimental_CompositionStep,
+  Spec,
+} from "@json-render/core";
+
+import {
+  isChartRecipeId,
+  isOverviewRecipeId,
+  isTableRecipeId,
+} from "./candidates";
+import { boardCatalog } from "./catalog";
+import {
+  boardCandidates,
+  recipeIdFromElement,
+  tableIdFromChoice,
+} from "./recipe-map";
+import type { AccountState, ViewConfig } from "./view-config";
 
 export type ComposeBoardResult =
-  | { skip: false; spec: Spec; elements: string[]; stopReason: 'finish' }
+  | { skip: false; spec: Spec; elements: string[]; stopReason: "finish" }
   | {
-      skip: true
-      reason: 'missing-key' | 'unavailable' | 'limit' | 'no-table'
-    }
+      skip: true;
+      reason: "missing-key" | "unavailable" | "limit" | "no-table";
+    };
 
-function tableIdFromSteps({ steps }: { steps: Experimental_CompositionStep[] }) {
-  for (const step of steps)
+function tableIdFromSteps({
+  steps,
+}: {
+  steps: Experimental_CompositionStep[];
+}) {
+  for (const step of steps) {
     for (const answer of Object.values(step.answers ?? {})) {
-      const tableId = tableIdFromChoice({ choice: answer.choice })
-      if (tableId) return tableId
+      const tableId = tableIdFromChoice({ choice: answer.choice });
+      if (tableId) return tableId;
     }
-  return undefined
+  }
+  return;
 }
 
 function elementsFromSpec({
   spec,
   steps,
 }: {
-  spec: Spec
-  steps: Experimental_CompositionStep[]
+  spec: Spec;
+  steps: Experimental_CompositionStep[];
 }): string[] {
-  const root = spec.elements[spec.root]
+  const root = spec.elements[spec.root];
   const children = Array.isArray(root?.children)
-    ? root.children.filter((id): id is string => typeof id === 'string')
-    : Object.keys(spec.elements).filter(id => id !== spec.root)
-  const tableId = tableIdFromSteps({ steps })
-  const next: string[] = []
-  const seen = new Set<string>()
+    ? root.children.filter((id): id is string => typeof id === "string")
+    : Object.keys(spec.elements).filter((id) => id !== spec.root);
+  const tableId = tableIdFromSteps({ steps });
+  const next: string[] = [];
+  const seen = new Set<string>();
   for (const id of children) {
-    const element = spec.elements[id]
-    if (!element) continue
+    const element = spec.elements[id];
+    if (!element) {
+      continue;
+    }
     const recipeId = recipeIdFromElement({
       element,
-      tableId: element.type === 'DataTable' ? tableId : undefined,
-    })
-    if (!recipeId || seen.has(recipeId)) continue
-    seen.add(recipeId)
-    next.push(recipeId)
+      tableId: element.type === "DataTable" ? tableId : undefined,
+    });
+    if (!recipeId || seen.has(recipeId)) {
+      continue;
+    }
+    seen.add(recipeId);
+    next.push(recipeId);
   }
-  return next
+  return next;
 }
 
 function specHasDataTable({ spec }: { spec: Spec }): boolean {
-  return Object.values(spec.elements).some(element => element.type === 'DataTable')
+  return Object.values(spec.elements).some(
+    (element) => element.type === "DataTable"
+  );
 }
 
 function specHasChart({ spec }: { spec: Spec }): boolean {
   return Object.values(spec.elements).some(
-    element =>
-      element.type === 'LineChart' || element.type === 'AreaChart' || element.type === 'BarChart',
-  )
+    (element) =>
+      element.type === "LineChart" ||
+      element.type === "AreaChart" ||
+      element.type === "BarChart"
+  );
 }
 
 function specHasOverview({ spec }: { spec: Spec }): boolean {
   return Object.values(spec.elements).some(
-    element => element.type === 'MetricTile' || element.type === 'TrendingTable',
-  )
+    (element) =>
+      element.type === "MetricTile" || element.type === "TrendingTable"
+  );
 }
 
 export async function runComposeBoardSpec({
@@ -81,56 +106,79 @@ export async function runComposeBoardSpec({
   model,
   evaluate,
 }: {
-  prompt: string
-  view: ViewConfig
-  caption: string
-  account: AccountState
-  apiKey?: string
-  model: string
-  evaluate?: Experimental_CompositionEvaluator
+  prompt: string;
+  view: ViewConfig;
+  caption: string;
+  account: AccountState;
+  apiKey?: string;
+  model: string;
+  evaluate?: Experimental_CompositionEvaluator;
 }): Promise<ComposeBoardResult> {
   const evaluator =
-    evaluate ?? (apiKey ? experimental_createEvaluator({ apiKey, model }) : undefined)
-  if (!evaluator) return { skip: true, reason: 'missing-key' }
+    evaluate ??
+    (apiKey ? experimental_createEvaluator({ apiKey, model }) : undefined);
+  if (!evaluator) {
+    return { skip: true, reason: "missing-key" };
+  }
 
-  let complete: Extract<Experimental_CompositionEvent, { type: 'complete' }> | null = null
+  let complete: Extract<
+    Experimental_CompositionEvent,
+    { type: "complete" }
+  > | null = null;
 
   for await (const event of experimental_composeSpec({
-    catalog: boardCatalog,
     candidates: boardCandidates({ surface: view.surface }),
-    prompt,
-    evaluate: evaluator,
-    initialState: { caption, account },
-    instructions: {
-      root: 'Use the board stack as the root.',
-      next:
-        view.surface === 'dashboard'
-          ? 'Include BTC.D, total-cap, and volume metric tiles, table-trending, and one DataTable (table-ranked or table-watchlist). Include one chart recipe only when a symbol is in context. Do not pin widgets.'
-          : 'Always include one DataTable recipe unless the surface is chart, then include one chart recipe and optionally a DataTable. Prefer table-movers when the user asks what moved. Include account when the surface is the signed-in profile.',
-    },
+    catalog: boardCatalog,
     context: { surface: view.surface, title: view.title },
-  }))
-    if (event.type === 'complete') complete = event
+    evaluate: evaluator,
+    initialState: { account, caption },
+    instructions: {
+      next:
+        view.surface === "dashboard"
+          ? "Include BTC.D, total-cap, and volume metric tiles, table-trending, and one DataTable (table-ranked or table-watchlist). Include one chart recipe only when a symbol is in context. Do not pin widgets."
+          : "Always include one DataTable recipe unless the surface is chart, then include one chart recipe and optionally a DataTable. Prefer table-movers when the user asks what moved. Include account when the surface is the signed-in profile.",
+      root: "Use the board stack as the root.",
+    },
+    prompt,
+  })) {
+    if (event.type === "complete") complete = event;
+  }
 
-  if (!complete) return { skip: true, reason: 'unavailable' }
-  if (complete.stopReason === 'unavailable') return { skip: true, reason: 'unavailable' }
-  if (complete.stopReason === 'limit') return { skip: true, reason: 'limit' }
+  if (!complete) {
+    return { skip: true, reason: "unavailable" };
+  }
+  if (complete.stopReason === "unavailable") {
+    return { skip: true, reason: "unavailable" };
+  }
+  if (complete.stopReason === "limit") {
+    return { skip: true, reason: "limit" };
+  }
   if (
     !complete.spec ||
     (!specHasDataTable({ spec: complete.spec }) &&
       !specHasChart({ spec: complete.spec }) &&
       !specHasOverview({ spec: complete.spec }))
-  )
-    return { skip: true, reason: 'no-table' }
+  ) {
+    return { skip: true, reason: "no-table" };
+  }
 
-  const elements = elementsFromSpec({ spec: complete.spec, steps: complete.steps })
-  if (!elements.some(id => isTableRecipeId(id) || isChartRecipeId(id) || isOverviewRecipeId(id)))
-    return { skip: true, reason: 'no-table' }
+  const elements = elementsFromSpec({
+    spec: complete.spec,
+    steps: complete.steps,
+  });
+  if (
+    !elements.some(
+      (id) =>
+        isTableRecipeId(id) || isChartRecipeId(id) || isOverviewRecipeId(id)
+    )
+  ) {
+    return { skip: true, reason: "no-table" };
+  }
 
   return {
+    elements,
     skip: false,
     spec: complete.spec,
-    elements,
-    stopReason: 'finish',
-  }
+    stopReason: "finish",
+  };
 }

@@ -1,9 +1,9 @@
-'use client'
-import { useNuqsDebug } from './use-nuqs-debug.js'
-import { useVConsole } from './use-vconsole.js'
+"use client";
+import { useNuqsDebug } from "./use-nuqs-debug.js";
+import { useVConsole } from "./use-vconsole.js";
 
-export * from './use-nuqs-debug.js'
-export * from './use-vconsole.js'
+export * from "./use-nuqs-debug.js";
+export * from "./use-vconsole.js";
 
 /**
  * Composite hook that combines VConsole (mobile debug panel) and nuqs debug toggles.
@@ -15,5 +15,5 @@ export function useDevtools() {
   return {
     ...useVConsole(),
     ...useNuqsDebug(),
-  }
+  };
 }

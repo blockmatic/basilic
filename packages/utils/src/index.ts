@@ -1,4 +1,4 @@
 // Async utilities
-export * from './async/index.js'
+export * from "./async/index.js";
 // Chain utilities
-export * from './web3/index.js'
+export * from "./web3/index.js";

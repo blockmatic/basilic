@@ -1,7 +1,8 @@
-import type { SearchParams } from 'nuqs/server'
-import { getUserInfo } from '@/lib/auth/auth-utils'
-import { loadChrome } from '@/lib/coins/chrome.server'
-import { toCoinsQuery } from '@/lib/coins/search-query'
+import type { SearchParams } from "nuqs/server";
+
+import { getUserInfo } from "@/lib/auth/auth-utils";
+import { loadChrome } from "@/lib/coins/chrome.server";
+import { toCoinsQuery } from "@/lib/coins/search-query";
 import {
   accountFromUser,
   composeSurface,
@@ -10,33 +11,42 @@ import {
   splitBoardView,
   viewFromSearchQuery,
   viewTitle,
-} from '@/lib/genui'
-import { loadBoardView } from '@/lib/genui/surface.server'
-import { fetchMarkets, fetchOverview } from '../markets/fetch-markets'
-import { CoinBoard } from './board'
+} from "@/lib/genui";
+import { loadBoardView } from "@/lib/genui/surface.server";
 
-export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const [view, chrome] = await Promise.all([loadBoardView(searchParams), loadChrome(searchParams)])
-  const { query, surface, period, chart, focus, columns, elements } = splitBoardView({ view })
-  const fetchQuery = overlayAccountQuery({ query, surface })
+import { fetchMarkets, fetchOverview } from "../markets/fetch-markets";
+import { CoinBoard } from "./board";
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const [view, chrome] = await Promise.all([
+    loadBoardView(searchParams),
+    loadChrome(searchParams),
+  ]);
+  const { query, surface, period, chart, focus, columns, elements } =
+    splitBoardView({ view });
+  const fetchQuery = overlayAccountQuery({ query, surface });
   const [markets, user, overview] = await Promise.all([
     fetchMarkets({ query: toCoinsQuery({ query: fetchQuery }) }),
     getUserInfo(),
     fetchOverview(),
-  ])
-  const title = viewTitle({ surface, caption: markets.queryCaption })
+  ]);
+  const title = viewTitle({ caption: markets.queryCaption, surface });
   const viewConfig = viewFromSearchQuery({
-    query: fetchQuery,
-    title,
-    surface,
-    period,
     chart,
     columns,
     elements,
-  })
+    period,
+    query: fetchQuery,
+    surface,
+    title,
+  });
   const spec = elements.length
     ? specFromSelection({ elements, view: viewConfig })
-    : composeSurface({ view: viewConfig })
+    : composeSurface({ view: viewConfig });
 
   return (
     <CoinBoard
@@ -58,5 +68,5 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
       initialGlobal={overview.global}
       initialTrending={overview.trending}
     />
-  )
+  );
 }

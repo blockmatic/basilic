@@ -24,7 +24,7 @@ Use the existing `tools/` directory. Adding `tooling/` would duplicate a boundar
 | --- | --- |
 | `pnpm-workspace.yaml` includes `apps/*`, `packages/*`, `tools/*` | Reuse the workspace layout. |
 | `packages/cli` is private `@repo/cli`, with a `basilic` executable | A generator called `basilic` would collide with the API CLI. |
-| `tools/eslint` and `tools/typescript` provide workspace dependencies | Copying only `apps/`, or excluding all `tools/`, produces an incomplete project. |
+| Root Ultracite configs (`oxlint.config.ts`, `oxfmt.config.ts`) and `tools/typescript` provide workspace lint and TypeScript | Copying only `apps/`, or excluding all `tools/`, produces an incomplete project. |
 | Root README and After fork describe generator-first adoption; clone and GitHub template remain for contributors | New products use `create-basilic`. |
 | Publishing documentation describes package packing and manual publishing | Packing support exists, but is not an automated release policy. |
 | Checked-in workflows cover quality, security, mobile, scaffold classification, Release Please, and npm publish | Conventional PR titles are gated. Release Please is upstream-only. |
@@ -54,7 +54,7 @@ Maintain one version-controlled **include-and-transform manifest**, colocated wi
 | `apps/docu` | Exclude the application, its build dependencies, and its Turbo tasks. |
 | `apps/agents` | Exclude the eve workspace until a later E PR copies it. |
 | Existing `packages/*`, including `packages/cli` | Include. Preserve `@repo/*` names and `workspace:*` links. |
-| `tools/eslint`, `tools/typescript` | Include; generated projects need these. |
+| Root Oxlint/Oxfmt configs, `tools/typescript` | Include; generated projects need these. |
 | `tools/create-basilic` and future maintainer-only tools | Exclude. |
 | Root package/workspace/Turbo/lint configuration and `scripts/` | Include required files; remove references to excluded components. |
 | Lockfile | Produce and validate a lockfile for the assembled workspace using pinned pnpm. Do not hand-edit YAML dependency resolutions. |
@@ -155,6 +155,6 @@ At launch, update root and generator READMEs, Getting Started, After fork, CLI, 
 ## References
 
 - Repository constraints: root `AGENTS.md`; `.cursor/rules/base/{general,file-organization,git,github-actions,naming,docs,readme}.mdc`.
-- Local evidence: root `README.md`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`; `packages/cli/{README.md,package.json}`; `tools/{eslint,typescript}`; `.github/workflows/`.
+- Local evidence: root `README.md`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`; `packages/cli/{README.md,package.json}`; `oxlint.config.ts`, `oxfmt.config.ts`, `tools/typescript`; `.github/workflows/`.
 - Existing technical guidance: [Monorepo](/docs/architecture/monorepo), [After fork](/docs/development/after-fork), [AI workflow](/docs/development/ai-workflow), [Publishing](/docs/deployment/publishing), [GitHub Actions](/docs/deployment/github-actions), [Product Ready](/docs/testing/product-ready).
 - Tool references: [Release Please manifest configuration](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md), [Release Please Action](https://github.com/googleapis/release-please-action), [Changesets](https://github.com/changesets/changesets), [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/). Consulted September 5, 2026; pin and verify selected versions during implementation.

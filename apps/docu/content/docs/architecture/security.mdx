@@ -7,7 +7,7 @@ Layers: local pre-commit, `security.yml` on every PR and push to main, DeepSec o
 
 ## Pre-commit
 
-`simple-git-hooks` runs `hooks:pre-commit`: block secret file types → gitleaks on staged files → OSV on dependencies → Biome on staged files.
+`simple-git-hooks` runs `hooks:pre-commit`: block secret file types → gitleaks on staged files → OSV on dependencies → Oxfmt write.
 
 Blocked paths include `.env` (templates like `.env.defaults.example`, `.env.schema`, `.env.test` are allowed), `*.pem` / `*.key` / `*.p12` / keystores, `id_rsa*`, certificate dumps, `*.keytab`.
 

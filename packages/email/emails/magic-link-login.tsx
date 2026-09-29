@@ -1,46 +1,57 @@
-import { Body, Container, Heading, Preview, Section, Text } from '@react-email/components'
-import 'react'
-import { Footer } from '../components/footer.js'
-import { Logo } from '../components/logo.js'
+import {
+  Body,
+  Container,
+  Heading,
+  Preview,
+  Section,
+  Text,
+} from "@react-email/components";
+import "react";
+
+import { Footer } from "../components/footer.js";
+import { Logo } from "../components/logo.js";
 import {
   Button,
   EmailThemeProvider,
   getEmailInlineStyles,
   getEmailThemeClasses,
-} from '../components/theme.js'
+} from "../components/theme.js";
 
 interface Props {
-  magicLink: string
-  loginCode: string
-  expirationMinutes?: number
-  fullName?: string
+  magicLink: string;
+  loginCode: string;
+  expirationMinutes?: number;
+  fullName?: string;
 }
 
 export function MagicLinkLoginEmail({
   magicLink,
   loginCode,
   expirationMinutes = 15,
-  fullName = '',
+  fullName = "",
 }: Props): React.JSX.Element {
-  const firstName = fullName ? fullName.split(' ').at(0) : ''
-  const previewText = `${firstName ? `Hi ${firstName}, ` : ''}Sign in to your account`
-  const themeClasses = getEmailThemeClasses()
-  const lightStyles = getEmailInlineStyles('light')
+  const firstName = fullName ? fullName.split(" ").at(0) : "";
+  const previewText = `${firstName ? `Hi ${firstName}, ` : ""}Sign in to your account`;
+  const themeClasses = getEmailThemeClasses();
+  const lightStyles = getEmailInlineStyles("light");
 
   return (
     <EmailThemeProvider preview={<Preview>{previewText}</Preview>}>
-      <Body className={`my-auto mx-auto font-sans ${themeClasses.body}`} style={lightStyles.body}>
+      <Body
+        className={`mx-auto my-auto font-sans ${themeClasses.body}`}
+        style={lightStyles.body}
+      >
         <Container
-          className={`my-[40px] mx-auto p-[20px] max-w-[600px] ${themeClasses.container}`}
+          className={`mx-auto my-[40px] max-w-[600px] p-[20px] ${themeClasses.container}`}
           style={{
-            borderStyle: 'solid',
-            borderWidth: 1,
             borderColor: lightStyles.container.borderColor,
+            borderStyle: "solid",
+            borderWidth: 1,
           }}
         >
           <Logo />
           <Heading
-            className={`text-[21px] font-normal text-center p-0 my-[30px] mx-0 ${themeClasses.heading}`}
+            className={`mx-0 my-[30px] p-0 text-center text-[21px] font-normal ${themeClasses.heading}`}
             style={{ color: lightStyles.text.color }}
           >
             Sign in to your account
@@ -50,11 +61,11 @@ export function MagicLinkLoginEmail({
             className={`text-[14px] leading-[24px] ${themeClasses.text}`}
             style={{ color: lightStyles.text.color }}
           >
-            {firstName ? `Hi ${firstName}` : 'Hello'},
+            {firstName ? `Hi ${firstName}` : "Hello"},
             <br />
             <br />
-            Use the code below or click the button to sign in. This link will expire in{' '}
-            {expirationMinutes} minutes.
+            Use the code below or click the button to sign in. This link will
+            expire in {expirationMinutes} minutes.
           </Text>
 
           <Section className="my-6 text-center">
@@ -66,7 +77,7 @@ export function MagicLinkLoginEmail({
             </Text>
           </Section>
 
-          <Section className="text-center mt-[32px] mb-[32px]">
+          <Section className="mt-[32px] mb-[32px] text-center">
             <Button href={magicLink}>Sign in</Button>
           </Section>
 
@@ -74,7 +85,8 @@ export function MagicLinkLoginEmail({
             className={`text-xs ${themeClasses.mutedText}`}
             style={{ color: lightStyles.mutedText.color }}
           >
-            If you didn&apos;t request this link, you can safely ignore this email.
+            If you didn&apos;t request this link, you can safely ignore this
+            email.
           </Text>
 
           <br />
@@ -82,7 +94,7 @@ export function MagicLinkLoginEmail({
         </Container>
       </Body>
     </EmailThemeProvider>
-  )
+  );
 }
 
-export default MagicLinkLoginEmail
+export default MagicLinkLoginEmail;

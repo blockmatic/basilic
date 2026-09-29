@@ -1,20 +1,20 @@
-'use client'
+"use client";
 
-import { Button } from '@repo/ui/components/button'
-import { Field, FieldError, FieldGroup } from '@repo/ui/components/field'
-import { InputGroup, InputGroupInput } from '@repo/ui/components/input-group'
-import { Label } from '@repo/ui/components/label'
-import { cn } from '@repo/ui/lib/utils'
+import { Button } from "@repo/ui/components/button";
+import { Field, FieldError, FieldGroup } from "@repo/ui/components/field";
+import { InputGroup, InputGroupInput } from "@repo/ui/components/input-group";
+import { Label } from "@repo/ui/components/label";
+import { cn } from "@repo/ui/lib/utils";
 
 type LoginCodeViewProps = {
-  className?: string
-  code: string
-  codeError: string | null
-  isVerifyPending: boolean
-  onCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onSubmit: React.FormEventHandler<HTMLFormElement>
-  onBackToEmail: () => void
-} & Omit<React.ComponentProps<'form'>, 'onSubmit'>
+  className?: string;
+  code: string;
+  codeError: string | null;
+  isVerifyPending: boolean;
+  onCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onBackToEmail: () => void;
+} & Omit<React.ComponentProps<"form">, "onSubmit">;
 
 export function LoginCodeView({
   className,
@@ -28,14 +28,16 @@ export function LoginCodeView({
 }: LoginCodeViewProps): React.JSX.Element {
   return (
     <form
-      className={cn('flex flex-col gap-6', className)}
+      className={cn("flex flex-col gap-6", className)}
       onSubmit={onSubmit}
       noValidate
       {...props}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-xl font-heading font-bold md:text-3xl">Check your email</h1>
+          <h1 className="font-heading text-xl font-bold md:text-3xl">
+            Check your email
+          </h1>
           <p className="text-muted-foreground text-sm text-balance">
             Enter the login code we sent you
           </p>
@@ -59,7 +61,9 @@ export function LoginCodeView({
               onChange={onCodeChange}
             />
           </InputGroup>
-          {codeError && <FieldError className="text-center">{codeError}</FieldError>}
+          {codeError && (
+            <FieldError className="text-center">{codeError}</FieldError>
+          )}
         </Field>
         <Button
           type="submit"
@@ -67,16 +71,16 @@ export function LoginCodeView({
           disabled={isVerifyPending}
           aria-busy={isVerifyPending}
         >
-          {isVerifyPending ? 'Verifying…' : 'Submit'}
+          {isVerifyPending ? "Verifying…" : "Submit"}
         </Button>
         <button
           type="button"
           onClick={onBackToEmail}
-          className="text-muted-foreground text-sm underline hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground text-sm underline"
         >
           Use a different email
         </button>
       </FieldGroup>
     </form>
-  )
+  );
 }

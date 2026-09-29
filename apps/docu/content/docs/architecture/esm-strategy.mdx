@@ -23,7 +23,7 @@ eve and Fastify Vitest resolve Pattern B `import` to `dist/`. After adding a `ts
 
 ## TypeScript 7 and 6
 
-TypeScript 7 is the native Go compiler (`"@typescript/native": "npm:typescript@^7.0.2"`, bin `tsc`). Package `checktypes` and emit scripts invoke that binary. ESLint and Next.js keep TypeScript 6 via `"typescript": "npm:@typescript/typescript6@^6.0.2"` where the programmatic API is required. Next.js 16.3 would call `typescript/bin/tsc`; set `experimental.useTypeScriptCli: false` so it uses the TS 6 API instead.
+TypeScript 7 is the native Go compiler (`"@typescript/native": "npm:typescript@^7.0.2"`, bin `tsc`). Package `checktypes` and emit scripts invoke that binary. Next.js keeps TypeScript 6 via `"typescript": "npm:@typescript/typescript6@^6.0.2"` where the programmatic API is required. Next.js 16.3 would call `typescript/bin/tsc`; set `experimental.useTypeScriptCli: false` so it uses the TS 6 API instead.
 
 Workspace `build` for Pattern A packages (`@repo/core`, `@repo/react`) is a no-op; `prepack` runs `tsup` and declaration emit for npm publish. Next.js apps that also depend on TypeScript 6 for the compiler API invoke the native CLI explicitly: `node ../../node_modules/@typescript/native/bin/tsc --noEmit`.
 
@@ -45,7 +45,7 @@ Node dev: `tsx`. Next: `transpilePackages` plus webpack `conditionNames: ['sourc
 Delete these when the blocker ships:
 
 - **`--webpack` / `extensionAlias`** — until Turbopack `resolveExtensionAlias`
-- **TS 6 alias / `useTypeScriptCli: false`** — until Next.js and ESLint use the TypeScript 7 compiler API
+- **TS 6 alias / `useTypeScriptCli: false`** — until Next.js uses the TypeScript 7 compiler API
 - **Pattern B `source` condition** — until Node can load workspace TypeScript through `exports` (type-stripping alone does not rewrite `.js` → `.ts`)
 
 Generated OpenAPI client (`packages/core/src/gen/`) and skill templates are excluded from hand-maintained TS rules. Conventions: `.cursor/rules/base/typescript.mdc`.

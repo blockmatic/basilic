@@ -1,11 +1,11 @@
-import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 
-type PolicyPageShellProps = {
-  title: string
-  updatedAt: string
-  contactEmail: string
-  children: React.ReactNode
+interface PolicyPageShellProps {
+  title: string;
+  updatedAt: string;
+  contactEmail: string;
+  children: React.ReactNode;
 }
 
 export function PolicyPageShell({
@@ -24,17 +24,24 @@ export function PolicyPageShell({
           <ChevronLeft className="size-4" aria-hidden />
           Back to login
         </Link>
-        <h1 className="font-heading text-lg font-semibold md:text-xl">{title}</h1>
-        <p className="text-muted-foreground text-sm">Last updated: {updatedAt}</p>
+        <h1 className="font-heading text-lg font-semibold md:text-xl">
+          {title}
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Last updated: {updatedAt}
+        </p>
         <div className="space-y-6 text-sm">{children}</div>
         <p className="text-muted-foreground text-sm">
-          For questions, contact us at{' '}
-          <a href={`mailto:${contactEmail}`} className="text-primary underline underline-offset-4">
+          For questions, contact us at{" "}
+          <a
+            href={`mailto:${contactEmail}`}
+            className="text-primary underline underline-offset-4"
+          >
             {contactEmail}
           </a>
           .
         </p>
       </div>
     </div>
-  )
+  );
 }

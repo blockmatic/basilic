@@ -1,8 +1,8 @@
 {
   "name": "@repo/core",
   "version": "0.0.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -14,11 +14,6 @@
     "build": "node -e \"process.exit(0)\"",
     "checktypes": "tsc --noEmit",
     "dev": "node --import tsx scripts/wait-and-watch.mjs",
-    "lint:eslint": "eslint . --max-warnings 0",
-    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
-    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
-    "lint:biome": "biome check .",
-    "lint:biome:fix": "biome check . --write",
     "prepack": "tsup && tsc --declaration --emitDeclarationOnly && node ../../scripts/prepare-publish.mjs",
     "postpack": "node ../../scripts/restore-publish.mjs",
     "generate": "openapi-ts && node --import tsx scripts/generate-wrapper.mjs",
@@ -26,12 +21,10 @@
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/utils": "workspace:*",
     "@typescript/native": "npm:typescript@^7.0.2",
     "chokidar-cli": "^3.0.0",
-    "eslint": "^10.11.0",
     "tsup": "^8.5.1",
     "tsx": "^4.23.15",
     "vitest": "^5.0.1"

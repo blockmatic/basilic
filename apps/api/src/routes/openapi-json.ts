@@ -1,18 +1,19 @@
-import type { FastifyPluginAsync } from 'fastify'
-import { sendOpenApiDocument } from '../lib/openapi-document.js'
+import type { FastifyPluginAsync } from "fastify";
 
-const openapiJsonRoute: FastifyPluginAsync = async fastify => {
+import { sendOpenApiDocument } from "../lib/openapi-document.js";
+
+const openapiJsonRoute: FastifyPluginAsync = async (fastify) => {
   fastify.get(
-    '/openapi.json',
+    "/openapi.json",
     {
       schema: {
         hide: true,
-        tags: ['public'],
         security: [],
+        tags: ["public"],
       },
     },
-    async (request, reply) => sendOpenApiDocument({ fastify, request, reply }),
-  )
-}
+    async (request, reply) => sendOpenApiDocument({ fastify, reply, request })
+  );
+};
 
-export default openapiJsonRoute
+export default openapiJsonRoute;

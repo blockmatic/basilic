@@ -1,7 +1,11 @@
-import type { MagiclinkRequestData, MagiclinkRequestResponse } from '@repo/core'
-import type { UseMutationOptions } from '@tanstack/react-query'
-import { useMutation } from '@tanstack/react-query'
-import { useReactApiConfig } from '../../context'
+import type {
+  MagiclinkRequestData,
+  MagiclinkRequestResponse,
+} from "@repo/core";
+import type { UseMutationOptions } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+
+import { useReactApiConfig } from "../../context";
 
 /**
  * React Query mutation hook for magic link request endpoint.
@@ -35,18 +39,26 @@ import { useReactApiConfig } from '../../context'
  */
 export function useMagicLink(
   options?: Omit<
-    UseMutationOptions<MagiclinkRequestResponse, Error, MagiclinkRequestData['body']>,
-    'mutationFn'
-  >,
+    UseMutationOptions<
+      MagiclinkRequestResponse,
+      Error,
+      MagiclinkRequestData["body"]
+    >,
+    "mutationFn"
+  >
 ) {
-  const { client, queryClientDefaults } = useReactApiConfig()
+  const { client, queryClientDefaults } = useReactApiConfig();
 
-  return useMutation<MagiclinkRequestResponse, Error, MagiclinkRequestData['body']>({
-    mutationFn: async variables =>
+  return useMutation<
+    MagiclinkRequestResponse,
+    Error,
+    MagiclinkRequestData["body"]
+  >({
+    mutationFn: async (variables) =>
       client.auth.magiclink.request({
         body: variables,
       }),
     ...queryClientDefaults,
     ...options,
-  })
+  });
 }

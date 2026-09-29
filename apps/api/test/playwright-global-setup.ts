@@ -1,32 +1,38 @@
-import { logger } from '@repo/utils/logger/server'
+import { logger } from "@repo/utils/logger/server";
 
-const pollTimeoutMs = 60_000
-const pollIntervalMs = 500
+const pollTimeoutMs = 60_000;
+const pollIntervalMs = 500;
 
 const apiUrl =
-  process.env.PLAYWRIGHT_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
+  process.env.PLAYWRIGHT_API_URL ??
+  process.env.NEXT_PUBLIC_API_URL ??
+  "http://localhost:3001";
 
 async function waitForUrl(url: string, timeoutMs: number): Promise<boolean> {
-  const start = Date.now()
+  const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(2000) })
-      if (res.ok || res.status === 307) return true
+      const res = await fetch(url, { signal: AbortSignal.timeout(2000) });
+      if (res.ok || res.status === 307) {
+        return true;
+      }
     } catch {
       // continue polling
     }
-    await new Promise(r => setTimeout(r, pollIntervalMs))
+    await new Promise((r) => setTimeout(r, pollIntervalMs));
   }
-  return false
+  return false;
 }
 
 async function globalSetup() {
-  const apiOk = await waitForUrl(`${apiUrl}/health`, pollTimeoutMs)
+  const apiOk = await waitForUrl(`${apiUrl}/health`, pollTimeoutMs);
   if (!apiOk) {
-    logger.error(`E2E setup: API unreachable at ${apiUrl}/health after ${pollTimeoutMs}ms`)
-    process.exit(1)
+    logger.error(
+      `E2E setup: API unreachable at ${apiUrl}/health after ${pollTimeoutMs}ms`
+    );
+    process.exit(1);
   }
 }
 
 // Playwright requires default export for globalSetup
-export default globalSetup
+export default globalSetup;

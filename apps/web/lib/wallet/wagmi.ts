@@ -1,10 +1,11 @@
-import { createConfig, http } from 'wagmi'
-import { mainnet } from 'wagmi/chains'
-import { injected } from 'wagmi/connectors/injected'
-import { walletConnect } from 'wagmi/connectors/walletConnect'
-import { env } from '@/lib/env'
+import { createConfig, http } from "wagmi";
+import { mainnet } from "wagmi/chains";
+import { injected } from "wagmi/connectors/injected";
+import { walletConnect } from "wagmi/connectors/walletConnect";
 
-const walletConnectProjectId = env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+import { env } from "@/lib/env";
+
+const walletConnectProjectId = env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 
 export const wagmiConfig = createConfig({
   chains: [mainnet],
@@ -19,8 +20,8 @@ export const wagmiConfig = createConfig({
         ]
       : []),
   ],
-  transports: { [mainnet.id]: http() },
   ssr: true,
-})
+  transports: { [mainnet.id]: http() },
+});
 
-export const hasWalletConnectProjectId = Boolean(walletConnectProjectId)
+export const hasWalletConnectProjectId = Boolean(walletConnectProjectId);

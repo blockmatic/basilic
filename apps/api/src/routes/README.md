@@ -14,22 +14,26 @@ One Fastify plugin file per endpoint. Folder layout mirrors the URL path (e.g. `
 Use TypeBox for request/response schemas. Fastify validates automatically; handlers stay thin.
 
 ```typescript
-import { Type } from '@sinclair/typebox'
-import type { FastifyPluginAsync } from 'fastify'
-import { isDbReady } from '@repo/db'
+import { Type } from "@sinclair/typebox";
+import type { FastifyPluginAsync } from "fastify";
+import { isDbReady } from "@repo/db";
 
 const HealthResponseSchema = Type.Object({
   ok: Type.Boolean(),
   dbReady: Type.Boolean(),
-})
+});
 
-const healthRoute: FastifyPluginAsync = async fastify => {
-  fastify.get('/health', {
-    schema: { response: { 200: HealthResponseSchema } },
-  }, async () => ({ ok: true, dbReady: isDbReady() }))
-}
+const healthRoute: FastifyPluginAsync = async (fastify) => {
+  fastify.get(
+    "/health",
+    {
+      schema: { response: { 200: HealthResponseSchema } },
+    },
+    async () => ({ ok: true, dbReady: isDbReady() })
+  );
+};
 
-export default healthRoute
+export default healthRoute;
 ```
 
 ## Related

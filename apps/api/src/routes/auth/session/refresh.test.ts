@@ -1,222 +1,261 @@
-import { randomUUID } from 'node:crypto'
-import { getDb } from '@repo/db'
-import { sessions, users } from '@repo/db/schema'
-import { and, eq, gt } from 'drizzle-orm'
-import { describe, expect, it } from 'vitest'
-import { getMagicLinkTokenRaw } from '../../../../test/utils/auth-helper.js'
-import { env } from '../../../lib/env.js'
-import { hashToken } from '../../../lib/jwt.js'
-import { fastify } from './session.spec.js'
+import { randomUUID } from "node:crypto";
+
+import { getDb } from "@repo/db";
+import { sessions, users } from "@repo/db/schema";
+import { and, eq, gt } from "drizzle-orm";
+import { describe, expect, it } from "vitest";
+
+import { getMagicLinkTokenRaw } from "../../../../test/utils/auth-helper.js";
+import { env } from "../../../lib/env.js";
+import { hashToken } from "../../../lib/jwt.js";
+import { fastify } from "./session.spec.js";
 
 function decodeJwtPayload<T extends Record<string, unknown>>(token: string) {
-  const payload = token.split('.')[1]
-  if (!payload) throw new Error('Invalid JWT')
-  return JSON.parse(Buffer.from(payload, 'base64url').toString()) as T
+  const payload = token.split(".")[1];
+  if (!payload) throw new Error("Invalid JWT");
+  return JSON.parse(Buffer.from(payload, "base64url").toString()) as T;
 }
 
-describe('POST /auth/session/refresh', () => {
-  it('should refresh token and return 200 { token, refreshToken }', async () => {
-    const email = 'refresh-happy@test.ai'
-    const token = await getMagicLinkTokenRaw(fastify, email)
+describe("POST /auth/session/refresh", () => {
+  it("should refresh token and return 200 { token, refreshToken }", async () => {
+    const email = "refresh-happy@test.ai";
+    const token = await getMagicLinkTokenRaw(fastify, email);
 
     const verifyResponse = await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/verify',
+      method: "POST",
+      url: "/auth/magiclink/verify",
       payload: { email, token },
-    })
+    });
 
-    const { token: jwtToken, refreshToken } = JSON.parse(verifyResponse.body)
-    expect(jwtToken).toBeTruthy()
-    expect(refreshToken).toBeTruthy()
+    const { token: jwtToken, refreshToken } = JSON.parse(verifyResponse.body);
+    expect(jwtToken).toBeTruthy();
+    expect(refreshToken).toBeTruthy();
 
     const refreshResponse = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: {
         refreshToken,
       },
-    })
+    });
 
-    expect(refreshResponse.statusCode).toBe(200)
-    const refreshBody = JSON.parse(refreshResponse.body)
-    expect(refreshBody).toHaveProperty('token')
-    expect(refreshBody).toHaveProperty('refreshToken')
-    expect(typeof refreshBody.token).toBe('string')
-    expect(typeof refreshBody.refreshToken).toBe('string')
-  })
+    expect(refreshResponse.statusCode).toBe(200);
+    const refreshBody = JSON.parse(refreshResponse.body);
+    expect(refreshBody).toHaveProperty("token");
+    expect(refreshBody).toHaveProperty("refreshToken");
+    expect(typeof refreshBody.token).toBe("string");
+    expect(typeof refreshBody.refreshToken).toBe("string");
+  });
 
-  it('should return the same rotated jti for overlapping refresh within the grace window', async () => {
-    const email = 'refresh-grace@test.ai'
-    const token = await getMagicLinkTokenRaw(fastify, email)
+  it("should return the same rotated jti for overlapping refresh within the grace window", async () => {
+    const email = "refresh-grace@test.ai";
+    const token = await getMagicLinkTokenRaw(fastify, email);
 
     const verifyRes = await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/verify',
+      method: "POST",
+      url: "/auth/magiclink/verify",
       payload: { email, token },
-    })
-    const { refreshToken: originalRefresh } = JSON.parse(verifyRes.body) as { refreshToken: string }
+    });
+    const { refreshToken: originalRefresh } = JSON.parse(verifyRes.body) as {
+      refreshToken: string;
+    };
 
     const firstRefresh = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: { refreshToken: originalRefresh },
-    })
-    expect(firstRefresh.statusCode).toBe(200)
-    const firstBody = JSON.parse(firstRefresh.body) as { token: string; refreshToken: string }
-    const firstJti = decodeJwtPayload<{ jti?: string }>(firstBody.refreshToken).jti
+    });
+    expect(firstRefresh.statusCode).toBe(200);
+    const firstBody = JSON.parse(firstRefresh.body) as {
+      token: string;
+      refreshToken: string;
+    };
+    const firstJti = decodeJwtPayload<{ jti?: string }>(
+      firstBody.refreshToken
+    ).jti;
 
     const graceRes = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: { refreshToken: originalRefresh },
-    })
-    expect(graceRes.statusCode).toBe(200)
-    const graceBody = JSON.parse(graceRes.body) as { token: string; refreshToken: string }
-    expect(decodeJwtPayload<{ jti?: string }>(graceBody.refreshToken).jti).toBe(firstJti)
-  })
+    });
+    expect(graceRes.statusCode).toBe(200);
+    const graceBody = JSON.parse(graceRes.body) as {
+      token: string;
+      refreshToken: string;
+    };
+    expect(decodeJwtPayload<{ jti?: string }>(graceBody.refreshToken).jti).toBe(
+      firstJti
+    );
+  });
 
-  it('should return TOKEN_REUSE_DETECTED and revoke session on refresh replay after grace', async () => {
-    const email = 'refresh-reuse@test.ai'
-    const token = await getMagicLinkTokenRaw(fastify, email)
+  it("should return TOKEN_REUSE_DETECTED and revoke session on refresh replay after grace", async () => {
+    const email = "refresh-reuse@test.ai";
+    const token = await getMagicLinkTokenRaw(fastify, email);
 
     const verifyRes = await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/verify',
+      method: "POST",
+      url: "/auth/magiclink/verify",
       payload: { email, token },
-    })
-    const { refreshToken: originalRefresh } = JSON.parse(verifyRes.body) as { refreshToken: string }
-    const decoded = decodeJwtPayload<{ sid?: string }>(originalRefresh)
-    if (!decoded.sid) throw new Error('Missing sid')
+    });
+    const { refreshToken: originalRefresh } = JSON.parse(verifyRes.body) as {
+      refreshToken: string;
+    };
+    const decoded = decodeJwtPayload<{ sid?: string }>(originalRefresh);
+    if (!decoded.sid) throw new Error("Missing sid");
 
     const firstRefresh = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: { refreshToken: originalRefresh },
-    })
-    expect(firstRefresh.statusCode).toBe(200)
+    });
+    expect(firstRefresh.statusCode).toBe(200);
 
-    const db = await getDb()
+    const db = await getDb();
     await db
       .update(sessions)
-      .set({ rotatedAt: new Date(Date.now() - (env.REFRESH_REUSE_GRACE_SECONDS + 5) * 1000) })
-      .where(eq(sessions.id, decoded.sid))
+      .set({
+        rotatedAt: new Date(
+          Date.now() - (env.REFRESH_REUSE_GRACE_SECONDS + 5) * 1000
+        ),
+      })
+      .where(eq(sessions.id, decoded.sid));
 
     const reuseRes = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: { refreshToken: originalRefresh },
-    })
-    expect(reuseRes.statusCode).toBe(401)
-    expect(JSON.parse(reuseRes.body).code).toBe('TOKEN_REUSE_DETECTED')
+    });
+    expect(reuseRes.statusCode).toBe(401);
+    expect(JSON.parse(reuseRes.body).code).toBe("TOKEN_REUSE_DETECTED");
 
     const { refreshToken: rotatedRefresh } = JSON.parse(firstRefresh.body) as {
-      refreshToken: string
-    }
+      refreshToken: string;
+    };
     const afterRevoke = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: { refreshToken: rotatedRefresh },
-    })
-    expect(afterRevoke.statusCode).toBe(401)
-    expect(JSON.parse(afterRevoke.body).code).toBe('SESSION_NOT_FOUND')
-  })
+    });
+    expect(afterRevoke.statusCode).toBe(401);
+    expect(JSON.parse(afterRevoke.body).code).toBe("SESSION_NOT_FOUND");
+  });
 
-  it('should return INVALID_TOKEN when access token is used as refresh token', async () => {
-    const email = 'refresh-access-as-refresh@test.ai'
-    const token = await getMagicLinkTokenRaw(fastify, email)
+  it("should return INVALID_TOKEN when access token is used as refresh token", async () => {
+    const email = "refresh-access-as-refresh@test.ai";
+    const token = await getMagicLinkTokenRaw(fastify, email);
 
     const verifyRes = await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/verify',
+      method: "POST",
+      url: "/auth/magiclink/verify",
       payload: { email, token },
-    })
-    const { token: accessToken } = JSON.parse(verifyRes.body) as { token: string }
+    });
+    const { token: accessToken } = JSON.parse(verifyRes.body) as {
+      token: string;
+    };
 
     const res = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: { refreshToken: accessToken },
-    })
-    expect(res.statusCode).toBe(401)
-    expect(JSON.parse(res.body).code).toBe('INVALID_TOKEN')
-  })
+    });
+    expect(res.statusCode).toBe(401);
+    expect(JSON.parse(res.body).code).toBe("INVALID_TOKEN");
+  });
 
-  it('should return INVALID_TOKEN and revoke session when userId does not match JWT sub', async () => {
-    const email = 'refresh-user-mismatch@test.ai'
-    const token = await getMagicLinkTokenRaw(fastify, email)
+  it("should return INVALID_TOKEN and revoke session when userId does not match JWT sub", async () => {
+    const email = "refresh-user-mismatch@test.ai";
+    const token = await getMagicLinkTokenRaw(fastify, email);
 
     const verifyRes = await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/verify',
+      method: "POST",
+      url: "/auth/magiclink/verify",
       payload: { email, token },
-    })
-    const { refreshToken } = JSON.parse(verifyRes.body) as { refreshToken: string }
-    const decoded = decodeJwtPayload<{ sid?: string }>(refreshToken)
-    const sessionId = decoded.sid
-    if (!sessionId) throw new Error('Missing sid')
+    });
+    const { refreshToken } = JSON.parse(verifyRes.body) as {
+      refreshToken: string;
+    };
+    const decoded = decodeJwtPayload<{ sid?: string }>(refreshToken);
+    const sessionId = decoded.sid;
+    if (!sessionId) throw new Error("Missing sid");
 
-    const db = await getDb()
-    const otherUserId = randomUUID()
+    const db = await getDb();
+    const otherUserId = randomUUID();
     await db.insert(users).values({
       id: otherUserId,
-      email: 'other-user@test.ai',
+      email: "other-user@test.ai",
       username: `other-${Date.now()}`,
-    })
-    await db.update(sessions).set({ userId: otherUserId }).where(eq(sessions.id, sessionId))
+    });
+    await db
+      .update(sessions)
+      .set({ userId: otherUserId })
+      .where(eq(sessions.id, sessionId));
 
     const res = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: { refreshToken },
-    })
-    expect(res.statusCode).toBe(401)
-    expect(JSON.parse(res.body).code).toBe('INVALID_TOKEN')
+    });
+    expect(res.statusCode).toBe(401);
+    expect(JSON.parse(res.body).code).toBe("INVALID_TOKEN");
 
-    const [row] = await db.select().from(sessions).where(eq(sessions.id, sessionId))
-    expect(row).toBeUndefined()
+    const [row] = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.id, sessionId));
+    expect(row).toBeUndefined();
 
-    await db.delete(users).where(eq(users.id, otherUserId))
-  })
+    await db.delete(users).where(eq(users.id, otherUserId));
+  });
 
-  it('should not rotate session when CAS update matches stale jti hash', async () => {
-    const email = 'refresh-cas-stale@test.ai'
-    const token = await getMagicLinkTokenRaw(fastify, email)
+  it("should not rotate session when CAS update matches stale jti hash", async () => {
+    const email = "refresh-cas-stale@test.ai";
+    const token = await getMagicLinkTokenRaw(fastify, email);
 
     const verifyRes = await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/verify',
+      method: "POST",
+      url: "/auth/magiclink/verify",
       payload: { email, token },
-    })
-    const { refreshToken } = JSON.parse(verifyRes.body) as { refreshToken: string }
-    const decoded = decodeJwtPayload<{ sub?: string; sid?: string; jti?: string }>(refreshToken)
-    if (!decoded.sub || !decoded.sid || !decoded.jti) throw new Error('Missing refresh claims')
+    });
+    const { refreshToken } = JSON.parse(verifyRes.body) as {
+      refreshToken: string;
+    };
+    const decoded = decodeJwtPayload<{
+      sub?: string;
+      sid?: string;
+      jti?: string;
+    }>(refreshToken);
+    if (!decoded.sub || !decoded.sid || !decoded.jti)
+      throw new Error("Missing refresh claims");
 
-    const oldJtiHash = hashToken(decoded.jti)
-    const db = await getDb()
+    const oldJtiHash = hashToken(decoded.jti);
+    const db = await getDb();
 
     const firstRefresh = await fastify.inject({
-      method: 'POST',
-      url: '/auth/session/refresh',
+      method: "POST",
+      url: "/auth/session/refresh",
       payload: { refreshToken },
-    })
-    expect(firstRefresh.statusCode).toBe(200)
+    });
+    expect(firstRefresh.statusCode).toBe(200);
 
     const staleCas = await db
       .update(sessions)
       .set({
-        token: hashToken('stale-jti'),
-        expiresAt: new Date(Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000),
+        token: hashToken("stale-jti"),
+        expiresAt: new Date(
+          Date.now() + env.REFRESH_JWT_EXPIRES_IN_SECONDS * 1000
+        ),
       })
       .where(
         and(
           eq(sessions.id, decoded.sid),
           eq(sessions.token, oldJtiHash),
           eq(sessions.userId, decoded.sub),
-          gt(sessions.expiresAt, new Date()),
-        ),
+          gt(sessions.expiresAt, new Date())
+        )
       )
-      .returning()
+      .returning();
 
-    expect(staleCas).toHaveLength(0)
-  })
-})
+    expect(staleCas).toHaveLength(0);
+  });
+});

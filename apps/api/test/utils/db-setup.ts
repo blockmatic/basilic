@@ -29,16 +29,17 @@
  * Tables are truncated between group specs; PGLite is not reopened per test.
  */
 
-import { configureDb, resetDbInstance } from '@repo/db'
-import { runMigrations } from '@repo/db/migrate'
-import { clearSessionPool } from './auth-helper.js'
-import { getTestDatabase, truncateAllTables } from './db.js'
+import { configureDb, resetDbInstance } from "@repo/db";
+import { runMigrations } from "@repo/db/migrate";
+
+import { clearSessionPool } from "./auth-helper.js";
+import { getTestDatabase, truncateAllTables } from "./db.js";
 
 // Track if migrations have been run in this worker
 // Since getTestDatabase() uses a singleton pattern per worker,
 // we need to ensure migrations only run once per worker
-let migrationsRun = false
-let migrationPromise: Promise<void> | null = null
+let migrationsRun = false;
+let migrationPromise: Promise<void> | null = null;
 
 /**
  * Setup database for a group entry test file.
@@ -48,22 +49,23 @@ let migrationPromise: Promise<void> | null = null
  * migrations will only run once (on the first call). Concurrent calls will wait for the first migration to complete.
  */
 export async function setupGroupDatabase() {
-  resetDbInstance()
+  resetDbInstance();
 
-  const { instance } = await getTestDatabase()
-  configureDb({ pglite: true, pgliteInstance: instance })
+  const { instance } = await getTestDatabase();
+  configureDb({ pglite: true, pgliteInstance: instance });
 
   if (!migrationsRun) {
-    if (!migrationPromise)
+    if (!migrationPromise) {
       migrationPromise = (async () => {
-        await runMigrations()
-        migrationsRun = true
-      })()
+        await runMigrations();
+        migrationsRun = true;
+      })();
+    }
 
-    await migrationPromise
+    await migrationPromise;
   }
 
-  resetDbInstance()
+  resetDbInstance();
 }
 
 /**
@@ -71,7 +73,7 @@ export async function setupGroupDatabase() {
  * Truncates tables for next spec (does not close PGLite - that causes Aborted when reopening).
  */
 export async function cleanupGroupDatabase() {
-  clearSessionPool()
-  await truncateAllTables()
-  resetDbInstance()
+  clearSessionPool();
+  await truncateAllTables();
+  resetDbInstance();
 }

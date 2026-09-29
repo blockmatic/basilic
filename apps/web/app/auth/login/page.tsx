@@ -1,21 +1,22 @@
-import { ApiHealthBadge } from 'components/shared/api-health-badge'
-import { AuthBadge } from 'components/shared/auth-badge'
-import { getAuthErrorMessage } from 'lib/auth/auth-error-messages'
-import { GalleryVerticalEnd } from 'lucide-react'
-import Image from 'next/image'
-import { LoginActions } from './login-actions'
+import { ApiHealthBadge } from "components/shared/api-health-badge";
+import { AuthBadge } from "components/shared/auth-badge";
+import { getAuthErrorMessage } from "lib/auth/auth-error-messages";
+import { GalleryVerticalEnd } from "lucide-react";
+import Image from "next/image";
 
-type LoginPageProps = {
+import { LoginActions } from "./login-actions";
+
+interface LoginPageProps {
   searchParams: Promise<{
-    error?: string
-    message?: string
-  }>
+    error?: string;
+    message?: string;
+  }>;
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const params = await searchParams
-  const errorParam = params.error || params.message
-  const errorMessage = getAuthErrorMessage(errorParam)
+  const params = await searchParams;
+  const errorParam = params.error || params.message;
+  const errorMessage = getAuthErrorMessage(errorParam);
 
   return (
     <div className="grid min-h-svh lg:grid-cols-[40fr_60fr]">
@@ -49,5 +50,5 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         />
       </div>
     </div>
-  )
+  );
 }

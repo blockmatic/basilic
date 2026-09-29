@@ -37,23 +37,23 @@ In Cursor chat, type `/` then the skill name.
 
 Recommended invocations are Basilic `/w-*`.
 
-| Task | Playbook |
-| --- | --- |
-| Blocking gaps | `/w-clarify` |
-| Stress-test a plan | `/w-grill` |
-| Fog bigger than one session | `/w-wayfinder` |
-| Ordered implementation plan | `/w-plan` (runs `/w-council` first) |
-| Explore a codebase | `/w-council` |
-| Implement without commit | `/w-build` |
-| Red-green TDD | `/w-tdd` |
-| Review a change | `/w-review` |
-| Hard bug | `/w-debug` |
-| Explore UI variants | `/w-v0` / `/w-ui` |
-| Commit | `/w-commit` |
-| Push | `/w-push` |
-| Pull request | `/w-pr` |
-| Implement through a described PR | `/w-ship` |
-| Reflect | `/w-retro` |
+| Task                             | Playbook                            |
+| -------------------------------- | ----------------------------------- |
+| Blocking gaps                    | `/w-clarify`                        |
+| Stress-test a plan               | `/w-grill`                          |
+| Fog bigger than one session      | `/w-wayfinder`                      |
+| Ordered implementation plan      | `/w-plan` (runs `/w-council` first) |
+| Explore a codebase               | `/w-council`                        |
+| Implement without commit         | `/w-build`                          |
+| Red-green TDD                    | `/w-tdd`                            |
+| Review a change                  | `/w-review`                         |
+| Hard bug                         | `/w-debug`                          |
+| Explore UI variants              | `/w-v0` / `/w-ui`                   |
+| Commit                           | `/w-commit`                         |
+| Push                             | `/w-push`                           |
+| Pull request                     | `/w-pr`                             |
+| Implement through a described PR | `/w-ship`                           |
+| Reflect                          | `/w-retro`                          |
 
 `/w-build` ends with verified local changes and does not commit. `/w-ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/w-council`, `/w-diagram`, `/w-docs`, `/w-git-repair`, and `/w-coderabbit`. Git, TDD, lint, generate, and publish stay single-writer.
 
@@ -111,7 +111,7 @@ Further polish is later and small. See [Skills](/docs/development/cursor-skills)
 
 Dashboard Chat (eve) and Fastify `/ai/generate` default to Claude Haiku 4.5 on Vercel AI Gateway — product models, not this page. Pass `model: "sonnet"` on generate for Sonnet 4.6. See [AI](/docs/architecture/ai).
 
-CodeRabbit reviews PRs against project standards. Local gates: Biome, ESLint, [pre-commit security](/docs/architecture/security).
+CodeRabbit reviews PRs against project standards. Local gates: Ultracite, [pre-commit security](/docs/architecture/security).
 
 Point agents at MDX: `Using the patterns from @api, add an endpoint…`
 

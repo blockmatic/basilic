@@ -1,9 +1,11 @@
-'use client'
+"use client";
 
-import { type ReactNode, useMemo } from 'react'
-import { ReactApiContext } from './context'
-import type { ReactApiConfig } from './setup'
-import { createReactApiConfig } from './setup'
+import { useMemo } from "react";
+import type { ReactNode } from "react";
+
+import { ReactApiContext } from "./context";
+import type { ReactApiConfig } from "./setup";
+import { createReactApiConfig } from "./setup";
 
 /**
  * Provider component that makes API client and query configuration available to child components.
@@ -53,14 +55,18 @@ export function ApiProvider({
   const apiConfig = useMemo(
     () =>
       createReactApiConfig({
-        client,
         baseUrl,
+        client,
         getAuthToken,
         queryClient,
         queryClientDefaults,
       }),
-    [client, baseUrl, getAuthToken, queryClient, queryClientDefaults],
-  )
+    [client, baseUrl, getAuthToken, queryClient, queryClientDefaults]
+  );
 
-  return <ReactApiContext.Provider value={apiConfig}>{children}</ReactApiContext.Provider>
+  return (
+    <ReactApiContext.Provider value={apiConfig}>
+      {children}
+    </ReactApiContext.Provider>
+  );
 }

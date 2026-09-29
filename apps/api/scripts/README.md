@@ -15,17 +15,20 @@ Generates the OpenAPI specification from Fastify route definitions.
 **Purpose**: Maintains the OpenAPI spec (`openapi/openapi.json`) by extracting route metadata, schemas, and documentation from Fastify plugins.
 
 **Usage**:
+
 ```bash
 pnpm generate:openapi
 ```
 
 **What it does**:
+
 - Scans Fastify route definitions in `src/routes/`
 - Extracts route metadata (paths, methods, schemas)
 - Generates OpenAPI 3.x specification
 - Writes to `openapi/openapi.json`
 
 **When to run**:
+
 - After adding or modifying API routes
 - Before committing route changes
 - As part of CI/CD to verify spec consistency

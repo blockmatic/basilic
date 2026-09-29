@@ -16,8 +16,8 @@ export type HealthCheckErrors = {
    * Default Response
    */
   503: {
-    ok: boolean;
     dbReady: boolean;
+    ok: boolean;
   };
 };
 
@@ -28,8 +28,8 @@ export type HealthCheckResponses = {
    * Default Response
    */
   200: {
-    ok: boolean;
     dbReady: boolean;
+    ok: boolean;
   };
 };
 
@@ -49,10 +49,10 @@ export type AccountApikeysListErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -64,12 +64,12 @@ export type AccountApikeysListResponses = {
    */
   200: {
     keys: Array<{
+      createdAt: string;
+      expiresAt: string | unknown;
       id: string;
+      lastUsedAt: string | unknown;
       name: string;
       prefix: string;
-      lastUsedAt: string | unknown;
-      expiresAt: string | unknown;
-      createdAt: string;
     }>;
   };
 };
@@ -92,10 +92,10 @@ export type AccountApikeysCreateErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -106,11 +106,11 @@ export type AccountApikeysCreateResponses = {
    * Default Response
    */
   200: {
-    id: string;
-    name: string;
-    key: string;
-    prefix: string;
     createdAt: string;
+    id: string;
+    key: string;
+    name: string;
+    prefix: string;
   };
 };
 
@@ -132,10 +132,10 @@ export type AccountApikeysRevokeErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -143,10 +143,10 @@ export type AccountApikeysRevokeErrors = {
   404: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -163,8 +163,8 @@ export type AccountApikeysRevokeResponse = AccountApikeysRevokeResponses[keyof A
 
 export type AccountEmailChangeRequestData = {
   body: {
-    email: string;
     callbackUrl: string;
+    email: string;
   };
   path?: never;
   query?: never;
@@ -178,10 +178,10 @@ export type AccountEmailChangeRequestErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -189,10 +189,10 @@ export type AccountEmailChangeRequestErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -200,10 +200,10 @@ export type AccountEmailChangeRequestErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -211,10 +211,10 @@ export type AccountEmailChangeRequestErrors = {
   429: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -234,13 +234,13 @@ export type AccountEmailChangeRequestResponse = AccountEmailChangeRequestRespons
 export type AccountEmailChangeVerifyData = {
   body: {
     /**
-     * 6-digit code
-     */
-    token: string;
-    /**
      * For code entry (must match request)
      */
     email?: string;
+    /**
+     * 6-digit code
+     */
+    token: string;
     /**
      * For link click
      */
@@ -258,10 +258,10 @@ export type AccountEmailChangeVerifyErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -269,10 +269,10 @@ export type AccountEmailChangeVerifyErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -280,10 +280,10 @@ export type AccountEmailChangeVerifyErrors = {
   429: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -294,8 +294,8 @@ export type AccountEmailChangeVerifyResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -303,8 +303,8 @@ export type AccountEmailChangeVerifyResponse = AccountEmailChangeVerifyResponses
 
 export type AccountLinkEmailRequestData = {
   body: {
-    email: string;
     callbackUrl: string;
+    email: string;
   };
   path?: never;
   query?: never;
@@ -318,10 +318,10 @@ export type AccountLinkEmailRequestErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -329,10 +329,10 @@ export type AccountLinkEmailRequestErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -340,10 +340,10 @@ export type AccountLinkEmailRequestErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -351,10 +351,10 @@ export type AccountLinkEmailRequestErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -387,10 +387,10 @@ export type AccountLinkEmailVerifyErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -398,10 +398,10 @@ export type AccountLinkEmailVerifyErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -409,10 +409,10 @@ export type AccountLinkEmailVerifyErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -423,8 +423,8 @@ export type AccountLinkEmailVerifyResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -446,10 +446,10 @@ export type AccountLinkOauthUnlinkErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -457,10 +457,10 @@ export type AccountLinkOauthUnlinkErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -491,10 +491,10 @@ export type AccountLinkPasskeyDeleteErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -502,10 +502,10 @@ export type AccountLinkPasskeyDeleteErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -513,10 +513,10 @@ export type AccountLinkPasskeyDeleteErrors = {
   404: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -534,19 +534,19 @@ export type AccountLinkPasskeyDeleteResponse = AccountLinkPasskeyDeleteResponses
 export type AccountLinkPasskeyFinishData = {
   body: {
     credential: {
-      id: string;
-      rawId: string;
-      response: {
-        clientDataJSON: string;
-        attestationObject: string;
-        authenticatorData?: string;
-        transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
-        publicKeyAlgorithm?: number;
-        publicKey?: string;
-      };
       authenticatorAttachment?: 'platform' | 'cross-platform';
       clientExtensionResults?: {
         [key: string]: unknown;
+      };
+      id: string;
+      rawId: string;
+      response: {
+        attestationObject: string;
+        authenticatorData?: string;
+        clientDataJSON: string;
+        publicKey?: string;
+        publicKeyAlgorithm?: number;
+        transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
       };
       type: 'public-key';
     };
@@ -564,10 +564,10 @@ export type AccountLinkPasskeyFinishErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -575,10 +575,10 @@ export type AccountLinkPasskeyFinishErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -609,10 +609,10 @@ export type AccountLinkPasskeyStartErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -620,10 +620,10 @@ export type AccountLinkPasskeyStartErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -631,10 +631,10 @@ export type AccountLinkPasskeyStartErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -646,35 +646,35 @@ export type AccountLinkPasskeyStartResponses = {
    */
   200: {
     options: {
-      rp: {
-        name: string;
-        id?: string;
-      };
-      user: {
-        id: string;
-        name: string;
-        displayName: string;
-      };
-      challenge: string;
-      pubKeyCredParams: Array<{
-        alg: number;
-        type: 'public-key';
-      }>;
-      timeout?: number;
-      excludeCredentials?: Array<{
-        id: string;
-        type: 'public-key';
-        transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
-      }>;
+      attestation?: 'direct' | 'enterprise' | 'indirect' | 'none';
       authenticatorSelection?: {
         authenticatorAttachment?: 'platform' | 'cross-platform';
         requireResidentKey?: boolean;
         residentKey?: 'discouraged' | 'preferred' | 'required';
         userVerification?: 'discouraged' | 'preferred' | 'required';
       };
-      attestation?: 'direct' | 'enterprise' | 'indirect' | 'none';
+      challenge: string;
+      excludeCredentials?: Array<{
+        id: string;
+        transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
+        type: 'public-key';
+      }>;
       extensions?: {
         [key: string]: unknown;
+      };
+      pubKeyCredParams: Array<{
+        alg: number;
+        type: 'public-key';
+      }>;
+      rp: {
+        id?: string;
+        name: string;
+      };
+      timeout?: number;
+      user: {
+        displayName: string;
+        id: string;
+        name: string;
       };
     };
   };
@@ -696,10 +696,10 @@ export type AccountLinkTotpSetupErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -707,10 +707,10 @@ export type AccountLinkTotpSetupErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -721,8 +721,8 @@ export type AccountLinkTotpSetupResponses = {
    * Default Response
    */
   200: {
-    otpauthUri: string;
     manualEntryKey: string;
+    otpauthUri: string;
     qrCodeDataUrl: string;
   };
 };
@@ -743,10 +743,10 @@ export type AccountLinkTotpUnlinkErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -754,10 +754,10 @@ export type AccountLinkTotpUnlinkErrors = {
   404: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -788,10 +788,10 @@ export type AccountLinkTotpVerifyErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -799,10 +799,10 @@ export type AccountLinkTotpVerifyErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -810,10 +810,10 @@ export type AccountLinkTotpVerifyErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -846,10 +846,10 @@ export type AccountLinkWalletUnlinkErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -857,10 +857,10 @@ export type AccountLinkWalletUnlinkErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -868,10 +868,10 @@ export type AccountLinkWalletUnlinkErrors = {
   404: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -889,9 +889,9 @@ export type AccountLinkWalletUnlinkResponse = AccountLinkWalletUnlinkResponses[k
 export type AccountLinkWalletVerifyData = {
   body: {
     chain: 'eip155' | 'solana';
+    domain: string;
     message: string;
     signature: string;
-    domain: string;
   };
   path?: never;
   query?: never;
@@ -905,10 +905,10 @@ export type AccountLinkWalletVerifyErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -916,10 +916,10 @@ export type AccountLinkWalletVerifyErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -927,10 +927,10 @@ export type AccountLinkWalletVerifyErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -961,10 +961,10 @@ export type AccountPasskeysListErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -976,9 +976,9 @@ export type AccountPasskeysListResponses = {
    */
   200: {
     passkeys: Array<{
+      createdAt: string;
       id: string;
       name: string;
-      createdAt: string;
     }>;
   };
 };
@@ -1002,10 +1002,10 @@ export type AccountProfileUpdateErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1013,10 +1013,10 @@ export type AccountProfileUpdateErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1028,8 +1028,8 @@ export type AccountProfileUpdateResponses = {
    */
   200: {
     user: {
-      id: string;
       email: string | unknown;
+      id: string;
       name: string | unknown;
       username: string | unknown;
     };
@@ -1052,10 +1052,10 @@ export type AccountWalletGetErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1067,25 +1067,25 @@ export type AccountWalletGetResponses = {
    */
   200: {
     address: string | unknown;
-    tokens: Array<{
-      network: 'eth-mainnet' | 'base-mainnet';
-      tokenAddress: string | unknown;
-      symbol: string | unknown;
-      name: string | unknown;
-      amount: string;
-      quoteUsd: number | unknown;
-      logoUrl: string | unknown;
-      assetId: string | unknown;
-    }>;
-    nfts: Array<{
-      network: 'eth-mainnet' | 'base-mainnet';
-      contractAddress: string;
-      tokenId: string;
-      name: string | unknown;
-      collectionName: string | unknown;
-      imageUrl: string | unknown;
-    }>;
     error: string | unknown;
+    nfts: Array<{
+      collectionName: string | unknown;
+      contractAddress: string;
+      imageUrl: string | unknown;
+      name: string | unknown;
+      network: 'eth-mainnet' | 'base-mainnet';
+      tokenId: string;
+    }>;
+    tokens: Array<{
+      amount: string;
+      assetId: string | unknown;
+      logoUrl: string | unknown;
+      name: string | unknown;
+      network: 'eth-mainnet' | 'base-mainnet';
+      quoteUsd: number | unknown;
+      symbol: string | unknown;
+      tokenAddress: string | unknown;
+    }>;
   };
 };
 
@@ -1107,10 +1107,10 @@ export type GetAgentByIdErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1118,10 +1118,10 @@ export type GetAgentByIdErrors = {
   404: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1130,10 +1130,10 @@ export type GetAgentByIdErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1144,13 +1144,13 @@ export type GetAgentByIdResponses = {
    * Default Response
    */
   200: {
+    capabilities: Array<string>;
+    endpoint: string;
+    features: Array<string>;
     id: 'command' | 'chat';
     name: string;
-    endpoint: string;
-    transport: 'eve';
     presentation: string;
-    capabilities: Array<string>;
-    features: Array<string>;
+    transport: 'eve';
   };
 };
 
@@ -1171,10 +1171,10 @@ export type ListAgentsErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1185,13 +1185,13 @@ export type ListAgentsResponses = {
    * Default Response
    */
   200: Array<{
+    capabilities: Array<string>;
+    endpoint: string;
+    features: Array<string>;
     id: 'command' | 'chat';
     name: string;
-    endpoint: string;
-    transport: 'eve';
     presentation: string;
-    capabilities: Array<string>;
-    features: Array<string>;
+    transport: 'eve';
   }>;
 };
 
@@ -1199,9 +1199,9 @@ export type ListAgentsResponse = ListAgentsResponses[keyof ListAgentsResponses];
 
 export type GenerateData = {
   body: {
+    model?: string;
     prompt: string;
     stream?: boolean;
-    model?: string;
     temperature?: number;
   };
   path?: never;
@@ -1216,10 +1216,10 @@ export type GenerateErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1227,10 +1227,10 @@ export type GenerateErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1238,10 +1238,10 @@ export type GenerateErrors = {
   402: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1250,10 +1250,10 @@ export type GenerateErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1261,10 +1261,10 @@ export type GenerateErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1272,10 +1272,10 @@ export type GenerateErrors = {
   502: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1283,10 +1283,10 @@ export type GenerateErrors = {
   504: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1305,8 +1305,8 @@ export type GenerateResponse = GenerateResponses[keyof GenerateResponses];
 
 export type MagiclinkRequestData = {
   body: {
-    email: string;
     callbackUrl: string;
+    email: string;
   };
   path?: never;
   query?: never;
@@ -1320,10 +1320,10 @@ export type MagiclinkRequestErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1332,10 +1332,10 @@ export type MagiclinkRequestErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1343,10 +1343,10 @@ export type MagiclinkRequestErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1366,6 +1366,10 @@ export type MagiclinkRequestResponse = MagiclinkRequestResponses[keyof Magiclink
 export type MagiclinkVerifyData = {
   body: {
     /**
+     * Email (for code entry on login page)
+     */
+    email?: string;
+    /**
      * 6-digit code
      */
     token: string;
@@ -1373,10 +1377,6 @@ export type MagiclinkVerifyData = {
      * Verification row id (from magic link URL)
      */
     verificationId?: string;
-    /**
-     * Email (for code entry on login page)
-     */
-    email?: string;
   };
   path?: never;
   query?: never;
@@ -1390,10 +1390,10 @@ export type MagiclinkVerifyErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1401,10 +1401,10 @@ export type MagiclinkVerifyErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1412,10 +1412,10 @@ export type MagiclinkVerifyErrors = {
   404: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1423,10 +1423,10 @@ export type MagiclinkVerifyErrors = {
   429: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1434,10 +1434,10 @@ export type MagiclinkVerifyErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1448,8 +1448,8 @@ export type MagiclinkVerifyResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -1467,12 +1467,12 @@ export type OauthProvidersResponses = {
    * Default Response
    */
   200: {
+    facebook: boolean;
+    facebookHasRedirectConfig: boolean;
     github: boolean;
     githubHasRedirectConfig: boolean;
     google: boolean;
     googleHasRedirectConfig: boolean;
-    facebook: boolean;
-    facebookHasRedirectConfig: boolean;
     twitter: boolean;
     twitterHasRedirectConfig: boolean;
   };
@@ -1496,10 +1496,10 @@ export type OauthFacebookAuthorizeUrlErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1508,10 +1508,10 @@ export type OauthFacebookAuthorizeUrlErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1519,10 +1519,10 @@ export type OauthFacebookAuthorizeUrlErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1556,10 +1556,10 @@ export type OauthFacebookExchangeErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1567,10 +1567,10 @@ export type OauthFacebookExchangeErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1578,10 +1578,10 @@ export type OauthFacebookExchangeErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1590,10 +1590,10 @@ export type OauthFacebookExchangeErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1601,10 +1601,10 @@ export type OauthFacebookExchangeErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1612,10 +1612,10 @@ export type OauthFacebookExchangeErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1623,10 +1623,10 @@ export type OauthFacebookExchangeErrors = {
   504: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1637,9 +1637,9 @@ export type OauthFacebookExchangeResponses = {
    * Default Response
    */
   200: {
-    token: string;
-    refreshToken: string;
     redirectTo?: string;
+    refreshToken: string;
+    token: string;
   };
 };
 
@@ -1661,10 +1661,10 @@ export type OauthFacebookLinkAuthorizeUrlErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1672,10 +1672,10 @@ export type OauthFacebookLinkAuthorizeUrlErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1683,10 +1683,10 @@ export type OauthFacebookLinkAuthorizeUrlErrors = {
   429: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1694,10 +1694,10 @@ export type OauthFacebookLinkAuthorizeUrlErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1730,10 +1730,10 @@ export type OauthGithubAuthorizeUrlErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1742,10 +1742,10 @@ export type OauthGithubAuthorizeUrlErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1753,10 +1753,10 @@ export type OauthGithubAuthorizeUrlErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1790,10 +1790,10 @@ export type OauthGithubExchangeErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1801,10 +1801,10 @@ export type OauthGithubExchangeErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1812,10 +1812,10 @@ export type OauthGithubExchangeErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1824,10 +1824,10 @@ export type OauthGithubExchangeErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1835,10 +1835,10 @@ export type OauthGithubExchangeErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1846,10 +1846,10 @@ export type OauthGithubExchangeErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1860,9 +1860,9 @@ export type OauthGithubExchangeResponses = {
    * Default Response
    */
   200: {
-    token: string;
-    refreshToken: string;
     redirectTo?: string;
+    refreshToken: string;
+    token: string;
   };
 };
 
@@ -1884,10 +1884,10 @@ export type OauthGithubLinkAuthorizeUrlErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1895,10 +1895,10 @@ export type OauthGithubLinkAuthorizeUrlErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1906,10 +1906,10 @@ export type OauthGithubLinkAuthorizeUrlErrors = {
   429: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1917,10 +1917,10 @@ export type OauthGithubLinkAuthorizeUrlErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -1953,10 +1953,10 @@ export type OauthGoogleAuthorizeUrlErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1965,10 +1965,10 @@ export type OauthGoogleAuthorizeUrlErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -1976,10 +1976,10 @@ export type OauthGoogleAuthorizeUrlErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2013,10 +2013,10 @@ export type OauthGoogleExchangeErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2024,10 +2024,10 @@ export type OauthGoogleExchangeErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2035,10 +2035,10 @@ export type OauthGoogleExchangeErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2047,10 +2047,10 @@ export type OauthGoogleExchangeErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2058,10 +2058,10 @@ export type OauthGoogleExchangeErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2069,10 +2069,10 @@ export type OauthGoogleExchangeErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2080,10 +2080,10 @@ export type OauthGoogleExchangeErrors = {
   504: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2094,9 +2094,9 @@ export type OauthGoogleExchangeResponses = {
    * Default Response
    */
   200: {
-    token: string;
-    refreshToken: string;
     redirectTo?: string;
+    refreshToken: string;
+    token: string;
   };
 };
 
@@ -2118,10 +2118,10 @@ export type OauthGoogleLinkAuthorizeUrlErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2129,10 +2129,10 @@ export type OauthGoogleLinkAuthorizeUrlErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2140,10 +2140,10 @@ export type OauthGoogleLinkAuthorizeUrlErrors = {
   429: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2151,10 +2151,10 @@ export type OauthGoogleLinkAuthorizeUrlErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2187,10 +2187,10 @@ export type OauthGoogleVerifyIdTokenErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2199,10 +2199,10 @@ export type OauthGoogleVerifyIdTokenErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2210,10 +2210,10 @@ export type OauthGoogleVerifyIdTokenErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2224,8 +2224,8 @@ export type OauthGoogleVerifyIdTokenResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -2247,10 +2247,10 @@ export type OauthTwitterAuthorizeUrlErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2259,10 +2259,10 @@ export type OauthTwitterAuthorizeUrlErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2270,10 +2270,10 @@ export type OauthTwitterAuthorizeUrlErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2307,10 +2307,10 @@ export type OauthTwitterExchangeErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2318,10 +2318,10 @@ export type OauthTwitterExchangeErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2329,10 +2329,10 @@ export type OauthTwitterExchangeErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2341,10 +2341,10 @@ export type OauthTwitterExchangeErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2352,10 +2352,10 @@ export type OauthTwitterExchangeErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2363,10 +2363,10 @@ export type OauthTwitterExchangeErrors = {
   502: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2374,10 +2374,10 @@ export type OauthTwitterExchangeErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2385,10 +2385,10 @@ export type OauthTwitterExchangeErrors = {
   504: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2399,9 +2399,9 @@ export type OauthTwitterExchangeResponses = {
    * Default Response
    */
   200: {
-    token: string;
-    refreshToken: string;
     redirectTo?: string;
+    refreshToken: string;
+    token: string;
   };
 };
 
@@ -2423,10 +2423,10 @@ export type OauthTwitterLinkAuthorizeUrlErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2434,10 +2434,10 @@ export type OauthTwitterLinkAuthorizeUrlErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2445,10 +2445,10 @@ export type OauthTwitterLinkAuthorizeUrlErrors = {
   429: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2456,10 +2456,10 @@ export type OauthTwitterLinkAuthorizeUrlErrors = {
   503: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2492,10 +2492,10 @@ export type AuthPasskeyExchangeErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2503,10 +2503,10 @@ export type AuthPasskeyExchangeErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2515,10 +2515,10 @@ export type AuthPasskeyExchangeErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2529,8 +2529,8 @@ export type AuthPasskeyExchangeResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -2552,10 +2552,10 @@ export type AuthPasskeyResolveUserErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2564,10 +2564,10 @@ export type AuthPasskeyResolveUserErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2598,10 +2598,10 @@ export type AuthPasskeyStartErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2610,10 +2610,10 @@ export type AuthPasskeyStartErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2625,18 +2625,18 @@ export type AuthPasskeyStartResponses = {
    */
   200: {
     options: {
-      challenge: string;
-      timeout?: number;
-      rpId?: string;
       allowCredentials?: Array<{
         id: string;
-        type: 'public-key';
         transports?: Array<'ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb'>;
+        type: 'public-key';
       }>;
-      userVerification?: 'discouraged' | 'preferred' | 'required';
+      challenge: string;
       extensions?: {
         [key: string]: unknown;
       };
+      rpId?: string;
+      timeout?: number;
+      userVerification?: 'discouraged' | 'preferred' | 'required';
     };
     sessionId: string;
   };
@@ -2647,22 +2647,22 @@ export type AuthPasskeyStartResponse = AuthPasskeyStartResponses[keyof AuthPassk
 export type AuthPasskeyVerifyData = {
   body: {
     assertion: {
-      id: string;
-      rawId: string;
-      response: {
-        clientDataJSON: string;
-        authenticatorData: string;
-        signature: string;
-        userHandle?: string;
-      };
       authenticatorAttachment?: 'platform' | 'cross-platform';
       clientExtensionResults?: {
         [key: string]: unknown;
       };
+      id: string;
+      rawId: string;
+      response: {
+        authenticatorData: string;
+        clientDataJSON: string;
+        signature: string;
+        userHandle?: string;
+      };
       type: 'public-key';
     };
-    sessionId: string;
     callbackUrl?: string;
+    sessionId: string;
   };
   path?: never;
   query?: never;
@@ -2676,10 +2676,10 @@ export type AuthPasskeyVerifyErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2687,10 +2687,10 @@ export type AuthPasskeyVerifyErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2699,10 +2699,10 @@ export type AuthPasskeyVerifyErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2715,8 +2715,8 @@ export type AuthPasskeyVerifyResponses = {
   200: {
     redirectUrl: string;
   } | {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -2736,10 +2736,10 @@ export type LogoutErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2747,10 +2747,10 @@ export type LogoutErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2781,10 +2781,10 @@ export type RefreshErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2792,10 +2792,10 @@ export type RefreshErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2806,8 +2806,8 @@ export type RefreshResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -2827,10 +2827,10 @@ export type GetUserErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2838,10 +2838,10 @@ export type GetUserErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2853,29 +2853,29 @@ export type GetUserResponses = {
    */
   200: {
     user: {
-      id: string;
       email: string | unknown;
-      name: string | unknown;
-      username: string | unknown;
       emailVerified: boolean;
+      id: string;
+      linkedAccounts: Array<{
+        providerId: string;
+      }>;
+      linkedWallets: Array<{
+        address: string;
+        chain: string;
+        id: string;
+      }>;
+      name: string | unknown;
+      passkeys: Array<{
+        createdAt: string;
+        id: string;
+        name: string;
+      }>;
+      totpEnabled: boolean;
+      username: string | unknown;
       wallet?: {
         chain: string;
         address: string;
       };
-      linkedWallets: Array<{
-        id: string;
-        chain: string;
-        address: string;
-      }>;
-      linkedAccounts: Array<{
-        providerId: string;
-      }>;
-      totpEnabled: boolean;
-      passkeys: Array<{
-        id: string;
-        name: string;
-        createdAt: string;
-      }>;
     };
   };
 };
@@ -2898,10 +2898,10 @@ export type ValidateTokensErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2934,10 +2934,10 @@ export type AuthSessionsDeleteErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2945,10 +2945,10 @@ export type AuthSessionsDeleteErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2956,10 +2956,10 @@ export type AuthSessionsDeleteErrors = {
   404: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -2988,10 +2988,10 @@ export type AuthSessionsListErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -2999,10 +2999,10 @@ export type AuthSessionsListErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3014,13 +3014,13 @@ export type AuthSessionsListResponses = {
    */
   200: {
     sessions: Array<{
-      id: string;
-      signInMethod: string | unknown;
-      deviceLabel: string | unknown;
-      location: string | unknown;
-      ipAddress: string | unknown;
       createdAt: string;
+      deviceLabel: string | unknown;
+      id: string;
+      ipAddress: string | unknown;
       isCurrent: boolean;
+      location: string | unknown;
+      signInMethod: string | unknown;
     }>;
   };
 };
@@ -3044,10 +3044,10 @@ export type AuthSessionsRevokeErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3056,10 +3056,10 @@ export type AuthSessionsRevokeErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3092,10 +3092,10 @@ export type Web3ExchangeErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3103,10 +3103,10 @@ export type Web3ExchangeErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3117,8 +3117,8 @@ export type Web3ExchangeResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -3141,10 +3141,10 @@ export type Web3NonceErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3177,10 +3177,10 @@ export type Web3Eip155NonceErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3188,10 +3188,10 @@ export type Web3Eip155NonceErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3210,10 +3210,10 @@ export type Web3Eip155NonceResponse = Web3Eip155NonceResponses[keyof Web3Eip155N
 
 export type Web3Eip155VerifyData = {
   body: {
+    callbackUrl?: string;
+    domain: string;
     message: string;
     signature: string;
-    domain: string;
-    callbackUrl?: string;
   };
   path?: never;
   query?: never;
@@ -3227,10 +3227,10 @@ export type Web3Eip155VerifyErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3238,10 +3238,10 @@ export type Web3Eip155VerifyErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3249,10 +3249,10 @@ export type Web3Eip155VerifyErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3263,8 +3263,8 @@ export type Web3Eip155VerifyResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -3286,10 +3286,10 @@ export type Web3SolanaNonceErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3297,10 +3297,10 @@ export type Web3SolanaNonceErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3319,10 +3319,10 @@ export type Web3SolanaNonceResponse = Web3SolanaNonceResponses[keyof Web3SolanaN
 
 export type Web3SolanaVerifyData = {
   body: {
+    callbackUrl?: string;
+    domain: string;
     message: string;
     signature: string;
-    domain: string;
-    callbackUrl?: string;
   };
   path?: never;
   query?: never;
@@ -3336,10 +3336,10 @@ export type Web3SolanaVerifyErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3347,10 +3347,10 @@ export type Web3SolanaVerifyErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3358,10 +3358,10 @@ export type Web3SolanaVerifyErrors = {
   500: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3372,8 +3372,8 @@ export type Web3SolanaVerifyResponses = {
    * Default Response
    */
   200: {
-    token: string;
     refreshToken: string;
+    token: string;
   };
 };
 
@@ -3383,17 +3383,17 @@ export type ListCoinsData = {
   body?: never;
   path?: never;
   query?: {
-    universe?: 'all' | 'majors' | 'watchlist';
+    highlight?: Array<string>;
+    maxChangePct?: number;
+    maxPrice?: number;
+    minChangePct?: number;
+    minPrice?: number;
+    sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
+    sortDir?: 'asc' | 'desc';
     symbols?: Array<string>;
     text?: string;
     topN?: number;
-    sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
-    sortDir?: 'asc' | 'desc';
-    minChangePct?: number;
-    maxChangePct?: number;
-    minPrice?: number;
-    maxPrice?: number;
-    highlight?: Array<string>;
+    universe?: 'all' | 'majors' | 'watchlist';
   };
   url: '/coins/';
 };
@@ -3405,10 +3405,10 @@ export type ListCoinsErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3416,10 +3416,10 @@ export type ListCoinsErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3428,10 +3428,10 @@ export type ListCoinsErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3443,42 +3443,42 @@ export type ListCoinsResponses = {
    */
   200: {
     coins: Array<{
-      id: string;
-      symbol: string;
-      name: string;
-      imageUrl: string | unknown;
-      priceUsd: number;
       change24h: number;
       change7d: number | unknown;
-      sparkline7d: Array<number>;
-      volumeUsd: number;
-      marketCapUsd: number;
-      rank: number;
       fetchedAt: string;
       highlighted: boolean;
+      id: string;
+      imageUrl: string | unknown;
+      marketCapUsd: number;
+      name: string;
+      priceUsd: number;
+      rank: number;
+      sparkline7d: Array<number>;
+      symbol: string;
+      volumeUsd: number;
     }>;
-    sync: {
-      source: string;
-      fetchedAt: string | unknown;
-      lastError: string | unknown;
-      stale?: boolean;
-      attribution?: string;
-    };
     query: {
-      universe?: 'all' | 'majors' | 'watchlist';
+      highlight?: Array<string>;
+      maxChangePct?: number;
+      maxPrice?: number;
+      minChangePct?: number;
+      minPrice?: number;
+      sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
+      sortDir?: 'asc' | 'desc';
       symbols?: Array<string>;
       text?: string;
       topN?: number;
-      sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
-      sortDir?: 'asc' | 'desc';
-      minChangePct?: number;
-      maxChangePct?: number;
-      minPrice?: number;
-      maxPrice?: number;
-      highlight?: Array<string>;
+      universe?: 'all' | 'majors' | 'watchlist';
     };
-    spokenSummary: string;
     queryCaption: string;
+    spokenSummary: string;
+    sync: {
+      attribution?: string;
+      fetchedAt: string | unknown;
+      lastError: string | unknown;
+      source: string;
+      stale?: boolean;
+    };
   };
 };
 
@@ -3486,17 +3486,17 @@ export type ListCoinsResponse = ListCoinsResponses[keyof ListCoinsResponses];
 
 export type QueryCoinsData = {
   body: {
-    universe?: 'all' | 'majors' | 'watchlist';
+    highlight?: Array<string>;
+    maxChangePct?: number;
+    maxPrice?: number;
+    minChangePct?: number;
+    minPrice?: number;
+    sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
+    sortDir?: 'asc' | 'desc';
     symbols?: Array<string>;
     text?: string;
     topN?: number;
-    sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
-    sortDir?: 'asc' | 'desc';
-    minChangePct?: number;
-    maxChangePct?: number;
-    minPrice?: number;
-    maxPrice?: number;
-    highlight?: Array<string>;
+    universe?: 'all' | 'majors' | 'watchlist';
   };
   path?: never;
   query?: never;
@@ -3510,10 +3510,10 @@ export type QueryCoinsErrors = {
   400: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3521,10 +3521,10 @@ export type QueryCoinsErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3533,10 +3533,10 @@ export type QueryCoinsErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3548,42 +3548,42 @@ export type QueryCoinsResponses = {
    */
   200: {
     coins: Array<{
-      id: string;
-      symbol: string;
-      name: string;
-      imageUrl: string | unknown;
-      priceUsd: number;
       change24h: number;
       change7d: number | unknown;
-      sparkline7d: Array<number>;
-      volumeUsd: number;
-      marketCapUsd: number;
-      rank: number;
       fetchedAt: string;
       highlighted: boolean;
+      id: string;
+      imageUrl: string | unknown;
+      marketCapUsd: number;
+      name: string;
+      priceUsd: number;
+      rank: number;
+      sparkline7d: Array<number>;
+      symbol: string;
+      volumeUsd: number;
     }>;
-    sync: {
-      source: string;
-      fetchedAt: string | unknown;
-      lastError: string | unknown;
-      stale?: boolean;
-      attribution?: string;
-    };
     query: {
-      universe?: 'all' | 'majors' | 'watchlist';
+      highlight?: Array<string>;
+      maxChangePct?: number;
+      maxPrice?: number;
+      minChangePct?: number;
+      minPrice?: number;
+      sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
+      sortDir?: 'asc' | 'desc';
       symbols?: Array<string>;
       text?: string;
       topN?: number;
-      sortBy?: 'rank' | 'change24h' | 'volume' | 'marketCap' | 'price';
-      sortDir?: 'asc' | 'desc';
-      minChangePct?: number;
-      maxChangePct?: number;
-      minPrice?: number;
-      maxPrice?: number;
-      highlight?: Array<string>;
+      universe?: 'all' | 'majors' | 'watchlist';
     };
-    spokenSummary: string;
     queryCaption: string;
+    spokenSummary: string;
+    sync: {
+      attribution?: string;
+      fetchedAt: string | unknown;
+      lastError: string | unknown;
+      source: string;
+      stale?: boolean;
+    };
   };
 };
 
@@ -3608,10 +3608,10 @@ export type GetCoinCandlesErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3623,18 +3623,18 @@ export type GetCoinCandlesResponses = {
    */
   200: {
     assetId: string;
-    interval: string;
     candles: Array<{
-      openTime: number;
-      open: number;
+      close: number;
+      closeTime: number;
       high: number;
       low: number;
-      close: number;
+      open: number;
+      openTime: number;
       volume: number;
-      closeTime: number;
     }>;
-    source: 'live' | 'fixture' | 'stale';
+    interval: string;
     provider: 'coingecko' | 'binance' | 'fixture';
+    source: 'live' | 'fixture' | 'stale';
   };
 };
 
@@ -3655,10 +3655,10 @@ export type GetCoinGlobalErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3669,10 +3669,10 @@ export type GetCoinGlobalResponses = {
    * Default Response
    */
   200: {
-    marketCapUsd: number;
-    volumeUsd: number;
     btcDominance: number;
+    marketCapUsd: number;
     source: 'live' | 'fixture' | 'stale';
+    volumeUsd: number;
   };
 };
 
@@ -3693,10 +3693,10 @@ export type GetCoinTrendingErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3709,10 +3709,10 @@ export type GetCoinTrendingResponses = {
   200: {
     coins: Array<{
       id: string;
-      symbol: string;
       name: string;
       rank: number | unknown;
       source: 'live' | 'fixture' | 'stale';
+      symbol: string;
     }>;
     source: 'live' | 'fixture' | 'stale';
   };
@@ -3736,10 +3736,10 @@ export type DeleteCoinWatchByIdErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3748,10 +3748,10 @@ export type DeleteCoinWatchByIdErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3782,10 +3782,10 @@ export type PutCoinWatchErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3793,10 +3793,10 @@ export type PutCoinWatchErrors = {
   404: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3804,10 +3804,10 @@ export type PutCoinWatchErrors = {
   409: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3816,10 +3816,10 @@ export type PutCoinWatchErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3830,9 +3830,9 @@ export type PutCoinWatchResponses = {
    * Default Response
    */
   200: {
-    id: string;
     assetId: string;
     createdAt: string;
+    id: string;
   };
 };
 
@@ -3852,10 +3852,10 @@ export type ListCoinWatchesErrors = {
   401: {
     code: string;
     message: string;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
   /**
    * Default Response
@@ -3864,10 +3864,10 @@ export type ListCoinWatchesErrors = {
     code: string;
     message: string;
     retryAfter: number;
-    type?: string;
-    title?: string;
-    status?: number;
     detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
   };
 };
 
@@ -3878,9 +3878,9 @@ export type ListCoinWatchesResponses = {
    * Default Response
    */
   200: Array<{
-    id: string;
     assetId: string;
     createdAt: string;
+    id: string;
   }>;
 };
 

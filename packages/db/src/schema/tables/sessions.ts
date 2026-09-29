@@ -1,48 +1,58 @@
-import { index, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
-import { users } from './users.js'
+import {
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
+
+import { users } from "./users.js";
 
 export const signInMethods = [
-  'magic_link',
-  'oauth_google',
-  'oauth_github',
-  'oauth_facebook',
-  'oauth_twitter',
-  'passkey',
-  'web3_eip155',
-  'web3_solana',
-] as const
-export type SignInMethod = (typeof signInMethods)[number]
+  "magic_link",
+  "oauth_google",
+  "oauth_github",
+  "oauth_facebook",
+  "oauth_twitter",
+  "passkey",
+  "web3_eip155",
+  "web3_solana",
+] as const;
+export type SignInMethod = (typeof signInMethods)[number];
 
 export const sessions = pgTable(
-  'sessions',
+  "sessions",
   {
-    id: text('id').primaryKey(),
-    token: text('token').notNull(),
-    previousToken: text('previous_token'),
-    currentJti: text('current_jti'),
-    rotatedAt: timestamp('rotated_at'),
-    userId: text('user_id')
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    currentJti: text("current_jti"),
+    deviceFingerprint: text("device_fingerprint"),
+    deviceLabel: text("device_label"),
+    expiresAt: timestamp("expires_at").notNull(),
+    id: text("id").primaryKey(),
+    ipAddress: text("ip_address"),
+    location: text("location"),
+    previousToken: text("previous_token"),
+    rotatedAt: timestamp("rotated_at"),
+    signInMethod: text("sign_in_method", { enum: signInMethods }),
+    token: text("token").notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    userAgent: text("user_agent"),
+    userId: text("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    expiresAt: timestamp('expires_at').notNull(),
-    ipAddress: text('ip_address'),
-    userAgent: text('user_agent'),
-    signInMethod: text('sign_in_method', { enum: signInMethods }),
-    deviceLabel: text('device_label'),
-    location: text('location'),
-    deviceFingerprint: text('device_fingerprint'),
-    walletChain: text('wallet_chain'),
-    walletAddress: text('wallet_address'),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+      .references(() => users.id, { onDelete: "cascade" }),
+    walletAddress: text("wallet_address"),
+    walletChain: text("wallet_chain"),
   },
-  table => [
-    index('sessions_user_id_idx').on(table.userId),
-    index('sessions_expires_at_idx').on(table.expiresAt),
-    uniqueIndex('sessions_token_idx').on(table.token),
-    index('sessions_user_id_device_fingerprint_idx').on(table.userId, table.deviceFingerprint),
-  ],
-)
+  (table) => [
+    index("sessions_user_id_idx").on(table.userId),
+    index("sessions_expires_at_idx").on(table.expiresAt),
+    uniqueIndex("sessions_token_idx").on(table.token),
+    index("sessions_user_id_device_fingerprint_idx").on(
+      table.userId,
+      table.deviceFingerprint
+    ),
+  ]
+);
 
-export type Session = typeof sessions.$inferSelect
-export type NewSession = typeof sessions.$inferInsert
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;

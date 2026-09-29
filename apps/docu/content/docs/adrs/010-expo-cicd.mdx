@@ -87,7 +87,7 @@ We adopt **EAS (Expo Application Services) + GitHub Actions** for mobile CI/CD.
 ### TLDR: Comparison Table
 
 | Feature | EAS + GitHub Actions ✅ | Local Only | Third-Party CI | Full Build Per PR |
-|---------|-------------------------|------------|---------------|-------------------|
+| --- | --- | --- | --- | --- |
 | **PR preview** | ✅ OTA + QR comment | ❌ Manual | ✅ Often supported | ⚠️ Slow |
 | **v1 no store accounts** | ✅ Internal dist | ✅ N/A | ⚠️ Varies | ✅ Possible |
 | **Path filtering** | ✅ apps/mobile, packages/ui | N/A | ⚠️ Varies | ✅ Possible |
@@ -104,7 +104,7 @@ We adopt **EAS (Expo Application Services) + GitHub Actions** for mobile CI/CD.
 ### Workflows (v1)
 
 | Workflow | Trigger | Use |
-|----------|---------|-----|
+| --- | --- | --- |
 | `mobile-build` | Manual | One-off Android preview or development build |
 | `mobile-preview` | Push to `main` | Auto-build baseline when mobile or UI changes |
 | `mobile-pr-preview` | Pull request | Publish EAS Update, comment QR (app-facing PRs only) |

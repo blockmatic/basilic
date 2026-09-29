@@ -28,21 +28,25 @@ Vendor HTTP lives in `@repo/markets`: CoinGecko Demo via `@coingecko/coingecko-t
 Runtime: request → Fastify validation → handler → Drizzle → JSON.
 
 ```typescript
-import { Type } from '@sinclair/typebox'
-import { dbHealth } from '../db/probe.js'
+import { Type } from "@sinclair/typebox";
+import { dbHealth } from "../db/probe.js";
 
-fastify.get('/health', {
-  schema: {
-    response: {
-      200: Type.Object({ ok: Type.Boolean(), dbReady: Type.Boolean() }),
-      503: Type.Object({ ok: Type.Boolean(), dbReady: Type.Boolean() }),
+fastify.get(
+  "/health",
+  {
+    schema: {
+      response: {
+        200: Type.Object({ ok: Type.Boolean(), dbReady: Type.Boolean() }),
+        503: Type.Object({ ok: Type.Boolean(), dbReady: Type.Boolean() }),
+      },
     },
   },
-}, async (_request, reply) => {
-  const dbReady = await dbHealth.probe()
-  if (!dbReady) return reply.code(503).send({ ok: false, dbReady: false })
-  return reply.code(200).send({ ok: true, dbReady: true })
-})
+  async (_request, reply) => {
+    const dbReady = await dbHealth.probe();
+    if (!dbReady) return reply.code(503).send({ ok: false, dbReady: false });
+    return reply.code(200).send({ ok: true, dbReady: true });
+  }
+);
 ```
 
 `GET /health` is readiness: **200** when `SELECT 1` succeeds, **503** when the store cannot answer. It does not probe Resend, AI, or IdPs.
@@ -52,11 +56,11 @@ fastify.get('/health', {
 `createClient` from `@repo/core` has three auth modes (see [Authentication](/docs/architecture/authentication)): no-auth, JWT (`getAuthToken` / refresh), API key.
 
 ```typescript
-import { createClient } from '@repo/core'
-import { useHealthCheck } from '@repo/react'
+import { createClient } from "@repo/core";
+import { useHealthCheck } from "@repo/react";
 
-const client = createClient({ baseUrl: process.env.NEXT_PUBLIC_API_URL! })
-const { data } = useHealthCheck()
+const client = createClient({ baseUrl: process.env.NEXT_PUBLIC_API_URL! });
+const { data } = useHealthCheck();
 ```
 
 Other languages can use any OpenAPI generator against the same spec. Local DB: `pnpm db:start` then `pnpm dev` (migrate + seed on API boot). Wipe: `pnpm reset`. See [ADR 008](/docs/adrs/008-database).

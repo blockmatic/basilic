@@ -1,20 +1,26 @@
-export function skipIfNoCommandModel({ skip }: { skip: (reason: string) => void }) {
+export function skipIfNoCommandModel({
+  skip,
+}: {
+  skip: (reason: string) => void;
+}) {
   /* eslint-disable no-restricted-properties -- eval skipIf must not load createEnv */
-  if (process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN) return false
+  if (process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN) {
+    return false;
+  }
   /* eslint-enable no-restricted-properties */
-  skip('no command language model')
-  return true
+  skip("no command language model");
+  return true;
 }
 
 export const marketWatchTools = [
-  'get_markets',
-  'get_asset',
-  'get_candles',
-  'get_global',
-  'get_quote',
-  'get_trending',
-  'search_assets',
-  'watch_asset',
-  'unwatch_asset',
-  'list_watches',
-] as const
+  "get_markets",
+  "get_asset",
+  "get_candles",
+  "get_global",
+  "get_quote",
+  "get_trending",
+  "search_assets",
+  "watch_asset",
+  "unwatch_asset",
+  "list_watches",
+] as const;

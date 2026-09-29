@@ -1,31 +1,31 @@
-import { randomBytes, randomUUID } from 'node:crypto'
-import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { getDb } from '@repo/db'
-import { web3Nonce } from '@repo/db/schema'
-import { Type } from '@sinclair/typebox'
-import { and, eq } from 'drizzle-orm'
-import type { FastifyPluginAsync } from 'fastify'
-import { authLoginRouteConfig } from '../../../../lib/auth/index.js'
-import { sendCatalogError } from '../../../../lib/catalogs/mapper.js'
-import { ErrorResponseSchema } from '../../../schemas.js'
-import { validateAddress } from '../validate-address.js'
+import { randomBytes, randomUUID } from "node:crypto";
 
-const nonceTtlMs = 5 * 60 * 1000 // 5 minutes
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+import { getDb } from "@repo/db";
+import { web3Nonce } from "@repo/db/schema";
+import { Type } from "@sinclair/typebox";
+import { and, eq } from "drizzle-orm";
+import type { FastifyPluginAsync } from "fastify";
+
+import { authLoginRouteConfig } from "../../../../lib/auth/index.js";
+import { sendCatalogError } from "../../../../lib/catalogs/mapper.js";
+import { ErrorResponseSchema } from "../../../schemas.js";
+import { validateAddress } from "../validate-address.js";
+
+const nonceTtlMs = 5 * 60 * 1000; // 5 minutes
 
 const NonceResponseSchema = Type.Object({
   nonce: Type.String(),
-})
+});
 
-const solanaNonceRoute: FastifyPluginAsync = async fastify => {
+const solanaNonceRoute: FastifyPluginAsync = async (fastify) => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().get(
-    '/nonce',
+    "/nonce",
     {
+      config: authLoginRouteConfig,
       schema: {
-        operationId: 'web3SolanaNonce',
-        description: 'Get nonce for SIWS (Sign-In with Solana)',
-        summary: 'Get Solana nonce',
-        tags: ['auth'],
-        security: [],
+        description: "Get nonce for SIWS (Sign-In with Solana)",
+        operationId: "web3SolanaNonce",
         querystring: Type.Object({
           address: Type.String({ minLength: 1 }),
         }),
@@ -34,40 +34,51 @@ const solanaNonceRoute: FastifyPluginAsync = async fastify => {
           400: ErrorResponseSchema,
           500: ErrorResponseSchema,
         },
+        security: [],
+        summary: "Get Solana nonce",
+        tags: ["auth"],
       },
-      config: authLoginRouteConfig,
     },
     async (request, reply) => {
-      const { address } = request.query as { address: string }
-      const chain = 'solana'
+      const { address } = request.query as { address: string };
+      const chain = "solana";
 
-      let validatedAddress: string
+      let validatedAddress: string;
       try {
-        validatedAddress = validateAddress({ chain, address })
+        validatedAddress = validateAddress({ address, chain });
       } catch {
-        return sendCatalogError({ reply, status: 400, code: 'INVALID_ADDRESS' })
+        return sendCatalogError({
+          code: "INVALID_ADDRESS",
+          reply,
+          status: 400,
+        });
       }
 
-      const nonce = randomBytes(16).toString('hex')
-      const expiresAt = new Date(Date.now() + nonceTtlMs)
-      const db = await getDb()
+      const nonce = randomBytes(16).toString("hex");
+      const expiresAt = new Date(Date.now() + nonceTtlMs);
+      const db = await getDb();
 
       await db
         .delete(web3Nonce)
-        .where(and(eq(web3Nonce.chain, chain), eq(web3Nonce.address, validatedAddress)))
+        .where(
+          and(
+            eq(web3Nonce.chain, chain),
+            eq(web3Nonce.address, validatedAddress)
+          )
+        );
 
       await db.insert(web3Nonce).values({
-        id: randomUUID(),
-        chain,
         address: validatedAddress,
-        nonce,
+        chain,
         expiresAt,
-      })
+        id: randomUUID(),
+        nonce,
+      });
 
-      return reply.code(200).send({ nonce })
-    },
-  )
-}
+      return reply.code(200).send({ nonce });
+    }
+  );
+};
 
-export default solanaNonceRoute
-export const prefixOverride = '/auth/web3/solana'
+export default solanaNonceRoute;
+export const prefixOverride = "/auth/web3/solana";

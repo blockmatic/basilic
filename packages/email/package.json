@@ -1,12 +1,8 @@
 {
   "name": "@repo/email",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
-  "portless": {
-    "name": "email.basilic",
-    "script": "dev:app"
-  },
+  "type": "module",
   "exports": {
     "./emails/*": {
       "types": "./emails/*.tsx",
@@ -25,10 +21,6 @@
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "lint": "biome check .",
-    "lint:eslint": "eslint . --max-warnings 0",
-    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
-    "format": "biome format --write .",
     "checktypes": "tsc --noEmit",
     "dev": "portless",
     "dev:app": "node scripts/dev-preview.mjs",
@@ -44,19 +36,21 @@
     "date-fns": "^4.4.0",
     "react-email": "6.9.5"
   },
-  "peerDependencies": {
-    "react": "^19.0.0"
-  },
   "devDependencies": {
     "@react-email/preview-server": "5.2.10",
     "@react-email/ui": "6.9.5",
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "~26.6.2",
     "@types/react": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "cross-env": "^10.1.0",
-    "eslint": "^10.11.0",
     "react": "^19.3.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "portless": {
+    "name": "email.basilic",
+    "script": "dev:app"
   }
 }

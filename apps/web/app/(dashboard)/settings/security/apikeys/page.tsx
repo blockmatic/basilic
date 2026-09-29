@@ -1,5 +1,5 @@
-import { ApiKeysCard } from '../api-keys-card'
+import { ApiKeysCard } from "../api-keys-card";
 
 export default function ApiKeysPage() {
-  return <ApiKeysCard />
+  return <ApiKeysCard />;
 }

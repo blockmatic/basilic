@@ -1,6 +1,7 @@
-import { Coingecko } from '@coingecko/coingecko-typescript'
-import { getMarketsConfig } from './config.js'
-import { fetchAllowed, fetchTimeoutMs } from './policy.js'
+import { Coingecko } from "@coingecko/coingecko-typescript";
+
+import { getMarketsConfig } from "./config.js";
+import { fetchAllowed, fetchTimeoutMs } from "./policy.js";
 import type {
   AssetDetail,
   GetMarketsArgs,
@@ -10,37 +11,37 @@ import type {
   Quote,
   SearchResult,
   TrendingResult,
-} from './types.js'
+} from "./types.js";
 
-let client: Coingecko | undefined
+let client: Coingecko | undefined;
 
 function getClient(): Coingecko {
   client ??= new Coingecko({
-    environment: 'demo',
     baseURL: null,
-    proAPIKey: null,
+    defaultHeaders: { "x-cg-pro-api-key": null },
     demoAPIKey: getMarketsConfig().coinGeckoDemoApiKey ?? null,
-    defaultHeaders: { 'x-cg-pro-api-key': null },
+    environment: "demo",
     fetch: fetchAllowed,
+    logLevel: "off",
     maxRetries: 0,
+    proAPIKey: null,
     timeout: fetchTimeoutMs,
-    logLevel: 'off',
-  })
-  return client
+  });
+  return client;
 }
 
 export function resetCoinGeckoClient(): void {
-  client = undefined
+  client = undefined;
 }
 
 export function geckoId({
   assetId,
   coingeckoId,
 }: {
-  assetId: string
-  coingeckoId?: string
+  assetId: string;
+  coingeckoId?: string;
 }): string {
-  return coingeckoId ?? assetId
+  return coingeckoId ?? assetId;
 }
 
 export async function fetchCoinGeckoMarkets({
@@ -50,22 +51,35 @@ export async function fetchCoinGeckoMarkets({
   ids,
   sparkline,
 }: GetMarketsArgs): Promise<MarketsResult> {
-  const vsCurrency = vs ?? 'usd'
+  const vsCurrency = vs ?? "usd";
   const query: {
-    vs_currency: string
-    category?: string
-    ids?: string
-    per_page?: number
-    sparkline?: boolean
-    price_change_percentage?: string
-  } = { vs_currency: vsCurrency }
-  if (category) query.category = category
-  if (ids?.length) query.ids = ids.join(',')
-  if (topN !== undefined) query.per_page = topN
-  if (sparkline !== undefined) query.sparkline = sparkline
-  if (sparkline) query.price_change_percentage = '7d'
-  const rows = await getClient().coins.markets.get(query)
-  return { markets: rows.flatMap(row => toMarketRow({ row, vs: vsCurrency })), source: 'live' }
+    vs_currency: string;
+    category?: string;
+    ids?: string;
+    per_page?: number;
+    sparkline?: boolean;
+    price_change_percentage?: string;
+  } = { vs_currency: vsCurrency };
+  if (category) {
+    query.category = category;
+  }
+  if (ids?.length) {
+    query.ids = ids.join(",");
+  }
+  if (topN !== undefined) {
+    query.per_page = topN;
+  }
+  if (sparkline !== undefined) {
+    query.sparkline = sparkline;
+  }
+  if (sparkline) {
+    query.price_change_percentage = "7d";
+  }
+  const rows = await getClient().coins.markets.get(query);
+  return {
+    markets: rows.flatMap((row) => toMarketRow({ row, vs: vsCurrency })),
+    source: "live",
+  };
 }
 
 function toMarketRow({
@@ -73,149 +87,165 @@ function toMarketRow({
   vs,
 }: {
   row: {
-    id: string
-    symbol: string
-    name: string
-    image?: string
-    current_price?: number | null
-    price_change_percentage_24h?: number | null
-    price_change_percentage_7d_in_currency?: number | null
-    sparkline_in_7d?: { price?: number[] }
-    total_volume?: number | null
-    market_cap?: number | null
-    market_cap_rank?: number | null
-    last_updated?: string
-  }
-  vs: string
+    id: string;
+    symbol: string;
+    name: string;
+    image?: string;
+    current_price?: number | null;
+    price_change_percentage_24h?: number | null;
+    price_change_percentage_7d_in_currency?: number | null;
+    sparkline_in_7d?: { price?: number[] };
+    total_volume?: number | null;
+    market_cap?: number | null;
+    market_cap_rank?: number | null;
+    last_updated?: string;
+  };
+  vs: string;
 }): MarketRow[] {
-  if (vs.toLowerCase() !== 'usd') return []
-  const priceUsd = row.current_price
-  if (typeof priceUsd !== 'number' || !Number.isFinite(priceUsd)) return []
-  const change7d = row.price_change_percentage_7d_in_currency
+  if (vs.toLowerCase() !== "usd") {
+    return [];
+  }
+  const priceUsd = row.current_price;
+  if (typeof priceUsd !== "number" || !Number.isFinite(priceUsd)) {
+    return [];
+  }
+  const change7d = row.price_change_percentage_7d_in_currency;
   return [
     {
-      id: row.id,
-      symbol: row.symbol,
-      name: row.name,
-      imageUrl: row.image ?? null,
-      priceUsd,
       change24h: row.price_change_percentage_24h ?? 0,
-      change7d: typeof change7d === 'number' && Number.isFinite(change7d) ? change7d : null,
-      sparkline7d: sparklinePrices({ prices: row.sparkline_in_7d?.price }),
-      volumeUsd: row.total_volume ?? 0,
-      marketCapUsd: row.market_cap ?? 0,
-      rank: row.market_cap_rank ?? 0,
+      change7d:
+        typeof change7d === "number" && Number.isFinite(change7d)
+          ? change7d
+          : null,
       fetchedAt: row.last_updated ?? new Date().toISOString(),
-      source: 'live',
-      provider: 'coingecko',
+      id: row.id,
+      imageUrl: row.image ?? null,
+      marketCapUsd: row.market_cap ?? 0,
+      name: row.name,
+      priceUsd,
+      provider: "coingecko",
+      rank: row.market_cap_rank ?? 0,
+      source: "live",
+      sparkline7d: sparklinePrices({ prices: row.sparkline_in_7d?.price }),
+      symbol: row.symbol,
+      volumeUsd: row.total_volume ?? 0,
     },
-  ]
+  ];
 }
 
 function sparklinePrices({ prices }: { prices?: number[] }): number[] {
-  if (!Array.isArray(prices)) return []
-  return prices.filter(value => typeof value === 'number' && Number.isFinite(value))
+  if (!Array.isArray(prices)) {
+    return [];
+  }
+  return prices.filter(
+    (value) => typeof value === "number" && Number.isFinite(value)
+  );
 }
 
 export async function fetchCoinGeckoQuote({
   assetId,
-  vs = 'usd',
+  vs = "usd",
   coingeckoId,
 }: {
-  assetId: string
-  vs?: string
-  coingeckoId?: string
+  assetId: string;
+  vs?: string;
+  coingeckoId?: string;
 }): Promise<Quote> {
-  const id = geckoId({ assetId, coingeckoId })
+  const id = geckoId({ assetId, coingeckoId });
   const payload = await getClient().simple.price.get({
     ids: id,
-    vs_currencies: vs,
     include_24hr_change: true,
     include_last_updated_at: true,
-  })
-  const row = payload[id] as Record<string, number | undefined> | undefined
-  const price = row?.[vs]
-  if (typeof price !== 'number' || !Number.isFinite(price))
-    throw new Error('coingecko quote missing')
-  const change = row?.[`${vs}_24h_change`]
-  const updated = row?.last_updated_at
+    vs_currencies: vs,
+  });
+  const row = payload[id] as Record<string, number | undefined> | undefined;
+  const price = row?.[vs];
+  if (typeof price !== "number" || !Number.isFinite(price)) {
+    throw new Error("coingecko quote missing");
+  }
+  const change = row?.[`${vs}_24h_change`];
+  const updated = row?.last_updated_at;
   return {
     assetId,
-    vs,
-    price,
-    change24h: typeof change === 'number' ? change : 0,
+    change24h: typeof change === "number" ? change : 0,
     fetchedAt:
-      typeof updated === 'number'
+      typeof updated === "number"
         ? new Date(updated * 1000).toISOString()
         : new Date().toISOString(),
-    source: 'live',
-    provider: 'coingecko',
-  }
+    price,
+    provider: "coingecko",
+    source: "live",
+    vs,
+  };
 }
 
-export async function fetchCoinGeckoSearch({ text }: { text: string }): Promise<SearchResult> {
-  const payload = await getClient().search.get({ query: text })
+export async function fetchCoinGeckoSearch({
+  text,
+}: {
+  text: string;
+}): Promise<SearchResult> {
+  const payload = await getClient().search.get({ query: text });
   return {
-    hits: payload.coins.map(coin => ({
+    hits: payload.coins.map((coin) => ({
       id: coin.id,
-      symbol: coin.symbol,
       name: coin.name,
       rank: coin.market_cap_rank,
+      symbol: coin.symbol,
     })),
-    source: 'live',
-  }
+    source: "live",
+  };
 }
 
 export async function fetchCoinGeckoTrending(): Promise<TrendingResult> {
-  const payload = await getClient().search.trending.get()
+  const payload = await getClient().search.trending.get();
   return {
-    coins: payload.coins.map(entry => ({
+    coins: payload.coins.map((entry) => ({
       id: entry.item.id,
-      symbol: entry.item.symbol,
       name: entry.item.name,
       rank: entry.item.market_cap_rank,
-      source: 'live' as const,
+      source: "live" as const,
+      symbol: entry.item.symbol,
     })),
-    source: 'live',
-  }
+    source: "live",
+  };
 }
 
 export async function fetchCoinGeckoAsset({
   assetId,
   coingeckoId,
 }: {
-  assetId: string
-  coingeckoId?: string
+  assetId: string;
+  coingeckoId?: string;
 }): Promise<AssetDetail> {
-  const id = geckoId({ assetId, coingeckoId })
+  const id = geckoId({ assetId, coingeckoId });
   const payload = await getClient().coins.getID(id, {
     localization: false,
-    tickers: false,
     sparkline: false,
-  })
+    tickers: false,
+  });
   return {
+    description: stripHtml(payload.description?.en ?? ""),
     id: payload.id,
-    symbol: payload.symbol,
     name: payload.name,
-    description: stripHtml(payload.description?.en ?? ''),
-    source: 'live',
-    provider: 'coingecko',
-  }
+    provider: "coingecko",
+    source: "live",
+    symbol: payload.symbol,
+  };
 }
 
 export async function fetchCoinGeckoGlobal(): Promise<GlobalStats> {
-  const payload = await getClient().global.get()
+  const payload = await getClient().global.get();
   return {
-    marketCapUsd: payload.data.total_market_cap.usd ?? 0,
-    volumeUsd: payload.data.total_volume.usd ?? 0,
     btcDominance: payload.data.market_cap_percentage.btc ?? 0,
-    source: 'live',
-  }
+    marketCapUsd: payload.data.total_market_cap.usd ?? 0,
+    source: "live",
+    volumeUsd: payload.data.total_volume.usd ?? 0,
+  };
 }
 
 function stripHtml(html: string): string {
   return html
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+    .replaceAll(/<[^>]*>/g, " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
 }

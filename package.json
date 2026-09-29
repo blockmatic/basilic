@@ -3,19 +3,18 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
     "generate": "turbo run generate --filter=@repo/core --filter=@repo/cli",
     "dev": "node scripts/dev.mjs",
     "qa": "node scripts/run-qa.mjs",
     "checktypes": "turbo checktypes",
-    "format": "biome format . --write",
-    "lint": "pnpm lint:biome && pnpm lint:eslint",
-    "lint:biome": "biome check .",
-    "lint:biome:fix": "biome check . --write",
-    "lint:eslint": "turbo run lint:eslint",
-    "lint:eslint:fix": "turbo run lint:eslint:fix",
-    "lint:fix": "pnpm lint:eslint:fix && pnpm lint:biome:fix",
+    "format": "oxfmt --write --no-error-on-unmatched-pattern .",
+    "lint": "oxlint . && oxfmt --check .",
+    "lint:fix": "oxlint --fix . && oxfmt --write --no-error-on-unmatched-pattern .",
+    "check": "oxlint . && oxfmt --check .",
+    "fix": "oxlint --fix . && oxfmt --write --no-error-on-unmatched-pattern .",
     "knip": "knip",
     "sherif": "sherif",
     "openapi:lint": "redocly lint --config .redocly.yaml apps/api/openapi/openapi.json",
@@ -24,7 +23,7 @@
     "test": "turbo run test",
     "test:scripts": "node --test scripts/*.test.mjs",
     "test:e2e": "node scripts/run-e2e.mjs",
-    "hooks:pre-commit": "pnpm hooks:security && biome check --write --staged --no-errors-on-unmatched && git update-index --again",
+    "hooks:pre-commit": "pnpm hooks:security && oxfmt --write --no-error-on-unmatched-pattern . && git update-index --again",
     "hooks:security": "pnpm security:block-files && pnpm security:secrets && pnpm security:osv",
     "security:block-files": "node scripts/block-secret-files.mjs",
     "security:secrets": "node scripts/scan-secrets-staged.mjs",
@@ -55,7 +54,6 @@
     "update-deps": "node scripts/update-deps.mjs"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.14",
     "@redocly/cli": "^2.53.3",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
@@ -64,22 +62,24 @@
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^5.0.1",
     "ahooks": "^3.10.0",
-    "eslint": "^10.11.0",
     "is-agentic": "1.0.1",
     "knip": "^6.37.0",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
     "portless": "^0.15.6",
     "sherif": "^1.13.0",
     "simple-git-hooks": "2.14.0",
     "tsup": "^8.5.1",
     "turbo": "^2.11.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "ultracite": "7.12.1",
     "vitest": "^5.0.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm hooks:pre-commit"
   },
   "engines": {
     "node": "24.x"
   },
-  "packageManager": "pnpm@12.5.1+sha512.e3f305bc784a2bc89f5ad3b6138889470fae8d2af5f36b61216ec91c2c3d64089775f9de38aac331044ea40f245cb0d5666392dfdf65824e1907ef6a2c62de5f",
-  "simple-git-hooks": {
-    "pre-commit": "pnpm hooks:pre-commit"
-  }
+  "packageManager": "pnpm@12.5.1+sha512.e3f305bc784a2bc89f5ad3b6138889470fae8d2af5f36b61216ec91c2c3d64089775f9de38aac331044ea40f245cb0d5666392dfdf65824e1907ef6a2c62de5f"
 }

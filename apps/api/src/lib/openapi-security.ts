@@ -1,16 +1,19 @@
 export const openapiSecurity = {
   components: {
     securitySchemes: {
-      bearerAuth: {
-        type: 'http' as const,
-        scheme: 'bearer',
-      },
       apiKeyAuth: {
-        type: 'apiKey' as const,
-        in: 'header' as const,
-        name: 'X-API-Key',
+        in: "header" as const,
+        name: "X-API-Key",
+        type: "apiKey" as const,
+      },
+      bearerAuth: {
+        scheme: "bearer",
+        type: "http" as const,
       },
     },
   },
-  security: [{ bearerAuth: [] }, { apiKeyAuth: [] }] as Record<string, string[]>[],
-}
+  security: [{ bearerAuth: [] }, { apiKeyAuth: [] }] as Record<
+    string,
+    string[]
+  >[],
+};

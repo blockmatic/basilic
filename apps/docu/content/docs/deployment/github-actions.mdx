@@ -111,7 +111,7 @@ See the complete `.coderabbit.yaml` in the repository root for full configuratio
 - **pnpm** — `lint`, `packages-test`, `api-e2e`, `web-e2e`, and `security` use `.github/actions/setup-pnpm` (`actions/setup-node` with `cache: pnpm`).
 - **Playwright** — `web-e2e` uses `.github/actions/setup-playwright` (caches `~/.cache/ms-playwright`, installs Chromium for `@repo/api` and `@repo/web`). `api-e2e` **e2e** still installs Playwright inline with the same cache key.
 - **Next.js** — `web-e2e` caches `apps/web/.next/cache`.
-- **Turbo** — caches `build`, `checktypes`, and `lint:eslint`; **not** `test` / `test:unit` / `test:e2e`.
+- **Turbo** — caches `build` and `checktypes`; **not** `test` / `test:unit` / `test:e2e`. Lint is Ultracite at the repo root.
 - **Turbo remote cache** (optional) — set `TURBO_TOKEN` (secret) and `TURBO_TEAM` (variable) after creating a Vercel Remote Cache token. Wired on `lint.yml`, `packages-test.yml`, and `web-e2e.yml`. Vercel deploys can reuse the same token. See [Development Tooling](/docs/development/dev-tooling#turbo-remote-cache-optional).
 
 ## Pre-commit Hooks
@@ -128,10 +128,11 @@ Local quality checks run before each commit:
 ```
 
 Pre-commit hooks check:
+
 1. **File blocking** — sensitive files (`.env`, `*.pem`, …)
 2. **Secret scanning** — gitleaks on staged files
 3. **OSV** — dependency CVEs
-4. **Formatting** — Biome on staged files
+4. **Formatting** — Oxfmt write
 
 ## Related Documentation
 

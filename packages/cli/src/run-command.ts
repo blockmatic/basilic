@@ -1,45 +1,67 @@
-import type { CoreApiClient } from '@repo/core'
-import type { commandSpecs, operationMeta } from './gen/commands.gen'
+import type { CoreApiClient } from "@repo/core";
 
-type CommandSpec = (typeof commandSpecs)[number]
-type OperationMeta = (typeof operationMeta)[keyof typeof operationMeta]
+import type { commandSpecs, operationMeta } from "./gen/commands.gen";
+
+type CommandSpec = (typeof commandSpecs)[number];
+type OperationMeta = (typeof operationMeta)[keyof typeof operationMeta];
 
 function toCamelCase(str: string): string {
-  return str.replace(/-([a-z])/g, (_, letter) => (letter as string).toUpperCase())
+  return str.replaceAll(/-([a-z])/g, (_, letter) =>
+    (letter as string).toUpperCase()
+  );
 }
 
 function getNested(
   client: object,
-  path: readonly string[],
+  path: readonly string[]
 ): ((opts: object) => Promise<unknown>) | undefined {
-  let obj: unknown = client
+  let obj: unknown = client;
   for (const segment of path) {
-    if (obj === null || obj === undefined || typeof obj !== 'object') return undefined
-    const key = segment.includes('-') ? toCamelCase(segment) : segment
-    obj = (obj as Record<string, unknown>)[key]
+    if (obj === null || obj === undefined || typeof obj !== "object") {
+      return undefined;
+    }
+    const key = segment.includes("-") ? toCamelCase(segment) : segment;
+    obj = (obj as Record<string, unknown>)[key];
   }
-  return typeof obj === 'function' ? (obj as (opts: object) => Promise<unknown>) : undefined
+  return typeof obj === "function"
+    ? (obj as (opts: object) => Promise<unknown>)
+    : undefined;
 }
 
 function buildClientPath(spec: CommandSpec): string[] {
-  return spec.path.map(seg => (seg.includes('-') ? toCamelCase(seg) : seg))
+  return spec.path.map((seg) => (seg.includes("-") ? toCamelCase(seg) : seg));
 }
 
-function parseBodyValue({ name, value }: { name: string; value: string }): unknown {
-  if (name === 'stream') {
-    if (value === 'true' || value === '1') return true
-    if (value === 'false' || value === '0') return false
-    throw new Error(`Invalid --stream value: ${value}. Use true, 1, false, or 0`)
+function parseBodyValue({
+  name,
+  value,
+}: {
+  name: string;
+  value: string;
+}): unknown {
+  if (name === "stream") {
+    if (value === "true" || value === "1") {
+      return true;
+    }
+    if (value === "false" || value === "0") {
+      return false;
+    }
+    throw new Error(
+      `Invalid --stream value: ${value}. Use true, 1, false, or 0`
+    );
   }
 
-  if (name === 'temperature') {
-    const n = Number.parseFloat(value)
-    if (!Number.isFinite(n))
-      throw new Error(`Invalid --temperature value: ${value}. Must be a finite number`)
-    return n
+  if (name === "temperature") {
+    const n = Number.parseFloat(value);
+    if (!Number.isFinite(n)) {
+      throw new Error(
+        `Invalid --temperature value: ${value}. Must be a finite number`
+      );
+    }
+    return n;
   }
 
-  return value
+  return value;
 }
 
 export async function runCommand({
@@ -48,28 +70,38 @@ export async function runCommand({
   meta,
   opts,
 }: {
-  client: CoreApiClient
-  spec: CommandSpec
-  meta: OperationMeta
-  opts: Record<string, string | undefined>
+  client: CoreApiClient;
+  spec: CommandSpec;
+  meta: OperationMeta;
+  opts: Record<string, string | undefined>;
 }): Promise<unknown> {
-  const clientPath = buildClientPath(spec)
-  const fn = getNested(client, clientPath)
-  if (!fn) throw new Error(`Command not found: ${spec.path.join(' ')}`)
+  const clientPath = buildClientPath(spec);
+  const fn = getNested(client, clientPath);
+  if (!fn) {
+    throw new Error(`Command not found: ${spec.path.join(" ")}`);
+  }
 
-  const pathParams: Record<string, string> = {}
+  const pathParams: Record<string, string> = {};
   for (const p of meta.pathParams) {
-    const v = opts[p.name]
-    if (v) pathParams[p.name] = v
+    const v = opts[p.name];
+    if (v) {
+      pathParams[p.name] = v;
+    }
   }
-  const bodyParams: Record<string, unknown> = {}
+  const bodyParams: Record<string, unknown> = {};
   for (const p of meta.bodyParams) {
-    const v = opts[p.name]
-    if (v !== undefined && v !== '') bodyParams[p.name] = parseBodyValue({ name: p.name, value: v })
+    const v = opts[p.name];
+    if (v !== undefined && v !== "") {
+      bodyParams[p.name] = parseBodyValue({ name: p.name, value: v });
+    }
   }
 
-  const callOpts: Record<string, unknown> = {}
-  if (Object.keys(pathParams).length > 0) callOpts.path = pathParams
-  if (Object.keys(bodyParams).length > 0) callOpts.body = bodyParams
-  return fn(callOpts)
+  const callOpts: Record<string, unknown> = {};
+  if (Object.keys(pathParams).length > 0) {
+    callOpts.path = pathParams;
+  }
+  if (Object.keys(bodyParams).length > 0) {
+    callOpts.body = bodyParams;
+  }
+  return fn(callOpts);
 }

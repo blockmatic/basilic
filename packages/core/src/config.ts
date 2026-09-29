@@ -29,25 +29,28 @@
  * createClient({ baseUrl: 'https://api.example.com' })
  * ```
  */
-export type ApiKeyOptions = {
-  baseUrl: string
-  apiKey: string
-  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>
+export interface ApiKeyOptions {
+  baseUrl: string;
+  apiKey: string;
+  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
 }
 
-export type JwtOptions = {
-  baseUrl: string
-  getAuthToken: () => string | null | Promise<string | null>
-  getRefreshToken: () => string | null | Promise<string | null>
-  onTokensRefreshed: (tokens: { token: string; refreshToken: string }) => void | Promise<void>
+export interface JwtOptions {
+  baseUrl: string;
+  getAuthToken: () => string | null | Promise<string | null>;
+  getRefreshToken: () => string | null | Promise<string | null>;
+  onTokensRefreshed: (tokens: {
+    token: string;
+    refreshToken: string;
+  }) => void | Promise<void>;
   /** Override Fastify `POST /auth/session/refresh`. Next web uses same-origin `/api/auth/refresh`. */
-  refreshTokens?: () => Promise<{ token: string; refreshToken: string } | null>
-  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>
+  refreshTokens?: () => Promise<{ token: string; refreshToken: string } | null>;
+  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
 }
 
-export type NoAuthOptions = {
-  baseUrl: string
-  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>
+export interface NoAuthOptions {
+  baseUrl: string;
+  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
 }
 
-export type CoreClientOptions = ApiKeyOptions | JwtOptions | NoAuthOptions
+export type CoreClientOptions = ApiKeyOptions | JwtOptions | NoAuthOptions;

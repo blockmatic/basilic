@@ -1,7 +1,8 @@
-import type { HealthCheckData, HealthCheckResponse } from '@repo/core'
-import type { UseQueryOptions } from '@tanstack/react-query'
-import { useQuery } from '@tanstack/react-query'
-import { useReactApiConfig } from '../context'
+import type { HealthCheckData, HealthCheckResponse } from "@repo/core";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+
+import { useReactApiConfig } from "../context";
 
 /**
  * React Query hook for health check endpoint.
@@ -43,14 +44,14 @@ import { useReactApiConfig } from '../context'
  */
 export function useHealthCheck(
   params?: HealthCheckData,
-  options?: Omit<UseQueryOptions<HealthCheckResponse, Error>, 'queryFn'>,
+  options?: Omit<UseQueryOptions<HealthCheckResponse, Error>, "queryFn">
 ) {
-  const { client, queryClientDefaults } = useReactApiConfig()
+  const { client, queryClientDefaults } = useReactApiConfig();
 
   return useQuery<HealthCheckResponse, Error>({
-    queryKey: ['healthCheck', params],
     queryFn: async () => client.healthCheck(params),
+    queryKey: ["healthCheck", params],
     ...queryClientDefaults,
     ...options,
-  })
+  });
 }

@@ -1,14 +1,14 @@
-import { env } from './env.js'
+import { env } from "./env.js";
 
 export function channelCors(): {
-  origin: '*' | readonly string[]
-  credentials: false
-  allowHeaders: readonly string[]
+  origin: "*" | readonly string[];
+  credentials: false;
+  allowHeaders: readonly string[];
 } {
-  const isWildcard = env.ALLOWED_ORIGINS.includes('*')
+  const isWildcard = env.ALLOWED_ORIGINS.includes("*");
   return {
-    origin: isWildcard ? '*' : env.ALLOWED_ORIGINS,
+    allowHeaders: ["authorization", "content-type"],
     credentials: false,
-    allowHeaders: ['authorization', 'content-type'],
-  }
+    origin: isWildcard ? "*" : env.ALLOWED_ORIGINS,
+  };
 }

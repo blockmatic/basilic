@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { useLocalStorageState } from 'ahooks'
-import { useEffect } from 'react'
+import { useLocalStorageState } from "ahooks";
+import { useEffect } from "react";
 
 /**
  * Enables nuqs URL state debug mode (persisted in localStorage).
@@ -10,16 +10,16 @@ import { useEffect } from 'react'
  * @returns `{ isNuqsDebugEnabled, toggleNuqsDebug }`
  */
 export function useNuqsDebug() {
-  const [debug, setDebug] = useLocalStorageState<string>('debug', {
-    defaultValue: '',
-  })
+  const [debug, setDebug] = useLocalStorageState<string>("debug", {
+    defaultValue: "",
+  });
 
   useEffect(() => {
-    setDebug(prev => (prev === 'nuqs' ? prev : 'nuqs'))
-  }, [setDebug])
+    setDebug((prev) => (prev === "nuqs" ? prev : "nuqs"));
+  }, [setDebug]);
 
   return {
-    isNuqsDebugEnabled: debug === 'nuqs',
-    toggleNuqsDebug: () => setDebug(debug === 'nuqs' ? '' : 'nuqs'),
-  }
+    isNuqsDebugEnabled: debug === "nuqs",
+    toggleNuqsDebug: () => setDebug(debug === "nuqs" ? "" : "nuqs"),
+  };
 }

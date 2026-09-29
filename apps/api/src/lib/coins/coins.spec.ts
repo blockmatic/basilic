@@ -1,17 +1,21 @@
-import { afterAll, beforeAll } from 'vitest'
-import { cleanupGroupDatabase, setupGroupDatabase } from '../../../test/utils/db-setup.js'
+import { afterAll, beforeAll } from "vitest";
+
+import {
+  cleanupGroupDatabase,
+  setupGroupDatabase,
+} from "../../../test/utils/db-setup.js";
 
 beforeAll(async () => {
-  await setupGroupDatabase()
-})
+  await setupGroupDatabase();
+});
 
 afterAll(async () => {
-  await cleanupGroupDatabase()
-})
+  await cleanupGroupDatabase();
+});
 
-import './kline-period.test'
-import './query.test'
-import './read.test'
-import './search-query.test'
-import './seed.test'
-import './spoken-summary.test'
+import "./kline-period.test";
+import "./query.test";
+import "./read.test";
+import "./search-query.test";
+import "./seed.test";
+import "./spoken-summary.test";

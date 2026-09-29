@@ -1,9 +1,10 @@
-import { defineTool } from 'eve/tools'
-import { setViewInputSchema } from '#lib/evaluate/view-config.js'
+import { defineTool } from "eve/tools";
+
+import { setViewInputSchema } from "#lib/evaluate/view-config.js";
 
 export default defineTool({
   description:
-    'Commit the closed ViewConfig for this command. Always call this before ending the turn. Never emit CSS or a json-render Spec.',
+    "Commit the closed ViewConfig for this command. Always call this before ending the turn. Never emit CSS or a json-render Spec.",
+  execute: (input) => input,
   inputSchema: setViewInputSchema,
-  execute: input => input,
-})
+});

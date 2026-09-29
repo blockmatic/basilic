@@ -1,4 +1,4 @@
-import type { ErrorWithMessage, Result } from './types.js'
+import type { ErrorWithMessage, Result } from "./types.js";
 
 /**
  * Wraps a promise or async function in a try-catch and returns a Result type.
@@ -23,14 +23,16 @@ import type { ErrorWithMessage, Result } from './types.js'
  * if (error) logger.error(error.message)
  * ```
  */
-export async function tryCatch<T = void, E extends ErrorWithMessage = ErrorWithMessage>(
-  promiseOrFn: Promise<T> | (() => Promise<T>),
-): Promise<Result<T, E>> {
+export async function tryCatch<
+  T = void,
+  E extends ErrorWithMessage = ErrorWithMessage,
+>(promiseOrFn: Promise<T> | (() => Promise<T>)): Promise<Result<T, E>> {
   try {
-    const promise = typeof promiseOrFn === 'function' ? promiseOrFn() : promiseOrFn
-    return { data: await promise, error: undefined }
-  } catch (e: unknown) {
-    return { data: undefined, error: toErrorWithMessage(e) as E }
+    const promise =
+      typeof promiseOrFn === "function" ? promiseOrFn() : promiseOrFn;
+    return { data: await promise, error: undefined };
+  } catch (error: unknown) {
+    return { data: undefined, error: toErrorWithMessage(error) as E };
   }
 }
 
@@ -40,11 +42,11 @@ export async function tryCatch<T = void, E extends ErrorWithMessage = ErrorWithM
  */
 export function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'message' in error &&
-    typeof (error as Record<string, unknown>).message === 'string'
-  )
+    "message" in error &&
+    typeof (error as Record<string, unknown>).message === "string"
+  );
 }
 
 /**
@@ -52,13 +54,15 @@ export function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
  * Handles all possible thrown values (Error, string, object, etc.)
  */
 export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
-  if (isErrorWithMessage(maybeError)) return maybeError
+  if (isErrorWithMessage(maybeError)) {
+    return maybeError;
+  }
 
   try {
-    return new Error(String(maybeError))
+    return new Error(String(maybeError));
   } catch {
     // Fallback if String() throws (shouldn't happen, but be safe)
-    return { message: 'An unknown error occurred' }
+    return { message: "An unknown error occurred" };
   }
 }
 
@@ -67,8 +71,8 @@ export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
  * Type-safe error message extraction following Kent C. Dodds pattern
  */
 export function getErrorMessage(error: unknown): string {
-  return toErrorWithMessage(error).message
+  return toErrorWithMessage(error).message;
 }
 
 // Re-export types
-export type { ErrorWithMessage, Result } from './types.js'
+export type { ErrorWithMessage, Result } from "./types.js";

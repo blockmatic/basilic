@@ -1,18 +1,18 @@
-'use client'
+"use client";
 
-type ChartDataPoint = {
-  label: string
-  value: number
-  color?: string
+interface ChartDataPoint {
+  label: string;
+  value: number;
+  color?: string;
 }
 
-type DocsChartProps = {
-  data: ChartDataPoint[]
-  type?: 'bar' | 'line' | 'pie'
-  title?: string
-  caption?: string
-  width?: number
-  height?: number
+interface DocsChartProps {
+  data: ChartDataPoint[];
+  type?: "bar" | "line" | "pie";
+  title?: string;
+  caption?: string;
+  width?: number;
+  height?: number;
 }
 
 function BarChart({
@@ -20,20 +20,20 @@ function BarChart({
   width = 800,
   height = 400,
 }: {
-  data: ChartDataPoint[]
-  width: number
-  height: number
+  data: ChartDataPoint[];
+  width: number;
+  height: number;
 }) {
-  const maxValue = Math.max(...data.map(d => d.value))
-  const barWidth = width / data.length - 10
+  const maxValue = Math.max(...data.map((d) => d.value));
+  const barWidth = width / data.length - 10;
 
   return (
     <svg width={width} height={height} className="overflow-visible">
       {data.map((point, index) => {
-        const barHeight = (point.value / maxValue) * (height - 60)
-        const x = index * (barWidth + 10) + 5
-        const y = height - barHeight - 30
-        const color = point.color || 'hsl(var(--primary))'
+        const barHeight = (point.value / maxValue) * (height - 60);
+        const x = index * (barWidth + 10) + 5;
+        const y = height - barHeight - 30;
+        const color = point.color || "hsl(var(--primary))";
 
         return (
           <g key={index}>
@@ -62,10 +62,10 @@ function BarChart({
               {point.value}
             </text>
           </g>
-        )
+        );
       })}
     </svg>
-  )
+  );
 }
 
 function LineChart({
@@ -73,17 +73,17 @@ function LineChart({
   width = 800,
   height = 400,
 }: {
-  data: ChartDataPoint[]
-  width: number
-  height: number
+  data: ChartDataPoint[];
+  width: number;
+  height: number;
 }) {
-  const maxValue = Math.max(...data.map(d => d.value))
-  const pointSpacing = (width - 40) / (data.length - 1)
+  const maxValue = Math.max(...data.map((d) => d.value));
+  const pointSpacing = (width - 40) / (data.length - 1);
   const points = data.map(
     (point, index) =>
-      `${40 + index * pointSpacing},${height - 30 - (point.value / maxValue) * (height - 60)}`,
-  )
-  const pathData = `M ${points.join(' L ')}`
+      `${40 + index * pointSpacing},${height - 30 - (point.value / maxValue) * (height - 60)}`
+  );
+  const pathData = `M ${points.join(" L ")}`;
 
   return (
     <svg width={width} height={height} className="overflow-visible">
@@ -95,9 +95,9 @@ function LineChart({
         className="transition-opacity hover:opacity-80"
       />
       {data.map((point, index) => {
-        const x = 40 + index * pointSpacing
-        const y = height - 30 - (point.value / maxValue) * (height - 60)
-        const color = point.color || 'hsl(var(--primary))'
+        const x = 40 + index * pointSpacing;
+        const y = height - 30 - (point.value / maxValue) * (height - 60);
+        const color = point.color || "hsl(var(--primary))";
 
         return (
           <g key={index}>
@@ -108,7 +108,12 @@ function LineChart({
               fill={color}
               className="transition-opacity hover:opacity-80"
             />
-            <text x={x} y={height - 10} textAnchor="middle" className="fill-foreground text-xs">
+            <text
+              x={x}
+              y={height - 10}
+              textAnchor="middle"
+              className="fill-foreground text-xs"
+            >
               {point.label}
             </text>
             <text
@@ -120,10 +125,10 @@ function LineChart({
               {point.value}
             </text>
           </g>
-        )
+        );
       })}
     </svg>
-  )
+  );
 }
 
 function PieChart({
@@ -131,17 +136,17 @@ function PieChart({
   width = 400,
   height = 400,
 }: {
-  data: ChartDataPoint[]
-  width: number
-  height: number
+  data: ChartDataPoint[];
+  width: number;
+  height: number;
 }) {
-  const total = data.reduce((sum, point) => sum + point.value, 0)
-  const centerX = width / 2
-  const centerY = height / 2
-  const radius = Math.min(width, height) / 2 - 20
+  const total = data.reduce((sum, point) => sum + point.value, 0);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = Math.min(width, height) / 2 - 20;
 
   // Guard against total === 0 to prevent NaN in percentage calculations
-  if (total === 0)
+  if (total === 0) {
     return (
       <div className="flex flex-col items-center gap-4 md:flex-row">
         <svg width={width} height={height} className="overflow-visible" />
@@ -151,7 +156,9 @@ function PieChart({
               <div
                 className="h-4 w-4 rounded"
                 style={{
-                  backgroundColor: point.color || `hsl(${(index * 360) / data.length}, 70%, 50%)`,
+                  backgroundColor:
+                    point.color ||
+                    `hsl(${(index * 360) / data.length}, 70%, 50%)`,
                 }}
               />
               <span className="text-sm">{point.label}: 0%</span>
@@ -159,36 +166,46 @@ function PieChart({
           ))}
         </div>
       </div>
-    )
+    );
+  }
 
-  const paths = data.reduce(
+  const { paths } = data.reduce(
     ({ paths: accPaths, currentAngle }, point, index) => {
-      const percentage = point.value / total
-      const angle = percentage * 360
-      const startAngle = currentAngle
-      const endAngle = currentAngle + angle
+      const percentage = point.value / total;
+      const angle = percentage * 360;
+      const startAngle = currentAngle;
+      const endAngle = currentAngle + angle;
 
-      const x1 = centerX + radius * Math.cos((startAngle * Math.PI) / 180)
-      const y1 = centerY + radius * Math.sin((startAngle * Math.PI) / 180)
-      const x2 = centerX + radius * Math.cos((endAngle * Math.PI) / 180)
-      const y2 = centerY + radius * Math.sin((endAngle * Math.PI) / 180)
+      const x1 = centerX + radius * Math.cos((startAngle * Math.PI) / 180);
+      const y1 = centerY + radius * Math.sin((startAngle * Math.PI) / 180);
+      const x2 = centerX + radius * Math.cos((endAngle * Math.PI) / 180);
+      const y2 = centerY + radius * Math.sin((endAngle * Math.PI) / 180);
 
-      const largeArcFlag = angle > 180 ? 1 : 0
+      const largeArcFlag = angle > 180 ? 1 : 0;
 
-      const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
+      const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
 
-      const color = point.color || `hsl(${(index * 360) / data.length}, 70%, 50%)`
+      const color =
+        point.color || `hsl(${(index * 360) / data.length}, 70%, 50%)`;
 
       return {
-        paths: [...accPaths, { pathData, color, label: point.label, percentage }],
+        paths: [
+          ...accPaths,
+          { pathData, color, label: point.label, percentage },
+        ],
         currentAngle: currentAngle + angle,
-      }
+      };
     },
     {
-      paths: [] as Array<{ pathData: string; color: string; label: string; percentage: number }>,
+      paths: [] as Array<{
+        pathData: string;
+        color: string;
+        label: string;
+        percentage: number;
+      }>,
       currentAngle: -90,
-    },
-  ).paths
+    }
+  );
 
   return (
     <div className="flex flex-col items-center gap-4 md:flex-row">
@@ -205,7 +222,10 @@ function PieChart({
       <div className="flex flex-col gap-2">
         {paths.map((path, index) => (
           <div key={index} className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: path.color }} />
+            <div
+              className="h-4 w-4 rounded"
+              style={{ backgroundColor: path.color }}
+            />
             <span className="text-sm">
               {path.label}: {(path.percentage * 100).toFixed(1)}%
             </span>
@@ -213,12 +233,12 @@ function PieChart({
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export function DocsChart({
   data,
-  type = 'bar',
+  type = "bar",
   title,
   caption,
   width = 800,
@@ -226,28 +246,34 @@ export function DocsChart({
 }: DocsChartProps) {
   const chartComponent = (() => {
     switch (type) {
-      case 'bar':
-        return <BarChart data={data} width={width} height={height} />
-      case 'line':
-        return <LineChart data={data} width={width} height={height} />
-      case 'pie':
-        return <PieChart data={data} width={width} height={height} />
-      default:
-        return <BarChart data={data} width={width} height={height} />
+      case "bar": {
+        return <BarChart data={data} width={width} height={height} />;
+      }
+      case "line": {
+        return <LineChart data={data} width={width} height={height} />;
+      }
+      case "pie": {
+        return <PieChart data={data} width={width} height={height} />;
+      }
+      default: {
+        return <BarChart data={data} width={width} height={height} />;
+      }
     }
-  })()
+  })();
 
   return (
     <figure className="my-8 flex flex-col items-center">
-      {title && <h4 className="mb-4 text-lg font-semibold text-foreground">{title}</h4>}
-      <div className="relative w-full max-w-full overflow-x-auto rounded-lg border border-border bg-muted/50 p-4">
+      {title && (
+        <h4 className="text-foreground mb-4 text-lg font-semibold">{title}</h4>
+      )}
+      <div className="border-border bg-muted/50 relative w-full max-w-full overflow-x-auto rounded-lg border p-4">
         <div className="flex items-center justify-center">{chartComponent}</div>
       </div>
       {caption && (
-        <figcaption className="mt-4 text-center text-sm text-muted-foreground">
+        <figcaption className="text-muted-foreground mt-4 text-center text-sm">
           {caption}
         </figcaption>
       )}
     </figure>
-  )
+  );
 }

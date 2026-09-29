@@ -2,113 +2,110 @@
 
 export const operationMeta = {
   "healthCheck": {
-    "summary": "Returns server health status",
+    "bodyParams": [],
     "description": "Readiness: process is up and the database answers SELECT 1",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "Returns server health status"
   },
   "accountApikeysCreate": {
-    "summary": "Create API key",
-    "description": "Create API key (shown once)",
-    "pathParams": [],
     "bodyParams": [
       {
         "name": "name"
       }
-    ]
+    ],
+    "description": "Create API key (shown once)",
+    "pathParams": [],
+    "summary": "Create API key"
   },
   "accountApikeysList": {
-    "summary": "List API keys",
+    "bodyParams": [],
     "description": "List API keys for authenticated user",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "List API keys"
   },
   "accountApikeysRevoke": {
-    "summary": "Revoke API key",
+    "bodyParams": [],
     "description": "Revoke API key",
     "pathParams": [
       {
         "name": "id"
       }
     ],
-    "bodyParams": []
+    "summary": "Revoke API key"
   },
   "accountEmailChangeRequest": {
-    "summary": "Change email request",
-    "description": "Request change of email for authenticated user",
-    "pathParams": [],
     "bodyParams": [
-      {
-        "name": "email"
-      },
       {
         "name": "callbackUrl"
-      }
-    ]
-  },
-  "accountEmailChangeVerify": {
-    "summary": "Change email verify",
-    "description": "Verify change email token (6-digit code) and update user email",
-    "pathParams": [],
-    "bodyParams": [
-      {
-        "name": "token"
       },
       {
         "name": "email"
+      }
+    ],
+    "description": "Request change of email for authenticated user",
+    "pathParams": [],
+    "summary": "Change email request"
+  },
+  "accountEmailChangeVerify": {
+    "bodyParams": [
+      {
+        "name": "email"
+      },
+      {
+        "name": "token"
       },
       {
         "name": "verificationId"
       }
-    ]
+    ],
+    "description": "Verify change email token (6-digit code) and update user email",
+    "pathParams": [],
+    "summary": "Change email verify"
   },
   "accountLinkEmailRequest": {
-    "summary": "Link email request",
-    "description": "Request email to link to authenticated user",
-    "pathParams": [],
     "bodyParams": [
       {
-        "name": "email"
+        "name": "callbackUrl"
       },
       {
-        "name": "callbackUrl"
+        "name": "email"
       }
-    ]
+    ],
+    "description": "Request email to link to authenticated user",
+    "pathParams": [],
+    "summary": "Link email request"
   },
   "accountLinkEmailVerify": {
-    "summary": "Link email verify",
-    "description": "Verify link email token and update user email",
-    "pathParams": [],
     "bodyParams": [
       {
         "name": "token"
       }
-    ]
+    ],
+    "description": "Verify link email token and update user email",
+    "pathParams": [],
+    "summary": "Link email verify"
   },
   "accountLinkOauthUnlink": {
-    "summary": "OAuth unlink",
+    "bodyParams": [],
     "description": "Unlink OAuth provider from authenticated user",
     "pathParams": [
       {
         "name": "providerId"
       }
     ],
-    "bodyParams": []
+    "summary": "OAuth unlink"
   },
   "accountLinkPasskeyDelete": {
-    "summary": "Remove passkey",
+    "bodyParams": [],
     "description": "Remove passkey by id",
     "pathParams": [
       {
         "name": "id"
       }
     ],
-    "bodyParams": []
+    "summary": "Remove passkey"
   },
   "accountLinkPasskeyFinish": {
-    "summary": "Passkey registration finish",
-    "description": "Finish passkey registration, verify and store credential",
-    "pathParams": [],
     "bodyParams": [
       {
         "name": "credential"
@@ -116,75 +113,75 @@ export const operationMeta = {
       {
         "name": "name"
       }
-    ]
+    ],
+    "description": "Finish passkey registration, verify and store credential",
+    "pathParams": [],
+    "summary": "Passkey registration finish"
   },
   "accountLinkPasskeyStart": {
-    "summary": "Passkey registration start",
+    "bodyParams": [],
     "description": "Start passkey registration, returns options for startRegistration",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "Passkey registration start"
   },
   "accountLinkTotpSetup": {
-    "summary": "TOTP setup",
+    "bodyParams": [],
     "description": "Start TOTP setup, returns QR and manual key",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "TOTP setup"
   },
   "accountLinkTotpUnlink": {
-    "summary": "TOTP unlink",
+    "bodyParams": [],
     "description": "Remove TOTP authenticator",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "TOTP unlink"
   },
   "accountLinkTotpVerify": {
-    "summary": "TOTP verify",
-    "description": "Verify TOTP code and persist authenticator",
-    "pathParams": [],
     "bodyParams": [
       {
         "name": "code"
       }
-    ]
+    ],
+    "description": "Verify TOTP code and persist authenticator",
+    "pathParams": [],
+    "summary": "TOTP verify"
   },
   "accountLinkWalletUnlink": {
-    "summary": "Unlink wallet",
+    "bodyParams": [],
     "description": "Unlink wallet from authenticated user",
     "pathParams": [
       {
         "name": "id"
       }
     ],
-    "bodyParams": []
+    "summary": "Unlink wallet"
   },
   "accountLinkWalletVerify": {
-    "summary": "Link wallet",
-    "description": "Link wallet to authenticated user",
-    "pathParams": [],
     "bodyParams": [
       {
         "name": "chain"
+      },
+      {
+        "name": "domain"
       },
       {
         "name": "message"
       },
       {
         "name": "signature"
-      },
-      {
-        "name": "domain"
       }
-    ]
+    ],
+    "description": "Link wallet to authenticated user",
+    "pathParams": [],
+    "summary": "Link wallet"
   },
   "accountPasskeysList": {
-    "summary": "List passkeys",
+    "bodyParams": [],
     "description": "List passkeys for authenticated user",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "List passkeys"
   },
   "accountProfileUpdate": {
-    "summary": "Update profile",
-    "description": "Update profile (name, username)",
-    "pathParams": [],
     "bodyParams": [
       {
         "name": "name"
@@ -192,35 +189,38 @@ export const operationMeta = {
       {
         "name": "username"
       }
-    ]
+    ],
+    "description": "Update profile (name, username)",
+    "pathParams": [],
+    "summary": "Update profile"
   },
   "accountWalletGet": {
-    "summary": "Get linked wallet holdings",
+    "bodyParams": [],
     "description": "Live Alchemy Portfolio for the access JWT user linked eip155 address. Empty when unlinked or key unset.",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "Get linked wallet holdings"
   },
   "getAgentById": {
-    "summary": "Get agent",
+    "bodyParams": [],
     "description": "Get one product eve agent by id (command or chat). JWT required.",
     "pathParams": [
       {
         "name": "agentId"
       }
     ],
-    "bodyParams": []
+    "summary": "Get agent"
   },
   "listAgents": {
-    "summary": "List agents",
+    "bodyParams": [],
     "description": "List product eve agents (command, chat). Public host discovery. Endpoints are absolute eve origins.",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "List agents"
   },
   "generate": {
-    "summary": "Generate text from prompt",
-    "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Vercel AI Gateway. Returns SSE (text/event-stream) when streaming.",
-    "pathParams": [],
     "bodyParams": [
+      {
+        "name": "model"
+      },
       {
         "name": "prompt"
       },
@@ -228,26 +228,41 @@ export const operationMeta = {
         "name": "stream"
       },
       {
-        "name": "model"
-      },
-      {
         "name": "temperature"
       }
-    ]
+    ],
+    "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Vercel AI Gateway. Returns SSE (text/event-stream) when streaming.",
+    "pathParams": [],
+    "summary": "Generate text from prompt"
   },
   "listCoins": {
-    "summary": "List coins",
+    "bodyParams": [],
     "description": "List cached CoinGecko markets joined to identity assets, optionally filtered by SearchQuery querystring. Seeds identity when the registry is empty. Vendor failure returns fixture quotes. Arrays are comma-separated (symbols=eth,sol). Public except universe=watchlist, which needs a session JWT.",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "List coins"
   },
   "queryCoins": {
-    "summary": "Query coins",
-    "description": "Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Public except universe=watchlist. Vendor failure returns fixture quotes.",
-    "pathParams": [],
     "bodyParams": [
       {
-        "name": "universe"
+        "name": "highlight"
+      },
+      {
+        "name": "maxChangePct"
+      },
+      {
+        "name": "maxPrice"
+      },
+      {
+        "name": "minChangePct"
+      },
+      {
+        "name": "minPrice"
+      },
+      {
+        "name": "sortBy"
+      },
+      {
+        "name": "sortDir"
       },
       {
         "name": "symbols"
@@ -259,326 +274,311 @@ export const operationMeta = {
         "name": "topN"
       },
       {
-        "name": "sortBy"
-      },
-      {
-        "name": "sortDir"
-      },
-      {
-        "name": "minChangePct"
-      },
-      {
-        "name": "maxChangePct"
-      },
-      {
-        "name": "minPrice"
-      },
-      {
-        "name": "maxPrice"
-      },
-      {
-        "name": "highlight"
+        "name": "universe"
       }
-    ]
+    ],
+    "description": "Apply a SearchQuery body to the cached CoinGecko markets list. Same filters as GET /coins querystring. Watchlist uses the access JWT sub. Public except universe=watchlist. Vendor failure returns fixture quotes.",
+    "pathParams": [],
+    "summary": "Query coins"
   },
   "getCoinCandles": {
-    "summary": "Get coin candles",
+    "bodyParams": [],
     "description": "Public Binance klines for an identity asset id, mapped from asset_markets. Unmapped assets and vendor failure return empty fixture candles (HTTP 200). period maps to interval plus range; 7d is 1h × 7d, not a kline interval.",
     "pathParams": [
       {
         "name": "assetId"
       }
     ],
-    "bodyParams": []
+    "summary": "Get coin candles"
   },
   "getCoinGlobal": {
-    "summary": "Get global market stats",
+    "bodyParams": [],
     "description": "Cached CoinGecko global market stats (total cap, volume, BTC dominance). Vendor failure returns fixture stats (HTTP 200). Public.",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "Get global market stats"
   },
   "getCoinTrending": {
-    "summary": "Get trending coins",
+    "bodyParams": [],
     "description": "Cached CoinGecko trending coins. Vendor failure returns fixture trending (HTTP 200). Public.",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "Get trending coins"
   },
   "deleteCoinWatchById": {
-    "summary": "Unwatch a coin",
+    "bodyParams": [],
     "description": "Remove an asset id from the access JWT user watchlist. Missing rows still return 204.",
     "pathParams": [
       {
         "name": "assetId"
       }
     ],
-    "bodyParams": []
+    "summary": "Unwatch a coin"
   },
   "putCoinWatch": {
-    "summary": "Watch a coin",
+    "bodyParams": [],
     "description": "Watch an identity asset id for the access JWT user. Idempotent. Unknown asset is 404. Cap 20 is 409 WATCHLIST_FULL.",
     "pathParams": [
       {
         "name": "assetId"
       }
     ],
-    "bodyParams": []
+    "summary": "Watch a coin"
   },
   "listCoinWatches": {
-    "summary": "List coin watches",
+    "bodyParams": [],
     "description": "List the access JWT user watchlist keyed by asset id. Empty list is []. Cap 20 is enforced on PUT.",
     "pathParams": [],
-    "bodyParams": []
+    "summary": "List coin watches"
   }
 } as const
 
 export const commandSpecs = [
   {
+    "operationId": "healthCheck",
     "path": [
       "health-check"
-    ],
-    "operationId": "healthCheck"
+    ]
   },
   {
+    "operationId": "accountApikeysCreate",
     "path": [
       "account",
       "apikeys",
       "create"
-    ],
-    "operationId": "accountApikeysCreate"
+    ]
   },
   {
+    "operationId": "accountApikeysList",
     "path": [
       "account",
       "apikeys",
       "list"
-    ],
-    "operationId": "accountApikeysList"
+    ]
   },
   {
+    "operationId": "accountApikeysRevoke",
     "path": [
       "account",
       "apikeys",
       "id"
-    ],
-    "operationId": "accountApikeysRevoke"
+    ]
   },
   {
+    "operationId": "accountEmailChangeRequest",
     "path": [
       "account",
       "email",
       "change",
       "request"
-    ],
-    "operationId": "accountEmailChangeRequest"
+    ]
   },
   {
+    "operationId": "accountEmailChangeVerify",
     "path": [
       "account",
       "email",
       "change",
       "verify"
-    ],
-    "operationId": "accountEmailChangeVerify"
+    ]
   },
   {
+    "operationId": "accountLinkEmailRequest",
     "path": [
       "account",
       "link",
       "email",
       "request"
-    ],
-    "operationId": "accountLinkEmailRequest"
+    ]
   },
   {
+    "operationId": "accountLinkEmailVerify",
     "path": [
       "account",
       "link",
       "email",
       "verify"
-    ],
-    "operationId": "accountLinkEmailVerify"
+    ]
   },
   {
+    "operationId": "accountLinkOauthUnlink",
     "path": [
       "account",
       "link",
       "oauth",
       "provider-id"
-    ],
-    "operationId": "accountLinkOauthUnlink"
+    ]
   },
   {
+    "operationId": "accountLinkPasskeyDelete",
     "path": [
       "account",
       "link",
       "passkey",
       "id"
-    ],
-    "operationId": "accountLinkPasskeyDelete"
+    ]
   },
   {
+    "operationId": "accountLinkPasskeyFinish",
     "path": [
       "account",
       "link",
       "passkey",
       "finish"
-    ],
-    "operationId": "accountLinkPasskeyFinish"
+    ]
   },
   {
+    "operationId": "accountLinkPasskeyStart",
     "path": [
       "account",
       "link",
       "passkey",
       "start"
-    ],
-    "operationId": "accountLinkPasskeyStart"
+    ]
   },
   {
+    "operationId": "accountLinkTotpSetup",
     "path": [
       "account",
       "link",
       "totp",
       "setup"
-    ],
-    "operationId": "accountLinkTotpSetup"
+    ]
   },
   {
+    "operationId": "accountLinkTotpUnlink",
     "path": [
       "account",
       "link",
       "totp",
       "unlink"
-    ],
-    "operationId": "accountLinkTotpUnlink"
+    ]
   },
   {
+    "operationId": "accountLinkTotpVerify",
     "path": [
       "account",
       "link",
       "totp",
       "verify"
-    ],
-    "operationId": "accountLinkTotpVerify"
+    ]
   },
   {
+    "operationId": "accountLinkWalletUnlink",
     "path": [
       "account",
       "link",
       "wallet",
       "id"
-    ],
-    "operationId": "accountLinkWalletUnlink"
+    ]
   },
   {
+    "operationId": "accountLinkWalletVerify",
     "path": [
       "account",
       "link",
       "wallet",
       "verify"
-    ],
-    "operationId": "accountLinkWalletVerify"
+    ]
   },
   {
+    "operationId": "accountPasskeysList",
     "path": [
       "account",
       "passkeys"
-    ],
-    "operationId": "accountPasskeysList"
+    ]
   },
   {
+    "operationId": "accountProfileUpdate",
     "path": [
       "account",
       "profile"
-    ],
-    "operationId": "accountProfileUpdate"
+    ]
   },
   {
+    "operationId": "accountWalletGet",
     "path": [
       "account",
       "wallet"
-    ],
-    "operationId": "accountWalletGet"
+    ]
   },
   {
+    "operationId": "getAgentById",
     "path": [
       "agents",
       "agent-id"
-    ],
-    "operationId": "getAgentById"
+    ]
   },
   {
+    "operationId": "listAgents",
     "path": [
       "list-agents"
-    ],
-    "operationId": "listAgents"
+    ]
   },
   {
+    "operationId": "generate",
     "path": [
       "ai",
       "generate"
-    ],
-    "operationId": "generate"
+    ]
   },
   {
+    "operationId": "listCoins",
     "path": [
       "list-coins"
-    ],
-    "operationId": "listCoins"
+    ]
   },
   {
+    "operationId": "queryCoins",
     "path": [
       "coins",
       "query"
-    ],
-    "operationId": "queryCoins"
+    ]
   },
   {
+    "operationId": "getCoinCandles",
     "path": [
       "coins",
       "asset-id",
       "candles"
-    ],
-    "operationId": "getCoinCandles"
+    ]
   },
   {
+    "operationId": "getCoinGlobal",
     "path": [
       "coins",
       "global"
-    ],
-    "operationId": "getCoinGlobal"
+    ]
   },
   {
+    "operationId": "getCoinTrending",
     "path": [
       "coins",
       "trending"
-    ],
-    "operationId": "getCoinTrending"
+    ]
   },
   {
+    "operationId": "deleteCoinWatchById",
     "path": [
       "coins",
       "watches",
       "asset-id",
       "id"
-    ],
-    "operationId": "deleteCoinWatchById"
+    ]
   },
   {
+    "operationId": "putCoinWatch",
     "path": [
       "coins",
       "watches",
       "asset-id",
       "watch"
-    ],
-    "operationId": "putCoinWatch"
+    ]
   },
   {
+    "operationId": "listCoinWatches",
     "path": [
       "coins",
       "watches",
       "watches"
-    ],
-    "operationId": "listCoinWatches"
+    ]
   }
 ] as const

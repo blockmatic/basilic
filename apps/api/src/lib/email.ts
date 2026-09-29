@@ -1,27 +1,28 @@
-import { type Logger, toErrField } from '@repo/utils/logger/types'
+import { toErrField } from "@repo/utils/logger/types";
+import type { Logger } from "@repo/utils/logger/types";
 
 /** Trim and lowercase email for consistent lookup and storage. */
 export function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase()
+  return email.trim().toLowerCase();
 }
 
-export type EmailProvider = {
+export interface EmailProvider {
   emails: {
     send: (options: {
-      from: string
-      to: string
-      subject: string
-      html: string
-      text?: string
+      from: string;
+      to: string;
+      subject: string;
+      html: string;
+      text?: string;
     }) => Promise<
       | { data: { id: string }; error: null }
       | { data: null; error: { message: string; name?: string } }
-    >
-  }
+    >;
+  };
 }
 
 declare global {
-  var __testEmailProvider: EmailProvider | null | undefined
+  var __testEmailProvider: EmailProvider | null | undefined;
 }
 
 /**
@@ -29,37 +30,41 @@ declare global {
  * Used by the email plugin to provide a test email provider instead of Resend.
  */
 export function setTestEmailProvider(provider: EmailProvider | null): void {
-  if (typeof globalThis !== 'undefined') globalThis.__testEmailProvider = provider
+  if (typeof globalThis !== "undefined") {
+    globalThis.__testEmailProvider = provider;
+  }
 }
 
-export type SendMailMessage = {
-  from: string
-  to: string
-  subject: string
-  html: string
-  text?: string
+export interface SendMailMessage {
+  from: string;
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
 }
 
-const redacted = '[REDACTED]'
+const redacted = "[REDACTED]";
 
 function redactKnownEmails(text: string, emails: string[]): string {
   return emails.reduce((out, email) => {
-    if (!email) return out
-    const normalized = normalizeEmail(email)
-    return out.replaceAll(email, redacted).replaceAll(normalized, redacted)
-  }, text)
+    if (!email) {
+      return out;
+    }
+    const normalized = normalizeEmail(email);
+    return out.replaceAll(email, redacted).replaceAll(normalized, redacted);
+  }, text);
 }
 
 function sanitizeProviderErrForLog(
   err: ReturnType<typeof toErrField>,
-  recipient: string,
+  recipient: string
 ): ReturnType<typeof toErrField> {
-  const emails = [recipient]
+  const emails = [recipient];
   return {
     ...err,
     message: redactKnownEmails(err.message, emails),
     ...(err.stack ? { stack: redactKnownEmails(err.stack, emails) } : {}),
-  }
+  };
 }
 
 function logEmailSendFailed({
@@ -68,16 +73,16 @@ function logEmailSendFailed({
   code,
   recipient,
 }: {
-  logger: Logger
-  error: unknown
-  code?: string
-  recipient: string
+  logger: Logger;
+  error: unknown;
+  code?: string;
+  recipient: string;
 }): void {
   const err = sanitizeProviderErrForLog(
     toErrField(error instanceof Error ? error : new Error(String(error))),
-    recipient,
-  )
-  logger.error({ err, ...(code ? { code } : {}) }, 'email_send_failed')
+    recipient
+  );
+  logger.error({ err, ...(code ? { code } : {}) }, "email_send_failed");
 }
 
 export async function sendMail({
@@ -86,23 +91,38 @@ export async function sendMail({
   logger,
   mode,
 }: {
-  provider: EmailProvider
-  message: SendMailMessage
-  logger: Logger
-  mode: 'throw' | 'fireAndForget'
+  provider: EmailProvider;
+  message: SendMailMessage;
+  logger: Logger;
+  mode: "throw" | "fireAndForget";
 }): Promise<{ resendId?: string }> {
-  let failure: { error: unknown; code?: string } | undefined
+  let failure: { error: unknown; code?: string } | undefined;
   try {
-    const result = await provider.emails.send(message)
-    if (!result.error) return { resendId: result.data.id }
-    failure = { error: new Error(result.error.message), code: result.error.name }
+    const result = await provider.emails.send(message);
+    if (!result.error) {
+      return { resendId: result.data.id };
+    }
+    failure = {
+      code: result.error.name,
+      error: new Error(result.error.message),
+    };
   } catch (error) {
-    failure = { error }
+    failure = { error };
   }
 
-  if (!failure) return {}
-  logEmailSendFailed({ logger, error: failure.error, code: failure.code, recipient: message.to })
-  if (mode === 'throw')
-    throw failure.error instanceof Error ? failure.error : new Error(String(failure.error))
-  return {}
+  if (!failure) {
+    return {};
+  }
+  logEmailSendFailed({
+    code: failure.code,
+    error: failure.error,
+    logger,
+    recipient: message.to,
+  });
+  if (mode === "throw") {
+    throw failure.error instanceof Error
+      ? failure.error
+      : new Error(String(failure.error));
+  }
+  return {};
 }

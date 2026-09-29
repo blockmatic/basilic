@@ -1,17 +1,17 @@
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vitest/config'
+import { resolve } from "node:path";
 
-const configDir = dirname(fileURLToPath(import.meta.url))
+import { defineConfig } from "vitest/config";
+
+const configDir = import.meta.dirname;
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': resolve(configDir),
+      "@": resolve(configDir),
     },
   },
   test: {
-    include: ['lib/**/*.test.ts'],
-    environment: 'node',
+    environment: "node",
+    include: ["lib/**/*.test.ts"],
   },
-})
+});

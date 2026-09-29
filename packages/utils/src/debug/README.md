@@ -11,10 +11,11 @@ Client-only React hooks for VConsole (mobile debug panel) and nuqs URL-state deb
 Combines VConsole and nuqs debug. Returns `isDebugEnabled`, `toggleDebug`, `isNuqsDebugEnabled`, `toggleNuqsDebug`.
 
 ```ts
-import { useDevtools } from '@repo/utils/debug'
+import { useDevtools } from "@repo/utils/debug";
 
 function App() {
-  const { isDebugEnabled, toggleDebug, isNuqsDebugEnabled, toggleNuqsDebug } = useDevtools()
+  const { isDebugEnabled, toggleDebug, isNuqsDebugEnabled, toggleNuqsDebug } =
+    useDevtools();
   // ...
 }
 ```
@@ -24,9 +25,9 @@ function App() {
 Enables/disables VConsole; state syncs with `?debug=true|false` and localStorage.
 
 ```ts
-import { useVConsole } from '@repo/utils/debug'
+import { useVConsole } from "@repo/utils/debug";
 
-const { isDebugEnabled, toggleDebug } = useVConsole()
+const { isDebugEnabled, toggleDebug } = useVConsole();
 ```
 
 ### `useNuqsDebug()`
@@ -34,7 +35,7 @@ const { isDebugEnabled, toggleDebug } = useVConsole()
 Toggles nuqs debug mode (persisted in localStorage). When enabled, nuqs logs search-param updates.
 
 ```ts
-import { useNuqsDebug } from '@repo/utils/debug'
+import { useNuqsDebug } from "@repo/utils/debug";
 
-const { isNuqsDebugEnabled, toggleNuqsDebug } = useNuqsDebug()
+const { isNuqsDebugEnabled, toggleNuqsDebug } = useNuqsDebug();
 ```

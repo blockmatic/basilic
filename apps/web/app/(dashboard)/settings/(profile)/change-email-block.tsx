@@ -1,51 +1,66 @@
-'use client'
+"use client";
 
-import { useChangeEmail } from '@repo/react'
-import { Button } from '@repo/ui/components/button'
-import { Input } from '@repo/ui/components/input'
-import { useCallback, useState } from 'react'
-import { toast } from 'sonner'
-import { updateAuthTokens } from '@/lib/auth/auth-client'
+import { useChangeEmail } from "@repo/react";
+import { Button } from "@repo/ui/components/button";
+import { Input } from "@repo/ui/components/input";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
+
+import { updateAuthTokens } from "@/lib/auth/auth-client";
 
 export function ChangeEmailBlock({ email }: { email: string | null }) {
-  const [step, setStep] = useState<'idle' | 'enter' | 'requested'>('idle')
-  const [newEmail, setNewEmail] = useState('')
-  const [code, setCode] = useState('')
+  const [step, setStep] = useState<"idle" | "enter" | "requested">("idle");
+  const [newEmail, setNewEmail] = useState("");
+  const [code, setCode] = useState("");
   const changeEmail = useChangeEmail({
     onVerifySuccess: async ({ token, refreshToken }) => {
-      await updateAuthTokens({ token, refreshToken })
-      toast.success('Email updated')
-      setStep('idle')
-      setNewEmail('')
-      setCode('')
+      await updateAuthTokens({ refreshToken, token });
+      toast.success("Email updated");
+      setStep("idle");
+      setNewEmail("");
+      setCode("");
     },
-  })
+  });
 
   const handleRequest = useCallback(async () => {
-    if (!newEmail.trim()) return
+    if (!newEmail.trim()) {
+      return;
+    }
     try {
       const callbackUrl =
-        typeof window !== 'undefined' ? `${window.location.origin}/auth/callback/change-email` : ''
-      await changeEmail.requestChange({ email: newEmail.trim(), callbackUrl })
-      setStep('requested')
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to send verification email')
+        typeof window === "undefined"
+          ? ""
+          : `${window.location.origin}/auth/callback/change-email`;
+      await changeEmail.requestChange({ callbackUrl, email: newEmail.trim() });
+      setStep("requested");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to send verification email"
+      );
     }
-  }, [newEmail, changeEmail])
+  }, [newEmail, changeEmail]);
 
   const handleVerify = useCallback(async () => {
-    if (!code.trim() || !newEmail.trim()) return
-    try {
-      await changeEmail.verify({ token: code.trim(), email: newEmail.trim() })
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Verification failed')
+    if (!code.trim() || !newEmail.trim()) {
+      return;
     }
-  }, [code, newEmail, changeEmail])
+    try {
+      await changeEmail.verify({ email: newEmail.trim(), token: code.trim() });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Verification failed"
+      );
+    }
+  }, [code, newEmail, changeEmail]);
 
-  if (step === 'requested')
+  if (step === "requested") {
     return (
       <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">Check your inbox for the verification code.</p>
+        <p className="text-muted-foreground text-sm">
+          Check your inbox for the verification code.
+        </p>
         <div className="flex gap-2">
           <Input
             id="verification-code"
@@ -54,29 +69,39 @@ export function ChangeEmailBlock({ email }: { email: string | null }) {
             placeholder="6-digit code"
             maxLength={6}
             value={code}
-            onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
             aria-label="Verification code (6 digits)"
           />
           <Button
             onClick={handleVerify}
             disabled={code.length !== 6 || changeEmail.isVerifyPending}
           >
-            {changeEmail.isVerifyPending ? 'Verifying…' : 'Verify'}
+            {changeEmail.isVerifyPending ? "Verifying…" : "Verify"}
           </Button>
         </div>
-        <p className="text-muted-foreground text-xs">Or click the link in the email to verify.</p>
+        <p className="text-muted-foreground text-xs">
+          Or click the link in the email to verify.
+        </p>
       </div>
-    )
+    );
+  }
 
-  if (step === 'idle')
+  if (step === "idle") {
     return (
       <div className="flex items-center gap-2">
-        <Input type="email" value={email ?? ''} disabled readOnly className="bg-muted flex-1" />
-        <Button variant="outline" onClick={() => setStep('enter')}>
+        <Input
+          type="email"
+          value={email ?? ""}
+          disabled
+          readOnly
+          className="bg-muted flex-1"
+        />
+        <Button variant="outline" onClick={() => setStep("enter")}>
           Change email
         </Button>
       </div>
-    )
+    );
+  }
 
   return (
     <div className="space-y-2">
@@ -86,16 +111,19 @@ export function ChangeEmailBlock({ email }: { email: string | null }) {
           type="email"
           placeholder="New email"
           value={newEmail}
-          onChange={e => setNewEmail(e.target.value)}
+          onChange={(e) => setNewEmail(e.target.value)}
           aria-label="New email address"
         />
-        <Button onClick={handleRequest} disabled={!newEmail.trim() || changeEmail.isRequestPending}>
-          {changeEmail.isRequestPending ? 'Sending…' : 'Send code'}
+        <Button
+          onClick={handleRequest}
+          disabled={!newEmail.trim() || changeEmail.isRequestPending}
+        >
+          {changeEmail.isRequestPending ? "Sending…" : "Send code"}
         </Button>
-        <Button variant="ghost" onClick={() => setStep('idle')}>
+        <Button variant="ghost" onClick={() => setStep("idle")}>
           Cancel
         </Button>
       </div>
     </div>
-  )
+  );
 }

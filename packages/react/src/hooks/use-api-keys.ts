@@ -1,21 +1,21 @@
-'use client'
+"use client";
 
-import { useReactApiConfig } from '@repo/react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useReactApiConfig } from "@repo/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const apiKeysQueryKey = ['account', 'apikeys'] as const
+const apiKeysQueryKey = ["account", "apikeys"] as const;
 
 export function useApiKeysList() {
-  const { client } = useReactApiConfig()
+  const { client } = useReactApiConfig();
   return useQuery({
-    queryKey: apiKeysQueryKey,
     queryFn: () => client.account.apikeys.list({ throwOnError: true }),
-  })
+    queryKey: apiKeysQueryKey,
+  });
 }
 
 export function useCreateApiKey() {
-  const { client } = useReactApiConfig()
-  const queryClient = useQueryClient()
+  const { client } = useReactApiConfig();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ name }: { name: string }) =>
@@ -24,21 +24,21 @@ export function useCreateApiKey() {
         throwOnError: true,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: apiKeysQueryKey })
+      queryClient.invalidateQueries({ queryKey: apiKeysQueryKey });
     },
-  })
+  });
 }
 
 export function useRevokeApiKey() {
-  const { client } = useReactApiConfig()
-  const queryClient = useQueryClient()
+  const { client } = useReactApiConfig();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id }: { id: string }) => {
-      await client.account.apikeys.id({ path: { id }, throwOnError: true })
+      await client.account.apikeys.id({ path: { id }, throwOnError: true });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: apiKeysQueryKey })
+      queryClient.invalidateQueries({ queryKey: apiKeysQueryKey });
     },
-  })
+  });
 }

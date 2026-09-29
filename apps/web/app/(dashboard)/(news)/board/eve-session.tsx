@@ -1,90 +1,99 @@
-'use client'
+"use client";
 
-import { useQuery } from '@tanstack/react-query'
-import { useSessionStorageState } from 'ahooks'
-import { type EveMessage, type UseEveAgentStatus, useEveAgent } from 'eve/react'
+import { useQuery } from "@tanstack/react-query";
+import { useSessionStorageState } from "ahooks";
+import { useEveAgent } from "eve/react";
+import type { EveMessage, UseEveAgentStatus } from "eve/react";
 import {
   createContext,
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
   useContext,
   useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
-} from 'react'
-import { toast } from 'sonner'
+} from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
+import { toast } from "sonner";
+
 import {
   chatSessionKey,
   commandSessionKey,
-  type EveSessionCursor,
   eveAuthHeaders,
   listAgentEndpoint,
   parseEveSessionCursor,
   sendWithEveRefresh,
   serializeEveSessionCursor,
-} from '@/lib/eve'
-import { eveHostQueryKey } from '@/lib/query-keys'
+} from "@/lib/eve";
+import type { EveSessionCursor } from "@/lib/eve";
+import { eveHostQueryKey } from "@/lib/query-keys";
 
-export type BoardEveEvent = { type: string; data?: unknown }
+export interface BoardEveEvent {
+  type: string;
+  data?: unknown;
+}
 
-export type BoardEveHostStatus = 'hydrating' | 'loading' | 'ready' | 'unavailable'
+export type BoardEveHostStatus =
+  | "hydrating"
+  | "loading"
+  | "ready"
+  | "unavailable";
 
-export type BoardEveHandle = {
-  hasHost: boolean
-  hostStatus: BoardEveHostStatus
-  status: UseEveAgentStatus
-  sessionId: string | undefined
-  error: Error | undefined
-  messages: readonly EveMessage[]
+export interface BoardEveHandle {
+  hasHost: boolean;
+  hostStatus: BoardEveHostStatus;
+  status: UseEveAgentStatus;
+  sessionId: string | undefined;
+  error: Error | undefined;
+  messages: readonly EveMessage[];
   send: (
     text: string,
     clientContext: NonNullable<
-      NonNullable<Parameters<ReturnType<typeof useEveAgent>['send']>[1]>['clientContext']
-    >,
-  ) => Promise<readonly BoardEveEvent[]>
-  cancel: () => Promise<void>
+      NonNullable<
+        Parameters<ReturnType<typeof useEveAgent>["send"]>[1]
+      >["clientContext"]
+    >
+  ) => Promise<readonly BoardEveEvent[]>;
+  cancel: () => Promise<void>;
 }
 
 const idleHandle: BoardEveHandle = {
-  hasHost: false,
-  hostStatus: 'unavailable',
-  status: 'ready',
-  sessionId: undefined,
+  cancel: async () => {},
   error: undefined,
+  hasHost: false,
+  hostStatus: "unavailable",
   messages: [],
   send: async () => {
-    throw new Error('eve host is not ready')
+    throw new Error("eve host is not ready");
   },
-  cancel: async () => {},
-}
+  sessionId: undefined,
+  status: "ready",
+};
 
-const ChatEveContext = createContext<BoardEveHandle>(idleHandle)
-const CommandEveContext = createContext<BoardEveHandle>(idleHandle)
+const ChatEveContext = createContext<BoardEveHandle>(idleHandle);
+const CommandEveContext = createContext<BoardEveHandle>(idleHandle);
 
 export function useChatEve(): BoardEveHandle {
-  return useContext(ChatEveContext)
+  return useContext(ChatEveContext);
 }
 
 export function useCommandEve(): BoardEveHandle {
-  return useContext(CommandEveContext)
+  return useContext(CommandEveContext);
 }
 
 function useIsHydrated(): boolean {
   return useSyncExternalStore(
     () => () => {},
     () => true,
-    () => false,
-  )
+    () => false
+  );
 }
 
-function useAgentHost({ id }: { id: 'chat' | 'command' }) {
+function useAgentHost({ id }: { id: "chat" | "command" }) {
   return useQuery({
-    queryKey: eveHostQueryKey(id),
     queryFn: () => listAgentEndpoint({ id }),
+    queryKey: eveHostQueryKey(id),
     staleTime: Infinity,
-  })
+  });
 }
 
 function EveSession({
@@ -92,82 +101,96 @@ function EveSession({
   storageKey,
   onHandle,
 }: {
-  host: string
-  storageKey: string
-  onHandle: Dispatch<SetStateAction<BoardEveHandle>>
+  host: string;
+  storageKey: string;
+  onHandle: Dispatch<SetStateAction<BoardEveHandle>>;
 }) {
-  const [raw, setRaw] = useSessionStorageState<string | undefined>(storageKey)
-  const boot = parseEveSessionCursor({ value: raw })
-  const finishWait = useRef<((events: readonly BoardEveEvent[]) => void) | null>(null)
+  const [raw, setRaw] = useSessionStorageState<string | undefined>(storageKey);
+  const boot = parseEveSessionCursor({ value: raw });
+  const finishWait = useRef<
+    ((events: readonly BoardEveEvent[]) => void) | null
+  >(null);
   const agent = useEveAgent({
-    host,
     headers: eveAuthHeaders,
+    host,
     initialSession: boot,
+    onError: (error) => {
+      toast.error(error.message || "Agent failed");
+    },
+    onFinish: (snapshot) => {
+      finishWait.current?.(snapshot.events as readonly BoardEveEvent[]);
+      finishWait.current = null;
+    },
+    onSessionChange: (session) => {
+      setRaw(
+        serializeEveSessionCursor({
+          session: session as EveSessionCursor | null,
+        })
+      );
+    },
     resume: Boolean(boot),
-    onSessionChange: session => {
-      setRaw(serializeEveSessionCursor({ session: session as EveSessionCursor | null }))
-    },
-    onFinish: snapshot => {
-      finishWait.current?.(snapshot.events as readonly BoardEveEvent[])
-      finishWait.current = null
-    },
-    onError: error => {
-      toast.error(error.message || 'Agent failed')
-    },
-  })
-  const { cancel, error, send, session, status } = agent
-  const messages = agent.data.messages
-  const sessionId = session?.sessionId
+  });
+  const { cancel, error, send, session, status } = agent;
+  const { messages } = agent.data;
+  const sessionId = session?.sessionId;
   useLayoutEffect(() => {
     const next: BoardEveHandle = {
-      hasHost: true,
-      hostStatus: 'ready',
-      status,
-      sessionId,
+      cancel: () => cancel().then(() => undefined),
       error,
+      hasHost: true,
+      hostStatus: "ready",
       messages,
       send: (text, clientContext) =>
         sendWithEveRefresh({
           run: async () => {
-            const eventsPromise = new Promise<readonly BoardEveEvent[]>(resolve => {
-              finishWait.current = resolve
-            })
+            const eventsPromise = new Promise<readonly BoardEveEvent[]>(
+              (resolve) => {
+                finishWait.current = resolve;
+              }
+            );
             try {
-              await send(text, { clientContext })
+              await send(text, { clientContext });
             } catch (caught) {
-              finishWait.current = null
-              throw caught
+              finishWait.current = null;
+              throw caught;
             }
-            return eventsPromise
+            return eventsPromise;
           },
         }),
-      cancel: () => cancel().then(() => undefined),
-    }
-    onHandle(current =>
+      sessionId,
+      status,
+    };
+    onHandle((current) =>
       current.hasHost === next.hasHost &&
       current.status === next.status &&
       current.sessionId === next.sessionId &&
       current.error === next.error &&
       current.messages === next.messages
         ? current
-        : next,
-    )
-  }, [cancel, error, messages, onHandle, send, sessionId, status])
-  useLayoutEffect(() => () => onHandle(idleHandle), [onHandle])
-  return null
+        : next
+    );
+  }, [cancel, error, messages, onHandle, send, sessionId, status]);
+  useLayoutEffect(() => () => onHandle(idleHandle), [onHandle]);
+  return null;
 }
 
 function idleHostStatus({
   hydrated,
   host,
 }: {
-  hydrated: boolean
-  host: ReturnType<typeof useAgentHost>
+  hydrated: boolean;
+  host: ReturnType<typeof useAgentHost>;
 }): BoardEveHostStatus {
-  if (!hydrated) return 'hydrating'
-  if (host.isPending) return 'loading'
-  if (host.isError || !host.data) return 'unavailable'
-  return 'ready'
+  if (!hydrated) {
+    return "hydrating";
+  }
+  if (host.isPending) {
+    return "loading";
+  }
+  if (host.isError || !host.data) {
+    return "unavailable";
+  }
+  return "ready";
 }
 
 function EveHost({
@@ -176,35 +199,43 @@ function EveHost({
   context,
   children,
 }: {
-  id: 'chat' | 'command'
-  storageKey: string
-  context: typeof ChatEveContext
-  children: ReactNode
+  id: "chat" | "command";
+  storageKey: string;
+  context: typeof ChatEveContext;
+  children: ReactNode;
 }) {
-  const hydrated = useIsHydrated()
-  const host = useAgentHost({ id })
-  const [liveHandle, setLiveHandle] = useState(idleHandle)
-  const endpoint = hydrated ? host.data : undefined
+  const hydrated = useIsHydrated();
+  const host = useAgentHost({ id });
+  const [liveHandle, setLiveHandle] = useState(idleHandle);
+  const endpoint = hydrated ? host.data : undefined;
   const idle: BoardEveHandle = {
     ...idleHandle,
-    hostStatus: idleHostStatus({ hydrated, host }),
-  }
+    hostStatus: idleHostStatus({ host, hydrated }),
+  };
   return (
     <context.Provider value={endpoint ? liveHandle : idle}>
       {endpoint ? (
-        <EveSession host={endpoint} storageKey={storageKey} onHandle={setLiveHandle} />
+        <EveSession
+          host={endpoint}
+          storageKey={storageKey}
+          onHandle={setLiveHandle}
+        />
       ) : null}
       {children}
     </context.Provider>
-  )
+  );
 }
 
 export function BoardEveProviders({ children }: { children: ReactNode }) {
   return (
-    <EveHost id="command" storageKey={commandSessionKey} context={CommandEveContext}>
+    <EveHost
+      id="command"
+      storageKey={commandSessionKey}
+      context={CommandEveContext}
+    >
       <EveHost id="chat" storageKey={chatSessionKey} context={ChatEveContext}>
         {children}
       </EveHost>
     </EveHost>
-  )
+  );
 }

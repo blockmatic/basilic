@@ -1,39 +1,40 @@
-import { getDb } from '@repo/db'
-import { resetCoinGeckoClient, resetMarketsRuntime } from '@repo/markets'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { queryCoins } from './query.js'
+import { getDb } from "@repo/db";
+import { resetCoinGeckoClient, resetMarketsRuntime } from "@repo/markets";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { queryCoins } from "./query.js";
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json' },
-  })
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
-describe('queryCoins', () => {
+describe("queryCoins", () => {
   beforeEach(() => {
-    resetMarketsRuntime()
-    resetCoinGeckoClient()
+    resetMarketsRuntime();
+    resetCoinGeckoClient();
     vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => jsonResponse('rate', 429)),
-    )
-  })
+      "fetch",
+      vi.fn(async () => jsonResponse("rate", 429))
+    );
+  });
 
   afterEach(() => {
-    vi.unstubAllGlobals()
-  })
+    vi.unstubAllGlobals();
+  });
 
-  it('filters fixture minChangePct 5 to doge', async () => {
-    const db = await getDb()
+  it("filters fixture minChangePct 5 to doge", async () => {
+    const db = await getDb();
     const result = await queryCoins({
       db,
-      userId: 'query-coins-user',
+      userId: "query-coins-user",
       query: { minChangePct: 5 },
-    })
-    expect(result.sync.source).toBe('fixture')
-    expect(result.coins.map(coin => coin.id)).toEqual(['dogecoin'])
-    expect(result.spokenSummary.toLowerCase()).toContain('doge')
-    expect(result.spokenSummary).not.toContain('$')
-  })
-})
+    });
+    expect(result.sync.source).toBe("fixture");
+    expect(result.coins.map((coin) => coin.id)).toEqual(["dogecoin"]);
+    expect(result.spokenSummary.toLowerCase()).toContain("doge");
+    expect(result.spokenSummary).not.toContain("$");
+  });
+});

@@ -1,12 +1,11 @@
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from "node:path";
 
-const srcDir = dirname(fileURLToPath(import.meta.url))
+const srcDir = import.meta.dirname;
 
-export const packageRoot = join(srcDir, '..')
+export const packageRoot = join(srcDir, "..");
 
-export const repoRootFromPackage = join(packageRoot, '../..')
+export const repoRootFromPackage = join(packageRoot, "../..");
 
-export const manifestPath = join(packageRoot, 'manifest.json')
+export const manifestPath = join(packageRoot, "manifest.json");
 
-export const bundledTemplateRoot = join(packageRoot, 'template')
+export const bundledTemplateRoot = join(packageRoot, "template");

@@ -1,78 +1,86 @@
-'use client'
+"use client";
 
-import type { ErrorInfo, ReactNode } from 'react'
-import { Component } from 'react'
-import type { CaptureErrorOptions } from '../types.js'
+import type { ErrorInfo, ReactNode } from "react";
+import { Component } from "react";
+
+import type { CaptureErrorOptions } from "../types.js";
 
 export interface AppErrorBoundaryProps {
-  children: ReactNode
+  children: ReactNode;
   /** Application name for tagging (required) */
-  app: string
+  app: string;
   /** Error capture function - import from @repo/error/nextjs or @repo/error/browser (client bundles only) */
-  captureError: (options: CaptureErrorOptions) => void
+  captureError: (options: CaptureErrorOptions) => void;
   /** Optional fallback component */
-  fallback?: (props: { error: Error; resetErrorBoundary: () => void }) => ReactNode
+  fallback?: (props: {
+    error: Error;
+    resetErrorBoundary: () => void;
+  }) => ReactNode;
   /** Optional onReset callback */
-  onReset?: () => void
+  onReset?: () => void;
 }
 
 interface AppErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
+  hasError: boolean;
+  error: Error | null;
 }
 
 /**
  * Client-only Error Boundary that captures errors via the provided captureError function.
  * Supports client-side implementations such as Next.js (client) and browser error reporting.
  */
-export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
+export class AppErrorBoundary extends Component<
+  AppErrorBoundaryProps,
+  AppErrorBoundaryState
+> {
   constructor(props: AppErrorBoundaryProps) {
-    super(props)
-    this.state = { hasError: false, error: null }
+    super(props);
+    this.state = { error: null, hasError: false };
   }
 
   static getDerivedStateFromError(error: Error): AppErrorBoundaryState {
-    return { hasError: true, error }
+    return { error, hasError: true };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.props.captureError({
-      code: 'UNEXPECTED_ERROR',
-      error,
-      label: 'React Error Boundary',
-      tags: {
-        app: this.props.app,
-        component: 'ErrorBoundary',
-      },
+      code: "UNEXPECTED_ERROR",
       data: {
         componentStack: errorInfo.componentStack,
       },
-    })
+      error,
+      label: "React Error Boundary",
+      tags: {
+        app: this.props.app,
+        component: "ErrorBoundary",
+      },
+    });
   }
 
   handleReset = (): void => {
-    this.setState({ hasError: false, error: null })
-    this.props.onReset?.()
-  }
+    this.setState({ error: null, hasError: false });
+    this.props.onReset?.();
+  };
 
   render(): ReactNode {
     if (this.state.hasError && this.state.error) {
-      if (this.props.fallback)
+      if (this.props.fallback) {
         return this.props.fallback({
           error: this.state.error,
           resetErrorBoundary: this.handleReset,
-        })
+        });
+      }
 
       // Default fallback UI
       return (
-        <div role="alert" style={{ padding: '1rem' }}>
+        <div role="alert" style={{ padding: "1rem" }}>
           <h2>Something went wrong</h2>
           <p>Something went wrong. Please try again.</p>
           <button onClick={this.handleReset}>Try again</button>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }

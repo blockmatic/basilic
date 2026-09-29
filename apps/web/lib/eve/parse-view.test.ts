@@ -1,34 +1,46 @@
-import { describe, expect, it } from 'vitest'
-import { whoamiViewConfig } from '@/lib/genui'
-import { viewConfigFromEvents } from './parse-view'
+import { describe, expect, it } from "vitest";
 
-describe('viewConfigFromEvents', () => {
-  it('reads set_view output from action.result', () => {
-    const viewConfig = whoamiViewConfig()
+import { whoamiViewConfig } from "@/lib/genui";
+
+import { viewConfigFromEvents } from "./parse-view";
+
+describe("viewConfigFromEvents", () => {
+  it("reads set_view output from action.result", () => {
+    const viewConfig = whoamiViewConfig();
     expect(
       viewConfigFromEvents({
         events: [
           {
-            type: 'action.result',
+            type: "action.result",
             data: {
-              result: { kind: 'tool-result', toolName: 'set_view', output: { viewConfig } },
+              result: {
+                kind: "tool-result",
+                toolName: "set_view",
+                output: { viewConfig },
+              },
             },
           },
         ],
-      }),
-    ).toEqual({ viewConfig, honesty: undefined })
-  })
+      })
+    ).toEqual({ viewConfig, honesty: undefined });
+  });
 
-  it('ignores other tools', () => {
+  it("ignores other tools", () => {
     expect(
       viewConfigFromEvents({
         events: [
           {
-            type: 'action.result',
-            data: { result: { kind: 'tool-result', toolName: 'get_markets', output: [] } },
+            type: "action.result",
+            data: {
+              result: {
+                kind: "tool-result",
+                toolName: "get_markets",
+                output: [],
+              },
+            },
           },
         ],
-      }),
-    ).toBeNull()
-  })
-})
+      })
+    ).toBeNull();
+  });
+});

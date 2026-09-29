@@ -10,7 +10,7 @@ Local HTTP apps use [Vercel Labs Portless](https://github.com/vercel-labs/portle
 ## Quick Reference
 
 | Context | Web + API | Mobile (Expo) |
-|---------|-----------|---------------|
+| --- | --- | --- |
 | Local | `pnpm setup` then `pnpm dev` | `pnpm --filter @repo/mobile start` |
 | Remote + Cursor | Forward **443**; `pnpm dev` | `pnpm --filter @repo/mobile start:localhost` |
 | Remote + other IDE | Forward 443; run `pnpm dev` | Forward 8081 + `start:localhost`, or use `start:tunnel` |
@@ -30,11 +30,11 @@ The monorepo must work consistently whether you develop locally (macOS, Linux, W
 ## Canonical local URLs
 
 | URL | App | Notes |
-|-----|-----|-------|
+| --- | --- | --- |
 | `https://basilic.localhost` | Next.js web | Login `test@test.ai` |
 | `https://api.basilic.localhost` | Fastify API | `GET /health`, `/reference` |
 | `https://docu.basilic.localhost` | Fumadocs | This repo only |
-| `https://email.basilic.localhost` | React Email preview | |
+| `https://email.basilic.localhost` | React Email preview |  |
 | `https://agents.basilic.localhost` | eve workspace | `/eve/command` and `/eve/chat` (`GET …/v1/health`) |
 
 Linked git worktrees prefix the branch: `https://fix-ui.api.basilic.localhost`. `scripts/dev.mjs` exports sibling URLs from `portless get` so worktrees do not call the main checkout.
@@ -46,7 +46,7 @@ Safari: `.localhost` may need `pnpm exec portless hosts sync`. Diagnose with `pn
 ### Still numeric (not Portless)
 
 | Port | Service |
-|------|---------|
+| --- | --- |
 | 54322 | Local Supabase Postgres |
 | 8081 / 19000 / 19001 | Expo Metro / DevTools |
 | 3000 / 3001 | Playwright and CI spawned web/API (no Portless, no eve) |
@@ -66,7 +66,7 @@ Standard workflow: run everything on the same machine where the IDE and simulato
 pnpm dev
 ```
 
-Ensures local Postgres is up, then starts Turborepo's TUI (same left-pane logs as `pnpm lint:eslint` / `pnpm test`): Fastify, Next.js, eve workspace (`/eve/command` and `/eve/chat`) in this repo, and dependent package watchers. Prints the named `.localhost` URLs, then the TUI. Mobile stays a separate command. Generated projects omit agents.
+Ensures local Postgres is up, then starts Turborepo's TUI (same left-pane logs as `pnpm lint` / `pnpm test`): Fastify, Next.js, eve workspace (`/eve/command` and `/eve/chat`) in this repo, and dependent package watchers. Prints the named `.localhost` URLs, then the TUI. Mobile stays a separate command. Generated projects omit agents.
 
 ### Mobile (Expo)
 
@@ -120,7 +120,7 @@ If the VPC is reachable from your machine (VPN or shared network):
 ### Expo (apps/mobile)
 
 | Scenario | Command | Simulator connects via |
-|----------|---------|------------------------|
+| --- | --- | --- |
 | Local dev | `pnpm --filter @repo/mobile start` | LAN IP (default) |
 | Remote + port forwarding | `pnpm --filter @repo/mobile start:localhost` | `localhost:8081` (tunneled) |
 | Remote + no forwarding | `pnpm --filter @repo/mobile start:tunnel` | Public ngrok URL |
@@ -160,7 +160,7 @@ Scripts `start:localhost` and `start:tunnel` are available in `apps/mobile` for 
 **Troubleshooting Expo**
 
 | Issue | Fix |
-|-------|-----|
+| --- | --- |
 | "Unable to resolve module" / red box | Run `pnpm install` at repo root; restart Metro with `pnpm start` (clear cache: `expo start -c`). |
 | Simulator can't connect to Metro (remote) | Use `--localhost` when Cursor forwards ports; or `--tunnel` if not. Ensure 8081 is in the Ports panel (Cursor/VS Code). |
 | "Network response timed out" | API unreachable. Check `EXPO_PUBLIC_API_URL` and that the API host is reachable from the simulator. |
@@ -174,20 +174,20 @@ These run where you execute `pnpm dev`. Browsers use the named `.localhost` URLs
 ## Scripts (apps/mobile)
 
 | Script | Command | Use case |
-|--------|---------|----------|
+| --- | --- | --- |
 | `start` | `expo start` | Local dev, default LAN |
 | `start:localhost` | `expo start --localhost` | Remote + port forwarding (Cursor, VS Code) |
 | `start:tunnel` | `expo start --tunnel` | Remote without forwarding, or physical device |
 
 ## IDE Support Matrix
 
-| IDE | Port forwarding | Remote (VPC) workflow |
-|-----|-----------------|----------------------|
-| Cursor | **Automatic** – tunnels ports | Use `--localhost`; 8081 auto-fwd |
-| VS Code | Remote-SSH (Ports view) | Same as Cursor |
-| Neovim | Manual / `ssh -L` | Use `--tunnel` or SSH port fwd |
-| JetBrains | Remote Dev | Forward ports or use `--tunnel` |
-| Other | Varies | Prefer `--tunnel` for mobile |
+| IDE       | Port forwarding               | Remote (VPC) workflow            |
+| --------- | ----------------------------- | -------------------------------- |
+| Cursor    | **Automatic** – tunnels ports | Use `--localhost`; 8081 auto-fwd |
+| VS Code   | Remote-SSH (Ports view)       | Same as Cursor                   |
+| Neovim    | Manual / `ssh -L`             | Use `--tunnel` or SSH port fwd   |
+| JetBrains | Remote Dev                    | Forward ports or use `--tunnel`  |
+| Other     | Varies                        | Prefer `--tunnel` for mobile     |
 
 ## Common Gotchas
 
@@ -212,5 +212,5 @@ No special env vars are required to distinguish local vs remote. The same `.env`
 
 ## Related
 
-- [Dev Tooling](/docs/development/dev-tooling) – pnpm, Biome, ESLint, Turborepo
+- [Dev Tooling](/docs/development/dev-tooling) – pnpm, Ultracite, Turborepo
 - Onboard new developer — playbook `/w-onboard` when installed under `.agents/skills/workflow/w-onboard/` (see [Skills](/docs/development/cursor-skills))
