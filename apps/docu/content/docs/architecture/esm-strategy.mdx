@@ -19,6 +19,8 @@ Pattern B JS is `tsup` (`format: ['esm']`); `.d.ts` is `tsc --declaration` (`dts
 
 Prefer subpath imports (`@repo/utils/async`). Do not deep-import `src/`.
 
+Eve and Fastify Vitest resolve Pattern B `import` to `dist/`. After adding a `tsup` entry (for example `@repo/utils/view-config`), run `pnpm --filter @repo/utils build` before `@repo/agents` tests or you get `Cannot find package`. Next can follow `source` / `types` to `src/` without that build.
+
 ## TypeScript 7 and 6
 
 TypeScript 7 is the native Go compiler (`"@typescript/native": "npm:typescript@^7.0.2"`, bin `tsc`). Package `checktypes` and emit scripts invoke that binary. ESLint and Next.js keep TypeScript 6 via `"typescript": "npm:@typescript/typescript6@^6.0.2"` where the programmatic API is required. Next.js 16.3 would call `typescript/bin/tsc`; set `experimental.useTypeScriptCli: false` so it uses the TS 6 API instead.

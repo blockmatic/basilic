@@ -68,6 +68,13 @@
       "import": "./dist/data/index.js",
       "node": "./dist/data/index.js",
       "default": "./dist/data/index.js"
+    },
+    "./view-config": {
+      "types": "./src/view-config.ts",
+      "source": "./src/view-config.ts",
+      "import": "./dist/view-config.js",
+      "node": "./dist/view-config.js",
+      "default": "./dist/view-config.js"
     }
   },
   "scripts": {

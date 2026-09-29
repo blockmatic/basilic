@@ -44,7 +44,7 @@ Root `pnpm dev` starts one Portless host after `@repo/db#db:start`. That process
 - `pnpm --filter @repo/agents eve:eval:chat` — chat `eve eval` (skipIf no language-model key; not default CI)
 - `pnpm --filter @repo/agents checktypes`
 - `pnpm --filter @repo/agents lint:eslint`
-- `pnpm --filter @repo/agents test`
+- `pnpm --filter @repo/agents test` — Pattern B `@repo/utils` `import` is `dist/`. After a new utils subpath, run `pnpm --filter @repo/utils build` first.
 
 Health:
 

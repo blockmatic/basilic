@@ -11,6 +11,7 @@ export default defineConfig({
     'src/logger/pino-options.ts',
     'src/debug/index.ts',
     'src/data/index.ts',
+    'src/view-config.ts',
   ],
   format: ['esm'],
   dts: false,

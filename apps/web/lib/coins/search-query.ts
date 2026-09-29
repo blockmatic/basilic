@@ -1,4 +1,5 @@
 import type { ListCoinsData } from '@repo/core'
+import { sortByValues, sortDirValues, universeValues } from '@repo/utils/view-config'
 import {
   type inferParserType,
   parseAsArrayOf,
@@ -7,10 +8,6 @@ import {
   parseAsString,
   parseAsStringLiteral,
 } from 'nuqs/server'
-
-const universeValues = ['all', 'majors', 'watchlist'] as const
-const sortByValues = ['rank', 'change24h', 'volume', 'marketCap', 'price'] as const
-const sortDirValues = ['asc', 'desc'] as const
 
 export const searchQueryParsers = {
   universe: parseAsStringLiteral(universeValues).withDefault('all').withOptions({

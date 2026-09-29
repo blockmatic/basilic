@@ -1,5 +1,17 @@
-import { z } from 'zod'
+import type { ViewSurface } from '@repo/utils/view-config'
 import type { SearchQueryState } from '@/lib/coins/search-query'
+
+export {
+  defaultSearchQuery,
+  parseViewConfig,
+  periodValues,
+  type ViewConfig,
+  type ViewPeriod,
+  type ViewSurface,
+  viewConfigSchema,
+  viewFromSearchQuery,
+  viewSurfaces,
+} from '@repo/utils/view-config'
 
 export const columnIds = [
   'rank',
@@ -12,63 +24,6 @@ export const columnIds = [
 ] as const
 
 export type ColumnId = (typeof columnIds)[number]
-
-export const defaultSearchQuery = {
-  universe: 'all',
-  sortBy: 'rank',
-  sortDir: 'asc',
-  symbols: [],
-  highlight: [],
-  text: null,
-  topN: null,
-  minChangePct: null,
-  maxChangePct: null,
-  minPrice: null,
-  maxPrice: null,
-} satisfies SearchQueryState
-
-const searchQuerySchema = z.object({
-  universe: z.enum(['all', 'majors', 'watchlist']),
-  sortBy: z.enum(['rank', 'change24h', 'volume', 'marketCap', 'price']),
-  sortDir: z.enum(['asc', 'desc']),
-  symbols: z.array(z.string()),
-  highlight: z.array(z.string()),
-  text: z.string().nullable(),
-  topN: z.number().nullable(),
-  minChangePct: z.number().nullable(),
-  maxChangePct: z.number().nullable(),
-  minPrice: z.number().nullable(),
-  maxPrice: z.number().nullable(),
-})
-
-export const viewSurfaces = [
-  'table',
-  'screener',
-  'comparison',
-  'chart',
-  'news',
-  'dashboard',
-  'coin',
-  'account',
-] as const
-
-export const periodValues = ['24h', '7d', '30d', '90d', '1y', '6m'] as const
-
-export const viewConfigSchema = z.object({
-  version: z.literal(1),
-  surface: z.enum(viewSurfaces),
-  title: z.string(),
-  query: searchQuerySchema,
-  columns: z.array(z.string()).optional(),
-  period: z.enum(periodValues).optional(),
-  elements: z.array(z.string()).optional(),
-  benchmark: z.string().optional(),
-  chart: z.enum(['line', 'area', 'bar', 'normalized']).optional(),
-})
-
-export type ViewConfig = z.infer<typeof viewConfigSchema>
-export type ViewSurface = (typeof viewSurfaces)[number]
-export type ViewPeriod = (typeof periodValues)[number]
 
 export type AccountState = {
   name: string | null
@@ -116,36 +71,4 @@ export function viewTitle({ surface, caption }: { surface: ViewSurface; caption:
   if (surface === 'account') return caption || 'Your profile'
   if (surface === 'dashboard') return caption || 'Market overview'
   return caption
-}
-
-export function parseViewConfig({ value }: { value: unknown }): ViewConfig | null {
-  const parsed = viewConfigSchema.safeParse(value)
-  if (!parsed.success) return null
-  return parsed.data
-}
-
-export function viewFromSearchQuery({
-  query,
-  title,
-  surface = 'table',
-  period,
-  columns,
-  elements,
-}: {
-  query: SearchQueryState
-  title: string
-  surface?: ViewSurface
-  period?: ViewPeriod | null
-  columns?: string[]
-  elements?: string[]
-}): ViewConfig {
-  return {
-    version: 1,
-    surface,
-    title,
-    query,
-    ...(period ? { period } : {}),
-    ...(columns?.length ? { columns } : {}),
-    ...(elements?.length ? { elements } : {}),
-  }
 }

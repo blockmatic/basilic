@@ -12,7 +12,7 @@ flowchart TB
     React["react — handwritten Query hooks"]
     UI["ui — shadcn + Base UI"]
     Error["error — captureError logs"]
-    Utils["utils — logger, async, web3"]
+    Utils["utils — logger, async, web3, view-config"]
     Email["email — React Email"]
     Cli["cli — API key CLI"]
     Db["db — Drizzle + named fns"]
@@ -44,6 +44,7 @@ flowchart TB
   Error --> API
   Utils --> API
   Utils --> Web
+  Utils --> Agents
   Email --> API
   Db --> API
   Markets --> API
@@ -59,6 +60,6 @@ flowchart TB
 
 **Tools:** `eslint`, `typescript` (copied), `create-basilic` (generator; excluded from generated projects). See [ADR 012](/docs/adrs/012-scaffolding-and-releases).
 
-**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils`, `cli`, `db` (Drizzle schema + named fns; Fastify + eve host), `markets` (CoinGecko + Binance; Fastify + eve host), `onchain` (Alchemy Portfolio; Fastify + eve host).
+**Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils` (`@repo/utils/view-config` is the closed board ViewConfig), `cli`, `db` (Drizzle schema + named fns; Fastify + eve host), `markets` (CoinGecko + Binance; Fastify + eve host), `onchain` (Alchemy Portfolio; Fastify + eve host).
 
 Dependency rule: `core` → `react`; apps depend on packages, never the reverse. Pattern A packages import `src/` in the workspace; Pattern B Node consumers (Fastify, serverless) use `dist/`. `prepack` switches to `dist/` for npm. See [Publishing](/docs/deployment/publishing) and [ESM & TypeScript](/docs/architecture/esm-strategy).
