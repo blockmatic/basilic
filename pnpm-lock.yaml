@@ -183,8 +183,8 @@ overrides:
   undici@5.28.4: 6.28.0
   undici@6.23.0: 6.28.0
   undici@6.24.0: 6.28.0
-  undici@7.22.0: 7.29.0
-  undici: 7.29.0
+  undici@7.22.0: 7.29.1
+  undici: 7.29.1
   next@<16.3.5: 16.3.5
   tar@<7.5.21: 7.5.21
   basic-ftp@<5.2.0: 5.2.0
@@ -12256,8 +12256,8 @@ packages:
   undici-types@8.10.2:
     resolution: {integrity: sha512-7/+aSjzkUoLc92hV22bTW4aGanXf800zbwguhcICs0OAoCF9wDOE4wkopQ+SqfhXZm8mCK8gHpdTs7pZUWzK3w==}
 
-  undici@7.29.0:
-    resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
+  undici@7.29.1:
+    resolution: {integrity: sha512-RYONW2MeafgYlkVOKYKkA/Ag7BmXqgIWCa8t1m0JcxrQg9pI9lEqRhAOruOBCbAohOa/gkCF+iPi9hrgvTzu6Q==}
     engines: {node: '>=20.18.1'}
 
   unenv@2.0.0-rc.24:
@@ -12942,7 +12942,7 @@ snapshots:
       '@standard-schema/spec': 1.1.0
       '@workflow/serde': 4.1.0
       eventsource-parser: 3.1.1
-      undici: 7.29.0
+      undici: 7.29.1
       zod: 4.6.5
 
   '@ai-sdk/provider@4.0.17':
@@ -16520,7 +16520,7 @@ snapshots:
     dependencies:
       '@scalar/helpers': 0.12.0
       pathe: 2.0.3
-      undici: 7.29.0
+      undici: 7.29.1
       yaml: 2.9.1
 
   '@scalar/json-schema-validator@0.1.2':
@@ -20693,7 +20693,7 @@ snapshots:
     dependencies:
       ai: 7.0.107(zod@4.6.5)
       nitro: 3.0.260903-beta
-      undici: 7.29.0
+      undici: 7.29.1
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
       microsandbox: 0.7.2
@@ -22118,7 +22118,7 @@ snapshots:
       parse5: 8.0.1
       saxes: 6.0.0
       tough-cookie: 6.0.2
-      undici: 7.29.0
+      undici: 7.29.1
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -25850,7 +25850,7 @@ snapshots:
 
   undici-types@8.10.2: {}
 
-  undici@7.29.0: {}
+  undici@7.29.1: {}
 
   unenv@2.0.0-rc.24:
     dependencies:
