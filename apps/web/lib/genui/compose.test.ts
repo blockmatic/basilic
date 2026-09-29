@@ -1,202 +1,263 @@
-import { describe, expect, it } from 'vitest'
-import { composeSurface } from './compose'
-import { specFromSelection } from './spec-from-selection'
-import { defaultSearchQuery, viewFromSearchQuery } from './view-config'
+import { describe, expect, it } from "vitest";
+
+import { composeSurface } from "./compose";
+import { specFromSelection } from "./spec-from-selection";
+import { defaultSearchQuery, viewFromSearchQuery } from "./view-config";
 
 function tableElement(spec: ReturnType<typeof composeSurface>) {
-  return Object.values(spec.elements).find(element => element.type === 'DataTable')
+  return Object.values(spec.elements).find(
+    (element) => element.type === "DataTable"
+  );
 }
 
-describe('composeSurface', () => {
-  it('binds the default table to $state.coins without spec repeat', () => {
+describe("composeSurface", () => {
+  it("binds the default table to $state.coins without spec repeat", () => {
     const spec = composeSurface({
-      view: viewFromSearchQuery({ query: defaultSearchQuery, title: 'Top coins' }),
-    })
-    const table = tableElement(spec)
-    expect(spec.root).toBe('board')
-    expect(table?.repeat).toBeUndefined()
-    expect(table?.children).toEqual([])
+      view: viewFromSearchQuery({
+        query: defaultSearchQuery,
+        title: "Top coins",
+      }),
+    });
+    const table = tableElement(spec);
+    expect(spec.root).toBe("board");
+    expect(table?.repeat).toBeUndefined();
+    expect(table?.children).toEqual([]);
     expect(table?.props).toMatchObject({
       columns: [
-        'rank',
-        'identity',
-        'price',
-        'change24h',
-        'spark7d',
-        'marketCap',
-        'volume',
-        'watch',
+        "rank",
+        "identity",
+        "price",
+        "change24h",
+        "spark7d",
+        "marketCap",
+        "volume",
+        "watch",
       ],
-    })
-  })
+    });
+  });
 
-  it('keeps a LineChart, DataTable, and no deferred chart honesty for surface=chart', () => {
+  it("keeps a LineChart, DataTable, and no deferred chart honesty for surface=chart", () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({
         query: defaultSearchQuery,
-        title: 'Top coins',
-        surface: 'chart',
+        title: "Top coins",
+        surface: "chart",
       }),
-    })
-    expect(tableElement(spec)?.repeat).toBeUndefined()
-    expect(Object.values(spec.elements).some(element => element.type === 'LineChart')).toBe(true)
-    expect(JSON.stringify(spec)).not.toContain('Charting lands next.')
-    expect(JSON.stringify(spec)).not.toContain('No Binance market')
-    expect(JSON.stringify(spec)).not.toMatch(/openTime/)
-  })
+    });
+    expect(tableElement(spec)?.repeat).toBeUndefined();
+    expect(
+      Object.values(spec.elements).some(
+        (element) => element.type === "LineChart"
+      )
+    ).toBe(true);
+    expect(JSON.stringify(spec)).not.toContain("Charting lands next.");
+    expect(JSON.stringify(spec)).not.toContain("No Binance market");
+    expect(JSON.stringify(spec)).not.toMatch(/openTime/);
+  });
 
-  it('uses movers columns when sortBy is change24h', () => {
+  it("uses movers columns when sortBy is change24h", () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({
-        query: { ...defaultSearchQuery, sortBy: 'change24h' },
-        title: 'What moved?',
+        query: { ...defaultSearchQuery, sortBy: "change24h" },
+        title: "What moved?",
       }),
-    })
+    });
     expect(tableElement(spec)?.props).toMatchObject({
-      columns: ['identity', 'price', 'change24h', 'spark7d', 'volume', 'watch'],
-    })
-  })
+      columns: ["identity", "price", "change24h", "spark7d", "volume", "watch"],
+    });
+  });
 
-  it('uses comparison columns for few symbols', () => {
+  it("uses comparison columns for few symbols", () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({
-        query: { ...defaultSearchQuery, symbols: ['btc', 'eth'] },
-        title: 'BTC vs ETH',
-        surface: 'comparison',
+        query: { ...defaultSearchQuery, symbols: ["btc", "eth"] },
+        title: "BTC vs ETH",
+        surface: "comparison",
       }),
-    })
+    });
     expect(tableElement(spec)?.props).toMatchObject({
-      columns: ['identity', 'price', 'change24h', 'spark7d', 'marketCap', 'watch'],
-    })
-  })
+      columns: [
+        "identity",
+        "price",
+        "change24h",
+        "spark7d",
+        "marketCap",
+        "watch",
+      ],
+    });
+  });
 
-  it('includes QuerySummary and DataTable for screener', () => {
+  it("includes QuerySummary and DataTable for screener", () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({
-        query: { ...defaultSearchQuery, universe: 'majors' },
-        title: 'Majors',
-        surface: 'screener',
+        query: { ...defaultSearchQuery, universe: "majors" },
+        title: "Majors",
+        surface: "screener",
       }),
-    })
-    expect(Object.values(spec.elements).some(element => element.type === 'QuerySummary')).toBe(true)
-    expect(tableElement(spec)?.type).toBe('DataTable')
-  })
+    });
+    expect(
+      Object.values(spec.elements).some(
+        (element) => element.type === "QuerySummary"
+      )
+    ).toBe(true);
+    expect(tableElement(spec)?.type).toBe("DataTable");
+  });
 
-  it('paints dashboard metrics, trending, and a table without honesty', () => {
+  it("paints dashboard metrics, trending, and a table without honesty", () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({
         query: defaultSearchQuery,
-        title: 'Market overview',
-        surface: 'dashboard',
+        title: "Market overview",
+        surface: "dashboard",
       }),
-    })
-    const types = Object.values(spec.elements).map(element => element.type)
-    expect(types).toContain('MetricTile')
-    expect(types).toContain('TrendingTable')
-    expect(types).toContain('DataTable')
-    expect(JSON.stringify(spec)).not.toContain('Dashboards come later')
+    });
+    const types = Object.values(spec.elements).map((element) => element.type);
+    expect(types).toContain("MetricTile");
+    expect(types).toContain("TrendingTable");
+    expect(types).toContain("DataTable");
+    expect(JSON.stringify(spec)).not.toContain("Dashboards come later");
     expect(spec.elements.board?.children).toEqual([
-      'summary',
-      'metric-btc-d',
-      'metric-market-cap',
-      'metric-volume',
-      'table-trending',
-      'table-ranked',
-    ])
-  })
+      "summary",
+      "metric-btc-d",
+      "metric-market-cap",
+      "metric-volume",
+      "table-trending",
+      "table-ranked",
+    ]);
+  });
 
-  it('paints account as UserInfo plus an empty-safe DataTable', () => {
+  it("paints account as UserInfo plus an empty-safe DataTable", () => {
     const spec = composeSurface({
       view: viewFromSearchQuery({
         query: defaultSearchQuery,
-        title: 'Account',
-        surface: 'account',
+        title: "Account",
+        surface: "account",
       }),
-    })
-    const userInfo = Object.values(spec.elements).find(element => element.type === 'UserInfo')
+    });
+    const userInfo = Object.values(spec.elements).find(
+      (element) => element.type === "UserInfo"
+    );
     expect(userInfo?.props).toMatchObject({
-      name: { $state: '/account/name' },
-      email: { $state: '/account/email' },
-      image: { $state: '/account/image' },
-      username: { $state: '/account/username' },
-      joinedAt: { $state: '/account/joinedAt' },
-    })
-    expect(tableElement(spec)?.repeat).toBeUndefined()
-    expect(JSON.stringify(spec)).toContain('Linked wallet tokens load live from Alchemy.')
-    expect(Object.values(spec.elements).some(element => element.type === 'TokenTable')).toBe(true)
-    expect(Object.values(spec.elements).some(element => element.type === 'NftGrid')).toBe(true)
-  })
+      name: { $state: "/account/name" },
+      email: { $state: "/account/email" },
+      image: { $state: "/account/image" },
+      username: { $state: "/account/username" },
+      joinedAt: { $state: "/account/joinedAt" },
+    });
+    expect(tableElement(spec)?.repeat).toBeUndefined();
+    expect(JSON.stringify(spec)).toContain(
+      "Linked wallet tokens load live from Alchemy."
+    );
+    expect(
+      Object.values(spec.elements).some(
+        (element) => element.type === "TokenTable"
+      )
+    ).toBe(true);
+    expect(
+      Object.values(spec.elements).some((element) => element.type === "NftGrid")
+    ).toBe(true);
+  });
 
-  it('drops unknown column ids and keeps the allowlist subset', () => {
+  it("drops unknown column ids and keeps the allowlist subset", () => {
     const spec = composeSurface({
       view: {
-        ...viewFromSearchQuery({ query: defaultSearchQuery, title: 'Custom' }),
-        columns: ['identity', 'nope', 'price'],
+        ...viewFromSearchQuery({ query: defaultSearchQuery, title: "Custom" }),
+        columns: ["identity", "nope", "price"],
       },
-    })
-    expect(tableElement(spec)?.props).toMatchObject({ columns: ['identity', 'price'] })
-  })
+    });
+    expect(tableElement(spec)?.props).toMatchObject({
+      columns: ["identity", "price"],
+    });
+  });
 
-  it('returns the same spec shape for the same query twice', () => {
+  it("returns the same spec shape for the same query twice", () => {
     const view = viewFromSearchQuery({
-      query: { ...defaultSearchQuery, sortBy: 'change24h' },
-      title: 'What moved?',
-      columns: ['identity', 'price'],
-    })
-    expect(composeSurface({ view })).toEqual(composeSurface({ view }))
-  })
-})
+      query: { ...defaultSearchQuery, sortBy: "change24h" },
+      title: "What moved?",
+      columns: ["identity", "price"],
+    });
+    expect(composeSurface({ view })).toEqual(composeSurface({ view }));
+  });
+});
 
-describe('specFromSelection', () => {
+describe("specFromSelection", () => {
   const view = viewFromSearchQuery({
-    query: { ...defaultSearchQuery, sortBy: 'change24h' },
-    title: 'What moved?',
-  })
+    query: { ...defaultSearchQuery, sortBy: "change24h" },
+    title: "What moved?",
+  });
 
-  it('rebuilds the same spec shape from the same elements', () => {
-    const elements = ['summary', 'table-movers']
-    expect(specFromSelection({ elements, view })).toEqual(specFromSelection({ elements, view }))
-    expect(tableElement(specFromSelection({ elements, view }))?.props).toMatchObject({
-      columns: ['identity', 'price', 'change24h', 'spark7d', 'volume', 'watch'],
-    })
-  })
+  it("rebuilds the same spec shape from the same elements", () => {
+    const elements = ["summary", "table-movers"];
+    expect(specFromSelection({ elements, view })).toEqual(
+      specFromSelection({ elements, view })
+    );
+    expect(
+      tableElement(specFromSelection({ elements, view }))?.props
+    ).toMatchObject({
+      columns: ["identity", "price", "change24h", "spark7d", "volume", "watch"],
+    });
+  });
 
-  it('falls back to composeSurface for empty or unknown ids', () => {
-    expect(specFromSelection({ elements: [], view })).toEqual(composeSurface({ view }))
-    expect(specFromSelection({ elements: ['nope'], view })).toEqual(composeSurface({ view }))
-  })
+  it("falls back to composeSurface for empty or unknown ids", () => {
+    expect(specFromSelection({ elements: [], view })).toEqual(
+      composeSurface({ view })
+    );
+    expect(specFromSelection({ elements: ["nope"], view })).toEqual(
+      composeSurface({ view })
+    );
+  });
 
-  it('falls back when the selection has no DataTable recipe', () => {
-    expect(specFromSelection({ elements: ['summary', 'account'], view })).toEqual(
-      composeSurface({ view }),
-    )
-  })
+  it("falls back when the selection has no DataTable recipe", () => {
+    expect(
+      specFromSelection({ elements: ["summary", "account"], view })
+    ).toEqual(composeSurface({ view }));
+  });
 
-  it('restores overview recipes without a DataTable', () => {
+  it("restores overview recipes without a DataTable", () => {
     const spec = specFromSelection({
-      elements: ['summary', 'metric-btc-d', 'table-trending'],
+      elements: ["summary", "metric-btc-d", "table-trending"],
       view,
-    })
-    expect(Object.values(spec.elements).some(element => element.type === 'MetricTile')).toBe(true)
-    expect(Object.values(spec.elements).some(element => element.type === 'TrendingTable')).toBe(
-      true,
-    )
-  })
+    });
+    expect(
+      Object.values(spec.elements).some(
+        (element) => element.type === "MetricTile"
+      )
+    ).toBe(true);
+    expect(
+      Object.values(spec.elements).some(
+        (element) => element.type === "TrendingTable"
+      )
+    ).toBe(true);
+  });
 
-  it('restores a chart recipe without embedding series', () => {
-    const spec = specFromSelection({ elements: ['summary', 'chart-line', 'table-ranked'], view })
-    expect(Object.values(spec.elements).some(element => element.type === 'LineChart')).toBe(true)
-    expect(JSON.stringify(spec)).not.toMatch(/openTime/)
-  })
+  it("restores a chart recipe without embedding series", () => {
+    const spec = specFromSelection({
+      elements: ["summary", "chart-line", "table-ranked"],
+      view,
+    });
+    expect(
+      Object.values(spec.elements).some(
+        (element) => element.type === "LineChart"
+      )
+    ).toBe(true);
+    expect(JSON.stringify(spec)).not.toMatch(/openTime/);
+  });
 
-  it('injects a chart recipe when surface is chart and selection omitted it', () => {
+  it("injects a chart recipe when surface is chart and selection omitted it", () => {
     const chartView = viewFromSearchQuery({
       query: defaultSearchQuery,
-      title: 'Chart',
-      surface: 'chart',
-      chart: 'area',
-    })
-    const spec = specFromSelection({ elements: ['summary', 'table-ranked'], view: chartView })
-    expect(Object.values(spec.elements).some(element => element.type === 'AreaChart')).toBe(true)
-  })
-})
+      title: "Chart",
+      surface: "chart",
+      chart: "area",
+    });
+    const spec = specFromSelection({
+      elements: ["summary", "table-ranked"],
+      view: chartView,
+    });
+    expect(
+      Object.values(spec.elements).some(
+        (element) => element.type === "AreaChart"
+      )
+    ).toBe(true);
+  });
+});

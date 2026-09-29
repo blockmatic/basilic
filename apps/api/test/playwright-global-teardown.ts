@@ -3,4 +3,4 @@ async function globalTeardown() {
 }
 
 // Playwright requires default export for globalTeardown
-export default globalTeardown
+export default globalTeardown;

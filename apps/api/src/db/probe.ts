@@ -1,18 +1,18 @@
-import { getDb } from '@repo/db'
-import { sql } from 'drizzle-orm'
+import { getDb } from "@repo/db";
+import { sql } from "drizzle-orm";
 
 export const dbHealth = {
   async probe(): Promise<boolean> {
     try {
-      const db = await getDb()
-      await db.execute(sql`select 1`)
-      return true
+      const db = await getDb();
+      await db.execute(sql`select 1`);
+      return true;
     } catch {
-      return false
+      return false;
     }
   },
-}
+};
 
 export async function probeDb(): Promise<boolean> {
-  return dbHealth.probe()
+  return dbHealth.probe();
 }

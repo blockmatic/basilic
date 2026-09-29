@@ -1,65 +1,77 @@
-import { assets } from '@repo/db/schema'
-import { getMarkets, type MarketRow, type Provenance } from '@repo/markets'
-import { eq } from 'drizzle-orm'
-import { type CoinsDb, seedIdentityIfEmpty } from './seed.js'
+import { assets } from "@repo/db/schema";
+import { getMarkets } from "@repo/markets";
+import type { MarketRow, Provenance } from "@repo/markets";
+import { eq } from "drizzle-orm";
 
-const coinGeckoAttribution = 'Data by CoinGecko'
+import { seedIdentityIfEmpty } from "./seed.js";
+import type { CoinsDb } from "./seed.js";
+
+const coinGeckoAttribution = "Data by CoinGecko";
 
 function toCoinDto({
   asset,
   quote,
 }: {
-  asset: { id: string; symbol: string; name: string; imageUrl: string | null }
-  quote: MarketRow
+  asset: { id: string; symbol: string; name: string; imageUrl: string | null };
+  quote: MarketRow;
 }) {
   return {
-    id: asset.id,
-    symbol: asset.symbol,
-    name: asset.name,
-    imageUrl: asset.imageUrl ?? quote.imageUrl,
-    priceUsd: quote.priceUsd,
     change24h: quote.change24h,
     change7d: quote.change7d,
-    sparkline7d: quote.sparkline7d,
-    volumeUsd: quote.volumeUsd,
-    marketCapUsd: quote.marketCapUsd,
-    rank: quote.rank,
     fetchedAt: quote.fetchedAt,
-  }
+    id: asset.id,
+    imageUrl: asset.imageUrl ?? quote.imageUrl,
+    marketCapUsd: quote.marketCapUsd,
+    name: asset.name,
+    priceUsd: quote.priceUsd,
+    rank: quote.rank,
+    sparkline7d: quote.sparkline7d,
+    symbol: asset.symbol,
+    volumeUsd: quote.volumeUsd,
+  };
 }
 
-function toSync({ source, markets }: { source: Provenance; markets: MarketRow[] }) {
+function toSync({
+  source,
+  markets,
+}: {
+  source: Provenance;
+  markets: MarketRow[];
+}) {
   const fetchedAt =
-    source === 'fixture'
+    source === "fixture"
       ? null
-      : (markets.find(row => row.fetchedAt)?.fetchedAt ?? new Date().toISOString())
+      : (markets.find((row) => row.fetchedAt)?.fetchedAt ??
+        new Date().toISOString());
   return {
-    source,
     fetchedAt,
     lastError: null,
-    ...(source === 'stale' ? { stale: true } : {}),
-    ...(source === 'live' ? { attribution: coinGeckoAttribution } : {}),
-  }
+    source,
+    ...(source === "stale" ? { stale: true } : {}),
+    ...(source === "live" ? { attribution: coinGeckoAttribution } : {}),
+  };
 }
 
 export async function listMarkets({ db }: { db: CoinsDb }) {
-  await seedIdentityIfEmpty({ db })
+  await seedIdentityIfEmpty({ db });
 
-  const rows = await db.select().from(assets).where(eq(assets.enabled, true))
-  const ids = rows.map(row => row.id)
+  const rows = await db.select().from(assets).where(eq(assets.enabled, true));
+  const ids = rows.map((row) => row.id);
   const { markets, source } = await getMarkets({
     ids,
     sparkline: true,
     topN: ids.length || undefined,
-  })
-  const quotes = new Map(markets.map(quote => [quote.id, quote]))
+  });
+  const quotes = new Map(markets.map((quote) => [quote.id, quote]));
   const coins = rows
-    .flatMap(asset => {
-      const quote = quotes.get(asset.id)
-      if (!quote) return []
-      return [toCoinDto({ asset, quote })]
+    .flatMap((asset) => {
+      const quote = quotes.get(asset.id);
+      if (!quote) {
+        return [];
+      }
+      return [toCoinDto({ asset, quote })];
     })
-    .sort((a, b) => a.rank - b.rank || a.id.localeCompare(b.id))
+    .sort((a, b) => a.rank - b.rank || a.id.localeCompare(b.id));
 
-  return { coins, sync: toSync({ source, markets }) }
+  return { coins, sync: toSync({ markets, source }) };
 }

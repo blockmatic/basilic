@@ -21,7 +21,7 @@ There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store,
 ## Routes
 
 | Route | Use case | Response |
-|-------|----------|----------|
+| --- | --- | --- |
 | `POST /ai/generate` | CLI, scripts, single prompt | JSON `{ text }` or UI-message SSE |
 
 Bearer auth is required (session JWT or API key). Set `Accept: text/event-stream` or `stream: true` for SSE. Generate is prompt-only (no tools). Interactive Chat is the eve `chat` agent — [Eve](/docs/architecture/eve). Fastify does not expose `POST /ai/chat`.
@@ -48,7 +48,7 @@ Eve Chat sanitizes inbound session payloads: client `{ role: 'system' }` message
 ## Environment variables
 
 | Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
+| --- | --- | --- | --- |
 | `AI_GATEWAY_API_KEY` | Conditional | — | Vercel AI Gateway. Unset (and no OIDC) yields 500 on generate |
 | `VERCEL_OIDC_TOKEN` | Conditional | — | Vercel injects this on deploy; same Gateway auth as the key |
 | `AI_DEFAULT_MODEL` | No | `anthropic/claude-haiku-4.5` | Gateway model id |

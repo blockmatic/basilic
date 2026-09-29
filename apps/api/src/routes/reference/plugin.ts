@@ -1,77 +1,87 @@
-import type { FastifyPluginAsync } from 'fastify'
+import type { FastifyPluginAsync } from "fastify";
+
 import {
   applyAgentDiscoveryHeaders,
   getRequestOrigin,
   negotiateAccept,
   renderReferenceMarkdown,
-} from '../../lib/agent/index.js'
-import { sendOpenApiDocument } from '../../lib/openapi-document.js'
-import { verifyMagicLinkAndIssueToken } from '../auth/magiclink/verify.js'
-import { getReferenceHtml } from './template.js'
+} from "../../lib/agent/index.js";
+import { sendOpenApiDocument } from "../../lib/openapi-document.js";
+import { verifyMagicLinkAndIssueToken } from "../auth/magiclink/verify.js";
+import { getReferenceHtml } from "./template.js";
 
-const referenceRoutes: FastifyPluginAsync = async fastify => {
+const referenceRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
-    '/openapi.json',
+    "/openapi.json",
     {
       schema: {
         hide: true,
-        tags: ['public'],
         security: [],
+        tags: ["public"],
       },
     },
-    async (request, reply) => sendOpenApiDocument({ fastify, request, reply }),
-  )
+    async (request, reply) => sendOpenApiDocument({ fastify, reply, request })
+  );
 
   fastify.get(
-    '/',
+    "/",
     {
       schema: {
         hide: true,
-        tags: ['public'],
         security: [],
+        tags: ["public"],
       },
     },
     async (request, reply) => {
-      const origin = getRequestOrigin({ request })
-      const openApiUrl = `${origin}/openapi.json`
-      const callbackUrl = `${origin}/reference`
+      const origin = getRequestOrigin({ request });
+      const openApiUrl = `${origin}/openapi.json`;
+      const callbackUrl = `${origin}/reference`;
 
-      const query = request.query as { token?: string; verificationId?: string }
-      const { token: urlToken, verificationId } = query
+      const query = request.query as {
+        token?: string;
+        verificationId?: string;
+      };
+      const { token: urlToken, verificationId } = query;
       const wantsMarkdown =
         negotiateAccept({
           acceptHeader:
-            typeof request.headers.accept === 'string' ? request.headers.accept : undefined,
-        }) === 'markdown'
+            typeof request.headers.accept === "string"
+              ? request.headers.accept
+              : undefined,
+        }) === "markdown";
       if (wantsMarkdown && !urlToken && !verificationId) {
-        applyAgentDiscoveryHeaders({ reply })
+        applyAgentDiscoveryHeaders({ reply });
         return reply
-          .type('text/markdown; charset=utf-8')
-          .send(renderReferenceMarkdown({ openApiUrl }))
+          .type("text/markdown; charset=utf-8")
+          .send(renderReferenceMarkdown({ openApiUrl }));
       }
 
-      let jwtToken: string | null = null
+      let jwtToken: string | null = null;
       if (urlToken && verificationId) {
         const result = await verifyMagicLinkAndIssueToken(fastify, request, {
           token: urlToken,
           verificationId,
-        })
-        if (result && 'collision' in result)
-          return reply.code(500).type('text/plain').send('Authentication failed')
-        jwtToken = result?.accessToken ?? null
+        });
+        if (result && "collision" in result) {
+          return reply
+            .code(500)
+            .type("text/plain")
+            .send("Authentication failed");
+        }
+        jwtToken = result?.accessToken ?? null;
       }
 
       const html = getReferenceHtml({
         apiUrl: origin,
-        openApiUrl,
         callbackUrl,
         jwtToken,
+        openApiUrl,
         verificationId: jwtToken ? undefined : (verificationId ?? undefined),
-      })
-      return reply.type('text/html').send(html)
-    },
-  )
-}
+      });
+      return reply.type("text/html").send(html);
+    }
+  );
+};
 
-export default referenceRoutes
-export const prefixOverride = '/reference'
+export default referenceRoutes;
+export const prefixOverride = "/reference";

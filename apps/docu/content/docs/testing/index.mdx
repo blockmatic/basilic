@@ -11,7 +11,6 @@ The adopter bar is [Product Ready](/docs/testing/product-ready): generate-and-ru
 
 ## API Vitest layout
 
-
 PGLite does not support concurrent writers. API Vitest runs with `fileParallelism: false`, `maxWorkers: 1`, and `sequence.concurrent: false`. Between group entry files, `cleanupGroupDatabase()` truncates all 15 schema tables and clears the JWT session pool.
 
 ## Assertion rule

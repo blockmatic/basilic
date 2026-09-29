@@ -1,3 +1,10 @@
 {
-  "pages": ["index", "architecture", "development", "testing", "deployment", "adrs"]
+  "pages": [
+    "index",
+    "architecture",
+    "development",
+    "testing",
+    "deployment",
+    "adrs"
+  ]
 }

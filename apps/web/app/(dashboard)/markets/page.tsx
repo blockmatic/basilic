@@ -1,6 +1,9 @@
-import type { SearchParams } from 'nuqs/server'
-import Home from '../(news)/page'
+import type { SearchParams } from "nuqs/server";
 
-export default async function MarketsPage(props: { searchParams: Promise<SearchParams> }) {
-  return Home(props)
+import Home from "../(news)/page";
+
+export default async function MarketsPage(props: {
+  searchParams: Promise<SearchParams>;
+}) {
+  return Home(props);
 }

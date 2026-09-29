@@ -1,16 +1,23 @@
-import { render as reactEmailRender } from '@react-email/render'
-import React, { type ReactNode } from 'react'
+import { render as reactEmailRender } from "@react-email/render";
+import React from "react";
+import type { ReactNode } from "react";
 
 const ensureReactGlobal = () => {
-  if (typeof globalThis === 'undefined') return
+  if (typeof globalThis === "undefined") {
+    return;
+  }
 
-  const globalScope = globalThis as typeof globalThis & { React?: typeof React }
-  if (!globalScope.React) globalScope.React = React
-}
+  const globalScope = globalThis as typeof globalThis & {
+    React?: typeof React;
+  };
+  if (!globalScope.React) {
+    globalScope.React = React;
+  }
+};
 
 // Ensure React is available globally at module load time
 // This provides a defensive measure in case components are evaluated before render() is called
-ensureReactGlobal()
+ensureReactGlobal();
 
 /**
  * Renders an email template component to an HTML string.
@@ -59,8 +66,11 @@ ensureReactGlobal()
  */
 export const render = async (
   component: ReactNode,
-  options?: { plainText?: boolean },
+  options?: { plainText?: boolean }
 ): Promise<string> => {
-  ensureReactGlobal()
-  return reactEmailRender(component, options?.plainText ? { plainText: true } : undefined)
-}
+  ensureReactGlobal();
+  return reactEmailRender(
+    component,
+    options?.plainText ? { plainText: true } : undefined
+  );
+};

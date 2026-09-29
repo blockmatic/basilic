@@ -1,14 +1,20 @@
-import { generate as DefaultImage } from 'fumadocs-ui/og'
-import { notFound } from 'next/navigation'
-import { ImageResponse } from 'next/og'
-import { getPageImage, source } from '@/lib/source'
+import { generate as DefaultImage } from "fumadocs-ui/og";
+import { notFound } from "next/navigation";
+import { ImageResponse } from "next/og";
 
-export const revalidate = false
+import { getPageImage, source } from "@/lib/source";
 
-export async function GET(_req: Request, { params }: { params: Promise<{ slug: string[] }> }) {
-  const { slug } = await params
-  const page = source.getPage(slug.slice(0, -1))
-  if (!page) notFound()
+export const revalidate = false;
+
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ slug: string[] }> }
+) {
+  const { slug } = await params;
+  const page = source.getPage(slug.slice(0, -1));
+  if (!page) {
+    notFound();
+  }
 
   return new ImageResponse(
     <DefaultImage
@@ -18,14 +24,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
       primaryColor="#2dd4a8"
     />,
     {
-      width: 1200,
       height: 630,
-    },
-  )
+      width: 1200,
+    }
+  );
 }
 
 export function generateStaticParams() {
-  return source.getPages().map(page => ({
+  return source.getPages().map((page) => ({
     slug: getPageImage(page).segments,
-  }))
+  }));
 }

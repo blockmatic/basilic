@@ -1,87 +1,102 @@
-import { spawnSync } from 'node:child_process'
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { mkdtemp } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
-import { repoRootFromPackage } from '../paths.js'
+import { spawnSync } from "node:child_process";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
-describe('assert-generated-tree', () => {
-  it('rejects leftover .agents/skills/b beside playbooks', async () => {
-    const dest = await mkdtemp(join(tmpdir(), 'assert-generated-tree-'))
-    mkdirSync(join(dest, '.agents/skills/b'), { recursive: true })
-    mkdirSync(join(dest, '.agents/skills/w-plan'), { recursive: true })
-    writeFileSync(join(dest, '.agents/skills/b/SKILL.md'), 'legacy\n')
-    writeFileSync(join(dest, '.agents/skills/w-plan/SKILL.md'), 'w-plan\n')
+import { describe, expect, it } from "vitest";
+
+import { repoRootFromPackage } from "../paths.js";
+
+describe("assert-generated-tree", () => {
+  it("rejects leftover .agents/skills/b beside playbooks", async () => {
+    const dest = await mkdtemp(join(tmpdir(), "assert-generated-tree-"));
+    mkdirSync(join(dest, ".agents/skills/b"), { recursive: true });
+    mkdirSync(join(dest, ".agents/skills/w-plan"), { recursive: true });
+    writeFileSync(join(dest, ".agents/skills/b/SKILL.md"), "legacy\n");
+    writeFileSync(join(dest, ".agents/skills/w-plan/SKILL.md"), "w-plan\n");
     const result = spawnSync(
-      'node',
-      [join(repoRootFromPackage, 'scripts/assert-generated-tree.mjs'), dest],
-      { encoding: 'utf8' },
-    )
-    expect(result.status).toBe(1)
-    expect(result.stderr).toContain('Forbidden path present: .agents/skills/b')
-  })
+      "node",
+      [join(repoRootFromPackage, "scripts/assert-generated-tree.mjs"), dest],
+      { encoding: "utf8" }
+    );
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("Forbidden path present: .agents/skills/b");
+  });
 
-  it('rejects an unsupported GitHub catalog in skills-lock.json', async () => {
-    const dest = await mkdtemp(join(tmpdir(), 'assert-generated-tree-lock-'))
+  it("rejects an unsupported GitHub catalog in skills-lock.json", async () => {
+    const dest = await mkdtemp(join(tmpdir(), "assert-generated-tree-lock-"));
     writeFileSync(
-      join(dest, 'skills-lock.json'),
+      join(dest, "skills-lock.json"),
       `${JSON.stringify({
         version: 1,
         skills: {
-          'w-plan': { source: 'blockmatic/basilic-skills', sourceType: 'github' },
-          other: { source: 'example/unknown-catalog', sourceType: 'github' },
+          "w-plan": {
+            source: "blockmatic/basilic-skills",
+            sourceType: "github",
+          },
+          other: { source: "example/unknown-catalog", sourceType: "github" },
         },
-      })}\n`,
-    )
+      })}\n`
+    );
     const result = spawnSync(
-      'node',
-      [join(repoRootFromPackage, 'scripts/assert-generated-tree.mjs'), dest],
-      { encoding: 'utf8' },
-    )
-    expect(result.status).toBe(1)
-    expect(result.stderr).toContain('unsupported catalogs (example/unknown-catalog)')
-  })
+      "node",
+      [join(repoRootFromPackage, "scripts/assert-generated-tree.mjs"), dest],
+      { encoding: "utf8" }
+    );
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(
+      "unsupported catalogs (example/unknown-catalog)"
+    );
+  });
 
-  it('does not treat allowed extra catalogs as unsupported', async () => {
-    const dest = await mkdtemp(join(tmpdir(), 'assert-generated-tree-allowed-'))
+  it("does not treat allowed extra catalogs as unsupported", async () => {
+    const dest = await mkdtemp(
+      join(tmpdir(), "assert-generated-tree-allowed-")
+    );
     writeFileSync(
-      join(dest, 'skills-lock.json'),
+      join(dest, "skills-lock.json"),
       `${JSON.stringify({
         version: 1,
         skills: {
-          workflow: { source: 'blockmatic/basilic-skills', sourceType: 'github' },
-          'react-email': { source: 'resend/react-email', sourceType: 'github' },
-          'ai-sdk': { source: 'vercel/ai', sourceType: 'github' },
+          workflow: {
+            source: "blockmatic/basilic-skills",
+            sourceType: "github",
+          },
+          "react-email": { source: "resend/react-email", sourceType: "github" },
+          "ai-sdk": { source: "vercel/ai", sourceType: "github" },
         },
-      })}\n`,
-    )
+      })}\n`
+    );
     const result = spawnSync(
-      'node',
-      [join(repoRootFromPackage, 'scripts/assert-generated-tree.mjs'), dest],
-      { encoding: 'utf8' },
-    )
-    expect(result.stderr).not.toContain('unsupported catalogs')
-  })
+      "node",
+      [join(repoRootFromPackage, "scripts/assert-generated-tree.mjs"), dest],
+      { encoding: "utf8" }
+    );
+    expect(result.stderr).not.toContain("unsupported catalogs");
+  });
 
-  it('rejects mattpocock/skills in skills-lock.json', async () => {
-    const dest = await mkdtemp(join(tmpdir(), 'assert-generated-tree-matt-'))
+  it("rejects mattpocock/skills in skills-lock.json", async () => {
+    const dest = await mkdtemp(join(tmpdir(), "assert-generated-tree-matt-"));
     writeFileSync(
-      join(dest, 'skills-lock.json'),
+      join(dest, "skills-lock.json"),
       `${JSON.stringify({
         version: 1,
         skills: {
-          'w-plan': { source: 'blockmatic/basilic-skills', sourceType: 'github' },
-          'grill-me': { source: 'mattpocock/skills', sourceType: 'github' },
+          "w-plan": {
+            source: "blockmatic/basilic-skills",
+            sourceType: "github",
+          },
+          "grill-me": { source: "mattpocock/skills", sourceType: "github" },
         },
-      })}\n`,
-    )
+      })}\n`
+    );
     const result = spawnSync(
-      'node',
-      [join(repoRootFromPackage, 'scripts/assert-generated-tree.mjs'), dest],
-      { encoding: 'utf8' },
-    )
-    expect(result.status).toBe(1)
-    expect(result.stderr).toContain('unsupported catalogs (mattpocock/skills)')
-  })
-})
+      "node",
+      [join(repoRootFromPackage, "scripts/assert-generated-tree.mjs"), dest],
+      { encoding: "utf8" }
+    );
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("unsupported catalogs (mattpocock/skills)");
+  });
+});

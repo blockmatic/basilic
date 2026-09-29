@@ -1,25 +1,39 @@
 /** @type {import('next').NextConfig} */
 
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { withSentryConfig } from '@sentry/nextjs'
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url))
+import { withSentryConfig } from "@sentry/nextjs";
+
+const scriptDir = import.meta.dirname;
 
 function prependEveUsingLoader(rules) {
   for (const rule of rules ?? []) {
-    if (rule.oneOf) prependEveUsingLoader(rule.oneOf)
-    if (rule.rules) prependEveUsingLoader(rule.rules)
-    const uses = Array.isArray(rule.use) ? rule.use : rule.use ? [rule.use] : []
-    const hasSwc = uses.some(entry => {
-      const loader = typeof entry === 'string' ? entry : entry?.loader
-      return typeof loader === 'string' && loader.includes('next-swc-loader')
-    })
-    if (!hasSwc) continue
+    if (rule.oneOf) {
+      prependEveUsingLoader(rule.oneOf);
+    }
+    if (rule.rules) {
+      prependEveUsingLoader(rule.rules);
+    }
+    const uses = Array.isArray(rule.use)
+      ? rule.use
+      : rule.use
+        ? [rule.use]
+        : [];
+    const hasSwc = uses.some((entry) => {
+      const loader = typeof entry === "string" ? entry : entry?.loader;
+      return typeof loader === "string" && loader.includes("next-swc-loader");
+    });
+    if (!hasSwc) {
+      continue;
+    }
     rule.use = [
-      { loader: path.join(scriptDir, 'webpack/eve-using-loader.cjs'), ident: 'eve-using' },
+      {
+        ident: "eve-using",
+        loader: path.join(scriptDir, "webpack/eve-using-loader.cjs"),
+      },
       ...(Array.isArray(rule.use) ? rule.use : [rule.use]),
-    ]
+    ];
   }
 }
 
@@ -28,124 +42,148 @@ function prependEveUsingLoader(rules) {
 // - Production: basilic-fastify.vercel.app (or basilic-fastify-gaboesquivel.vercel.app)
 // - Preview (commit): basilic-fastify-{hash}-gaboesquivel.vercel.app
 // - Preview (branch): basilic-fastify-git-{branch}-gaboesquivel.vercel.app
-const apiProjectName = 'basilic-fastify'
-const teamSlug = 'gaboesquivel'
+const apiProjectName = "basilic-fastify";
+const teamSlug = "gaboesquivel";
 
 function toBranchSlug(ref) {
   return ref
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 63)
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/-+/g, "-")
+    .replaceAll(/^-|-$/g, "")
+    .slice(0, 63);
 }
 
 function getApiUrl() {
-  const explicit = process.env.NEXT_PUBLIC_API_URL
-  if (explicit) return explicit
+  const explicit = process.env.NEXT_PUBLIC_API_URL;
+  if (explicit) {
+    return explicit;
+  }
 
-  const vercelEnv = process.env.VERCEL_ENV
-  const branch = process.env.VERCEL_GIT_COMMIT_REF
+  const vercelEnv = process.env.VERCEL_ENV;
+  const branch = process.env.VERCEL_GIT_COMMIT_REF;
 
   if (!vercelEnv || !branch) {
-    const missing = []
-    if (!vercelEnv) missing.push('VERCEL_ENV')
-    if (!branch) missing.push('VERCEL_GIT_COMMIT_REF')
+    const missing = [];
+    if (!vercelEnv) {
+      missing.push("VERCEL_ENV");
+    }
+    if (!branch) {
+      missing.push("VERCEL_GIT_COMMIT_REF");
+    }
     // biome-ignore lint/suspicious/noConsole: build-time warning for URL resolution
     console.warn(
-      `[next.config] getApiUrl: cannot resolve API URL: ${missing.join(' and ')} must be set (vercelEnv=${vercelEnv ?? 'undefined'}, branch=${branch ?? 'undefined'})`,
-    )
-    return undefined
+      `[next.config] getApiUrl: cannot resolve API URL: ${missing.join(" and ")} must be set (vercelEnv=${vercelEnv ?? "undefined"}, branch=${branch ?? "undefined"})`
+    );
+    return;
   }
 
-  const isProductionBranch = vercelEnv === 'production' || branch === 'main' || branch === 'develop'
+  const isProductionBranch =
+    vercelEnv === "production" || branch === "main" || branch === "develop";
   if (isProductionBranch) {
-    const msg = `[next.config] getApiUrl: NEXT_PUBLIC_API_URL must be configured for production/main/develop deployments (vercelEnv=${vercelEnv}, branch=${branch})`
+    const msg = `[next.config] getApiUrl: NEXT_PUBLIC_API_URL must be configured for production/main/develop deployments (vercelEnv=${vercelEnv}, branch=${branch})`;
     // biome-ignore lint/suspicious/noConsole: build-time error
-    console.error(msg)
-    throw new Error(msg)
+    console.error(msg);
+    throw new Error(msg);
   }
 
-  const hostname = `${apiProjectName}-git-${toBranchSlug(branch)}-${teamSlug}.vercel.app`
-  const labels = hostname.split('.')
-  if (labels.some(label => label.length === 0 || label.length > 63)) {
-    const msg = `[next.config] getApiUrl: derived preview hostname is invalid (a DNS label exceeds 63 characters): ${hostname}. Set NEXT_PUBLIC_API_URL explicitly.`
+  const hostname = `${apiProjectName}-git-${toBranchSlug(branch)}-${teamSlug}.vercel.app`;
+  const labels = hostname.split(".");
+  if (labels.some((label) => label.length === 0 || label.length > 63)) {
+    const msg = `[next.config] getApiUrl: derived preview hostname is invalid (a DNS label exceeds 63 characters): ${hostname}. Set NEXT_PUBLIC_API_URL explicitly.`;
     // biome-ignore lint/suspicious/noConsole: build-time error
-    console.error(msg)
-    throw new Error(msg)
+    console.error(msg);
+    throw new Error(msg);
   }
 
-  const url = `https://${hostname}`
+  const url = `https://${hostname}`;
 
   if (process.env.VERCEL)
-    // biome-ignore lint/suspicious/noConsole: build-time debug for Vercel build logs
-    console.log('[next.config] NEXT_PUBLIC_API_URL:', url)
+  // biome-ignore lint/suspicious/noConsole: build-time debug for Vercel build logs
+  {
+    console.log("[next.config] NEXT_PUBLIC_API_URL:", url);
+  }
 
-  return url
+  return url;
 }
 
-const apiUrl = process.env.VERCEL ? getApiUrl() : undefined
+const apiUrl = process.env.VERCEL ? getApiUrl() : undefined;
 
 const nextConfig = {
-  allowedDevOrigins: ['basilic.localhost', '*.basilic.localhost', 'api.basilic.localhost'],
+  allowedDevOrigins: [
+    "basilic.localhost",
+    "*.basilic.localhost",
+    "api.basilic.localhost",
+  ],
   // Next 16.3 defaults to the TypeScript CLI (`typescript/bin/tsc`). The dual-package
   // alias (`typescript` → @typescript/typescript6) only ships `tsc6` + the compiler API.
   experimental: {
+    optimizePackageImports: ["lucide-react", "ahooks", "@web3icons/react"],
     useTypeScriptCli: false,
-    optimizePackageImports: ['lucide-react', 'ahooks', '@web3icons/react'],
   },
   ...(apiUrl !== undefined && {
     env: { NEXT_PUBLIC_API_URL: apiUrl },
   }),
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'assets.coingecko.com', pathname: '/coins/**' },
-      { protocol: 'https', hostname: 'coin-images.coingecko.com', pathname: '/coins/**' },
+      {
+        hostname: "assets.coingecko.com",
+        pathname: "/coins/**",
+        protocol: "https",
+      },
+      {
+        hostname: "coin-images.coingecko.com",
+        pathname: "/coins/**",
+        protocol: "https",
+      },
     ],
   },
   async redirects() {
     return [
-      { source: '/dashboard', destination: '/', permanent: true },
-      { source: '/markets', destination: '/', permanent: false },
-    ]
+      { destination: "/", permanent: true, source: "/dashboard" },
+      { destination: "/", permanent: false, source: "/markets" },
+    ];
   },
   transpilePackages: [
-    '@repo/ui',
-    '@repo/core',
-    '@repo/react',
-    '@repo/error',
-    '@repo/utils',
-    'ai',
-    'eventsource-parser',
+    "@repo/ui",
+    "@repo/core",
+    "@repo/react",
+    "@repo/error",
+    "@repo/utils",
+    "ai",
+    "eventsource-parser",
     // ESM-only unist/mdast deps for react-markdown
-    'mdast-util-from-markdown',
-    'unist-util-is',
-    'unist-util-stringify-position',
-    'unist-util-visit-parents',
+    "mdast-util-from-markdown",
+    "unist-util-is",
+    "unist-util-stringify-position",
+    "unist-util-visit-parents",
   ],
-  serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
+  serverExternalPackages: ["import-in-the-middle", "require-in-the-middle"],
   // Turbopack: resolveExtensionAlias is not available in Next 16.3.5; scripts use --webpack until it is.
   // Webpack: Pattern B `source` exports and `.js` → `.ts` for workspace + instrumentation imports.
-  webpack: config => {
-    config.resolve.conditionNames = [...(config.resolve.conditionNames ?? []), 'source']
-    const existingExtensionAlias = config.resolve.extensionAlias || {}
+  webpack: (config) => {
+    config.resolve.conditionNames = [
+      ...(config.resolve.conditionNames ?? []),
+      "source",
+    ];
+    const existingExtensionAlias = config.resolve.extensionAlias || {};
     config.resolve.extensionAlias = {
       ...existingExtensionAlias,
-      '.js': ['.ts', '.tsx', '.js', '.jsx'],
-      '.jsx': ['.tsx', '.jsx'],
-    }
+      ".js": [".ts", ".tsx", ".js", ".jsx"],
+      ".jsx": [".tsx", ".jsx"],
+    };
     // eve 0.63 ships `using` in eve/react; Next webpack SWC does not parse it yet.
     // eve 0.63 ships `using` in eve/react; Next webpack SWC does not parse it yet.
-    prependEveUsingLoader(config.module.rules)
-    return config
+    prependEveUsingLoader(config.module.rules);
+    return config;
   },
-}
+};
 
 export default process.env.SENTRY_AUTH_TOKEN
   ? withSentryConfig(nextConfig, {
-      org: process.env.SENTRY_ORG ?? 'placeholder',
-      project: process.env.SENTRY_PROJECT ?? 'placeholder',
       authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: process.env.SENTRY_ORG ?? "placeholder",
+      project: process.env.SENTRY_PROJECT ?? "placeholder",
       silent: !process.env.CI,
     })
-  : nextConfig
+  : nextConfig;

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 /**
  * Zod schema for validating chain type strings.
@@ -13,17 +13,17 @@ import { z } from 'zod'
  * ```
  */
 export const chainTypeSchema = z.enum([
-  'evm',
-  'solana',
-  'cosmos',
-  'bitcoin',
-  'flow',
-  'starknet',
-  'algorand',
-  'sui',
-  'spark',
-  'tron',
-])
+  "evm",
+  "solana",
+  "cosmos",
+  "bitcoin",
+  "flow",
+  "starknet",
+  "algorand",
+  "sui",
+  "spark",
+  "tron",
+]);
 
 /**
  * TypeScript type for chain types.
@@ -35,4 +35,4 @@ export const chainTypeSchema = z.enum([
  * const chainType: ChainType = 'evm'
  * ```
  */
-export type ChainType = z.infer<typeof chainTypeSchema>
+export type ChainType = z.infer<typeof chainTypeSchema>;

@@ -38,7 +38,7 @@ jobs:
       - name: Assemble template
         if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
         env:
-          CREATE_BASILIC_LOCKFILE: '1'
+          CREATE_BASILIC_LOCKFILE: "1"
           CREATE_BASILIC_TEMPLATE_DIR: ${{ runner.temp }}/basilic-template
         run: pnpm --filter create-basilic assemble
 

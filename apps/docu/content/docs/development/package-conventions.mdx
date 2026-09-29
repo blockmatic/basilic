@@ -12,7 +12,7 @@ This repository is a pnpm workspace with these top-level groups:
 ```text
 apps/       # product apps (Next.js, Fastify, docs site)
 packages/   # shared libraries published as @repo/*
-tools/      # shared tooling (eslint, typescript config, etc.)
+tools/      # shared tooling (typescript config, create-basilic, etc.)
 ```
 
 ## Package layout
@@ -82,9 +82,9 @@ The **HTTP boundary** is defined by Fastify route schemas (TypeBox). The OpenAPI
 
 **What goes here**
 
-* Route schemas + handlers in `apps/api/src/routes/`
-* Generated OpenAPI 3.0 file at `apps/api/openapi/openapi.json` (do not hand-edit)
-* Served OpenAPI JSON at `/openapi.json` (`/reference/openapi.json` alias) and Scalar UI at `/reference`
+- Route schemas + handlers in `apps/api/src/routes/`
+- Generated OpenAPI 3.0 file at `apps/api/openapi/openapi.json` (do not hand-edit)
+- Served OpenAPI JSON at `/openapi.json` (`/reference/openapi.json` alias) and Scalar UI at `/reference`
 
 See **[OpenAPI Generation](/docs/development/openapi-generation)** for the exact workflow.
 
@@ -126,7 +126,7 @@ PostgreSQL access for Fastify and the eve host. Schema barrel `@repo/db/schema`,
 **Hard rules**
 
 - No Fastify dependency and no import of api `env` or `test/utils/db`
-- Next.js must not import `@repo/db` or `drizzle-orm` (eslint in `apps/web`)
+- Next.js must not import `@repo/db` or `drizzle-orm` (Oxlint in `oxlint.config.ts`)
 - Do not add a second Vercel `db:migrate` filter; api still runs `turbo run db:migrate --filter=@repo/api`
 
 ### 5) `packages/markets`
@@ -148,14 +148,14 @@ Alchemy Free Portfolio (`getWallet`, `getNfts`) for eth-mainnet and base-mainnet
 For `@repo/utils`, prefer subpath imports even though a root barrel exists:
 
 ```ts
-import { delay } from '@repo/utils/async'
-import { logger } from '@repo/utils/logger/server'
-import { getErrorMessage } from '@repo/error'
+import { delay } from "@repo/utils/async";
+import { logger } from "@repo/utils/logger/server";
+import { getErrorMessage } from "@repo/error";
 ```
 
 ## Dependency management strategy
 
-Pick dependency types based on *who should own the version*:
+Pick dependency types based on _who should own the version_:
 
 - **App/framework deps → peerDependencies**: React, React DOM, TanStack Query, Next.js, etc.
 - **Tightly-coupled internal deps → dependencies**: shared UI building blocks, generated code wrappers.

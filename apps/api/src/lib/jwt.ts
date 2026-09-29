@@ -1,50 +1,51 @@
-import { createHash, createHmac, randomBytes, randomInt } from 'node:crypto'
-import { env } from './env.js'
+import { createHash, createHmac, randomBytes, randomInt } from "node:crypto";
 
-type AccessTokenPayload = {
-  typ: 'access'
-  sub: string // userId
-  sid: string // sessionId
-  wal?: { chain: string; address: string } // session wallet (when JWT created by wallet)
-  iss: string
-  aud: string[]
-  iat: number
-  exp: number
+import { env } from "./env.js";
+
+interface AccessTokenPayload {
+  typ: "access";
+  sub: string; // userId
+  sid: string; // sessionId
+  wal?: { chain: string; address: string }; // session wallet (when JWT created by wallet)
+  iss: string;
+  aud: string[];
+  iat: number;
+  exp: number;
 }
 
-type RefreshTokenPayload = {
-  typ: 'refresh'
-  sub: string // userId
-  sid: string // sessionId
-  jti: string // refresh token JTI
-  iss: string
-  aud: string[]
-  iat: number
-  exp: number
+interface RefreshTokenPayload {
+  typ: "refresh";
+  sub: string; // userId
+  sid: string; // sessionId
+  jti: string; // refresh token JTI
+  iss: string;
+  aud: string[];
+  iat: number;
+  exp: number;
 }
 
 export function hashToken(token: string): string {
-  return createHash('sha256').update(token).digest('hex')
+  return createHash("sha256").update(token).digest("hex");
 }
 
 /** HMAC-SHA256 for low-entropy 6-digit login codes (magic link, change email). */
 export function hashLoginCode(code: string): string {
-  return createHmac('sha256', Buffer.from(env.ENCRYPTION_KEY, 'hex'))
+  return createHmac("sha256", Buffer.from(env.ENCRYPTION_KEY, "hex"))
     .update(`login-code:${code}`)
-    .digest('hex')
+    .digest("hex");
 }
 
 export function generateToken(): string {
-  return randomBytes(32).toString('base64url')
+  return randomBytes(32).toString("base64url");
 }
 
 /** Returns 6-digit code (100000–999999) for magic link login. */
 export function generateLoginCode(): string {
-  return String(randomInt(100000, 1000000))
+  return String(randomInt(100_000, 1_000_000));
 }
 
 export function generateJti(): string {
-  return randomBytes(16).toString('base64url')
+  return randomBytes(16).toString("base64url");
 }
 
 export function createAccessTokenPayload({
@@ -52,18 +53,18 @@ export function createAccessTokenPayload({
   sessionId,
   wallet,
 }: {
-  userId: string
-  sessionId: string
-  wallet?: { chain: string; address: string }
-}): Omit<AccessTokenPayload, 'iat' | 'exp'> {
+  userId: string;
+  sessionId: string;
+  wallet?: { chain: string; address: string };
+}): Omit<AccessTokenPayload, "iat" | "exp"> {
   return {
-    typ: 'access',
+    typ: "access",
     sub: userId,
     sid: sessionId,
     ...(wallet && { wal: wallet }),
     iss: env.JWT_ISSUER,
     aud: env.JWT_AUDIENCE,
-  }
+  };
 }
 
 export function createRefreshTokenPayload({
@@ -71,18 +72,18 @@ export function createRefreshTokenPayload({
   sessionId,
   jti,
 }: {
-  userId: string
-  sessionId: string
-  jti: string
-}): Omit<RefreshTokenPayload, 'iat' | 'exp'> {
+  userId: string;
+  sessionId: string;
+  jti: string;
+}): Omit<RefreshTokenPayload, "iat" | "exp"> {
   return {
-    typ: 'refresh',
-    sub: userId,
-    sid: sessionId,
-    jti,
-    iss: env.JWT_ISSUER,
     aud: env.JWT_AUDIENCE,
-  }
+    iss: env.JWT_ISSUER,
+    jti,
+    sid: sessionId,
+    sub: userId,
+    typ: "refresh",
+  };
 }
 
-export type { AccessTokenPayload, RefreshTokenPayload }
+export type { AccessTokenPayload, RefreshTokenPayload };

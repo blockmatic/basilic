@@ -35,4 +35,4 @@ export const scalarStyles = `
   }
   .submit-button:hover:not(:disabled) { background: #5568d3; }
   .submit-button:disabled { background: #444; cursor: not-allowed; }
-`
+`;

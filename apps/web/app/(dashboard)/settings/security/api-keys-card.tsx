@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useApiKeysList, useCreateApiKey, useRevokeApiKey } from '@repo/react'
+import { useApiKeysList, useCreateApiKey, useRevokeApiKey } from "@repo/react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,9 +10,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@repo/ui/components/alert-dialog'
-import { Button } from '@repo/ui/components/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/card'
+} from "@repo/ui/components/alert-dialog";
+import { Button } from "@repo/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components/card";
 import {
   Dialog,
   DialogContent,
@@ -20,10 +26,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@repo/ui/components/dialog'
-import { Input } from '@repo/ui/components/input'
-import { Label } from '@repo/ui/components/label'
-import { Skeleton } from '@repo/ui/components/skeleton'
+} from "@repo/ui/components/dialog";
+import { Input } from "@repo/ui/components/input";
+import { Label } from "@repo/ui/components/label";
+import { Skeleton } from "@repo/ui/components/skeleton";
 import {
   Table,
   TableBody,
@@ -31,69 +37,77 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@repo/ui/components/table'
-import { CopyIcon, PlusIcon, Trash2Icon } from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
+} from "@repo/ui/components/table";
+import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleDateString()
+    return new Date(iso).toLocaleDateString();
   } catch {
-    return iso
+    return iso;
   }
 }
 
 export function ApiKeysCard() {
-  const { data, isLoading, isError, error } = useApiKeysList()
-  const createMutation = useCreateApiKey()
-  const revokeMutation = useRevokeApiKey()
+  const { data, isLoading, isError, error } = useApiKeysList();
+  const createMutation = useCreateApiKey();
+  const revokeMutation = useRevokeApiKey();
 
-  const [createOpen, setCreateOpen] = useState(false)
-  const [createName, setCreateName] = useState('')
-  const [createdKey, setCreatedKey] = useState<string | null>(null)
-  const [revokeId, setRevokeId] = useState<string | null>(null)
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createName, setCreateName] = useState("");
+  const [createdKey, setCreatedKey] = useState<string | null>(null);
+  const [revokeId, setRevokeId] = useState<string | null>(null);
 
   async function handleCreateSubmit() {
-    if (!createName.trim()) return
+    if (!createName.trim()) {
+      return;
+    }
     try {
-      const res = await createMutation.mutateAsync({ name: createName.trim() })
-      setCreateOpen(false)
-      setCreateName('')
-      setCreatedKey(res.key)
-      toast.success('API key created. Copy it now—you won’t see it again.')
+      const res = await createMutation.mutateAsync({ name: createName.trim() });
+      setCreateOpen(false);
+      setCreateName("");
+      setCreatedKey(res.key);
+      toast.success("API key created. Copy it now—you won’t see it again.");
     } catch {
-      toast.error('Failed to create API key')
+      toast.error("Failed to create API key");
     }
   }
 
   async function handleCopyKey() {
-    if (!createdKey) return
+    if (!createdKey) {
+      return;
+    }
     if (!navigator.clipboard) {
-      toast.error('Clipboard not available')
-      return
+      toast.error("Clipboard not available");
+      return;
     }
     try {
-      await navigator.clipboard.writeText(createdKey)
-      toast.success('Copied to clipboard')
-    } catch (err) {
-      toast.error(`Failed to copy: ${err instanceof Error ? err.message : 'Unknown error'}`)
+      await navigator.clipboard.writeText(createdKey);
+      toast.success("Copied to clipboard");
+    } catch (error) {
+      toast.error(
+        `Failed to copy: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
   async function handleRevokeConfirm(): Promise<boolean> {
-    if (!revokeId) return false
+    if (!revokeId) {
+      return false;
+    }
     try {
-      await revokeMutation.mutateAsync({ id: revokeId })
-      toast.success('API key revoked')
-      return true
+      await revokeMutation.mutateAsync({ id: revokeId });
+      toast.success("API key revoked");
+      return true;
     } catch {
-      toast.error('Failed to revoke API key')
-      return false
+      toast.error("Failed to revoke API key");
+      return false;
     }
   }
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <Card className="shadow-lg">
         <CardHeader>
@@ -104,18 +118,22 @@ export function ApiKeysCard() {
           <Skeleton className="h-24 w-full" />
         </CardContent>
       </Card>
-    )
+    );
+  }
 
-  if (isError)
+  if (isError) {
     return (
       <Card className="shadow-lg">
         <CardContent className="pt-6">
-          <p className="text-destructive text-sm">{error?.message ?? 'Failed to load API keys'}</p>
+          <p className="text-destructive text-sm">
+            {error?.message ?? "Failed to load API keys"}
+          </p>
         </CardContent>
       </Card>
-    )
+    );
+  }
 
-  const keys = data?.keys ?? []
+  const keys = data?.keys ?? [];
 
   return (
     <>
@@ -123,7 +141,8 @@ export function ApiKeysCard() {
         <CardHeader>
           <CardTitle>API keys</CardTitle>
           <CardDescription>
-            Manage API keys for programmatic access. Keys are shown once at creation.
+            Manage API keys for programmatic access. Keys are shown once at
+            creation.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -147,12 +166,16 @@ export function ApiKeysCard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {keys.map(k => (
+                {keys.map((k) => (
                   <TableRow key={k.id}>
                     <TableCell>{k.name}</TableCell>
-                    <TableCell className="font-mono text-muted-foreground">{k.prefix}…</TableCell>
+                    <TableCell className="text-muted-foreground font-mono">
+                      {k.prefix}…
+                    </TableCell>
                     <TableCell>
-                      {typeof k.lastUsedAt === 'string' ? formatDate(k.lastUsedAt) : 'Never'}
+                      {typeof k.lastUsedAt === "string"
+                        ? formatDate(k.lastUsedAt)
+                        : "Never"}
                     </TableCell>
                     <TableCell>{formatDate(String(k.createdAt))}</TableCell>
                     <TableCell>
@@ -177,14 +200,16 @@ export function ApiKeysCard() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create API key</DialogTitle>
-            <DialogDescription>Give your key a name to identify it later.</DialogDescription>
+            <DialogDescription>
+              Give your key a name to identify it later.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <Label htmlFor="key-name">Name</Label>
             <Input
               id="key-name"
               value={createName}
-              onChange={e => setCreateName(e.target.value)}
+              onChange={(e) => setCreateName(e.target.value)}
               placeholder="e.g. Production"
             />
           </div>
@@ -196,13 +221,16 @@ export function ApiKeysCard() {
               onClick={handleCreateSubmit}
               disabled={!createName.trim() || createMutation.isPending}
             >
-              {createMutation.isPending ? 'Creating…' : 'Create'}
+              {createMutation.isPending ? "Creating…" : "Create"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!createdKey} onOpenChange={open => !open && setCreatedKey(null)}>
+      <AlertDialog
+        open={!!createdKey}
+        onOpenChange={(open) => !open && setCreatedKey(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Your API key</AlertDialogTitle>
@@ -210,24 +238,37 @@ export function ApiKeysCard() {
               Copy this key now. You won’t be able to see it again.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-3">
-            <code className="flex-1 break-all font-mono text-sm">{createdKey}</code>
-            <Button variant="outline" size="icon" onClick={handleCopyKey} aria-label="Copy key">
+          <div className="bg-muted/50 flex items-center gap-2 rounded-lg border p-3">
+            <code className="flex-1 font-mono text-sm break-all">
+              {createdKey}
+            </code>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleCopyKey}
+              aria-label="Copy key"
+            >
               <CopyIcon />
             </Button>
           </div>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setCreatedKey(null)}>Done</AlertDialogAction>
+            <AlertDialogAction onClick={() => setCreatedKey(null)}>
+              Done
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={!!revokeId} onOpenChange={open => !open && setRevokeId(null)}>
+      <AlertDialog
+        open={!!revokeId}
+        onOpenChange={(open) => !open && setRevokeId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Revoke API key</AlertDialogTitle>
             <AlertDialogDescription>
-              This will immediately invalidate the key. Any applications using it will stop working.
+              This will immediately invalidate the key. Any applications using
+              it will stop working.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -235,16 +276,18 @@ export function ApiKeysCard() {
             <Button
               variant="destructive"
               onClick={async () => {
-                const ok = await handleRevokeConfirm()
-                if (ok) setRevokeId(null)
+                const ok = await handleRevokeConfirm();
+                if (ok) {
+                  setRevokeId(null);
+                }
               }}
               disabled={revokeMutation.isPending}
             >
-              {revokeMutation.isPending ? 'Revoking…' : 'Revoke'}
+              {revokeMutation.isPending ? "Revoking…" : "Revoke"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }

@@ -1,53 +1,69 @@
-import { getValidSession } from '@repo/db'
+import { getValidSession } from "@repo/db";
 import {
-  type AuthFn,
   extractBearerToken,
   verifyJwtHmac,
   withAuthChallenges,
-} from 'eve/channels/auth'
-import { env } from './env.js'
+} from "eve/channels/auth";
+import type { AuthFn } from "eve/channels/auth";
 
-type AccessClaims = {
-  typ?: string
-  sub?: string
-  sid?: string
+import { env } from "./env.js";
+
+interface AccessClaims {
+  typ?: string;
+  sub?: string;
+  sid?: string;
 }
 
 function decodeJwtPayload(token: string): AccessClaims | null {
-  const payload = token.split('.')[1]
-  if (!payload) return null
+  const payload = token.split(".")[1];
+  if (!payload) {
+    return null;
+  }
   try {
-    return JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as AccessClaims
+    return JSON.parse(
+      Buffer.from(payload, "base64url").toString("utf-8")
+    ) as AccessClaims;
   } catch {
-    return null
+    return null;
   }
 }
 
 export function basilicAccessJwt(): AuthFn<Request> {
   return withAuthChallenges(
-    async request => {
-      const token = extractBearerToken(request.headers.get('authorization'))
-      if (!token) return null
+    async (request) => {
+      const token = extractBearerToken(request.headers.get("authorization"));
+      if (!token) {
+        return null;
+      }
       const result = await verifyJwtHmac(token, {
-        algorithm: 'HS256',
-        issuer: env.JWT_ISSUER,
+        algorithm: "HS256",
         audiences: env.JWT_AUDIENCE,
+        claims: { typ: ["access"] },
+        issuer: env.JWT_ISSUER,
         secret: env.JWT_SECRET,
-        claims: { typ: ['access'] },
-      })
-      if (!result.ok) return null
-      const payload = decodeJwtPayload(token)
-      if (!payload?.sub || !payload.sid || payload.typ !== 'access') return null
-      const valid = await getValidSession({ sid: payload.sid, userId: payload.sub })
-      if (!valid) return null
+      });
+      if (!result.ok) {
+        return null;
+      }
+      const payload = decodeJwtPayload(token);
+      if (!payload?.sub || !payload.sid || payload.typ !== "access") {
+        return null;
+      }
+      const valid = await getValidSession({
+        sid: payload.sid,
+        userId: payload.sub,
+      });
+      if (!valid) {
+        return null;
+      }
       return {
         attributes: { sessionId: payload.sid },
-        authenticator: 'basilic-jwt',
+        authenticator: "basilic-jwt",
         issuer: env.JWT_ISSUER,
         principalId: payload.sub,
-        principalType: 'user',
-      }
+        principalType: "user",
+      };
     },
-    [{ scheme: 'Bearer' }],
-  )
+    [{ scheme: "Bearer" }]
+  );
 }

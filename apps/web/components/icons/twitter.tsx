@@ -1,6 +1,10 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
-export function Twitter({ width = 24, height = 24, ...rest }: SVGProps<SVGSVGElement>) {
+export function Twitter({
+  width = 24,
+  height = 24,
+  ...rest
+}: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...rest}
@@ -18,5 +22,5 @@ export function Twitter({ width = 24, height = 24, ...rest }: SVGProps<SVGSVGEle
         d="m4 4l11.733 16H20L8.267 4zm0 16l6.768-6.768m2.46-2.46L20 4"
       />
     </svg>
-  )
+  );
 }

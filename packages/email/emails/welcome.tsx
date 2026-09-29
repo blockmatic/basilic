@@ -1,37 +1,47 @@
-import { Body, Container, Heading, Preview, Text } from '@react-email/components'
-import 'react'
-import { Footer } from '../components/footer.js'
-import { Logo } from '../components/logo.js'
+import {
+  Body,
+  Container,
+  Heading,
+  Preview,
+  Text,
+} from "@react-email/components";
+import "react";
+
+import { Footer } from "../components/footer.js";
+import { Logo } from "../components/logo.js";
 import {
   EmailThemeProvider,
   getEmailInlineStyles,
   getEmailThemeClasses,
-} from '../components/theme.js'
+} from "../components/theme.js";
 
 interface Props {
-  fullName?: string
+  fullName?: string;
 }
 
-export function WelcomeEmail({ fullName = '' }: Props) {
-  const firstName = fullName ? fullName.split(' ').at(0) : ''
-  const text = `${firstName ? `Hi ${firstName}, ` : ''}Welcome! We're excited to have you.`
-  const themeClasses = getEmailThemeClasses()
-  const lightStyles = getEmailInlineStyles('light')
+export function WelcomeEmail({ fullName = "" }: Props) {
+  const firstName = fullName ? fullName.split(" ").at(0) : "";
+  const text = `${firstName ? `Hi ${firstName}, ` : ""}Welcome! We're excited to have you.`;
+  const themeClasses = getEmailThemeClasses();
+  const lightStyles = getEmailInlineStyles("light");
 
   return (
     <EmailThemeProvider preview={<Preview>{text}</Preview>}>
-      <Body className={`my-auto mx-auto font-sans ${themeClasses.body}`} style={lightStyles.body}>
+      <Body
+        className={`mx-auto my-auto font-sans ${themeClasses.body}`}
+        style={lightStyles.body}
+      >
         <Container
-          className={`my-[40px] mx-auto p-[20px] max-w-[600px] ${themeClasses.container}`}
+          className={`mx-auto my-[40px] max-w-[600px] p-[20px] ${themeClasses.container}`}
           style={{
-            borderStyle: 'solid',
-            borderWidth: 1,
             borderColor: lightStyles.container.borderColor,
+            borderStyle: "solid",
+            borderWidth: 1,
           }}
         >
           <Logo />
           <Heading
-            className={`text-[21px] font-normal text-center p-0 my-[30px] mx-0 ${themeClasses.heading}`}
+            className={`mx-0 my-[30px] p-0 text-center text-[21px] font-normal ${themeClasses.heading}`}
             style={{ color: lightStyles.text.color }}
           >
             Welcome!
@@ -43,25 +53,28 @@ export function WelcomeEmail({ fullName = '' }: Props) {
             className={`font-medium ${themeClasses.text}`}
             style={{ color: lightStyles.text.color }}
           >
-            {firstName ? `Hi ${firstName},` : 'Hello,'}
+            {firstName ? `Hi ${firstName},` : "Hello,"}
           </span>
-          <Text className={themeClasses.text} style={{ color: lightStyles.text.color }}>
+          <Text
+            className={themeClasses.text}
+            style={{ color: lightStyles.text.color }}
+          >
             Welcome! We&apos;re excited to have you.
             <br />
             <br />
-            If there&apos;s anything we can do to help, just reply. We&apos;re always one message
-            away.
+            If there&apos;s anything we can do to help, just reply. We&apos;re
+            always one message away.
           </Text>
 
           <br />
 
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ borderCollapse: "collapse", width: "100%" }}>
             <tr>
               <td
                 style={{
-                  width: '50%',
-                  padding: '0 8px 0 0',
-                  verticalAlign: 'top',
+                  padding: "0 8px 0 0",
+                  verticalAlign: "top",
+                  width: "50%",
                 }}
               >
                 <Text
@@ -79,9 +92,9 @@ export function WelcomeEmail({ fullName = '' }: Props) {
               </td>
               <td
                 style={{
-                  width: '50%',
-                  padding: '0 0 0 8px',
-                  verticalAlign: 'top',
+                  padding: "0 0 0 8px",
+                  verticalAlign: "top",
+                  width: "50%",
                 }}
               >
                 <Text
@@ -104,7 +117,7 @@ export function WelcomeEmail({ fullName = '' }: Props) {
         </Container>
       </Body>
     </EmailThemeProvider>
-  )
+  );
 }
 
-export default WelcomeEmail
+export default WelcomeEmail;

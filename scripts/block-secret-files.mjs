@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { execSync } from 'node:child_process'
-import { exit } from 'node:process'
+import { execSync } from "node:child_process";
+import { exit } from "node:process";
 
 const blockedPatterns = [
   /^\.env$/,
@@ -24,7 +24,7 @@ const blockedPatterns = [
   /\.pfx$/,
   /\.p12$/,
   /\.keytab$/,
-]
+];
 
 const allowedPatterns = [
   /\.env\.[^/]+\.example$/,
@@ -33,57 +33,64 @@ const allowedPatterns = [
   /\.env\.staging$/,
   /\.env\.production$/,
   /\.env\.test$/,
-]
+];
 
 function getStagedFiles() {
   try {
-    const output = execSync('git diff --cached --name-only --diff-filter=ACMR', {
-      encoding: 'utf-8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-    })
+    const output = execSync(
+      "git diff --cached --name-only --diff-filter=ACMR",
+      {
+        encoding: "utf-8",
+        stdio: ["pipe", "pipe", "pipe"],
+      }
+    );
     return output
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 0)
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
   } catch (error) {
-    console.error('Error getting staged files:', error.message)
-    exit(1)
+    console.error("Error getting staged files:", error.message);
+    exit(1);
   }
 }
 
 function isBlocked(filename) {
   for (const allowed of allowedPatterns) {
     if (allowed.test(filename)) {
-      return false
+      return false;
     }
   }
 
   for (const blocked of blockedPatterns) {
     if (blocked.test(filename)) {
-      return true
+      return true;
     }
   }
 
-  return false
+  return false;
 }
 
-const stagedFiles = getStagedFiles()
-const blockedFiles = stagedFiles.filter(isBlocked)
+const stagedFiles = getStagedFiles();
+const blockedFiles = stagedFiles.filter(isBlocked);
 
 if (blockedFiles.length > 0) {
-  console.error('\n❌ Security check failed: Attempting to commit sensitive files\n')
-  console.error('Blocked files:')
-  blockedFiles.forEach(file => {
-    console.error(`  - ${file}`)
-  })
-  console.error('\nThese file types contain sensitive data and should not be committed.')
   console.error(
-    'Allowed exceptions: .env.<qualifier>.example (e.g. .env.defaults.example), .env.schema, .env.{development,staging,production,test}',
-  )
+    "\n❌ Security check failed: Attempting to commit sensitive files\n"
+  );
+  console.error("Blocked files:");
+  blockedFiles.forEach((file) => {
+    console.error(`  - ${file}`);
+  });
   console.error(
-    '\nIf you need to commit a configuration template, use .env.defaults.example (or .env.local.example) or .env.schema.\n',
-  )
-  exit(1)
+    "\nThese file types contain sensitive data and should not be committed."
+  );
+  console.error(
+    "Allowed exceptions: .env.<qualifier>.example (e.g. .env.defaults.example), .env.schema, .env.{development,staging,production,test}"
+  );
+  console.error(
+    "\nIf you need to commit a configuration template, use .env.defaults.example (or .env.local.example) or .env.schema.\n"
+  );
+  exit(1);
 }
 
-exit(0)
+exit(0);

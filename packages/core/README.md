@@ -51,15 +51,15 @@ await client.ai.chat({ body: { messages: [...] } }) // If 401, automatically ref
 All API methods throw `ApiError` on failure. Handle errors with try/catch:
 
 ```ts
-import { createClient, ApiError } from '@repo/core'
+import { createClient, ApiError } from "@repo/core";
 
 try {
-  await client.auth.magiclink.request({ body: { email } })
+  await client.auth.magiclink.request({ body: { email } });
 } catch (error) {
   if (error instanceof ApiError) {
-    console.error(`API error ${error.status}: ${error.message}`)
-    console.error('Response body:', error.body)
-    
+    console.error(`API error ${error.status}: ${error.message}`);
+    console.error("Response body:", error.body);
+
     if (error.status === 401) {
       // Token expired or invalid - refresh will be attempted automatically
       // If refresh fails, user must re-login
@@ -73,9 +73,13 @@ try {
 All types from the OpenAPI spec are exported:
 
 ```ts
-import type { HealthCheckResponse, LoginRequest, ChatMessage } from '@repo/core'
+import type {
+  HealthCheckResponse,
+  LoginRequest,
+  ChatMessage,
+} from "@repo/core";
 
-const response: HealthCheckResponse = await client.healthCheck()
+const response: HealthCheckResponse = await client.healthCheck();
 ```
 
 ## Authentication

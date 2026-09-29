@@ -1,19 +1,15 @@
 {
-  "type": "module",
   "name": "@repo/api",
   "version": "1.0.0",
   "description": "This project was bootstrapped with Fastify-CLI.",
-  "portless": {
-    "name": "api.basilic",
-    "script": "dev:app"
-  },
-  "main": "dist/server.js",
-  "engines": {
-    "node": "24.x"
-  },
+  "keywords": [],
+  "license": "MIT",
+  "author": "",
   "directories": {
     "test": "test"
   },
+  "type": "module",
+  "main": "dist/server.js",
   "scripts": {
     "test": "pnpm test:unit",
     "test:unit": "node scripts/check-test-imports.mjs && NODE_OPTIONS='--import tsx' vitest run",
@@ -30,12 +26,6 @@
     "watch:ts": "pnpm build:ts && concurrently 'tsc -p tsconfig.build.json -w'",
     "dev": "portless",
     "dev:app": "pnpm generate:openapi && concurrently -n server,openapi 'node --watch --import tsx server.ts' 'chokidar \"src/routes/**/*.ts\" \"src/plugins/**/*.ts\" -c \"pnpm generate:openapi\"'",
-    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "lint:biome": "biome check .",
-    "lint:biome:fix": "biome check . --write",
-    "lint:eslint": "eslint . --max-warnings 0",
-    "lint:eslint:fix": "eslint . --fix --max-warnings 0",
-    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:biome:fix",
     "checktypes": "tsc --noEmit -p tsconfig.build.json",
     "generate:openapi": "node --import tsx scripts/generate-openapi.ts",
     "reset": "pnpm --filter @repo/db db:reset && RUN_PG_MIGRATE=true POSTGRES_URL=\"postgresql://postgres:postgres@127.0.0.1:54322/postgres\" sh -c 'pnpm db:migrate && node --import tsx scripts/seed.ts'",
@@ -43,9 +33,6 @@
     "db:generate": "pnpm --filter @repo/db db:generate",
     "db:push": "pnpm --filter @repo/db db:push"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "@faker-js/faker": "^10.6.0",
     "@fastify/autoload": "^6.5.0",
@@ -87,7 +74,6 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@playwright/test": "~1.63.0",
-    "@repo/eslint-config": "workspace:*",
     "@types/node": "~26.6.2",
     "@types/pg": "^8.23.1",
     "@types/qrcode": "^1.5.6",
@@ -97,7 +83,6 @@
     "@vitest/coverage-v8": "^5.0.1",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^10.0.5",
-    "eslint": "^10.11.0",
     "fastify-tsconfig": "^3.0.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
@@ -106,5 +91,12 @@
     "undici-types": "^8.10.2",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.1"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "portless": {
+    "name": "api.basilic",
+    "script": "dev:app"
   }
 }

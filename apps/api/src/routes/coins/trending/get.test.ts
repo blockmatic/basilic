@@ -1,45 +1,49 @@
-import { resetCoinGeckoClient, resetMarketsRuntime } from '@repo/markets'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { getOrCreateSession } from '../../../../test/utils/auth-helper.js'
-import { fastify } from '../coins.spec.js'
+import { resetCoinGeckoClient, resetMarketsRuntime } from "@repo/markets";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-describe('GET /coins/trending', () => {
+import { getOrCreateSession } from "../../../../test/utils/auth-helper.js";
+import { fastify } from "../coins.spec.js";
+
+describe("GET /coins/trending", () => {
   beforeEach(() => {
-    resetMarketsRuntime()
-    resetCoinGeckoClient()
-  })
+    resetMarketsRuntime();
+    resetCoinGeckoClient();
+  });
 
   afterEach(() => {
-    vi.unstubAllGlobals()
-  })
+    vi.unstubAllGlobals();
+  });
 
-  it('returns trending without a Bearer token', async () => {
+  it("returns trending without a Bearer token", async () => {
     const response = await fastify.inject({
-      method: 'GET',
-      url: '/coins/trending',
-    })
-    expect(response.statusCode).toBe(200)
-    expect(Array.isArray(response.json().coins)).toBe(true)
-  })
+      method: "GET",
+      url: "/coins/trending",
+    });
+    expect(response.statusCode).toBe(200);
+    expect(Array.isArray(response.json().coins)).toBe(true);
+  });
 
-  it('returns HTTP 200 fixture trending when CoinGecko fails', async () => {
-    const jwt = await getOrCreateSession(fastify, 'coins-trending@test.ai')
+  it("returns HTTP 200 fixture trending when CoinGecko fails", async () => {
+    const jwt = await getOrCreateSession(fastify, "coins-trending@test.ai");
     vi.stubGlobal(
-      'fetch',
+      "fetch",
       vi.fn(async () => {
-        throw new Error('offline')
-      }),
-    )
+        throw new Error("offline");
+      })
+    );
 
     const response = await fastify.inject({
-      method: 'GET',
-      url: '/coins/trending',
+      method: "GET",
+      url: "/coins/trending",
       headers: { Authorization: `Bearer ${jwt}` },
-    })
-    expect(response.statusCode).toBe(200)
-    const body = response.json() as { source: string; coins: { id: string }[] }
-    expect(body.source).toBe('fixture')
-    expect(body.coins.length).toBeGreaterThan(0)
-    expect(body.coins[0]).toMatchObject({ id: expect.any(String), symbol: expect.any(String) })
-  })
-})
+    });
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as { source: string; coins: { id: string }[] };
+    expect(body.source).toBe("fixture");
+    expect(body.coins.length).toBeGreaterThan(0);
+    expect(body.coins[0]).toMatchObject({
+      id: expect.any(String),
+      symbol: expect.any(String),
+    });
+  });
+});

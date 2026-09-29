@@ -13,12 +13,12 @@ Chain metadata, chain type, and RPC helpers for EVM and Solana. Uses a single re
 - For "is chain supported?", use `getChainMetadata(chainId) !== undefined`.
 
 ```ts
-import { getChainMetadata, getChainType } from '@repo/utils/web3'
+import { getChainMetadata, getChainType } from "@repo/utils/web3";
 
-getChainMetadata(1)           // Ethereum Mainnet
-getChainType(1)               // 'evm'
-getChainMetadata('mainnet-beta')  // Solana Mainnet
-getChainMetadata(chainId) !== undefined  // boolean - is supported
+getChainMetadata(1); // Ethereum Mainnet
+getChainType(1); // 'evm'
+getChainMetadata("mainnet-beta"); // Solana Mainnet
+getChainMetadata(chainId) !== undefined; // boolean - is supported
 ```
 
 ### Types and schema
@@ -34,10 +34,10 @@ getChainMetadata(chainId) !== undefined  // boolean - is supported
 - **isAlchemySupported(chainId)** — Whether Alchemy supports the chain.
 
 ```ts
-import { getRpcEndpoint, getAlchemyRpcUrl } from '@repo/utils/web3'
+import { getRpcEndpoint, getAlchemyRpcUrl } from "@repo/utils/web3";
 
-const rpc = getRpcEndpoint(1, process.env.ALCHEMY_API_KEY)
-const alchemyUrl = getAlchemyRpcUrl(1, apiKey)
+const rpc = getRpcEndpoint(1, process.env.ALCHEMY_API_KEY);
+const alchemyUrl = getAlchemyRpcUrl(1, apiKey);
 ```
 
 **Optional:** `zod-validation-error` for richer Zod error messages.

@@ -1,36 +1,36 @@
-import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import assert from "node:assert/strict";
+import { test } from "node:test";
 
-import { pnpmVersionMatches } from './vercel-pnpm.mjs'
+import { pnpmVersionMatches } from "./vercel-pnpm.mjs";
 
-const pinned = '12.4.2'
+const pinned = "12.4.2";
 
 function spawnStdout(stdout) {
-  return () => ({ status: 0, stdout })
+  return () => ({ status: 0, stdout });
 }
 
-test('accepts the pinned pnpm version', () => {
+test("accepts the pinned pnpm version", () => {
   assert.equal(
     pnpmVersionMatches({
-      cmd: 'pnpm',
       argsPrefix: [],
+      cmd: "pnpm",
       env: {},
-      version: pinned,
       spawn: spawnStdout(`${pinned}\n`),
+      version: pinned,
     }),
-    true,
-  )
-})
+    true
+  );
+});
 
-test('rejects a different major version', () => {
+test("rejects a different major version", () => {
   assert.equal(
     pnpmVersionMatches({
-      cmd: 'pnpm',
       argsPrefix: [],
+      cmd: "pnpm",
       env: {},
+      spawn: spawnStdout("9.0.0\n"),
       version: pinned,
-      spawn: spawnStdout('9.0.0\n'),
     }),
-    false,
-  )
-})
+    false
+  );
+});

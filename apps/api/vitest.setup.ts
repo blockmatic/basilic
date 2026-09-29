@@ -5,4 +5,4 @@
  * Remote AI tests run only when AI_GATEWAY_API_KEY is a real secret (`hasRealGatewayKey`).
  */
 
-await import('./src/lib/markets-host.js')
+await import("./src/lib/markets-host.js");

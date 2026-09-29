@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   useOAuthLogin,
@@ -6,40 +6,44 @@ import {
   usePasskeyAuth,
   usePasskeyDiscovery,
   useWebAuthnAvailable,
-} from '@repo/react'
-import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
-import { toast } from 'sonner'
-import { Facebook, GitHub, Google, Passkey, Twitter } from '@/components/icons'
-import { WalletLoginButton } from '@/components/wallet/wallet-login-button'
-import { capture } from '@/lib/analytics'
-import { getApiErrorCode } from '@/lib/auth/api-error'
-import { updateAuthTokens } from '@/lib/auth/auth-client'
-import { getAuthErrorMessage } from '@/lib/auth/auth-error-messages'
-import { ErrorBanner } from './login-error-banner'
-import { LoginForm } from './login-form'
-import { PasskeyShortcut } from './passkey-shortcut'
-import { useGoogleOneTap } from './use-google-one-tap'
+} from "@repo/react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
-type LoginActionsProps = { initialError?: string }
+import { Facebook, GitHub, Google, Passkey, Twitter } from "@/components/icons";
+import { WalletLoginButton } from "@/components/wallet/wallet-login-button";
+import { capture } from "@/lib/analytics";
+import { getApiErrorCode } from "@/lib/auth/api-error";
+import { updateAuthTokens } from "@/lib/auth/auth-client";
+import { getAuthErrorMessage } from "@/lib/auth/auth-error-messages";
 
-type OAuthButtonsProps = {
-  anyPending: boolean
-  setLastAuthMethod: (m: 'oauth' | 'passkey' | 'wallet') => void
-  startOAuthLogin: (p: 'github' | 'google' | 'facebook' | 'twitter') => void
-  onGoogleClick: () => void
-  isGithubConfigured: boolean
-  isGoogleConfigured: boolean
-  isGoogleRedirectConfigured: boolean
-  isGoogleReady: boolean
-  isFacebookConfigured: boolean
-  isTwitterConfigured: boolean
-  isOAuthPending: boolean
-  isGooglePending: boolean
-  webauthnAvailable: boolean
-  startPasskeyAuth: (opts: { callbackUrl: string }) => void
-  isPasskeyPending: boolean
-  onWalletError: (error: unknown) => void
+import { ErrorBanner } from "./login-error-banner";
+import { LoginForm } from "./login-form";
+import { PasskeyShortcut } from "./passkey-shortcut";
+import { useGoogleOneTap } from "./use-google-one-tap";
+
+interface LoginActionsProps {
+  initialError?: string;
+}
+
+interface OAuthButtonsProps {
+  anyPending: boolean;
+  setLastAuthMethod: (m: "oauth" | "passkey" | "wallet") => void;
+  startOAuthLogin: (p: "github" | "google" | "facebook" | "twitter") => void;
+  onGoogleClick: () => void;
+  isGithubConfigured: boolean;
+  isGoogleConfigured: boolean;
+  isGoogleRedirectConfigured: boolean;
+  isGoogleReady: boolean;
+  isFacebookConfigured: boolean;
+  isTwitterConfigured: boolean;
+  isOAuthPending: boolean;
+  isGooglePending: boolean;
+  webauthnAvailable: boolean;
+  startPasskeyAuth: (opts: { callbackUrl: string }) => void;
+  isPasskeyPending: boolean;
+  onWalletError: (error: unknown) => void;
 }
 
 function OAuthButtons({
@@ -64,9 +68,9 @@ function OAuthButtons({
     <div className="flex flex-wrap items-center justify-center gap-3">
       <WalletLoginButton
         disabled={anyPending}
-        onError={error => {
-          setLastAuthMethod('wallet')
-          onWalletError(error)
+        onError={(error) => {
+          setLastAuthMethod("wallet");
+          onWalletError(error);
         }}
       />
       {webauthnAvailable && (
@@ -74,13 +78,15 @@ function OAuthButtons({
           type="button"
           disabled={anyPending}
           onClick={() => {
-            setLastAuthMethod('passkey')
+            setLastAuthMethod("passkey");
             startPasskeyAuth({
               callbackUrl: `${window.location.origin}/auth/callback/passkey?callbackUrl=/`,
-            })
+            });
           }}
-          aria-label={isPasskeyPending ? 'Signing in…' : 'Continue with Passkey'}
-          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label={
+            isPasskeyPending ? "Signing in…" : "Continue with Passkey"
+          }
+          className="border-input bg-background hover:bg-accent flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Passkey className="size-5" aria-hidden />
         </button>
@@ -89,25 +95,31 @@ function OAuthButtons({
         type="button"
         disabled={anyPending || !isGithubConfigured}
         onClick={() => {
-          setLastAuthMethod('oauth')
-          startOAuthLogin('github')
+          setLastAuthMethod("oauth");
+          startOAuthLogin("github");
         }}
-        aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with GitHub'}
-        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+        aria-label={isOAuthPending ? "Redirecting..." : "Continue with GitHub"}
+        className="border-input bg-background hover:bg-accent flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-50"
       >
         <GitHub className="size-5" aria-hidden />
       </button>
       <button
         type="button"
         disabled={
-          anyPending || !isGoogleConfigured || (!isGoogleRedirectConfigured && !isGoogleReady)
+          anyPending ||
+          !isGoogleConfigured ||
+          (!isGoogleRedirectConfigured && !isGoogleReady)
         }
         onClick={() => {
-          setLastAuthMethod('oauth')
-          onGoogleClick()
+          setLastAuthMethod("oauth");
+          onGoogleClick();
         }}
-        aria-label={isGooglePending || isOAuthPending ? 'Signing in…' : 'Continue with Google'}
-        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+        aria-label={
+          isGooglePending || isOAuthPending
+            ? "Signing in…"
+            : "Continue with Google"
+        }
+        className="border-input bg-background hover:bg-accent flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Google className="size-5" aria-hidden />
       </button>
@@ -115,11 +127,13 @@ function OAuthButtons({
         type="button"
         disabled={anyPending || !isFacebookConfigured}
         onClick={() => {
-          setLastAuthMethod('oauth')
-          startOAuthLogin('facebook')
+          setLastAuthMethod("oauth");
+          startOAuthLogin("facebook");
         }}
-        aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with Facebook'}
-        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+        aria-label={
+          isOAuthPending ? "Redirecting..." : "Continue with Facebook"
+        }
+        className="border-input bg-background hover:bg-accent flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Facebook className="size-5" aria-hidden />
       </button>
@@ -127,33 +141,45 @@ function OAuthButtons({
         type="button"
         disabled={anyPending || !isTwitterConfigured}
         onClick={() => {
-          setLastAuthMethod('oauth')
-          startOAuthLogin('twitter')
+          setLastAuthMethod("oauth");
+          startOAuthLogin("twitter");
         }}
-        aria-label={isOAuthPending ? 'Redirecting...' : 'Continue with X'}
-        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-input bg-background hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+        aria-label={isOAuthPending ? "Redirecting..." : "Continue with X"}
+        className="border-input bg-background hover:bg-accent flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Twitter className="size-5" aria-hidden />
       </button>
     </div>
-  )
+  );
 }
 
-export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Element {
-  const router = useRouter()
-  const [dismissedForError, setDismissedForError] = useState<string | null>(null)
-  const [lastAuthMethod, setLastAuthMethod] = useState<'oauth' | 'passkey' | 'wallet' | null>(null)
-  const [walletError, setWalletError] = useState<string | null>(null)
-  const [optedOutEmails, setOptedOutEmails] = useState<Set<string>>(() => new Set())
-  const [oneTapSkipped, setOneTapSkipped] = useState(false)
-  const { mutate: startOAuthLogin, error: oauthError, isPending: isOAuthPending } = useOAuthLogin()
+export function LoginActions({
+  initialError,
+}: LoginActionsProps): React.JSX.Element {
+  const router = useRouter();
+  const [dismissedForError, setDismissedForError] = useState<string | null>(
+    null
+  );
+  const [lastAuthMethod, setLastAuthMethod] = useState<
+    "oauth" | "passkey" | "wallet" | null
+  >(null);
+  const [walletError, setWalletError] = useState<string | null>(null);
+  const [optedOutEmails, setOptedOutEmails] = useState<Set<string>>(
+    () => new Set()
+  );
+  const [oneTapSkipped, setOneTapSkipped] = useState(false);
+  const {
+    mutate: startOAuthLogin,
+    error: oauthError,
+    isPending: isOAuthPending,
+  } = useOAuthLogin();
   const {
     github: isGithubConfigured,
     google: isGoogleConfigured,
     googleHasRedirectConfig: isGoogleRedirectConfigured,
     facebook: isFacebookConfigured,
     twitter: isTwitterConfigured,
-  } = useOAuthProviders()
+  } = useOAuthProviders();
   const {
     prompt: promptGoogle,
     isPending: isGooglePending,
@@ -161,74 +187,94 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
   } = useGoogleOneTap({
     enabled: isGoogleConfigured,
     onSkipped: useCallback(() => setOneTapSkipped(true), []),
-  })
+  });
   const {
     mutate: startPasskeyAuth,
     error: passkeyError,
     isPending: isPasskeyPending,
-  } = usePasskeyAuth()
+  } = usePasskeyAuth();
   const capturePasskeyFailed = (err: unknown) => {
     capture({
-      name: 'auth_failed',
-      method: 'passkey',
-      errorCode: getApiErrorCode(err) ?? 'PASSKEY_FAILED',
-    })
-  }
-  const { email: discoveryEmail } = usePasskeyDiscovery()
-  const webauthnAvailable = useWebAuthnAvailable()
-  const anyPending = isOAuthPending || isPasskeyPending || isGooglePending
-  const walletBanner = walletError
+      errorCode: getApiErrorCode(err) ?? "PASSKEY_FAILED",
+      method: "passkey",
+      name: "auth_failed",
+    });
+  };
+  const { email: discoveryEmail } = usePasskeyDiscovery();
+  const webauthnAvailable = useWebAuthnAvailable();
+  const anyPending = isOAuthPending || isPasskeyPending || isGooglePending;
+  const walletBanner = walletError;
   const displayError =
-    lastAuthMethod === 'wallet'
+    lastAuthMethod === "wallet"
       ? (walletBanner ?? initialError)
-      : lastAuthMethod === 'passkey'
+      : lastAuthMethod === "passkey"
         ? (passkeyError?.message ?? oauthError?.message ?? initialError)
-        : lastAuthMethod === 'oauth'
+        : lastAuthMethod === "oauth"
           ? (oauthError?.message ?? passkeyError?.message ?? initialError)
-          : (oauthError?.message ?? passkeyError?.message ?? walletBanner ?? initialError)
-  const showBanner = displayError && displayError !== dismissedForError
+          : (oauthError?.message ??
+            passkeyError?.message ??
+            walletBanner ??
+            initialError);
+  const showBanner = displayError && displayError !== dismissedForError;
 
   const handleGoogleClick = useCallback(() => {
-    const useRedirect = (oneTapSkipped || !isGoogleReady) && isGoogleRedirectConfigured
+    const useRedirect =
+      (oneTapSkipped || !isGoogleReady) && isGoogleRedirectConfigured;
     if (useRedirect) {
-      startOAuthLogin('google')
-      return
+      startOAuthLogin("google");
+      return;
     }
-    if (!isGoogleReady) return
-    promptGoogle()
-  }, [oneTapSkipped, isGoogleReady, isGoogleRedirectConfigured, startOAuthLogin, promptGoogle])
+    if (!isGoogleReady) {
+      return;
+    }
+    promptGoogle();
+  }, [
+    oneTapSkipped,
+    isGoogleReady,
+    isGoogleRedirectConfigured,
+    startOAuthLogin,
+    promptGoogle,
+  ]);
 
   const showPasskeyShortcut =
-    webauthnAvailable && discoveryEmail && !optedOutEmails.has(discoveryEmail)
+    webauthnAvailable && discoveryEmail && !optedOutEmails.has(discoveryEmail);
 
   return (
     <div className="flex flex-col gap-4">
       {showBanner && (
-        <ErrorBanner message={displayError} onDismiss={() => setDismissedForError(displayError)} />
+        <ErrorBanner
+          message={displayError}
+          onDismiss={() => setDismissedForError(displayError)}
+        />
       )}
       {showPasskeyShortcut && (
         <PasskeyShortcut
           email={discoveryEmail}
           onUsePasskey={() => {
-            setLastAuthMethod('passkey')
+            setLastAuthMethod("passkey");
             startPasskeyAuth(
               {
                 onSuccess: async ({ token, refreshToken }) => {
                   try {
-                    await updateAuthTokens({ token, refreshToken })
-                  } catch (err) {
-                    toast.error(err instanceof Error ? err.message : 'Failed to complete sign-in')
-                    return
+                    await updateAuthTokens({ refreshToken, token });
+                  } catch (error) {
+                    toast.error(
+                      error instanceof Error
+                        ? error.message
+                        : "Failed to complete sign-in"
+                    );
+                    return;
                   }
-                  capture({ name: 'auth_succeeded', method: 'passkey' })
-                  router.push('/')
+                  capture({ method: "passkey", name: "auth_succeeded" });
+                  router.push("/");
                 },
               },
-              { onError: capturePasskeyFailed },
-            )
+              { onError: capturePasskeyFailed }
+            );
           }}
           onUseAnotherMethod={() =>
-            discoveryEmail && setOptedOutEmails(prev => new Set(prev).add(discoveryEmail))
+            discoveryEmail &&
+            setOptedOutEmails((prev) => new Set(prev).add(discoveryEmail))
           }
           isPending={isPasskeyPending}
         />
@@ -237,11 +283,15 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
         initialError={initialError}
         onVerifySuccess={async ({ token, refreshToken }) => {
           try {
-            await updateAuthTokens({ token, refreshToken })
-            capture({ name: 'auth_succeeded', method: 'magic_link' })
-            router.push('/')
-          } catch (err) {
-            toast.error(err instanceof Error ? err.message : 'Failed to complete sign-in')
+            await updateAuthTokens({ refreshToken, token });
+            capture({ method: "magic_link", name: "auth_succeeded" });
+            router.push("/");
+          } catch (error) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Failed to complete sign-in"
+            );
           }
         }}
         extraActions={
@@ -259,23 +309,27 @@ export function LoginActions({ initialError }: LoginActionsProps): React.JSX.Ele
             isOAuthPending={isOAuthPending}
             isGooglePending={isGooglePending}
             webauthnAvailable={webauthnAvailable}
-            startPasskeyAuth={opts => startPasskeyAuth(opts, { onError: capturePasskeyFailed })}
+            startPasskeyAuth={(opts) =>
+              startPasskeyAuth(opts, { onError: capturePasskeyFailed })
+            }
             isPasskeyPending={isPasskeyPending}
-            onWalletError={error => {
-              const code = getApiErrorCode(error)
+            onWalletError={(error) => {
+              const code = getApiErrorCode(error);
               capture({
-                name: 'auth_failed',
-                method: 'web3_eip155',
-                errorCode: code ?? 'WALLET_FAILED',
-              })
+                errorCode: code ?? "WALLET_FAILED",
+                method: "web3_eip155",
+                name: "auth_failed",
+              });
               setWalletError(
                 getAuthErrorMessage(code) ??
-                  (error instanceof Error ? error.message : 'Wallet sign-in failed'),
-              )
+                  (error instanceof Error
+                    ? error.message
+                    : "Wallet sign-in failed")
+              );
             }}
           />
         }
       />
     </div>
-  )
+  );
 }

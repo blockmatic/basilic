@@ -1,4 +1,4 @@
-import { Skeleton } from '@repo/ui/components/skeleton'
+import { Skeleton } from "@repo/ui/components/skeleton";
 
 // eslint-disable-next-line import/no-default-export -- Next.js requires default export for loading.tsx
 export default function SettingsLoading(): React.JSX.Element {
@@ -11,5 +11,5 @@ export default function SettingsLoading(): React.JSX.Element {
         </div>
       ))}
     </div>
-  )
+  );
 }

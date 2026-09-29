@@ -1,1 +1,1 @@
-export { default } from 'eve/tools/load_skill'
+export { default } from "eve/tools/load_skill";

@@ -1,126 +1,135 @@
-import { describe, expect, it } from 'vitest'
-import { adviseCopy, isAccountScopedCanned, refuseCopy, resolveCommandTurn } from './resolve.js'
-import { defaultSearchQuery } from './view-config.js'
+import { describe, expect, it } from "vitest";
+
+import {
+  adviseCopy,
+  isAccountScopedCanned,
+  refuseCopy,
+  resolveCommandTurn,
+} from "./resolve.js";
+import { defaultSearchQuery } from "./view-config.js";
 
 function answers(
-  overrides: Parameters<typeof resolveCommandTurn>[0]['answers'] extends infer T
+  overrides: Parameters<typeof resolveCommandTurn>[0]["answers"] extends infer T
     ? Partial<T>
-    : never,
+    : never
 ) {
   return {
     outOfSnapshot: { probability: 0.05 },
     isPrediction: { probability: 0.05 },
-    cannedIntent: { choice: 'other' as const, probabilities: { other: 0.9 } },
-    surface: { choice: 'table', probabilities: { table: 0.9 } },
-    turnType: { choice: 'board', probabilities: { board: 0.9 } },
+    cannedIntent: { choice: "other" as const, probabilities: { other: 0.9 } },
+    surface: { choice: "table", probabilities: { table: 0.9 } },
+    turnType: { choice: "board", probabilities: { board: 0.9 } },
     ...overrides,
-  }
+  };
 }
 
-const thresholds = { cannedMinProbability: 0.8, refuseMinProbability: 0.8 }
+const thresholds = { cannedMinProbability: 0.8, refuseMinProbability: 0.8 };
 
-describe('resolveCommandTurn', () => {
-  it('refuses high outOfSnapshot noul without pretending last week is change24h', () => {
+describe("resolveCommandTurn", () => {
+  it("refuses high outOfSnapshot noul without pretending last week is change24h", () => {
     const result = resolveCommandTurn({
       answers: answers({ outOfSnapshot: { probability: 0.91 } }),
-      cannedPatch: { sortBy: 'change24h', sortDir: 'desc' },
+      cannedPatch: { sortBy: "change24h", sortDir: "desc" },
       ...thresholds,
-    })
-    expect(result).toMatchObject({ kind: 'refuse', honesty: refuseCopy })
-    if (result.kind === 'refuse') expect(result.viewConfig.query.sortBy).toBe('rank')
-  })
+    });
+    expect(result).toMatchObject({ kind: "refuse", honesty: refuseCopy });
+    if (result.kind === "refuse")
+      expect(result.viewConfig.query.sortBy).toBe("rank");
+  });
 
-  it('advises high isPrediction noul', () => {
+  it("advises high isPrediction noul", () => {
     expect(
       resolveCommandTurn({
         answers: answers({ isPrediction: { probability: 0.9 } }),
         cannedPatch: null,
         ...thresholds,
-      }),
-    ).toMatchObject({ kind: 'advise', honesty: adviseCopy })
-  })
+      })
+    ).toMatchObject({ kind: "advise", honesty: adviseCopy });
+  });
 
-  it('falls through when canned probability is missing or low', () => {
+  it("falls through when canned probability is missing or low", () => {
     expect(
       resolveCommandTurn({
-        answers: answers({ cannedIntent: { choice: 'movers' } }),
-        cannedPatch: { sortBy: 'change24h', sortDir: 'desc' },
+        answers: answers({ cannedIntent: { choice: "movers" } }),
+        cannedPatch: { sortBy: "change24h", sortDir: "desc" },
         ...thresholds,
-      }),
-    ).toEqual({ kind: 'tools' })
+      })
+    ).toEqual({ kind: "tools" });
     expect(
       resolveCommandTurn({
         answers: answers({
-          cannedIntent: { choice: 'movers', probabilities: { movers: 0.51 } },
+          cannedIntent: { choice: "movers", probabilities: { movers: 0.51 } },
         }),
-        cannedPatch: { sortBy: 'change24h', sortDir: 'desc' },
+        cannedPatch: { sortBy: "change24h", sortDir: "desc" },
         ...thresholds,
-      }),
-    ).toEqual({ kind: 'tools' })
-  })
+      })
+    ).toEqual({ kind: "tools" });
+  });
 
-  it('maps high-confidence movers onto the current query', () => {
+  it("maps high-confidence movers onto the current query", () => {
     const result = resolveCommandTurn({
       answers: answers({
-        cannedIntent: { choice: 'movers', probabilities: { movers: 0.92 } },
+        cannedIntent: { choice: "movers", probabilities: { movers: 0.92 } },
       }),
-      cannedPatch: { sortBy: 'change24h', sortDir: 'desc' },
-      boardQuery: { ...defaultSearchQuery, universe: 'majors' },
+      cannedPatch: { sortBy: "change24h", sortDir: "desc" },
+      boardQuery: { ...defaultSearchQuery, universe: "majors" },
       ...thresholds,
-    })
-    expect(result.kind).toBe('canned')
-    if (result.kind !== 'canned') return
+    });
+    expect(result.kind).toBe("canned");
+    if (result.kind !== "canned") return;
     expect(result.viewConfig.query).toMatchObject({
-      universe: 'majors',
-      sortBy: 'change24h',
-      sortDir: 'desc',
-    })
-  })
+      universe: "majors",
+      sortBy: "change24h",
+      sortDir: "desc",
+    });
+  });
 
-  it('maps whoami to account watchlist', () => {
+  it("maps whoami to account watchlist", () => {
     const result = resolveCommandTurn({
       answers: answers({
-        cannedIntent: { choice: 'whoami', probabilities: { whoami: 0.95 } },
-        surface: { choice: 'account', probabilities: { account: 0.9 } },
+        cannedIntent: { choice: "whoami", probabilities: { whoami: 0.95 } },
+        surface: { choice: "account", probabilities: { account: 0.9 } },
       }),
-      cannedPatch: { universe: 'watchlist', surface: 'account' },
+      cannedPatch: { universe: "watchlist", surface: "account" },
       ...thresholds,
-    })
-    expect(result.kind).toBe('canned')
-    if (result.kind !== 'canned') return
-    expect(result.viewConfig.surface).toBe('account')
-    expect(result.viewConfig.query.universe).toBe('watchlist')
-  })
+    });
+    expect(result.kind).toBe("canned");
+    if (result.kind !== "canned") return;
+    expect(result.viewConfig.surface).toBe("account");
+    expect(result.viewConfig.query.universe).toBe("watchlist");
+  });
 
-  it('flags whoami and watchlist canned patches as account-scoped', () => {
+  it("flags whoami and watchlist canned patches as account-scoped", () => {
     expect(
       isAccountScopedCanned({
         answers: answers({
-          cannedIntent: { choice: 'whoami', probabilities: { whoami: 0.95 } },
+          cannedIntent: { choice: "whoami", probabilities: { whoami: 0.95 } },
         }),
-        cannedPatch: { universe: 'watchlist', surface: 'account' },
-      }),
-    ).toBe(true)
+        cannedPatch: { universe: "watchlist", surface: "account" },
+      })
+    ).toBe(true);
     expect(
       isAccountScopedCanned({
-        answers: answers({ cannedIntent: { choice: 'movers', probabilities: { movers: 0.92 } } }),
-        cannedPatch: { sortBy: 'change24h', sortDir: 'desc' },
-      }),
-    ).toBe(false)
-  })
+        answers: answers({
+          cannedIntent: { choice: "movers", probabilities: { movers: 0.92 } },
+        }),
+        cannedPatch: { sortBy: "change24h", sortDir: "desc" },
+      })
+    ).toBe(false);
+  });
 
-  it('maps high-confidence dashboard surface onto canned turns', () => {
+  it("maps high-confidence dashboard surface onto canned turns", () => {
     const result = resolveCommandTurn({
       answers: answers({
-        cannedIntent: { choice: 'movers', probabilities: { movers: 0.92 } },
-        surface: { choice: 'dashboard', probabilities: { dashboard: 0.91 } },
+        cannedIntent: { choice: "movers", probabilities: { movers: 0.92 } },
+        surface: { choice: "dashboard", probabilities: { dashboard: 0.91 } },
       }),
-      cannedPatch: { sortBy: 'change24h', sortDir: 'desc' },
+      cannedPatch: { sortBy: "change24h", sortDir: "desc" },
       ...thresholds,
-    })
-    expect(result.kind).toBe('canned')
-    if (result.kind !== 'canned') return
-    expect(result.viewConfig.surface).toBe('dashboard')
-    expect(result.honesty).toBeUndefined()
-  })
-})
+    });
+    expect(result.kind).toBe("canned");
+    if (result.kind !== "canned") return;
+    expect(result.viewConfig.surface).toBe("dashboard");
+    expect(result.honesty).toBeUndefined();
+  });
+});

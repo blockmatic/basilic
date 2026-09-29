@@ -41,18 +41,20 @@ Live OpenAPI is `GET /openapi.json` (`/reference/openapi.json` is an alias); Sca
 4. If the UI needs a hook, add it under `packages/react/src/hooks/` and export from `packages/react/src/index.ts`.
 
 ```typescript
-import { createClient } from '@repo/core'
-import { useUser } from '@repo/react'
+import { createClient } from "@repo/core";
+import { useUser } from "@repo/react";
 
 const client = createClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL!,
   getAuthToken: async () => session?.token,
   getRefreshToken: async () => session?.refreshToken,
-  onTokensRefreshed: async ({ token, refreshToken }) => { /* persist */ },
-})
+  onTokensRefreshed: async ({ token, refreshToken }) => {
+    /* persist */
+  },
+});
 
-const user = await client.auth.session.user()
-const { data } = useUser()
+const user = await client.auth.session.user();
+const { data } = useUser();
 ```
 
 See [API Architecture](/docs/architecture/api) and [Package Conventions](/docs/development/package-conventions).

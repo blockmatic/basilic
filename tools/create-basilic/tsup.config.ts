@@ -1,14 +1,14 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ['src/cli.ts'],
-  format: ['esm'],
-  target: 'node24',
-  sourcemap: true,
-  clean: true,
-  outDir: 'dist',
-  noExternal: ['commander'],
   banner: {
-    js: '#!/usr/bin/env node',
+    js: "#!/usr/bin/env node",
   },
-})
+  clean: true,
+  entry: ["src/cli.ts"],
+  format: ["esm"],
+  noExternal: ["commander"],
+  outDir: "dist",
+  sourcemap: true,
+  target: "node24",
+});

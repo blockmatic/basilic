@@ -1,35 +1,22 @@
-import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared'
+import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 
 export function baseOptions(): BaseLayoutProps {
   return {
-    searchToggle: {
-      enabled: true,
-    },
-    nav: {
-      title: (
-        <span className="inline-flex items-center gap-2">
-          <span className="flex size-6 items-center justify-center rounded-md bg-primary font-heading text-xs font-semibold text-primary-foreground">
-            B
-          </span>
-          <span className="font-heading font-semibold">Basilic</span>
-        </span>
-      ),
-    },
     links: [
       {
-        text: 'Docs',
-        url: '/docs',
+        text: "Docs",
+        url: "/docs",
       },
       {
-        text: 'LLM',
-        url: '/llms.txt',
+        text: "LLM",
+        url: "/llms.txt",
         external: true,
       },
       {
-        type: 'icon',
-        label: 'GitHub',
-        url: 'https://github.com/blockmatic/basilic',
-        text: 'GitHub',
+        type: "icon",
+        label: "GitHub",
+        url: "https://github.com/blockmatic/basilic",
+        text: "GitHub",
         icon: (
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <title>GitHub</title>
@@ -39,5 +26,18 @@ export function baseOptions(): BaseLayoutProps {
         external: true,
       },
     ],
-  }
+    nav: {
+      title: (
+        <span className="inline-flex items-center gap-2">
+          <span className="bg-primary font-heading text-primary-foreground flex size-6 items-center justify-center rounded-md text-xs font-semibold">
+            B
+          </span>
+          <span className="font-heading font-semibold">Basilic</span>
+        </span>
+      ),
+    },
+    searchToggle: {
+      enabled: true,
+    },
+  };
 }

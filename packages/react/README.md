@@ -39,18 +39,27 @@ Add `@repo/react` and `@repo/core` to `transpilePackages` in your `next.config.m
 // next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@repo/ui', '@repo/core', '@repo/react', '@repo/error', '@repo/utils'],
-  webpack: config => {
-    config.resolve.conditionNames = [...(config.resolve.conditionNames ?? []), 'source']
+  transpilePackages: [
+    "@repo/ui",
+    "@repo/core",
+    "@repo/react",
+    "@repo/error",
+    "@repo/utils",
+  ],
+  webpack: (config) => {
+    config.resolve.conditionNames = [
+      ...(config.resolve.conditionNames ?? []),
+      "source",
+    ];
     config.resolve.extensionAlias = {
-      '.js': ['.ts', '.tsx', '.js', '.jsx'],
-      '.jsx': ['.tsx', '.jsx'],
-    }
-    return config
+      ".js": [".ts", ".tsx", ".js", ".jsx"],
+      ".jsx": [".tsx", ".jsx"],
+    };
+    return config;
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
 ```
 
 **Note**: Next.js 16.3 defaults to Turbopack, but this monorepo uses `--webpack` on dev/build because Turbopack 16.3.5 does not yet support `resolveExtensionAlias` for workspace `.js` → `.ts` resolution (instrumentation and `@repo/*` imports). Drop `--webpack` when Next ships Turbopack extension aliasing.
@@ -60,15 +69,19 @@ export default nextConfig
 Create a client component provider (e.g., `app/providers.tsx`). For JWT mode with automatic refresh on 401, provide `getAuthToken`, `getRefreshToken`, and `onTokensRefreshed` (all three required). In `apps/web`, use `getAuthToken`, `getRefreshToken`, and `updateAuthTokens` from `lib/auth/auth-client` (reads single cookie `api.session`):
 
 ```tsx
-'use client'
+"use client";
 
-import { createClient } from '@repo/core'
-import { ApiProvider } from '@repo/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import type { ReactNode } from 'react'
-import { getAuthToken, getRefreshToken, updateAuthTokens } from '@/lib/auth/auth-client'
+import { createClient } from "@repo/core";
+import { ApiProvider } from "@repo/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
+import {
+  getAuthToken,
+  getRefreshToken,
+  updateAuthTokens,
+} from "@/lib/auth/auth-client";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 // JWT mode: pass getAuthToken, getRefreshToken, onTokensRefreshed for 401 refresh
 const coreClient = createClient({
@@ -76,14 +89,14 @@ const coreClient = createClient({
   getAuthToken,
   getRefreshToken,
   onTokensRefreshed: updateAuthTokens,
-})
+});
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ApiProvider client={coreClient}>{children}</ApiProvider>
     </QueryClientProvider>
-  )
+  );
 }
 ```
 
@@ -92,16 +105,20 @@ See [Authentication](https://basilic-docs.vercel.app/docs/architecture/authentic
 Wrap your app in `app/layout.tsx`:
 
 ```tsx
-import { Providers } from './providers'
+import { Providers } from "./providers";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
         <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -111,19 +128,19 @@ Hooks must be used in client components. Mark components with `'use client'`:
 
 ```tsx
 // app/components/health-status.tsx
-'use client'
+"use client";
 
-import { useHealthCheck } from '@repo/react'
+import { useHealthCheck } from "@repo/react";
 
 export function HealthStatus() {
-  const { data, isLoading } = useHealthCheck()
-  
-  if (isLoading) return <div>Loading...</div>
+  const { data, isLoading } = useHealthCheck();
+
+  if (isLoading) return <div>Loading...</div>;
   return (
     <div>
       API ok: {String(data?.ok)} — DB ready: {String(data?.dbReady)}
     </div>
-  )
+  );
 }
 ```
 
@@ -132,24 +149,24 @@ export function HealthStatus() {
 Wrap your app with `QueryClientProvider` and `ApiProvider`:
 
 ```tsx
-import { ApiProvider } from '@repo/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createClient } from '@repo/core'
+import { ApiProvider } from "@repo/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createClient } from "@repo/core";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 // Create core client instance with authentication (JWT mode)
 // For Next.js apps, use getAuthToken, getRefreshToken, updateAuthTokens from @/lib/auth/auth-client
 const coreClient = createClient({
-  baseUrl: 'https://api.example.com',
-  getAuthToken: async () => localStorage.getItem('accessToken'),
-  getRefreshToken: async () => localStorage.getItem('refreshToken'),
+  baseUrl: "https://api.example.com",
+  getAuthToken: async () => localStorage.getItem("accessToken"),
+  getRefreshToken: async () => localStorage.getItem("refreshToken"),
   onTokensRefreshed: async ({ token, refreshToken }) => {
-    localStorage.setItem('accessToken', token)
-    localStorage.setItem('refreshToken', refreshToken)
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("refreshToken", refreshToken);
   },
-  getHeaders: async () => ({ 'X-Custom': 'value' }),
-})
+  getHeaders: async () => ({ "X-Custom": "value" }),
+});
 
 function App() {
   return (
@@ -164,7 +181,7 @@ function App() {
         <MyComponent />
       </ApiProvider>
     </QueryClientProvider>
-  )
+  );
 }
 ```
 
@@ -173,32 +190,32 @@ function App() {
 Hooks are fully typed using types from `@repo/core`. All standard TanStack Query options are supported, including the ability to override the default `queryKey`.
 
 ```tsx
-import { useHealthCheck } from '@repo/react'
+import { useHealthCheck } from "@repo/react";
 
 function MyComponent() {
   // Hook uses core client instance directly
   // data is fully typed from @repo/core types
-  const { data, isLoading, error } = useHealthCheck()
-  
+  const { data, isLoading, error } = useHealthCheck();
+
   // Hooks support params that the core client function supports
-  const { data: healthData } = useHealthCheck({ query: { include: 'details' } })
-  
+  const { data: healthData } = useHealthCheck({
+    query: { include: "details" },
+  });
+
   // Override query options per hook
-  const { data: refetchData } = useHealthCheck(
-    undefined,
-    { refetchInterval: 30000 }
-  )
-  
+  const { data: refetchData } = useHealthCheck(undefined, {
+    refetchInterval: 30000,
+  });
+
   // Override queryKey for custom caching behavior
-  const { data: customData } = useHealthCheck(
-    undefined,
-    { queryKey: ['custom-health-check'] }
-  )
-  
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error: {error.message}</div>
-  
-  return <div>Server status: {data?.now}</div>
+  const { data: customData } = useHealthCheck(undefined, {
+    queryKey: ["custom-health-check"],
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return <div>Server status: {data?.now}</div>;
 }
 ```
 
@@ -207,24 +224,24 @@ function MyComponent() {
 You can create custom hooks for other API endpoints by following this pattern:
 
 ```tsx
-import type { EndpointData, EndpointResponse } from '@repo/core'
-import type { UseQueryOptions } from '@tanstack/react-query'
-import { useQuery } from '@tanstack/react-query'
-import { useReactApiConfig } from '@repo/react'
+import type { EndpointData, EndpointResponse } from "@repo/core";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useReactApiConfig } from "@repo/react";
 
 export function useEndpoint(
   params?: EndpointData,
-  options?: Omit<UseQueryOptions<EndpointResponse, Error>, 'queryFn'>,
+  options?: Omit<UseQueryOptions<EndpointResponse, Error>, "queryFn">
 ) {
-  const { client, queryClientDefaults } = useReactApiConfig()
+  const { client, queryClientDefaults } = useReactApiConfig();
   return useQuery<EndpointResponse, Error>({
-    queryKey: ['endpoint', params],
+    queryKey: ["endpoint", params],
     queryFn: async () => {
-      return (await client.endpoint(params)) as unknown as EndpointResponse
+      return (await client.endpoint(params)) as unknown as EndpointResponse;
     },
     ...queryClientDefaults,
     ...options,
-  })
+  });
 }
 ```
 
@@ -233,18 +250,18 @@ export function useEndpoint(
 Use `useReactApiConfig` to access the API client directly:
 
 ```tsx
-import { useReactApiConfig } from '@repo/react'
+import { useReactApiConfig } from "@repo/react";
 
 function CustomHook() {
-  const { client, queryClientDefaults } = useReactApiConfig()
-  
+  const { client, queryClientDefaults } = useReactApiConfig();
+
   // Use client directly for custom logic
   const customOperation = async () => {
-    const result = await client.auth.magiclink.request({ body: { email } })
-    return result
-  }
-  
-  return { customOperation }
+    const result = await client.auth.magiclink.request({ body: { email } });
+    return result;
+  };
+
+  return { customOperation };
 }
 ```
 
@@ -268,13 +285,13 @@ Individual hooks can override these defaults:
 
 ```tsx
 // This hook won't retry (overrides default retry: 3)
-const { data } = useHealthCheck(undefined, { retry: false })
+const { data } = useHealthCheck(undefined, { retry: false });
 
 // Override queryKey while keeping other defaults
-const { data } = useHealthCheck(undefined, { 
-  queryKey: ['health', 'custom'],
-  refetchInterval: 10000 
-})
+const { data } = useHealthCheck(undefined, {
+  queryKey: ["health", "custom"],
+  refetchInterval: 10000,
+});
 ```
 
 All standard TanStack Query options are supported, including `queryKey`, `retry`, `staleTime`, `refetchInterval`, `enabled`, `onSuccess`, `onError`, and more.
@@ -284,24 +301,28 @@ All standard TanStack Query options are supported, including `queryKey`, `retry`
 Hooks throw errors that you can handle:
 
 ```tsx
-import { useHealthCheck } from '@repo/react'
-import { ApiError } from '@repo/core'
+import { useHealthCheck } from "@repo/react";
+import { ApiError } from "@repo/core";
 
 function HealthStatus() {
-  const { data, error } = useHealthCheck()
-  
+  const { data, error } = useHealthCheck();
+
   if (error) {
     if (error instanceof ApiError) {
-      return <div>API Error {error.status}: {error.message}</div>
+      return (
+        <div>
+          API Error {error.status}: {error.message}
+        </div>
+      );
     }
-    return <div>Error: {error.message}</div>
+    return <div>Error: {error.message}</div>;
   }
-  
+
   return (
     <div>
       API ok: {String(data?.ok)} — DB ready: {String(data?.dbReady)}
     </div>
-  )
+  );
 }
 ```
 
@@ -310,6 +331,7 @@ function HealthStatus() {
 ### Type Safety
 
 All types are imported directly from `@repo/core`, ensuring:
+
 - **Single source of truth**: Types are generated once in `@repo/core` from the OpenAPI spec
 - **No duplication**: This package doesn't generate its own types
 - **Type consistency**: Hooks use the same types as the core client

@@ -29,7 +29,7 @@ flowchart TB
   end
 
   subgraph Tools["tools/"]
-    Eslint["eslint"]
+    Oxlint["oxlint / oxfmt"]
     Ts["typescript"]
     Create["create-basilic (upstream only)"]
   end
@@ -58,7 +58,7 @@ flowchart TB
 
 **Apps:** `api` (Fastify), `web` (Next.js 16), `mobile` (Expo 57 UI scaffold — shares **tokens** later, not components/`@repo/core` types yet), `agents` (eve `command`/`chat` sibling; not scored; not copied by `create-basilic` yet), `docu` (Fumadocs, not copied into generated projects).
 
-**Tools:** `eslint`, `typescript` (copied), `create-basilic` (generator; excluded from generated projects). See [ADR 012](/docs/adrs/012-scaffolding-and-releases).
+**Tools:** `typescript` (copied), root Ultracite configs (`oxlint.config.ts`, `oxfmt.config.ts`), `create-basilic` (generator; excluded from generated projects). See [ADR 012](/docs/adrs/012-scaffolding-and-releases).
 
 **Packages:** `core` (generated, no app runtime), `react` (handwritten hooks on core), `ui`, `email`, `error`, `utils` (`@repo/utils/view-config` is the closed board ViewConfig), `cli`, `db` (Drizzle schema + named fns; Fastify + eve host), `markets` (CoinGecko + Binance; Fastify + eve host), `onchain` (Alchemy Portfolio; Fastify + eve host).
 

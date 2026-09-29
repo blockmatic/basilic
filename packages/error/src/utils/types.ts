@@ -16,20 +16,26 @@
  */
 export interface ErrorWithMessage {
   /** Error message string */
-  message: string
+  message: string;
 }
 
 /**
  * Success variant of Result type.
  * Contains the successful data value, error is undefined.
  */
-type Success<T> = { data: T; error: undefined }
+interface Success<T> {
+  data: T;
+  error: undefined;
+}
 
 /**
  * Failure variant of Result type.
  * Contains the error value, data is undefined.
  */
-type Failure<E> = { data: undefined; error: E }
+interface Failure<E> {
+  data: undefined;
+  error: E;
+}
 
 /**
  * Result type representing either success or failure.
@@ -53,4 +59,6 @@ type Failure<E> = { data: undefined; error: E }
  * }
  * ```
  */
-export type Result<T, E extends ErrorWithMessage = ErrorWithMessage> = Success<T> | Failure<E>
+export type Result<T, E extends ErrorWithMessage = ErrorWithMessage> =
+  | Success<T>
+  | Failure<E>;

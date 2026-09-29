@@ -22,12 +22,12 @@ export async function fetchWithTimeout({
   options = {},
   timeoutMs = 5000,
 }: {
-  url: string
-  options?: RequestInit
-  timeoutMs?: number
+  url: string;
+  options?: RequestInit;
+  timeoutMs?: number;
 }): Promise<Response> {
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     // ts-reset makes fetch return unknown, but we know it's Response
@@ -35,26 +35,30 @@ export async function fetchWithTimeout({
     const response = (await fetch(url, {
       ...options,
       signal: controller.signal,
-    })) as Response
-    return response
+    })) as Response;
+    return response;
   } catch (error) {
     // Enhance error with more context
     if (error instanceof Error) {
       if (controller.signal.aborted) {
-        const timeoutError = new Error(`Request to ${url} timed out after ${timeoutMs}ms`)
-        timeoutError.cause = error
-        throw timeoutError
+        const timeoutError = new Error(
+          `Request to ${url} timed out after ${timeoutMs}ms`
+        );
+        timeoutError.cause = error;
+        throw timeoutError;
       }
       // Preserve original error with URL context
-      const enhancedError = new Error(`Failed to fetch ${url}: ${error.message}`)
-      enhancedError.cause = error
-      if ('code' in error) {
-        ;(enhancedError as Error & { code: unknown }).code = error.code
+      const enhancedError = new Error(
+        `Failed to fetch ${url}: ${error.message}`
+      );
+      enhancedError.cause = error;
+      if ("code" in error) {
+        (enhancedError as Error & { code: unknown }).code = error.code;
       }
-      throw enhancedError
+      throw enhancedError;
     }
-    throw error
+    throw error;
   } finally {
-    clearTimeout(timeoutId)
+    clearTimeout(timeoutId);
   }
 }

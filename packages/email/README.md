@@ -18,13 +18,14 @@ Pre-configured email templates using React Email components. Templates are fully
 Welcome email for new users.
 
 ```tsx
-import { WelcomeEmail } from '@repo/email/emails/welcome'
-import { render } from '@repo/email/render'
+import { WelcomeEmail } from "@repo/email/emails/welcome";
+import { render } from "@repo/email/render";
 
-const html = await render(<WelcomeEmail fullName="John Doe" />)
+const html = await render(<WelcomeEmail fullName="John Doe" />);
 ```
 
 **Props:**
+
 - `fullName` (string, optional) - User's full name
 
 ### `LoginNotificationEmail`
@@ -32,8 +33,8 @@ const html = await render(<WelcomeEmail fullName="John Doe" />)
 Sent when a **new browser/OS fingerprint** signs in (not on every login). One CTA signs that session out.
 
 ```tsx
-import { LoginNotificationEmail } from '@repo/email/emails/login-notification'
-import { render } from '@repo/email/render'
+import { LoginNotificationEmail } from "@repo/email/emails/login-notification";
+import { render } from "@repo/email/render";
 
 const html = await render(
   <LoginNotificationEmail
@@ -46,7 +47,7 @@ const html = await render(
     sessionsUrl="https://app.example.com/settings/security/sessions"
     appName="Acme"
   />
-)
+);
 const text = await render(
   <LoginNotificationEmail
     signInType="Email code"
@@ -55,11 +56,12 @@ const text = await render(
     timestamp={new Date().toISOString()}
     signOutUrl="https://app.example.com/auth/session/revoke?verificationId=...&token=..."
   />,
-  { plainText: true },
-)
+  { plainText: true }
+);
 ```
 
 **Props:**
+
 - `signInType` (string) - How they signed in
 - `device` (string) - Browser and OS label
 - `ipAddress` (string) - Client IP
@@ -75,8 +77,8 @@ const text = await render(
 Sent to the previous address after a successful email change.
 
 ```tsx
-import { EmailChangedNotification } from '@repo/email/emails/email-changed-notification'
-import { render } from '@repo/email/render'
+import { EmailChangedNotification } from "@repo/email/emails/email-changed-notification";
+import { render } from "@repo/email/render";
 
 const html = await render(
   <EmailChangedNotification
@@ -84,10 +86,11 @@ const html = await render(
     sessionsUrl="https://app.example.com/settings/security/sessions"
     appName="Acme"
   />
-)
+);
 ```
 
 **Props:**
+
 - `newEmail` (string)
 - `fullName` (string, optional)
 - `appName` (string, optional)
@@ -98,8 +101,8 @@ const html = await render(
 Magic link email for passwordless authentication.
 
 ```tsx
-import { MagicLinkLoginEmail } from '@repo/email/emails/magic-link-login'
-import { render } from '@repo/email/render'
+import { MagicLinkLoginEmail } from "@repo/email/emails/magic-link-login";
+import { render } from "@repo/email/render";
 
 const html = await render(
   <MagicLinkLoginEmail
@@ -107,10 +110,11 @@ const html = await render(
     expirationMinutes={15}
     fullName="John Doe"
   />
-)
+);
 ```
 
 **Props:**
+
 - `magicLink` (string) - Magic link URL
 - `expirationMinutes` (number, optional, default: 15) - Link expiration time in minutes
 - `fullName` (string, optional) - User's full name
@@ -129,18 +133,18 @@ The `render` function is **server-only** and must be used in:
 **Do not use in client components or browser code.**
 
 ```tsx
-import { WelcomeEmail } from '@repo/email/emails/welcome'
-import { render } from '@repo/email/render'
+import { WelcomeEmail } from "@repo/email/emails/welcome";
+import { render } from "@repo/email/render";
 
 // In API route or Server Component
-const html = await render(<WelcomeEmail fullName="John Doe" />)
+const html = await render(<WelcomeEmail fullName="John Doe" />);
 
 // Send HTML via email service
 await emailService.send({
-  to: 'user@example.com',
-  subject: 'Welcome!',
+  to: "user@example.com",
+  subject: "Welcome!",
   html,
-})
+});
 ```
 
 ### Development Server

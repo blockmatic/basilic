@@ -88,20 +88,22 @@ function getButtonInjectionScript(): string {
         observer.disconnect();
       }
     }, 100);
-  }`
+  }`;
 }
 
 export function getInitScript(opts: {
-  apiUrl: string
-  openApiUrl: string
-  callbackUrl: string
-  jwtToken: string | null
-  verificationId?: string
+  apiUrl: string;
+  openApiUrl: string;
+  callbackUrl: string;
+  jwtToken: string | null;
+  verificationId?: string;
 }): string {
-  const { apiUrl, openApiUrl, callbackUrl, jwtToken, verificationId } = opts
-  const jwtJson = jwtToken ? JSON.stringify(jwtToken) : 'null'
-  const verificationIdJson = verificationId ? JSON.stringify(verificationId) : 'null'
-  const buttonScript = getButtonInjectionScript()
+  const { apiUrl, openApiUrl, callbackUrl, jwtToken, verificationId } = opts;
+  const jwtJson = jwtToken ? JSON.stringify(jwtToken) : "null";
+  const verificationIdJson = verificationId
+    ? JSON.stringify(verificationId)
+    : "null";
+  const buttonScript = getButtonInjectionScript();
 
   return `
 (function() {
@@ -243,5 +245,5 @@ export function getInitScript(opts: {
   
   injectLoginLinkInternal(scalarApiReference, showModal);
 })();
-`
+`;
 }

@@ -1,10 +1,16 @@
-'use client'
+"use client";
 
-import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
-import { Button } from '@repo/ui/components/button'
-import { X } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from "@repo/ui/components/alert";
+import { Button } from "@repo/ui/components/button";
+import { X } from "lucide-react";
 
-export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+export function ErrorBanner({
+  message,
+  onDismiss,
+}: {
+  message: string;
+  onDismiss: () => void;
+}) {
   return (
     <Alert variant="destructive" className="mb-4">
       <AlertTitle className="text-center">Error</AlertTitle>
@@ -21,5 +27,5 @@ export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss
         </Button>
       </AlertDescription>
     </Alert>
-  )
+  );
 }

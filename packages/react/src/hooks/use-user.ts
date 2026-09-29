@@ -1,7 +1,8 @@
-import type { GetUserResponse } from '@repo/core'
-import type { UseQueryOptions } from '@tanstack/react-query'
-import { useQuery } from '@tanstack/react-query'
-import { useReactApiConfig } from '../context'
+import type { GetUserResponse } from "@repo/core";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+
+import { useReactApiConfig } from "../context";
 
 /**
  * React Query hook for current user (auth/session/user).
@@ -24,15 +25,15 @@ import { useReactApiConfig } from '../context'
  * ```
  */
 export function useUser(
-  options?: Partial<Omit<UseQueryOptions<GetUserResponse, Error>, 'queryFn'>>,
+  options?: Partial<Omit<UseQueryOptions<GetUserResponse, Error>, "queryFn">>
 ) {
-  const { client, queryClientDefaults } = useReactApiConfig()
+  const { client, queryClientDefaults } = useReactApiConfig();
 
   return useQuery<GetUserResponse, Error>({
-    queryKey: ['auth', 'session', 'user'],
     queryFn: async () => client.auth.session.user(),
+    queryKey: ["auth", "session", "user"],
     retry: false,
     ...queryClientDefaults,
     ...options,
-  })
+  });
 }

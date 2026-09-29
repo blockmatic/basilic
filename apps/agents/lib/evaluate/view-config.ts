@@ -1,12 +1,11 @@
 import {
   defaultSearchQuery,
   parseViewConfig,
-  type ViewConfig,
-  type ViewSurface,
   viewConfigSchema,
   viewFromSearchQuery,
-} from '@repo/utils/view-config'
-import { z } from 'zod'
+} from "@repo/utils/view-config";
+import type { ViewConfig, ViewSurface } from "@repo/utils/view-config";
+import { z } from "zod";
 
 export {
   defaultSearchQuery,
@@ -15,11 +14,11 @@ export {
   type ViewSurface,
   viewConfigSchema,
   viewFromSearchQuery,
-}
+};
 
 export const setViewInputSchema = z.object({
-  viewConfig: viewConfigSchema.omit({ elements: true }),
   honesty: z.string().optional(),
-})
+  viewConfig: viewConfigSchema.omit({ elements: true }),
+});
 
-export type SetViewInput = z.infer<typeof setViewInputSchema>
+export type SetViewInput = z.infer<typeof setViewInputSchema>;

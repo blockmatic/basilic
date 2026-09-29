@@ -1,38 +1,51 @@
-'use client'
+"use client";
 
-import type { Web3Eip155VerifyResponse, Web3SolanaVerifyResponse } from '@repo/core'
-import { ApiError } from '@repo/core'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useReactApiConfig } from '../../context'
-import type { Web3Chain } from '../../types'
+import type {
+  Web3Eip155VerifyResponse,
+  Web3SolanaVerifyResponse,
+} from "@repo/core";
+import { ApiError } from "@repo/core";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export type { Web3Chain }
+import { useReactApiConfig } from "../../context";
+import type { Web3Chain } from "../../types";
 
-export type UseVerifyWeb3AuthParams = {
-  chain: Web3Chain
-  message: string
-  signature: string
-  domain: string
-  callbackUrl?: string
+export type { Web3Chain };
+
+export interface UseVerifyWeb3AuthParams {
+  chain: Web3Chain;
+  message: string;
+  signature: string;
+  domain: string;
+  callbackUrl?: string;
 }
 
-function throwVerifyFailure({ status, text }: { status: number; text: string }): never {
-  let body: unknown
+function throwVerifyFailure({
+  status,
+  text,
+}: {
+  status: number;
+  text: string;
+}): never {
+  let body: unknown;
   try {
-    body = JSON.parse(text) as unknown
+    body = JSON.parse(text) as unknown;
   } catch {
-    body = { message: text }
+    body = { message: text };
   }
   const message =
-    body && typeof body === 'object' && 'message' in body && typeof body.message === 'string'
+    body &&
+    typeof body === "object" &&
+    "message" in body &&
+    typeof body.message === "string"
       ? body.message
-      : text || `Verify failed: ${status}`
-  throw new ApiError(status, message, body)
+      : text || `Verify failed: ${status}`;
+  throw new ApiError(status, message, body);
 }
 
 export function useVerifyWeb3Auth() {
-  const { client, baseUrl } = useReactApiConfig()
-  const queryClient = useQueryClient()
+  const { client, baseUrl } = useReactApiConfig();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({
@@ -41,43 +54,49 @@ export function useVerifyWeb3Auth() {
       signature,
       domain,
       callbackUrl,
-    }: UseVerifyWeb3AuthParams): Promise<Web3Eip155VerifyResponse | Web3SolanaVerifyResponse> => {
+    }: UseVerifyWeb3AuthParams): Promise<
+      Web3Eip155VerifyResponse | Web3SolanaVerifyResponse
+    > => {
       if (callbackUrl) {
-        const { getClientConfig } = await import('@repo/core')
-        const url = baseUrl || getClientConfig(client)?.baseUrl || ''
-        if (!url?.trim()) throw new Error('baseUrl is required for web3 verification')
+        const { getClientConfig } = await import("@repo/core");
+        const url = baseUrl || getClientConfig(client)?.baseUrl || "";
+        if (!url?.trim()) {
+          throw new Error("baseUrl is required for web3 verification");
+        }
 
         const verifyUrl =
-          chain === 'eip155' ? `${url}/auth/web3/eip155/verify` : `${url}/auth/web3/solana/verify`
+          chain === "eip155"
+            ? `${url}/auth/web3/eip155/verify`
+            : `${url}/auth/web3/solana/verify`;
         const res = await fetch(verifyUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message, signature, domain, callbackUrl }),
-          redirect: 'manual',
-        })
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+          redirect: "manual",
+        });
         if (res.status === 302) {
-          const location = res.headers.get('Location')
+          const location = res.headers.get("Location");
           if (location) {
-            window.location.href = location
-            return {} as Web3Eip155VerifyResponse
+            window.location.href = location;
+            return {} as Web3Eip155VerifyResponse;
           }
         }
-        throwVerifyFailure({ status: res.status, text: await res.text() })
+        throwVerifyFailure({ status: res.status, text: await res.text() });
       }
 
-      return chain === 'eip155'
+      return chain === "eip155"
         ? client.auth.web3.eip155.verify({
-            body: { message, signature, domain },
+            body: { domain, message, signature },
             throwOnError: true,
           })
         : client.auth.web3.solana.verify({
-            body: { message, signature, domain },
+            body: { domain, message, signature },
             throwOnError: true,
-          })
+          });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
-      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
+      queryClient.invalidateQueries({ queryKey: ["auth", "session", "user"] });
+      queryClient.invalidateQueries({ queryKey: ["auth", "session", "jwt"] });
     },
-  })
+  });
 }

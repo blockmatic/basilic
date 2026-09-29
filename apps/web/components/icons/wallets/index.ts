@@ -1,1 +1,1 @@
-export { BraveWalletIcon } from './brave'
+export { BraveWalletIcon } from "./brave";

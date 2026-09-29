@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from "react";
 
 export function GitHub(props: SVGProps<SVGSVGElement>) {
   return (
@@ -11,5 +11,5 @@ export function GitHub(props: SVGProps<SVGSVGElement>) {
         fill="currentColor"
       />
     </svg>
-  )
+  );
 }

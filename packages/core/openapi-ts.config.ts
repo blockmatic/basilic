@@ -1,11 +1,11 @@
-import { defineConfig } from '@hey-api/openapi-ts'
+import { defineConfig } from "@hey-api/openapi-ts";
 
 export default defineConfig({
-  input: '../../apps/api/openapi/openapi.json',
+  input: "../../apps/api/openapi/openapi.json",
   output: {
-    path: './src/gen',
+    path: "./src/gen",
   },
   types: {
-    enums: 'typescript',
+    enums: "typescript",
   },
-})
+});

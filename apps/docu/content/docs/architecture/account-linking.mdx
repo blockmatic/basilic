@@ -10,7 +10,7 @@ Account linking lets users attach additional sign-in methods (email, OAuth provi
 ## Change email vs link email
 
 | Capability | Change email | Link email |
-|------------|--------------|------------|
+| --- | --- | --- |
 | Effect | Replaces `users.email` | Sets `users.email` when it is currently null |
 | Flow | Request → verify code/link → update | Request → verify link → set email |
 | Use case | User changes email address | Authenticated session with `users.email` null requests a primary email |

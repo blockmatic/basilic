@@ -1,4 +1,4 @@
-import type { FastifyRequest } from 'fastify'
+import type { FastifyRequest } from "fastify";
 
 export function logAuthSignal({
   request,
@@ -6,26 +6,26 @@ export function logAuthSignal({
   code,
   signInMethod,
 }: {
-  request: FastifyRequest
-  event: 'auth_verify_failed' | 'auth_locked'
-  code: string
-  signInMethod: string
+  request: FastifyRequest;
+  event: "auth_verify_failed" | "auth_locked";
+  code: string;
+  signInMethod: string;
 }): void {
-  request.log.warn({ code, signInMethod }, event)
+  request.log.warn({ code, signInMethod }, event);
 }
 
 export function logAuthVerifyFailed(opts: {
-  request: FastifyRequest
-  code: string
-  signInMethod: string
+  request: FastifyRequest;
+  code: string;
+  signInMethod: string;
 }): void {
-  logAuthSignal({ ...opts, event: 'auth_verify_failed' })
+  logAuthSignal({ ...opts, event: "auth_verify_failed" });
 }
 
 export function logAuthLocked(opts: {
-  request: FastifyRequest
-  code: string
-  signInMethod: string
+  request: FastifyRequest;
+  code: string;
+  signInMethod: string;
 }): void {
-  logAuthSignal({ ...opts, event: 'auth_locked' })
+  logAuthSignal({ ...opts, event: "auth_locked" });
 }

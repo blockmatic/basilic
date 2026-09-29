@@ -1,1 +1,1 @@
-export { CoinBoard } from './island'
+export { CoinBoard } from "./island";

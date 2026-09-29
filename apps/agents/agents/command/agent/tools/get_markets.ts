@@ -1,9 +1,10 @@
-import { getMarkets } from '@repo/markets'
-import { defineTool } from 'eve/tools'
-import { z } from 'zod'
+import { getMarkets } from "@repo/markets";
+import { defineTool } from "eve/tools";
+import { z } from "zod";
 
 export default defineTool({
-  description: 'List public market rows. No user id.',
+  description: "List public market rows. No user id.",
+  execute: (input) => getMarkets(input),
   inputSchema: z.object({
     vs: z.string().optional(),
     topN: z.number().int().positive().optional(),
@@ -11,5 +12,4 @@ export default defineTool({
     ids: z.array(z.string()).optional(),
     sparkline: z.boolean().optional(),
   }),
-  execute: input => getMarkets(input),
-})
+});

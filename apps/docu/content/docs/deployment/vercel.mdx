@@ -19,6 +19,7 @@ This is how you ship Basilic. Git integration deploys automatically: preview on 
 Set environment variables in Vercel project settings:
 
 **For API (`apps/api`):**
+
 ```bash
 POSTGRES_URL=postgresql://user:pass@host:5432/dbname
 ENCRYPTION_KEY=<64-char-hex>
@@ -38,6 +39,7 @@ SENTRY_DSN=https://...
 Scope `POSTGRES_URL` per Vercel environment. Production and Preview must not share a URL. Preview builds skip `db:migrate` unless `RUN_PG_MIGRATE=true` (use that only with an isolated Preview database). Vercel Marketplace Postgres already injects `POSTGRES_URL`.
 
 **For Web (`apps/web`):**
+
 ```bash
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com
 NEXT_PUBLIC_APP_URL=https://app.yourdomain.com
@@ -45,6 +47,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://...
 ```
 
 **For Docs (`apps/docu`):**
+
 ```bash
 NEXT_PUBLIC_SITE_URL=https://docs.yourdomain.com
 ```
@@ -90,11 +93,13 @@ Optional: set `TURBO_TOKEN` and `TURBO_TEAM` in Vercel project environment varia
 ## Environment-Specific Configuration
 
 ### Development
+
 - Preview deployments for every PR
 - Uses staging environment variables
 - Automatic URL generation
 
 ### Production
+
 - Deploys from `main` branch
 - Uses production environment variables
 - Custom domain configuration
@@ -187,20 +192,24 @@ Basilic is **not** an official Vercel project. It is built around Vercel-oriente
 ## Troubleshooting
 
 ### Build Fails
+
 - Check build logs in Vercel dashboard
 - Verify environment variables are set
 - Ensure all dependencies are installed
 
 ### Deployment Not Created
+
 - Vercel auto-deploys from Git integration. Ensure projects are connected in Vercel dashboard.
 - Check that relevant paths changed; `ignoreCommand` in `vercel.json` may skip deploys for unrelated changes.
 
 ### Environment Variables Not Applied
+
 - Redeploy after changing environment variables
 - Check variable names match exactly (case-sensitive)
 - Verify variables are set for the correct environment (production/preview)
 
 ### "spawn pnpm ENOENT", missing pnpm wrapper, or path ".../apps/docu/apps/docu"
+
 - **pnpm ENOENT / wrapper missing**: Vercel’s `packageManager` provisioning skips lifecycle scripts, so the pnpm 12 on `PATH` is a placeholder. `vercel.json` runs `node scripts/vercel-install.mjs` for install, build, and dev: `npm install -g pnpm@<pin>` with scripts, then that binary with `PNPM_HOME` isolated and package-manager switching off. That `npm install -g` uses the version string only; it does not verify the `packageManager` sha512.
 - **Path duplication**: Ensure Vercel project settings → General → Root Directory is `apps/web`, `apps/docu`, `apps/api`, or `apps/agents` (not `.` or blank). `vercel.json` install/build commands `cd ../..` to the monorepo root.
 

@@ -1,5 +1,6 @@
-import { type createClient, getClientConfig } from '@repo/core'
-import type { QueryClient } from '@tanstack/react-query'
+import { getClientConfig } from "@repo/core";
+import type { createClient } from "@repo/core";
+import type { QueryClient } from "@tanstack/react-query";
 
 /**
  * Configuration options for React API provider.
@@ -16,58 +17,58 @@ import type { QueryClient } from '@tanstack/react-query'
  * }
  * ```
  */
-export type ReactApiConfig = {
+export interface ReactApiConfig {
   /** API client instance from `@repo/core` */
-  client: ReturnType<typeof createClient>
+  client: ReturnType<typeof createClient>;
 
   /**
    * Base URL for the API. Optional when client is from createClient with baseUrl.
    */
-  baseUrl?: string
+  baseUrl?: string;
 
   /**
    * Callback to get Bearer token. Optional when client is from createClient with getAuthToken.
    */
-  getAuthToken?: () => Promise<string | null>
+  getAuthToken?: () => Promise<string | null>;
 
   /** Optional TanStack Query client instance */
-  queryClient?: QueryClient
+  queryClient?: QueryClient;
 
   /** Default query options applied to all hooks */
   queryClientDefaults?: {
     /** Number of retry attempts on failure */
-    retry?: number
+    retry?: number;
 
     /** Time in milliseconds before data is considered stale */
-    staleTime?: number
-  }
+    staleTime?: number;
+  };
 }
 
 /**
  * Internal configuration value stored in React context.
  * Includes normalized defaults for query client options.
  */
-export type ReactApiConfigValue = {
+export interface ReactApiConfigValue {
   /** API client instance from `@repo/core` */
-  client: ReturnType<typeof createClient>
+  client: ReturnType<typeof createClient>;
 
   /** Base URL for the API */
-  baseUrl?: string
+  baseUrl?: string;
 
   /** Callback to get Bearer token */
-  getAuthToken?: () => Promise<string | null>
+  getAuthToken?: () => Promise<string | null>;
 
   /** Optional TanStack Query client instance */
-  queryClient?: QueryClient
+  queryClient?: QueryClient;
 
   /** Normalized default query options (always an object, never undefined) */
   queryClientDefaults: {
     /** Number of retry attempts on failure */
-    retry?: number
+    retry?: number;
 
     /** Time in milliseconds before data is considered stale */
-    staleTime?: number
-  }
+    staleTime?: number;
+  };
 }
 
 /**
@@ -79,17 +80,19 @@ export type ReactApiConfigValue = {
  * @param options - React API configuration options
  * @returns Normalized configuration value for React context
  */
-export function createReactApiConfig(options: ReactApiConfig): ReactApiConfigValue {
-  const clientConfig = getClientConfig(options.client)
-  const rawGetAuthToken = options.getAuthToken ?? clientConfig?.getAuthToken
+export function createReactApiConfig(
+  options: ReactApiConfig
+): ReactApiConfigValue {
+  const clientConfig = getClientConfig(options.client);
+  const rawGetAuthToken = options.getAuthToken ?? clientConfig?.getAuthToken;
   const getAuthToken = rawGetAuthToken
     ? async (): Promise<string | null> => (await rawGetAuthToken()) ?? null
-    : undefined
+    : undefined;
   return {
-    client: options.client,
     baseUrl: options.baseUrl ?? clientConfig?.baseUrl,
+    client: options.client,
     getAuthToken,
     queryClient: options.queryClient,
     queryClientDefaults: options.queryClientDefaults ?? {},
-  }
+  };
 }

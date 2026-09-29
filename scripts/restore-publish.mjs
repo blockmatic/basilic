@@ -1,37 +1,37 @@
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from "node:fs";
+import path from "node:path";
 
-const pkgPath = path.resolve(process.cwd(), 'package.json')
-const tempPath = path.resolve(process.cwd(), '.package-originals.json')
+const pkgPath = path.resolve(process.cwd(), "package.json");
+const tempPath = path.resolve(process.cwd(), ".package-originals.json");
 
 if (!fs.existsSync(tempPath)) {
   // No originals stored, skip restore
-  process.exit(0)
+  process.exit(0);
 }
 
-const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
-const originals = JSON.parse(fs.readFileSync(tempPath, 'utf8'))
+const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+const originals = JSON.parse(fs.readFileSync(tempPath, "utf-8"));
 
 // Restore original exports (handle null/undefined)
-if (originals.exports !== null) {
-  pkg.exports = JSON.parse(originals.exports)
+if (originals.exports === null) {
+  delete pkg.exports;
 } else {
-  delete pkg.exports
+  pkg.exports = JSON.parse(originals.exports);
 }
 
-if (originals.main !== null) {
-  pkg.main = originals.main
+if (originals.main === null) {
+  delete pkg.main;
 } else {
-  delete pkg.main
+  pkg.main = originals.main;
 }
 
-if (originals.types !== null) {
-  pkg.types = originals.types
+if (originals.types === null) {
+  delete pkg.types;
 } else {
-  delete pkg.types
+  pkg.types = originals.types;
 }
 
-delete pkg.files
+delete pkg.files;
 
-fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)
-fs.unlinkSync(tempPath)
+fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
+fs.unlinkSync(tempPath);

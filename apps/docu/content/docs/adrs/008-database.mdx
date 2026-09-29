@@ -115,7 +115,7 @@ We will use **PostgreSQL** as the single database engine with **Supabase** as th
 ### TLDR: Comparison Table
 
 | Feature | PostgreSQL + Supabase ✅ | Cloud Managed Postgres | Self-hosted Postgres | Embedded (PGlite) | Other Databases |
-|---------|-------------------------|----------------------|---------------------|-------------------|-----------------|
+| --- | --- | --- | --- | --- | --- |
 | **Portability** | ✅ Standard SQL | ✅ Standard SQL | ✅ Standard SQL | ⚠️ Limited | ❌ Vendor-specific |
 | **ACID transactions** | ✅ Full support | ✅ Full support | ✅ Full support | ✅ Full support | ⚠️ Varies |
 | **Initial setup** | ✅ Fast | ⚠️ More config | ⚠️ Complex | ✅ Very fast | ⚠️ Varies |
@@ -139,6 +139,7 @@ Database migrations follow a host-agnostic strategy that works across all deploy
 ### Migration Execution
 
 **PostgreSQL (Production):**
+
 - Migrations run at **build time** via `pnpm db:migrate` (Vercel: after `turbo run build`, skipped when `VERCEL_ENV=preview` unless `RUN_PG_MIGRATE=true`). Vercel pools skip Postgres CA verification so Marketplace TLS succeeds.
 - Concurrent migrators serialize with a PostgreSQL advisory lock
 - Migrations are **skipped at runtime** (`NODE_ENV=production` / Vercel Preview) so Function cold starts stay cheap
@@ -147,10 +148,12 @@ Database migrations follow a host-agnostic strategy that works across all deploy
 - Works with any deployment platform
 
 **PostgreSQL (local development):**
+
 - Fastify and eve call `runMigrations()` on boot. Development applies Drizzle SQL; production skip remains.
 - Identity seed runs on API boot when `assets` is empty (`seedIdentity` in `apps/api`).
 
 **PGLite (Preview/Development):**
+
 - Migrations skip at build time, run at **runtime** when instance is created
 - PGLite instance doesn't exist at build time
 - Migrations run during app initialization via `runMigrations()`

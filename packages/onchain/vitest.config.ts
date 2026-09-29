@@ -1,11 +1,11 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    include: ['src/**/*.spec.ts'],
-    globals: true,
-    environment: 'node',
+    environment: "node",
     fileParallelism: false,
+    globals: true,
+    include: ["src/**/*.spec.ts"],
     maxWorkers: 1,
   },
-})
+});

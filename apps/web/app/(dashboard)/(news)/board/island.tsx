@@ -1,21 +1,21 @@
-'use client'
+"use client";
 
-import { AccountRequiredProvider } from './account-required'
-import { BoardCanvas } from './board-canvas'
-import type { CoinBoardProps } from './coin-board'
-import { BoardLayout } from './rail'
-import { useCoinBoard } from './use-coin-board'
+import { AccountRequiredProvider } from "./account-required";
+import { BoardCanvas } from "./board-canvas";
+import type { CoinBoardProps } from "./coin-board";
+import { BoardLayout } from "./rail";
+import { useCoinBoard } from "./use-coin-board";
 
 export function CoinBoard(props: CoinBoardProps) {
   return (
     <AccountRequiredProvider>
       <CoinBoardIsland {...props} />
     </AccountRequiredProvider>
-  )
+  );
 }
 
 function CoinBoardIsland(props: CoinBoardProps) {
-  const board = useCoinBoard(props)
+  const board = useCoinBoard(props);
   return (
     <div
       className="flex h-full min-h-0 w-full flex-col"
@@ -41,5 +41,5 @@ function CoinBoardIsland(props: CoinBoardProps) {
         </div>
       </BoardLayout>
     </div>
-  )
+  );
 }

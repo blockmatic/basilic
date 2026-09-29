@@ -1,17 +1,19 @@
-import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { mkdtemp } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { dirname, join, resolve } from 'node:path'
-import { assertEmptyDest, copyTree, IoError, moveAtomic } from './copy.js'
-import { bundledTemplateRoot } from './paths.js'
-import { assertNode24, type ProjectName, parseProjectName } from './project-name.js'
-import { applyProjectTransforms } from './transforms/index.js'
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
 
-export type GenerateInput = {
-  directory: string
-  yes?: boolean
-  templateRoot?: string
-  generatorVersion: string
+import { assertEmptyDest, copyTree, IoError, moveAtomic } from "./copy.js";
+import { bundledTemplateRoot } from "./paths.js";
+import { assertNode24, parseProjectName } from "./project-name.js";
+import type { ProjectName } from "./project-name.js";
+import { applyProjectTransforms } from "./transforms/index.js";
+
+export interface GenerateInput {
+  directory: string;
+  yes?: boolean;
+  templateRoot?: string;
+  generatorVersion: string;
 }
 
 export async function generateProject({
@@ -20,34 +22,39 @@ export async function generateProject({
   templateRoot = bundledTemplateRoot,
   generatorVersion,
 }: GenerateInput) {
-  assertNode24()
-  const name = parseProjectName({ directory })
-  if (!existsSync(join(templateRoot, 'package.json')))
+  assertNode24();
+  const name = parseProjectName({ directory });
+  if (!existsSync(join(templateRoot, "package.json"))) {
     throw new IoError(
-      'Bundled template is missing. Assemble before packing, or pass templateRoot in tests.',
-    )
-  const dest = resolve(directory)
-  await assertEmptyDest({ dest })
-  if (existsSync(dest)) rmSync(dest, { recursive: true, force: true })
-
-  const parent = dirname(dest)
-  const tempParent = parent === dest ? tmpdir() : parent
-  const temp = await mkdtemp(join(tempParent, `.create-basilic-${name.slug}-`))
-
-  try {
-    await copyTree({ from: templateRoot, to: temp })
-    applyProjectTransforms({ destRoot: temp, name })
-    writeAdopterReadme({ destRoot: temp, name })
-    writeProvenance({ destRoot: temp, name, generatorVersion, yes })
-    rmSync(join(temp, '.basilic-template.json'), { force: true })
-    await moveAtomic({ from: temp, to: dest })
-  } catch (error) {
-    rmSync(temp, { recursive: true, force: true })
-    if (error instanceof IoError) throw error
-    throw new IoError(error instanceof Error ? error.message : String(error))
+      "Bundled template is missing. Assemble before packing, or pass templateRoot in tests."
+    );
+  }
+  const dest = resolve(directory);
+  await assertEmptyDest({ dest });
+  if (existsSync(dest)) {
+    rmSync(dest, { recursive: true, force: true });
   }
 
-  return { dest, name }
+  const parent = dirname(dest);
+  const tempParent = parent === dest ? tmpdir() : parent;
+  const temp = await mkdtemp(join(tempParent, `.create-basilic-${name.slug}-`));
+
+  try {
+    await copyTree({ from: templateRoot, to: temp });
+    applyProjectTransforms({ destRoot: temp, name });
+    writeAdopterReadme({ destRoot: temp, name });
+    writeProvenance({ destRoot: temp, generatorVersion, name, yes });
+    rmSync(join(temp, ".basilic-template.json"), { force: true });
+    await moveAtomic({ from: temp, to: dest });
+  } catch (error) {
+    rmSync(temp, { force: true, recursive: true });
+    if (error instanceof IoError) {
+      throw error;
+    }
+    throw new IoError(error instanceof Error ? error.message : String(error));
+  }
+
+  return { dest, name };
 }
 
 function writeProvenance({
@@ -56,46 +63,67 @@ function writeProvenance({
   generatorVersion,
   yes,
 }: {
-  destRoot: string
-  name: ProjectName
-  generatorVersion: string
-  yes: boolean
+  destRoot: string;
+  name: ProjectName;
+  generatorVersion: string;
+  yes: boolean;
 }) {
-  const path = join(destRoot, 'package.json')
-  const pkg = JSON.parse(readFileSync(path, 'utf8')) as {
-    basilic?: unknown
-  }
-  let templateSourceSha = 'unknown'
-  let templateDigest = 'unknown'
+  const path = join(destRoot, "package.json");
+  const pkg = JSON.parse(readFileSync(path, "utf-8")) as {
+    basilic?: unknown;
+  };
+  let templateSourceSha = "unknown";
+  let templateDigest = "unknown";
   try {
-    const meta = JSON.parse(readFileSync(join(destRoot, '.basilic-template.json'), 'utf8')) as {
-      sourceSha: string
-      digest: string
-    }
-    templateSourceSha = meta.sourceSha
-    templateDigest = meta.digest
+    const meta = JSON.parse(
+      readFileSync(join(destRoot, ".basilic-template.json"), "utf-8")
+    ) as {
+      sourceSha: string;
+      digest: string;
+    };
+    templateSourceSha = meta.sourceSha;
+    templateDigest = meta.digest;
   } catch {
     // packed templates always include the meta file; tests may omit it
   }
   pkg.basilic = {
     generatorVersion,
-    templateSourceSha,
-    templateDigest,
     inputs: { directory: name.slug, yes },
-  }
-  writeFileSync(path, `${JSON.stringify(pkg, null, 2)}\n`)
+    templateDigest,
+    templateSourceSha,
+  };
+  writeFileSync(path, `${JSON.stringify(pkg, null, 2)}\n`);
 }
 
-function writeAdopterReadme({ destRoot, name }: { destRoot: string; name: ProjectName }) {
-  const pkg = JSON.parse(readFileSync(join(destRoot, 'package.json'), 'utf8')) as {
-    packageManager?: string
-  }
-  const pnpmVersion = pkg.packageManager?.match(/^pnpm@([^+]+)/)?.[1] ?? null
-  writeFileSync(join(destRoot, 'README.md'), adopterReadme({ name, pnpmVersion }))
+function writeAdopterReadme({
+  destRoot,
+  name,
+}: {
+  destRoot: string;
+  name: ProjectName;
+}) {
+  const pkg = JSON.parse(
+    readFileSync(join(destRoot, "package.json"), "utf-8")
+  ) as {
+    packageManager?: string;
+  };
+  const pnpmVersion = pkg.packageManager?.match(/^pnpm@([^+]+)/)?.[1] ?? null;
+  writeFileSync(
+    join(destRoot, "README.md"),
+    adopterReadme({ name, pnpmVersion })
+  );
 }
 
-function adopterReadme({ name, pnpmVersion }: { name: ProjectName; pnpmVersion: string | null }) {
-  const pnpmReq = pnpmVersion ? `pnpm ${pnpmVersion}` : 'pnpm (see packageManager)'
+function adopterReadme({
+  name,
+  pnpmVersion,
+}: {
+  name: ProjectName;
+  pnpmVersion: string | null;
+}) {
+  const pnpmReq = pnpmVersion
+    ? `pnpm ${pnpmVersion}`
+    : "pnpm (see packageManager)";
   return `# ${name.displayName}
 
 Generated with [create-basilic](https://www.npmjs.com/package/create-basilic). This tree is an independent monorepo (API, web, mobile). It does not include Basilic's documentation app, generator, or apps/agents.
@@ -121,5 +149,5 @@ Local starter docs: [\`docs/basilic/\`](docs/basilic/). Hosted: [Product Ready](
 Replace display names, mobile scheme (\`apps/mobile/app.json\`), DeepSec \`githubUrl\`, and Vercel project slugs in \`apps/web/next.config.mjs\`. Keep \`@repo/*\` package names.
 
 Upstream contributions belong in a Basilic fork, not this generated repo.
-`
+`;
 }

@@ -2,7 +2,7 @@ name: Mobile PR Preview
 
 on:
   pull_request:
-    paths: ['apps/mobile/**', 'packages/ui/**']
+    paths: ["apps/mobile/**", "packages/ui/**"]
 
 jobs:
   update:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
       - uses: pnpm/action-setup@v4
       - name: Get pnpm store directory
         shell: bash

@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
 import {
   usePasskeyRegister,
   usePasskeyRemove,
   usePasskeysList,
   useWebAuthnAvailable,
-} from '@repo/react'
-import { Alert, AlertDescription } from '@repo/ui/components/alert'
+} from "@repo/react";
+import { Alert, AlertDescription } from "@repo/ui/components/alert";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,9 +15,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@repo/ui/components/alert-dialog'
-import { Button } from '@repo/ui/components/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/card'
+} from "@repo/ui/components/alert-dialog";
+import { Button } from "@repo/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components/card";
 import {
   Dialog,
   DialogContent,
@@ -25,62 +31,68 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@repo/ui/components/dialog'
-import { Input } from '@repo/ui/components/input'
-import { Label } from '@repo/ui/components/label'
-import { Skeleton } from '@repo/ui/components/skeleton'
-import { Trash2Icon } from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
+} from "@repo/ui/components/dialog";
+import { Input } from "@repo/ui/components/input";
+import { Label } from "@repo/ui/components/label";
+import { Skeleton } from "@repo/ui/components/skeleton";
+import { Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleDateString()
+    return new Date(iso).toLocaleDateString();
   } catch {
-    return iso
+    return iso;
   }
 }
 
 const webauthnUnavailableMessage =
-  'Passkeys require a secure connection (HTTPS) and a modern browser. Try accessing this page over HTTPS or updating your browser.'
+  "Passkeys require a secure connection (HTTPS) and a modern browser. Try accessing this page over HTTPS or updating your browser.";
 
 export function PasskeysCard() {
-  const webauthnAvailable = useWebAuthnAvailable()
-  const { data, isLoading, isError, error } = usePasskeysList()
-  const registerMutation = usePasskeyRegister()
-  const removeMutation = usePasskeyRemove()
+  const webauthnAvailable = useWebAuthnAvailable();
+  const { data, isLoading, isError, error } = usePasskeysList();
+  const registerMutation = usePasskeyRegister();
+  const removeMutation = usePasskeyRemove();
 
-  const [removeId, setRemoveId] = useState<string | null>(null)
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-  const [addName, setAddName] = useState('')
+  const [removeId, setRemoveId] = useState<string | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [addName, setAddName] = useState("");
 
   async function handleAddPasskey(name?: string) {
     try {
-      await registerMutation.mutateAsync({ name: name?.trim() || undefined })
-      setAddDialogOpen(false)
-      setAddName('')
-      toast.success('Passkey added')
-    } catch (err) {
-      const isAbort = err instanceof Error && err.name === 'NotAllowedError'
-      if (isAbort) toast.info('Registration cancelled')
-      else toast.error('Failed to add passkey')
+      await registerMutation.mutateAsync({ name: name?.trim() || undefined });
+      setAddDialogOpen(false);
+      setAddName("");
+      toast.success("Passkey added");
+    } catch (error) {
+      const isAbort =
+        error instanceof Error && error.name === "NotAllowedError";
+      if (isAbort) {
+        toast.info("Registration cancelled");
+      } else {
+        toast.error("Failed to add passkey");
+      }
     }
   }
 
   async function handleRemoveConfirm() {
-    if (!removeId) return false
+    if (!removeId) {
+      return false;
+    }
     try {
-      await removeMutation.mutateAsync({ id: removeId })
-      toast.success('Passkey removed')
-      setRemoveId(null)
-      return true
+      await removeMutation.mutateAsync({ id: removeId });
+      toast.success("Passkey removed");
+      setRemoveId(null);
+      return true;
     } catch {
-      toast.error('Failed to remove passkey')
-      return false
+      toast.error("Failed to remove passkey");
+      return false;
     }
   }
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <Card className="shadow-lg">
         <CardHeader>
@@ -91,25 +103,31 @@ export function PasskeysCard() {
           <Skeleton className="h-24 w-full" />
         </CardContent>
       </Card>
-    )
+    );
+  }
 
-  if (isError)
+  if (isError) {
     return (
       <Card className="shadow-lg">
         <CardContent className="pt-6">
-          <p className="text-destructive text-sm">{error?.message ?? 'Failed to load passkeys'}</p>
+          <p className="text-destructive text-sm">
+            {error?.message ?? "Failed to load passkeys"}
+          </p>
         </CardContent>
       </Card>
-    )
+    );
+  }
 
-  const passkeys = data?.passkeys ?? []
+  const passkeys = data?.passkeys ?? [];
 
   return (
     <>
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-heading font-semibold">Passkeys</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardTitle className="font-heading text-lg font-semibold">
+            Passkeys
+          </CardTitle>
+          <CardDescription className="text-muted-foreground text-sm">
             Sign in securely with a passkey. No passwords to remember.
           </CardDescription>
         </CardHeader>
@@ -121,13 +139,15 @@ export function PasskeysCard() {
           )}
           {passkeys.length === 0 ? (
             <div className="space-y-4 py-8">
-              <p className="text-muted-foreground text-sm">No passkeys configured.</p>
+              <p className="text-muted-foreground text-sm">
+                No passkeys configured.
+              </p>
               <Button
                 variant="outline"
                 onClick={() => setAddDialogOpen(true)}
                 disabled={registerMutation.isPending || !webauthnAvailable}
               >
-                {registerMutation.isPending ? 'Adding…' : 'Add passkey'}
+                {registerMutation.isPending ? "Adding…" : "Add passkey"}
               </Button>
             </div>
           ) : (
@@ -138,17 +158,17 @@ export function PasskeysCard() {
                   onClick={() => setAddDialogOpen(true)}
                   disabled={registerMutation.isPending || !webauthnAvailable}
                 >
-                  {registerMutation.isPending ? 'Adding…' : 'Add passkey'}
+                  {registerMutation.isPending ? "Adding…" : "Add passkey"}
                 </Button>
               </div>
               <ul className="space-y-3">
-                {passkeys.map(pk => (
+                {passkeys.map((pk) => (
                   <li
                     key={pk.id}
                     className="flex min-h-[44px] items-center justify-between gap-4 rounded-lg border p-3"
                   >
                     <div className="min-w-0 flex-1 space-y-1">
-                      <p className="font-medium truncate">{pk.name}</p>
+                      <p className="truncate font-medium">{pk.name}</p>
                       <p className="text-muted-foreground text-sm">
                         Added {formatDate(pk.createdAt)}
                       </p>
@@ -171,16 +191,19 @@ export function PasskeysCard() {
 
       <Dialog
         open={addDialogOpen}
-        onOpenChange={open => {
-          setAddDialogOpen(open)
-          if (!open) setAddName('')
+        onOpenChange={(open) => {
+          setAddDialogOpen(open);
+          if (!open) {
+            setAddName("");
+          }
         }}
       >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add passkey</DialogTitle>
             <DialogDescription>
-              Give your passkey a name to identify it later (e.g. MacBook, iPhone).
+              Give your passkey a name to identify it later (e.g. MacBook,
+              iPhone).
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -188,7 +211,7 @@ export function PasskeysCard() {
             <Input
               id="passkey-name"
               value={addName}
-              onChange={e => setAddName(e.target.value)}
+              onChange={(e) => setAddName(e.target.value)}
               placeholder="e.g. MacBook"
             />
           </div>
@@ -196,19 +219,26 @@ export function PasskeysCard() {
             <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={() => handleAddPasskey(addName)} disabled={registerMutation.isPending}>
-              {registerMutation.isPending ? 'Adding…' : 'Add'}
+            <Button
+              onClick={() => handleAddPasskey(addName)}
+              disabled={registerMutation.isPending}
+            >
+              {registerMutation.isPending ? "Adding…" : "Add"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!removeId} onOpenChange={open => !open && setRemoveId(null)}>
+      <AlertDialog
+        open={!!removeId}
+        onOpenChange={(open) => !open && setRemoveId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove passkey</AlertDialogTitle>
             <AlertDialogDescription>
-              This passkey will no longer work for signing in. You can add a new one anytime.
+              This passkey will no longer work for signing in. You can add a new
+              one anytime.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -216,16 +246,18 @@ export function PasskeysCard() {
             <Button
               variant="destructive"
               onClick={async () => {
-                const ok = await handleRemoveConfirm()
-                if (ok) setRemoveId(null)
+                const ok = await handleRemoveConfirm();
+                if (ok) {
+                  setRemoveId(null);
+                }
               }}
               disabled={removeMutation.isPending}
             >
-              {removeMutation.isPending ? 'Removing…' : 'Remove'}
+              {removeMutation.isPending ? "Removing…" : "Remove"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }

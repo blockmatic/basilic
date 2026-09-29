@@ -1,6 +1,6 @@
-import { Hero } from '@/components/landing/hero'
-import { Skills } from '@/components/landing/skills'
-import { Stack } from '@/components/landing/stack'
+import { Hero } from "@/components/landing/hero";
+import { Skills } from "@/components/landing/skills";
+import { Stack } from "@/components/landing/stack";
 
 export default function HomePage() {
   return (
@@ -9,5 +9,5 @@ export default function HomePage() {
       <Stack />
       <Skills />
     </>
-  )
+  );
 }

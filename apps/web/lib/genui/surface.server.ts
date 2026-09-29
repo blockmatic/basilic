@@ -1,4 +1,5 @@
-import { createLoader } from 'nuqs/server'
-import { boardViewParsers } from './surface'
+import { createLoader } from "nuqs/server";
 
-export const loadBoardView = createLoader(boardViewParsers)
+import { boardViewParsers } from "./surface";
+
+export const loadBoardView = createLoader(boardViewParsers);

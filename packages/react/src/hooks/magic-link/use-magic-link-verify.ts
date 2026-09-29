@@ -1,7 +1,8 @@
-import type { MagiclinkVerifyData, MagiclinkVerifyResponse } from '@repo/core'
-import type { UseMutationOptions } from '@tanstack/react-query'
-import { useMutation } from '@tanstack/react-query'
-import { useReactApiConfig } from '../../context'
+import type { MagiclinkVerifyData, MagiclinkVerifyResponse } from "@repo/core";
+import type { UseMutationOptions } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+
+import { useReactApiConfig } from "../../context";
 
 /**
  * React Query mutation hook for magic link verify endpoint.
@@ -14,19 +15,27 @@ import { useReactApiConfig } from '../../context'
  */
 export function useMagicLinkVerify(
   options?: Omit<
-    UseMutationOptions<MagiclinkVerifyResponse, Error, MagiclinkVerifyData['body']>,
-    'mutationFn'
-  >,
+    UseMutationOptions<
+      MagiclinkVerifyResponse,
+      Error,
+      MagiclinkVerifyData["body"]
+    >,
+    "mutationFn"
+  >
 ) {
-  const { client, queryClientDefaults } = useReactApiConfig()
+  const { client, queryClientDefaults } = useReactApiConfig();
 
-  return useMutation<MagiclinkVerifyResponse, Error, MagiclinkVerifyData['body']>({
-    mutationFn: async variables =>
+  return useMutation<
+    MagiclinkVerifyResponse,
+    Error,
+    MagiclinkVerifyData["body"]
+  >({
+    mutationFn: async (variables) =>
       client.auth.magiclink.verify({
         body: variables,
         throwOnError: true,
       }),
     ...queryClientDefaults,
     ...options,
-  })
+  });
 }

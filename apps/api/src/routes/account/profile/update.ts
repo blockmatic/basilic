@@ -1,67 +1,81 @@
-import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { getDb } from '@repo/db'
-import { users } from '@repo/db/schema'
-import { Type } from '@sinclair/typebox'
-import { and, eq, ne } from 'drizzle-orm'
-import type { FastifyPluginAsync } from 'fastify'
-import { ErrorResponseSchema } from '../../schemas.js'
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+import { getDb } from "@repo/db";
+import { users } from "@repo/db/schema";
+import { Type } from "@sinclair/typebox";
+import { and, eq, ne } from "drizzle-orm";
+import type { FastifyPluginAsync } from "fastify";
 
-const usernameRegex = /^[a-zA-Z0-9_-]{1,48}$/
+import { ErrorResponseSchema } from "../../schemas.js";
+
+const usernameRegex = /^[a-zA-Z0-9_-]{1,48}$/;
 
 const UpdateSchema = Type.Object({
-  name: Type.Optional(Type.String({ minLength: 1, maxLength: 32 })),
+  name: Type.Optional(Type.String({ maxLength: 32, minLength: 1 })),
   username: Type.Optional(
     Type.Union([
-      Type.String({ minLength: 1, maxLength: 48, pattern: usernameRegex.source }),
+      Type.String({
+        maxLength: 48,
+        minLength: 1,
+        pattern: usernameRegex.source,
+      }),
       Type.Null(),
-    ]),
+    ])
   ),
-})
+});
 
 const UpdateResponseSchema = Type.Object({
   user: Type.Object({
-    id: Type.String(),
     email: Type.Union([Type.String(), Type.Null()]),
+    id: Type.String(),
     name: Type.Union([Type.String(), Type.Null()]),
     username: Type.Union([Type.String(), Type.Null()]),
   }),
-})
+});
 
-const profileUpdateRoute: FastifyPluginAsync = async fastify => {
+const profileUpdateRoute: FastifyPluginAsync = async (fastify) => {
   fastify.withTypeProvider<TypeBoxTypeProvider>().patch(
-    '/',
+    "/",
     {
       schema: {
-        operationId: 'accountProfileUpdate',
-        description: 'Update profile (name, username)',
-        summary: 'Update profile',
-        tags: ['account'],
-        security: [{ bearerAuth: [] }],
         body: UpdateSchema,
+        description: "Update profile (name, username)",
+        operationId: "accountProfileUpdate",
         response: {
           200: UpdateResponseSchema,
           401: ErrorResponseSchema,
           409: ErrorResponseSchema,
         },
+        security: [{ bearerAuth: [] }],
+        summary: "Update profile",
+        tags: ["account"],
       },
     },
     async (request, reply) => {
-      if (!request.session)
+      if (!request.session) {
         return reply.code(401).send({
-          code: 'UNAUTHORIZED',
-          message: 'Authentication required',
-        })
-
-      const { name, username } = request.body
-      const userId = request.session.user.id
-
-      const updates: { name?: string | null; username?: string | null; updatedAt?: Date } = {
-        updatedAt: new Date(),
+          code: "UNAUTHORIZED",
+          message: "Authentication required",
+        });
       }
-      if (name !== undefined) updates.name = name
-      if (username !== undefined) updates.username = username === '' ? null : username
 
-      if (name === undefined && username === undefined)
+      const { name, username } = request.body;
+      const userId = request.session.user.id;
+
+      const updates: {
+        name?: string | null;
+        username?: string | null;
+        updatedAt?: Date;
+      } = {
+        updatedAt: new Date(),
+      };
+      if (name !== undefined) {
+        updates.name = name;
+      }
+      if (username !== undefined) {
+        updates.username = username === "" ? null : username;
+      }
+
+      if (name === undefined && username === undefined) {
         return reply.code(200).send({
           user: {
             id: userId,
@@ -69,49 +83,57 @@ const profileUpdateRoute: FastifyPluginAsync = async fastify => {
             name: request.session.user.name ?? null,
             username: request.session.user.username ?? null,
           },
-        })
+        });
+      }
 
-      const db = await getDb()
+      const db = await getDb();
 
-      if (username !== undefined && username !== null && username !== '') {
+      if (username !== undefined && username !== null && username !== "") {
         const [existing] = await db
           .select({ id: users.id })
           .from(users)
-          .where(and(eq(users.username, username), ne(users.id, userId)))
-        if (existing)
+          .where(and(eq(users.username, username), ne(users.id, userId)));
+        if (existing) {
           return reply.code(409).send({
-            code: 'USERNAME_TAKEN',
-            message: 'Username is already in use',
-          })
+            code: "USERNAME_TAKEN",
+            message: "Username is already in use",
+          });
+        }
       }
 
       try {
-        const [row] = await db.update(users).set(updates).where(eq(users.id, userId)).returning()
+        const [row] = await db
+          .update(users)
+          .set(updates)
+          .where(eq(users.id, userId))
+          .returning();
 
-        if (!row) throw new Error('Failed to update profile')
+        if (!row) {
+          throw new Error("Failed to update profile");
+        }
 
         return reply.code(200).send({
           user: {
-            id: row.id,
             email: row.email ?? null,
+            id: row.id,
             name: row.name ?? null,
             username: row.username ?? null,
           },
-        })
-      } catch (err) {
+        });
+      } catch (error) {
         const code =
-          (err as { cause?: { code?: string }; code?: string }).cause?.code ??
-          (err as { code?: string }).code
-        if (code === '23505')
+          (error as { cause?: { code?: string }; code?: string }).cause?.code ??
+          (error as { code?: string }).code;
+        if (code === "23505")
           return reply.code(409).send({
-            code: 'USERNAME_TAKEN',
-            message: 'Username is already in use',
-          })
-        throw err
+            code: "USERNAME_TAKEN",
+            message: "Username is already in use",
+          });
+        throw error;
       }
-    },
-  )
-}
+    }
+  );
+};
 
-export default profileUpdateRoute
-export const prefixOverride = '/account/profile'
+export default profileUpdateRoute;
+export const prefixOverride = "/account/profile";

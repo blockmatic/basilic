@@ -13,12 +13,12 @@ Explicit subpath imports: `@repo/utils/logger/server` (Pino, Node) and `@repo/ut
 Canonical call shapes:
 
 ```ts
-logger.info('message')
-logger.info({ userId: '123' }, 'User logged in')
-logger.error({ err, reqId }, 'Request failed')
+logger.info("message");
+logger.info({ userId: "123" }, "User logged in");
+logger.error({ err, reqId }, "Request failed");
 
-const reqLogger = logger.child({ reqId: 'abc' })
-reqLogger.debug('Processing request')
+const reqLogger = logger.child({ reqId: "abc" });
+reqLogger.debug("Processing request");
 ```
 
 `Error` values become `{ err: { type, message, stack? } }`. Structured context is sanitized (sensitive keys at any depth).

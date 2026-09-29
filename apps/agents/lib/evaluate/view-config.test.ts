@@ -1,17 +1,22 @@
-import { describe, expect, it } from 'vitest'
-import { defaultSearchQuery, setViewInputSchema, viewFromSearchQuery } from './view-config.js'
+import { describe, expect, it } from "vitest";
 
-describe('setViewInputSchema', () => {
-  it('strips elements so the command tool cannot commit candidate ids', () => {
+import {
+  defaultSearchQuery,
+  setViewInputSchema,
+  viewFromSearchQuery,
+} from "./view-config.js";
+
+describe("setViewInputSchema", () => {
+  it("strips elements so the command tool cannot commit candidate ids", () => {
     const parsed = setViewInputSchema.parse({
       viewConfig: {
         ...viewFromSearchQuery({
           query: defaultSearchQuery,
-          title: 'Board',
-          elements: ['summary', 'table-ranked'],
+          title: "Board",
+          elements: ["summary", "table-ranked"],
         }),
       },
-    })
-    expect(parsed.viewConfig).not.toHaveProperty('elements')
-  })
-})
+    });
+    expect(parsed.viewConfig).not.toHaveProperty("elements");
+  });
+});

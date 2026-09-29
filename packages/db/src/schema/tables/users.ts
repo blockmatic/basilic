@@ -1,19 +1,26 @@
-import { boolean, index, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const users = pgTable(
-  'users',
+  "users",
   {
-    id: text('id').primaryKey(),
-    email: varchar('email', { length: 255 }).unique(),
-    emailVerified: boolean('email_verified').default(false).notNull(),
-    name: text('name'),
-    username: varchar('username', { length: 48 }).unique(),
-    image: text('image'),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    email: varchar("email", { length: 255 }).unique(),
+    emailVerified: boolean("email_verified").default(false).notNull(),
+    id: text("id").primaryKey(),
+    image: text("image"),
+    name: text("name"),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    username: varchar("username", { length: 48 }).unique(),
   },
-  table => [index('users_email_idx').on(table.email)],
-)
+  (table) => [index("users_email_idx").on(table.email)]
+);
 
-export type User = typeof users.$inferSelect
-export type NewUser = typeof users.$inferInsert
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;

@@ -1,19 +1,20 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
-import { users } from './users.js'
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
+import { users } from "./users.js";
 
 export const totp = pgTable(
-  'totp',
+  "totp",
   {
-    id: text('id').primaryKey(),
-    userId: text('user_id')
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    id: text("id").primaryKey(),
+    secretEncrypted: text("secret_encrypted").notNull(),
+    userId: text("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' })
+      .references(() => users.id, { onDelete: "cascade" })
       .unique(),
-    secretEncrypted: text('secret_encrypted').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
   },
-  _table => [],
-)
+  (_table) => []
+);
 
-export type Totp = typeof totp.$inferSelect
-export type NewTotp = typeof totp.$inferInsert
+export type Totp = typeof totp.$inferSelect;
+export type NewTotp = typeof totp.$inferInsert;

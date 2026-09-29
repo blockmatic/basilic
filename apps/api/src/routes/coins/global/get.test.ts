@@ -1,47 +1,48 @@
-import { resetCoinGeckoClient, resetMarketsRuntime } from '@repo/markets'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { getOrCreateSession } from '../../../../test/utils/auth-helper.js'
-import { fastify } from '../coins.spec.js'
+import { resetCoinGeckoClient, resetMarketsRuntime } from "@repo/markets";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-describe('GET /coins/global', () => {
+import { getOrCreateSession } from "../../../../test/utils/auth-helper.js";
+import { fastify } from "../coins.spec.js";
+
+describe("GET /coins/global", () => {
   beforeEach(() => {
-    resetMarketsRuntime()
-    resetCoinGeckoClient()
-  })
+    resetMarketsRuntime();
+    resetCoinGeckoClient();
+  });
 
   afterEach(() => {
-    vi.unstubAllGlobals()
-  })
+    vi.unstubAllGlobals();
+  });
 
-  it('returns global stats without a Bearer token', async () => {
+  it("returns global stats without a Bearer token", async () => {
     const response = await fastify.inject({
-      method: 'GET',
-      url: '/coins/global',
-    })
-    expect(response.statusCode).toBe(200)
-    expect(typeof response.json().marketCapUsd).toBe('number')
-  })
+      method: "GET",
+      url: "/coins/global",
+    });
+    expect(response.statusCode).toBe(200);
+    expect(typeof response.json().marketCapUsd).toBe("number");
+  });
 
-  it('returns HTTP 200 fixture stats when CoinGecko fails', async () => {
-    const jwt = await getOrCreateSession(fastify, 'coins-global@test.ai')
+  it("returns HTTP 200 fixture stats when CoinGecko fails", async () => {
+    const jwt = await getOrCreateSession(fastify, "coins-global@test.ai");
     vi.stubGlobal(
-      'fetch',
+      "fetch",
       vi.fn(async () => {
-        throw new Error('offline')
-      }),
-    )
+        throw new Error("offline");
+      })
+    );
 
     const response = await fastify.inject({
-      method: 'GET',
-      url: '/coins/global',
+      method: "GET",
+      url: "/coins/global",
       headers: { Authorization: `Bearer ${jwt}` },
-    })
-    expect(response.statusCode).toBe(200)
+    });
+    expect(response.statusCode).toBe(200);
     expect(response.json()).toMatchObject({
-      source: 'fixture',
+      source: "fixture",
       btcDominance: 50,
-    })
-    expect(typeof response.json().marketCapUsd).toBe('number')
-    expect(typeof response.json().volumeUsd).toBe('number')
-  })
-})
+    });
+    expect(typeof response.json().marketCapUsd).toBe("number");
+    expect(typeof response.json().volumeUsd).toBe("number");
+  });
+});

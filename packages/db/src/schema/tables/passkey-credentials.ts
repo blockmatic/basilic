@@ -1,24 +1,33 @@
-import { boolean, index, integer, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
-import { users } from './users.js'
+import {
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
+
+import { users } from "./users.js";
 
 export const passkeyCredentials = pgTable(
-  'passkey_credentials',
+  "passkey_credentials",
   {
-    id: text('id').primaryKey(),
-    userId: text('user_id')
+    counter: integer("counter").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    credentialBackedUp: boolean("credential_backed_up"),
+    credentialDeviceType: text("credential_device_type"),
+    credentialId: text("credential_id").notNull().unique(),
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    publicKey: text("public_key").notNull(),
+    transports: jsonb("transports").$type<string[]>(),
+    userId: text("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    credentialId: text('credential_id').notNull().unique(),
-    publicKey: text('public_key').notNull(),
-    counter: integer('counter').notNull(),
-    name: text('name').notNull(),
-    transports: jsonb('transports').$type<string[]>(),
-    credentialDeviceType: text('credential_device_type'),
-    credentialBackedUp: boolean('credential_backed_up'),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
+      .references(() => users.id, { onDelete: "cascade" }),
   },
-  table => [index('passkey_credentials_user_id_idx').on(table.userId)],
-)
+  (table) => [index("passkey_credentials_user_id_idx").on(table.userId)]
+);
 
-export type PasskeyCredential = typeof passkeyCredentials.$inferSelect
-export type NewPasskeyCredential = typeof passkeyCredentials.$inferInsert
+export type PasskeyCredential = typeof passkeyCredentials.$inferSelect;
+export type NewPasskeyCredential = typeof passkeyCredentials.$inferInsert;

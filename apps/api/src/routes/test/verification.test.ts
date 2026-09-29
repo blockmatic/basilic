@@ -1,138 +1,147 @@
-import { getDb } from '@repo/db'
-import { verification } from '@repo/db/schema'
-import { like } from 'drizzle-orm'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { getOrCreateSession } from '../../../test/utils/auth-helper.js'
-import { fastify } from './test.spec.js'
+import { getDb } from "@repo/db";
+import { verification } from "@repo/db/schema";
+import { like } from "drizzle-orm";
+import { beforeEach, describe, expect, it } from "vitest";
 
-describe('GET /test/verification/last', () => {
+import { getOrCreateSession } from "../../../test/utils/auth-helper.js";
+import { fastify } from "./test.spec.js";
+
+describe("GET /test/verification/last", () => {
   beforeEach(async () => {
-    fastify.fakeEmail?.clear?.()
-    const db = await getDb()
-    await db.delete(verification).where(like(verification.identifier, '%@test.ai'))
-  })
+    fastify.fakeEmail?.clear?.();
+    const db = await getDb();
+    await db
+      .delete(verification)
+      .where(like(verification.identifier, "%@test.ai"));
+  });
 
-  it('should return null for missing email', async () => {
+  it("should return null for missing email", async () => {
     const response = await fastify.inject({
-      method: 'GET',
-      url: '/test/verification/last?type=magic_link',
-    })
+      method: "GET",
+      url: "/test/verification/last?type=magic_link",
+    });
 
-    expect(response.statusCode).toBe(400)
-  })
+    expect(response.statusCode).toBe(400);
+  });
 
-  it('should return null for non-test.ai email', async () => {
+  it("should return null for non-test.ai email", async () => {
     const response = await fastify.inject({
-      method: 'GET',
-      url: '/test/verification/last?type=magic_link&email=user@example.com',
-    })
+      method: "GET",
+      url: "/test/verification/last?type=magic_link&email=user@example.com",
+    });
 
-    expect(response.statusCode).toBe(200)
-    expect(response.json()).toEqual({ token: null, verificationId: null })
-  })
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ token: null, verificationId: null });
+  });
 
-  it('should return null for invalid type', async () => {
+  it("should return null for invalid type", async () => {
     const response = await fastify.inject({
-      method: 'GET',
-      url: '/test/verification/last?type=link_email&email=test@test.ai',
-    })
+      method: "GET",
+      url: "/test/verification/last?type=link_email&email=test@test.ai",
+    });
 
-    expect(response.statusCode).toBe(200)
-    expect(response.json()).toEqual({ token: null, verificationId: null })
-  })
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ token: null, verificationId: null });
+  });
 
-  it('should return magic_link token scoped by email', async () => {
-    const email = 'scoped-magic@test.ai'
+  it("should return magic_link token scoped by email", async () => {
+    const email = "scoped-magic@test.ai";
     await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/request',
-      payload: { email, callbackUrl: 'https://example.com/callback' },
-    })
+      method: "POST",
+      url: "/auth/magiclink/request",
+      payload: { email, callbackUrl: "https://example.com/callback" },
+    });
 
     const response = await fastify.inject({
-      method: 'GET',
+      method: "GET",
       url: `/test/verification/last?type=magic_link&email=${encodeURIComponent(email)}`,
-    })
+    });
 
-    expect(response.statusCode).toBe(200)
-    const body = response.json()
-    expect(body.token).toMatch(/^\d{6}$/)
-    expect(body.verificationId).toBeTruthy()
-  })
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    expect(body.token).toMatch(/^\d{6}$/);
+    expect(body.verificationId).toBeTruthy();
+  });
 
-  it('should return change_email token scoped by target email', async () => {
-    const jwt = await getOrCreateSession(fastify, 'e2e-email@test.ai', { clearBefore: true })
-    const targetEmail = 'e2e-email-new@test.ai'
+  it("should return change_email token scoped by target email", async () => {
+    const jwt = await getOrCreateSession(fastify, "e2e-email@test.ai", {
+      clearBefore: true,
+    });
+    const targetEmail = "e2e-email-new@test.ai";
 
     await fastify.inject({
-      method: 'POST',
-      url: '/account/email/change/request',
+      method: "POST",
+      url: "/account/email/change/request",
       headers: { Authorization: `Bearer ${jwt}` },
       payload: {
         email: targetEmail,
-        callbackUrl: 'https://example.com/auth/callback/change-email',
+        callbackUrl: "https://example.com/auth/callback/change-email",
       },
-    })
+    });
 
     const response = await fastify.inject({
-      method: 'GET',
+      method: "GET",
       url: `/test/verification/last?type=change_email&email=${encodeURIComponent(targetEmail)}`,
-    })
+    });
 
-    expect(response.statusCode).toBe(200)
-    const body = response.json()
-    expect(body.token).toMatch(/^\d{6}$/)
-    expect(body.verificationId).toBeTruthy()
-  })
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    expect(body.token).toMatch(/^\d{6}$/);
+    expect(body.verificationId).toBeTruthy();
+  });
 
-  it('should not match change_email via LIKE wildcards in email', async () => {
-    const jwt = await getOrCreateSession(fastify, 'foo_bar@test.ai', { clearBefore: true })
-    const targetEmail = 'foo_bar@test.ai'
-    const decoyEmail = 'fooXbar@test.ai'
+  it("should not match change_email via LIKE wildcards in email", async () => {
+    const jwt = await getOrCreateSession(fastify, "foo_bar@test.ai", {
+      clearBefore: true,
+    });
+    const targetEmail = "foo_bar@test.ai";
+    const decoyEmail = "fooXbar@test.ai";
 
     await fastify.inject({
-      method: 'POST',
-      url: '/account/email/change/request',
+      method: "POST",
+      url: "/account/email/change/request",
       headers: { Authorization: `Bearer ${jwt}` },
       payload: {
         email: targetEmail,
-        callbackUrl: 'https://example.com/auth/callback/change-email',
+        callbackUrl: "https://example.com/auth/callback/change-email",
       },
-    })
+    });
 
     const decoyResponse = await fastify.inject({
-      method: 'GET',
+      method: "GET",
       url: `/test/verification/last?type=change_email&email=${encodeURIComponent(decoyEmail)}`,
-    })
+    });
 
-    expect(decoyResponse.statusCode).toBe(200)
-    expect(decoyResponse.json()).toEqual({ token: null, verificationId: null })
-  })
-})
+    expect(decoyResponse.statusCode).toBe(200);
+    expect(decoyResponse.json()).toEqual({ token: null, verificationId: null });
+  });
+});
 
-describe('GET /test/magic-link/last with email', () => {
+describe("GET /test/magic-link/last with email", () => {
   beforeEach(async () => {
-    fastify.fakeEmail?.clear?.()
-    const db = await getDb()
-    await db.delete(verification).where(like(verification.identifier, '%@test.ai'))
-  })
+    fastify.fakeEmail?.clear?.();
+    const db = await getDb();
+    await db
+      .delete(verification)
+      .where(like(verification.identifier, "%@test.ai"));
+  });
 
-  it('should scope magic link by email when provided', async () => {
-    const email = 'scoped-wrapper@test.ai'
+  it("should scope magic link by email when provided", async () => {
+    const email = "scoped-wrapper@test.ai";
     await fastify.inject({
-      method: 'POST',
-      url: '/auth/magiclink/request',
-      payload: { email, callbackUrl: 'https://example.com/callback' },
-    })
+      method: "POST",
+      url: "/auth/magiclink/request",
+      payload: { email, callbackUrl: "https://example.com/callback" },
+    });
 
     const response = await fastify.inject({
-      method: 'GET',
+      method: "GET",
       url: `/test/magic-link/last?email=${encodeURIComponent(email)}`,
-    })
+    });
 
-    expect(response.statusCode).toBe(200)
-    const body = response.json()
-    expect(body.token).toMatch(/^\d{6}$/)
-    expect(body.verificationId).toBeTruthy()
-  })
-})
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    expect(body.token).toMatch(/^\d{6}$/);
+    expect(body.verificationId).toBeTruthy();
+  });
+});

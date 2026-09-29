@@ -14,11 +14,11 @@ Validates **JWT Bearer** access tokens and **API keys** (`bask_` prefix via `Aut
 - API key path: hashes and compares against `api_keys`, no logout (revoke the key)
 
 ```typescript
-fastify.get('/protected', async (request, reply) => {
-  if (!request.session) return reply.code(401).send({ code: 'UNAUTHORIZED' })
-  const userId = request.session.user.id
+fastify.get("/protected", async (request, reply) => {
+  if (!request.session) return reply.code(401).send({ code: "UNAUTHORIZED" });
+  const userId = request.session.user.id;
   // ...
-})
+});
 ```
 
 ## Related

@@ -1,22 +1,31 @@
-'use client'
+"use client";
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useReactApiConfig } from '../context'
-import { useUser } from './use-user'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export type UseLinkEmailConfig = {
+import { useReactApiConfig } from "../context";
+import { useUser } from "./use-user";
+
+export interface UseLinkEmailConfig {
   /** Callback after verify succeeds; use to POST tokens to update-tokens endpoint */
-  onVerifySuccess?: (data: { token: string; refreshToken: string }) => void | Promise<void>
+  onVerifySuccess?: (data: {
+    token: string;
+    refreshToken: string;
+  }) => void | Promise<void>;
 }
 
-export type UseLinkEmailResult = {
-  requestLink: (params: { email: string; callbackUrl: string }) => Promise<void>
-  verifyFromToken: (params: { token: string }) => Promise<{ token: string; refreshToken: string }>
-  isRequestPending: boolean
-  isVerifyPending: boolean
-  error: Error | null
+export interface UseLinkEmailResult {
+  requestLink: (params: {
+    email: string;
+    callbackUrl: string;
+  }) => Promise<void>;
+  verifyFromToken: (params: {
+    token: string;
+  }) => Promise<{ token: string; refreshToken: string }>;
+  isRequestPending: boolean;
+  isVerifyPending: boolean;
+  error: Error | null;
   /** True when user is loaded and authenticated (ready to link) */
-  isReady: boolean
+  isReady: boolean;
 }
 
 /**
@@ -25,24 +34,30 @@ export type UseLinkEmailResult = {
  * isReady when useUser has loaded and user is authenticated.
  */
 export function useLinkEmail(config?: UseLinkEmailConfig): UseLinkEmailResult {
-  const { client } = useReactApiConfig()
-  const queryClient = useQueryClient()
-  const { data: userData, isLoading: isUserLoading } = useUser()
+  const { client } = useReactApiConfig();
+  const queryClient = useQueryClient();
+  const { data: userData, isLoading: isUserLoading } = useUser();
 
-  const isReady = !isUserLoading && !!userData?.user
+  const isReady = !isUserLoading && !!userData?.user;
 
   const requestMutation = useMutation({
-    mutationFn: async ({ email, callbackUrl }: { email: string; callbackUrl: string }) => {
+    mutationFn: async ({
+      email,
+      callbackUrl,
+    }: {
+      email: string;
+      callbackUrl: string;
+    }) => {
       await client.account.link.email.request({
-        body: { email, callbackUrl },
+        body: { callbackUrl, email },
         throwOnError: true,
-      })
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
-      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
+      queryClient.invalidateQueries({ queryKey: ["auth", "session", "user"] });
+      queryClient.invalidateQueries({ queryKey: ["auth", "session", "jwt"] });
     },
-  })
+  });
 
   const verifyMutation = useMutation({
     mutationFn: async ({ token }: { token: string }) =>
@@ -50,35 +65,40 @@ export function useLinkEmail(config?: UseLinkEmailConfig): UseLinkEmailResult {
         body: { token },
         throwOnError: true,
       }),
-    onSuccess: data => {
-      config?.onVerifySuccess?.(data)
-      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'user'] })
-      queryClient.invalidateQueries({ queryKey: ['auth', 'session', 'jwt'] })
+    onSuccess: (data) => {
+      config?.onVerifySuccess?.(data);
+      queryClient.invalidateQueries({ queryKey: ["auth", "session", "user"] });
+      queryClient.invalidateQueries({ queryKey: ["auth", "session", "jwt"] });
     },
-  })
+  });
 
-  const requestLink = async (params: { email: string; callbackUrl: string }) => {
+  const requestLink = async (params: {
+    email: string;
+    callbackUrl: string;
+  }) => {
     try {
-      await requestMutation.mutateAsync(params)
+      await requestMutation.mutateAsync(params);
     } catch {
       /* Error in requestMutation.error */
     }
-  }
+  };
 
   const verifyFromToken = async (params: { token: string }) => {
-    const result = await verifyMutation.mutateAsync(params)
-    if (!result) throw new Error('Verify failed')
-    return result
-  }
+    const result = await verifyMutation.mutateAsync(params);
+    if (!result) {
+      throw new Error("Verify failed");
+    }
+    return result;
+  };
 
-  const error = (requestMutation.error ?? verifyMutation.error) as Error | null
+  const error = (requestMutation.error ?? verifyMutation.error) as Error | null;
 
   return {
-    requestLink,
-    verifyFromToken,
-    isRequestPending: requestMutation.isPending,
-    isVerifyPending: verifyMutation.isPending,
     error: error ?? null,
     isReady,
-  }
+    isRequestPending: requestMutation.isPending,
+    isVerifyPending: verifyMutation.isPending,
+    requestLink,
+    verifyFromToken,
+  };
 }

@@ -4,5 +4,5 @@ appId: com.blockmatic.basilic
 ---
 - launchApp:
     clearState: true
-- assertVisible: 'Welcome to Expo'
-- assertVisible: 'get started'
+- assertVisible: "Welcome to Expo"
+- assertVisible: "get started"

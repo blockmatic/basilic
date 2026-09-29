@@ -4,81 +4,87 @@
  */
 export const skillInstallGroups = [
   {
-    source: 'blockmatic/basilic-skills',
-    skills: ['workflow'],
+    skills: ["workflow"],
+    source: "blockmatic/basilic-skills",
   },
   {
-    source: 'emilkowalski/skills',
     skills: [
-      'emil-design-eng',
-      'animate',
-      'animate-expo',
-      'review-animations',
-      'improve-animations',
-      'find-animation-opportunities',
-      'animation-vocabulary',
-      'apple-design',
-      'pick-ui-library',
-      'ask-sonner',
+      "emil-design-eng",
+      "animate",
+      "animate-expo",
+      "review-animations",
+      "improve-animations",
+      "find-animation-opportunities",
+      "animation-vocabulary",
+      "apple-design",
+      "pick-ui-library",
+      "ask-sonner",
     ],
+    source: "emilkowalski/skills",
   },
   {
-    source: 'pproenca/dot-skills',
-    skills: ['nextjs', 'nuqs', 'vitest', 'emilkowal-animations', 'playwright'],
+    skills: ["nextjs", "nuqs", "vitest", "emilkowal-animations", "playwright"],
+    source: "pproenca/dot-skills",
   },
   {
-    source: 'expo/skills',
     skills: [
-      'eas-workflows',
-      'eas-app-stores',
-      'eas-update',
-      'expo-dev-client',
-      'expo-router',
-      'expo-upgrade',
-      'expo-dom',
-      'expo-native-ui',
+      "eas-workflows",
+      "eas-app-stores",
+      "eas-update",
+      "expo-dev-client",
+      "expo-router",
+      "expo-upgrade",
+      "expo-dom",
+      "expo-native-ui",
     ],
+    source: "expo/skills",
   },
   {
-    source: 'vercel-labs/agent-skills',
-    skills: ['vercel-composition-patterns', 'vercel-react-best-practices', 'web-design-guidelines'],
+    skills: [
+      "vercel-composition-patterns",
+      "vercel-react-best-practices",
+      "web-design-guidelines",
+    ],
+    source: "vercel-labs/agent-skills",
   },
   {
-    source: 'uniswap/uniswap-ai',
-    skills: ['viem-integration'],
+    skills: ["viem-integration"],
+    source: "uniswap/uniswap-ai",
   },
   {
-    source: 'affaan-m/ecc',
-    skills: ['nodejs-keccak256'],
+    skills: ["nodejs-keccak256"],
+    source: "affaan-m/ecc",
   },
   {
-    source: 'resend/react-email',
-    skills: ['react-email'],
+    skills: ["react-email"],
+    source: "resend/react-email",
   },
   {
-    source: 'typesafe-ai/skills',
-    skills: ['typesafe-ai'],
+    skills: ["typesafe-ai"],
+    source: "typesafe-ai/skills",
   },
   {
-    source: 'vercel/eve',
-    skills: ['eve', 'technical-writing'],
+    skills: ["eve", "technical-writing"],
+    source: "vercel/eve",
   },
   {
-    source: 'vercel-labs/json-render',
-    skills: ['core', 'react'],
+    skills: ["core", "react"],
+    source: "vercel-labs/json-render",
   },
   {
-    source: 'alchemyplatform/skills',
-    skills: ['alchemy-api'],
+    skills: ["alchemy-api"],
+    source: "alchemyplatform/skills",
   },
   {
-    source: 'vercel/ai',
-    skills: ['ai-sdk'],
+    skills: ["ai-sdk"],
+    source: "vercel/ai",
   },
   {
-    source: 'shadcn/ui',
-    skills: ['shadcn'],
+    skills: ["shadcn"],
+    source: "shadcn/ui",
   },
-]
+];
 
-export const allowedGithubCatalogs = [...new Set(skillInstallGroups.map(group => group.source))]
+export const allowedGithubCatalogs = [
+  ...new Set(skillInstallGroups.map((group) => group.source)),
+];

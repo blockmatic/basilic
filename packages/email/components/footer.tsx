@@ -1,18 +1,19 @@
-import { Hr, Link, Section, Text } from '@react-email/components'
-import { getEmailInlineStyles, getEmailThemeClasses } from './theme.js'
+import { Hr, Link, Section, Text } from "@react-email/components";
+
+import { getEmailInlineStyles, getEmailThemeClasses } from "./theme.js";
 
 export function Footer({
   href,
   label,
-  appName = 'App',
+  appName = "App",
 }: {
-  href?: string
-  label?: string
-  appName?: string
+  href?: string;
+  label?: string;
+  appName?: string;
 }) {
-  const themeClasses = getEmailThemeClasses()
-  const lightStyles = getEmailInlineStyles('light')
-  const year = new Date().getFullYear()
+  const themeClasses = getEmailThemeClasses();
+  const lightStyles = getEmailInlineStyles("light");
+  const year = new Date().getFullYear();
 
   return (
     <Section className="w-full">
@@ -43,5 +44,5 @@ export function Footer({
 
       <br />
     </Section>
-  )
+  );
 }

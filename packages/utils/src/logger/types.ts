@@ -1,7 +1,7 @@
 /**
  * Logging levels supported by the logger.
  */
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent'
+export type LogLevel = "debug" | "info" | "warn" | "error" | "silent";
 
 /**
  * Logger interface for structured logging.
@@ -21,16 +21,16 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent'
  */
 export interface Logger {
   /** Log debug message (lowest priority) */
-  debug: (data?: unknown, msg?: string) => void
+  debug: (data?: unknown, msg?: string) => void;
 
   /** Log info message */
-  info: (data?: unknown, msg?: string) => void
+  info: (data?: unknown, msg?: string) => void;
 
   /** Log warning message */
-  warn: (data?: unknown, msg?: string) => void
+  warn: (data?: unknown, msg?: string) => void;
 
   /** Log error message (highest priority) */
-  error: (data?: unknown, msg?: string) => void
+  error: (data?: unknown, msg?: string) => void;
 
   /**
    * Create a child logger with additional bindings.
@@ -39,7 +39,7 @@ export interface Logger {
    * @param bindings - Key-value pairs to include in all logs
    * @returns New logger instance with merged bindings
    */
-  child: (bindings: Record<string, unknown>) => Logger
+  child: (bindings: Record<string, unknown>) => Logger;
 }
 
 /**
@@ -52,10 +52,15 @@ export interface Logger {
  * @param fallback - Default value if v is null/undefined
  * @returns Parsed boolean value
  */
-export const parseBool = (v: string | undefined, fallback: boolean): boolean => {
-  if (v == null) return fallback
-  return ['1', 'true', 'yes', 'on'].includes(v.toLowerCase())
-}
+export const parseBool = (
+  v: string | undefined,
+  fallback: boolean
+): boolean => {
+  if (v == null) {
+    return fallback;
+  }
+  return ["1", "true", "yes", "on"].includes(v.toLowerCase());
+};
 
 /**
  * Normalizes a log level string to a valid LogLevel.
@@ -67,16 +72,24 @@ export const parseBool = (v: string | undefined, fallback: boolean): boolean => 
  * @returns Normalized log level, defaults to 'info' if invalid
  */
 export const normalizeLevel = (v: string | undefined): LogLevel => {
-  const x = (v ?? '').toLowerCase()
-  if (x === 'debug' || x === 'info' || x === 'warn' || x === 'error' || x === 'silent') return x
-  return 'info'
-}
+  const x = (v ?? "").toLowerCase();
+  if (
+    x === "debug" ||
+    x === "info" ||
+    x === "warn" ||
+    x === "error" ||
+    x === "silent"
+  ) {
+    return x;
+  }
+  return "info";
+};
 
-export { normalizeLogArgs, toErrField } from './normalize.js'
+export { normalizeLogArgs, toErrField } from "./normalize.js";
 export {
   isValidRequestId,
   pathOnlyUrl,
   pinoRedactPaths,
   sanitizeLogData,
   sensitiveKeys,
-} from './redact.js'
+} from "./redact.js";

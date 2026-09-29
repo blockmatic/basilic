@@ -1,4 +1,5 @@
-import { createLoader } from 'nuqs/server'
-import { chromeParsers } from './chrome'
+import { createLoader } from "nuqs/server";
 
-export const loadChrome = createLoader(chromeParsers)
+import { chromeParsers } from "./chrome";
+
+export const loadChrome = createLoader(chromeParsers);

@@ -1,33 +1,34 @@
-import pino from 'pino'
-import { normalizeLogArgs } from './normalize.js'
-import { createPinoOptions } from './pino-options.js'
-import type { Logger } from './types.js'
+import pino from "pino";
 
-const root = pino(createPinoOptions())
+import { normalizeLogArgs } from "./normalize.js";
+import { createPinoOptions } from "./pino-options.js";
+import type { Logger } from "./types.js";
+
+const root = pino(createPinoOptions());
 
 const wrap = (x: pino.Logger): Logger => ({
+  child: (bindings) => wrap(x.child(bindings)),
   debug: (data, msg) => {
-    const { obj, msg: message } = normalizeLogArgs(data, msg)
-    if (obj) x.debug(obj, message)
-    else x.debug(message)
-  },
-  info: (data, msg) => {
-    const { obj, msg: message } = normalizeLogArgs(data, msg)
-    if (obj) x.info(obj, message)
-    else x.info(message)
-  },
-  warn: (data, msg) => {
-    const { obj, msg: message } = normalizeLogArgs(data, msg)
-    if (obj) x.warn(obj, message)
-    else x.warn(message)
+    const { obj, msg: message } = normalizeLogArgs(data, msg);
+    if (obj) x.debug(obj, message);
+    else x.debug(message);
   },
   error: (data, msg) => {
-    const { obj, msg: message } = normalizeLogArgs(data, msg)
-    if (obj) x.error(obj, message)
-    else x.error(message)
+    const { obj, msg: message } = normalizeLogArgs(data, msg);
+    if (obj) x.error(obj, message);
+    else x.error(message);
   },
-  child: bindings => wrap(x.child(bindings)),
-})
+  info: (data, msg) => {
+    const { obj, msg: message } = normalizeLogArgs(data, msg);
+    if (obj) x.info(obj, message);
+    else x.info(message);
+  },
+  warn: (data, msg) => {
+    const { obj, msg: message } = normalizeLogArgs(data, msg);
+    if (obj) x.warn(obj, message);
+    else x.warn(message);
+  },
+});
 
 /**
  * Node.js/server-side logger. Uses Pino with shared `createPinoOptions`.
@@ -43,14 +44,14 @@ const wrap = (x: pino.Logger): Logger => ({
  * requestLogger.debug('Processing request')
  * ```
  */
-export const logger: Logger = wrap(root)
-export { normalizeLogArgs, toErrField } from './normalize.js'
-export { createPinoOptions } from './pino-options.js'
+export const logger: Logger = wrap(root);
+export { normalizeLogArgs, toErrField } from "./normalize.js";
+export { createPinoOptions } from "./pino-options.js";
 export {
   isValidRequestId,
   pathOnlyUrl,
   pinoRedactPaths,
   sanitizeLogData,
   sensitiveKeys,
-} from './redact.js'
-export type { Logger, LogLevel } from './types.js'
+} from "./redact.js";
+export type { Logger, LogLevel } from "./types.js";

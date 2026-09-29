@@ -1,24 +1,30 @@
-import type { getDb } from '@repo/db'
-import { users } from '@repo/db/schema'
-import { sql } from 'drizzle-orm'
-import { normalizeEmail } from './email.js'
+import type { getDb } from "@repo/db";
+import { users } from "@repo/db/schema";
+import { sql } from "drizzle-orm";
 
-type Db = Awaited<ReturnType<typeof getDb>>
-type UserRow = typeof users.$inferSelect
+import { normalizeEmail } from "./email.js";
+
+type Db = Awaited<ReturnType<typeof getDb>>;
+type UserRow = typeof users.$inferSelect;
 
 export type FindUserByNormalizedEmailResult =
-  | { status: 'ok'; user: UserRow | undefined; normalized: string }
-  | { status: 'collision'; normalized: string }
+  | { status: "ok"; user: UserRow | undefined; normalized: string }
+  | { status: "collision"; normalized: string };
 
 export async function findUserByNormalizedEmail({
   db,
   email,
 }: {
-  db: Db
-  email: string
+  db: Db;
+  email: string;
 }): Promise<FindUserByNormalizedEmailResult> {
-  const normalized = normalizeEmail(email)
-  const matches = await db.select().from(users).where(sql`lower(${users.email}) = ${normalized}`)
-  if (matches.length > 1) return { status: 'collision', normalized }
-  return { status: 'ok', user: matches[0], normalized }
+  const normalized = normalizeEmail(email);
+  const matches = await db
+    .select()
+    .from(users)
+    .where(sql`lower(${users.email}) = ${normalized}`);
+  if (matches.length > 1) {
+    return { status: "collision", normalized };
+  }
+  return { normalized, status: "ok", user: matches[0] };
 }

@@ -114,7 +114,7 @@ We will use **Fastify REST API** with **OpenAPI spec generation from routes** an
 ### TLDR: Comparison Table
 
 | Feature | OpenAPI + hey-api ✅ | tRPC | GraphQL-First | Plain REST |
-|---------|-------------------|------|---------------|------------|
+| --- | --- | --- | --- | --- |
 | **Type safety** | ✅ Generated from OpenAPI | ✅ End-to-end | ✅ Schema-based | ❌ Manual |
 | **Client generation** | ✅ Automatic (hey-api) | ✅ Automatic | ✅ Codegen | ❌ Manual |
 | **AI/MCP integration** | ✅ REST-native | ⚠️ RPC pattern | ⚠️ Complex | ✅ Standard HTTP |
@@ -227,6 +227,7 @@ The public agent contract on this scored host remains OpenAPI plus `@repo/core`.
    - Other languages: Use standard OpenAPI generators (oapi-codegen, openapi-generator, etc.)
 
 **Benefits:**
+
 - OpenAPI spec always up-to-date (single source of truth)
 - Consistent approach across all languages
 - Standard tooling (industry-standard OpenAPI generators)
@@ -244,6 +245,7 @@ oapi-codegen -package client openapi.json > client.go
 ```
 
 **When to generate SDKs for other languages:**
+
 - Early stage: Use REST endpoints directly with `/openapi.json` for reference
 - Production: Generate SDKs using language-specific generators (keep in separate repos)
 

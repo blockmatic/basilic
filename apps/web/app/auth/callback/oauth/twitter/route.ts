@@ -1,56 +1,64 @@
-import { cookies } from 'next/headers'
-import { redirect, unstable_rethrow } from 'next/navigation'
-import { capture } from '@/lib/analytics'
-import { createBffClient, logAuthBffFailure } from '@/lib/auth/bff-client'
-import { completeOAuthCallback } from '@/lib/auth/callback-utils'
-import { parseAuthCookie } from '@/lib/auth/parse-auth-cookie'
-import { env } from '@/lib/env'
+import { cookies } from "next/headers";
+import { redirect, unstable_rethrow } from "next/navigation";
+
+import { capture } from "@/lib/analytics";
+import { createBffClient, logAuthBffFailure } from "@/lib/auth/bff-client";
+import { completeOAuthCallback } from "@/lib/auth/callback-utils";
+import { parseAuthCookie } from "@/lib/auth/parse-auth-cookie";
+import { env } from "@/lib/env";
 
 function mapAuthError(raw: string): string {
   const known: Record<string, string> = {
-    'Invalid or expired state': 'invalid_state',
-    'State has expired': 'expired_state',
-    'Missing code verifier for Twitter PKCE': 'invalid_state',
-    'Failed to exchange code for token': 'token_exchange_failed',
-    'Failed to fetch Twitter user': 'fetch_user_failed',
-    'Invalid Twitter user response': 'fetch_user_failed',
-    'Twitter OAuth is not configured': 'oauth_not_configured',
-    'Twitter sign-in failed': 'oauth_failed',
-  }
-  return known[raw] ?? 'oauth_failed'
+    "Failed to exchange code for token": "token_exchange_failed",
+    "Failed to fetch Twitter user": "fetch_user_failed",
+    "Invalid Twitter user response": "fetch_user_failed",
+    "Invalid or expired state": "invalid_state",
+    "Missing code verifier for Twitter PKCE": "invalid_state",
+    "State has expired": "expired_state",
+    "Twitter OAuth is not configured": "oauth_not_configured",
+    "Twitter sign-in failed": "oauth_failed",
+  };
+  return known[raw] ?? "oauth_failed";
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const code = searchParams.get('code')
-  const state = searchParams.get('state')
+  const { searchParams } = new URL(request.url);
+  const code = searchParams.get("code");
+  const state = searchParams.get("state");
 
   if (!code || !state) {
-    capture({ name: 'auth_failed', method: 'oauth_twitter', errorCode: 'missing_params' })
-    redirect(`/auth/login?message=${encodeURIComponent('missing_params')}`)
+    capture({
+      errorCode: "missing_params",
+      method: "oauth_twitter",
+      name: "auth_failed",
+    });
+    redirect(`/auth/login?message=${encodeURIComponent("missing_params")}`);
   }
 
-  const cookieStore = await cookies()
-  const { token } = parseAuthCookie(cookieStore.get(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)?.value)
-  const { client, reqId } = createBffClient({ request, token })
+  const cookieStore = await cookies();
+  const { token } = parseAuthCookie(
+    cookieStore.get(env.NEXT_PUBLIC_AUTH_COOKIE_NAME)?.value
+  );
+  const { client, reqId } = createBffClient({ request, token });
 
   try {
     const response = await client.auth.oauth.twitter.exchange({
       body: { code, state },
       throwOnError: true,
-    })
+    });
     return completeOAuthCallback({
+      failureMessage: "oauth_failed",
+      method: "oauth_twitter",
       request,
       response,
-      failureMessage: 'oauth_failed',
-      method: 'oauth_twitter',
-    })
+    });
   } catch (error) {
-    unstable_rethrow(error)
-    logAuthBffFailure({ error, reqId, method: 'oauth_twitter' })
-    const rawMessage = error instanceof Error ? error.message : 'Twitter sign-in failed'
-    const errorCode = mapAuthError(rawMessage)
-    capture({ name: 'auth_failed', method: 'oauth_twitter', errorCode })
-    redirect(`/auth/login?message=${encodeURIComponent(errorCode)}`)
+    unstable_rethrow(error);
+    logAuthBffFailure({ error, method: "oauth_twitter", reqId });
+    const rawMessage =
+      error instanceof Error ? error.message : "Twitter sign-in failed";
+    const errorCode = mapAuthError(rawMessage);
+    capture({ errorCode, method: "oauth_twitter", name: "auth_failed" });
+    redirect(`/auth/login?message=${encodeURIComponent(errorCode)}`);
   }
 }

@@ -1,12 +1,12 @@
-export { type VerifyPasskeyAuthResult, verifyPasskeyAuth } from './auth.js'
+export { type VerifyPasskeyAuthResult, verifyPasskeyAuth } from "./auth.js";
 export {
   getWebAuthnOriginFromRequest,
   getWebAuthnRpName,
   isAllowedCallbackOriginScheme,
-} from './origin.js'
+} from "./origin.js";
 export {
   AuthenticationResponseJSONSchema,
   PublicKeyCredentialCreationOptionsJSONSchema,
   PublicKeyCredentialRequestOptionsJSONSchema,
   RegistrationResponseJSONSchema,
-} from './webauthn.js'
+} from "./webauthn.js";

@@ -1,11 +1,12 @@
-import type { FastifyPluginAsync } from 'fastify'
-import fp from 'fastify-plugin'
-import { requestIdHeader } from '../lib/http-logging.js'
+import type { FastifyPluginAsync } from "fastify";
+import fp from "fastify-plugin";
 
-const requestId: FastifyPluginAsync = async fastify => {
-  fastify.addHook('onRequest', async (request, reply) => {
-    reply.header(requestIdHeader, request.id)
-  })
-}
+import { requestIdHeader } from "../lib/http-logging.js";
 
-export default fp(requestId)
+const requestId: FastifyPluginAsync = async (fastify) => {
+  fastify.addHook("onRequest", async (request, reply) => {
+    reply.header(requestIdHeader, request.id);
+  });
+};
+
+export default fp(requestId);

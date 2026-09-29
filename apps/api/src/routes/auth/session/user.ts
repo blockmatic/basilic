@@ -1,121 +1,146 @@
-import { getDb } from '@repo/db'
-import { account, passkeyCredentials, totp, users, walletIdentities } from '@repo/db/schema'
-import { Type } from '@sinclair/typebox'
-import { eq } from 'drizzle-orm'
-import type { FastifyPluginAsync } from 'fastify'
-import { sendCatalogError, sendServerCatalogError } from '../../../lib/catalogs/mapper.js'
-import { ErrorResponseSchema } from '../../schemas.js'
+import { getDb } from "@repo/db";
+import {
+  account,
+  passkeyCredentials,
+  totp,
+  users,
+  walletIdentities,
+} from "@repo/db/schema";
+import { Type } from "@sinclair/typebox";
+import { eq } from "drizzle-orm";
+import type { FastifyPluginAsync } from "fastify";
+
+import {
+  sendCatalogError,
+  sendServerCatalogError,
+} from "../../../lib/catalogs/mapper.js";
+import { ErrorResponseSchema } from "../../schemas.js";
 
 const LinkedWalletSchema = Type.Object({
-  id: Type.String(),
-  chain: Type.String(),
   address: Type.String(),
-})
+  chain: Type.String(),
+  id: Type.String(),
+});
 
 const PasskeySchema = Type.Object({
+  createdAt: Type.String({ format: "date-time" }),
   id: Type.String(),
   name: Type.String(),
-  createdAt: Type.String({ format: 'date-time' }),
-})
+});
 
 const LinkedAccountSchema = Type.Object({
   providerId: Type.String(),
-})
+});
 
 const UserResponseSchema = Type.Object({
   user: Type.Object({
-    id: Type.String(),
     email: Type.Union([Type.String(), Type.Null()]),
-    name: Type.Union([Type.String(), Type.Null()]),
-    username: Type.Union([Type.String(), Type.Null()]),
     emailVerified: Type.Boolean(),
-    wallet: Type.Optional(Type.Object({ chain: Type.String(), address: Type.String() })),
-    linkedWallets: Type.Array(LinkedWalletSchema),
+    id: Type.String(),
     linkedAccounts: Type.Array(LinkedAccountSchema),
-    totpEnabled: Type.Boolean(),
+    linkedWallets: Type.Array(LinkedWalletSchema),
+    name: Type.Union([Type.String(), Type.Null()]),
     passkeys: Type.Array(PasskeySchema),
+    totpEnabled: Type.Boolean(),
+    username: Type.Union([Type.String(), Type.Null()]),
+    wallet: Type.Optional(
+      Type.Object({ chain: Type.String(), address: Type.String() })
+    ),
   }),
-})
+});
 
-const sessionUserRoute: FastifyPluginAsync = async fastify => {
+const sessionUserRoute: FastifyPluginAsync = async (fastify) => {
   fastify.get(
-    '/user',
+    "/user",
     {
       schema: {
-        operationId: 'getUser',
-        description: 'Get current user information',
-        summary: 'Get user',
-        tags: ['auth'],
-        security: [{ bearerAuth: [] }],
+        description: "Get current user information",
+        operationId: "getUser",
         response: {
           200: UserResponseSchema,
           401: ErrorResponseSchema,
           500: ErrorResponseSchema,
         },
+        security: [{ bearerAuth: [] }],
+        summary: "Get user",
+        tags: ["auth"],
       },
     },
     async (request, reply) => {
-      if (!request.session) return sendCatalogError({ reply, status: 401, code: 'UNAUTHORIZED' })
+      if (!request.session) {
+        return sendCatalogError({ reply, status: 401, code: "UNAUTHORIZED" });
+      }
 
-      const userId = request.session.user.id
-      let linkedWallets: { id: string; chain: string; address: string }[]
-      let linkedAccounts: { providerId: string }[]
-      let totpEnabled: boolean
-      let passkeys: { id: string; name: string; createdAt: string }[]
+      const userId = request.session.user.id;
+      let linkedWallets: { id: string; chain: string; address: string }[];
+      let linkedAccounts: { providerId: string }[];
+      let totpEnabled: boolean;
+      let passkeys: { id: string; name: string; createdAt: string }[];
       let userRow:
-        | { name?: string | null; username?: string | null; emailVerified?: boolean }
-        | undefined
+        | {
+            name?: string | null;
+            username?: string | null;
+            emailVerified?: boolean;
+          }
+        | undefined;
 
       try {
-        const db = await getDb()
+        const db = await getDb();
         linkedWallets = await db
           .select({
-            id: walletIdentities.id,
-            chain: walletIdentities.chain,
             address: walletIdentities.address,
+            chain: walletIdentities.chain,
+            id: walletIdentities.id,
           })
           .from(walletIdentities)
-          .where(eq(walletIdentities.userId, userId))
+          .where(eq(walletIdentities.userId, userId));
 
         const accountRows = await db
           .select({ providerId: account.providerId })
           .from(account)
-          .where(eq(account.userId, userId))
-        const uniqueProviderIds = [...new Set(accountRows.map(a => a.providerId))]
-        linkedAccounts = uniqueProviderIds.map(providerId => ({ providerId }))
+          .where(eq(account.userId, userId));
+        const uniqueProviderIds = [
+          ...new Set(accountRows.map((a) => a.providerId)),
+        ];
+        linkedAccounts = uniqueProviderIds.map((providerId) => ({
+          providerId,
+        }));
 
-        const [totpRow] = await db.select().from(totp).where(eq(totp.userId, userId))
-        totpEnabled = !!totpRow
+        const [totpRow] = await db
+          .select()
+          .from(totp)
+          .where(eq(totp.userId, userId));
+        totpEnabled = !!totpRow;
 
         const passkeyRows = await db
           .select({
+            createdAt: passkeyCredentials.createdAt,
             id: passkeyCredentials.id,
             name: passkeyCredentials.name,
-            createdAt: passkeyCredentials.createdAt,
           })
           .from(passkeyCredentials)
-          .where(eq(passkeyCredentials.userId, userId))
-        passkeys = passkeyRows.map(p => ({
+          .where(eq(passkeyCredentials.userId, userId));
+        passkeys = passkeyRows.map((p) => ({
+          createdAt: p.createdAt.toISOString(),
           id: p.id,
           name: p.name,
-          createdAt: p.createdAt.toISOString(),
-        }))
+        }));
 
-        ;[userRow] = await db
+        [userRow] = await db
           .select({
+            emailVerified: users.emailVerified,
             name: users.name,
             username: users.username,
-            emailVerified: users.emailVerified,
           })
           .from(users)
-          .where(eq(users.id, userId))
-      } catch (err) {
+          .where(eq(users.id, userId));
+      } catch (error) {
         return sendServerCatalogError({
           request,
           reply,
-          code: 'SERVER_ERROR',
-          error: err,
-        })
+          code: "SERVER_ERROR",
+          error: error,
+        });
       }
 
       return reply.code(200).send({
@@ -125,16 +150,18 @@ const sessionUserRoute: FastifyPluginAsync = async fastify => {
           name: userRow?.name ?? request.session.user.name ?? null,
           username: userRow?.username ?? request.session.user.username ?? null,
           emailVerified: userRow?.emailVerified ?? false,
-          ...(request.session.user.wallet && { wallet: request.session.user.wallet }),
+          ...(request.session.user.wallet && {
+            wallet: request.session.user.wallet,
+          }),
           linkedWallets,
           linkedAccounts,
           totpEnabled,
           passkeys,
         },
-      })
-    },
-  )
-}
+      });
+    }
+  );
+};
 
-export default sessionUserRoute
-export const prefixOverride = '/auth/session'
+export default sessionUserRoute;
+export const prefixOverride = "/auth/session";

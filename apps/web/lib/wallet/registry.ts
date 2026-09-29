@@ -1,138 +1,142 @@
-export type WalletNamespace = 'eip155' | 'solana'
-export type WalletConnectKind = 'injected' | 'walletconnect' | 'standard' | 'deeplink'
+export type WalletNamespace = "eip155" | "solana";
+export type WalletConnectKind =
+  | "injected"
+  | "walletconnect"
+  | "standard"
+  | "deeplink";
 
 export interface WalletRow {
-  id: string
-  name: string
-  icon: string
-  namespaces: WalletNamespace[]
-  rdns?: string
-  installed: boolean
-  recent: boolean
-  connectKind: WalletConnectKind
-  wcOnly?: boolean
-  deeplink?: string
+  id: string;
+  name: string;
+  icon: string;
+  namespaces: WalletNamespace[];
+  rdns?: string;
+  installed: boolean;
+  recent: boolean;
+  connectKind: WalletConnectKind;
+  wcOnly?: boolean;
+  deeplink?: string;
 }
 
 export interface CatalogWallet {
-  id: string
-  name: string
-  icon: string
-  namespaces: WalletNamespace[]
-  rdns?: string
-  connectKind: WalletConnectKind
-  wcOnly?: boolean
-  deeplink?: string
+  id: string;
+  name: string;
+  icon: string;
+  namespaces: WalletNamespace[];
+  rdns?: string;
+  connectKind: WalletConnectKind;
+  wcOnly?: boolean;
+  deeplink?: string;
 }
 
 export interface DetectedWallet {
-  id: string
-  name: string
-  icon?: string
-  namespaces: WalletNamespace[]
-  rdns?: string
-  connectKind: WalletConnectKind
+  id: string;
+  name: string;
+  icon?: string;
+  namespaces: WalletNamespace[];
+  rdns?: string;
+  connectKind: WalletConnectKind;
 }
 
 export const catalogWallets: CatalogWallet[] = [
   {
-    id: 'metamask',
-    name: 'MetaMask',
-    icon: 'metamask',
-    namespaces: ['eip155'],
-    rdns: 'io.metamask',
-    connectKind: 'injected',
+    connectKind: "injected",
+    icon: "metamask",
+    id: "metamask",
+    name: "MetaMask",
+    namespaces: ["eip155"],
+    rdns: "io.metamask",
   },
   {
-    id: 'coinbase',
-    name: 'Coinbase Wallet',
-    icon: 'coinbase',
-    namespaces: ['eip155'],
-    rdns: 'com.coinbase.wallet',
-    connectKind: 'injected',
+    connectKind: "injected",
+    icon: "coinbase",
+    id: "coinbase",
+    name: "Coinbase Wallet",
+    namespaces: ["eip155"],
+    rdns: "com.coinbase.wallet",
   },
   {
-    id: 'rainbow',
-    name: 'Rainbow',
-    icon: 'rainbow',
-    namespaces: ['eip155'],
-    rdns: 'me.rainbow',
-    connectKind: 'injected',
+    connectKind: "injected",
+    icon: "rainbow",
+    id: "rainbow",
+    name: "Rainbow",
+    namespaces: ["eip155"],
+    rdns: "me.rainbow",
   },
   {
-    id: 'rabby',
-    name: 'Rabby',
-    icon: 'rabby',
-    namespaces: ['eip155'],
-    rdns: 'io.rabby',
-    connectKind: 'injected',
+    connectKind: "injected",
+    icon: "rabby",
+    id: "rabby",
+    name: "Rabby",
+    namespaces: ["eip155"],
+    rdns: "io.rabby",
   },
   {
-    id: 'phantom',
-    name: 'Phantom',
-    icon: 'phantom',
-    namespaces: ['eip155', 'solana'],
-    rdns: 'app.phantom',
-    connectKind: 'injected',
-    deeplink: 'https://phantom.app/ul/browse/',
+    connectKind: "injected",
+    deeplink: "https://phantom.app/ul/browse/",
+    icon: "phantom",
+    id: "phantom",
+    name: "Phantom",
+    namespaces: ["eip155", "solana"],
+    rdns: "app.phantom",
   },
   {
-    id: 'backpack',
-    name: 'Backpack',
-    icon: 'backpack',
-    namespaces: ['eip155', 'solana'],
-    rdns: 'app.backpack',
-    connectKind: 'injected',
+    connectKind: "injected",
+    icon: "backpack",
+    id: "backpack",
+    name: "Backpack",
+    namespaces: ["eip155", "solana"],
+    rdns: "app.backpack",
   },
   {
-    id: 'okx',
-    name: 'OKX Wallet',
-    icon: 'okx',
-    namespaces: ['eip155'],
-    rdns: 'com.okex.wallet',
-    connectKind: 'injected',
+    connectKind: "injected",
+    icon: "okx",
+    id: "okx",
+    name: "OKX Wallet",
+    namespaces: ["eip155"],
+    rdns: "com.okex.wallet",
   },
   {
-    id: 'trust',
-    name: 'Trust Wallet',
-    icon: 'trust',
-    namespaces: ['eip155'],
-    rdns: 'com.trustwallet.app',
-    connectKind: 'injected',
+    connectKind: "injected",
+    icon: "trust",
+    id: "trust",
+    name: "Trust Wallet",
+    namespaces: ["eip155"],
+    rdns: "com.trustwallet.app",
   },
   {
-    id: 'brave',
-    name: 'Brave Wallet',
-    icon: 'brave',
-    namespaces: ['eip155'],
-    rdns: 'com.brave.wallet',
-    connectKind: 'injected',
+    connectKind: "injected",
+    icon: "brave",
+    id: "brave",
+    name: "Brave Wallet",
+    namespaces: ["eip155"],
+    rdns: "com.brave.wallet",
   },
   {
-    id: 'solflare',
-    name: 'Solflare',
-    icon: 'solflare',
-    namespaces: ['solana'],
-    rdns: 'app.solflare',
-    connectKind: 'standard',
-    deeplink: 'https://solflare.com/ul/v1/browse/',
+    connectKind: "standard",
+    deeplink: "https://solflare.com/ul/v1/browse/",
+    icon: "solflare",
+    id: "solflare",
+    name: "Solflare",
+    namespaces: ["solana"],
+    rdns: "app.solflare",
   },
   {
-    id: 'walletconnect',
-    name: 'WalletConnect',
-    icon: 'walletconnect',
-    namespaces: ['eip155'],
-    connectKind: 'walletconnect',
+    connectKind: "walletconnect",
+    icon: "walletconnect",
+    id: "walletconnect",
+    name: "WalletConnect",
+    namespaces: ["eip155"],
     wcOnly: true,
   },
-]
+];
 
 function rowKey(row: { id: string; rdns?: string }): string {
-  return row.rdns ?? row.id
+  return row.rdns ?? row.id;
 }
 
 function uniqueNamespaces(values: WalletNamespace[]): WalletNamespace[] {
-  return [...new Set(values)]
+  return [...new Set(values)];
 }
 
 export function mergeWalletRows({
@@ -141,66 +145,78 @@ export function mergeWalletRows({
   recentIds,
   hasWalletConnectProjectId,
 }: {
-  catalog: CatalogWallet[]
-  detected: DetectedWallet[]
-  recentIds: string[]
-  hasWalletConnectProjectId: boolean
+  catalog: CatalogWallet[];
+  detected: DetectedWallet[];
+  recentIds: string[];
+  hasWalletConnectProjectId: boolean;
 }): WalletRow[] {
-  const rows = new Map<string, WalletRow>()
+  const rows = new Map<string, WalletRow>();
 
-  for (const item of catalog)
+  for (const item of catalog) {
     rows.set(rowKey(item), {
       ...item,
       installed: false,
       recent: recentIds.includes(item.id),
-    })
+    });
+  }
 
   for (const item of detected) {
     const existing = item.rdns
-      ? [...rows.values()].find(row => row.rdns === item.rdns)
-      : rows.get(item.id)
+      ? [...rows.values()].find((row) => row.rdns === item.rdns)
+      : rows.get(item.id);
     if (existing) {
       const merged: WalletRow = {
         ...existing,
-        installed: true,
-        namespaces: uniqueNamespaces([...existing.namespaces, ...item.namespaces]),
         connectKind: item.connectKind,
+        installed: true,
+        namespaces: uniqueNamespaces([
+          ...existing.namespaces,
+          ...item.namespaces,
+        ]),
         recent: recentIds.includes(existing.id) || recentIds.includes(item.id),
-      }
-      rows.set(rowKey(existing), merged)
-      continue
+      };
+      rows.set(rowKey(existing), merged);
+      continue;
     }
     rows.set(rowKey(item), {
-      id: item.id,
-      name: item.name,
+      connectKind: item.connectKind,
       icon: item.icon ?? item.id,
+      id: item.id,
+      installed: true,
+      name: item.name,
       namespaces: item.namespaces,
       rdns: item.rdns,
-      installed: true,
       recent: recentIds.includes(item.id),
-      connectKind: item.connectKind,
-    })
+    });
   }
 
-  return [...rows.values()].filter(row => row.installed || !row.wcOnly || hasWalletConnectProjectId)
+  return [...rows.values()].filter(
+    (row) => row.installed || !row.wcOnly || hasWalletConnectProjectId
+  );
 }
 
 export function sortWalletRows(rows: WalletRow[]): WalletRow[] {
   return [...rows].sort((a, b) => {
-    if (a.installed !== b.installed) return a.installed ? -1 : 1
-    if (a.recent !== b.recent) return a.recent ? -1 : 1
-    return a.name.localeCompare(b.name)
-  })
+    if (a.installed !== b.installed) {
+      return a.installed ? -1 : 1;
+    }
+    if (a.recent !== b.recent) {
+      return a.recent ? -1 : 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
 }
 
 export function searchWalletRows({
   rows,
   query,
 }: {
-  rows: WalletRow[]
-  query: string
+  rows: WalletRow[];
+  query: string;
 }): WalletRow[] {
-  const needle = query.trim().toLowerCase()
-  if (!needle) return rows
-  return rows.filter(row => row.name.toLowerCase().includes(needle))
+  const needle = query.trim().toLowerCase();
+  if (!needle) {
+    return rows;
+  }
+  return rows.filter((row) => row.name.toLowerCase().includes(needle));
 }

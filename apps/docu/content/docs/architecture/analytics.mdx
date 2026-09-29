@@ -7,12 +7,12 @@ description: "PostHog is chosen, not installed. Web capture() is a typed no-op: 
 
 Web product events go through `apps/web/lib/analytics.ts` `capture()`. That helper has **no sink**. Auth and assistant jobs are **specified** (types + this page) and **instrumented** (call sites exist). They are **not collected** and **not measured**. Do not invent Pino substitutes for product events. Do not treat a no-op `capture()` as measurement.
 
-| State | Meaning | Auth / assistant |
-| --- | --- | --- |
-| specified | Event and props named | yes |
-| instrumented | Call site exists | yes |
-| collected | A sink receives the event | no |
-| measured | Queryable; used to keep / iterate / kill | no |
+| State        | Meaning                                  | Auth / assistant |
+| ------------ | ---------------------------------------- | ---------------- |
+| specified    | Event and props named                    | yes              |
+| instrumented | Call site exists                         | yes              |
+| collected    | A sink receives the event                | no               |
+| measured     | Queryable; used to keep / iterate / kill | no               |
 
 ## Product questions
 
@@ -34,9 +34,9 @@ Discriminated union. Unknown names and invalid property combinations do not type
 No prompt text, email, or tokens in props.
 
 ```ts
-import { capture } from '@/lib/analytics'
+import { capture } from "@/lib/analytics";
 
-capture({ name: 'auth_succeeded', method: 'magic_link' })
+capture({ name: "auth_succeeded", method: "magic_link" });
 ```
 
 ## Later (not in the TypeScript union)

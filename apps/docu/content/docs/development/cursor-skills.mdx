@@ -11,7 +11,7 @@ Cursor requires `name` in each `SKILL.md` to match the folder (`nextjs`, not `ne
 
 **Basilic playbooks** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills). Skill `workflow` installs nested `/w-*` under `.agents/skills/workflow/w-<name>/`. Slash names: `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-review`, plus git close-out (`/w-commit` … `/w-ship`).
 
-**Stack and craft** — upstream GitHub catalogs listed in `scripts/skills-lock-manifest.mjs` (Emil motion, Next.js, Expo EAS, Vercel agent-skills, json-render, eve, shadcn, and others). Do not restyle installed copies to match Biome; `biome.json` excludes `.agents/skills/**`. Repo-specific layout and style stay in `AGENTS.md` and `.cursor/rules/`.
+**Stack and craft** — upstream GitHub catalogs listed in `scripts/skills-lock-manifest.mjs` (Emil motion, Next.js, Expo EAS, Vercel agent-skills, json-render, eve, shadcn, and others). Do not restyle installed copies; Oxlint ignores `.agents/skills/**`. Repo-specific layout and style stay in `AGENTS.md` and `.cursor/rules/`.
 
 ## What’s in git
 

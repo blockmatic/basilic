@@ -5,19 +5,19 @@ Bidirectional map with O(1) exact lookups and optional sorted key/value queries 
 ## Usage
 
 ```ts
-import { createBiMap } from '@repo/utils/data'
+import { createBiMap } from "@repo/utils/data";
 
-const map = createBiMap<number, string>()
-map.set(3, 'charlie')
-map.set(1, 'alice')
-map.set(2, 'bob')
+const map = createBiMap<number, string>();
+map.set(3, "charlie");
+map.set(1, "alice");
+map.set(2, "bob");
 
-const numCmp = (a: number, b: number) => a - b
-const strCmp = (a: string, b: string) => (a > b ? 1 : a < b ? -1 : 0)
+const numCmp = (a: number, b: number) => a - b;
+const strCmp = (a: string, b: string) => (a > b ? 1 : a < b ? -1 : 0);
 
-map.searchKey(2, numCmp)         // 'bob' — O(log n)
-map.searchValue('alice', strCmp)  // 1 — O(log n)
-map.rangeByKey(1, 2, numCmp)     // [[1,'alice'], [2,'bob']]
+map.searchKey(2, numCmp); // 'bob' — O(log n)
+map.searchValue("alice", strCmp); // 1 — O(log n)
+map.rangeByKey(1, 2, numCmp); // [[1,'alice'], [2,'bob']]
 ```
 
 ## When to use which
@@ -30,13 +30,13 @@ Sorting runs only when the map has changed (dirty flag), so repeated queries sta
 
 ## Performance (JS at scale)
 
-| Approach        | Lookup    | Setup       | Best for                    |
-|----------------|-----------|-------------|-----------------------------|
-| Map            | O(1)      | O(n)        | Exact match on any key      |
-| Binary search  | O(log n)  | O(n log n)  | Sorted numeric/string data  |
-| Trie           | O(k)      | O(n·k)      | Prefix/autocomplete         |
-| Bloom filter   | O(k)      | O(n)        | Existence (probabilistic)   |
-| Flat Typed Array | O(log n) | O(n)        | Numeric keys, max perf      |
+| Approach         | Lookup   | Setup      | Best for                   |
+| ---------------- | -------- | ---------- | -------------------------- |
+| Map              | O(1)     | O(n)       | Exact match on any key     |
+| Binary search    | O(log n) | O(n log n) | Sorted numeric/string data |
+| Trie             | O(k)     | O(n·k)     | Prefix/autocomplete        |
+| Bloom filter     | O(k)     | O(n)       | Existence (probabilistic)  |
+| Flat Typed Array | O(log n) | O(n)       | Numeric keys, max perf     |
 
 ## Practical recommendations
 

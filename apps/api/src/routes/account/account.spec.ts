@@ -1,46 +1,50 @@
-import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest'
-import { cleanupGroupDatabase, setupGroupDatabase } from '../../../test/utils/db-setup.js'
-import type { TestApp } from '../../../test/utils/fastify.js'
-import { buildTestApp } from '../../../test/utils/fastify.js'
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
-let fastify: TestApp
+import {
+  cleanupGroupDatabase,
+  setupGroupDatabase,
+} from "../../../test/utils/db-setup.js";
+import type { TestApp } from "../../../test/utils/fastify.js";
+import { buildTestApp } from "../../../test/utils/fastify.js";
+
+let fastify: TestApp;
 
 beforeAll(async () => {
-  await setupGroupDatabase()
-  fastify = await buildTestApp()
-})
+  await setupGroupDatabase();
+  fastify = await buildTestApp();
+});
 
 beforeEach(() => {
-  fastify.fakeEmail?.clear()
-})
+  fastify.fakeEmail?.clear();
+});
 
 afterEach(() => {
-  fastify.fakeEmail?.clear()
-})
+  fastify.fakeEmail?.clear();
+});
 
 afterAll(async () => {
-  if (fastify) await fastify.close()
-  await cleanupGroupDatabase()
-})
+  if (fastify) await fastify.close();
+  await cleanupGroupDatabase();
+});
 
-export { fastify }
+export { fastify };
 
-import './link/wallet/verify.test'
-import './link/wallet/unlink.test'
-import './wallet/get.test'
-import './link/email/request.test'
-import './link/email/verify.test'
-import './apikeys/create.test'
-import './apikeys/list.test'
-import './apikeys/revoke.test'
-import './link/passkey/delete.test'
-import './link/passkey/start.test'
-import './link/passkey/finish.test'
-import './link/totp/setup.test'
-import './link/totp/verify.test'
-import './link/totp/unlink.test'
-import './link/oauth/unlink.test'
-import './email/change/request.test'
-import './email/change/verify.test'
-import './profile/update.test'
-import './passkeys/list.test'
+import "./link/wallet/verify.test";
+import "./link/wallet/unlink.test";
+import "./wallet/get.test";
+import "./link/email/request.test";
+import "./link/email/verify.test";
+import "./apikeys/create.test";
+import "./apikeys/list.test";
+import "./apikeys/revoke.test";
+import "./link/passkey/delete.test";
+import "./link/passkey/start.test";
+import "./link/passkey/finish.test";
+import "./link/totp/setup.test";
+import "./link/totp/verify.test";
+import "./link/totp/unlink.test";
+import "./link/oauth/unlink.test";
+import "./email/change/request.test";
+import "./email/change/verify.test";
+import "./profile/update.test";
+import "./passkeys/list.test";

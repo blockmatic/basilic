@@ -1,1 +1,1 @@
-export type { CaptureErrorOptions } from '../types.js'
+export type { CaptureErrorOptions } from "../types.js";
