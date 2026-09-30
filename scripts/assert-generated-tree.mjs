@@ -12,7 +12,6 @@ if (!dest) {
 
 const forbidden = [
   "apps/docu",
-  "apps/agents",
   "tools/create-basilic",
   "scripts/prepare-publish.mjs",
   "scripts/restore-publish.mjs",

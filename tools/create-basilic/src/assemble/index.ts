@@ -14,6 +14,7 @@ import { classifyTrackedFiles, loadManifest } from "./classify.js";
 import { regenerateLockfile } from "./lockfile.js";
 import { rewritePointers } from "./pointers.js";
 import { resetProductBrief } from "./product-reset.js";
+import { snapshotDocs } from "./snapshot-docs.js";
 import { applyAssembleTransforms } from "./transforms.js";
 
 export const forbiddenGeneratedPaths = [
@@ -76,13 +77,19 @@ export function assembleTemplate({
 
   if (allowDirty) {
     copyClassifiedFromWorktree({ classified, dest, repoRoot });
+    snapshotDocs({ destRoot: dest, sourceRoot: repoRoot });
   } else {
     extractHeadArchive({ dest, repoRoot });
+    snapshotDocs({ destRoot: dest, sourceRoot: dest });
     for (const { path, kind } of classified) {
       if (kind !== "exclude") {
         continue;
       }
       rmSync(join(dest, path), { force: true, recursive: true });
+    }
+    for (const rule of manifest.exclude) {
+      const normalized = rule.endsWith("/") ? rule.slice(0, -1) : rule;
+      rmSync(join(dest, normalized), { force: true, recursive: true });
     }
   }
 
