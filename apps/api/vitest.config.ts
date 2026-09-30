@@ -11,8 +11,11 @@ const projectRoot = resolve(configDir);
 
 // Load .env.test for tests (before env.ts validation runs)
 const envTestFile = resolve(projectRoot, ".env.test");
+const envTestExample = resolve(projectRoot, ".env.test.example");
 if (existsSync(envTestFile)) {
   config({ path: envTestFile });
+} else if (existsSync(envTestExample)) {
+  config({ path: envTestExample });
 }
 // Ensure tests run against the default model only (no AI_DEFAULT_MODEL override)
 Reflect.deleteProperty(process.env, "AI_DEFAULT_MODEL");
