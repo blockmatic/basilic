@@ -16,5 +16,5 @@ runs:
           ${{ runner.os }}-agent-skills-
     - run: pnpm install --frozen-lockfile
       shell: bash
-    - run: pnpm setup:skills
+    - run: pnpm skills:install
       shell: bash

@@ -4,7 +4,7 @@ import { LandingSection } from "@/components/landing/section";
 
 const groups = [
   {
-    body: "Lock-installed from upstream catalogs (`pnpm setup:skills`).",
+    body: "Lock-installed from upstream catalogs (`pnpm skills:install`).",
     items: ["nextjs", "ai-sdk", "shadcn"],
     title: "Stack",
   },

@@ -2,7 +2,30 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { allowedGithubCatalogs } from "./skills-lock-manifest.mjs";
+const repoRoot = join(import.meta.dirname, "..");
+
+/** GitHub catalog sources allowed in generated `skills-lock.json`. */
+function githubCatalogsFromRepoRootLock(lockPath) {
+  if (!existsSync(lockPath)) {
+    console.error(`Missing repo-root skills lock: ${lockPath}`);
+    process.exit(1);
+  }
+  let lock;
+  try {
+    lock = JSON.parse(readFileSync(lockPath, "utf-8"));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Malformed skills lock at ${lockPath}: ${message}`);
+    process.exit(1);
+  }
+  return [
+    ...new Set(
+      Object.values(lock.skills ?? {})
+        .filter((skill) => skill.sourceType === "github" && skill.source)
+        .map((skill) => skill.source)
+    ),
+  ];
+}
 
 const dest = process.argv[2];
 if (!dest) {
@@ -121,7 +144,9 @@ if (existsSync(lockPath)) {
         .map((skill) => skill.source)
     ),
   ];
-  const allowed = new Set(allowedGithubCatalogs);
+  const allowed = new Set(
+    githubCatalogsFromRepoRootLock(join(repoRoot, "skills-lock.json"))
+  );
   const unexpected = github.filter((source) => !allowed.has(source));
   if (unexpected.length > 0) {
     console.error(
