@@ -51,15 +51,15 @@
       "description": "Vercel project documentation context"
     },
     "fastify": {
-      "url": "https://mcp.vercel.com/gaboesquivel/basilic-fastify",
+      "url": "https://mcp.vercel.com/gaboesquivel/tracker-fastify",
       "description": "Vercel Fastify API package context"
     },
     "next": {
-      "url": "https://mcp.vercel.com/gaboesquivel/basilic-next",
+      "url": "https://mcp.vercel.com/gaboesquivel/tracker-next",
       "description": "Next.js web application context"
     },
     "agents": {
-      "url": "https://mcp.vercel.com/gaboesquivel/basilic-agents",
+      "url": "https://mcp.vercel.com/gaboesquivel/tracker-agents",
       "description": "Eve Agents context"
     }
   }

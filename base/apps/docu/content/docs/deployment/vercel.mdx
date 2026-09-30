@@ -110,14 +110,14 @@ Each app uses `ignoreCommand` in `vercel.json` (e.g. `turbo-ignore @repo/web --f
 
 ## Branch Preview Coupling
 
-Next's `apps/web/next.config.mjs` derives `NEXT_PUBLIC_API_URL` for preview branches as `basilic-fastify-git-{branch}-*.vercel.app`. Ensure Fastify and Next projects are connected to the same Git repo so both get preview deploys on PR branches.
+Coin Tracker's `example/apps/web/next.config.mjs` derives `NEXT_PUBLIC_API_URL` for preview branches as `tracker-fastify-git-{branch}-*.vercel.app`. Ensure the Fastify and Next Vercel projects stay connected to the same Git repo so both get preview deploys on PR branches. The starter in `base/` still uses `basilic-fastify` as the `create-basilic` rewrite seed.
 
 ## Monorepo Configuration
 
 For monorepo apps, Vercel needs to know the root directory:
 
 1. Go to Vercel project settings
-2. Set "Root Directory" to `apps/web` (or `apps/docu`, `apps/api`, `apps/agents`)
+2. Set "Root Directory" to `example/apps/web` (or `example/apps/api`, `example/apps/agents`). Docs stay `base/apps/docu` and are ignored on this team's Coin Tracker deploys. A generated `create-basilic` app uses `apps/web`, `apps/api`, `apps/docu`.
 3. Vercel automatically detects package dependencies
 
 **Fork or different project names**: Next's `next.config.mjs` uses `API_PROJECT_NAME` and `TEAM_SLUG` to compute preview API URLs. Update these constants to match your Fastify Vercel project name and team slug.

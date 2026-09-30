@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 const scriptDir = import.meta.dirname;
 const repoRoot = dirname(scriptDir);
 
-const defaultUrl = "https://basilic-fastify.vercel.app";
+const defaultUrl = "https://tracker-fastify.vercel.app";
 const target = process.env.AGENTIC_SCAN_URL?.trim() || defaultUrl;
 
 const host = target.replace(/^https?:\/\//, "").replace(/\/.*$/, "");

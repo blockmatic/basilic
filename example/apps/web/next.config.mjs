@@ -37,12 +37,12 @@ function prependEveUsingLoader(rules) {
   }
 }
 
-// Must match basilic-fastify Vercel deployment URL pattern. Fork/deploy: change API_PROJECT_NAME
+// Must match tracker-fastify Vercel deployment URL pattern. Fork/deploy: change API_PROJECT_NAME
 // and TEAM_SLUG to your Fastify project and Vercel team slug.
-// - Production: basilic-fastify.vercel.app (or basilic-fastify-gaboesquivel.vercel.app)
-// - Preview (commit): basilic-fastify-{hash}-gaboesquivel.vercel.app
-// - Preview (branch): basilic-fastify-git-{branch}-gaboesquivel.vercel.app
-const apiProjectName = "basilic-fastify";
+// - Production: tracker-fastify.vercel.app (or tracker-fastify-gaboesquivel.vercel.app)
+// - Preview (commit): tracker-fastify-{hash}-gaboesquivel.vercel.app
+// - Preview (branch): tracker-fastify-git-{branch}-gaboesquivel.vercel.app
+const apiProjectName = "tracker-fastify";
 const teamSlug = "gaboesquivel";
 
 function toBranchSlug(ref) {
