@@ -13,8 +13,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze diff
-    if: >
-      github.event.pull_request.head.repo.full_name == github.repository && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) && secrets.AI_GATEWAY_API_KEY != ''
+    if: github.event.pull_request.head.repo.full_name == github.repository && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -70,6 +69,10 @@ jobs:
         env:
           AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
         run: |
+          if [ -z "$AI_GATEWAY_API_KEY" ]; then
+            echo "AI_GATEWAY_API_KEY is required for DeepSec process."
+            exit 1
+          fi
           printf 'AI_GATEWAY_API_KEY=%s\nOPENAI_API_KEY=%s\nOPENAI_BASE_URL=https://ai-gateway.vercel.sh/v1\n' \
             "$AI_GATEWAY_API_KEY" "$AI_GATEWAY_API_KEY" > .env.local
           chmod 600 .env.local
