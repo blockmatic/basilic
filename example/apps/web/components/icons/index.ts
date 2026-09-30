@@ -1,5 +1,0 @@
-export { Facebook } from "./facebook";
-export { GitHub } from "./github";
-export { Google } from "./google";
-export { Passkey } from "./passkey";
-export { Twitter } from "./twitter";

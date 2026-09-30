@@ -1,0 +1,57 @@
+---
+title: "Architecture Decisions"
+description: "Architecture Decision Records (ADRs) documenting key technical decisions for the monorepo."
+---
+
+Architecture Decision Records (ADRs) document key technical decisions made during development. Each ADR captures the context, considered options, decision rationale, and consequences.
+
+## Foundation Layer
+
+Foundational infrastructure decisions:
+
+- **[ADR 001: Monorepo vs Standalone](/docs/adrs/001-monorepo-vs-standalone)** - Monorepo architecture with Turborepo
+- **[ADR 005: Package Manager](/docs/adrs/005-package-manager)** - pnpm for package management with Node.js LTS runtime
+
+## Backend Stack
+
+Server infrastructure and data storage:
+
+- **[ADR 002: Backend Framework & Runtime](/docs/adrs/002-backend-framework)** - Node.js LTS + Fastify for backend API
+- **[ADR 014: Fastify, eve, and Vercel runtime](/docs/adrs/014-fastify-eve-vercel-runtime)** - Fastify product API, eve sibling host, Vercel Fluid, Node/container exit
+- **[ADR 008: Database Platform & Strategy](/docs/adrs/008-database)** - PostgreSQL with Supabase and portability strategy
+- **[ADR 007: Backend ORM](/docs/adrs/007-backend-orm)** - Drizzle ORM for type-safe PostgreSQL queries
+
+## API Architecture
+
+Frontend-backend communication and integration:
+
+- **[ADR 009: API Architecture & Client Generation](/docs/adrs/009-api-architecture)** - REST API with OpenAPI, hey-api client generation, multi-language SDK strategy, public discovery files (no product MCP)
+
+## Frontend Stack
+
+Client application infrastructure:
+
+- **[ADR 003: Frontend Framework](/docs/adrs/003-frontend-framework)** - Next.js for frontend applications
+- **[ADR 004: Design System](/docs/adrs/004-design-system)** - Shadcn/ui with Tailwind CSS
+- **[ADR 013: Shadcn Base UI](/docs/adrs/013-shadcn-base-ui)** - Base UI primitives under `@repo/ui` (`base-vega`)
+
+## Code Quality
+
+Development tooling and code standards:
+
+- **[ADR 006: Linters & Formatters](/docs/adrs/006-linters)** - Ultracite (Oxlint + Oxfmt)
+
+## Observability & Analytics
+
+Product usage and observability:
+
+- **[ADR 011: Product Analytics](/docs/adrs/011-product-analytics)** - PostHog chosen, not installed; web `capture()` is a typed no-op
+
+## Deployment & CI/CD
+
+- **[ADR 012: Scaffolding and Releases](/docs/adrs/012-scaffolding-and-releases)** - `create-basilic` generator, template boundaries, Release Please, trusted npm publish
+- **[ADR 016: Standalone repos](/docs/adrs/016-standalone-repos)** - Basilic git root is the starter; Coin Tracker is a separate repository
+
+Mobile app build and preview workflows:
+
+- **[ADR 010: Expo CI/CD](/docs/adrs/010-expo-cicd)** - EAS builds, preview distribution, PR OTA updates (Android-only v1)

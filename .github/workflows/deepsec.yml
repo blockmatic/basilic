@@ -10,6 +10,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  DEEPSEC_MAX_FILES: "80"
+
 jobs:
   analyze:
     name: Analyze diff
@@ -35,27 +38,39 @@ jobs:
           fi
 
       - name: List PR files
+        id: files
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GIT_TERMINAL_PROMPT: "0"
-        run: git diff --name-only --diff-filter=AMRC "${BASE_SHA}...HEAD" | tee "${{ github.workspace }}/deepsec-files.txt"
+        run: |
+          git diff --name-only --diff-filter=AMRC "${BASE_SHA}...HEAD" | tee "${{ github.workspace }}/deepsec-files.txt"
+          count=$(wc -l < "${{ github.workspace }}/deepsec-files.txt" | tr -d ' ')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          if [ "$count" -gt "$DEEPSEC_MAX_FILES" ]; then
+            echo "over_cap=true" >> "$GITHUB_OUTPUT"
+            echo "Skipping DeepSec process: $count files exceeds the $DEEPSEC_MAX_FILES-file cap."
+          else
+            echo "over_cap=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Setup Node.js
+        if: steps.files.outputs.over_cap != 'true'
         uses: actions/setup-node@v4
         with:
-          node-version-file: "base/.nvmrc"
+          node-version-file: ".nvmrc"
 
       - name: Setup pnpm
+        if: steps.files.outputs.over_cap != 'true'
         uses: pnpm/action-setup@v4
-        with:
-          package_json_file: .deepsec/package.json
 
       - name: Get pnpm store directory
+        if: steps.files.outputs.over_cap != 'true'
         working-directory: .deepsec
         shell: bash
         run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
 
       - name: Setup pnpm cache
+        if: steps.files.outputs.over_cap != 'true'
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
@@ -64,10 +79,12 @@ jobs:
             ${{ runner.os }}-deepsec-pnpm-
 
       - name: Install DeepSec
+        if: steps.files.outputs.over_cap != 'true'
         working-directory: .deepsec
         run: pnpm install --frozen-lockfile
 
       - name: Configure DeepSec credentials
+        if: steps.files.outputs.over_cap != 'true'
         working-directory: .deepsec
         env:
           AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
@@ -77,6 +94,7 @@ jobs:
           chmod 600 .env.local
 
       - name: Review PR diff
+        if: steps.files.outputs.over_cap != 'true'
         id: deepsec
         working-directory: .deepsec
         env:
@@ -86,8 +104,8 @@ jobs:
         run: |
           set -o pipefail
           pnpm exec deepsec process \
-            --agent codex \
-            --model gpt-5.6-sol \
+            --agent pi \
+            --model xai/grok-4.6 \
             --thinking-level medium \
             --root "${{ github.workspace }}" \
             --files-from "${{ github.workspace }}/deepsec-files.txt" \
@@ -95,7 +113,7 @@ jobs:
             2>&1 | tee "${{ github.workspace }}/deepsec.log"
 
       - name: Upload DeepSec log
-        if: failure()
+        if: failure() && steps.files.outputs.over_cap != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: deepsec-log
@@ -103,7 +121,7 @@ jobs:
           retention-days: 1
 
       - name: Upload findings comment
-        if: always() && hashFiles('comment.md') != ''
+        if: always() && steps.files.outputs.over_cap != 'true' && hashFiles('comment.md') != ''
         uses: actions/upload-artifact@v4
         with:
           name: deepsec-comment

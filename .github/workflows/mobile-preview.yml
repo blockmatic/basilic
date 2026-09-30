@@ -4,11 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "base/apps/mobile/**"
-      - "base/packages/ui/**"
-      - "base/pnpm-lock.yaml"
-      - "base/package.json"
-      - "base/turbo.json"
+      - "apps/mobile/**"
+      - "packages/ui/**"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - "turbo.json"
 
 concurrency:
   group: mobile-preview-${{ github.ref }}
@@ -23,25 +23,22 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: "base/.nvmrc"
+          node-version-file: ".nvmrc"
       - uses: pnpm/action-setup@v4
-        with:
-          package_json_file: base/package.json
       - name: Get pnpm store directory
         shell: bash
         run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
       - uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('base/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - run: pnpm install --frozen-lockfile
-        working-directory: base
       - uses: expo/expo-github-action@v8
         with:
           eas-version: 18
           token: ${{ secrets.EXPO_TOKEN }}
       - name: EAS Build
-        working-directory: base/apps/mobile
+        working-directory: apps/mobile
         run: npx eas build --platform android --profile preview --non-interactive

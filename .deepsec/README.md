@@ -12,7 +12,7 @@ If setup was interrupted, run `pnpm deepsec setup` here or re-run the original i
 
 Use `--model-auth direct --ai-provider <provider> --ai-api-key-env <ENV_NAME>` to use a user-owned model credential; secret values remain in the environment or `.env.local`. Use `--model-auth local` to rely on a machine-wide `claude`/`codex` login instead — no API key or env vars needed.
 
-From the monorepo root: `pnpm security:deepsec:scan`, `pnpm security:deepsec:process:diff` (GPT-5.6 Sol / Codex), `pnpm security:deepsec:process:diff:grok` (Cursor Grok 4.6 / Pi), `pnpm security:deepsec:process`, `pnpm security:deepsec:report`. CI uses Sol GPT on same-repo PRs from OWNER, MEMBER, or COLLABORATOR (`.github/workflows/deepsec.yml`). Not in pre-commit or `security.yml`.
+From the monorepo root: `pnpm security:deepsec:scan`, `pnpm security:deepsec:process:diff` (Grok 4.6 / Pi), `pnpm security:deepsec:process:diff:sol` (GPT-5.6 Sol / Codex), `pnpm security:deepsec:process`, `pnpm security:deepsec:report`. CI uses Grok 4.6 on same-repo PRs from OWNER, MEMBER, or COLLABORATOR when `AI_GATEWAY_API_KEY` is set and the PR changes at most 80 files (`.github/workflows/deepsec.yml`). Not in pre-commit or `security.yml`.
 
 pnpm 12 rejects lockfile entries younger than 24 hours (`minimumReleaseAge`). Security patches published inside that window go in `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` (currently `qs@6.16.0` for CVE-2026-82417 / CVE-2026-82562). Install scripts must be listed under `allowBuilds` (`true` to run, `false` to skip).
 
@@ -27,7 +27,7 @@ pnpm deepsec export      --format md-dir --out ./findings
 
 `--project-id` is auto-resolved while there's only one project in `deepsec.config.ts`. Once you've added a second project, pass `--project-id basilic` (or whichever id you want) explicitly.
 
-`scan` is free (regex only). `process` is the AI stage (Codex / `gpt-5.6-sol` by default). Run state goes to `data/basilic/`.
+`scan` is free (regex only). `process` is the AI stage (`pi` / `xai/grok-4.6` by default). Run state goes to `data/basilic/`.
 
 ## Adding another project
 

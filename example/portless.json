@@ -1,8 +1,0 @@
-{
-  "apps": {
-    "apps/web": { "name": "tracker", "script": "dev:app" },
-    "apps/api": { "name": "api.tracker", "script": "dev:app" },
-    "apps/agents": { "name": "agents.tracker", "script": "dev:app" },
-    "packages/email": { "name": "email.tracker", "script": "dev:app" }
-  }
-}

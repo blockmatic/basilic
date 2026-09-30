@@ -3,11 +3,23 @@ name: API (E2E)
 on:
   pull_request:
     paths:
-      - "base/**"
-      - "example/**"
+      - "apps/api/**"
+      - "packages/db/**"
+      - "packages/email/**"
+      - "packages/error/**"
+      - "packages/utils/**"
+      - "oxlint.config.ts"
+      - "oxfmt.config.ts"
+      - "tools/typescript/**"
+      - "packages/core/**"
+      - "packages/cli/**"
+      - "apps/api/openapi/**"
       - ".github/workflows/api-e2e.yml"
       - ".github/actions/setup-pnpm/**"
       - ".github/actions/setup-playwright/**"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - "turbo.json"
 
 concurrency:
   group: api-e2e-${{ github.ref }}
@@ -23,47 +35,33 @@ env:
 jobs:
   unit:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        workspace: [base, example]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-pnpm
-        with:
-          workspace: ${{ matrix.workspace }}
       - name: Check OpenAPI drift
-        working-directory: ${{ matrix.workspace }}
         run: |
           pnpm generate
-          git diff --exit-code -- ${{ matrix.workspace }}/apps/api/openapi/openapi.json ${{ matrix.workspace }}/packages/core/src/gen ${{ matrix.workspace }}/packages/core/src/api-wrapper.gen.ts ${{ matrix.workspace }}/packages/core/src/api-client.gen.ts ${{ matrix.workspace }}/packages/cli/src/gen
-          untracked=$(git status --short --untracked-files=all -- ${{ matrix.workspace }}/packages/core/src/gen ${{ matrix.workspace }}/packages/cli/src/gen)
+          git diff --exit-code -- apps/api/openapi/openapi.json packages/core/src/gen packages/core/src/api-wrapper.gen.ts packages/core/src/api-client.gen.ts packages/cli/src/gen
+          untracked=$(git status --short --untracked-files=all -- packages/core/src/gen packages/cli/src/gen)
           if [ -n "$untracked" ]; then
             echo "$untracked"
             exit 1
           fi
       - name: Unit tests with coverage
-        working-directory: ${{ matrix.workspace }}
         run: pnpm --filter @repo/api test:cov
       - name: Upload Vitest coverage
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: api-vitest-coverage-${{ matrix.workspace }}
-          path: ${{ matrix.workspace }}/apps/api/coverage/
+          name: api-vitest-coverage
+          path: apps/api/coverage/
           retention-days: 30
 
   e2e:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        workspace: [base, example]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-pnpm
-        with:
-          workspace: ${{ matrix.workspace }}
       - uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
@@ -71,18 +69,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
       - name: Install Playwright
-        working-directory: ${{ matrix.workspace }}
         run: pnpm --filter @repo/api exec playwright install chromium --with-deps
       - name: Build API dependencies
-        working-directory: ${{ matrix.workspace }}
         run: pnpm turbo run build --filter=@repo/api...
       - name: E2E tests (local)
-        working-directory: ${{ matrix.workspace }}
         run: pnpm --filter @repo/api test:e2e:local
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-api-${{ matrix.workspace }}
-          path: ${{ matrix.workspace }}/apps/api/playwright-report/
+          name: playwright-report-api
+          path: apps/api/playwright-report/
           retention-days: 30
