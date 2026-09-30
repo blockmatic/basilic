@@ -1,1 +1,0 @@
-ALTER TABLE "verification" ADD COLUMN "meta" jsonb;

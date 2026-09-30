@@ -1,1 +1,0 @@
-export { BraveWalletIcon } from "./brave";

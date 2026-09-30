@@ -1,6 +1,0 @@
-export type { CoreApiClient } from "./api-client.gen";
-export type { ClientConfig } from "./client";
-export { createClient, getClientConfig } from "./client";
-export type { CoreClientOptions } from "./config";
-export { ApiError } from "./errors";
-export type * from "./gen/types.gen";

@@ -34,20 +34,16 @@ jobs:
 
       - if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
         uses: ./.github/actions/setup-pnpm
-        with:
-          workspace: base
 
       - name: Assemble template
         if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
         env:
           CREATE_BASILIC_LOCKFILE: "1"
           CREATE_BASILIC_TEMPLATE_DIR: ${{ runner.temp }}/basilic-template
-        working-directory: base
         run: pnpm --filter create-basilic assemble
 
       - name: Assert generated tree
         if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')
-        working-directory: base
         run: node scripts/assert-generated-tree.mjs "$RUNNER_TEMP/basilic-template"
 
       - name: Secret scan assembled tree
@@ -55,7 +51,6 @@ jobs:
         run: |
           node scripts/setup-gitleaks.mjs
           gitleaks detect --source "$RUNNER_TEMP/basilic-template" --no-git --redact --verbose --config .gitleaks.toml
-        working-directory: base
 
       - name: Git init and install generated workspace
         if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release-please--')

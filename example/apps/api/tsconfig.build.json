@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "paths": {}
-  },
-  "include": ["server.ts", "src/**/*.ts", "api/**/*.ts"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts", "test"]
-}

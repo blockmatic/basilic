@@ -1,0 +1,22 @@
+---
+title: ADR 016 — Standalone Basilic and Coin Tracker
+description: Basilic and Coin Tracker are separate git repositories. This tree is the starter. Tracker is the reference product.
+---
+
+## Status
+
+Accepted.
+
+## Context
+
+ADR 015 put the starter and Coin Tracker in one git repository as `base/` and `example/`. That layout needed a dispatcher at the git root, nested `HEAD:base` archives, and a workspace matrix in CI. Generated apps should look like this starter at the workspace root, not like a nested folder.
+
+## Decision
+
+`blockmatic/basilic` is one pnpm workspace at the git root. Doku stays at `apps/docu`. `create-basilic` archives `HEAD` from that root. Coin Tracker is [blockmatic/basilic-tracker](https://github.com/blockmatic/basilic-tracker), seeded from the former `example/` tree. There is no sync, overlay, or cross-repo import.
+
+Basilic local hosts stay on `*.basilic.localhost` including `https://docu.basilic.localhost`. Tracker hosts are `*.tracker.localhost` with no Doku host. Basilic Postgres is `127.0.0.1:54422`. Tracker stays on `127.0.0.1:54322`. Tracker keeps migrations `0000`–`0021` and omits `apps/mobile`.
+
+## Consequences
+
+Work in this clone at the git root (`pnpm setup`, `pnpm qa`). Point product questions about markets, wallets, and Chat at basilic-tracker. Vercel Root Directory is `apps/<app>` in both repos, with include-files-outside-root on.
