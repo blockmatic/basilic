@@ -1,0 +1,133 @@
+import { getDb } from "@repo/db";
+import type { VerificationType } from "@repo/db/schema";
+import { sessions, users, verification } from "@repo/db/schema";
+import { and, desc, eq, isNotNull, sql } from "drizzle-orm";
+import type { FastifyInstance } from "fastify";
+
+import { env } from "../../lib/env.js";
+
+export interface VerificationLastResult {
+  token: string | null;
+  verificationId: string | null;
+}
+
+const emptyResult: VerificationLastResult = {
+  token: null,
+  verificationId: null,
+};
+
+function escapeLikePattern(value: string): string {
+  return value
+    .replaceAll("\\", "\\\\")
+    .replaceAll("%", "\\%")
+    .replaceAll("_", "\\_");
+}
+
+function extractFromScopedFakeEmail({
+  fastify,
+  email,
+}: {
+  fastify: FastifyInstance;
+  email: string;
+}): VerificationLastResult {
+  const captured = fastify.fakeEmail?.all().findLast((e) => e.to === email);
+  if (!captured) {
+    return emptyResult;
+  }
+  return {
+    token: fastify.fakeEmail?.extractToken(captured) ?? null,
+    verificationId: fastify.fakeEmail?.extractVerificationId(captured) ?? null,
+  };
+}
+
+export function isTestEmailAllowed(email: string | undefined): email is string {
+  return typeof email === "string" && email.endsWith("@test.ai");
+}
+
+export function isAllowedTestType(
+  type: string | undefined
+): type is "magic_link" | "change_email" | "session_revoke" {
+  return (
+    type === "magic_link" ||
+    type === "change_email" ||
+    type === "session_revoke"
+  );
+}
+
+export async function getLastVerification({
+  fastify,
+  type,
+  email,
+}: {
+  fastify: FastifyInstance;
+  type: VerificationType;
+  email: string;
+}): Promise<VerificationLastResult> {
+  if (!env.ALLOW_TEST || env.NODE_ENV === "production") {
+    return emptyResult;
+  }
+
+  const db = await getDb();
+
+  if (type === "session_revoke") {
+    const [row] = await db
+      .select({ id: verification.id, tokenPlain: verification.tokenPlain })
+      .from(verification)
+      .innerJoin(sessions, eq(verification.identifier, sessions.id))
+      .innerJoin(users, eq(sessions.userId, users.id))
+      .where(
+        and(
+          eq(verification.type, type),
+          eq(users.email, email),
+          isNotNull(verification.tokenPlain)
+        )
+      )
+      .orderBy(desc(verification.createdAt))
+      .limit(1);
+    if (row) {
+      return { token: row.tokenPlain, verificationId: row.id };
+    }
+    return extractFromScopedFakeEmail({ email, fastify });
+  }
+
+  const where =
+    type === "magic_link"
+      ? and(
+          eq(verification.type, type),
+          eq(verification.identifier, email),
+          isNotNull(verification.tokenPlain)
+        )
+      : and(
+          eq(verification.type, type),
+          sql`${verification.identifier} LIKE ${`%:${escapeLikePattern(email)}`} ESCAPE '\\'`,
+          isNotNull(verification.tokenPlain)
+        );
+
+  const [row] = await db
+    .select({ id: verification.id, tokenPlain: verification.tokenPlain })
+    .from(verification)
+    .where(where)
+    .orderBy(desc(verification.createdAt))
+    .limit(1);
+
+  if (row) {
+    return { token: row.tokenPlain, verificationId: row.id };
+  }
+  return extractFromScopedFakeEmail({ email, fastify });
+}
+
+export async function getLastMagicLinkForTestAi({
+  fastify,
+  email,
+}: {
+  fastify: FastifyInstance;
+  email: string;
+}): Promise<VerificationLastResult> {
+  if (!env.ALLOW_TEST || env.NODE_ENV === "production") {
+    return emptyResult;
+  }
+  if (!isTestEmailAllowed(email)) {
+    return emptyResult;
+  }
+  return getLastVerification({ email, fastify, type: "magic_link" });
+}

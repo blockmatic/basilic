@@ -1,0 +1,26 @@
+# @repo/db
+
+Drizzle PostgreSQL schema, client factory, and named data-access functions. Fastify and eve host call this package. Next.js must not import it.
+
+## Exports
+
+| Path | Use for |
+| --- | --- |
+| `@repo/db` | `configureDb`, `getDb`, `createPgPool`, `closeDb`, `resetDbInstance`, asset/watch/session/account-snapshot/linked-wallet fns (`findBinanceMarket`) |
+| `@repo/db/schema` | Table defs for Fastify auth and coins routes |
+| `@repo/db/migrate` | `runMigrations`, `runPostgresMigrations`, `migrationsDir` |
+
+Call `configureDb({ databaseUrl, pglite, pgliteInstance, vercel })` from the host env; pass `databaseUrl` from `POSTGRES_URL`. The package does not import Fastify `env` or the api test harness. Pass `vercel: true` on Vercel so `createPgPool` uses TLS without verifying the Postgres CA — Node 24 and `pg` treat `sslmode=require` as `verify-full`, which fails Marketplace Postgres chains.
+
+Local Docker Postgres is `pnpm db:start` (Supabase CLI in this package; no-op when `SKIP_DB_START=1`). `dev` is `tsc --watch` so Fastify and eve pick up `dist/` changes. Identity seed stays in `apps/api`.
+
+## Scripts
+
+- `pnpm --filter @repo/db build` — Compile and copy SQL migrations
+- `pnpm --filter @repo/db dev` — `tsc --watch`
+- `pnpm db:start` / `db:stop` / `db:status` — Supabase CLI (from repo root: `pnpm db:start`)
+- `pnpm --filter @repo/db db:reset` — `supabase db reset` (wipe only; used by `pnpm reset`)
+- `pnpm --filter @repo/db checktypes` — Type-check
+- `pnpm --filter @repo/db test` — PGLite unit tests
+- `pnpm --filter @repo/db db:generate` — Generate migrations from schema
+- `pnpm db:studio` (root) / `pnpm --filter @repo/db db:studio` — Drizzle Studio (`http://127.0.0.1:4983`; needs `POSTGRES_URL` and `pnpm db:start`)

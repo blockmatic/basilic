@@ -1,0 +1,6 @@
+---
+description: Naming conventions — canonical text is root AGENTS.md
+alwaysApply: true
+---
+
+Canonical naming and collocation constraints live in root `AGENTS.md`. Do not diverge from that file.

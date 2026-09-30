@@ -88,3 +88,5 @@ tsup.config.bundled_*.mjs
 
 # Lock-installed agent skills (`pnpm setup:skills` from scripts/skills-lock-manifest.mjs)
 .agents/skills/
+base/.agents/skills/
+example/.agents/skills/

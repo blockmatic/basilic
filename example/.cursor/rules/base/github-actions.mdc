@@ -1,0 +1,6 @@
+---
+description: GitHub Actions inspection — canonical text is root AGENTS.md
+alwaysApply: true
+---
+
+Canonical GitHub Actions inspection constraints (`gh`, not GitHub MCP) live in root `AGENTS.md`. Do not diverge from that file.

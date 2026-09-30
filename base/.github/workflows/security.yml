@@ -1,0 +1,84 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Run gitleaks (full repo scan)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        with:
+          config-path: .gitleaks.toml
+          redact: true
+          verbose: true
+          exit-code: 1
+          fail: true
+
+      - name: Run TruffleHog OSS (git scan)
+        uses: trufflesecurity/trufflehog@821e8b9e5cdf8dc484dd23e06f78941fcf6b9191
+        with:
+          path: ./
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          extra_args: --exclude-paths=.trufflehogignore --only-verified
+
+      - name: Install OSV Scanner
+        run: |
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
+          wget -O /tmp/osv-scanner https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_linux_${ARCH}
+          chmod +x /tmp/osv-scanner
+          sudo mv /tmp/osv-scanner /usr/local/bin/
+          osv-scanner --version
+
+      - name: Run OSV Scanner
+        run: |
+          echo "🔍 Scanning dependencies for known vulnerabilities..."
+          set +e
+          osv-scanner scan --lockfile=pnpm-lock.yaml --format=markdown
+          EXIT_CODE=$?
+          set -e
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo ""
+            echo "❌ SECURITY ISSUE: OSV Scanner found known vulnerabilities in dependencies"
+            echo "Review the output above for details about affected packages"
+            echo "Update or replace vulnerable dependencies"
+            exit 1
+          fi
+          echo "✅ No known vulnerabilities found in dependencies"
+
+      - name: Run pnpm audit
+        run: |
+          echo "🔍 Running pnpm audit for dependency vulnerabilities..."
+          set +e
+          pnpm security:audit
+          EXIT_CODE=$?
+          set -e
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo ""
+            echo "❌ SECURITY ISSUE: pnpm audit found vulnerabilities with severity >= high"
+            echo "Review the audit output above for details about vulnerable packages"
+            echo "Run 'pnpm audit fix' or update affected packages"
+            exit 1
+          fi
+          echo "✅ pnpm audit passed (high+). Registry timeouts and HTTP errors are ignored; OSV still gates CVEs."

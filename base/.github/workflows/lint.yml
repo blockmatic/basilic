@@ -1,0 +1,50 @@
+name: Lint
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    env:
+      PGLITE: true
+      POSTGRES_URL: postgresql://localhost/test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Run lint
+        run: pnpm lint
+
+      - name: Check OpenAPI drift
+        run: pnpm openapi:drift
+
+      - name: Lint OpenAPI spec
+        run: pnpm openapi:lint
+
+      - name: Run knip
+        run: pnpm knip
+
+      - name: Run sherif
+        run: pnpm sherif
+
+      - name: Run script tests
+        run: pnpm test:scripts
+
+      - name: Run type check
+        run: pnpm exec turbo run checktypes

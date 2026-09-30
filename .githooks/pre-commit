@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+files=$(git diff --cached --name-only --diff-filter=ACMR)
+base=0
+example=0
+for file in $files; do
+  case "$file" in
+    base/*) base=1 ;;
+    example/*) example=1 ;;
+  esac
+done
+if [ "$base" = 1 ]; then
+  (cd "$root/base" && pnpm hooks:pre-commit)
+fi
+if [ "$example" = 1 ]; then
+  (cd "$root/example" && pnpm hooks:pre-commit)
+fi

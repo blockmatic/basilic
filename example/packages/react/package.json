@@ -1,0 +1,49 @@
+{
+  "name": "@repo/react",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "source": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "checktypes": "tsc --noEmit",
+    "dev": "tsup --watch",
+    "prepack": "tsup && tsc --declaration --emitDeclarationOnly && node ../../scripts/prepare-publish.mjs",
+    "postpack": "node ../../scripts/restore-publish.mjs",
+    "test": "pnpm test:unit",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@simplewebauthn/browser": "^14.0.0",
+    "jose": "^6.2.12",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/utils": "workspace:*",
+    "@tanstack/react-query": "^5.103.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/react": "^19.3.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^30.1.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tsup": "^8.5.1",
+    "vitest": "^5.0.1"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.90.17",
+    "react": "^19.0.0"
+  }
+}

@@ -21,13 +21,16 @@ jobs:
         with:
           ref: ${{ github.sha }}
       - uses: ./.github/actions/setup-pnpm
+        with:
+          workspace: base
       - name: Assemble and build
+        working-directory: base
         run: |
           CREATE_BASILIC_LOCKFILE=1 pnpm --filter create-basilic assemble
           pnpm --filter create-basilic build
       - name: Pack once
         id: pack
-        working-directory: tools/create-basilic
+        working-directory: base/tools/create-basilic
         run: |
           tarball=$(npm pack --pack-destination .)
           echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
@@ -39,19 +42,19 @@ jobs:
           TARBALL: ${{ steps.pack.outputs.tarball }}
         run: |
           work=$(mktemp -d)
-          tar -xzf "tools/create-basilic/$TARBALL" -C "$work"
+          tar -xzf "base/tools/create-basilic/$TARBALL" -C "$work"
           dest=$(mktemp -d)/from-tarball
           node "$work/package/dist/cli.js" "$dest" --yes
           test -f "$dest/package.json"
           test ! -d "$dest/apps/docu"
-          test ! -d "$dest/apps/agents"
+          test -d "$dest/apps/agents"
           test ! -d "$dest/tools/create-basilic"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: create-basilic-tarball
           path: |
-            tools/create-basilic/${{ steps.pack.outputs.tarball }}
-            tools/create-basilic/${{ steps.pack.outputs.tarball }}.sha256
+            base/tools/create-basilic/${{ steps.pack.outputs.tarball }}
+            base/tools/create-basilic/${{ steps.pack.outputs.tarball }}.sha256
           retention-days: 30
 
   publish:
@@ -122,5 +125,5 @@ jobs:
           npx --yes "create-basilic@$VERSION" "$work/from-npx" --yes
           test -f "$work/from-npx/package.json"
           test ! -d "$work/from-npx/apps/docu"
-          test ! -d "$work/from-npx/apps/agents"
+          test -d "$work/from-npx/apps/agents"
           test ! -d "$work/from-npx/tools/create-basilic"

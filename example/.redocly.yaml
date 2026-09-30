@@ -1,0 +1,12 @@
+apis:
+  basilic:
+    root: apps/api/openapi/openapi.json
+
+rules:
+  struct: off
+  no-path-trailing-slash: off
+  no-unused-components: off
+  operation-operationId: error
+  operation-operationId-unique: error
+  path-not-include-query: error
+  security-defined: warn

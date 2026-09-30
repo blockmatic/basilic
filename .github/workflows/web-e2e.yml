@@ -3,31 +3,11 @@ name: Web (E2E)
 on:
   pull_request:
     paths:
-      - "apps/web/**"
-      - "apps/api/src/routes/auth/**"
-      - "apps/api/src/routes/account/**"
-      - "apps/api/src/routes/ai/**"
-      - "apps/api/src/routes/health/**"
-      - "apps/api/src/routes/test/**"
-      - "scripts/**"
-      - "packages/core/**"
-      - "packages/react/**"
-      - "packages/ui/**"
-      - "packages/utils/**"
-      - "packages/error/**"
-      - "packages/db/**"
-      - "packages/markets/**"
-      - "packages/onchain/**"
-      - "oxlint.config.ts"
-      - "oxfmt.config.ts"
-      - "tools/typescript/**"
-      - "apps/api/openapi/**"
+      - "base/**"
+      - "example/**"
       - ".github/workflows/web-e2e.yml"
       - ".github/actions/setup-pnpm/**"
       - ".github/actions/setup-playwright/**"
-      - "pnpm-lock.yaml"
-      - "package.json"
-      - "turbo.json"
 
 concurrency:
   group: web-e2e-${{ github.ref }}
@@ -44,33 +24,47 @@ env:
   POSTGRES_URL: postgresql://localhost/test
   JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
   NEXT_PUBLIC_API_URL: http://localhost:3001
-  AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: [base, example]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-pnpm
+        with:
+          workspace: ${{ matrix.workspace }}
       - uses: actions/cache@v4
         with:
-          path: apps/web/.next/cache
+          path: ${{ matrix.workspace }}/apps/web/.next/cache
           key: ${{ runner.os }}-next-web-${{ hashFiles('**/pnpm-lock.yaml', 'apps/web/**', 'packages/ui/**', 'packages/core/**', 'packages/react/**', 'packages/utils/**', 'packages/error/**') }}
           restore-keys: |
             ${{ runner.os }}-next-web-
       - name: Build
-        run: pnpm turbo run build --filter=@repo/web... --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain
+        working-directory: ${{ matrix.workspace }}
+        run: |
+          if [ "${{ matrix.workspace }}" = "base" ]; then
+            pnpm turbo run build --filter=@repo/web... --filter=@repo/db
+          else
+            pnpm turbo run build --filter=@repo/web... --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain
+          fi
       - uses: ./.github/actions/setup-playwright
+        with:
+          workspace: ${{ matrix.workspace }}
       - name: E2E tests (local)
         env:
           SKIP_BUILD: "1"
+        working-directory: ${{ matrix.workspace }}
         run: pnpm --filter @repo/web test:e2e:local
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-web
-          path: apps/web/playwright-report/
+          name: playwright-report-web-${{ matrix.workspace }}
+          path: ${{ matrix.workspace }}/apps/web/playwright-report/
           retention-days: 30

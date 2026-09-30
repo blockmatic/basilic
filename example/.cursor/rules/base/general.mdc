@@ -1,0 +1,6 @@
+---
+description: General Agent Rules — canonical text is root AGENTS.md
+alwaysApply: true
+---
+
+Canonical always-on behavior, workflow, and code-quality constraints live in root `AGENTS.md`. Do not diverge from that file.

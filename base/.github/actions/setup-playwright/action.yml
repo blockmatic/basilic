@@ -1,0 +1,16 @@
+name: Setup Playwright
+description: Cache and install Chromium with system deps for API and web E2E
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-playwright-
+    - name: Install Playwright Chromium
+      shell: bash
+      run: |
+        pnpm --filter @repo/api exec playwright install chromium --with-deps
+        pnpm --filter @repo/web exec playwright install chromium --with-deps

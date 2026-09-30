@@ -1,0 +1,90 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+.pnpm-store
+__dev
+.logs/
+
+# Bun
+.bun
+
+# Sensitive environment files (never commit)
+.env
+.env.local
+
+# Note: .env.development, .env.staging, .env.production are committed (configs, not sensitive)
+
+# Testing
+coverage
+test-results/
+playwright-report/
+playwright/.cache/
+playwright/.auth/
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+
+# Turbo
+.turbo
+
+# eve (apps/agents)
+.eve
+.output
+.nitro
+
+# Vercel
+.vercel
+
+# Build Outputs
+.next/
+next-env.d.ts
+out/
+build
+dist
+bin
+
+# Contracts
+contracts/evm/out/
+contracts/evm/cache/
+contracts/evm/broadcast/
+contracts/solana/target/
+contracts/solana/.anchor/
+contracts/solana/**/*.so
+
+
+# Debug
+npm-debug.log*
+
+# Misc
+.DS_Store
+*.pem
+
+# TypeScript build info
+*.tsbuildinfo
+
+# tsup temp config (bundled during build)
+tsup.config.bundled_*.mjs
+
+# Package publish temp files
+.package-originals.json
+
+
+.react-email
+
+# DeepSec scan output and credentials (config and INFO.md are committed)
+.deepsec/node_modules/
+.deepsec/.env.local
+.deepsec/data/**/files/
+.deepsec/data/**/runs/
+.deepsec/findings/
+
+# Local agent skill symlinks (canonical tree is .agents/skills/ after setup:skills)
+.claude/
+.cursor/skills/
+
+# Extra agent trees from `skills add --all` (repo root only)
+/agent/
+
+# Lock-installed agent skills (`pnpm setup:skills` from scripts/skills-lock-manifest.mjs)
+.agents/skills/

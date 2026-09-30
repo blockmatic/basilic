@@ -1,0 +1,89 @@
+import type { getDb } from "@repo/db";
+import { account, passkeyCredentials, users } from "@repo/db/schema";
+import { and, eq, sql } from "drizzle-orm";
+
+type Db = Awaited<ReturnType<typeof getDb>>;
+type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
+type DbOrTx = Db | Tx;
+
+/** Serialize sign-in-method mutations per user (check + delete in one transaction). */
+export async function withUserSignInMethodLock<T>(
+  db: Db,
+  userId: string,
+  fn: (tx: Tx) => Promise<T>
+): Promise<T> {
+  return db.transaction(async (tx) => {
+    await tx
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.id, userId))
+      .for("update");
+    return fn(tx);
+  });
+}
+
+/**
+ * Returns true if the user has at least one remaining sign-in method.
+ * Sign-in methods: users.email, account (OAuth), passkey_credentials.
+ *
+ * When checking before OAuth unlink, pass excludeProviderId to simulate removal of that account.
+ */
+export async function hasRemainingLoginMethod(
+  db: DbOrTx,
+  userId: string,
+  options?: {
+    excludeProviderId?: string;
+    excludePasskeyId?: string;
+  }
+): Promise<boolean> {
+  const [user] = await db
+    .select({ email: users.email })
+    .from(users)
+    .where(eq(users.id, userId));
+  if (!user) return false;
+
+  const hasEmail = user.email != null && user.email !== "";
+
+  const [oauthResult, passkeyResult] = await Promise.all([
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(account)
+      .where(eq(account.userId, userId)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(passkeyCredentials)
+      .where(eq(passkeyCredentials.userId, userId)),
+  ]);
+
+  let oauthCount = oauthResult[0]?.count ?? 0;
+  let passkeyCount = passkeyResult[0]?.count ?? 0;
+
+  if (options?.excludeProviderId && oauthCount > 0) {
+    const [hasProvider] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(account)
+      .where(
+        and(
+          eq(account.userId, userId),
+          eq(account.providerId, options.excludeProviderId)
+        )
+      );
+    if ((hasProvider?.count ?? 0) > 0) oauthCount -= 1;
+  }
+
+  if (options?.excludePasskeyId && passkeyCount > 0) {
+    const [hasPasskey] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(passkeyCredentials)
+      .where(
+        and(
+          eq(passkeyCredentials.userId, userId),
+          eq(passkeyCredentials.id, options.excludePasskeyId)
+        )
+      );
+    if ((hasPasskey?.count ?? 0) > 0) passkeyCount -= 1;
+  }
+
+  const total = (hasEmail ? 1 : 0) + oauthCount + passkeyCount;
+  return total >= 1;
+}

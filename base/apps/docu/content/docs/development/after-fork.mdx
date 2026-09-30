@@ -1,0 +1,51 @@
+---
+title: After fork
+description: Generator vs fork, Product Ready, and what to replace when the copy is your product.
+---
+
+Basilic stays the upstream brand. **Start a product** with `npx create-basilic@latest my-app` so the new repo has no Basilic git history, no `apps/docu`, no generator, and no `apps/agents`. **Fork** only to contribute upstream. GitHub **Use this template** or a clone of this repository is not a product start path. Generated projects omit `apps/agents` until a later release; Commands/Chat on the web sample need eve in this upstream tree. First run is still [Product Ready](/docs/testing/product-ready). There is no rename script and no upgrade CLI. The generator is `0.0.0` in this tree and is not on npm `latest` yet; until it is, assemble and run it from this repository as in [Getting Started](/docs/development).
+
+## Generator vs fork
+
+- **`npx create-basilic@latest`** — start a product. Independent git history; no docu app; no generator; no `apps/agents`; local docs snapshot in `docs/basilic/`.
+- **Fork** — contribute back to Basilic. Keep the upstream remote.
+- **Use this template / clone of this repo** — not a product start path. The copy includes the documentation app, generator, and agents workspace.
+
+## Run
+
+Follow [Getting Started](/docs/development): `pnpm setup`, `pnpm db:start`, `pnpm dev`. Copied env sets `ALLOW_TEST=true`. Sign in with `test@test.ai`. Production refuses `ALLOW_TEST`.
+
+Fastify `POST /ai/generate` is optional API chrome. Set `AI_GATEWAY_API_KEY` for live generate. Unset skips remote tests and returns 500 on generate. Dashboard Chat is eve, not Fastify.
+
+## Replace when you ship as you
+
+Keep Basilic names until you care. Then:
+
+- `APP_NAME`, `WEB_APP_URL`, `EMAIL_FROM` in API env
+- OAuth client ids (unconfigured providers stay 503)
+- [`.cursor/mcp.json`](https://github.com/blockmatic/basilic/blob/main/example/.cursor/mcp.json) Vercel MCP URLs (`mcp.vercel.com/gaboesquivel/tracker-*` for this tree's Coin Tracker projects). Generated products still start from starter `basilic-*` URLs — comment them out until you have your own projects
+- Mobile `appId` `com.blockmatic.basilic`
+- DeepSec `githubUrl` in `.deepsec/deepsec.config.ts`
+
+Do not sweep every `blockmatic` docs URL. Those point at the upstream starter.
+
+## After you own the copy
+
+Existing copies that still have `_first/` can delete that folder. The agent contract (`AGENTS.md`, `.agents/rules/always.md`) ships with the copy; keep it pointing at local docs (`docs/basilic/`).
+
+## CI secrets
+
+Lint, `security.yml`, package tests, and API unit/Scalar E2E run without org secrets. Fork PRs do not get upstream secrets.
+
+- **DeepSec** already skips untrusted and fork PRs.
+- Vercel and EAS are not Product Ready.
+
+## License
+
+MIT. Root [`LICENSE`](https://github.com/blockmatic/basilic/blob/main/LICENSE). Keep the copyright notice in copies.
+
+## Related
+
+- [Product Ready](/docs/testing/product-ready)
+- [Getting Started](/docs/development)
+- [GitHub Actions](/docs/deployment/github-actions)

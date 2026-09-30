@@ -1,0 +1,40 @@
+---
+description: TypeScript conventions
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+- TypeScript strict mode
+- Never use `any`
+- Use ts-reset (`@total-typescript/ts-reset`)
+- `no-unsafe-*` disabled
+- ESM with bundler/Node resolution
+- Never use CommonJS (`__dirname`, `__filename`, `require`, `module.exports`)
+- ESM: `fileURLToPath(import.meta.url)` with descriptive names (`scriptDir`, not `__dirname`)
+- Monorepo with `@repo/*` subpath exports
+- Subpath exports (`@repo/utils/async`)
+- Named exports (exception: Next.js pages/layouts)
+- Type-only (`import type`)
+- Interfaces for object shapes
+- Types for unions/utilities/mapped/Zod inference
+- Avoid enums (use const objects/union types)
+- Infer types when possible (`type User = z.infer<typeof userSchema>`)
+- Always camelCase variables
+- Booleans with aux verbs (`isLoading`, `hasError`)
+- Lowercase-with-dashes directories
+- RORO (`({ name }: Input) => ({ id, name })`)
+- Functional (avoid classes/decorators)
+- Use `function` keyword for named function definitions, arrow functions for inline functions and React component methods
+- Fail-fast: Early returns (guard clauses), avoid else after return/throw; keep success path at top indentation
+- Single-line (`if (!value) return null`); no braces for single-statement blocks (curly multi)
+- Nesting: Prefer max 3–4 levels; extract helpers or invert conditions to flatten
+- Explicit return types for exported functions/API handlers
+- Zod-first (validate at boundaries)
+- Colocate schemas (`app/api/users/schema.ts`)
+- Validation functions return results (never throw)
+- Avoid unnecessary runtime validations in functions, we validate at build time
+- Prefer inline expressions, minimize code without sacrificing readability
+- No intermediate vars unless reused (`process(fetch())` not `const data = fetch(); process(data)`). Exceptions: destructuring, readability, error handling
+- Avoid thin wrappers: don't export functions that only delegate to another without adding logic; inline at call sites or consolidate
+- Lodash per-function (`import isEmpty from "lodash-es/isEmpty"`)
+

@@ -1,0 +1,18 @@
+{
+  "extends": "@repo/typescript-config/react-library.json",
+  "include": [
+    "emails",
+    "components",
+    "render.ts",
+    "../../tools/typescript/reset.d.ts"
+  ],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "paths": {
+      "*": ["./*"]
+    },
+    "outDir": "dist",
+    "rootDir": ".",
+    "types": ["node"]
+  }
+}

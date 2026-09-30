@@ -1,0 +1,66 @@
+{
+  "mcpServers": {
+    "shadcnui-official": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"],
+      "description": "Official shadcn/ui components, variants, and definitions"
+    },
+    "shadcnui-jpisnice-react": {
+      "command": "npx",
+      "args": ["@jpisnice/shadcn-ui-mcp-server"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "shadcn/ui v4 components, blocks, and demos for React"
+    },
+    "shadcnui-jpisnice-react-native": {
+      "command": "npx",
+      "args": ["@jpisnice/shadcn-ui-mcp-server", "--framework", "react-native"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "shadcn/ui v4 components, blocks, and demos for react native"
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-github",
+        "--toolsets",
+        "context,repos,issues,pull_requests,users,actions"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub repository operations, issue management, and Actions logs"
+    },
+    "coderabbit": {
+      "command": "npx",
+      "args": ["coderabbitai-mcp@latest"],
+      "env": {
+        "GITHUB_PAT": "${GITHUB_TOKEN}"
+      },
+      "description": "Expose CodeRabbit PR review comments via MCP"
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"],
+      "description": "Next.js runtime diagnostics (errors, routes, logs) and migration tools for coding agents"
+    },
+    "docu": {
+      "url": "https://mcp.vercel.com/gaboesquivel/basilic-docu",
+      "description": "Vercel project documentation context"
+    },
+    "fastify": {
+      "url": "https://mcp.vercel.com/gaboesquivel/tracker-fastify",
+      "description": "Vercel Fastify API package context"
+    },
+    "next": {
+      "url": "https://mcp.vercel.com/gaboesquivel/tracker-next",
+      "description": "Next.js web application context"
+    },
+    "agents": {
+      "url": "https://mcp.vercel.com/gaboesquivel/tracker-agents",
+      "description": "Eve Agents context"
+    }
+  }
+}

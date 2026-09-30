@@ -3,16 +3,10 @@ name: Packages (Unit Tests)
 on:
   pull_request:
     paths:
-      - "packages/**"
-      - "apps/agents/**"
-      - "tools/**"
-      - "apps/api/openapi/**"
+      - "base/**"
+      - "example/**"
       - ".github/workflows/packages-test.yml"
       - ".github/actions/setup-pnpm/**"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "package.json"
-      - "turbo.json"
 
 concurrency:
   group: packages-test-${{ github.ref }}
@@ -29,10 +23,24 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - workspace: base
+            build: pnpm turbo run build --filter=@repo/error... --filter=@repo/core --filter=@repo/react --filter=@repo/db
+            test: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/db --filter=@repo/agents
+          - workspace: example
+            build: pnpm turbo run build --filter=@repo/error... --filter=@repo/core --filter=@repo/react --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain
+            test: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain --filter=@repo/agents
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-pnpm
+        with:
+          workspace: ${{ matrix.workspace }}
       - name: Build packages
-        run: pnpm turbo run build --filter=@repo/error... --filter=@repo/core --filter=@repo/react --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain
+        working-directory: ${{ matrix.workspace }}
+        run: ${{ matrix.build }}
       - name: Unit tests (packages + agents)
-        run: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain --filter=@repo/agents
+        working-directory: ${{ matrix.workspace }}
+        run: ${{ matrix.test }}

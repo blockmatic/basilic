@@ -1,0 +1,12 @@
+---
+description: React hooks patterns and best practices
+globs: "**/*.{tsx,css}"
+alwaysApply: false
+---
+
+- Use TanStack Query for ANY async calls in client side react component. 
+- Hooks naming: `use-kebab-case.ts`
+- Don't use `useMemo`/`useCallback`** - React 19.2.3 + Fiber handle most cases
+- Prefer `React.memo` over `useCallback`
+- Combine queries into cohesive hooks, extract query logic for reusability
+- Never manually manage `isLoading`/`error`/`isError`

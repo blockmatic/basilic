@@ -1,0 +1,24 @@
+---
+title: ADR 015 — Base and Example workspaces
+description: The Git repository holds two independent pnpm workspaces. Base is the starter. Example is Coin Tracker.
+---
+
+## Status
+
+Accepted.
+
+## Context
+
+Coin Tracker was built inside the same pnpm workspace as the starter. Wallet auth, markets, and the coin board leaked into the foundation that `create-basilic` copies.
+
+## Decision
+
+The Git root is not a pnpm workspace. `base/` is the domain-agnostic starter, Doku, and `create-basilic`. `example/` is Coin Tracker and keeps migrations `0000`–`0021`. Base has a single generated `0000_initial` for auth tables and uses local Postgres port `54422`. Example stays on port `54322`.
+
+Similar packages in both trees are independent copies. Nothing imports across `base/` and `example/`.
+
+Base local hosts stay on `basilic.localhost`. Example local hosts are `tracker.localhost`. Generated projects use the project slug. Doku stays at `base/apps/docu` and is not copied into generated apps. Generated apps include `apps/agents` and `apps/mobile`.
+
+## Consequences
+
+Developers run `pnpm` inside `base/` or `example/`. Git hooks are installed from `.githooks` at the Git root. Example does not include a mobile app. Wallet sign-in, markets, and chat stay in Example.
