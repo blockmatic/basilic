@@ -20,3 +20,9 @@ Basilic local hosts stay on `*.basilic.localhost` including `https://docu.basili
 ## Consequences
 
 Work in this clone at the git root (`pnpm setup`, `pnpm qa`). Point product questions about markets, wallets, and Chat at basilic-tracker. Vercel Root Directory is `apps/<app>` in both repos, with include-files-outside-root on.
+
+Reconnect Vercel after the split (dashboard; this change does not write Vercel):
+
+- Basilic projects (`basilic-web`, `basilic-api`, `basilic-docs`, `basilic-agents`): Root Directory `apps/web`, `apps/api`, `apps/docu`, `apps/agents`; include files outside root on.
+- Tracker projects (`tracker-web`, `tracker-api`, `tracker-agents`): same app folders; no docs project; include files outside root on.
+- Confirm production git is `blockmatic/basilic` vs `blockmatic/basilic-tracker` so previews do not mix.
