@@ -1,6 +1,6 @@
 "use client";
 
-import { createStateStore, Renderer, StateProvider } from "@json-render/react";
+import { JSONUIProvider, Renderer } from "@json-render/react";
 import { useHealthCheck, useUser } from "@repo/react";
 import { Button } from "@repo/ui/components/button";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
@@ -20,7 +20,6 @@ const parsers = {
 export function HomePage() {
   const [view, setView] = useQueryStates(parsers);
   const [draft, setDraft] = useState(view.q);
-  const [store] = useState(() => createStateStore({}));
   const health = useHealthCheck();
   const user = useUser();
   const status = {
@@ -29,6 +28,7 @@ export function HomePage() {
     ok: Boolean(health.data?.ok),
   };
   const account = user.data?.user;
+  const isAccount = view.surface === "account";
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
@@ -51,14 +51,11 @@ export function HomePage() {
         />
         <Button type="submit">Ask</Button>
       </form>
-      {view.surface === "status" ? (
-        <StateProvider store={store}>
+      <JSONUIProvider registry={commandRegistry}>
+        {view.surface === "status" ? (
           <Renderer registry={commandRegistry} spec={statusSpec({ status })} />
-        </StateProvider>
-      ) : null}
-      {view.surface === "account" && user.isError ? <AuthRequired /> : null}
-      {view.surface === "account" && account ? (
-        <StateProvider store={store}>
+        ) : null}
+        {isAccount && account ? (
           <Renderer
             registry={commandRegistry}
             spec={accountSpec({
@@ -69,8 +66,9 @@ export function HomePage() {
               },
             })}
           />
-        </StateProvider>
-      ) : null}
+        ) : null}
+      </JSONUIProvider>
+      {isAccount && !user.isPending && !account ? <AuthRequired /> : null}
     </div>
   );
 }

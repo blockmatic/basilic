@@ -18,12 +18,11 @@ test.describe("Dashboard routes", () => {
     });
   });
 
-  test("account command asks a signed-out visitor to sign in", async ({
-    page,
-  }) => {
+  test("account command renders the signed-in user", async ({ page }) => {
     await page.goto("/?q=show+my+account&surface=account");
-    await expect(page.getByTestId("auth-required")).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(page.getByTestId("user-info-card")).toContainText(
+      "test@test.ai",
+      { timeout: 15_000 }
+    );
   });
 });

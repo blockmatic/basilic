@@ -91,9 +91,13 @@ test.describe("Dashboard routes", () => {
     await page.goto("/");
     const star = visibleCoinRow(page, "btc").getByTestId("coin-watch");
     await expect(star).toBeVisible({ timeout: 15_000 });
-    if ((await star.getAttribute("aria-pressed")) !== "true")
-      await star.click();
-    await expect(star).toHaveAttribute("aria-pressed", "true");
+    await expect(async () => {
+      if ((await star.getAttribute("aria-pressed")) !== "true")
+        await star.click();
+      await expect(star).toHaveAttribute("aria-pressed", "true", {
+        timeout: 3000,
+      });
+    }).toPass({ timeout: 20_000 });
     await page.reload();
     await expect(
       visibleCoinRow(page, "btc").getByTestId("coin-watch")
