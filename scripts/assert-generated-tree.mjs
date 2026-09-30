@@ -4,9 +4,20 @@ import { join } from "node:path";
 
 const repoRoot = join(import.meta.dirname, "..");
 
-function githubCatalogsFromLock(lockPath) {
-  if (!existsSync(lockPath)) return [];
-  const lock = JSON.parse(readFileSync(lockPath, "utf-8"));
+/** GitHub catalog sources allowed in generated `skills-lock.json`. */
+function githubCatalogsFromRepoRootLock(lockPath) {
+  if (!existsSync(lockPath)) {
+    console.error(`Missing repo-root skills lock: ${lockPath}`);
+    process.exit(1);
+  }
+  let lock;
+  try {
+    lock = JSON.parse(readFileSync(lockPath, "utf-8"));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Malformed skills lock at ${lockPath}: ${message}`);
+    process.exit(1);
+  }
   return [
     ...new Set(
       Object.values(lock.skills ?? {})
@@ -134,7 +145,7 @@ if (existsSync(lockPath)) {
     ),
   ];
   const allowed = new Set(
-    githubCatalogsFromLock(join(repoRoot, "skills-lock.json"))
+    githubCatalogsFromRepoRootLock(join(repoRoot, "skills-lock.json"))
   );
   const unexpected = github.filter((source) => !allowed.has(source));
   if (unexpected.length > 0) {
