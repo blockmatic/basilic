@@ -28,7 +28,10 @@ const isConnectionClassFailure = (res: ResponseLike): boolean =>
 export const isProviderUnavailable = (res: ResponseLike): boolean =>
   res.statusCode === 502 || isConnectionClassFailure(res);
 
+const runJevTests = (): boolean => process.env.RUN_JEV_TESTS === "1";
+
 export const hasRealGatewayKey = (): boolean => {
+  if (!runJevTests()) return false;
   const key = process.env.AI_GATEWAY_API_KEY;
   if (!key) {
     return false;

@@ -24,7 +24,6 @@ env:
   POSTGRES_URL: postgresql://localhost/test
   JWT_SECRET: e2e-jwt-secret-min-32-chars-for-tests
   NEXT_PUBLIC_API_URL: http://localhost:3001
-  AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 

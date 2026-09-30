@@ -108,7 +108,7 @@ describe("evaluateBoardTurn", () => {
     });
   });
 
-  it.skipIf(!process.env.AI_GATEWAY_API_KEY)(
+  it.skipIf(process.env.RUN_JEV_TESTS !== "1")(
     "evaluates a tiny prompt against Gateway",
     async () => {
       const result = await evaluateBoardTurn({ prompt: "what moved?" });
