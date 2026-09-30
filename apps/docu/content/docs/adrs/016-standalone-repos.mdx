@@ -19,7 +19,7 @@ Basilic local hosts stay on `*.basilic.localhost` including `https://docu.basili
 
 ## Consequences
 
-Work in this clone at the git root (`pnpm setup`, `pnpm qa`). Point product questions about markets, wallets, and Chat at basilic-tracker. Vercel Root Directory is `apps/<app>` in both repos, with include-files-outside-root on.
+Work in this clone at the git root (`pnpm setup`, `pnpm qa`). Git hooks install through `simple-git-hooks` into `.git/hooks` on `postinstall`; the ADR 015 `.githooks` / `core.hooksPath` layout no longer applies. Point product questions about markets, wallets, and Chat at basilic-tracker. Vercel Root Directory is `apps/<app>` in both repos, with include-files-outside-root on.
 
 Vercel Git should match the repo that owns the app:
 
