@@ -79,12 +79,12 @@ tsup.config.bundled_*.mjs
 .deepsec/data/**/runs/
 .deepsec/findings/
 
-# Local agent skill symlinks (canonical tree is .agents/skills/ after setup:skills)
+# Local agent skill copies (canonical tree is .agents/skills/ after skills:install)
 .claude/
 .cursor/skills/
 
 # Extra agent trees from `skills add --all` (repo root only)
 /agent/
 
-# Lock-installed agent skills (`pnpm setup:skills` from scripts/skills-lock-manifest.mjs)
+# Lock-installed agent skills (`pnpm skills:install` from skills-lock.json)
 .agents/skills/

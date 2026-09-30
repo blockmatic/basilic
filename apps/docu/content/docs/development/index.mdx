@@ -45,7 +45,7 @@ Run the rest of this page in that generated directory, not in the Basilic clone.
 pnpm setup
 ```
 
-`setup` installs dependencies, git hooks, **agent skills** (`pnpm setup:skills` from `skills-lock.json`), security tools, **Portless** (CA trust + HTTPS proxy), and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
+`setup` installs dependencies, git hooks, **agent skills** (`pnpm skills:install` from `skills-lock.json`), security tools, **Portless** (CA trust + HTTPS proxy), and database **tooling**. It also copies `.env.<qualifier>.example` templates to gitignored dest files when those dest files are missing. Copied local env sets `ALLOW_TEST=true` so `test@test.ai` works without Resend. Edit the copied files to set paid secrets. `setup` does **not** start Postgres.
 
 ## First run
 

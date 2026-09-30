@@ -8,7 +8,7 @@ These instructions apply to the whole monorepo. A nested `AGENTS.md` adds or ove
 
 1. Always-on constraints are **this file**. Do not chase `.cursor/rules` for the global contract.
 2. When editing files that match a glob in [File-scoped rules](#file-scoped-rules), read that `.cursor/rules` file (Cursor auto-attaches it).
-3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the task matches (after `pnpm setup` / `pnpm setup:skills`, which installs catalogs selected from `skills-lock.json` by `scripts/setup-skills.mjs`; preserves the committed `skills-lock.json` snapshot and targets all agents, not `--agent cursor` only). Daily path: Basilic `/w-*` under `.agents/skills/w-<name>/` (`/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-ship`). If the harness has no `/` menu, open the `SKILL.md` file. Catalog: [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
+3. Read `.agents/skills/<name>/SKILL.md` when the user invokes a skill or the task matches (after `pnpm setup` / `pnpm skills:install`, which restores catalogs from `skills-lock.json`). Daily path: Basilic `/w-*` under `.agents/skills/workflow/w-<name>/` (`/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-ship`). If the harness has no `/` menu, open the `SKILL.md` file. Catalog: [`blockmatic/basilic-skills`](https://github.com/blockmatic/basilic-skills).
 4. Read the matching technical documentation under [`apps/docu/content/docs/`](apps/docu/content/docs/) before changing an architecture, convention, command, or documented behavior.
 5. Read the target app or package `README.md` and `package.json` before choosing setup, generation, validation, or test commands.
 

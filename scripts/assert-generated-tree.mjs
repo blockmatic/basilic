@@ -2,7 +2,19 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { allowedGithubCatalogs } from "./skills-lock-manifest.mjs";
+const repoRoot = join(import.meta.dirname, "..");
+
+function githubCatalogsFromLock(lockPath) {
+  if (!existsSync(lockPath)) return [];
+  const lock = JSON.parse(readFileSync(lockPath, "utf-8"));
+  return [
+    ...new Set(
+      Object.values(lock.skills ?? {})
+        .filter((skill) => skill.sourceType === "github" && skill.source)
+        .map((skill) => skill.source)
+    ),
+  ];
+}
 
 const dest = process.argv[2];
 if (!dest) {
@@ -121,7 +133,9 @@ if (existsSync(lockPath)) {
         .map((skill) => skill.source)
     ),
   ];
-  const allowed = new Set(allowedGithubCatalogs);
+  const allowed = new Set(
+    githubCatalogsFromLock(join(repoRoot, "skills-lock.json"))
+  );
   const unexpected = github.filter((source) => !allowed.has(source));
   if (unexpected.length > 0) {
     console.error(

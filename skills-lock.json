@@ -5,13 +5,7 @@
       "source": "vercel/ai",
       "sourceType": "github",
       "skillPath": "skills/use-ai-sdk/SKILL.md",
-      "computedHash": "da25c27a274ef2b71017c255f95a26350d2519765a75cb54ee1a37872b121dab"
-    },
-    "alchemy-api": {
-      "source": "alchemyplatform/skills",
-      "sourceType": "github",
-      "skillPath": "skills/alchemy-api/SKILL.md",
-      "computedHash": "e24bf884071456eedfda5ff7c578cbcbadf817226bdf46ca72bfbd342c0e4475"
+      "computedHash": "d6910e7d8bb527d2823ba58b6225b304ae649c135fc7e43ec2d2152251c218db"
     },
     "animate": {
       "source": "emilkowalski/skills",
@@ -47,7 +41,7 @@
       "source": "vercel-labs/json-render",
       "sourceType": "github",
       "skillPath": "skills/core/SKILL.md",
-      "computedHash": "3c09b9da56b5ac560b490a00fb6cf8b6ec57d3d18b42a8894c82aee681f07e80"
+      "computedHash": "a836fc8bcf35018f3c72884e89d1e49adf77535eb93ad73284d5343342d54f7a"
     },
     "eas-app-stores": {
       "source": "expo/skills",
@@ -133,23 +127,11 @@
       "skillPath": "skills/.curated/nextjs/SKILL.md",
       "computedHash": "870064c2c1098e06a812b63663c7404c533618d2f33896fe5f028f6a4cbc4cfb"
     },
-    "nodejs-keccak256": {
-      "source": "affaan-m/ecc",
-      "sourceType": "github",
-      "skillPath": "skills/nodejs-keccak256/SKILL.md",
-      "computedHash": "a92cfcb36a67e40068b2084867d21aa00b6e54cf58281ffd52c04f838e4fb152"
-    },
     "nuqs": {
       "source": "pproenca/dot-skills",
       "sourceType": "github",
       "skillPath": "skills/.curated/nuqs/SKILL.md",
       "computedHash": "5811f3b4c6f981aa75647ffb879d6e98429535ff830df219a04f4c9a884658a6"
-    },
-    "pick-ui-library": {
-      "source": "emilkowalski/skills",
-      "sourceType": "github",
-      "skillPath": "skills/pick-ui-library/SKILL.md",
-      "computedHash": "5d2a77bf0ecafbda85aa95fb49999b6d77945d9066ec83d970b62e5b388cd686"
     },
     "playwright": {
       "source": "pproenca/dot-skills",
@@ -204,12 +186,6 @@
       "sourceType": "github",
       "skillPath": "skills/react-best-practices/SKILL.md",
       "computedHash": "3219a1944e404ffc14d1d9d6aef6dd2e3855b81387ee0a044ccbfe14d34c2357"
-    },
-    "viem-integration": {
-      "source": "uniswap/uniswap-ai",
-      "sourceType": "github",
-      "skillPath": "packages/plugins/uniswap-viem/skills/viem-integration/SKILL.md",
-      "computedHash": "90297ae94a88b74fd3c2cfbbba737712d538c38416101a2c8c039d9016220fe1"
     },
     "vitest": {
       "source": "pproenca/dot-skills",

@@ -6,7 +6,7 @@ Rules, skills, and MCP for AI-assisted development. Daily workflow: [AI Developm
 
 - Root [`AGENTS.md`](../AGENTS.md) — always-on contract (all harnesses).
 - [`rules/`](rules/) — glob-scoped constraints. Always-on `.mdc` files are short pointers to `AGENTS.md`.
-- [`.agents/skills/`](../.agents/skills/) — gitignored; `pnpm setup:skills` installs from [`skills-lock-manifest.mjs`](../scripts/skills-lock-manifest.mjs) (`--agent cursor` only; removes `.claude/` and `.cursor/skills/`). Hashes in [`skills-lock.json`](../skills-lock.json). Basilic playbooks land under `workflow/w-*`. Details: [Cursor Skills](../apps/docu/content/docs/development/cursor-skills.mdx).
+- [`.agents/skills/`](../.agents/skills/) — gitignored; `pnpm skills:install` restores from [`skills-lock.json`](../skills-lock.json). Refresh with `pnpm skills:update`. Basilic playbooks land under `workflow/w-*`. Details: [Cursor Skills](../apps/docu/content/docs/development/cursor-skills.mdx).
 - [`mcp.json`](mcp.json) — MCP servers. Setup: [Cursor Setup](../apps/docu/content/docs/development/cursor-setup.mdx).
 
 Type `/` in chat for Basilic `/w-*` (`/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-ship`). `/w-plan` explores via `/w-council` first. Tech skills load when relevant, or `@.agents/skills/<name>`.

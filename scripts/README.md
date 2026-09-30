@@ -65,12 +65,11 @@ Runs during `postpack` lifecycle hook (after packing):
 
 ## Setup
 
-### `setup-skills.mjs`
-
-Reads [`skills-lock-manifest.mjs`](skills-lock-manifest.mjs), runs `pnpm dlx skills@latest add <source> --skill <name> … -y --agent cursor` per catalog, and removes `.claude/` and `.cursor/skills/` if present. The skills CLI updates [`skills-lock.json`](../skills-lock.json). Used by `pnpm setup` and CI `setup-pnpm`.
+`pnpm skills:install` restores from [`skills-lock.json`](../skills-lock.json) (`skills experimental_install`). `pnpm skills:update` refreshes hashes (`skills update -p -y`). Used by `pnpm setup` and CI `setup-pnpm`.
 
 ```bash
-pnpm setup:skills
+pnpm skills:install
+pnpm skills:update
 ```
 
 ## Dependencies
@@ -108,7 +107,7 @@ Vercel pnpm 12 runner: `npm install -g` the `packageManager` pin with scripts, t
 
 ### `assert-generated-tree.mjs`
 
-Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files. `skills-lock.json` must not use local sources, must pin `blockmatic/basilic-skills`, and may only list GitHub catalogs from `skills-lock-manifest.mjs`.
+Fails if an assembled template still contains forbidden paths (`apps/docu`, the generator, Release Please, leftover `.agents/skills/b`) or is missing required agent/docs files. `skills-lock.json` must not use local sources, must pin `blockmatic/basilic-skills`, and may only list GitHub catalogs already in the repo-root lock.
 
 ```bash
 node scripts/assert-generated-tree.mjs /path/to/assembled-template

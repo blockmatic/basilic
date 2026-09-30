@@ -3,7 +3,7 @@ title: "Skills"
 description: "Lock-installed stack skills and Basilic /w-* daily playbooks."
 ---
 
-Project skills live under `.agents/skills/`. The tree is **gitignored**; install with `pnpm setup:skills` from [`scripts/skills-lock-manifest.mjs`](https://github.com/blockmatic/basilic/blob/main/scripts/skills-lock-manifest.mjs). The CLI writes [`skills-lock.json`](https://github.com/blockmatic/basilic/blob/main/skills-lock.json) (hashes for CI). Use `--agent cursor` only so the canonical copy lands in `.agents/skills/` (not `.claude/` or `.cursor/skills/`). Do not use `skills experimental_install`.
+Project skills live under `.agents/skills/`. The tree is **gitignored**; restore with `pnpm skills:install` (`skills experimental_install` from [`skills-lock.json`](https://github.com/blockmatic/basilic/blob/main/skills-lock.json)). Refresh hashes with `pnpm skills:update`. The CLI writes the lock (hashes for CI). Canonical copies land in `.agents/skills/` (not `.claude/` or `.cursor/skills/`).
 
 Cursor requires `name` in each `SKILL.md` to match the folder (`nextjs`, not `next-v16`). Rules override skills. Skills override the model. Daily workflow: [AI Workflow](/docs/development/ai-workflow).
 
@@ -11,19 +11,18 @@ Cursor requires `name` in each `SKILL.md` to match the folder (`nextjs`, not `ne
 
 **Basilic playbooks** — [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills). Skill `workflow` installs nested `/w-*` under `.agents/skills/workflow/w-<name>/`. Slash names: `/w-plan`, `/w-grill`, `/w-wayfinder`, `/w-build`, `/w-review`, plus git close-out (`/w-commit` … `/w-ship`).
 
-**Stack and craft** — upstream GitHub catalogs listed in `scripts/skills-lock-manifest.mjs` (Emil motion, Next.js, Expo EAS, Vercel agent-skills, json-render, eve, shadcn, and others). Do not restyle installed copies; Oxlint ignores `.agents/skills/**`. Repo-specific layout and style stay in `AGENTS.md` and `.cursor/rules/`.
+**Stack and craft** — upstream GitHub catalogs listed in `skills-lock.json` (Emil motion, Next.js, Expo EAS, Vercel agent-skills, json-render, eve, shadcn, and others). Do not restyle installed copies; Oxlint ignores `.agents/skills/**`. Repo-specific layout and style stay in `AGENTS.md` and `.cursor/rules/`.
 
 ## What’s in git
 
 - `skills-lock.json` — pin record after install or catalog refresh
-- `scripts/skills-lock-manifest.mjs` — which `--skill` names `setup:skills` installs per source
-- `scripts/setup-skills.mjs` — runs the manifest, removes `.claude/` and `.cursor/skills/`
 
 ```bash
-pnpm setup:skills
+pnpm skills:install
+pnpm skills:update
 ```
 
-`pnpm setup` runs the same step.
+`pnpm setup` runs `pnpm skills:install`.
 
 ## Three kinds
 
@@ -41,15 +40,15 @@ pnpm setup:skills
 
 ## Update procedure
 
-1. Edit `scripts/skills-lock-manifest.mjs` (add/remove a source or `--skill` name).
-2. Run `pnpm setup:skills`.
-3. Commit `skills-lock.json` (and the manifest change).
+1. Add: `pnpm dlx skills@latest add <source> --skill <name> -y`
+2. Remove: `pnpm dlx skills@latest remove <name> -y`
+3. Commit `skills-lock.json`.
 
 Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
 
 ## Design
 
-`DESIGN.md` and glob rules win over craft skills. UI work: `/w-ui`. New shadcn primitive: `/w-shadcn` (follow `@shadcn`). Component APIs: `@vercel-composition-patterns`. UI code audit: `@web-design-guidelines`. React/Next performance: `@vercel-react-best-practices`. Motion: `@animate` (web) or `@animate-expo` (native). Toasts: `@ask-sonner`. Do not run `@pick-ui-library` to replace shadcn in this repo.
+`DESIGN.md` and glob rules win over craft skills. UI work: `/w-ui`. New shadcn primitive: `/w-shadcn` (follow `@shadcn`). Component APIs: `@vercel-composition-patterns`. UI code audit: `@web-design-guidelines`. React/Next performance: `@vercel-react-best-practices`. Motion: `@animate` (web) or `@animate-expo` (native). Toasts: `@ask-sonner`.
 
 This product uses Base UI (`base-vega`, `render`, `data-slot` / `data-open`). The official `shadcn` skill reads `components.json`.
 
