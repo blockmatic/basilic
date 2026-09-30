@@ -1,0 +1,81 @@
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+import { getDb } from "@repo/db";
+import { totpSetup } from "@repo/db/schema";
+import { Type } from "@sinclair/typebox";
+import { eq } from "drizzle-orm";
+import type { FastifyPluginAsync } from "fastify";
+
+import { decryptTotpSecret, generateTotpCode } from "../../lib/totp.js";
+import { assertTestRoutesEnabled } from "./assert-test-routes-enabled.js";
+
+const TotpCurrentResponseSchema = Type.Object({
+  code: Type.String(),
+});
+
+const totpTestRoute: FastifyPluginAsync = async (fastify) => {
+  fastify.withTypeProvider<TypeBoxTypeProvider>().get(
+    "/current",
+    {
+      schema: {
+        description:
+          "Get current TOTP code for in-progress setup (E2E only, requires Bearer)",
+        operationId: "getTestTotpCurrent",
+        response: {
+          200: TotpCurrentResponseSchema,
+          401: Type.Object({ code: Type.String(), message: Type.String() }),
+          404: Type.Object({ code: Type.String(), message: Type.String() }),
+        },
+        security: [{ bearerAuth: [] }],
+        summary: "Get current TOTP code",
+        tags: ["test"],
+      },
+    },
+    async (request, reply) => {
+      if (!assertTestRoutesEnabled(reply)) {
+        return;
+      }
+
+      if (!request.session) {
+        return reply.code(401).send({
+          code: "UNAUTHORIZED",
+          message: "Authentication required",
+        });
+      }
+
+      const userId = request.session.user.id;
+      const db = await getDb();
+      const [setup] = await db
+        .select()
+        .from(totpSetup)
+        .where(eq(totpSetup.userId, userId));
+
+      if (!setup) {
+        return reply.code(404).send({
+          code: "NOT_FOUND",
+          message: "No TOTP setup in progress",
+        });
+      }
+
+      if (setup.expiresAt < new Date()) {
+        return reply.code(404).send({
+          code: "NOT_FOUND",
+          message: "Setup expired",
+        });
+      }
+
+      const secret = decryptTotpSecret(setup.secretEncrypted);
+      if (!secret) {
+        return reply.code(404).send({
+          code: "NOT_FOUND",
+          message: "Failed to decrypt secret",
+        });
+      }
+
+      const code = await generateTotpCode(secret);
+      return reply.code(200).send({ code });
+    }
+  );
+};
+
+export default totpTestRoute;
+export const prefixOverride = "/test/totp";

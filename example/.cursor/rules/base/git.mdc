@@ -1,0 +1,6 @@
+---
+description: Git identity and commits — canonical text is root AGENTS.md
+alwaysApply: true
+---
+
+Canonical git identity, Conventional Commits, and publication-playbook paths live in root `AGENTS.md`. Do not diverge from that file.

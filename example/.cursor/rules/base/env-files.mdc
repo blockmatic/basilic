@@ -1,0 +1,49 @@
+---
+description: Environment files — templates, naming, alignment with t3 createEnv
+globs: "**/.env.*.example"
+alwaysApply: false
+---
+
+## Source of truth
+
+- Runtime vars: each app’s `createEnv` in `lib/env.ts` or `src/lib/env.ts` (t3-oss + Zod). Adding/removing a var **requires** updating that schema and the committed template(s) for that app.
+- Do not document env vars only in README without a template line.
+
+## Secrets and commits
+
+- **Never** put real API keys, tokens, or production secrets in committed `.env.<qualifier>.example` templates, nor in `.env.development`, `.env.staging`, or `.env.production`. Use obvious placeholders (`sk-ant-xxx`, `your_dynamic_environment_id`).
+- `.env`, `.env.local`, and secret-bearing `.env.test` stay gitignored per app; ship `.env.test.example` where tests need a template.
+
+## Naming (templates) — pattern `.env.<qualifier>.example`
+
+- **Canonical glob**: `**/.env.*.example` (Cursor: `@**/.env.*.example`). Filenames must be `.env.` + one qualifier + `.example` (e.g. `defaults`, `local`, `test`). Do **not** add `.env.sample`, `.env-example`, or bare `.env.example`.
+- **`pnpm setup` / `pnpm setup:env`** copies each template to its dest when the dest is missing (never overwrites). Mapping: `.env.defaults.example` → `.env`; `.env.<qualifier>.example` → `.env.<qualifier>`.
+- **Fastify API** (`apps/api`): `.env.defaults.example` (copy to `.env`); `.env.test.example` → `.env.test`.
+- **Next.js** (`apps/web`, `apps/mathler`): `.env.local.example` (copy to `.env.local`); committed `.env.development` / `.env.staging` / `.env.production` only for non-sensitive defaults (`NEXT_PUBLIC_*`, etc.).
+- **Expo** (`apps/mobile`): `.env.defaults.example` with `EXPO_PUBLIC_*`.
+- **Docu**: committed `.env.development`; optional `.env.defaults.example` aligned with `lib/env.ts`.
+- **Legacy**: `.env.schema` may remain; update `block-secret-files` / gitleaks when renaming templates.
+
+## Next.js section order (web + mathler)
+
+Use the same header order in `.env.local.example` and committed `.env.*`:
+
+1. Short header (what is committed vs local-only).
+2. Client / `NEXT_PUBLIC_*` (API URL, auth, logging, legal).
+3. Server-only / local secrets (`JWT_SECRET`, etc.) — template only where applicable.
+4. E2E / Playwright (`PLAYWRIGHT_APP_URL`, `PLAYWRIGHT_API_URL` on web; unify mathler on the same names; avoid duplicate `BASE_URL` / `PLAYWRIGHT_TEST_BASE_URL` without documented precedence).
+5. Optional integrations (Sentry, …).
+
+## Prefix discipline
+
+- Browser-exposed: `NEXT_PUBLIC_*` (Next), `EXPO_PUBLIC_*` (Expo). Do not use unprefixed names for client-only config.
+- If `createEnv` expects `NEXT_PUBLIC_LOG_*`, do not use `LOG_*` alone in Next env files.
+
+## API template completeness
+
+- `apps/api/.env.defaults.example` and `.env.test.example` share **the same section headings**; defaults template documents the full `env.ts` surface (optional blocks commented). Tests override a subset via `.env.test`.
+
+## When editing
+
+- After changing any template, verify `pnpm` dev/test for that app still loads `createEnv` without missing/empty required vars.
+- Update docs under `apps/docu/` if canonical filenames or copy instructions change.

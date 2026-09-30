@@ -1,0 +1,22 @@
+---
+description: Next.js standards
+globs: "apps/web/**/*.{tsx,css}"
+alwaysApply: false
+---
+
+## Route Collocation
+Keep route-specific files collocated with their route segment. Place page components, section components, and route-specific utilities inside the same directory as the route's `page.tsx`.
+
+- `app/(dashboard)/settings/security/page.tsx` → collocate `security-section.tsx`, `api-keys-card.tsx`, etc. in `settings/security/`
+- ❌ `settings/security-section.tsx` when the page lives in `settings/security/`
+
+## React Server Components (CRITICAL)
+ALWAYS default to Server Components. Only `'use client'` when necessary: interactive features (`onClick`/`onChange`/`onSubmit`), Browser APIs (`window`/`document`/`localStorage`), React hooks (`useState`/`useEffect`/`useContext`), client-side libraries, event listeners
+
+❌ Unnecessary client components, entire page as client
+
+## Performance Optimization
+See @.cursor/rules/frontend/react.mdc for concurrent rendering (Suspense/Transitions/Deferred Values)
+
+### Core Web Vitals & Images
+Optimize Core Web Vitals (LCP <2.5s, FID <100ms, CLS <0.1), images (WebP, proper sizes, lazy loading)

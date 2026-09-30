@@ -21,6 +21,11 @@ jobs:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup-pnpm
+        with:
+          workspace: base
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          workspace: example
 
       - name: Run gitleaks (full repo scan)
         uses: gitleaks/gitleaks-action@v2
@@ -55,7 +60,7 @@ jobs:
         run: |
           echo "🔍 Scanning dependencies for known vulnerabilities..."
           set +e
-          osv-scanner scan --lockfile=pnpm-lock.yaml --format=markdown
+          osv-scanner scan --lockfile=base/pnpm-lock.yaml --lockfile=example/pnpm-lock.yaml --format=markdown
           EXIT_CODE=$?
           set -e
           if [ $EXIT_CODE -ne 0 ]; then
@@ -71,7 +76,8 @@ jobs:
         run: |
           echo "🔍 Running pnpm audit for dependency vulnerabilities..."
           set +e
-          pnpm security:audit
+          (cd base && pnpm security:audit)
+          (cd example && pnpm security:audit)
           EXIT_CODE=$?
           set -e
           if [ $EXIT_CODE -ne 0 ]; then

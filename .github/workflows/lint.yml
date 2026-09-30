@@ -2,6 +2,12 @@ name: Lint
 
 on:
   pull_request:
+    paths:
+      - "base/**"
+      - "example/**"
+      - ".github/**"
+      - ".githooks/**"
+      - "README.md"
   workflow_dispatch:
 
 permissions:
@@ -16,35 +22,69 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
-  lint:
-    name: Lint Code
+  structure:
+    name: Workspace layout
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert split layout
+        run: |
+          test ! -f package.json
+          test ! -f pnpm-workspace.yaml
+          test ! -f turbo.json
+          test ! -f pnpm-lock.yaml
+          test -f base/pnpm-workspace.yaml
+          test -f base/turbo.json
+          test -f base/pnpm-lock.yaml
+          test -f example/pnpm-workspace.yaml
+          test -f example/turbo.json
+          test -f example/pnpm-lock.yaml
+          test -f base/apps/mobile/package.json
+          test ! -d example/apps/mobile
+          test -f .githooks/pre-commit
+
+  lint:
+    name: Lint ${{ matrix.workspace }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: [base, example]
     env:
-      PGLITE: true
+      PGLITE: "true"
       POSTGRES_URL: postgresql://localhost/test
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup-pnpm
+        with:
+          workspace: ${{ matrix.workspace }}
 
       - name: Run lint
+        working-directory: ${{ matrix.workspace }}
         run: pnpm lint
 
       - name: Check OpenAPI drift
+        working-directory: ${{ matrix.workspace }}
         run: pnpm openapi:drift
 
       - name: Lint OpenAPI spec
+        working-directory: ${{ matrix.workspace }}
         run: pnpm openapi:lint
 
       - name: Run knip
+        working-directory: ${{ matrix.workspace }}
         run: pnpm knip
 
       - name: Run sherif
+        working-directory: ${{ matrix.workspace }}
         run: pnpm sherif
 
       - name: Run script tests
+        working-directory: ${{ matrix.workspace }}
         run: pnpm test:scripts
 
       - name: Run type check
+        working-directory: ${{ matrix.workspace }}
         run: pnpm exec turbo run checktypes

@@ -1,0 +1,201 @@
+{
+  "$schema": "https://v2-11-2.turborepo.dev/schema.json",
+  "ui": "tui",
+  "globalPassThroughEnv": ["SKIP_KILL_PORTS", "SKIP_BUILD", "SKIP_DB_START"],
+  "tasks": {
+    "generate": {
+      "dependsOn": [],
+      "inputs": ["$TURBO_DEFAULT$", "../../apps/api/openapi/openapi.json"],
+      "outputs": ["src/gen/**"],
+      "env": ["NODE_ENV"]
+    },
+    "@repo/api#generate:openapi": {
+      "dependsOn": ["@repo/utils#build", "@repo/error#build", "@repo/db#build"],
+      "inputs": ["$TURBO_DEFAULT$", "src/**/*.ts"],
+      "outputs": ["openapi/openapi.json"],
+      "env": ["NODE_ENV"]
+    },
+    "@repo/core#generate": {
+      "dependsOn": ["@repo/api#generate:openapi"],
+      "inputs": ["$TURBO_DEFAULT$", "../../apps/api/openapi/openapi.json"],
+      "outputs": [
+        "src/gen/**",
+        "src/api-wrapper.gen.ts",
+        "src/api-client.gen.ts"
+      ],
+      "env": ["NODE_ENV"]
+    },
+    "@repo/cli#generate": {
+      "dependsOn": ["@repo/core#generate"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "../../apps/api/openapi/openapi.json",
+        "scripts/generate-cli.mjs"
+      ],
+      "outputs": ["src/gen/**"],
+      "env": ["NODE_ENV"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", ".react-email/**"],
+      "env": ["NODE_ENV"]
+    },
+    "@repo/web#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "NODE_ENV",
+        "VERCEL",
+        "VERCEL_ENV",
+        "VERCEL_GIT_COMMIT_REF",
+        "VERCEL_URL",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
+        "NEXT_PUBLIC_LOG_ENABLED",
+        "NEXT_PUBLIC_LOG_LEVEL",
+        "NEXT_PUBLIC_LEGAL_EMAIL",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT"
+      ],
+      "passThroughEnv": [
+        "JWT_SECRET",
+        "JWT_ISSUER",
+        "JWT_AUDIENCE",
+        "AUTH_COOKIE_NAME",
+        "ALLOW_TEST",
+        "SENTRY_DSN",
+        "SENTRY_ENVIRONMENT"
+      ]
+    },
+    "@repo/docu#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": ["NODE_ENV", "NEXT_PUBLIC_SITE_URL"]
+    },
+    "@repo/api#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": ["dist/**", "openapi/openapi.json"],
+      "env": ["NODE_ENV"]
+    },
+    "@repo/api#db:migrate": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "env": [
+        "POSTGRES_URL",
+        "PGLITE",
+        "RUN_PG_MIGRATE",
+        "NODE_ENV",
+        "VERCEL_ENV",
+        "VERCEL"
+      ]
+    },
+    "checktypes": {
+      "env": ["NODE_ENV"]
+    },
+    "test": {
+      "cache": false,
+      "env": [
+        "NODE_ENV",
+        "POSTGRES_URL",
+        "PGLITE",
+        "RUN_PG_MIGRATE",
+        "AI_GATEWAY_API_KEY",
+        "CI",
+        "VITEST_WORKER_ID",
+        "ALLOW_TEST",
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX"
+      ]
+    },
+    "test:unit": {
+      "cache": false,
+      "env": [
+        "NODE_ENV",
+        "POSTGRES_URL",
+        "PGLITE",
+        "RUN_PG_MIGRATE",
+        "AI_DEFAULT_MODEL",
+        "AI_GATEWAY_API_KEY",
+        "CI",
+        "VITEST_WORKER_ID",
+        "ALLOW_TEST",
+        "ALLOWED_ORIGINS",
+        "WEB_APP_URL",
+        "VITEST",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
+        "WEBAUTHN_RP_NAME",
+        "TOTP_ISSUER",
+        "RATE_LIMIT_MAX"
+      ]
+    },
+    "test:e2e": {
+      "cache": false,
+      "env": [
+        "NODE_ENV",
+        "CI",
+        "PORT",
+        "HOST",
+        "POSTGRES_URL",
+        "PGLITE",
+        "RUN_PG_MIGRATE",
+        "AI_DEFAULT_MODEL",
+        "AI_GATEWAY_API_KEY",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_APP_URL",
+        "PLAYWRIGHT_REUSE_SERVER",
+        "JWT_SECRET",
+        "PLAYWRIGHT_APP_URL",
+        "PLAYWRIGHT_API_URL",
+        "EVE_E2E",
+        "VERCEL_AUTOMATION_BYPASS_SECRET",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME",
+        "SKIP_BUILD"
+      ]
+    },
+    "@repo/db#db:start": {
+      "cache": false,
+      "env": ["SKIP_DB_START"]
+    },
+    "dev": {
+      "dependsOn": [],
+      "cache": false,
+      "persistent": true,
+      "env": [
+        "NODE_ENV",
+        "PORT",
+        "HOST",
+        "PORTLESS_URL",
+        "NODE_EXTRA_CA_CERTS",
+        "POSTGRES_URL",
+        "PGLITE",
+        "RUN_PG_MIGRATE",
+        "AI_GATEWAY_API_KEY",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_SITE_URL",
+        "WEB_APP_URL",
+        "EVE_COMMAND_URL",
+        "EXPO_PUBLIC_API_URL",
+        "AUTH_COOKIE_NAME",
+        "NEXT_PUBLIC_AUTH_COOKIE_NAME"
+      ]
+    },
+    "@repo/agents#dev": {
+      "dependsOn": ["@repo/db#db:start"],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

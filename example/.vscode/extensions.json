@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "coderabbit.coderabbit-vscode",
+    "oxc.oxc-vscode",
+    "bradlc.vscode-tailwindcss",
+    "bierner.markdown-mermaid",
+    "mermaidchart.vscode-mermaid-chart",
+    "github.vscode-github-actions",
+    "TypeScriptTeam.native-preview"
+  ]
+}

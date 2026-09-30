@@ -1,0 +1,98 @@
+import { getClientConfig } from "@repo/core";
+import type { createClient } from "@repo/core";
+import type { QueryClient } from "@tanstack/react-query";
+
+/**
+ * Configuration options for React API provider.
+ *
+ * @example
+ * ```tsx
+ * const config: ReactApiConfig = {
+ *   client: createClient({ baseUrl: 'https://api.example.com' }),
+ *   queryClient: new QueryClient(),
+ *   queryClientDefaults: {
+ *     retry: 3,
+ *     staleTime: 5 * 60 * 1000, // 5 minutes
+ *   },
+ * }
+ * ```
+ */
+export interface ReactApiConfig {
+  /** API client instance from `@repo/core` */
+  client: ReturnType<typeof createClient>;
+
+  /**
+   * Base URL for the API. Optional when client is from createClient with baseUrl.
+   */
+  baseUrl?: string;
+
+  /**
+   * Callback to get Bearer token. Optional when client is from createClient with getAuthToken.
+   */
+  getAuthToken?: () => Promise<string | null>;
+
+  /** Optional TanStack Query client instance */
+  queryClient?: QueryClient;
+
+  /** Default query options applied to all hooks */
+  queryClientDefaults?: {
+    /** Number of retry attempts on failure */
+    retry?: number;
+
+    /** Time in milliseconds before data is considered stale */
+    staleTime?: number;
+  };
+}
+
+/**
+ * Internal configuration value stored in React context.
+ * Includes normalized defaults for query client options.
+ */
+export interface ReactApiConfigValue {
+  /** API client instance from `@repo/core` */
+  client: ReturnType<typeof createClient>;
+
+  /** Base URL for the API */
+  baseUrl?: string;
+
+  /** Callback to get Bearer token */
+  getAuthToken?: () => Promise<string | null>;
+
+  /** Optional TanStack Query client instance */
+  queryClient?: QueryClient;
+
+  /** Normalized default query options (always an object, never undefined) */
+  queryClientDefaults: {
+    /** Number of retry attempts on failure */
+    retry?: number;
+
+    /** Time in milliseconds before data is considered stale */
+    staleTime?: number;
+  };
+}
+
+/**
+ * Creates normalized React API configuration value.
+ *
+ * Derives baseUrl and getAuthToken from the client (via getClientConfig) when not
+ * provided, when the client was created with createClient from @repo/core.
+ *
+ * @param options - React API configuration options
+ * @returns Normalized configuration value for React context
+ */
+export function createReactApiConfig(
+  options: ReactApiConfig
+): ReactApiConfigValue {
+  const clientConfig = getClientConfig(options.client);
+  const rawGetAuthToken = options.getAuthToken ?? clientConfig?.getAuthToken;
+  const getAuthToken = rawGetAuthToken
+    ? async (): Promise<string | null> => (await rawGetAuthToken()) ?? null
+    : undefined;
+  return {
+    baseUrl: options.baseUrl ?? clientConfig?.baseUrl,
+    client: options.client,
+    getAuthToken,
+    queryClient: options.queryClient,
+    queryClientDefaults: options.queryClientDefaults ?? {},
+  };
+}

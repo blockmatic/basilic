@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+
+import { readFileSync } from "node:fs";
+
+import { Command } from "commander";
+
+import { IoError } from "./copy.js";
+import { docsUrl } from "./docs-url.js";
+import { exitCodes } from "./exit-codes.js";
+import { generateProject } from "./generate.js";
+import { ValidationError } from "./project-name.js";
+
+const pkg = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf-8")
+) as {
+  version: string;
+};
+
+const program = new Command();
+
+program
+  .name("create-basilic")
+  .description("Scaffold an independent Basilic API, web, and mobile monorepo")
+  .version(pkg.version)
+  .argument(
+    "<directory>",
+    "Project name and destination directory (created; must be empty)"
+  )
+  .option(
+    "-y, --yes",
+    "Accept safe defaults and skip the optional purpose prompt"
+  )
+  .option("--purpose <text>", "Optional product purpose sentence")
+  .action(
+    async (directory: string, options: { purpose?: string; yes?: boolean }) => {
+      try {
+        const result = await generateProject({
+          directory,
+          generatorVersion: pkg.version,
+          purpose: options.purpose,
+          yes: Boolean(options.yes),
+        });
+        process.stdout.write(
+          `Created ${result.name.displayName} at ${result.dest}\n\n`
+        );
+        process.stdout.write("Next:\n");
+        process.stdout.write(`  cd ${directory}\n`);
+        process.stdout.write("  pnpm setup\n");
+        process.stdout.write("  pnpm db:start\n");
+        process.stdout.write("  pnpm dev\n\n");
+        process.stdout.write(
+          `Product Ready: ${docsUrl}/docs/testing/product-ready\n`
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        process.stderr.write(`${message}\n`);
+        if (error instanceof ValidationError) {
+          process.exit(error.exitCode);
+        }
+        if (error instanceof IoError) {
+          process.exit(error.exitCode);
+        }
+        process.exit(exitCodes.io);
+      }
+    }
+  );
+
+program.parseAsync(process.argv).catch((error) => {
+  process.stderr.write(`${error instanceof Error ? error.message : error}\n`);
+  process.exit(exitCodes.io);
+});
+
+process.on("SIGINT", () => {
+  process.stderr.write("\nInterrupted\n");
+  process.exit(exitCodes.interrupt);
+});

@@ -1,0 +1,51 @@
+import { getDb } from "@repo/db";
+import { verification } from "@repo/db/schema";
+import { like } from "drizzle-orm";
+import { beforeEach, describe, expect, it } from "vitest";
+
+import { fastify } from "./test.spec.js";
+
+describe("GET /test/magic-link/last", () => {
+  beforeEach(async () => {
+    fastify.fakeEmail?.clear?.();
+    const db = await getDb();
+    await db
+      .delete(verification)
+      .where(like(verification.identifier, "%@test.ai"));
+  });
+
+  it("should return 400 when email is missing", async () => {
+    const response = await fastify.inject({
+      method: "GET",
+      url: "/test/magic-link/last",
+    });
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return token after magic link is sent", async () => {
+    const email = "test@test.ai";
+    const callbackUrl = "https://example.com/callback";
+
+    await fastify.inject({
+      method: "POST",
+      url: "/auth/magiclink/request",
+      payload: {
+        email,
+        callbackUrl,
+      },
+    });
+
+    const response = await fastify.inject({
+      method: "GET",
+      url: `/test/magic-link/last?email=${encodeURIComponent(email)}`,
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    expect(body.token).toBeTruthy();
+    expect(typeof body.token).toBe("string");
+    expect(body.verificationId).toBeTruthy();
+    expect(typeof body.verificationId).toBe("string");
+  });
+});

@@ -1,0 +1,56 @@
+{
+  "name": "@repo/email",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./emails/*": {
+      "types": "./emails/*.tsx",
+      "source": "./emails/*.tsx",
+      "node": "./dist/emails/*.js",
+      "import": "./dist/emails/*.js",
+      "default": "./dist/emails/*.js"
+    },
+    "./render": {
+      "types": "./render.ts",
+      "source": "./render.ts",
+      "node": "./dist/render.js",
+      "import": "./dist/render.js",
+      "default": "./dist/render.js"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "checktypes": "tsc --noEmit",
+    "dev": "portless",
+    "dev:app": "node scripts/dev-preview.mjs",
+    "build": "tsc",
+    "build:preview": "NEXT_TELEMETRY_DISABLED=1 email build",
+    "start": "email start"
+  },
+  "dependencies": {
+    "@react-email/components": "1.0.12",
+    "@react-email/render": "2.1.0",
+    "@react-email/tailwind": "2.0.7",
+    "@repo/ui": "workspace:*",
+    "date-fns": "^4.4.0",
+    "react-email": "6.9.5"
+  },
+  "devDependencies": {
+    "@react-email/preview-server": "5.2.10",
+    "@react-email/ui": "6.9.5",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "~26.6.2",
+    "@types/react": "^19.3.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "cross-env": "^10.1.0",
+    "react": "^19.3.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "portless": {
+    "name": "email.tracker",
+    "script": "dev:app"
+  }
+}

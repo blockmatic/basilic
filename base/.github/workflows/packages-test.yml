@@ -1,0 +1,38 @@
+name: Packages (Unit Tests)
+
+on:
+  pull_request:
+    paths:
+      - "packages/**"
+      - "apps/agents/**"
+      - "tools/**"
+      - "apps/api/openapi/**"
+      - ".github/workflows/packages-test.yml"
+      - ".github/actions/setup-pnpm/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - "turbo.json"
+
+concurrency:
+  group: packages-test-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_ENV: test
+  CI: true
+  PGLITE: true
+  POSTGRES_URL: postgresql://localhost/test
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+      - name: Build packages
+        run: pnpm turbo run build --filter=@repo/error... --filter=@repo/core --filter=@repo/react --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain
+      - name: Unit tests (packages + agents)
+        run: pnpm turbo run test --filter=@repo/core --filter=@repo/react --filter=@repo/error --filter=@repo/db --filter=@repo/markets --filter=@repo/onchain --filter=@repo/agents

@@ -1,0 +1,174 @@
+import "dotenv/config";
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
+
+import swagger from "@fastify/swagger";
+import Fastify from "fastify";
+
+const scriptDir = import.meta.dirname;
+
+/**
+ * Post-process OpenAPI schema to remove fields with default values from required arrays.
+ * This fixes the issue where z.toJSONSchema() marks optional-with-default fields as required.
+ */
+function removeDefaultsFromRequired(schema: unknown): unknown {
+  if (!schema || typeof schema !== "object") {
+    return schema;
+  }
+
+  const obj = schema as Record<string, unknown>;
+
+  // If this is a schema object with properties and required
+  if ("properties" in obj && "required" in obj && Array.isArray(obj.required)) {
+    const properties = obj.properties as Record<string, unknown> | undefined;
+    const required = obj.required as string[];
+
+    if (properties) {
+      // Remove any property from required if it has a default value
+      const newRequired = required.filter((key) => {
+        const prop = properties[key];
+        if (prop && typeof prop === "object" && "default" in prop) {
+          return false;
+        }
+
+        return true;
+      });
+
+      // Recursively process properties
+      const newProperties: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(properties)) {
+        newProperties[key] = removeDefaultsFromRequired(value);
+      }
+
+      return {
+        ...obj,
+        properties: newProperties,
+        required: newRequired.length > 0 ? newRequired : undefined,
+      };
+    }
+  }
+
+  const processComponents = (
+    components: Record<string, unknown>
+  ): Record<string, unknown> => {
+    const newComponents: Record<string, unknown> = {};
+    for (const [compKey, compValue] of Object.entries(components)) {
+      if (
+        compKey === "schemas" &&
+        typeof compValue === "object" &&
+        compValue !== null
+      ) {
+        const schemas = compValue as Record<string, unknown>;
+        const newSchemas: Record<string, unknown> = {};
+        for (const [schemaKey, schemaValue] of Object.entries(schemas))
+          newSchemas[schemaKey] = removeDefaultsFromRequired(schemaValue);
+        newComponents[compKey] = newSchemas;
+      } else {
+        newComponents[compKey] = removeDefaultsFromRequired(compValue);
+      }
+    }
+    return newComponents;
+  };
+
+  // Recursively process nested objects
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (key === "paths" && typeof value === "object" && value !== null) {
+      // Process paths object
+      const paths = value as Record<string, unknown>;
+      const newPaths: Record<string, unknown> = {};
+      for (const [pathKey, pathValue] of Object.entries(paths))
+        newPaths[pathKey] = removeDefaultsFromRequired(pathValue);
+
+      result[key] = newPaths;
+    } else if (
+      key === "components" &&
+      typeof value === "object" &&
+      value !== null
+    ) {
+      result[key] = processComponents(value as Record<string, unknown>);
+    } else if (
+      (key === "requestBody" ||
+        key === "responses" ||
+        key === "body" ||
+        key === "schema") &&
+      typeof value === "object" &&
+      value !== null
+    ) {
+      // Process requestBody, responses, body, schema
+      result[key] = removeDefaultsFromRequired(value);
+    } else if (Array.isArray(value)) {
+      result[key] = value.map((item) => removeDefaultsFromRequired(item));
+    } else if (typeof value === "object" && value !== null) {
+      result[key] = removeDefaultsFromRequired(value);
+    } else {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+async function generateOpenAPI() {
+  // Stub env for OpenAPI generation when missing (e.g. Vercel Next build)
+  const stubs: Record<string, string> = {
+    ALLOWED_ORIGINS: "https://openapi-gen.example",
+    APP_NAME: "OpenAPI Generation",
+    DOCS_SITE_URL: "https://basilic-docs.vercel.app",
+    ENCRYPTION_KEY: "deadbeef".repeat(8), // 64-char hex (valid, not weak)
+    JWT_SECRET: "openapi-gen-jwt-secret-placeholder-32ch",
+    PGLITE: "true",
+    WEB_APP_URL: "https://openapi-gen.example",
+  };
+  for (const [k, v] of Object.entries(stubs)) {
+    if (!process.env[k]) process.env[k] = v;
+  }
+
+  const { getOpenApiDocumentOptions } =
+    await import("../src/lib/openapi-spec.js");
+  const { default: app } = await import("../src/app.js");
+
+  // Create Fastify instance (same as production)
+  const fastify = Fastify({
+    logger: false, // Disable logging for generation
+    pluginTimeout: 30_000, // Increase timeout for plugin loading (30 seconds)
+  });
+
+  try {
+    // Register @fastify/swagger FIRST (before routes)
+    // Swagger needs to scan routes as they're registered
+    await fastify.register(swagger, getOpenApiDocumentOptions());
+
+    // Register app (which autoloads plugins + routes)
+    // Swagger will automatically scan route schemas as they're registered
+    await fastify.register(app, { allowTest: false });
+
+    // Wait for Fastify to be ready before generating OpenAPI
+    await fastify.ready();
+
+    // Generate OpenAPI JSON
+    const openApiDocument = fastify.swagger();
+
+    // Post-process to remove default-valued fields from required arrays
+    const processedDocument = removeDefaultsFromRequired(
+      openApiDocument
+    ) as typeof openApiDocument;
+
+    // Write to openapi.json
+    const outputPath = join(scriptDir, "../openapi/openapi.json");
+    await writeFile(
+      outputPath,
+      JSON.stringify(processedDocument, null, 2),
+      "utf-8"
+    );
+
+    console.log("OpenAPI spec generated:", outputPath);
+  } catch (error) {
+    console.error("Failed to generate OpenAPI spec", error);
+    process.exit(1);
+  } finally {
+    await fastify.close();
+  }
+}
+
+generateOpenAPI();

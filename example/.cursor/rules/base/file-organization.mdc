@@ -1,0 +1,6 @@
+---
+description: Folder-plus-index grouping — canonical text is root AGENTS.md
+alwaysApply: true
+---
+
+Canonical file-organization constraints live in root `AGENTS.md`. Decision tree: `apps/docu/content/docs/development/file-organization.mdx`.
