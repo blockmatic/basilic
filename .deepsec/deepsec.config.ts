@@ -4,8 +4,8 @@ import { generatedMatchersPlugin } from "./generated-matchers.js";
 
 export default defineConfig({
   ai: { mode: "gateway", provider: "vercel" },
-  defaultAgent: "codex",
-  defaultModel: "gpt-5.6-sol",
+  defaultAgent: "pi",
+  defaultModel: "xai/grok-4.6",
   defaultThinkingLevel: "medium",
   projects: [
     {

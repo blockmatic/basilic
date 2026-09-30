@@ -133,9 +133,10 @@ All security-related pnpm scripts are organized under the `security:` namespace:
 - **`pnpm security:audit`** - Run pnpm audit for high+ vulnerabilities (`--ignore-registry-errors` so npm registry timeouts/HTTP errors do not fail the check)
 - **`pnpm security:check`** - Run all security checks (comprehensive)
 - **`pnpm security:deepsec:scan`** - DeepSec regex scan (no AI)
-- **`pnpm security:deepsec:process:diff`** - DeepSec AI review vs `origin/main` (GPT-5.6 Sol / Codex)
-- **`pnpm security:deepsec:process:diff:grok`** - Same diff review with Cursor Grok 4.6 / Pi
-- **`pnpm security:deepsec:process`** - DeepSec full-repo AI review (GPT-5.6 Sol / Codex)
+- **`pnpm security:deepsec:process:diff`** - DeepSec AI review vs `origin/main` (Grok 4.6 / Pi)
+- **`pnpm security:deepsec:process:diff:grok`** - Same as `process:diff`
+- **`pnpm security:deepsec:process:diff:sol`** - Same diff review with GPT-5.6 Sol / Codex
+- **`pnpm security:deepsec:process`** - DeepSec full-repo AI review (Grok 4.6 / Pi)
 - **`pnpm security:deepsec:report`** - DeepSec findings summary
 
 DeepSec lives in `.deepsec/` and is not part of pre-commit or `security.yml`. `scan` is free. `process` needs `AI_GATEWAY_API_KEY`. See [Security](https://basilic-docs.vercel.app/docs/architecture/security).
