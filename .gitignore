@@ -83,8 +83,5 @@ tsup.config.bundled_*.mjs
 .claude/
 .cursor/skills/
 
-# Extra agent trees from `skills add --all` (repo root only)
-/agent/
-
 # Lock-installed agent skills (`pnpm skills:install` from skills-lock.json)
 .agents/skills/

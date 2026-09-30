@@ -44,7 +44,7 @@ pnpm skills:update
 2. Remove: `pnpm dlx skills@latest remove <name> -y`
 3. Commit `skills-lock.json`.
 
-Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
+Do not pass `--all` or `-a '*'`: they install into every harness and write extra root trees such as the root `agent/skills/` directory. Do not `git pull` inside nested `.git` under skills. Do not store project skills only in `~/.cursor/skills/`.
 
 ## Design
 
