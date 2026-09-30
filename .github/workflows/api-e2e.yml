@@ -5,25 +5,9 @@ on:
     paths:
       - "base/**"
       - "example/**"
-      - "apps/api/**"
-      - "packages/db/**"
-      - "packages/markets/**"
-      - "packages/onchain/**"
-      - "packages/email/**"
-      - "packages/error/**"
-      - "packages/utils/**"
-      - "oxlint.config.ts"
-      - "oxfmt.config.ts"
-      - "tools/typescript/**"
-      - "packages/core/**"
-      - "packages/cli/**"
-      - "apps/api/openapi/**"
       - ".github/workflows/api-e2e.yml"
       - ".github/actions/setup-pnpm/**"
       - ".github/actions/setup-playwright/**"
-      - "pnpm-lock.yaml"
-      - "package.json"
-      - "turbo.json"
 
 concurrency:
   group: api-e2e-${{ github.ref }}
