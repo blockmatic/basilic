@@ -18,7 +18,7 @@ Local HTTP apps use Portless named HTTPS hosts. Do not discover bind ports.
 - API: `https://api.basilic.localhost`
 - Docs: `https://docu.basilic.localhost`
 - Email preview: `https://email.basilic.localhost`
-- Eve: `https://agents.basilic.localhost` (`/eve/command`)
+- Eve: `https://agents.basilic.localhost` (`/eve/operator`, `/eve/ask`)
 
 Linked git worktrees prefix the branch (`https://fix-ui.api.basilic.localhost`). Escape hatch: `pnpm --filter <pkg> dev:app` or `PORTLESS=0`. Postgres stays on `127.0.0.1:54422`. Playwright/CI spawn `localhost:3000` / `:3001` (no Portless; eve is not in the Playwright DAG).
 
@@ -120,7 +120,7 @@ Cursor attaches these by glob. Other harnesses should read the matching file whe
 
 Public one-liner: **Basilic — API-first foundation for agentic products.** Do not use swissknife or Vercel-identity copy. **Starter** is only for `create-basilic` / clone onboarding. Agents participate through the product API, eve, CLI, generated clients, and Generative UI (Jev + json-render + shadcn/Base UI tooling)—not a separate AI app. Canonical capability names live on [architecture overview](apps/docu/content/docs/architecture/index.mdx); README and Docu homepage summarize that set. `__dev/` is not public evidence.
 
-Visual language is [`DESIGN.md`](DESIGN.md). Technical adopter documentation lives in `apps/docu`. Public MDX and README changes follow lock-installed `.agents/skills/technical-writing/` (research, edit, review); glob `.cursor/rules/base/docs.mdc` and `readme.mdc` override eve-repo paths. Read the matching MDX or ADR before changing an architecture, convention, command, or documented behavior. Durable agents: [ADR 014](apps/docu/content/docs/adrs/014-fastify-eve-vercel-runtime.mdx) and [`architecture/eve.mdx`](apps/docu/content/docs/architecture/eve.mdx) (`command` in `apps/agents`). Chat lives in [Coin Tracker](https://github.com/blockmatic/basilic-tracker). Do not create `PRODUCT.md` or `ROADMAP.md`.
+Visual language is [`DESIGN.md`](DESIGN.md). Technical adopter documentation lives in `apps/docu`. Public MDX and README changes follow lock-installed `.agents/skills/technical-writing/` from [blockmatic/basilic-skills](https://github.com/blockmatic/basilic-skills); glob `.cursor/rules/base/docs.mdc` and `readme.mdc` override the skill when they conflict. Read the matching MDX or ADR before changing an architecture, convention, command, or documented behavior. Durable agents: [ADR 014](apps/docu/content/docs/adrs/014-fastify-eve-vercel-runtime.mdx) and [`architecture/eve.mdx`](apps/docu/content/docs/architecture/eve.mdx) (`command` in `apps/agents`). Chat lives in [Coin Tracker](https://github.com/blockmatic/basilic-tracker). Do not create `PRODUCT.md` or `ROADMAP.md`.
 
 ## Working contract
 
