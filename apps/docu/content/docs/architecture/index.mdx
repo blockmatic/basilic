@@ -3,9 +3,9 @@ title: "Architecture Overview"
 description: "API-first foundation: one product API, agentic clients, four planes."
 ---
 
-Basilic is an API-first foundation for agentic products. The Fastify HTTP API is the product boundary. Web, CLI, generated clients, and durable agents operate against that contract. There is no product MCP. Expo is a UI scaffold and does not call the API yet.
+Basilic is an API-first foundation for agentic products. The Fastify HTTP API is the product boundary. Web, CLI, generated clients, and durable agents operate against that contract. Fastify also serves a thin `/mcp` surface for public agents. Expo is a UI scaffold and does not call the API yet.
 
-Humans and agents are both clients. Session JWTs serve the browser. API keys serve the CLI, scripts, and other machine callers. eve hosts durable `command` and `chat` on a sibling origin. Generative UI is presentation tooling: Jev triages command turns, Next `composeSpec` authors json-render specs, and `@repo/ui` (shadcn/Base UI) is the catalog the renderer paints.
+Humans and agents are both clients. Session JWTs serve the browser. API keys serve the CLI, scripts, and other machine callers. eve hosts durable `operator` and `ask` on a sibling origin. Generative UI is presentation tooling: Jev triages command turns, Next `composeSpec` authors json-render specs, and `@repo/ui` (shadcn/Base UI) is the catalog the renderer paints.
 
 **Default host:** [Vercel](/docs/deployment/vercel) + Supabase. **Exit:** ordinary Node (`Fastify listen`, `eve start`) and PostgreSQL — see [Portability](/docs/architecture/portability).
 
@@ -67,7 +67,7 @@ flowchart TB
 
 Agents discover and call **HTTP** on Fastify (`/openapi.json`, `/llms.txt`, RFC 9727 catalog). Interactive streams and durable turns belong on **eve**, not a Fastify proxy. Next calls `@repo/core`; it does not own the API. Detail: [AI](/docs/architecture/ai), [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime).
 
-The machine contract for API consumers is **OpenAPI** + `@repo/core` + CLI — not product MCP ([ADR 009](/docs/adrs/009-api-architecture)).
+The machine contract for API consumers is **OpenAPI** + `@repo/core` + CLI, plus a thin MCP surface for public agents ([ADR 017](/docs/adrs/017-public-agent-registry)).
 
 ## Capabilities
 

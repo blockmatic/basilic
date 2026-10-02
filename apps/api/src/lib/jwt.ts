@@ -82,4 +82,32 @@ export function createRefreshTokenPayload({
   };
 }
 
-export type { AccessTokenPayload, RefreshTokenPayload };
+interface AgentTokenPayload {
+  agent: string;
+  akid?: string;
+  typ: "agent";
+  sub: string;
+  iss: string;
+  aud: string;
+}
+
+export function createAgentTokenPayload({
+  agentId,
+  apiKeyId,
+  userId,
+}: {
+  agentId: string;
+  apiKeyId?: string;
+  userId: string;
+}): Omit<AgentTokenPayload, "iat" | "exp"> {
+  return {
+    agent: agentId,
+    aud: env.AGENT_JWT_AUDIENCE,
+    iss: env.JWT_ISSUER,
+    sub: userId,
+    typ: "agent",
+    ...(apiKeyId ? { akid: apiKeyId } : {}),
+  };
+}
+
+export type { AccessTokenPayload, AgentTokenPayload, RefreshTokenPayload };

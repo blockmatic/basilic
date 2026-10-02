@@ -2,10 +2,12 @@ import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
 import type { FastifyPluginAsync } from "fastify";
 
-import { AgentRecordSchema, agentById } from "../../lib/agents-registry.js";
-import { sendCatalogError } from "../../lib/catalogs/mapper.js";
-import { env } from "../../lib/env.js";
-import { ErrorResponseSchema, RateLimitResponseSchema } from "../schemas.js";
+import {
+  AgentRecordSchema,
+  agentById,
+  sendAgentProblem,
+} from "../../lib/agents/index.js";
+import { AgentProblemSchema, RateLimitResponseSchema } from "../schemas.js";
 
 const AgentIdParamsSchema = Type.Object({
   agentId: Type.String({ minLength: 1 }),
@@ -17,13 +19,13 @@ const agentsGetRoute: FastifyPluginAsync = async (fastify) => {
     {
       schema: {
         description:
-          "Get one product eve agent by id. Session required. An API key satisfies Fastify session auth. Eve itself accepts only an access JWT.",
+          "Get one public eve agent by id. Session required. An API key satisfies Fastify session auth.",
         operationId: "getAgentById",
         params: AgentIdParamsSchema,
         response: {
           200: AgentRecordSchema,
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
+          401: AgentProblemSchema,
+          404: AgentProblemSchema,
           429: RateLimitResponseSchema,
         },
         security: [{ bearerAuth: [] }],
@@ -32,16 +34,21 @@ const agentsGetRoute: FastifyPluginAsync = async (fastify) => {
       },
     },
     async (request, reply) => {
-      if (!request.session) {
-        return sendCatalogError({ reply, status: 401, code: "UNAUTHORIZED" });
-      }
-      const row = agentById({
-        agentId: request.params.agentId,
-        commandUrl: env.EVE_COMMAND_URL,
-      });
-      if (!row) {
-        return sendCatalogError({ reply, status: 404, code: "NOT_FOUND" });
-      }
+      if (!request.session)
+        return sendAgentProblem({
+          code: "UNAUTHORIZED",
+          reply,
+          request,
+          status: 401,
+        });
+      const row = agentById({ agentId: request.params.agentId });
+      if (!row)
+        return sendAgentProblem({
+          code: "NOT_FOUND",
+          reply,
+          request,
+          status: 404,
+        });
       return reply.code(200).send(row);
     }
   );

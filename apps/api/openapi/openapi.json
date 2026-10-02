@@ -2631,7 +2631,7 @@
         "tags": [
           "agents"
         ],
-        "description": "Get one product eve agent by id. Session required. An API key satisfies Fastify session auth. Eve itself accepts only an access JWT.",
+        "description": "Get one public eve agent by id. Session required. An API key satisfies Fastify session auth.",
         "parameters": [
           {
             "schema": {
@@ -2656,47 +2656,116 @@
                 "schema": {
                   "type": "object",
                   "required": [
+                    "auth",
                     "capabilities",
+                    "description",
+                    "docs",
                     "endpoint",
-                    "features",
                     "id",
+                    "inputMode",
                     "name",
-                    "presentation",
-                    "transport"
+                    "outputMode",
+                    "streaming",
+                    "transport",
+                    "version",
+                    "visibility"
                   ],
                   "properties": {
+                    "auth": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "optional"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "required"
+                          ]
+                        }
+                      ]
+                    },
                     "capabilities": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       }
                     },
-                    "endpoint": {
-                      "minLength": 1,
-                      "type": "string"
-                    },
-                    "features": {
+                    "delegatesTo": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       }
                     },
+                    "description": {
+                      "type": "string"
+                    },
+                    "docs": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
                     "id": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "operator"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ask"
+                          ]
+                        }
+                      ]
+                    },
+                    "inputMode": {
                       "type": "string",
                       "enum": [
-                        "command"
+                        "text"
                       ]
                     },
                     "name": {
                       "type": "string"
                     },
-                    "presentation": {
-                      "type": "string"
+                    "outputMode": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "genui"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "conversation"
+                          ]
+                        }
+                      ]
+                    },
+                    "streaming": {
+                      "type": "boolean"
                     },
                     "transport": {
                       "type": "string",
                       "enum": [
                         "eve"
+                      ]
+                    },
+                    "version": {
+                      "type": "string"
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "enum": [
+                        "public"
                       ]
                     }
                   }
@@ -2712,13 +2781,23 @@
                   "type": "object",
                   "required": [
                     "code",
-                    "message"
+                    "message",
+                    "retryable"
                   ],
                   "properties": {
                     "code": {
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "resolution": {
+                      "type": "string"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    },
+                    "traceId": {
                       "type": "string"
                     },
                     "detail": {
@@ -2746,13 +2825,23 @@
                   "type": "object",
                   "required": [
                     "code",
-                    "message"
+                    "message",
+                    "retryable"
                   ],
                   "properties": {
                     "code": {
                       "type": "string"
                     },
                     "message": {
+                      "type": "string"
+                    },
+                    "resolution": {
+                      "type": "string"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    },
+                    "traceId": {
                       "type": "string"
                     },
                     "detail": {
@@ -2820,7 +2909,7 @@
         "tags": [
           "agents"
         ],
-        "description": "List product eve agents. Public host discovery. Endpoints are absolute eve origins. An API key can call this route when a session is not required. A bask_ key is not an eve access JWT.",
+        "description": "List public eve agents. No auth. Endpoints are absolute eve origins. A bask_ key is not an eve access JWT.",
         "security": [],
         "responses": {
           "200": {
@@ -2832,49 +2921,302 @@
                   "items": {
                     "type": "object",
                     "required": [
+                      "auth",
                       "capabilities",
+                      "description",
+                      "docs",
                       "endpoint",
-                      "features",
                       "id",
+                      "inputMode",
                       "name",
-                      "presentation",
-                      "transport"
+                      "outputMode",
+                      "streaming",
+                      "transport",
+                      "version",
+                      "visibility"
                     ],
                     "properties": {
+                      "auth": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "optional"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "required"
+                            ]
+                          }
+                        ]
+                      },
                       "capabilities": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
                       },
-                      "endpoint": {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      "features": {
+                      "delegatesTo": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
                       },
+                      "description": {
+                        "type": "string"
+                      },
+                      "docs": {
+                        "type": "string"
+                      },
+                      "endpoint": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
                       "id": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "operator"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "ask"
+                            ]
+                          }
+                        ]
+                      },
+                      "inputMode": {
                         "type": "string",
                         "enum": [
-                          "command"
+                          "text"
                         ]
                       },
                       "name": {
                         "type": "string"
                       },
-                      "presentation": {
-                        "type": "string"
+                      "outputMode": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "genui"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "conversation"
+                            ]
+                          }
+                        ]
+                      },
+                      "streaming": {
+                        "type": "boolean"
                       },
                       "transport": {
                         "type": "string",
                         "enum": [
                           "eve"
                         ]
+                      },
+                      "version": {
+                        "type": "string"
+                      },
+                      "visibility": {
+                        "type": "string",
+                        "enum": [
+                          "public"
+                        ]
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "retryAfter"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "retryAfter": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agents/{agentId}/token": {
+      "post": {
+        "operationId": "createAgentToken",
+        "summary": "Create agent token",
+        "tags": [
+          "agents"
+        ],
+        "description": "Exchange an access JWT or API key for a short-lived eve bearer bound to one public agent. The token has typ=agent, the agent audience, and no refresh token. Open the eve session and attach its stream before it expires. eve rejects a raw bask_ key.",
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "in": "path",
+            "name": "agentId",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "agentId",
+                    "endpoint",
+                    "expiresIn",
+                    "token"
+                  ],
+                  "properties": {
+                    "agentId": {
+                      "type": "string"
+                    },
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "expiresIn": {
+                      "type": "integer"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "retryable"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "resolution": {
+                      "type": "string"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    },
+                    "traceId": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "retryable"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "resolution": {
+                      "type": "string"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    },
+                    "traceId": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
                     }
                   }
                 }

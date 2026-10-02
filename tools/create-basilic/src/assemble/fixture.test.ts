@@ -112,6 +112,7 @@ describe("exact-version fixture", () => {
         "knip.json",
         ".redocly.yaml",
         "osv-scanner.toml",
+        "patches/",
         "package.json",
         "pnpm-lock.yaml",
         "pnpm-workspace.yaml",

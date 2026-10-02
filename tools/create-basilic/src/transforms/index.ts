@@ -55,7 +55,7 @@ function projectReplacements({ name }: { name: ProjectName }) {
     },
     {
       from: 'name: "Basilic"',
-      path: "apps/agents/agents/command/agent/tools/get_application_status.ts",
+      path: "apps/agents/agents/operator/agent/subagents/system/tools/get_application_status.ts",
       to: `name: "${name.displayName}"`,
     },
     {

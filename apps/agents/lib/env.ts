@@ -20,6 +20,8 @@ export const env = createEnv({
   emptyStringAsUndefined: true,
   runtimeEnv: process.env,
   server: {
+    AGENT_JWT_AUDIENCE: z.string().min(1).default("agents.yourapp.com"),
+    AGENTS_MODEL: z.enum(["scripted", "gateway"]).optional(),
     AI_DEFAULT_MODEL: z.string().min(1).optional(),
     AI_EVALUATE_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
     AI_GATEWAY_API_KEY: z.string().min(1).optional(),

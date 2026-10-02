@@ -48,6 +48,8 @@ import type {
   AuthSessionsListResponse,
   AuthSessionsRevokeData,
   AuthSessionsRevokeResponse,
+  CreateAgentTokenData,
+  CreateAgentTokenResponse,
   GenerateData,
   GenerateResponse,
   GetAgentByIdData,
@@ -135,7 +137,10 @@ export type CoreApiClient = {
     profile: (opts: Options<AccountProfileUpdateData>) => Promise<AccountProfileUpdateResponse>
   };
   agents: {
-    agentId: (opts: Options<GetAgentByIdData>) => Promise<GetAgentByIdResponse>
+    agentId: {
+      id: (opts: Options<GetAgentByIdData>) => Promise<GetAgentByIdResponse>;
+      token: (opts: Options<CreateAgentTokenData>) => Promise<CreateAgentTokenResponse>
+    }
   };
   listAgents: (opts?: Options<ListAgentsData>) => Promise<ListAgentsResponse>;
   ai: {

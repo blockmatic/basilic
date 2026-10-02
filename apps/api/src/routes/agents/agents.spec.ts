@@ -23,3 +23,5 @@ export { fastify };
 
 import "./get.test";
 import "./list.test";
+import "./token.test";
+import "../mcp.test";

@@ -24,6 +24,18 @@ export function DashboardShell({
             </div>
             Basilic
           </Link>
+          <Link
+            className="text-muted-foreground hover:text-foreground text-sm"
+            href="/"
+          >
+            Agent
+          </Link>
+          <Link
+            className="text-muted-foreground hover:text-foreground text-sm"
+            href="/ask"
+          >
+            Ask
+          </Link>
           <PageTitle />
         </div>
         <div className="flex min-h-11 items-center gap-3 md:gap-4">

@@ -39,7 +39,10 @@ account: {
   profile: gen.accountProfileUpdate,
 },
 agents: {
-  agentId: gen.getAgentById,
+  agentId: {
+    id: gen.getAgentById,
+    token: gen.createAgentToken,
+  },
 },
 listAgents: gen.listAgents,
 ai: {

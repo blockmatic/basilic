@@ -937,6 +937,9 @@ export type GetAgentByIdErrors = {
   401: {
     code: string;
     message: string;
+    resolution?: string;
+    retryable: boolean;
+    traceId?: string;
     detail?: string;
     status?: number;
     title?: string;
@@ -948,6 +951,9 @@ export type GetAgentByIdErrors = {
   404: {
     code: string;
     message: string;
+    resolution?: string;
+    retryable: boolean;
+    traceId?: string;
     detail?: string;
     status?: number;
     title?: string;
@@ -974,13 +980,20 @@ export type GetAgentByIdResponses = {
    * Default Response
    */
   200: {
+    auth: 'optional' | 'required';
     capabilities: Array<string>;
+    delegatesTo?: Array<string>;
+    description: string;
+    docs: string;
     endpoint: string;
-    features: Array<string>;
-    id: 'command';
+    id: 'operator' | 'ask';
+    inputMode: 'text';
     name: string;
-    presentation: string;
+    outputMode: 'genui' | 'conversation';
+    streaming: boolean;
     transport: 'eve';
+    version: string;
+    visibility: 'public';
   };
 };
 
@@ -1015,17 +1028,92 @@ export type ListAgentsResponses = {
    * Default Response
    */
   200: Array<{
+    auth: 'optional' | 'required';
     capabilities: Array<string>;
+    delegatesTo?: Array<string>;
+    description: string;
+    docs: string;
     endpoint: string;
-    features: Array<string>;
-    id: 'command';
+    id: 'operator' | 'ask';
+    inputMode: 'text';
     name: string;
-    presentation: string;
+    outputMode: 'genui' | 'conversation';
+    streaming: boolean;
     transport: 'eve';
+    version: string;
+    visibility: 'public';
   }>;
 };
 
 export type ListAgentsResponse = ListAgentsResponses[keyof ListAgentsResponses];
+
+export type CreateAgentTokenData = {
+  body?: never;
+  path: {
+    agentId: string;
+  };
+  query?: never;
+  url: '/agents/{agentId}/token';
+};
+
+export type CreateAgentTokenErrors = {
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    resolution?: string;
+    retryable: boolean;
+    traceId?: string;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+  /**
+   * Default Response
+   */
+  404: {
+    code: string;
+    message: string;
+    resolution?: string;
+    retryable: boolean;
+    traceId?: string;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+};
+
+export type CreateAgentTokenError = CreateAgentTokenErrors[keyof CreateAgentTokenErrors];
+
+export type CreateAgentTokenResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    agentId: string;
+    endpoint: string;
+    expiresIn: number;
+    token: string;
+  };
+};
+
+export type CreateAgentTokenResponse = CreateAgentTokenResponses[keyof CreateAgentTokenResponses];
 
 export type GenerateData = {
   body: {

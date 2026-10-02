@@ -129,16 +129,16 @@ function nextOrAbort<T>({
   return new Promise((resolve, reject) => {
     const onAbort = () => resolve("aborted");
     signal.addEventListener("abort", onAbort, { once: true });
-    iterator.next().then(
-      (result) => {
+    iterator
+      .next()
+      .then((result) => {
         signal.removeEventListener("abort", onAbort);
         resolve(result);
-      },
-      (error: unknown) => {
+      })
+      .catch((error: unknown) => {
         signal.removeEventListener("abort", onAbort);
         reject(error);
-      }
-    );
+      });
   });
 }
 

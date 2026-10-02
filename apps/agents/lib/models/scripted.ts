@@ -10,7 +10,12 @@ const resultOf = ({
 }: {
   request: MockModelRequest;
   name: string;
-}) => [...request.toolResults].reverse().find((result) => result.name === name);
+}) => {
+  for (let i = request.toolResults.length - 1; i >= 0; i -= 1) {
+    const result = request.toolResults[i];
+    if (result?.name === name) return result;
+  }
+};
 
 const outputOf = ({ value }: { value: unknown }): Output =>
   typeof value === "object" && value !== null ? (value as Output) : {};

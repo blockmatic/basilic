@@ -53,7 +53,7 @@ test("formatLocalUrlBanner lists every service", () => {
   const banner = formatLocalUrlBanner();
   assert.match(banner, /https:\/\/basilic\.localhost/);
   assert.match(banner, /https:\/\/api\.basilic\.localhost/);
-  assert.match(banner, /\/eve\/command/);
+  assert.match(banner, /\/eve\/operator/);
   assert.doesNotMatch(banner, /chat\.basilic/);
   assert.match(banner, /dev:app/);
 });
@@ -70,8 +70,9 @@ test("localDevChildEnv exports sibling URLs for Turbo children", () => {
   assert.equal(env.NEXT_PUBLIC_APP_URL, "https://fix-ui.basilic.localhost");
   assert.equal(env.NEXT_PUBLIC_API_URL, "https://fix-ui.api.basilic.localhost");
   assert.equal(env.WEB_APP_URL, "https://fix-ui.basilic.localhost");
+  assert.equal(env.EVE_AGENTS_URL, canonicalLocalAppUrls.agents);
   assert.equal(
     env.EVE_COMMAND_URL,
-    eveAgentUrl({ id: "command", origin: canonicalLocalAppUrls.agents })
+    eveAgentUrl({ id: "operator", origin: canonicalLocalAppUrls.agents })
   );
 });

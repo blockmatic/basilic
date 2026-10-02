@@ -8,6 +8,11 @@
       "types": "./src/index.ts",
       "source": "./src/index.ts",
       "import": "./src/index.ts"
+    },
+    "./agents": {
+      "types": "./src/agents/index.ts",
+      "source": "./src/agents/index.ts",
+      "import": "./src/agents/index.ts"
     }
   },
   "scripts": {

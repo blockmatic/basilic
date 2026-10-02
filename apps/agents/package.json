@@ -12,9 +12,9 @@
     "dev:app": "node scripts/dev-workspace.mjs",
     "eve:build": "eve build",
     "eve:dev": "pnpm run dev",
-    "eve:dev:command:app": "eve dev --agent command --no-ui",
+    "eve:dev:operator:app": "eve dev --agent operator --no-ui",
     "eve:start": "eve start --port 3004",
-    "eve:eval": "eve eval --agent command",
+    "eve:eval": "eve eval --agent operator",
     "test": "vitest run && node --test scripts/*.test.mjs",
     "test:unit": "vitest run && node --test scripts/*.test.mjs"
   },

@@ -11,6 +11,7 @@ export const defaultE2eEnv = {
   ALLOW_TEST: "true",
   COINS_RATE_LIMIT_MAX: "10000",
   COINS_USE_FIXTURE: "true",
+  EVE_AGENTS_URL: "http://127.0.0.1:3004",
   EVE_COMMAND_URL: "http://127.0.0.1:3004",
   NODE_ENV: "test",
   PGLITE: "true",

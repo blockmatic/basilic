@@ -167,7 +167,7 @@ export const operationMeta = {
   },
   "getAgentById": {
     "bodyParams": [],
-    "description": "Get one product eve agent by id. Session required. An API key satisfies Fastify session auth. Eve itself accepts only an access JWT.",
+    "description": "Get one public eve agent by id. Session required. An API key satisfies Fastify session auth.",
     "pathParams": [
       {
         "name": "agentId"
@@ -175,9 +175,19 @@ export const operationMeta = {
     ],
     "summary": "Get agent"
   },
+  "createAgentToken": {
+    "bodyParams": [],
+    "description": "Exchange an access JWT or API key for a short-lived eve bearer bound to one public agent. The token has typ=agent, the agent audience, and no refresh token. Open the eve session and attach its stream before it expires. eve rejects a raw bask_ key.",
+    "pathParams": [
+      {
+        "name": "agentId"
+      }
+    ],
+    "summary": "Create agent token"
+  },
   "listAgents": {
     "bodyParams": [],
-    "description": "List product eve agents. Public host discovery. Endpoints are absolute eve origins. An API key can call this route when a session is not required. A bask_ key is not an eve access JWT.",
+    "description": "List public eve agents. No auth. Endpoints are absolute eve origins. A bask_ key is not an eve access JWT.",
     "pathParams": [],
     "summary": "List agents"
   },
@@ -350,7 +360,16 @@ export const commandSpecs = [
     "operationId": "getAgentById",
     "path": [
       "agents",
-      "agent-id"
+      "agent-id",
+      "id"
+    ]
+  },
+  {
+    "operationId": "createAgentToken",
+    "path": [
+      "agents",
+      "agent-id",
+      "token"
     ]
   },
   {

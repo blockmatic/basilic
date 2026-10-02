@@ -19,3 +19,12 @@ export const RateLimitResponseSchema = Type.Object({
   retryAfter: Type.Integer(),
   ...catalogProblemFields,
 });
+
+export const AgentProblemSchema = Type.Object({
+  code: Type.String(),
+  message: Type.String(),
+  resolution: Type.Optional(Type.String()),
+  retryable: Type.Boolean(),
+  traceId: Type.Optional(Type.String()),
+  ...catalogProblemFields,
+});
