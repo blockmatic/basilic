@@ -1,0 +1,28 @@
+---
+title: ADR 017 — Public agent registry
+description: Discovery is the primitive. operator and ask are public eve agents; system and account are private specialists of operator. Credentials become per-agent tokens; MCP is a thin API-key surface.
+---
+
+## Status
+
+Accepted. Builds on [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Amends [ADR 009](/docs/adrs/009-api-architecture): the API now serves an MCP endpoint for public agents, still not a conversion of OpenAPI into tools.
+
+## Context
+
+Basilic had one eve member holding every tool. The web mapped prompts to views locally and never called eve. API keys authenticated Fastify but could not open an eve session, so scripts and AI clients had no way to reach an agent. A single global ingress that also owned conversation would mix orchestration with a different job.
+
+## Decision
+
+- `GET /agents` lists public agents. Base ships `operator` (orchestrates specialists and commits Web view state) and `ask` (conversation, no tools). Callers pick an id; there is no LLM router between public agents. The web product labels them **Agent** and **Ask**.
+- Private specialists live under the agent that orchestrates them. `operator` delegates to `system` and `account` with eve subagents through blocking workflow tools (`consult_system`, `consult_account`), self-contained briefs, and a JSON output schema. Specialists are not in the catalog and do not delegate. A specialist exists only when it creates a real boundary in responsibility, context, tools, authorization, or independent evaluation.
+- `POST /agents/{agentId}/token` exchanges an access JWT or API key for a 120-second agent JWT (`typ=agent`, a separate audience, `agent=<id>`, `akid` for keys). Each eve member accepts only tokens minted for its id and checks that the key is still active. eve rejects raw API keys. The browser keeps sending its access JWT.
+- `@repo/core/agents` is the software client (`list`, `get`, `invoke`, `stream` with cancel and timeout). The CLI and the MCP server use it.
+- `/mcp` on Fastify is Streamable HTTP with `agents_list`, `agents_get`, and `agent_invoke`, authenticated by the same API key. No OAuth, no dynamic client registration, no eve `mcpChannel`.
+- Agent errors extend `problem+json` with `resolution`, `retryable`, and `traceId`.
+- No A2A Agent Card: a card's `url` must be an A2A task endpoint, and Basilic has none. The catalog-to-card mapping is documented on [Agents](/docs/architecture/agents#standards).
+
+## Consequences
+
+Adding a public agent means a new eve member, a catalog record, and an `eveAgentIds` entry; `scripts/agents-parity.test.mjs` keeps them aligned. Delegation is not authorization: specialists run under the caller's principal. Evals use scripted `mockModel` routers, so they run without model credentials, and live-model quality is not a CI gate. Channels, more public agents, a dispatcher for ambiguous ingress, an A2A server, memory, and API-key scopes stay out of the starter.
+
+Details: [Agents](/docs/architecture/agents), [eve](/docs/architecture/eve).

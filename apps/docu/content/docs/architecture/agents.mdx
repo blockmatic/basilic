@@ -1,0 +1,119 @@
+---
+title: "Agents"
+description: "Public agent registry: discover operator and ask with GET /agents, exchange a credential for an agent token, and invoke from web, Core, CLI, or MCP."
+---
+
+Discovery is the primitive. `GET /agents` lists the public agents, and the caller picks an id. Basilic ships two: `operator` orchestrates application requests and commits Web view state, and `ask` answers in conversation. The web product surfaces are **Agent** (home, eve id `operator`) and **Ask** (`/ask`, eve id `ask`). There is no LLM dispatcher between public agents; the web tab, CLI, SDK, or MCP client already knows which id it wants.
+
+```text
+PUBLIC
+├── operator         orchestrates; consult_* + set_view
+│   ├── system       private specialist
+│   └── account      private specialist
+└── ask              conversation; no tools, no specialists
+```
+
+Runtime and hosting are on [eve](/docs/architecture/eve). The decision record is [ADR 017](/docs/adrs/017-public-agent-registry).
+
+## Public and private agents
+
+Public agents are the only ids in `GET /agents`, `POST /agents/{agentId}/token`, `@repo/core/agents`, the CLI, and MCP. Each public agent is an eve member at `apps/agents/agents/<id>/agent/` with its own mount (`/eve/operator`, `/eve/ask`).
+
+Private specialists live under the agent that orchestrates them, at `agents/operator/agent/subagents/<id>/`. They set `tool: false`, so the model reaches them only through a blocking workflow tool (`consult_system`, `consult_account`) that sends a short self-contained brief and a JSON output schema (`status`, `summary`, optional `data`). Specialists do not delegate, and `operator` disables the root-copy `agent` tool. `GET /agents/system` returns `404`.
+
+Add a private specialist only when it creates a real boundary in responsibility, context, tools, authorization, or independent evaluation. Do not add specialists for symmetry.
+
+Delegation is not authorization. A specialist runs under the caller's eve principal. `account` reads the signed-in user from that principal, never from the brief, and returns `status: "required"` for anonymous callers.
+
+## Catalog record
+
+Fastify builds every record from one function (`agentCatalog` in `apps/api/src/lib/agents/registry.ts`). `EVE_AGENTS_URL` on the API is the eve origin; the record appends `/eve/<id>`.
+
+| Field | `operator` | `ask` |
+| --- | --- | --- |
+| `name` | Operator | Ask |
+| `outputMode` | `genui` | `conversation` |
+| `capabilities` | `status`, `account` | `conversation` |
+| `delegatesTo` | `system`, `account` | — |
+| `endpoint` | `<EVE_AGENTS_URL>/eve/operator` | `<EVE_AGENTS_URL>/eve/ask` |
+
+Both records also carry `inputMode: "text"`, `transport: "eve"`, `streaming: true`, `auth: "optional"`, `visibility: "public"`, `version`, and a `docs` link to this page.
+
+## Invoke an agent
+
+1. Discover: `GET /agents` (no auth) or `GET /agents/{agentId}` (access JWT or API key).
+2. Exchange: `POST /agents/{agentId}/token` with an access JWT or `X-API-Key: bask_…`. The response is `{ agentId, endpoint, token, expiresIn }`.
+3. Open an eve session at `endpoint` with `Authorization: Bearer <token>` and attach the stream before the token expires.
+
+The agent token is an HS256 JWT with `typ: "agent"`, audience `AGENT_JWT_AUDIENCE` (must differ from the browser `JWT_AUDIENCE`), `agent: <id>`, `sub: <userId>`, and `akid` when an API key minted it. It lives `AGENT_TOKEN_TTL_SECONDS` (default 120, max 600) and has no refresh token. Each eve member verifies that `agent` matches its own id and that the API key still exists, so a revoked key stops new sessions and an `ask` token cannot open `operator`. eve rejects a raw `bask_` key with `api_key_not_accepted`.
+
+The browser skips the exchange. The web app sends its Fastify access JWT (`typ: "access"`) to eve directly.
+
+## Clients
+
+- **Web:** `/` (Agent) sends turns to `operator` with `useEveAgent` and applies the committed `set_view` output (`q`, `surface`) to the URL; the status and account cards render from the API. `/ask` sends turns to `ask` and renders text only.
+- **Core:** `@repo/core/agents` exports `createAgentsClient({ baseUrl, getCredential })` with `list`, `get`, `invoke`, and `stream`. `stream` yields `text`, `delegation`, `action`, then one `result` or `error`; it supports `signal` and `timeoutMs` (default 120000) and cancels the eve turn on abort.
+- **CLI:** `basilic agents list`, `basilic agents describe <agentId>`, and `basilic agents invoke <agentId> <message>` with `--json`, `--stream --jsonl`, and `--timeout <ms>`. See [CLI](/docs/development/cli).
+- **MCP:** Streamable HTTP at `POST /mcp` on the API with tools `agents_list`, `agents_get`, and `agent_invoke`. Send the API key as `X-API-Key` or `Authorization: Bearer`. The server runs the same Core client through Fastify, so it lists only public agents and applies the same token exchange. There is no MCP OAuth or dynamic client registration.
+
+```ts
+import { createAgentsClient } from "@repo/core/agents";
+
+const agents = createAgentsClient({
+  baseUrl: "https://api.basilic.localhost",
+  getCredential: () => process.env.BASILIC_API_KEY,
+});
+
+const { text, actions } = await agents.invoke({
+  agentId: "operator",
+  message: "Show application status",
+});
+```
+
+## Errors
+
+Agent routes and clients use `problem+json` plus `resolution`, `retryable`, and `traceId` (the request id). API codes are `UNAUTHORIZED` and `NOT_FOUND`. eve codes are `invalid_agent_token` and `api_key_not_accepted`. The Core client adds `AGENT_UNAVAILABLE` (eve unreachable, retryable), `AGENT_REJECTED` (eve returned an HTTP error), `TIMEOUT`, `ABORTED`, and `CANCELLED`. MCP returns the same problem as `structuredContent.error` with `isError: true`.
+
+## Add an agent
+
+- **Public agent:** create `apps/agents/agents/<id>/agent/` with `agent.ts`, `instructions.md`, and `channels/eve.ts` calling `createBasilicEveChannel({ agentId: "<id>" })`. Add the id to `publicAgentIds`, `AgentRecordSchema`, and `publicAgents` in the API registry, and to `eveAgentIds` in `apps/agents/scripts/dev-workspace.mjs`. `scripts/agents-parity.test.mjs` fails until the catalog, `eveAgentIds`, and member directories agree.
+- **Private specialist:** create `subagents/<id>/` under the orchestrating member with `tool: false`, narrow tools, and instructions that return the output schema. Add a `consult_<id>` workflow tool on the parent. Add `mockModel` evals for the delegation.
+
+## Standards
+
+- eve subagents: internal delegation inside one public agent.
+- `GET /agents`: Basilic public discovery.
+- `@repo/core` and the CLI: software clients.
+- MCP: AI clients discovering and invoking public agents.
+- OpenAPI: application HTTP capabilities.
+- eve channels and Chat SDK: future human conversational ingress.
+- A2A: later interoperability with independent external agents. Basilic does not depend on it.
+
+Basilic does not publish an A2A Agent Card. A card's `url` must be an A2A task endpoint, and Basilic has none, so a card would over-claim. The catalog maps onto a card as follows when an A2A server exists:
+
+| A2A Agent Card | Basilic catalog |
+| --- | --- |
+| `name`, `description`, `version` | `name`, `description`, `version` |
+| `skills[]` | `capabilities` |
+| `defaultInputModes` / `defaultOutputModes` | `inputMode` / `outputMode` |
+| `capabilities.streaming` | `streaming` |
+| `securitySchemes` | Bearer access JWT or API key, exchanged at `POST /agents/{agentId}/token` |
+| `url` | none (the eve `endpoint` speaks the eve session protocol, not A2A) |
+
+## Channels
+
+Slack, WhatsApp, and other channels are not installed. A channel adapter maps a trusted external identity to a Basilic user before any model runs, then calls a selected public agent, usually `ask`:
+
+```text
+channel → trusted identity mapping → selected public agent → capabilities
+```
+
+`ask` has no Generative UI dependency, which keeps that path open. Base has no channel-specific business logic.
+
+## Related
+
+- [eve](/docs/architecture/eve) — runtime, hosts, models, identity
+- [API Architecture](/docs/architecture/api) — discovery, problem format, MCP route
+- [Authentication](/docs/architecture/authentication) — access JWT and API keys
+- [CLI](/docs/development/cli) — `basilic agents`
+- [ADR 017: Public agent registry](/docs/adrs/017-public-agent-registry)
