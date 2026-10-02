@@ -115,7 +115,7 @@ See [Authentication Architecture](../docu/content/docs/architecture/authenticati
 
 ## Testing
 
-Playwright E2E (`e2e/**/*.spec.ts`) plus compose Vitest beside `lib/genui`. See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx).
+Playwright E2E (`e2e/**/*.spec.ts`) plus Vitest beside `lib/genui` (catalog validation and spec helpers). The command GenUI catalog lives in `lib/genui/catalog` with renderers in `components/genui/registry`. See [E2E Testing](../docu/content/docs/testing/e2e-testing.mdx).
 
 ## Related Documentation
 

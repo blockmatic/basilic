@@ -10,8 +10,8 @@ import {
 import { InputGroup, InputGroupAddon } from "@repo/ui/components/input-group";
 import { cn } from "@repo/ui/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
-import { CheckIcon, SearchIcon } from "lucide-react";
-import type * as React from "react";
+import { SearchIcon, CheckIcon } from "lucide-react";
+import * as React from "react";
 
 function Command({
   className,
@@ -56,7 +56,7 @@ function CommandDialog({
         )}
         showCloseButton={showCloseButton}
       >
-        <Command>{children}</Command>
+        {children}
       </DialogContent>
     </Dialog>
   );
@@ -68,7 +68,7 @@ function CommandInput({
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="border-input/30 bg-input/30 focus-within:border-ring focus-within:ring-ring/50 h-8! rounded-lg! shadow-none! focus-within:ring-[3px] *:data-[slot=input-group-addon]:pl-2!">
+      <InputGroup className="border-input/30 bg-input/30 h-8! rounded-lg! shadow-none! *:data-[slot=input-group-addon]:pl-2!">
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(
@@ -182,11 +182,11 @@ function CommandShortcut({
 export {
   Command,
   CommandDialog,
+  CommandInput,
+  CommandList,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
-  CommandList,
-  CommandSeparator,
   CommandShortcut,
+  CommandSeparator,
 };

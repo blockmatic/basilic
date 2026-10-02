@@ -16,6 +16,7 @@ export function statusSpec({ status }: { status: ApplicationStatus }): Spec {
   return {
     elements: {
       status: {
+        children: [],
         props: {
           database: status.database,
           name: status.name,
@@ -32,6 +33,7 @@ export function accountSpec({ account }: { account: AccountCard }): Spec {
   return {
     elements: {
       account: {
+        children: [],
         props: {
           email: account.email,
           image: account.image,

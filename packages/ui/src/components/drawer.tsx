@@ -4,12 +4,12 @@ import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import { cn } from "@repo/ui/lib/utils";
 import * as React from "react";
 
-interface DrawerContextProps {
+type DrawerContextProps = {
   hasSnapPoints: boolean;
   modal: DrawerPrimitive.Root.Props["modal"];
   showSwipeHandle: boolean;
   swipeDirection: NonNullable<DrawerPrimitive.Root.Props["swipeDirection"]>;
-}
+};
 
 const DrawerContext = React.createContext<DrawerContextProps | null>(null);
 
@@ -190,7 +190,7 @@ function DrawerTitle({ className, ...props }: DrawerPrimitive.Title.Props) {
   return (
     <DrawerPrimitive.Title
       data-slot="drawer-title"
-      className={cn("cn-font-heading text-foreground font-medium", className)}
+      className={cn("text-foreground font-medium", className)}
       {...props}
     />
   );
@@ -211,14 +211,14 @@ function DrawerDescription({
 
 export {
   Drawer,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerSwipeHandle,
+  DrawerTrigger,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
-  DrawerOverlay,
-  DrawerPortal,
-  DrawerSwipeHandle,
+  DrawerFooter,
   DrawerTitle,
-  DrawerTrigger,
+  DrawerDescription,
 };

@@ -2,8 +2,8 @@
 
 import { ContextMenu as ContextMenuPrimitive } from "@base-ui/react/context-menu";
 import { cn } from "@repo/ui/lib/utils";
-import { CheckIcon, ChevronRightIcon } from "lucide-react";
-import type * as React from "react";
+import { ChevronRightIcon, CheckIcon } from "lucide-react";
+import * as React from "react";
 
 function ContextMenu({ ...props }: ContextMenuPrimitive.Root.Props) {
   return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />;
@@ -254,18 +254,18 @@ function ContextMenuShortcut({
 
 export {
   ContextMenu,
-  ContextMenuCheckboxItem,
+  ContextMenuTrigger,
   ContextMenuContent,
-  ContextMenuGroup,
   ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuPortal,
-  ContextMenuRadioGroup,
+  ContextMenuCheckboxItem,
   ContextMenuRadioItem,
+  ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuShortcut,
+  ContextMenuGroup,
+  ContextMenuPortal,
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
-  ContextMenuTrigger,
+  ContextMenuRadioGroup,
 };

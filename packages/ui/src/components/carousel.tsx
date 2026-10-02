@@ -2,8 +2,9 @@
 
 import { Button } from "@repo/ui/components/button";
 import { cn } from "@repo/ui/lib/utils";
-import useEmblaCarousel from "embla-carousel-react";
-import type { UseEmblaCarouselType } from "embla-carousel-react";
+import useEmblaCarousel, {
+  type UseEmblaCarouselType,
+} from "embla-carousel-react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import * as React from "react";
 
@@ -12,12 +13,12 @@ type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
 type CarouselOptions = UseCarouselParameters[0];
 type CarouselPlugin = UseCarouselParameters[1];
 
-interface CarouselProps {
+type CarouselProps = {
   opts?: CarouselOptions;
   plugins?: CarouselPlugin;
   orientation?: "horizontal" | "vertical";
   setApi?: (api: CarouselApi) => void;
-}
+};
 
 type CarouselContextProps = {
   carouselRef: ReturnType<typeof useEmblaCarousel>[0];
@@ -60,9 +61,7 @@ function Carousel({
   const [canScrollNext, setCanScrollNext] = React.useState(false);
 
   const onSelect = React.useCallback((api: CarouselApi) => {
-    if (!api) {
-      return;
-    }
+    if (!api) return;
     setCanScrollPrev(api.canScrollPrev());
     setCanScrollNext(api.canScrollNext());
   }, []);
@@ -89,40 +88,33 @@ function Carousel({
   );
 
   React.useEffect(() => {
-    if (!api || !setApi) {
-      return;
-    }
+    if (!api || !setApi) return;
     setApi(api);
   }, [api, setApi]);
 
   React.useEffect(() => {
-    if (!api) {
-      return;
-    }
-    // Subscribe to embla; sync selected/canScroll flags after attach.
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- embla API attach
+    if (!api) return;
     onSelect(api);
     api.on("reInit", onSelect);
     api.on("select", onSelect);
 
     return () => {
-      api.off("reInit", onSelect);
-      api.off("select", onSelect);
+      api?.off("select", onSelect);
     };
   }, [api, onSelect]);
 
   return (
     <CarouselContext.Provider
       value={{
-        api: api,
-        canScrollNext,
-        canScrollPrev,
         carouselRef,
+        api: api,
         opts,
         orientation:
           orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
-        scrollNext,
         scrollPrev,
+        scrollNext,
+        canScrollPrev,
+        canScrollNext,
       }}
     >
       <div
@@ -202,7 +194,7 @@ function CarouselPrevious({
       onClick={scrollPrev}
       {...props}
     >
-      <ChevronLeftIcon className="cn-rtl-flip" />
+      <ChevronLeftIcon />
       <span className="sr-only">Previous slide</span>
     </Button>
   );
@@ -232,18 +224,18 @@ function CarouselNext({
       onClick={scrollNext}
       {...props}
     >
-      <ChevronRightIcon className="cn-rtl-flip" />
+      <ChevronRightIcon />
       <span className="sr-only">Next slide</span>
     </Button>
   );
 }
 
 export {
-  Carousel,
   type CarouselApi,
+  Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
   CarouselPrevious,
+  CarouselNext,
   useCarousel,
 };
