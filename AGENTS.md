@@ -92,7 +92,7 @@ Search first and keep reads targeted. Inspect the implementation, configuration,
 - Inspect PR checks, workflow runs, logs, artifacts, and reruns with **`gh`** (authenticated for the repo remote).
 - Common commands: `gh pr checks`, `gh run list --branch "$(git branch --show-current)"`, `gh run view <id> --log-failed`, `gh run watch <id>`, `gh run download <id>`.
 - Never use GitHub MCP for Actions — logs, artifacts, and reruns belong to the CLI.
-- `/w-gha` follows this rule; do not add `gh run watch` to `/w-push` or `/w-ship`.
+- `/w-gha` and `/w-pr-loop` follow this rule. Waiting on checks belongs to `/w-pr-loop`; do not add `gh run watch` to `/w-push` or `/w-ship`.
 
 ## File-scoped rules
 

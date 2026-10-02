@@ -37,23 +37,24 @@ In Cursor chat, type `/` then the skill name.
 
 Recommended invocations are Basilic `/w-*`.
 
-| Task                             | Playbook                            |
-| -------------------------------- | ----------------------------------- |
-| Blocking gaps                    | `/w-clarify`                        |
-| Stress-test a plan               | `/w-grill`                          |
-| Fog bigger than one session      | `/w-wayfinder`                      |
-| Ordered implementation plan      | `/w-plan` (runs `/w-council` first) |
-| Explore a codebase               | `/w-council`                        |
-| Implement without commit         | `/w-build`                          |
-| Red-green TDD                    | `/w-tdd`                            |
-| Review a change                  | `/w-review`                         |
-| Hard bug                         | `/w-debug`                          |
-| Explore UI variants              | `/w-v0` / `/w-ui`                   |
-| Commit                           | `/w-commit`                         |
-| Push                             | `/w-push`                           |
-| Pull request                     | `/w-pr`                             |
-| Implement through a described PR | `/w-ship`                           |
-| Reflect                          | `/w-retro`                          |
+| Task | Playbook |
+| --- | --- |
+| Blocking gaps | `/w-clarify` |
+| Stress-test a plan | `/w-grill` |
+| Fog bigger than one session | `/w-wayfinder` |
+| Ordered implementation plan | `/w-plan` (runs `/w-council` first) |
+| Explore a codebase | `/w-council` |
+| Implement without commit | `/w-build` |
+| Red-green TDD | `/w-tdd` |
+| Review a change | `/w-review` |
+| Hard bug | `/w-debug` |
+| Explore UI variants | `/w-v0` / `/w-ui` |
+| Commit | `/w-commit` |
+| Push | `/w-push` |
+| Pull request | `/w-pr` |
+| Implement through a described PR | `/w-ship` |
+| Fix an open PR until CI and CodeRabbit pass | `/w-pr-loop` |
+| Reflect | `/w-retro` |
 
 `/w-build` ends with verified local changes and does not commit. `/w-ship` requests implementation, full validation, commit, push, and a described PR. No playbook implies merge or deployment. Specialists include `/w-council`, `/w-diagram`, `/w-docs`, `/w-git-repair`, and `/w-coderabbit`. Git, TDD, lint, generate, and publish stay single-writer.
 
@@ -85,7 +86,7 @@ Compose skills. This is not a router.
 1. **Shape** — `/w-grill` or `/w-clarify`. Use `/w-wayfinder` when the thread is fog bigger than one session. `/w-plan` explores via `/w-council` first. Planning alone does not create a branch. Resolve product facts from matching MDX/ADRs, README, and `DESIGN.md`.
 2. **Implement** — `/w-build` or `/w-tdd`. `/w-build` leaves verified local changes **without** a commit.
 3. **Review** — `/w-review`. Reviews stay read-only unless fixes are requested.
-4. **Publish when requested** — `/w-commit`, `/w-push`, or `/w-pr`. `/w-ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/w-commit` owns Conventional Commit format. `/w-ship` requires `pnpm qa`. `/w-yolo` does not; it fixes failing or requested local checks without publish.
+4. **Publish when requested** — `/w-commit`, `/w-push`, or `/w-pr`. `/w-ship` follows installed `git-publish.md`: dirty tree stops (no stash); `/w-commit` owns Conventional Commit format. `/w-ship` requires `pnpm qa`. `/w-yolo` does not; it fixes failing or requested local checks without publish. After a PR exists, `/w-pr-loop` polls CI and CodeRabbit with `gh`, fixes, and pushes until green; it never merges.
 5. **Learn** — `/w-retro` identifies concrete improvements; changed conventions belong in existing durable documentation.
 
 Lock-installed skills (`nextjs`, `ai-sdk`, `core`, `react`, `eve`, `typesafe-ai`, …) load when relevant; stack gaps are covered by glob rules. Playbooks do not add another backlog or quality policy.
