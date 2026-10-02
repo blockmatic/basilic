@@ -18,7 +18,7 @@ Local HTTP apps use Portless named HTTPS hosts. Do not discover bind ports.
 - API: `https://api.basilic.localhost`
 - Docs: `https://docu.basilic.localhost`
 - Email preview: `https://email.basilic.localhost`
-- Eve: `https://agents.basilic.localhost` (`/eve/operator`, `/eve/ask`)
+- Eve: `https://agents.basilic.localhost` (`/eve/command`)
 
 Linked git worktrees prefix the branch (`https://fix-ui.api.basilic.localhost`). Escape hatch: `pnpm --filter <pkg> dev:app` or `PORTLESS=0`. Postgres stays on `127.0.0.1:54422`. Playwright/CI spawn `localhost:3000` / `:3001` (no Portless; eve is not in the Playwright DAG).
 
