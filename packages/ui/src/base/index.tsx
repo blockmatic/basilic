@@ -7,7 +7,12 @@ export * as Avatar from "@base-ui/react/avatar";
 export * as Button from "@base-ui/react/button";
 export * as Checkbox from "@base-ui/react/checkbox";
 export * as Collapsible from "@base-ui/react/collapsible";
+export * as Combobox from "@base-ui/react/combobox";
 export * as ContextMenu from "@base-ui/react/context-menu";
+export {
+  DirectionProvider,
+  useDirection,
+} from "@base-ui/react/direction-provider";
 export * as Dialog from "@base-ui/react/dialog";
 export * as Drawer from "@base-ui/react/drawer";
 export * as Menu from "@base-ui/react/menu";
@@ -25,6 +30,7 @@ export * as Separator from "@base-ui/react/separator";
 export * as Slider from "@base-ui/react/slider";
 export * as Switch from "@base-ui/react/switch";
 export * as Tabs from "@base-ui/react/tabs";
+export * as Toast from "@base-ui/react/toast";
 export * as Toggle from "@base-ui/react/toggle";
 export * as ToggleGroup from "@base-ui/react/toggle-group";
 export * as Tooltip from "@base-ui/react/tooltip";

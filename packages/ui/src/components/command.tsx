@@ -10,8 +10,8 @@ import {
 import { InputGroup, InputGroupAddon } from "@repo/ui/components/input-group";
 import { cn } from "@repo/ui/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
-import { CheckIcon, SearchIcon } from "lucide-react";
-import type * as React from "react";
+import { SearchIcon, CheckIcon } from "lucide-react";
+import * as React from "react";
 
 function Command({
   className,
@@ -182,11 +182,11 @@ function CommandShortcut({
 export {
   Command,
   CommandDialog,
+  CommandInput,
+  CommandList,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
-  CommandList,
-  CommandSeparator,
   CommandShortcut,
+  CommandSeparator,
 };

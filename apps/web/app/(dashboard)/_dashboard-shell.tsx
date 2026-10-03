@@ -44,7 +44,6 @@ export function DashboardShell({
         </div>
       </header>
       <ScrollArea
-        orientation="vertical"
         className="min-h-0 min-w-0 flex-1"
         style={{ height: "calc(100dvh - 3.5rem)" }}
       >
