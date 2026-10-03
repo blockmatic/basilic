@@ -7,3 +7,8 @@ reason = "False positive on 0.0.0-next prerelease required for TypeScript 7"
 [[IgnoredVulns]]
 id = "GHSA-528h-pc64-c93x"
 reason = "Transitive stream-json via jayson; fix is 3.5.0 (breaking), no 1.x patch"
+
+# node-forge 1.4.0 via Expo CLI; GHSA-86w9 has no published 1.4.1 on npm
+[[IgnoredVulns]]
+id = "GHSA-86w9-cpqp-85rv"
+reason = "Transitive node-forge 1.4.0 via Expo 57 CLI; npm latest is still 1.4.0"

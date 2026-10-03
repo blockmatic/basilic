@@ -22,14 +22,14 @@
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "clsx": "^2.1.1",
-    "expo": "~57.0.24",
-    "expo-constants": "~57.0.19",
+    "expo": "~57.0.26",
+    "expo-constants": "~57.0.20",
     "expo-device": "~57.0.2",
     "expo-font": "~57.0.4",
     "expo-glass-effect": "~57.0.3",
     "expo-image": "~57.0.5",
     "expo-linking": "~57.0.10",
-    "expo-router": "~57.0.22",
+    "expo-router": "~57.0.24",
     "expo-secure-store": "~57.0.4",
     "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",
@@ -63,5 +63,21 @@
   },
   "engines": {
     "node": "24.x"
+  },
+  "expo": {
+    "install": {
+      "exclude": [
+        "react",
+        "react-dom",
+        "react-native",
+        "react-native-gesture-handler",
+        "react-native-reanimated",
+        "react-native-safe-area-context",
+        "react-native-screens",
+        "react-native-worklets",
+        "@types/react",
+        "typescript"
+      ]
+    }
   }
 }
