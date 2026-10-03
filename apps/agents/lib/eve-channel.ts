@@ -7,7 +7,7 @@ import {
 } from "eve/channels/auth";
 import { defaultEveAuth, eveChannel } from "eve/channels/eve";
 
-import { basilicAccessJwt } from "./auth.js";
+import { basilicAccessJwt, basilicAgentJwt } from "./auth.js";
 import { channelCors } from "./cors.js";
 import { env } from "./env.js";
 import { inspectSessionPayload } from "./ingress.js";
@@ -72,10 +72,24 @@ async function basilicAnonymousWithLimit(request: Request) {
   };
 }
 
-export function createBasilicEveChannel() {
+async function basilicAgentJwtWithLimit({
+  agentId,
+  request,
+}: {
+  agentId: string;
+  request: Request;
+}) {
+  const auth = await basilicAgentJwt({ agentId })(request);
+  if (!auth) return null;
+  consumeKeyedLimit({ hits: hitsByPrincipal, key: auth.principalId });
+  return auth;
+}
+
+export function createBasilicEveChannel({ agentId }: { agentId: string }) {
   return eveChannel({
     auth: [
       basilicAccessJwtWithLimit,
+      (request) => basilicAgentJwtWithLimit({ agentId, request }),
       basilicAnonymousWithLimit,
       vercelOidc(),
       localDev(),

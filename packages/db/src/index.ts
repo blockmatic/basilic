@@ -13,3 +13,4 @@ export {
 export { createPgPool, pgPoolConfig } from "./pg-pool.js";
 export { probeDatabase } from "./probe.js";
 export { getValidSession } from "./sessions.js";
+export { isApiKeyActive } from "./api-keys.js";

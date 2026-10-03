@@ -6,6 +6,7 @@ import { Writable } from "node:stream";
 import { createClient } from "@repo/core";
 import { Command } from "commander";
 
+import { registerAgentCommands } from "./agents.js";
 import {
   loadConfig,
   resolveApiKey,
@@ -219,5 +220,11 @@ for (const spec of commandSpecs) {
     parent = cmd;
   }
 }
+
+registerAgentCommands({
+  getApiKey: ensureApiKey,
+  getBaseUrl: resolveBaseUrl,
+  program,
+});
 
 program.parse();

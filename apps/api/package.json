@@ -42,6 +42,9 @@
     "@fastify/static": "^10.1.4",
     "@fastify/swagger": "^9.8.1",
     "@fastify/type-provider-typebox": "^6.1.0",
+    "@modelcontextprotocol/node": "2.1.0",
+    "@modelcontextprotocol/server": "2.2.0",
+    "@repo/core": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/email": "workspace:*",
     "@repo/error": "workspace:*",
@@ -66,6 +69,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
+    "@modelcontextprotocol/client": "2.2.0",
     "@playwright/test": "~1.63.0",
     "@types/node": "~26.6.2",
     "@types/pg": "^8.23.1",

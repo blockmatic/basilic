@@ -2,10 +2,8 @@
 import { spawn } from "node:child_process";
 import http from "node:http";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 
 const packageRoot = dirname(import.meta.dirname);
-const defaultCommandInternalPort = "3104";
 const hopByHop = new Set([
   "connection",
   "keep-alive",
@@ -41,7 +39,7 @@ export function stripHopByHopHeaders(headers) {
   return out;
 }
 
-export const eveAgentIds = ["command"];
+export const eveAgentIds = ["operator", "ask"];
 
 export function evePublicMount({ id }) {
   return `/eve/${id}`;
@@ -68,11 +66,12 @@ function proxyHeaders({ headers, host }) {
   return { ...stripHopByHopHeaders(headers), host };
 }
 
-export function createWorkspaceProxy({ commandOrigin }) {
-  const origins = { command: commandOrigin };
+const defaultInternalPorts = { ask: "3105", operator: "3104" };
+
+export function createWorkspaceProxy({ origins }) {
   return http.createServer((req, res) => {
     const mapped = mapPublicEvePath({ url: req.url ?? "/" });
-    if (!mapped) {
+    if (!mapped || !origins[mapped.id]) {
       res.writeHead(404);
       res.end();
       return;
@@ -142,14 +141,16 @@ function isMain() {
 }
 
 function main({ env = process.env } = {}) {
-  const commandPort =
-    env.EVE_COMMAND_INTERNAL_PORT ?? defaultCommandInternalPort;
   const listenPort = env.PORT ?? "3100";
-  const command = spawnEve({ agentId: "command", env, port: commandPort });
-  const children = [command];
-  const server = createWorkspaceProxy({
-    commandOrigin: `http://127.0.0.1:${commandPort}`,
-  });
+  const origins = {};
+  const children = [];
+  for (const id of eveAgentIds) {
+    const portKey = `EVE_${id.toUpperCase()}_INTERNAL_PORT`;
+    const port = env[portKey] ?? defaultInternalPorts[id];
+    children.push(spawnEve({ agentId: id, env, port }));
+    origins[id] = `http://127.0.0.1:${port}`;
+  }
+  const server = createWorkspaceProxy({ origins });
   let exitCode = 0;
   let stopping = false;
   const shutdown = createIdempotentShutdown(async () => {

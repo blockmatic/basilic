@@ -183,6 +183,13 @@ export const env = createEnv({
       .string()
       .default("api.yourapp.com")
       .transform((val) => val.split(",").map((aud) => aud.trim())),
+    AGENT_JWT_AUDIENCE: z.string().min(1).default("agents.yourapp.com"),
+    AGENT_TOKEN_TTL_SECONDS: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(600)
+      .default(120),
     RESEND_API_KEY: z.string().min(1).default("re_placeholder"),
     EMAIL_FROM: z.string().email().default("noreply@localhost"),
     EMAIL_FROM_NAME: z.string().default("App"),
@@ -201,6 +208,10 @@ export const env = createEnv({
       .default("Your App"),
     WEB_APP_URL: z.string().url().default(defaultWebAppUrl),
     DOCS_SITE_URL: z.string().url().default("https://basilic-docs.vercel.app"),
+    EVE_AGENTS_URL: z
+      .string()
+      .url()
+      .default("https://agents.basilic.localhost"),
     EVE_COMMAND_URL: z
       .string()
       .url()

@@ -35,7 +35,7 @@ export const localServices = [
     url: "https://email.basilic.localhost",
   },
   {
-    hint: "/eve/command",
+    hint: "/eve/operator",
     id: "agents",
     label: "Eve",
     name: "agents.basilic",
@@ -120,7 +120,8 @@ export function localDevChildEnv({
 } = {}) {
   return {
     ...env,
-    EVE_COMMAND_URL: eveAgentUrl({ origin: urls.agents, id: "command" }),
+    EVE_AGENTS_URL: urls.agents,
+    EVE_COMMAND_URL: eveAgentUrl({ origin: urls.agents, id: "operator" }),
     EXPO_PUBLIC_API_URL: urls.api,
     NEXT_PUBLIC_API_URL: urls.api,
     NEXT_PUBLIC_APP_URL: urls.web,

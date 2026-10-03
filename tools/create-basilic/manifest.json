@@ -69,6 +69,7 @@
     "knip.json",
     ".redocly.yaml",
     "osv-scanner.toml",
+    "patches/",
     "package.json",
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",

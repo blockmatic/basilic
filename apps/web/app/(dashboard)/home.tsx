@@ -2,14 +2,14 @@
 
 import { JSONUIProvider, Renderer } from "@json-render/react";
 import { useHealthCheck, useUser } from "@repo/react";
-import { Button } from "@repo/ui/components/button";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
-import { useState } from "react";
 
 import { AuthRequired } from "@/components/genui/auth-required";
+import { CommandComposer } from "@/components/genui/command-composer";
 import { commandRegistry } from "@/components/genui/registry";
 import { Welcome } from "@/components/welcome";
-import { commandFromPrompt, commandSurfaces } from "@/lib/command-url";
+import { commandSurfaces } from "@/lib/command-url";
+import { useAgentEndpoint } from "@/lib/eve/use-agent-endpoint";
 import { accountSpec, statusSpec } from "@/lib/genui/spec";
 
 const parsers = {
@@ -19,7 +19,7 @@ const parsers = {
 
 export function HomePage() {
   const [view, setView] = useQueryStates(parsers);
-  const [draft, setDraft] = useState(view.q);
+  const endpoint = useAgentEndpoint({ id: "operator" });
   const health = useHealthCheck();
   const user = useUser();
   const status = {
@@ -33,24 +33,14 @@ export function HomePage() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <Welcome name="Basilic" />
-      <form
-        className="flex gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const next = commandFromPrompt({ q: draft });
-          void setView(next);
-        }}
-      >
-        <input
-          aria-label="Command"
-          className="border-input bg-background min-h-11 flex-1 rounded-md border px-3"
-          data-testid="command-input"
-          onChange={(event) => setDraft(event.target.value)}
-          placeholder="Show application status"
-          value={draft}
-        />
-        <Button type="submit">Ask</Button>
-      </form>
+      <CommandComposer
+        host={endpoint.data}
+        initialDraft={view.q}
+        onView={(next) => void setView(next)}
+      />
+      {endpoint.error ? (
+        <p className="text-destructive text-sm">{endpoint.error.message}</p>
+      ) : null}
       <JSONUIProvider registry={commandRegistry}>
         {view.surface === "status" ? (
           <Renderer registry={commandRegistry} spec={statusSpec({ status })} />

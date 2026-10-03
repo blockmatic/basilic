@@ -17,6 +17,7 @@
     "013-shadcn-base-ui",
     "014-fastify-eve-vercel-runtime",
     "015-base-example-split",
-    "016-standalone-repos"
+    "016-standalone-repos",
+    "017-public-agent-registry"
   ]
 }
