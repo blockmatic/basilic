@@ -6,9 +6,9 @@ import * as RechartsPrimitive from "recharts";
 import type { TooltipValueType } from "recharts";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
-const THEMES = { light: "", dark: ".dark" } as const;
+const themes = { light: "", dark: ".dark" } as const;
 
-const INITIAL_DIMENSION = { width: 320, height: 200 } as const;
+const defaultInitialDimension = { width: 320, height: 200 } as const;
 type TooltipNameType = number | string;
 
 export type ChartConfig = Record<
@@ -18,7 +18,7 @@ export type ChartConfig = Record<
     icon?: React.ComponentType;
   } & (
     | { color?: string; theme?: never }
-    | { color?: never; theme: Record<keyof typeof THEMES, string> }
+    | { color?: never; theme: Record<keyof typeof themes, string> }
   )
 >;
 
@@ -43,7 +43,7 @@ function ChartContainer({
   className,
   children,
   config,
-  initialDimension = INITIAL_DIMENSION,
+  initialDimension = defaultInitialDimension,
   ...props
 }: React.ComponentProps<"div"> & {
   config: ChartConfig;
@@ -81,8 +81,9 @@ function ChartContainer({
 }
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+  // Keys become custom-property names in raw stylesheet text; skip anything that is not a plain identifier.
   const colorConfig = Object.entries(config).filter(
-    ([, config]) => config.theme ?? config.color
+    ([key, config]) => /^[\w-]+$/.test(key) && (config.theme ?? config.color)
   );
 
   if (!colorConfig.length) {
@@ -92,7 +93,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   return (
     <style
       dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
+        __html: Object.entries(themes)
           .map(
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {

@@ -1,13 +1,20 @@
 "use client";
 
 import { cn } from "@repo/ui/lib/utils";
-import * as React from "react";
+import type * as React from "react";
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({
+  className,
+  fluid,
+  ...props
+}: React.ComponentProps<"table"> & { fluid?: boolean }) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      className={cn(
+        "relative w-full",
+        fluid ? "overflow-hidden" : "overflow-x-auto"
+      )}
     >
       <table
         data-slot="table"
@@ -105,11 +112,11 @@ function TableCaption({
 
 export {
   Table,
-  TableHeader,
   TableBody,
+  TableCaption,
+  TableCell,
   TableFooter,
   TableHead,
+  TableHeader,
   TableRow,
-  TableCell,
-  TableCaption,
 };
