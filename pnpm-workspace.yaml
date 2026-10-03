@@ -73,3 +73,10 @@ overrides:
 minimumReleaseAgeExclude:
   - fumadocs-core@16.15.17
   - fumadocs-ui@16.15.17
+
+audit:
+  ignore:
+    # Expo CLI still vendors node-forge 1.4.0; npm has no 1.4.1
+    - GHSA-86w9-cpqp-85rv
+    # micromatch braces 3.0.3 is npm latest; no patched release
+    - GHSA-vfj7-8cjw-p6xm

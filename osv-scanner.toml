@@ -3,12 +3,12 @@
 id = "GHSA-hhx9-57xq-r5rw"
 reason = "False positive on 0.0.0-next prerelease required for TypeScript 7"
 
-# stream-json: jayson 4.x pins 1.9.1; patch is 3.5.0 (ESM breaking)
-[[IgnoredVulns]]
-id = "GHSA-528h-pc64-c93x"
-reason = "Transitive stream-json via jayson; fix is 3.5.0 (breaking), no 1.x patch"
-
-# node-forge: @expo/cli and @expo/code-signing-certificates need 1.x; 1.4.0 is the latest release
+# node-forge 1.4.0 via Expo CLI; GHSA-86w9 has no published 1.4.1 on npm
 [[IgnoredVulns]]
 id = "GHSA-86w9-cpqp-85rv"
-reason = "Transitive node-forge via Expo CLI tooling for apps/mobile; advisory covers <= 1.4.0 with no patched release"
+reason = "Transitive node-forge 1.4.0 via Expo 57 CLI; npm latest is still 1.4.0"
+
+# braces 3.0.3 is npm latest; GHSA-vfj7 has no patched release
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+reason = "Transitive braces 3.0.3 via micromatch; npm latest is still 3.0.3"
