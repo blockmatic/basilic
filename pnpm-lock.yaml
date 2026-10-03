@@ -710,6 +710,9 @@ importers:
       autoprefixer:
         specifier: ^10.6.1
         version: 10.6.1(postcss@8.5.28)
+      date-fns:
+        specifier: ^4.4.0
+        version: 4.4.0
       eve:
         specifier: ^0.63.0
         version: 0.63.0(@opentelemetry/api@1.9.1)(ai@7.0.107(zod@4.6.5))(microsandbox@0.7.4)

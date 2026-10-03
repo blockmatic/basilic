@@ -158,7 +158,9 @@ export const commandComponentDefinitions = {
       confirmLabel: z.string().nullable(),
       cancelLabel: z.string().nullable(),
     }),
-    description: "Confirmation dialog bound to openPath state.",
+    events: ["confirm", "cancel"],
+    description:
+      "Confirmation dialog bound to openPath state. Emits confirm from the confirm button and cancel when dismissed.",
   },
 
   // =============

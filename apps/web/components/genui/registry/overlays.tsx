@@ -44,11 +44,15 @@ export const overlayComponents = {
 
   AlertDialog: ({
     props,
+    emit,
   }: BaseComponentProps<CommandComponentProps<"AlertDialog">>) => {
     const [open, setOpen] = useStateBinding<boolean>(props.openPath ?? "");
     return (
       <AlertDialog
-        onOpenChange={(value) => setOpen(value)}
+        onOpenChange={(value) => {
+          setOpen(value);
+          if (!value) emit("cancel");
+        }}
         open={open ?? false}
       >
         <AlertDialogContent>
@@ -64,7 +68,12 @@ export const overlayComponents = {
             <AlertDialogCancel>
               {props.cancelLabel ?? "Cancel"}
             </AlertDialogCancel>
-            <AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => {
+                setOpen(false);
+                emit("confirm");
+              }}
+            >
               {props.confirmLabel ?? "Continue"}
             </AlertDialogAction>
           </AlertDialogFooter>

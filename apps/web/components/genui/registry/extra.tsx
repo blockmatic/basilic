@@ -33,6 +33,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@repo/ui/components/native-select";
+import { format, isValid, parseISO } from "date-fns";
 import { useState } from "react";
 import {
   Area,
@@ -76,19 +77,22 @@ export const extraComponents = {
 
   Chart: ({ props }: BaseComponentProps<CommandComponentProps<"Chart">>) => {
     const labels = props.labels ?? [];
-    const series = props.series ?? [];
+    // Series names are spec data; generated keys keep them out of CSS custom-property names.
+    const series = (props.series ?? []).map((entry, index) => ({
+      ...entry,
+      key: `series-${index}`,
+    }));
     const chartType = props.type ?? "bar";
-    const data = labels.map((label, index) => {
-      const row: Record<string, string | number> = { label };
-      for (const entry of series) {
-        row[entry.name] = entry.values[index] ?? 0;
-      }
-      return row;
-    });
+    const data = labels.map((label, index) => ({
+      label,
+      ...Object.fromEntries(
+        series.map(({ key, values }) => [key, values[index] ?? 0])
+      ),
+    }));
     const config = Object.fromEntries(
-      series.map((entry, index) => [
-        entry.name,
-        { label: entry.name, color: `var(--chart-${(index % 5) + 1})` },
+      series.map(({ key, name }, index) => [
+        key,
+        { label: name, color: `var(--chart-${(index % 5) + 1})` },
       ])
     );
 
@@ -99,11 +103,11 @@ export const extraComponents = {
             <CartesianGrid vertical={false} />
             <XAxis dataKey="label" tickLine={false} axisLine={false} />
             <ChartTooltip content={<ChartTooltipContent />} />
-            {series.map((entry) => (
+            {series.map(({ key }) => (
               <Line
-                dataKey={entry.name}
-                key={entry.name}
-                stroke={`var(--color-${entry.name})`}
+                dataKey={key}
+                key={key}
+                stroke={`var(--color-${key})`}
                 type="monotone"
               />
             ))}
@@ -114,12 +118,12 @@ export const extraComponents = {
             <CartesianGrid vertical={false} />
             <XAxis dataKey="label" tickLine={false} axisLine={false} />
             <ChartTooltip content={<ChartTooltipContent />} />
-            {series.map((entry) => (
+            {series.map(({ key }) => (
               <Area
-                dataKey={entry.name}
-                fill={`var(--color-${entry.name})`}
-                key={entry.name}
-                stroke={`var(--color-${entry.name})`}
+                dataKey={key}
+                fill={`var(--color-${key})`}
+                key={key}
+                stroke={`var(--color-${key})`}
                 type="monotone"
               />
             ))}
@@ -130,11 +134,11 @@ export const extraComponents = {
             <CartesianGrid vertical={false} />
             <XAxis dataKey="label" tickLine={false} axisLine={false} />
             <ChartTooltip content={<ChartTooltipContent />} />
-            {series.map((entry) => (
+            {series.map(({ key }) => (
               <Bar
-                dataKey={entry.name}
-                fill={`var(--color-${entry.name})`}
-                key={entry.name}
+                dataKey={key}
+                fill={`var(--color-${key})`}
+                key={key}
                 radius={4}
               />
             ))}
@@ -230,7 +234,8 @@ export const extraComponents = {
       props.value as string | undefined,
       bindings?.value
     );
-    const selected = boundValue ? new Date(boundValue) : undefined;
+    const parsed = boundValue ? parseISO(boundValue) : undefined;
+    const selected = parsed && isValid(parsed) ? parsed : undefined;
 
     return (
       <div className="space-y-2">
@@ -238,8 +243,7 @@ export const extraComponents = {
         <Calendar
           mode="single"
           onSelect={(date) => {
-            const iso = date?.toISOString().slice(0, 10) ?? "";
-            setBoundValue(iso);
+            setBoundValue(date ? format(date, "yyyy-MM-dd") : "");
             emit("change");
           }}
           selected={selected}
