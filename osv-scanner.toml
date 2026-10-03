@@ -7,3 +7,8 @@ reason = "False positive on 0.0.0-next prerelease required for TypeScript 7"
 [[IgnoredVulns]]
 id = "GHSA-528h-pc64-c93x"
 reason = "Transitive stream-json via jayson; fix is 3.5.0 (breaking), no 1.x patch"
+
+# node-forge: @expo/cli and @expo/code-signing-certificates need 1.x; 1.4.0 is the latest release
+[[IgnoredVulns]]
+id = "GHSA-86w9-cpqp-85rv"
+reason = "Transitive node-forge via Expo CLI tooling for apps/mobile; advisory covers <= 1.4.0 with no patched release"
