@@ -35,7 +35,7 @@ The monorepo must work consistently whether you develop locally (macOS, Linux, W
 | `https://api.basilic.localhost` | Fastify API | `GET /health`, `/reference` |
 | `https://docu.basilic.localhost` | Fumadocs | This repo only |
 | `https://email.basilic.localhost` | React Email preview |  |
-| `https://agents.basilic.localhost` | eve workspace | `/eve/command` only (`GET …/v1/health`) |
+| `https://agents.basilic.localhost` | eve workspace | `/eve/operator` and `/eve/ask` (`GET …/v1/health`) |
 
 Coin Tracker ([basilic-tracker](https://github.com/blockmatic/basilic-tracker)) uses a second namespace. It has no Doku host and no mobile app.
 
@@ -44,7 +44,7 @@ Coin Tracker ([basilic-tracker](https://github.com/blockmatic/basilic-tracker)) 
 | `https://tracker.localhost` | Next.js web | Coin board |
 | `https://api.tracker.localhost` | Fastify API | Markets and wallet routes |
 | `https://email.tracker.localhost` | React Email preview |  |
-| `https://agents.tracker.localhost` | eve workspace | `/eve/command` and `/eve/chat` |
+| `https://agents.tracker.localhost` | eve workspace | `/eve/operator` and `/eve/ask` |
 
 Linked git worktrees prefix the branch: `https://fix-ui.api.basilic.localhost`. `scripts/dev.mjs` exports sibling URLs from `portless get` so worktrees do not call the main checkout.
 
@@ -77,7 +77,7 @@ Standard workflow: run everything on the same machine where the IDE and simulato
 pnpm dev
 ```
 
-Ensures local Postgres is up, then starts Turborepo's TUI (same left-pane logs as `pnpm lint` / `pnpm test`): Fastify, Next.js, eve command, and dependent package watchers. Prints the named `.localhost` URLs, then the TUI. Mobile stays a separate command (`apps/mobile`). [Coin Tracker](https://github.com/blockmatic/basilic-tracker) has no mobile app. Generated projects include agents and omit Doku. Coin Tracker also mounts `/eve/chat`.
+Ensures local Postgres is up, then starts Turborepo's TUI (same left-pane logs as `pnpm lint` / `pnpm test`): Fastify, Next.js, eve operator and ask, and dependent package watchers. Prints the named `.localhost` URLs, then the TUI. Mobile stays a separate command (`apps/mobile`). [Coin Tracker](https://github.com/blockmatic/basilic-tracker) has no mobile app. Generated projects include agents and omit Doku. Coin Tracker uses the same public ids with board-specific operator tools.
 
 ### Mobile (Expo)
 

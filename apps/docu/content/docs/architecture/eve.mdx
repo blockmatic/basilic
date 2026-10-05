@@ -1,48 +1,48 @@
 ---
 title: "Eve"
-description: "Default host is Vercel (Workflow + Sandbox). Product command and chat live in apps/agents."
+description: "Default host is Vercel (Workflow + Sandbox). Product operator and ask agents live in apps/agents."
 ---
 
-Default host is Vercel (Workflow + Sandbox) on a sibling project. Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The workspace is `apps/agents` (`@repo/agents`) with separately addressable agents `command` and `chat` on one origin (`/eve/command`, `/eve/chat`). Local `eve:dev` / `eve start` (Nitro `.output`) is the exit. Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
+Default host is Vercel (Workflow + Sandbox) on a sibling project. Eve is the recommended **durable** agent runtime: sessions, turns, steps, Workflow, sandbox, and HTTP channels. The workspace is `apps/agents` (`@repo/agents`) with separately addressable agents `operator` and `ask` on one origin (`/eve/operator`, `/eve/ask`). Local `eve:dev` / `eve start` (Nitro `.output`) is the exit. Do not treat the `.agents/skills/eve` coding skill as the runtime; runtime skills stay inside `apps/agents`.
 
-The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. Fastify `GET /agents` lists command (and chat, in Coin Tracker) origins. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` includes `apps/agents` (command). Chat stays in [Coin Tracker](https://github.com/blockmatic/basilic-tracker).
+The scored Fastify host stays the Is Agentic product API. Do not mount `/eve/` on that URL. Discovery (`llms.txt`, `/openapi.json`, RFC 9727 catalog) does **not** advertise eve. Fastify `GET /agents` lists operator and ask origins. See [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Start commands and the actual HTTP paths: [apps/agents/README.md](https://github.com/blockmatic/basilic/blob/main/apps/agents/README.md). `create-basilic` includes `apps/agents` (operator and ask). Coin Tracker extends operator with board tools and Jev.
 
 ## Interaction
 
 ```mermaid
 flowchart LR
   Web[Next_useEveAgent] --> AgentsMeta[Fastify_GET_agents]
-  AgentsMeta --> Command["/eve/command"]
-  AgentsMeta --> Chat["/eve/chat"]
-  Web -->|access_JWT| Command
-  Web -->|access_JWT| Chat
-  Command --> Jev[Gateway_Jev]
+  AgentsMeta --> Operator["/eve/operator"]
+  AgentsMeta --> Ask["/eve/ask"]
+  Web -->|access_JWT| Operator
+  Web -->|access_JWT| Ask
+  Operator --> Jev[Gateway_Jev]
   Jev -.-> Compose[Next_composeSpec]
-  Command --> Domain["db_markets_onchain"]
-  Chat --> Domain
+  Operator --> Domain["db_markets_onchain"]
+  Ask --> Domain
 ```
 
-Fastify mints the access JWT. Eve verifies `typ=access`. Chat does not run Jev.
+Fastify mints the access JWT. Eve verifies `typ=access`. Ask does not run Jev.
 
 ## Session model
 
-Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `command` and `chat` under `agents/<name>/agent/`. The web rail uses **`useEveAgent` from `eve/react`** with `host` from Fastify `GET /agents` and an optional Bearer access JWT (`headers`). Persist the `session` cursor (`sessionId`, `streamIndex`). Do not import `eve/client` into Next (not webpack-safe). Next webpack rewrites eve’s `using` syntax in the react store so SWC can parse it. Do not wrap Next with **`withEve()`** — the frontend is a peer of `apps/agents`, not one Vercel project. Do not use AI SDK `useChat` / `DefaultChatTransport` against eve (UIMessage HTTP is not the eve NDJSON session protocol). `clientContext` on `send()` carries `boardQuery` / `viewConfig` / `elements`. Commands still have no assistant bubbles.
+Eve owns **session → turn → step**. Fastify `/ai/*` does not. Interactive streams belong here; they are not a Fastify proxy and there is no coordinator agent in front of them. Product ids are `operator` and `ask` under `agents/<name>/agent/`. The web rail uses **`useEveAgent` from `eve/react`** with `host` from Fastify `GET /agents` and an optional Bearer access JWT (`headers`). Persist the `session` cursor (`sessionId`, `streamIndex`). Do not import `eve/client` into Next (not webpack-safe). Next webpack rewrites eve’s `using` syntax in the react store so SWC can parse it. Do not wrap Next with **`withEve()`** — the frontend is a peer of `apps/agents`, not one Vercel project. Do not use AI SDK `useChat` / `DefaultChatTransport` against eve (UIMessage HTTP is not the eve NDJSON session protocol). `clientContext` on `send()` carries `boardQuery` / `viewConfig` / `elements`. Commands still have no assistant bubbles.
 
 ## Hosts
 
 | Host | What runs |
 | --- | --- |
 | Default | Separate Vercel project: Workflow + Sandbox. Fastify stays Function + Fluid on its own project. This queue has not added that Vercel project. |
-| Local | Root `pnpm dev` starts one Portless host (`https://agents.basilic.localhost`) after `@repo/db#db:start`. Health: `GET /eve/command/v1/health`. Chat is Coin Tracker only. Manual: `pnpm --filter @repo/agents eve:dev`. `PGLITE=false` is local Postgres. |
+| Local | Root `pnpm dev` starts one Portless host (`https://agents.basilic.localhost`) after `@repo/db#db:start`. Health: `GET /eve/operator/v1/health` and `GET /eve/ask/v1/health`. Manual: `pnpm --filter @repo/agents eve:dev`. `PGLITE=false` is local Postgres. |
 | Exit | `eve build` → Nitro `.output/`, then `eve start`. Ordinary Node / container. Not `vercel()` sandbox as the only self-host path. Local Workflow data is `.eve/.workflow-data`. |
 
-On a single-member host, keep `/eve/` and `/.well-known/workflow/` un-rewritten. The workspace public mounts `/eve/command` and `/eve/chat` are stripped before each member (local `dev-workspace.mjs`, Vercel `eve deploy`). Nitro is eve’s build and server, not Basilic’s product API and not an identity provider.
+On a single-member host, keep `/eve/` and `/.well-known/workflow/` un-rewritten. The workspace public mounts `/eve/operator` and `/eve/ask` are stripped before each member (local `dev-workspace.mjs`, Vercel `eve deploy`). Nitro is eve’s build and server, not Basilic’s product API and not an identity provider.
 
-Command and chat `defineAgent` set `build.externalDependencies` to `@repo/db`, `@electric-sql/pglite`, and `pg`. Eve must not bundle PGLite into authored modules (WASM / `eval`). `bootHost` runs from the HTTP channel, not `agent.ts`, so eve can read that list before it evaluates `@repo/db`. It is once-per-process: `eve dev` re-evaluates the compiled channel after listen, and a second eval must not construct PGLite (Node 24 V8 `Check failed: end > addr`).
+Operator and ask `defineAgent` set `build.externalDependencies` to `@repo/db`, `@electric-sql/pglite`, and `pg`. Eve must not bundle PGLite into authored modules (WASM / `eval`). `bootHost` runs from the HTTP channel, not `agent.ts`, so eve can read that list before it evaluates `@repo/db`. It is once-per-process: `eve dev` re-evaluates the compiled channel after listen, and a second eval must not construct PGLite (Node 24 V8 `Check failed: end > addr`).
 
 ## Domain logic
 
-Eve consumes `@repo/db` **named functions**. Next.js keeps `@repo/core` HTTP clients and does not import `@repo/db`. The closed board `ViewConfig` lives in `@repo/utils/view-config`. Eve Vitest loads `@repo/utils/*` from `dist/`; after adding a utils subpath, run `pnpm --filter @repo/utils build` before `pnpm --filter @repo/agents test`. Markets, onchain, and Chat tools live in [Coin Tracker](https://github.com/blockmatic/basilic-tracker). OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP. Command sets `defaultTools: false`.
+Eve consumes `@repo/db` **named functions**. Next.js keeps `@repo/core` HTTP clients and does not import `@repo/db`. The closed board `ViewConfig` lives in `@repo/utils/view-config`. Eve Vitest loads `@repo/utils/*` from `dist/`; after adding a utils subpath, run `pnpm --filter @repo/utils build` before `pnpm --filter @repo/agents test`. Markets, onchain, and Chat tools live in [Coin Tracker](https://github.com/blockmatic/basilic-tracker). OpenAPI to Fastify is a last resort when a function is not extractable. There is no product MCP. Operator sets `defaultTools: false`.
 
 ## Jev
 

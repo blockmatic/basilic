@@ -164,8 +164,8 @@ The Fastify API runs as one Vercel Function with **Fluid Compute**. Do not move 
 
 Eve is a **separate Vercel project** (`apps/agents`, Root Directory `apps/agents`) — Workflow + Sandbox — not a route on the scored Fastify host. Command and chat deploy together in that one project. Git builds must not run Vercel’s `pnpm install` shim: `apps/agents/vercel.json` uses `scripts/vercel-install.mjs`, then `turbo run build --filter=@repo/agents^...` and `eve build` (writes `.vercel/output` when `VERCEL` is set). `eve link` / `eve deploy` remain the CLI path. Public mounts:
 
-- `https://<agents-project>.vercel.app/eve/command`
-- `https://<agents-project>.vercel.app/eve/chat`
+- `https://<agents-project>.vercel.app/eve/operator`
+- `https://<agents-project>.vercel.app/eve/ask`
 
 Set those values on the **API** project as `EVE_COMMAND_URL` and `EVE_CHAT_URL` (no trailing slash). Fastify `GET /agents` advertises them; the web rail uses each string as `useEveAgent` `host`. Local Portless uses the same path shape on `https://agents.basilic.localhost`. Edge is for CDN, WAF, redirects, and auth precheck. Node workloads: Fastify API, eve, Drizzle. Decision: [ADR 014](/docs/adrs/014-fastify-eve-vercel-runtime). Diagram: [eve interaction](/docs/architecture/eve#interaction).
 
@@ -176,9 +176,10 @@ Basilic is **not** an official Vercel project. It is built around Vercel-oriente
 | Primitive | In Basilic | Notes |
 | --- | --- | --- |
 | **AI SDK** (`ai`) | Used | `streamText` / `generateText` on Fastify `/ai/generate`; `experimental_evaluate` (Jev) on eve and Next composeSpec |
-| **AI Gateway** | Used | `AI_GATEWAY_API_KEY` on API (generate), eve (language models + Jev), and web (composeSpec); independent skips |
+| **AI Gateway** | Used | `AI_GATEWAY_API_KEY` (or OIDC) for Jev on eve and Coin Tracker web `composeSpec`; not used for Fastify generate |
+| **Anthropic API** | Used | `ANTHROPIC_API_KEY` on API (`/ai/generate`) and eve language models (operator / ask) |
 | **Fluid Compute** | Used | Fastify API as one Node Function (not Edge wholesale) |
-| **eve** (Agent Stack) | Used | `apps/agents` sibling; `command` + `chat`; Workflow + Sandbox |
+| **eve** (Agent Stack) | Used | `apps/agents` sibling; `operator` + `ask`; Workflow + Sandbox |
 | **`useEveAgent`** (`eve/react`) | Used | Web Commands/Chat rail + Bearer; not `withEve()` |
 | **Turborepo / previews** | Used | Monorepo builds; PR preview deploys per app |
 | **skills CLI** | Used | `pnpm skills:install` from `skills-lock.json` |
