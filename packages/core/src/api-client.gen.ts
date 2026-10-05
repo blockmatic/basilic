@@ -50,6 +50,8 @@ import type {
   AuthSessionsRevokeResponse,
   CreateAgentTokenData,
   CreateAgentTokenResponse,
+  EnhanceData,
+  EnhanceResponse,
   GenerateData,
   GenerateResponse,
   GetAgentByIdData,
@@ -144,6 +146,7 @@ export type CoreApiClient = {
   };
   listAgents: (opts?: Options<ListAgentsData>) => Promise<ListAgentsResponse>;
   ai: {
+    enhance: (opts: Options<EnhanceData>) => Promise<EnhanceResponse>;
     generate: (opts: Options<GenerateData>) => Promise<GenerateResponse>
   };
   auth: {

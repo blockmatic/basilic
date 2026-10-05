@@ -5,7 +5,7 @@ description: "Four planes, Fastify POST /ai/generate, and Generative UI. Durable
 
 Four planes:
 
-- **Control** — Fastify product HTTP. `POST /ai/generate` is the only `/ai/*` route. Interactive dashboard Chat uses eve.
+- **Control** — Fastify product HTTP. `POST /ai/generate` and `POST /ai/enhance` are the `/ai/*` routes. Interactive dashboard Chat uses eve.
 - **Interaction and execution** — eve on a separate host. Public agents `operator` and `ask` live in `apps/agents` — [Agents](/docs/architecture/agents) and [Eve](/docs/architecture/eve). Not a Fastify proxy. No coordinator agent.
 - **Domain** — `@repo/db` named functions, `@repo/markets` vendor HTTP, and `@repo/onchain` wallet HTTP. Next keeps `@repo/core`.
 - **Presentation** — Generative UI on the home Agent surface: operator `set_view` commits `q` and `surface`; Next renders status/account specs via `apps/web/lib/genui` and `apps/web/components/genui/registry`. Coin Tracker adds board Jev and `composeSpec` on Send; the starter does not.
@@ -14,7 +14,7 @@ Models are implementation details; agents are product capabilities (`operator`, 
 
 Fastify `/ai/generate` is **control-plane API chrome**, not the Product Ready bar and not the durable agent runtime. Agent **skills** (`AGENTS.md`, Basilic `/w-*`) live in [AI Workflow](/docs/development/ai-workflow) — not this page.
 
-The Fastify API exposes one AI endpoint under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; the route file in `apps/api/src/routes/ai/` is a thin handler (schema + auth + delegation). The browser talks to Fastify directly (Bearer). There is no Next.js AI BFF.
+The Fastify API exposes two AI endpoints under `/ai/*`. Implementation lives in `apps/api/src/lib/ai/`; route files in `apps/api/src/routes/ai/` are thin handlers (schema + auth + delegation). The browser talks to Fastify directly (Bearer). There is no Next.js AI BFF.
 
 There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store, no `ToolLoopAgent`, and no mobile assistant. Generate is `streamText` / `generateText` with `maxOutputTokens` from `AI_MAX_OUTPUT_TOKENS` (default 4096). `body.model` is an allowlist (`default`, `haiku`, `sonnet`, `anthropic/claude-haiku-4.5`, `anthropic/claude-sonnet-4.6`, plus `AI_DEFAULT_MODEL` when set). Unknown ids including `opus` are 400. Legacy Gateway slugs (`anthropic/claude-haiku-4.5`) map to direct Anthropic ids. `POST /ai/generate` uses a tighter route rate limit (`AI_RATE_LIMIT_MAX`, default 20) than global `RATE_LIMIT_MAX`. `GET /coins` is tighter still (`COINS_RATE_LIMIT_MAX`, default 10).
 
@@ -23,8 +23,20 @@ There is no first-class OpenAI SDK, no RAG or embeddings, no chat message store,
 | Route | Use case | Response |
 | --- | --- | --- |
 | `POST /ai/generate` | CLI, scripts, single prompt | JSON `{ text }` or UI-message SSE |
+| `POST /ai/enhance` | Rewrite a draft before send (command, Ask, CLI) | JSON `{ text }` |
 
-Bearer auth is required (session JWT or API key). Set `Accept: text/event-stream` or `stream: true` for SSE. Generate is prompt-only (no tools). Interactive Ask is the eve `ask` agent — [Eve](/docs/architecture/eve). Fastify does not expose `POST /ai/chat`.
+Bearer auth is required (session JWT or API key). Set `Accept: text/event-stream` or `stream: true` for SSE on generate. Generate is prompt-only (no tools). Enhance uses a fixed system instruction and returns one rewritten prompt; it does not send to eve. Interactive Ask is the eve `ask` agent — [Eve](/docs/architecture/eve). Fastify does not expose `POST /ai/chat`.
+
+## Enhance prompt
+
+The home command composer and Ask tab expose **Enhance**. It calls `POST /ai/enhance` with the current draft, replaces the field with the improved text, and does not send. You edit the result, then send. Naming the stack and style yourself still steers the agent; Enhance is not a substitute for that.
+
+The model fixes typos, misspellings, and speech-to-text errors. Thin drafts expand into one clearer prompt. When the draft is about UI and names no stack, the rewrite may suggest React, Tailwind, and shadcn/Base UI.
+
+Example:
+
+- Draft: `develop a contex sales form`
+- Improved prompt: `Build a contact sales form with React, Tailwind, and shadcn/Base UI. Include name, work email, company, and a message. Use one column on small screens.`
 
 ## Provider
 
@@ -69,7 +81,7 @@ Pre-stream failures map to catalog codes: 401, 400, 402 (`INSUFFICIENT_CREDITS`)
 
 ## Testing
 
-- **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): remote generate runs when `ANTHROPIC_API_KEY` is set (not a placeholder). Skips **402** only for `INSUFFICIENT_CREDITS`. Skips 502/504 when the key is missing. Generate contract: 401 unauthenticated, 400 bad payloads, model allowlist, rate limit.
+- **API Vitest** (`ai.spec.ts`, `lib/ai/provider.spec.ts`): remote generate and enhance run when `ANTHROPIC_API_KEY` is set (not a placeholder). Skips **402** only for `INSUFFICIENT_CREDITS`. Skips 502/504 when the key is missing. Generate contract: 401 unauthenticated, 400 bad payloads, model allowlist, rate limit. Enhance contract: 401, 400 empty or whitespace prompts.
 - Board chrome, eve Chat, and compose tests: [Frontend](/docs/architecture/frontend), [Eve](/docs/architecture/eve), and [E2E Testing](/docs/testing/e2e-testing). Dashboard Playwright still asserts Send paths do not hit `/ai/chat`. Missing SpeechRecognition hides the mic; keyboard Send still works. There is no Fastify chat Playwright project.
 
 ## Related

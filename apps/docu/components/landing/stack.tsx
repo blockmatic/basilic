@@ -36,6 +36,11 @@ const groups = [
         body: "Jev triages command turns. Next `composeSpec` authors json-render specs. `@repo/ui` (shadcn/Base UI) is the catalog.",
       },
       {
+        title: "Enhance prompt",
+        href: "/docs/architecture/ai#enhance-prompt",
+        body: "Fix typos and thin drafts before send. Example: “develop a contex sales form” → a clear contact-sales prompt with React, Tailwind, and shadcn/Base UI.",
+      },
+      {
         title: "API CLI",
         href: "/docs/development/cli",
         body: "`basilic` binary for humans, scripts, and shell agents. API key auth. JSON on stdout.",
