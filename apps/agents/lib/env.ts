@@ -21,7 +21,7 @@ export const env = createEnv({
   runtimeEnv: process.env,
   server: {
     AGENT_JWT_AUDIENCE: z.string().min(1).default("agents.yourapp.com"),
-    AGENTS_MODEL: z.enum(["scripted", "anthropic"]).optional(),
+    AGENTS_MODEL: z.enum(["scripted", "anthropic", "gateway"]).optional(),
     AI_DEFAULT_MODEL: z.string().min(1).optional(),
     AI_EVALUATE_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
     ANTHROPIC_API_KEY: z.string().min(1).optional(),
