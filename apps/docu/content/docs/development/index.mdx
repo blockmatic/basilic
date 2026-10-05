@@ -64,7 +64,7 @@ pnpm dev
 
 Ensures Docker Postgres is up, then starts Turborepo's TUI — the same left-pane task list as `pnpm lint` / `pnpm test`. In this upstream repository, eve `dev` waits on `@repo/db#db:start`. Skip Docker with `SKIP_DB_START=1` (use that for PGLite-only generated apps). Click or arrow-key between logs. Ctrl-C stops Node watchers; Postgres stays up until `pnpm db:stop`.
 
-A generated project's TUI includes API, web, email preview, eve command (`/eve/command`), and package watchers. Hosts follow the project slug (`https://api.myapp.localhost`). Mobile stays `pnpm --filter @repo/mobile start`. Generated projects include `apps/agents` and `apps/mobile` and omit `apps/docu`. This starter uses `https://basilic.localhost` and command only. Coin Tracker uses `https://tracker.localhost` and also mounts `/eve/chat`. Docs for the starter are `https://docu.basilic.localhost`. If the Portless proxy is down, `pnpm dev` starts it on port 443 before Turbo (one sudo prompt). `pnpm setup` trusts the local CA.
+A generated project's TUI includes API, web, email preview, eve (`/eve/operator`, `/eve/ask`), and package watchers. Hosts follow the project slug (`https://api.myapp.localhost`). Mobile stays `pnpm --filter @repo/mobile start`. Generated projects include `apps/agents` and `apps/mobile` and omit `apps/docu`. This starter uses `https://basilic.localhost` with operator and ask. Coin Tracker uses `https://tracker.localhost` with board Jev on operator. Docs for the starter are `https://docu.basilic.localhost`. If the Portless proxy is down, `pnpm dev` starts it on port 443 before Turbo (one sudo prompt). `pnpm setup` trusts the local CA.
 
 ## Manual
 
@@ -73,7 +73,7 @@ Separate terminals, always from the repo root (no `cd`):
 - Postgres: `pnpm db:start`. Status: `pnpm db:status`. Stop: `pnpm db:stop`. Wipe: `pnpm reset`.
 - API: `pnpm --filter @repo/api dev` — https://api.basilic.localhost
 - Web: `pnpm --filter @repo/web dev` — https://basilic.localhost
-- Agents: `pnpm --filter @repo/agents eve:dev` — https://agents.basilic.localhost/eve/command/v1/health. Coin Tracker also serves `/eve/chat/v1/health`.
+- Agents: `pnpm --filter @repo/agents eve:dev` — https://agents.basilic.localhost/eve/operator/v1/health and `/eve/ask/v1/health`.
 - Docs: `pnpm --filter @repo/docu dev` — https://docu.basilic.localhost. Generated projects link to the hosted docs site.
 - Email: `pnpm --filter @repo/email dev` — https://email.basilic.localhost
 - Mobile: `pnpm --filter @repo/mobile start`

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import {
-  hasRealGatewayKey,
+  hasRealAnthropicKey,
   skipIfInsufficientCredits,
   skipIfProviderUnavailable,
 } from "../../../test/utils/ai-remote.js";
@@ -102,7 +102,7 @@ describe("POST /ai/generate", () => {
     });
   });
 
-  describe.skipIf(!hasRealGatewayKey())("POST /ai/generate — remote", () => {
+  describe.skipIf(!hasRealAnthropicKey())("POST /ai/generate — remote", () => {
     it("should return 200 non-streaming with text", async (ctx) => {
       const response = await fastify.inject({
         method: "POST",

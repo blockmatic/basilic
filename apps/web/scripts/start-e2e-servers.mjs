@@ -4,8 +4,7 @@
  * Run in one terminal, then in another: pnpm test:e2e
  *
  * Use when Playwright's webServer spawns processes that get OOM killed (exit 137) on constrained VMs.
- * Pins Fastify generate to Vercel AI Gateway when AI_GATEWAY_API_KEY is set.
- * Playwright does not call live AI, so a missing key warns and the servers still start.
+ * Playwright does not call live AI; a missing ANTHROPIC_API_KEY only affects optional remote generate tests.
  */
 import { spawn } from "node:child_process";
 import { dirname } from "node:path";
@@ -21,11 +20,6 @@ const env = {
   NODE_ENV: "test",
   PGLITE: "true",
 };
-if (!String(env.AI_GATEWAY_API_KEY ?? "").trim()) {
-  process.stderr.write(
-    "start-e2e-servers: AI_GATEWAY_API_KEY is not set; Fastify AI generation will be unavailable.\n"
-  );
-}
 delete env.AI_DEFAULT_MODEL;
 
 const api = spawn("pnpm", ["--filter", "@repo/api", "start:ci"], {

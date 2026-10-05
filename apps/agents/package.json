@@ -19,6 +19,7 @@
     "test:unit": "vitest run && node --test scripts/*.test.mjs"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.71",
     "@repo/db": "workspace:*",
     "@repo/utils": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",

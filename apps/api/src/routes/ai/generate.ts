@@ -41,7 +41,7 @@ const generateRoute: FastifyPluginAsync = async (fastify) => {
       schema: {
         body: GenerateRequestSchema,
         description:
-          "Generate text from a single prompt (CLI, scripts, pipelines). Uses Vercel AI Gateway. Returns SSE (text/event-stream) when streaming.",
+          "Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic via ANTHROPIC_API_KEY. Returns SSE (text/event-stream) when streaming.",
         operationId: "generate",
         response: {
           200: Type.Union([

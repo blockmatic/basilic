@@ -1,11 +1,10 @@
-import { createGateway } from "ai";
-
 import { env } from "../env.js";
+import { createProductGateway } from "../gateway.js";
 
 export function getEvaluationModel() {
-  const token = env.AI_GATEWAY_API_KEY ?? env.VERCEL_OIDC_TOKEN;
-  if (!token) {
+  const gateway = createProductGateway();
+  if (!gateway) {
     return null;
   }
-  return createGateway({ apiKey: token }).evaluationModel(env.JEV_MODEL);
+  return gateway.evaluationModel(env.JEV_MODEL);
 }

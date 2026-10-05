@@ -154,6 +154,7 @@ export const env = createEnv({
       .positive()
       .optional()
       .default(20),
+    ANTHROPIC_API_KEY: z.string().min(1).optional(),
     AI_GATEWAY_API_KEY: z.string().min(1).optional(),
     VERCEL: z
       .string()
@@ -215,7 +216,7 @@ export const env = createEnv({
     EVE_COMMAND_URL: z
       .string()
       .url()
-      .default("https://agents.basilic.localhost/eve/command"),
+      .default("https://agents.basilic.localhost/eve/operator"),
     ALLOW_TEST: z
       .string()
       .optional()
