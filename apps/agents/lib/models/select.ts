@@ -16,9 +16,9 @@ export function selectModel({
 }) {
   const gateway = env.AGENTS_MODEL === "scripted" ? null : getProvider();
   if (gateway) return { model: gateway, modelContextWindowTokens: 200_000 };
-  if (env.AGENTS_MODEL === "gateway")
+  if (env.AGENTS_MODEL === "anthropic")
     throw new Error(
-      `${member}: AGENTS_MODEL=gateway needs AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN in apps/agents/.env`
+      `${member}: AGENTS_MODEL=anthropic needs ANTHROPIC_API_KEY in apps/agents/.env`
     );
   return {
     model: mockModel({

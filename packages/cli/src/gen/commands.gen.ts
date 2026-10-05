@@ -206,7 +206,7 @@ export const operationMeta = {
         "name": "temperature"
       }
     ],
-    "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Vercel AI Gateway. Returns SSE (text/event-stream) when streaming.",
+    "description": "Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic via ANTHROPIC_API_KEY. Returns SSE (text/event-stream) when streaming.",
     "pathParams": [],
     "summary": "Generate text from prompt"
   }

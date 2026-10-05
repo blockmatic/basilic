@@ -26,10 +26,8 @@ export const env = createEnv({
   },
   emptyStringAsUndefined: true,
   runtimeEnv: {
-    AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
     ALLOW_TEST: process.env.ALLOW_TEST,
     AUTH_COOKIE_NAME: process.env.AUTH_COOKIE_NAME,
-    JEV_MODEL: process.env.JEV_MODEL,
     JWT_AUDIENCE: process.env.JWT_AUDIENCE,
     JWT_ISSUER: process.env.JWT_ISSUER,
     JWT_SECRET: process.env.JWT_SECRET,
@@ -54,10 +52,8 @@ export const env = createEnv({
     SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
   },
   server: {
-    AI_GATEWAY_API_KEY: z.string().min(1).optional(),
     ALLOW_TEST: z.enum(["true", "false"]).optional(),
     AUTH_COOKIE_NAME: z.string().default("api.session"),
-    JEV_MODEL: z.string().min(1).default("typesafe-ai/jev"),
     JWT_AUDIENCE: z
       .string()
       .default("api.yourapp.com")

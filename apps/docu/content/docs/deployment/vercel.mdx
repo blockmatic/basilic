@@ -84,7 +84,7 @@ Root Directory must be set in Vercel project settings (e.g. `apps/web`, `apps/ap
 }
 ```
 
-Production migrations run against that environment's Postgres and take a PostgreSQL advisory lock so concurrent deploys serialize. They no-op under `PGLITE` or `NODE_ENV=test` (CI E2E). Preview defaults to skip so a shared Production `POSTGRES_URL` cannot be migrated from a PR build. Vercel `createPgPool` uses TLS without CA verification: `pg` on Node 24 treats `sslmode=require` as `verify-full`, which rejects Marketplace Postgres certificate chains (`self-signed certificate in certificate chain`).
+Production migrations run against that environment's Postgres and take a PostgreSQL advisory lock so concurrent deploys serialize. They no-op under `PGLITE` or `NODE_ENV=test` (CI E2E). Preview defaults to skip so a shared Production `POSTGRES_URL` cannot be migrated from a PR build. On Vercel, `createPgPool` strips `sslmode` from `POSTGRES_URL` and uses TLS without CA verification; otherwise `pg` on Node 24 treats `sslmode=require` as `verify-full`, which rejects Marketplace Postgres certificate chains (`self-signed certificate in certificate chain`).
 
 ## Turbo remote cache
 

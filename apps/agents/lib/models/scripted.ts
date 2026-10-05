@@ -92,5 +92,5 @@ export function scriptedAccount(request: MockModelRequest): MockModelResponse {
 }
 
 export function scriptedAsk(request: MockModelRequest): string {
-  return `Ask is running without a language model, so this reply is scripted. Set AI_GATEWAY_API_KEY in apps/agents/.env for real answers. You said: "${request.lastUserMessage ?? ""}"`;
+  return `Ask is running without a language model, so this reply is scripted. Set ANTHROPIC_API_KEY in apps/agents/.env for real answers. You said: "${request.lastUserMessage ?? ""}"`;
 }

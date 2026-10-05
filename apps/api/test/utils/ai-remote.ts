@@ -28,19 +28,20 @@ const isConnectionClassFailure = (res: ResponseLike): boolean =>
 export const isProviderUnavailable = (res: ResponseLike): boolean =>
   res.statusCode === 502 || isConnectionClassFailure(res);
 
-const runJevTests = (): boolean => process.env.RUN_JEV_TESTS === "1";
+const isPlaceholderKey = (key: string) =>
+  key.includes("dummy") || key.includes("placeholder") || key.includes("xxx");
 
-export const hasRealGatewayKey = (): boolean => {
-  if (!runJevTests()) return false;
-  const key = process.env.AI_GATEWAY_API_KEY;
-  if (!key) {
+export const hasRealAnthropicKey = (): boolean => {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key || isPlaceholderKey(key)) {
     return false;
   }
-  if (
-    key.includes("dummy") ||
-    key.includes("placeholder") ||
-    key.includes("xxx")
-  ) {
+  return true;
+};
+
+export const hasRealGatewayKey = (): boolean => {
+  const key = process.env.AI_GATEWAY_API_KEY ?? process.env.VERCEL_OIDC_TOKEN;
+  if (!key || isPlaceholderKey(key)) {
     return false;
   }
   return true;
@@ -51,7 +52,7 @@ export const skipIfProviderUnavailable = (
   res: ResponseLike,
   name: string
 ): void => {
-  if (hasRealGatewayKey()) {
+  if (hasRealAnthropicKey()) {
     return;
   }
   if (isProviderUnavailable(res)) {

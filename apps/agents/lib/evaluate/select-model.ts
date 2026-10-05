@@ -87,6 +87,6 @@ export async function selectCommandLanguageModel({
     };
   }
   const model = getProvider();
-  if (!model) throw new Error("command language model is not configured");
+  if (!model) throw new Error("operator language model is not configured");
   return { model, modelContextWindowTokens: 200_000 };
 }

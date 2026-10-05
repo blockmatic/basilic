@@ -34,6 +34,7 @@
     "db:push": "pnpm --filter @repo/db db:push"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.71",
     "@faker-js/faker": "^10.6.0",
     "@fastify/autoload": "^6.5.0",
     "@fastify/cors": "^11.3.0",

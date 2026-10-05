@@ -265,7 +265,7 @@ export const createAgentToken = <ThrowOnError extends boolean = false>(options: 
 /**
  * Generate text from prompt
  *
- * Generate text from a single prompt (CLI, scripts, pipelines). Uses Vercel AI Gateway. Returns SSE (text/event-stream) when streaming.
+ * Generate text from a single prompt (CLI, scripts, pipelines). Uses Anthropic via ANTHROPIC_API_KEY. Returns SSE (text/event-stream) when streaming.
  */
 export const generate = <ThrowOnError extends boolean = false>(options: Options<GenerateData, ThrowOnError>): RequestResult<GenerateResponses, GenerateErrors, ThrowOnError> => (options.client ?? client).post<GenerateResponses, GenerateErrors, ThrowOnError>({
   security: [{ scheme: 'bearer', type: 'http' }],

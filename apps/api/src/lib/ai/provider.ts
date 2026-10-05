@@ -1,27 +1,33 @@
+import { createAnthropic } from "@ai-sdk/anthropic";
 import type { LanguageModel } from "ai";
-import { createGateway } from "ai";
 
 import { env } from "../env.js";
 
-export const defaultGatewayModel = "anthropic/claude-haiku-4.5";
+export const defaultAnthropicModel = "claude-haiku-4-5";
 /** Explicit Sonnet tier when callers request `sonnet` (not the default — Haiku is cheaper). */
+export const upgradeSonnetAnthropicModel = "claude-sonnet-4-6";
+
+/** Legacy Vercel AI Gateway slugs — still accepted on `POST /ai/generate`. */
+export const defaultGatewayModel = "anthropic/claude-haiku-4.5";
 export const upgradeSonnetGatewayModel = "anthropic/claude-sonnet-4.6";
 
-export const defaultProvider: ResolvedProvider = "gateway";
+export const defaultProvider: ResolvedProvider = "anthropic";
 
-export type ResolvedProvider = "gateway";
+export type ResolvedProvider = "anthropic";
 
-function gatewayToken() {
-  return env.AI_GATEWAY_API_KEY ?? env.VERCEL_OIDC_TOKEN;
+function anthropicApiKey() {
+  return env.ANTHROPIC_API_KEY;
 }
 
 export function getResolvedProvider(): ResolvedProvider | null {
-  return gatewayToken() ? defaultProvider : null;
+  return anthropicApiKey() ? defaultProvider : null;
 }
 
-const gatewayModelAliases: Record<string, string> = {
-  haiku: defaultGatewayModel,
-  sonnet: upgradeSonnetGatewayModel,
+const modelAliases: Record<string, string> = {
+  haiku: defaultAnthropicModel,
+  sonnet: upgradeSonnetAnthropicModel,
+  [defaultGatewayModel]: defaultAnthropicModel,
+  [upgradeSonnetGatewayModel]: upgradeSonnetAnthropicModel,
 };
 
 function resolveModelParam({
@@ -55,11 +61,11 @@ export function resolveGatewayModel(
   opts?: { defaultModel?: string }
 ): string {
   return resolveModelParam({
-    aliases: gatewayModelAliases,
+    aliases: modelAliases,
     defaultAliases: ["default", "haiku"],
     defaultModelOverride: opts?.defaultModel,
     modelParam,
-    runtimeDefault: defaultGatewayModel,
+    runtimeDefault: defaultAnthropicModel,
   });
 }
 
@@ -69,9 +75,11 @@ function requestModelAllowlist(): Set<string> {
     ...(env.AI_DEFAULT_MODEL ? [env.AI_DEFAULT_MODEL] : []),
     "haiku",
     "sonnet",
+    defaultAnthropicModel,
+    upgradeSonnetAnthropicModel,
     defaultGatewayModel,
     upgradeSonnetGatewayModel,
-    ...Object.keys(gatewayModelAliases),
+    ...Object.keys(modelAliases),
   ]);
 }
 
@@ -92,13 +100,10 @@ export function getProvider(
   _provider: ResolvedProvider,
   modelParam?: string
 ): LanguageModel {
-  const apiKey = gatewayToken();
+  const apiKey = anthropicApiKey();
   if (!apiKey) {
-    throw new Error(
-      "AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN required for AI Gateway"
-    );
+    throw new Error("ANTHROPIC_API_KEY required for Anthropic language models");
   }
-  return createGateway({ apiKey }).languageModel(
-    resolveGatewayModel(modelParam)
-  );
+  const anthropic = createAnthropic({ apiKey });
+  return anthropic.languageModel(resolveGatewayModel(modelParam));
 }

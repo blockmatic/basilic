@@ -8,25 +8,25 @@ import {
 } from "./provider.js";
 
 describe("AI provider model resolution", () => {
-  it("defaults Gateway to Haiku when model is omitted", () => {
-    expect(resolveGatewayModel()).toBe(defaultGatewayModel);
+  it("defaults to Haiku when model is omitted", () => {
+    expect(resolveGatewayModel()).toBe("claude-haiku-4-5");
     expect(defaultGatewayModel).toBe("anthropic/claude-haiku-4.5");
   });
 
   it("maps sonnet alias to Sonnet 4.6", () => {
-    expect(resolveGatewayModel("sonnet")).toBe(upgradeSonnetGatewayModel);
+    expect(resolveGatewayModel("sonnet")).toBe("claude-sonnet-4-6");
     expect(upgradeSonnetGatewayModel).toBe("anthropic/claude-sonnet-4.6");
   });
 
   it("honors defaultModel override for the haiku alias", () => {
     expect(
       resolveGatewayModel("haiku", {
-        defaultModel: "anthropic/claude-sonnet-4.6",
+        defaultModel: "claude-sonnet-4-6",
       })
-    ).toBe("anthropic/claude-sonnet-4.6");
+    ).toBe("claude-sonnet-4-6");
     expect(
       resolveGatewayModel("sonnet", { defaultModel: "x-ai/grok-3-mini" })
-    ).toBe(upgradeSonnetGatewayModel);
+    ).toBe("claude-sonnet-4-6");
   });
 });
 
@@ -42,11 +42,14 @@ describe("isAllowedRequestModel", () => {
     );
   });
 
-  it("rejects opus, unknown ids, and bare Anthropic ids", () => {
+  it("rejects opus and unknown ids", () => {
     expect(isAllowedRequestModel({ model: "opus" })).toBe(false);
     expect(isAllowedRequestModel({ model: "gpt-4" })).toBe(false);
-    expect(isAllowedRequestModel({ model: "claude-haiku-4-5" })).toBe(false);
     expect(isAllowedRequestModel({ model: "qwen3:8b" })).toBe(false);
+  });
+
+  it("allows direct Anthropic model ids", () => {
+    expect(isAllowedRequestModel({ model: "claude-haiku-4-5" })).toBe(true);
   });
 });
 
@@ -56,14 +59,12 @@ describe("getResolvedProvider", () => {
     vi.doUnmock("../env.js");
   });
 
-  it("returns null when Gateway credentials are unset", async () => {
+  it("returns null when Anthropic credentials are unset", async () => {
     vi.resetModules();
     vi.doMock("../env.js", () => ({
       env: {
         // biome-ignore lint/style/useNamingConvention: mocked env keys match createEnv
-        AI_GATEWAY_API_KEY: undefined,
-        // biome-ignore lint/style/useNamingConvention: mocked env keys match createEnv
-        VERCEL_OIDC_TOKEN: undefined,
+        ANTHROPIC_API_KEY: undefined,
         // biome-ignore lint/style/useNamingConvention: mocked env keys match createEnv
         AI_DEFAULT_MODEL: undefined,
       },

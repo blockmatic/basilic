@@ -1,16 +1,17 @@
+import { createAnthropic } from "@ai-sdk/anthropic";
 import type { LanguageModel } from "ai";
-import { createGateway } from "ai";
 
 import { env } from "./env.js";
 
+const defaultAnthropicModel = "claude-haiku-4-5";
+
 export function getProvider(): LanguageModel | null {
-  const apiKey = env.AI_GATEWAY_API_KEY ?? env.VERCEL_OIDC_TOKEN;
+  const apiKey = env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return null;
   }
-  return createGateway({ apiKey }).languageModel(
-    env.AI_DEFAULT_MODEL ?? "anthropic/claude-haiku-4.5"
-  );
+  const anthropic = createAnthropic({ apiKey });
+  return anthropic.languageModel(env.AI_DEFAULT_MODEL ?? defaultAnthropicModel);
 }
 
 export const getCommandModel = getProvider;
