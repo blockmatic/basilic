@@ -26,7 +26,7 @@ basilic config set-api-key bask_xxx_yyy
 
 ## Commands
 
-Commands mirror core API nesting (excluding auth): `health-check`, `account apikeys create`, `account apikeys list`, `ai generate`, `list-agents`. Use `--help` on any command.
+Commands mirror core API nesting (excluding auth): `health-check`, `account apikeys create`, `account apikeys list`, `ai generate`, `ai enhance`, `list-agents`. Use `--help` on any command.
 
 ## Local testing
 

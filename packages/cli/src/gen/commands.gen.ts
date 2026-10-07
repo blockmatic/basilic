@@ -191,6 +191,16 @@ export const operationMeta = {
     "pathParams": [],
     "summary": "List agents"
   },
+  "enhance": {
+    "bodyParams": [
+      {
+        "name": "prompt"
+      }
+    ],
+    "description": "Rewrite a draft prompt: fix typos and speech-to-text errors, clarify thin drafts. Uses Anthropic via ANTHROPIC_API_KEY. Returns JSON only.",
+    "pathParams": [],
+    "summary": "Enhance prompt draft"
+  },
   "generate": {
     "bodyParams": [
       {
@@ -376,6 +386,13 @@ export const commandSpecs = [
     "operationId": "listAgents",
     "path": [
       "list-agents"
+    ]
+  },
+  {
+    "operationId": "enhance",
+    "path": [
+      "ai",
+      "enhance"
     ]
   },
   {

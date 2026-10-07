@@ -8,6 +8,7 @@ import {
   ConversationContent,
   ConversationEmptyState,
 } from "@/components/assistant/conversation";
+import { EnhancePromptButton } from "@/components/assistant/enhance-prompt";
 import { Message, MessageContent } from "@/components/assistant/message";
 import {
   PromptInput,
@@ -20,9 +21,11 @@ import { useAgentEndpoint } from "@/lib/eve/use-agent-endpoint";
 
 function AskSession({ host }: { host: string | undefined }) {
   const [draft, setDraft] = useState("");
+  const [enhanceError, setEnhanceError] = useState<string | null>(null);
   const agent = useEveAgent({ auth: { bearer: eveAccessToken }, host });
   const { messages } = agent.data;
   const status = agent.status === "resuming" ? "submitted" : agent.status;
+  const isBusy = status === "submitted" || status === "streaming";
 
   return (
     <div className="flex h-[calc(100dvh-8rem)] min-h-0 flex-col gap-3 md:h-[calc(100dvh-9rem)]">
@@ -44,9 +47,9 @@ function AskSession({ host }: { host: string | undefined }) {
           ))}
         </ConversationContent>
       </Conversation>
-      {agent.error ? (
+      {(enhanceError ?? agent.error?.message) ? (
         <p className="text-destructive text-sm" data-testid="chat-error">
-          {agent.error.message}
+          {enhanceError ?? agent.error?.message}
         </p>
       ) : null}
       <PromptInput
@@ -61,12 +64,24 @@ function AskSession({ host }: { host: string | undefined }) {
         <PromptInputTextarea
           aria-label="Message"
           data-testid="chat-input"
-          onChange={(event) => setDraft(event.target.value)}
+          onChange={(event) => {
+            setEnhanceError(null);
+            setDraft(event.target.value);
+          }}
           placeholder="Ask a question"
           value={draft}
         />
+        <EnhancePromptButton
+          disabled={!host || isBusy}
+          draft={draft}
+          onEnhanced={(text) => {
+            setEnhanceError(null);
+            setDraft(text);
+          }}
+          onError={setEnhanceError}
+        />
         <PromptInputSubmit
-          disabled={!host || !draft.trim()}
+          disabled={!host || !draft.trim() || isBusy}
           onStop={() => void agent.cancel()}
           status={status}
         />

@@ -21,4 +21,5 @@ afterAll(async () => {
 
 export { fastify };
 
+import "./enhance.test";
 import "./generate.test";

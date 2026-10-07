@@ -1115,6 +1115,109 @@ export type CreateAgentTokenResponses = {
 
 export type CreateAgentTokenResponse = CreateAgentTokenResponses[keyof CreateAgentTokenResponses];
 
+export type EnhanceData = {
+  body: {
+    prompt: string;
+  };
+  path?: never;
+  query?: never;
+  url: '/ai/enhance';
+};
+
+export type EnhanceErrors = {
+  /**
+   * Default Response
+   */
+  400: {
+    code: string;
+    message: string;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+  /**
+   * Default Response
+   */
+  401: {
+    code: string;
+    message: string;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+  /**
+   * Default Response
+   */
+  402: {
+    code: string;
+    message: string;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+  /**
+   * Default Response
+   */
+  429: {
+    code: string;
+    message: string;
+    retryAfter: number;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+  /**
+   * Default Response
+   */
+  500: {
+    code: string;
+    message: string;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+  /**
+   * Default Response
+   */
+  502: {
+    code: string;
+    message: string;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+  /**
+   * Default Response
+   */
+  504: {
+    code: string;
+    message: string;
+    detail?: string;
+    status?: number;
+    title?: string;
+    type?: string;
+  };
+};
+
+export type EnhanceError = EnhanceErrors[keyof EnhanceErrors];
+
+export type EnhanceResponses = {
+  /**
+   * Default Response
+   */
+  200: {
+    text: string;
+  };
+};
+
+export type EnhanceResponse = EnhanceResponses[keyof EnhanceResponses];
+
 export type GenerateData = {
   body: {
     model?: string;

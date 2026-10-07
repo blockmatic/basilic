@@ -1,3 +1,4 @@
+export { enhancePromptInstruction } from "./enhance-instruction.js";
 export {
   defaultGatewayModel,
   defaultProvider,

@@ -46,6 +46,7 @@ agents: {
 },
 listAgents: gen.listAgents,
 ai: {
+  enhance: gen.enhance,
   generate: gen.generate,
 },
 auth: {

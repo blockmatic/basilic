@@ -5,6 +5,7 @@ import type { ViewConfig } from "@repo/utils/view-config";
 import { useEveAgent } from "eve/react";
 import { useEffect, useRef, useState } from "react";
 
+import { EnhancePromptButton } from "@/components/assistant/enhance-prompt";
 import { eveAccessToken } from "@/lib/eve/headers";
 import { lastAssistantText, latestView } from "@/lib/eve/messages";
 
@@ -18,6 +19,7 @@ export function CommandComposer({
   onView: (view: Pick<ViewConfig, "q" | "surface">) => void;
 }) {
   const [draft, setDraft] = useState(initialDraft);
+  const [enhanceError, setEnhanceError] = useState<string | null>(null);
   const agent = useEveAgent({ auth: { bearer: eveAccessToken }, host });
   const applied = useRef<string | null>(null);
   const isBusy = agent.status === "submitted" || agent.status === "streaming";
@@ -45,9 +47,21 @@ export function CommandComposer({
           aria-label="Agent"
           className="border-input bg-background min-h-11 flex-1 rounded-md border px-3"
           data-testid="command-input"
-          onChange={(event) => setDraft(event.target.value)}
+          onChange={(event) => {
+            setEnhanceError(null);
+            setDraft(event.target.value);
+          }}
           placeholder="Show application status"
           value={draft}
+        />
+        <EnhancePromptButton
+          disabled={!host || isBusy}
+          draft={draft}
+          onEnhanced={(text) => {
+            setEnhanceError(null);
+            setDraft(text);
+          }}
+          onError={setEnhanceError}
         />
         <Button className="min-h-11" disabled={!host || isBusy} type="submit">
           {isBusy ? "Sending…" : "Send"}
@@ -61,9 +75,9 @@ export function CommandComposer({
           {reply}
         </p>
       ) : null}
-      {agent.error ? (
+      {(enhanceError ?? agent.error?.message) ? (
         <p className="text-destructive text-sm" data-testid="command-error">
-          {agent.error.message}
+          {enhanceError ?? agent.error?.message}
         </p>
       ) : null}
     </div>
